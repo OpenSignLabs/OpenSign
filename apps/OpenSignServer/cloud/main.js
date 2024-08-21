@@ -61,15 +61,22 @@ import updateTeam from './parsefunction/updateTeam.js';
 import getOrgAdmins from './parsefunction/getOrgAdmins.js';
 import getAllUserTeamByOrg from './parsefunction/getAllUserTeamByOrg.js';
 import AllowedUsers from './parsefunction/AlllowedUsers.js';
-import Buyaddon from './parsefunction/BuyAddon.js';
+import BuyAddonUsers from './parsefunction/BuyAddonUsers.js';
+import AllowedApis from './parsefunction/AllowedApis.js';
+import BuyApis from './parsefunction/BuyApis.js';
+import AllowedQuicksend from './parsefunction/AllowedQuicksend.js';
+import BuyQuickSend from './parsefunction/BuyQuicksend.js';
+import ExtUserAftersave from './parsefunction/ExtUserAftersave.js';
+import ExtUserAfterdelete from './parsefunction/ExtUserAfterdelete.js';
 
 // This afterSave function triggers after an object is added or updated in the specified class, allowing for post-processing logic.
 Parse.Cloud.afterSave('contracts_Document', DocumentAftersave);
 Parse.Cloud.afterSave('contracts_Contactbook', ContactbookAftersave);
-// Parse.Cloud.afterSave('contracts_Users', ContractUsersAftersave);
 Parse.Cloud.afterSave('contracts_Template', TemplateAfterSave);
 Parse.Cloud.afterSave('contracts_Teams', TeamsAftersave);
 Parse.Cloud.afterSave('contracts_Subscriptions', SubscriptionAftersave);
+Parse.Cloud.afterSave('contracts_Users', ExtUserAftersave);
+
 // This beforeSave function triggers before an object is added or updated in the specified class, allowing for validation or modification.
 Parse.Cloud.beforeSave('contracts_Document', DocumentBeforesave);
 Parse.Cloud.beforeSave('contracts_Template', TemplateBeforeSave);
@@ -80,6 +87,9 @@ Parse.Cloud.afterFind('contracts_Document', DocumentBeforeFind);
 Parse.Cloud.afterFind('contracts_Template', TemplateAfterFind);
 Parse.Cloud.afterFind('contracts_Signature', SignatureAfterFind);
 Parse.Cloud.afterFind('partners_Tenant', TenantAterFind);
+
+// This afterDelete function triggers after an object get deleted.
+Parse.Cloud.afterDelete('contracts_Users', ExtUserAfterdelete);
 
 // This define function creates a custom Cloud Function that can be called from the client-side, enabling custom business logic on the server.
 Parse.Cloud.define('signPdf', PDF);
@@ -132,4 +142,8 @@ Parse.Cloud.define('updateteam', updateTeam);
 Parse.Cloud.define('getorgadmins', getOrgAdmins);
 Parse.Cloud.define('getalluserteambyorg', getAllUserTeamByOrg);
 Parse.Cloud.define('allowedusers', AllowedUsers);
-Parse.Cloud.define('buyaddon', Buyaddon);
+Parse.Cloud.define('buyaddonusers', BuyAddonUsers);
+Parse.Cloud.define('allowedapis', AllowedApis);
+Parse.Cloud.define('allowedquicksend', AllowedQuicksend);
+Parse.Cloud.define('buyapis', BuyApis);
+Parse.Cloud.define('buyquicksend', BuyQuickSend);

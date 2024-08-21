@@ -3,7 +3,9 @@ import axios from "axios";
 import SuggestionInput from "./shared/fields/SuggestionInput";
 import Loader from "../primitives/Loader";
 import { useTranslation } from "react-i18next";
-
+import Parse from "parse";
+import ModalUi from "../primitives/ModalUi";
+import { isEnableSubscription } from "../constant/const";
 const BulkSendUi = (props) => {
   const { t } = useTranslation();
   const [forms, setForms] = useState([]);
@@ -13,6 +15,16 @@ const BulkSendUi = (props) => {
   const [isSubmit, setIsSubmit] = useState(false);
   const [allowedForm, setAllowedForm] = useState(0);
   const [isSignatureExist, setIsSignatureExist] = useState();
+  const [isBulkAvailable, setIsBulkAvailable] = useState(false);
+  const quantityList = [500, 1000, 5000, 50000];
+  const [amount, setAmount] = useState({
+    price: (75.0).toFixed(2),
+    quantity: 500,
+    totalPrice: 0,
+    priceperbulksend: 0.15,
+    totalQuickSend: 0
+  });
+  const [isQuotaReached, setIsQuotaReached] = useState(false);
   const allowedSigners = 50;
   useEffect(() => {
     signatureExist();
@@ -20,14 +32,38 @@ const BulkSendUi = (props) => {
   }, []);
 
   //function to check atleast one signature field exist
-  const signatureExist = () => {
-    const getPlaceholder = props.item?.Placeholders;
-    const checkIsSignatureExistt = getPlaceholder?.every((placeholderObj) =>
-      placeholderObj?.placeHolder?.some((holder) =>
-        holder?.pos?.some((posItem) => posItem?.type === "signature")
-      )
-    );
-    setIsSignatureExist(checkIsSignatureExistt);
+  const signatureExist = async () => {
+    if (isEnableSubscription) {
+      setIsSubmit(true);
+      try {
+        const allowedquicksend = await Parse.Cloud.run("allowedquicksend");
+        if (allowedquicksend > 0) {
+          setIsBulkAvailable(true);
+          const getPlaceholder = props.item?.Placeholders;
+          const checkIsSignatureExistt = getPlaceholder?.every(
+            (placeholderObj) =>
+              placeholderObj?.placeHolder?.some((holder) =>
+                holder?.pos?.some((posItem) => posItem?.type === "signature")
+              )
+          );
+          setIsSignatureExist(checkIsSignatureExistt);
+        }
+        setAmount((obj) => ({ ...obj, totalQuickSend: allowedquicksend }));
+        setIsSubmit(false);
+      } catch (err) {
+        setIsSubmit(false);
+        console.log("Err", err);
+      }
+    } else {
+      setIsBulkAvailable(true);
+      const getPlaceholder = props.item?.Placeholders;
+      const checkIsSignatureExistt = getPlaceholder?.every((placeholderObj) =>
+        placeholderObj?.placeHolder?.some((holder) =>
+          holder?.pos?.some((posItem) => posItem?.type === "signature")
+        )
+      );
+      setIsSignatureExist(checkIsSignatureExistt);
+    }
   };
   useEffect(() => {
     if (scrollOnNextUpdate && formRef.current) {
@@ -76,29 +112,33 @@ const BulkSendUi = (props) => {
   const handleAddForm = (e) => {
     e.preventDefault();
     // Check if the quick send limit has been reached
-    if (forms?.length < allowedForm) {
-      if (props?.Placeholders.length > 0) {
-        let newForm = [];
-        props?.Placeholders?.forEach((element) => {
-          if (!element.signerObjId) {
-            newForm = [
-              ...newForm,
-              {
-                fieldId: element.Id,
-                email: "",
-                label: element.Role,
-                signer: {}
-              }
-            ];
-          }
-        });
-        setForms([...forms, { Id: formId, fields: newForm }]);
-      }
-      setFormId(formId + 1);
-      setScrollOnNextUpdate(true);
+    if (isEnableSubscription && forms.length >= amount.totalQuickSend) {
+      setIsQuotaReached(true);
     } else {
-      // If the limit has been reached, throw an error with the appropriate message
-      alert(t("quick-send-alert-4"));
+      if (forms?.length < allowedForm) {
+        if (props?.Placeholders.length > 0) {
+          let newForm = [];
+          props?.Placeholders?.forEach((element) => {
+            if (!element.signerObjId) {
+              newForm = [
+                ...newForm,
+                {
+                  fieldId: element.Id,
+                  email: "",
+                  label: element.Role,
+                  signer: {}
+                }
+              ];
+            }
+          });
+          setForms([...forms, { Id: formId, fields: newForm }]);
+        }
+        setFormId(formId + 1);
+        setScrollOnNextUpdate(true);
+      } else {
+        // If the limit has been reached, throw an error with the appropriate message
+        alert(t("quick-send-alert-4"));
+      }
     }
   };
 
@@ -162,13 +202,9 @@ const BulkSendUi = (props) => {
             : [...existSigner]
         });
       } else {
-        Documents.push({
-          ...props.item,
-          Placeholders: updatedPlaceholders
-        });
+        Documents.push({ ...props.item, Placeholders: updatedPlaceholders });
       }
     });
-    //console.log("Documents ", Documents);
     await batchQuery(Documents);
   };
 
@@ -180,9 +216,7 @@ const BulkSendUi = (props) => {
       "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
       sessionToken: localStorage.getItem("accesstoken")
     };
-    const params = {
-      Documents: JSON.stringify(Documents)
-    };
+    const params = { Documents: JSON.stringify(Documents) };
     try {
       const res = await axios.post(functionsUrl, params, { headers: headers });
       // console.log("res ", res);
@@ -196,7 +230,48 @@ const BulkSendUi = (props) => {
       setIsSubmit(false);
     }
   };
-
+  const handleAddOnQuickSubmit = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsSubmit(true);
+    try {
+      const resAddon = await Parse.Cloud.run("buyquicksend", {
+        quicksend: amount.quantity
+      });
+      if (resAddon) {
+        const _resAddon = JSON.parse(JSON.stringify(resAddon));
+        if (_resAddon.status === "success") {
+          setIsBulkAvailable(true);
+          handleCloseQuotaReached();
+          setAmount((obj) => ({
+            ...obj,
+            quantity: 500,
+            priceperapi: 0.15,
+            price: (75.0).toFixed(2),
+            totalapis: _resAddon.addon
+          }));
+        }
+      }
+    } catch (err) {
+      console.log("Err in buy addon", err);
+      alert(t("something-went-wrong-mssg"));
+    } finally {
+      setIsSubmit(false);
+    }
+  };
+  const handlePricePerQuick = async (e) => {
+    const quantity = e.target?.value;
+    const price =
+      quantity > 0
+        ? (Math.round(quantity * amount.priceperbulksend * 100) / 100).toFixed(
+            2
+          )
+        : 500 * amount.priceperbulksend;
+    setAmount((prev) => ({ ...prev, quantity: quantity, price: price }));
+  };
+  const handleCloseQuotaReached = () => {
+    setIsQuotaReached(false);
+  };
   return (
     <>
       {isSubmit && (
@@ -204,75 +279,141 @@ const BulkSendUi = (props) => {
           <Loader />
         </div>
       )}
-      {props.Placeholders?.length > 0 ? (
-        isSignatureExist ? (
-          <>
-            {props.Placeholders?.some((x) => !x.signerObjId) ? (
-              <form onSubmit={handleSubmit}>
-                <div className="min-h-max max-h-[250px] overflow-y-auto">
-                  {forms?.map((form, index) => (
-                    <div
-                      key={form.Id}
-                      className="p-3 op-card border-[1px] border-gray-400 mt-3 mx-4 mb-4 bg-base-200 text-base-content grid grid-cols-1 md:grid-cols-2 gap-2 relative"
-                    >
-                      {form?.fields?.map((field, fieldIndex) => (
-                        <div className="flex flex-col" key={field.fieldId}>
-                          <label>{field.label}</label>
-                          <SuggestionInput
-                            required
-                            type="email"
-                            value={field.value}
-                            index={fieldIndex}
-                            onChange={(signer) =>
-                              handleInputChange(index, signer, fieldIndex)
-                            }
-                          />
-                        </div>
-                      ))}
-                      {forms?.length > 1 && (
+      {isBulkAvailable ? (
+        <>
+          {props.Placeholders?.length > 0 ? (
+            isSignatureExist ? (
+              <>
+                {props.Placeholders?.some((x) => !x.signerObjId) ? (
+                  <div>
+                    <form onSubmit={handleSubmit}>
+                      <div className="min-h-max max-h-[250px] overflow-y-auto">
+                        {forms?.map((form, index) => (
+                          <div
+                            key={form.Id}
+                            className="p-3 op-card border-[1px] border-gray-400 mt-3 mx-4 mb-4 bg-base-200 text-base-content grid grid-cols-1 md:grid-cols-2 gap-2 relative"
+                          >
+                            {form?.fields?.map((field, fieldIndex) => (
+                              <div
+                                className="flex flex-col"
+                                key={field.fieldId}
+                              >
+                                <label>{field.label}</label>
+                                <SuggestionInput
+                                  required
+                                  type="email"
+                                  value={field.value}
+                                  index={fieldIndex}
+                                  onChange={(signer) =>
+                                    handleInputChange(index, signer, fieldIndex)
+                                  }
+                                />
+                              </div>
+                            ))}
+                            {forms?.length > 1 && (
+                              <button
+                                onClick={() => handleRemoveForm(index)}
+                                className="absolute right-3 top-1 text-[red] border-[1px] border-[red] rounded-lg w-[1.7rem] h-[1.7rem]"
+                              >
+                                <i className="fa-light fa-trash"></i>
+                              </button>
+                            )}
+                            <div ref={formRef}></div>
+                          </div>
+                        ))}
+                      </div>
+                      <div className="flex flex-col mx-4 mb-4 gap-3">
                         <button
-                          onClick={() => handleRemoveForm(index)}
-                          className="absolute right-3 top-1 text-[red] border-[1px] border-[red] rounded-lg w-[1.7rem] h-[1.7rem]"
+                          onClick={handleAddForm}
+                          className="op-btn op-btn-primary focus:outline-none"
                         >
-                          <i className="fa-light fa-trash"></i>
+                          <i className="fa-light fa-plus"></i>{" "}
+                          <span>{t("add-new")}</span>
                         </button>
-                      )}
-                      <div ref={formRef}></div>
-                    </div>
-                  ))}
-                </div>
-                <div className="flex flex-col mx-4 mb-4 gap-3">
-                  <button
-                    onClick={handleAddForm}
-                    className="op-btn op-btn-primary focus:outline-none"
-                  >
-                    <i className="fa-light fa-plus"></i>{" "}
-                    <span>{t("add-new")}</span>
-                  </button>
-                  <button
-                    type="submit"
-                    className="op-btn op-btn-secondary focus:outline-none"
-                  >
-                    <i className="fa-light fa-paper-plane"></i>{" "}
-                    <span>{t("send")}</span>
-                  </button>
-                </div>
-              </form>
+                        <button
+                          type="submit"
+                          className="op-btn op-btn-accent focus:outline-none"
+                        >
+                          <i className="fa-light fa-paper-plane"></i>{" "}
+                          <span>{t("send")}</span>
+                        </button>
+                      </div>
+                    </form>
+                    <ModalUi
+                      isOpen={isQuotaReached}
+                      handleClose={() => handleCloseQuotaReached()}
+                    >
+                      <div className="p-4 flex justify-center items-center flex-col gap-y-3">
+                        <p className="text-center text-base-content">
+                          {t("quotaerrquicksend")}
+                        </p>
+                        <button
+                          onClick={() => setIsBulkAvailable(false)}
+                          className=" op-btn op-btn-primary w-28"
+                        >
+                          {t("buycredits")}
+                        </button>
+                      </div>
+                    </ModalUi>
+                  </div>
+                ) : (
+                  <div className="text-black p-3 bg-white w-full text-sm md:text-base flex justify-center items-center">
+                    {t("quick-send-alert-1")}
+                  </div>
+                )}
+              </>
             ) : (
               <div className="text-black p-3 bg-white w-full text-sm md:text-base flex justify-center items-center">
-                {t("quick-send-alert-1")}
+                {t("quick-send-alert-2")}
               </div>
-            )}
-          </>
-        ) : (
-          <div className="text-black p-3 bg-white w-full text-sm md:text-base flex justify-center items-center">
-            {t("quick-send-alert-2")}
-          </div>
-        )
+            )
+          ) : (
+            <div className="text-black p-3 bg-white w-full text-sm md:text-base flex justify-center items-center">
+              {t("quick-send-alert-3")}
+            </div>
+          )}
+        </>
       ) : (
-        <div className="text-black p-3 bg-white w-full text-sm md:text-base flex justify-center items-center">
-          {t("quick-send-alert-3")}
-        </div>
+        <form onSubmit={handleAddOnQuickSubmit} className="p-3">
+          <p className="flex justify-center text-center mx-2 mb-3 text-base op-text-accent font-medium">
+            {t("additional-quicksend")}
+          </p>
+          <div className="mb-3 flex justify-between">
+            <label
+              htmlFor="quantity"
+              className="block text-xs text-gray-700 font-semibold"
+            >
+              {t("quantityofquicksend")}
+              <span className="text-[red] text-[13px]">*</span>
+            </label>
+            <select
+              value={amount.quantity}
+              onChange={(e) => handlePricePerQuick(e)}
+              name="quantity"
+              className="op-select op-select-bordered op-select-sm focus:outline-none hover:border-base-content w-1/4 text-xs"
+              required
+            >
+              {quantityList.length > 0 &&
+                quantityList.map((x) => (
+                  <option key={x} value={x}>
+                    {x}
+                  </option>
+                ))}
+            </select>
+          </div>
+          <div className="mb-3 flex justify-between">
+            <label className="block text-xs text-gray-700 font-semibold">
+              {t("Price")} (1 * {amount.priceperbulksend})
+            </label>
+            <div className="w-1/4 flex justify-center items-center text-sm">
+              USD {amount.price}
+            </div>
+          </div>
+          <hr className="text-base-content mb-3" />
+          <button className="op-btn op-btn-primary w-full mt-2">
+            {t("Proceed")}
+          </button>
+        </form>
       )}
     </>
   );
