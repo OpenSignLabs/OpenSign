@@ -76,7 +76,7 @@ export default async function BuyAddonUsers(request) {
                 },
               ],
             });
-            await axios.put(
+            const updatedSubscription = await axios.put(
               'https://www.zohoapis.in/billing/v1/subscriptions/' + subscriptionId,
               data,
               {
@@ -86,20 +86,11 @@ export default async function BuyAddonUsers(request) {
                 },
               }
             );
-            const hostedpage_id = _resSub.SubscriptionDetails.hostedpage_id;
-            const userData = await axios.get(
-              'https://www.zohoapis.in/billing/v1/hostedpages/' + hostedpage_id,
-              {
-                headers: {
-                  Authorization: 'Zoho-oauthtoken ' + res.data.access_token,
-                  'X-com-zoho-subscriptions-organizationid': process.env.ZOHO_BILLING_ORG_ID,
-                },
-              }
-            );
+            const subscriptionInfo = { data: updatedSubscription.data };
             const allowedUsers = quantity + 1;
             const updateSub = new Parse.Object('contracts_Subscriptions');
             updateSub.id = resSub.id;
-            updateSub.set('SubscriptionDetails', userData.data);
+            updateSub.set('SubscriptionDetails', subscriptionInfo);
             updateSub.set('AllowedUsers', allowedUsers);
             const resupdateSub = await updateSub.save(null, { useMasterKey: true });
             return { status: 'success', addon: allowedUsers };
