@@ -227,11 +227,7 @@ const Header = ({ showSidebar }) => {
                   <i className="fa-light fa-lock"></i> {t("change-password")}
                 </span>
               </li>
-              <li
-                onClick={() => {
-                  handleConsoleRedirect();
-                }}
-              >
+              <li onClick={() => handleConsoleRedirect()}>
                 <span>
                   <i className="fa-light fa-id-card"></i> Console
                 </span>

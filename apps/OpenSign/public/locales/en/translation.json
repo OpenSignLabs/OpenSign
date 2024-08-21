@@ -369,7 +369,8 @@
   "copy-type": {
     "All pages": "All pages",
     "All pages but last": "All pages but last",
-    "All pages but first": "All pages but first"
+    "All pages but first": "All pages but first",
+    "Beside to widget":"Beside to widget"
   },
   "options": "Options",
   "minimun-check": "Minimun check",
@@ -612,5 +613,8 @@
   "additional-quicksend": "Please purchase add-on quick send",
   "quantityofquicksend": "Quantity of Quick send",
   "quotaerrquicksend": "Quota Reached, You don't have enough credits.",
-  "buycredits": "Buy credits"
+  "buycredits": "Buy credits",
+  "rotate-right":"Rotate right",
+  "rotate-left":"Rotate left",
+  "rotate-alert-mssg":"All widgets on this page will be lost. Are you sure you want to proceed?"
 }

@@ -1306,9 +1306,7 @@ const ReportTable = (props) => {
                                 <ModalUi
                                   isOpen
                                   title={t("public-url")}
-                                  handleClose={() => {
-                                    setIsPublicProfile({});
-                                  }}
+                                  handleClose={() => setIsPublicProfile({})}
                                 >
                                   <div className="m-[20px]">
                                     {publicUserName ? (

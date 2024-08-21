@@ -35,7 +35,13 @@ import {
   fetchSubscription,
   convertPdfArrayBuffer,
   getContainerScale,
-  openInNewTab
+  openInNewTab,
+  convertBase64ToFile,
+  onClickZoomIn,
+  onClickZoomOut,
+  rotatePdfPage,
+  handleRemoveWidgets,
+  handleRotateWarning
 } from "../constant/Utils";
 import RenderPdf from "../components/pdf/RenderPdf";
 import { useNavigate } from "react-router-dom";
@@ -56,6 +62,7 @@ import PdfZoom from "../components/pdf/PdfZoom";
 import LottieWithLoader from "../primitives/DotLottieReact";
 import { paidUrl } from "../json/plansArr";
 import { useTranslation } from "react-i18next";
+import RotateAlert from "../components/RotateAlert";
 
 function PlaceHolderSign() {
   const { t } = useTranslation();
@@ -133,6 +140,10 @@ function PlaceHolderSign() {
   const [pdfArrayBuffer, setPdfArrayBuffer] = useState("");
   const isHeader = useSelector((state) => state.showHeader);
   const [activeMailAdapter, setActiveMailAdapter] = useState("");
+  const [isRotate, setIsRotate] = useState({
+    status: false,
+    degree: 0
+  });
   const [isAlreadyPlace, setIsAlreadyPlace] = useState({
     status: false,
     message: ""
@@ -141,6 +152,8 @@ function PlaceHolderSign() {
   const [isCustomize, setIsCustomize] = useState(false);
   const [zoomPercent, setZoomPercent] = useState(0);
   const [scale, setScale] = useState(1);
+
+  const [pdfRotateBase64, setPdfRotatese64] = useState("");
   const isMobile = window.innerWidth < 767;
   const [, drop] = useDrop({
     accept: "BOX",
@@ -837,11 +850,6 @@ function PlaceHolderSign() {
   const handleMouseLeave = () => {
     setSignBtnPosition([xySignature]);
   };
-
-  function sanitizeFileName(fileName) {
-    // Remove spaces and invalid characters
-    return fileName.replace(/[^a-zA-Z0-9._-]/g, "");
-  }
   //embed prefill label widget data
   const embedPrefilllData = async () => {
     const prefillExist = signerPos.filter((data) => data.Role === "prefill");
@@ -853,7 +861,7 @@ function PlaceHolderSign() {
       });
       const isSignYourSelfFlow = false;
       try {
-        const pdfBytes = await multiSignEmbed(
+        const pdfBase64 = await multiSignEmbed(
           placeholder,
           pdfDoc,
           isSignYourSelfFlow,
@@ -861,19 +869,26 @@ function PlaceHolderSign() {
           pdfOriginalWH,
           containerWH
         );
-
-        const fileName = sanitizeFileName(pdfDetails[0].Name) + ".pdf";
-        const pdfFile = new Parse.File(fileName, { base64: pdfBytes });
-
-        // Save the Parse File if needed
-        const pdfData = await pdfFile.save();
-        const pdfUrl = pdfData.url();
+        const pdfUrl = await convertBase64ToFile(pdfDetails[0].Name, pdfBase64);
         const tenantId = localStorage.getItem("TenantId");
-        const buffer = atob(pdfBytes);
+        const buffer = atob(pdfBase64);
         SaveFileSize(buffer.length, pdfUrl, tenantId);
         return pdfUrl;
       } catch (e) {
-        console.log("error", e);
+        console.log("error to convertBase64ToFile in placeholder flow", e);
+      }
+    } else if (pdfRotateBase64) {
+      try {
+        const pdfUrl = await convertBase64ToFile(
+          pdfDetails[0].Name,
+          pdfRotateBase64
+        );
+        const tenantId = localStorage.getItem("TenantId");
+        const buffer = atob(pdfRotateBase64);
+        SaveFileSize(buffer.length, pdfUrl, tenantId);
+        return pdfUrl;
+      } catch (e) {
+        console.log("error to convertBase64ToFile in placeholder flow", e);
       }
     } else {
       return pdfDetails[0].URL;
@@ -1710,6 +1725,39 @@ function PlaceHolderSign() {
       });
     }
   };
+  const clickOnZoomIn = () => {
+    onClickZoomIn(scale, zoomPercent, setScale, setZoomPercent);
+  };
+  const clickOnZoomOut = () => {
+    onClickZoomOut(zoomPercent, scale, setZoomPercent, setScale);
+  };
+  //`handleRotationFun` function is used to roatate pdf particular page
+  const handleRotationFun = async (rotateDegree) => {
+    const isRotate = handleRotateWarning(signerPos, pageNumber);
+    if (isRotate) {
+      setIsRotate({ status: true, degree: rotateDegree });
+    } else {
+      const urlDetails = await rotatePdfPage(
+        pdfDetails[0].URL,
+        rotateDegree,
+        pageNumber - 1,
+        pdfRotateBase64
+      );
+      setPdfArrayBuffer && setPdfArrayBuffer(urlDetails.arrayBuffer);
+      setPdfRotatese64(urlDetails.base64);
+    }
+  };
+  const handleRemovePlaceholder = async () => {
+    handleRemoveWidgets(setSignerPos, signerPos, pageNumber, setIsRotate);
+    const urlDetails = await rotatePdfPage(
+      pdfDetails[0].URL,
+      isRotate.degree,
+      pageNumber - 1,
+      pdfRotateBase64
+    );
+    setPdfArrayBuffer && setPdfArrayBuffer(urlDetails.arrayBuffer);
+    setPdfRotatese64(urlDetails.base64);
+  };
   return (
     <>
       <Title title={state?.title ? state.title : "New Document"} />
@@ -1758,15 +1806,14 @@ function PlaceHolderSign() {
                 setPageNumber={setPageNumber}
                 setSignBtnPosition={setSignBtnPosition}
                 pageNumber={pageNumber}
+                pdfRotateBase64={pdfRotateBase64}
               />
               {/* pdf render view */}
               <div className=" w-full md:w-[57%] flex mr-4">
                 <PdfZoom
-                  setScale={setScale}
-                  scale={scale}
-                  containerWH={containerWH}
-                  setZoomPercent={setZoomPercent}
-                  zoomPercent={zoomPercent}
+                  clickOnZoomIn={clickOnZoomIn}
+                  clickOnZoomOut={clickOnZoomOut}
+                  handleRotationFun={handleRotationFun}
                 />
                 <div className=" w-full md:w-[95%] ">
                   {/* this modal is used show alert set placeholder for all signers before send mail */}
@@ -1894,9 +1941,7 @@ function PlaceHolderSign() {
                       >
                         {isCurrUser && (
                           <button
-                            onClick={() => {
-                              handleRecipientSign();
-                            }}
+                            onClick={() => handleRecipientSign()}
                             type="button"
                             className="op-btn op-btn-primary mr-1"
                           >
@@ -1921,17 +1966,13 @@ function PlaceHolderSign() {
                   <ModalUi
                     isOpen={isShowEmail}
                     title={t("signers-alert")}
-                    handleClose={() => {
-                      setIsShowEmail(false);
-                    }}
+                    handleClose={() => setIsShowEmail(false)}
                   >
                     <div className="h-[100%] p-[20px]">
                       <p>{t("placeholder-alert-7")}</p>
                       <div className="w-full h-[1px] bg-[#9f9f9f] my-[15px]"></div>
                       <button
-                        onClick={() => {
-                          setIsShowEmail(false);
-                        }}
+                        onClick={() => setIsShowEmail(false)}
                         type="button"
                         className="op-btn op-btn-primary"
                       >
@@ -2012,9 +2053,16 @@ function PlaceHolderSign() {
                     alertSendEmail={alertSendEmail}
                     isShowHeader={true}
                     currentSigner={true}
+                    handleRotationFun={handleRotationFun}
+                    clickOnZoomIn={clickOnZoomIn}
+                    clickOnZoomOut={clickOnZoomOut}
                   />
 
-                  <div ref={divRef} data-tut="pdfArea" className="h-[95%]">
+                  <div
+                    ref={divRef}
+                    data-tut="pdfArea"
+                    className="h-full md:h-[95%]"
+                  >
                     {containerWH && (
                       <RenderPdf
                         pageNumber={pageNumber}
@@ -2056,6 +2104,7 @@ function PlaceHolderSign() {
                         setScale={setScale}
                         scale={scale}
                         setIsSelectId={setIsSelectId}
+                        pdfRotateBase64={pdfRotateBase64}
                         fontSize={fontSize}
                         setFontSize={setFontSize}
                         fontColor={fontColor}
@@ -2201,6 +2250,11 @@ function PlaceHolderSign() {
           setFontSize={setFontSize}
           fontColor={fontColor}
           setFontColor={setFontColor}
+        />
+        <RotateAlert
+          isRotate={isRotate.status}
+          setIsRotate={setIsRotate}
+          handleRemoveWidgets={handleRemovePlaceholder}
         />
       </DndProvider>
     </>
