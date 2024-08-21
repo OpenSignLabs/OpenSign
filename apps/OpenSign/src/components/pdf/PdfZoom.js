@@ -17,9 +17,7 @@ function PdfZoom(props) {
         <>
           <span
             className="bg-gray-50 px-[4px] 2xl:px-[15px] 2xl:py-[10px] cursor-pointer"
-            onClick={() => {
-              props.handleRotationFun(90);
-            }}
+            onClick={() => props.handleRotationFun(90)}
             title={t("rotate-right")}
           >
             <i className="fa-light fa-rotate-right text-gray-500 2xl:text-[30px]"></i>

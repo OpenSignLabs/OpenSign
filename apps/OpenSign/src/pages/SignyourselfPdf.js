@@ -1305,9 +1305,7 @@ function SignYourSelf() {
                 <ModalUi
                   isOpen={showAlreadySignDoc.status}
                   title={t("document-signed")}
-                  handleClose={() => {
-                    setShowAlreadySignDoc({ status: false });
-                  }}
+                  handleClose={() => setShowAlreadySignDoc({ status: false })}
                 >
                   <div className="p-[20px] h-full">
                     <p>{showAlreadySignDoc.mssg}</p>
@@ -1483,9 +1481,7 @@ function SignYourSelf() {
       <ModalUi
         isOpen={validateAlert}
         title={t("validation-alert")}
-        handleClose={() => {
-          setValidateAlert(false);
-        }}
+        handleClose={() => setValidateAlert(false)}
       >
         <div className="p-[20px] h-full">
           <p>{t("validate-alert-mssg")}</p>

@@ -188,9 +188,7 @@ function Header({
                     ) : (
                       <div
                         data-tut="reactourThird"
-                        onClick={() => {
-                          embedWidgetsData();
-                        }}
+                        onClick={() => embedWidgetsData()}
                         className="border-none font-[650] text-[14px] op-link op-link-primary no-underline"
                       >
                         {t("finish")}
@@ -460,9 +458,7 @@ function Header({
               <button
                 type="button"
                 className="op-btn op-btn-primary op-btn-sm  shadow"
-                onClick={() => {
-                  embedWidgetsData();
-                }}
+                onClick={() => embedWidgetsData()}
               >
                 {t("sign-now")}
               </button>
@@ -479,9 +475,7 @@ function Header({
               <button
                 type="button"
                 className="op-btn op-btn-primary op-btn-sm mr-[3px]"
-                onClick={() => {
-                  embedWidgetsData();
-                }}
+                onClick={() => embedWidgetsData()}
               >
                 {t("finish")}
               </button>

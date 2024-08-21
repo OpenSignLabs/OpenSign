@@ -1941,9 +1941,7 @@ function PlaceHolderSign() {
                       >
                         {isCurrUser && (
                           <button
-                            onClick={() => {
-                              handleRecipientSign();
-                            }}
+                            onClick={() => handleRecipientSign()}
                             type="button"
                             className="op-btn op-btn-primary mr-1"
                           >
@@ -1968,17 +1966,13 @@ function PlaceHolderSign() {
                   <ModalUi
                     isOpen={isShowEmail}
                     title={t("signers-alert")}
-                    handleClose={() => {
-                      setIsShowEmail(false);
-                    }}
+                    handleClose={() => setIsShowEmail(false)}
                   >
                     <div className="h-[100%] p-[20px]">
                       <p>{t("placeholder-alert-7")}</p>
                       <div className="w-full h-[1px] bg-[#9f9f9f] my-[15px]"></div>
                       <button
-                        onClick={() => {
-                          setIsShowEmail(false);
-                        }}
+                        onClick={() => setIsShowEmail(false)}
                         type="button"
                         className="op-btn op-btn-primary"
                       >
