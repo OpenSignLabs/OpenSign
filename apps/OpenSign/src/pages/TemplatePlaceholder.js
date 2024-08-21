@@ -70,7 +70,10 @@ const TemplatePlaceholder = () => {
   const [isSendAlert, setIsSendAlert] = useState(false);
   const [isCreateDocModal, setIsCreateDocModal] = useState(false);
   const [isSubscribe, setIsSubscribe] = useState(false);
-  const [isRotate, setIsRotate] = useState(false);
+  const [isRotate, setIsRotate] = useState({
+    status: false,
+    degree: 0
+  });
   const [isLoading, setIsLoading] = useState({
     isLoad: true,
     message: t("loading-mssg")
@@ -1334,7 +1337,7 @@ const TemplatePlaceholder = () => {
   const handleRotationFun = async (rotateDegree) => {
     const isRotate = handleRotateWarning(signerPos, pageNumber);
     if (isRotate) {
-      setIsRotate(true);
+      setIsRotate({ status: true, degree: rotateDegree });
     } else {
       const urlDetails = await rotatePdfPage(
         pdfDetails[0].URL,
@@ -1345,8 +1348,15 @@ const TemplatePlaceholder = () => {
       setPdfRotatese64(urlDetails.base64);
     }
   };
-  const handleRemovePlaceholder = () => {
+  const handleRemovePlaceholder = async () => {
     handleRemoveWidgets(setSignerPos, signerPos, pageNumber, setIsRotate);
+    const urlDetails = await rotatePdfPage(
+      pdfDetails[0].URL,
+      isRotate.degree,
+      pageNumber - 1,
+      pdfRotateBase64
+    );
+    setPdfRotatese64(urlDetails.base64);
   };
 
   return (
@@ -1734,7 +1744,7 @@ const TemplatePlaceholder = () => {
           setFontColor={setFontColor}
         />
         <RotateAlert
-          isRotate={isRotate}
+          isRotate={isRotate.status}
           setIsRotate={setIsRotate}
           handleRemoveWidgets={handleRemovePlaceholder}
         />
