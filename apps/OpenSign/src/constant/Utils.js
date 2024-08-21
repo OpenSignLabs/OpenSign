@@ -872,7 +872,6 @@ export const onChangeInput = (
     }
   } else {
     let getXYdata = xyPostion[index].pos;
-
     const updatePosition = getXYdata.map((positionData) => {
       if (positionData.key === signKey) {
         if (dateFormat) {
@@ -1859,29 +1858,26 @@ export const handleCopyNextToWidget = (
   setXyPostion,
   userId
 ) => {
-  const isSigners = xyPostion.some((data) => data.signerPtr);
   let filterSignerPos;
   //get position of previous widget and create new widget next to that widget on same data except
   // xPosition and key
-  let newpos = position;
+  let newposition = position;
   const calculateXPosition =
     parseInt(position.xPosition) +
     defaultWidthHeight(widgetType).width +
     resizeBorderExtraWidth();
   const newId = randomId();
-  newpos = { ...newpos, xPosition: calculateXPosition, key: newId };
+  newposition = { ...newposition, xPosition: calculateXPosition, key: newId };
   //if condition to create widget in request-sign flow
-  if (isSigners) {
-    if (userId) {
-      filterSignerPos = xyPostion.filter((data) => data.Id === userId);
-    }
-    const getPlaceHolder = filterSignerPos[0]?.placeHolder;
-    const getPageNumer = getPlaceHolder.filter(
+  if (userId) {
+    filterSignerPos = xyPostion.filter((data) => data.Id === userId);
+    const getPlaceHolder = filterSignerPos && filterSignerPos[0]?.placeHolder;
+    const getPageNumer = getPlaceHolder?.filter(
       (data) => data.pageNumber === index
     );
-    const getXYdata = getPageNumer[0].pos;
-    getXYdata.push(newpos);
-    if (getPageNumer.length > 0) {
+    const getXYdata = getPageNumer && getPageNumer[0]?.pos;
+    getXYdata.push(newposition);
+    if (getPageNumer && getPageNumer.length > 0) {
       const newUpdateSignPos = getPlaceHolder.map((obj) => {
         if (obj.pageNumber === index) {
           return { ...obj, pos: getXYdata };
@@ -1899,9 +1895,8 @@ export const handleCopyNextToWidget = (
       setXyPostion(newUpdateSigner);
     }
   } else {
-    // else condition to create widget in sign-yourself flow
-    let getXYdata = xyPostion[index].pos;
-    getXYdata.push(newpos);
+    let getXYdata = xyPostion[index]?.pos || [];
+    getXYdata.push(newposition);
     const updatePlaceholder = xyPostion.map((obj, ind) => {
       if (ind === index) {
         return { ...obj, pos: getXYdata };

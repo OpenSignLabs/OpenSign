@@ -1,12 +1,21 @@
 import React, { useState } from "react";
 import ModalUi from "../../primitives/ModalUi";
-import { randomId, textWidget } from "../../constant/Utils";
+import {
+  handleCopyNextToWidget,
+  randomId,
+  textWidget
+} from "../../constant/Utils";
 import { useTranslation } from "react-i18next";
 
 function PlaceholderCopy(props) {
   const { t } = useTranslation();
-  const copyType = ["All pages", "All pages but last", "All pages but first"];
-  const [selectCopyType, setSelectCopyType] = useState("");
+  const copyType = [
+    { id: 1, type: "All pages" },
+    { id: 2, type: "All pages but last" },
+    { id: 3, type: "All pages but first" },
+    { id: 4, type: "Beside to widget" }
+  ];
+  const [selectCopyType, setSelectCopyType] = useState(1);
   //function for get copy placeholder position
   const getCopyPlaceholderPosition = (
     type,
@@ -20,7 +29,7 @@ function PlaceholderCopy(props) {
         (data) => data.xPosition !== currentPlaceholder.xPosition
       );
     //copy all page placeholder at requested position except first page
-    if (newPageNumber === 1 && type === "first") {
+    if (newPageNumber === 1 && type === 3) {
       if (filterPosition && filterPosition.length > 0) {
         return {
           pageNumber: newPageNumber,
@@ -29,7 +38,7 @@ function PlaceholderCopy(props) {
       }
     }
     //copy all page placeholder at requested position except  last page
-    else if (newPageNumber === props.allPages && type === "last") {
+    else if (newPageNumber === props.allPages && type === 2) {
       if (existPlaceholderPosition) {
         return {
           pageNumber: newPageNumber,
@@ -172,20 +181,60 @@ function PlaceholderCopy(props) {
 
   //function for getting selected type placeholder copy
   const handleApplyCopy = () => {
-    if (selectCopyType === "All pages") {
-      copyPlaceholder("all");
-    } else if (selectCopyType === "All pages but last") {
-      copyPlaceholder("last");
-    } else if (selectCopyType === "All pages but first") {
-      copyPlaceholder("first");
+    if (selectCopyType === 4) {
+      const signerPosition = props.xyPostion;
+      let currentXYposition;
+      const signerId = props.signerObjId ? props.signerObjId : props.Id;
+      if (signerId) {
+        const filterSignerPosition = signerPosition.filter(
+          (item) => item?.Id === signerId
+        );
+        currentXYposition = filterSignerPosition[0].placeHolder.filter(
+          (data) => data.pageNumber === props?.pageNumber
+        );
+        //get current placeholder position data which user want to copy
+        currentXYposition = currentXYposition[0].pos.find(
+          (position) => position.key === props.signKey
+        );
+        //function to create new widget next to just widget
+        handleCopyNextToWidget(
+          currentXYposition,
+          props.widgetType,
+          props.xyPostion,
+          props.pageNumber,
+          props.setXyPostion,
+          props?.Id
+        );
+      } else {
+        const getIndex = props?.xyPostion.findIndex(
+          (data) => data.pageNumber === props.pageNumber
+        );
+        const placeholderPosition = props?.xyPostion[getIndex];
+        //get current placeholder position data which user want to copy
+        currentXYposition = placeholderPosition.pos.find(
+          (pos) => pos.key === props.signKey
+        );
+        //function to create new widget next to just widget
+        handleCopyNextToWidget(
+          currentXYposition,
+          props.widgetType,
+          props.xyPostion,
+          getIndex,
+          props.setXyPostion
+        );
+      }
+    } else {
+      copyPlaceholder(selectCopyType);
     }
   };
   const handleUniqueId = () => {
-    if (props.widgetType === textWidget) {
+    const signerId = props.signerObjId ? props.signerObjId : props.Id;
+    if (signerId && props.widgetType === textWidget) {
       props.setUniqueId(props?.tempSignerId);
       props.setTempSignerId("");
     }
     props.setIsPageCopy(false);
+    setSelectCopyType(1);
   };
   return (
     <ModalUi
@@ -201,11 +250,11 @@ function PlaceholderCopy(props) {
                 <input
                   className="mr-[8px] op-radio op-radio-xs"
                   type="radio"
-                  value={data}
-                  onChange={() => setSelectCopyType(data)}
-                  checked={selectCopyType === data}
+                  value={data.id}
+                  onChange={() => setSelectCopyType(data.id)}
+                  checked={selectCopyType === data.id}
                 />
-                {t(`copy-type.${data}`)}
+                {t(`copy-type.${data.type}`)}
               </label>
             </div>
           );

@@ -1333,6 +1333,7 @@ function SignYourSelf() {
                   allPages={allPages}
                   pageNumber={pageNumber}
                   signKey={signKey}
+                  widgetType={widgetType}
                 />
                 {/* this is modal of signature pad */}
                 <SignPad
