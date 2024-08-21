@@ -424,9 +424,7 @@ function RenderPdf({
                     }))}
 
             <Document
-              onLoadError={() => {
-                setPdfLoad(false);
-              }}
+              onLoadError={() => setPdfLoad(false)}
               loading={t("loading-doc")}
               onLoadSuccess={pageDetails}
               // ref={pdfRef}'
@@ -618,9 +616,7 @@ function RenderPdf({
 
             {/* this component for render pdf document is in middle of the component */}
             <Document
-              onLoadError={() => {
-                setPdfLoad(false);
-              }}
+              onLoadError={() => setPdfLoad(false)}
               loading={t("loading-doc")}
               onLoadSuccess={pageDetails}
               onClick={() => {

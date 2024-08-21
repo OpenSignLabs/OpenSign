@@ -1727,9 +1727,7 @@ function PdfRequestFiles(props) {
                 <ModalUi
                   isOpen={isPublicContact}
                   title={isOtp ? t("verify-email-1") : t("contact-details")}
-                  handleClose={() => {
-                    handleCloseOtp();
-                  }}
+                  handleClose={() => handleCloseOtp()}
                 >
                   <div className="h-full p-[20px]">
                     {isOtp ? (
@@ -1757,9 +1755,7 @@ function PdfRequestFiles(props) {
                           <div className="flex gap-2">
                             <button
                               className="op-btn op-btn-ghost"
-                              onClick={() => {
-                                handleCloseOtp();
-                              }}
+                              onClick={() => handleCloseOtp()}
                             >
                               {t("cancel")}
                             </button>
@@ -1849,9 +1845,7 @@ function PdfRequestFiles(props) {
                           <div className="flex gap-2">
                             <button
                               className="op-btn op-btn-ghost"
-                              onClick={() => {
-                                handleCloseOtp();
-                              }}
+                              onClick={() => handleCloseOtp()}
                             >
                               {t("close")}
                             </button>
@@ -1938,9 +1932,9 @@ function PdfRequestFiles(props) {
                     <ModalUi
                       isOpen={isCompleted.isModal}
                       title={t("document-signed")}
-                      handleClose={() => {
-                        setIsCompleted((prev) => ({ ...prev, isModal: false }));
-                      }}
+                      handleClose={() =>
+                        setIsCompleted((prev) => ({ ...prev, isModal: false }))
+                      }
                       reduceWidth={
                         !isCompleted?.message &&
                         "md:min-w-[440px] md:max-w-[400px]"
@@ -2189,9 +2183,7 @@ function PdfRequestFiles(props) {
           <ModalUi
             isOpen={validateAlert}
             title={t("validation-alert")}
-            handleClose={() => {
-              setValidateAlert(false);
-            }}
+            handleClose={() => setValidateAlert(false)}
           >
             <div className="h-[100%] p-[20px]">
               <p>{t("validation-alert-1")}</p>
