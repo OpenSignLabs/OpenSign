@@ -782,13 +782,13 @@ const ReportTable = (props) => {
       if (count > 1) {
         setAlertMsg({
           type: "success",
-          message: count + t("document-sent-alert")
+          message: count + " " + t("document-sent-alert")
         });
         setTimeout(() => setIsAlert(false), 1500);
       } else {
         setAlertMsg({
           type: "success",
-          message: count + t("document-sent-alert")
+          message: count + " " + t("document-sent-alert")
         });
         setTimeout(() => setIsAlert(false), 1500);
       }
