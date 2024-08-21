@@ -1,7 +1,7 @@
 import axios from "axios";
 import moment from "moment";
 import React from "react";
-import { rgb } from "pdf-lib";
+import { PDFDocument, rgb, degrees } from "pdf-lib";
 import Parse from "parse";
 import { appInfo } from "./appinfo";
 import { saveAs } from "file-saver";
@@ -658,7 +658,12 @@ export const randomId = () => {
   return randomDigit;
 };
 
-export const createDocument = async (template, placeholders, signerData) => {
+export const createDocument = async (
+  template,
+  placeholders,
+  signerData,
+  pdfUrl
+) => {
   if (template && template.length > 0) {
     const Doc = template[0];
 
@@ -681,7 +686,7 @@ export const createDocument = async (template, placeholders, signerData) => {
     }
     const data = {
       Name: Doc.Name,
-      URL: Doc.URL,
+      URL: pdfUrl,
       SignedUrl: Doc.SignedUrl,
       SentToOthers: Doc.SentToOthers,
       Description: Doc.Description,
@@ -867,7 +872,6 @@ export const onChangeInput = (
     }
   } else {
     let getXYdata = xyPostion[index].pos;
-
     const updatePosition = getXYdata.map((positionData) => {
       if (positionData.key === signKey) {
         if (dateFormat) {
@@ -1077,13 +1081,18 @@ export const embedDocId = async (pdfDoc, documentId, allPages) => {
     const textContent = documentId && `OpenSign™ DocumentId: ${documentId} `;
     const pages = pdfDoc.getPages();
     const page = pages[i];
-    page.drawText(textContent, {
-      x: 10,
-      y: page.getHeight() - 10,
-      size: fontSize,
+    const getObj = compensateRotation(
+      page.getRotation().angle,
+      10,
+      5,
+      1,
+      page.getSize(),
+      fontSize,
+      rgb(0.5, 0.5, 0.5),
       font,
-      color: rgb(0.5, 0.5, 0.5)
-    });
+      page
+    );
+    page.drawText(textContent, getObj);
   }
 };
 
@@ -1849,29 +1858,26 @@ export const handleCopyNextToWidget = (
   setXyPostion,
   userId
 ) => {
-  const isSigners = xyPostion.some((data) => data.signerPtr);
   let filterSignerPos;
   //get position of previous widget and create new widget next to that widget on same data except
   // xPosition and key
-  let newpos = position;
+  let newposition = position;
   const calculateXPosition =
     parseInt(position.xPosition) +
     defaultWidthHeight(widgetType).width +
     resizeBorderExtraWidth();
   const newId = randomId();
-  newpos = { ...newpos, xPosition: calculateXPosition, key: newId };
+  newposition = { ...newposition, xPosition: calculateXPosition, key: newId };
   //if condition to create widget in request-sign flow
-  if (isSigners) {
-    if (userId) {
-      filterSignerPos = xyPostion.filter((data) => data.Id === userId);
-    }
-    const getPlaceHolder = filterSignerPos[0]?.placeHolder;
-    const getPageNumer = getPlaceHolder.filter(
+  if (userId) {
+    filterSignerPos = xyPostion.filter((data) => data.Id === userId);
+    const getPlaceHolder = filterSignerPos && filterSignerPos[0]?.placeHolder;
+    const getPageNumer = getPlaceHolder?.filter(
       (data) => data.pageNumber === index
     );
-    const getXYdata = getPageNumer[0].pos;
-    getXYdata.push(newpos);
-    if (getPageNumer.length > 0) {
+    const getXYdata = getPageNumer && getPageNumer[0]?.pos;
+    getXYdata.push(newposition);
+    if (getPageNumer && getPageNumer.length > 0) {
       const newUpdateSignPos = getPlaceHolder.map((obj) => {
         if (obj.pageNumber === index) {
           return { ...obj, pos: getXYdata };
@@ -1889,9 +1895,8 @@ export const handleCopyNextToWidget = (
       setXyPostion(newUpdateSigner);
     }
   } else {
-    // else condition to create widget in sign-yourself flow
-    let getXYdata = xyPostion[index].pos;
-    getXYdata.push(newpos);
+    let getXYdata = xyPostion[index]?.pos || [];
+    getXYdata.push(newposition);
     const updatePlaceholder = xyPostion.map((obj, ind) => {
       if (ind === index) {
         return { ...obj, pos: getXYdata };
@@ -2192,9 +2197,11 @@ function compensateRotation(
   font,
   page
 ) {
+  // Ensure pageRotation is between 0 and 360 degrees
+  pageRotation = ((pageRotation % 360) + 360) % 360;
   let rotationRads = (pageRotation * Math.PI) / 180;
 
-  //These coords are now from bottom/left
+  // Coordinates are from bottom-left
   let coordsFromBottomLeft = { x: x / scale };
   if (pageRotation === 90 || pageRotation === 270) {
     coordsFromBottomLeft.y = dimensions.width - (y + fontSize) / scale;
@@ -2204,6 +2211,7 @@ function compensateRotation(
 
   let drawX = null;
   let drawY = null;
+
   if (pageRotation === 90) {
     drawX =
       coordsFromBottomLeft.x * Math.cos(rotationRads) -
@@ -2229,8 +2237,8 @@ function compensateRotation(
       coordsFromBottomLeft.x * Math.sin(rotationRads) +
       coordsFromBottomLeft.y * Math.cos(rotationRads) +
       dimensions.height;
-  } else {
-    //no rotation
+  } else if (pageRotation === 0 || pageRotation === 360) {
+    // No rotation or full rotation
     drawX = coordsFromBottomLeft.x;
     drawY = coordsFromBottomLeft.y;
   }
@@ -2332,5 +2340,116 @@ export const getDefaultSignature = async (objectId) => {
     return {
       status: "error"
     };
+  }
+};
+
+//function to rotate pdf page
+export async function rotatePdfPage(
+  url,
+  rotateDegree,
+  pageNumber,
+  pdfRotateBase64
+) {
+  let file;
+
+  //condition to handle pdf base64 in arrayBuffer format
+  if (pdfRotateBase64) {
+    file = base64ToArrayBuffer(pdfRotateBase64);
+  } else {
+    //condition to handle pdf url in arrayBuffer format
+    file = await convertPdfArrayBuffer(url);
+  }
+  // Load the existing PDF
+  const pdfDoc = await PDFDocument.load(file);
+  // Get the page according to page number
+  const page = pdfDoc.getPage(pageNumber);
+  //get current page rotation angle
+  const currentRotation = page.getRotation().angle;
+  // Apply the rotation in the counterclockwise direction
+  let newRotation = (currentRotation + rotateDegree) % 360;
+  // Adjust for negative angles to keep within 0-359 range
+  if (newRotation < 0) {
+    newRotation += 360;
+  }
+  page.setRotation(degrees(newRotation));
+  const pdfbase64 = await pdfDoc.saveAsBase64({ useObjectStreams: false });
+  //convert base64 to arraybuffer is used in pdf-lib
+  //pdfbase64 is used to show pdf rotated format
+  const arrayBuffer = base64ToArrayBuffer(pdfbase64);
+  //`base64` is used to show pdf
+  return { arrayBuffer: arrayBuffer, base64: pdfbase64 };
+}
+function base64ToArrayBuffer(base64) {
+  // Decode the base64 string to a binary string
+  const binaryString = atob(base64);
+  // Create a new ArrayBuffer with the same length as the binary string
+  const len = binaryString.length;
+  const bytes = new Uint8Array(len);
+  // Convert the binary string to a byte array
+  for (let i = 0; i < len; i++) {
+    bytes[i] = binaryString.charCodeAt(i);
+  }
+  // Return the ArrayBuffer
+  return bytes.buffer;
+}
+
+export const convertBase64ToFile = async (pdfName, pdfBase64) => {
+  const fileName = sanitizeFileName(pdfName) + ".pdf";
+  const pdfFile = new Parse.File(fileName, { base64: pdfBase64 });
+  // Save the Parse File if needed
+  const pdfData = await pdfFile.save();
+  const pdfUrl = pdfData.url();
+  return pdfUrl;
+};
+export const onClickZoomIn = (scale, zoomPercent, setScale, setZoomPercent) => {
+  setScale(scale + 0.1 * scale);
+  setZoomPercent(zoomPercent + 10);
+};
+export const onClickZoomOut = (
+  zoomPercent,
+  scale,
+  setZoomPercent,
+  setScale
+) => {
+  if (zoomPercent > 0) {
+    if (zoomPercent === 10) {
+      setScale(1);
+    } else {
+      setScale(scale - 0.1 * scale);
+    }
+    setZoomPercent(zoomPercent - 10);
+  }
+};
+
+//function to use remove widgets from current page when user want to rotate page
+export const handleRemoveWidgets = (
+  setSignerPos,
+  signerPos,
+  pageNumber,
+  setIsRotate
+) => {
+  const updatedSignerPos = signerPos.map((placeholderObj) => {
+    return {
+      ...placeholderObj,
+      placeHolder: placeholderObj?.placeHolder?.filter(
+        (data) => data?.pageNumber !== pageNumber
+      )
+    };
+  });
+  setSignerPos(updatedSignerPos);
+  setIsRotate({
+    status: false,
+    degree: 0
+  });
+};
+//function to show warning when user rotate page and there are some already widgets on that page
+export const handleRotateWarning = (signerPos, pageNumber) => {
+  const placeholderExist = signerPos?.some((placeholderObj) =>
+    placeholderObj?.placeHolder?.some((data) => data?.pageNumber === pageNumber)
+  );
+  if (placeholderExist) {
+    return true;
+  } else {
+    return false;
   }
 };

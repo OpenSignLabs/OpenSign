@@ -56,9 +56,7 @@ function VerifyEmail(props) {
               <button
                 className="op-btn op-btn-primary"
                 type="submit"
-                onClick={() => {
-                  props.handleVerifyBtn();
-                }}
+                onClick={() => props.handleVerifyBtn()}
               >
                 {t("send-otp")}
               </button>

@@ -32,7 +32,9 @@ import {
   handleToPrint,
   handleDownloadCertificate,
   openInNewTab,
-  getDefaultSignature
+  getDefaultSignature,
+  onClickZoomIn,
+  onClickZoomOut
 } from "../constant/Utils";
 import LoaderWithMsg from "../primitives/LoaderWithMsg";
 import HandleError from "../primitives/HandleError";
@@ -122,7 +124,6 @@ function PdfRequestFiles(props) {
   const [otp, setOtp] = useState("");
   const [contractName, setContractName] = useState("");
   const [zoomPercent, setZoomPercent] = useState(0);
-  const [totalZoomPercent, setTotalZoomPercent] = useState();
   const [scale, setScale] = useState(1);
   const [uniqueId, setUniqueId] = useState("");
   const [isPublicTemplate, setIsPublicTemplate] = useState(false);
@@ -132,6 +133,7 @@ function PdfRequestFiles(props) {
   const [res, setRes] = useState({});
   const [documentId, setDocumentId] = useState("");
   const [isPublicContact, setIsPublicContact] = useState(false);
+  const [pdfArrayBuffer, setPdfArrayBuffer] = useState("");
   const isHeader = useSelector((state) => state.showHeader);
   const divRef = useRef(null);
 
@@ -140,17 +142,18 @@ function PdfRequestFiles(props) {
   let isGuestSignFlow = false;
   let sendmail;
   let getDocId = "";
-  const route = !props.templateId && window.location.pathname;
+  const route = !props.templateId && window.location.pathname; //'/load/recipientSignPdf/TOAVuhXbfw/fPAKdK1qgX'
+  //window.location.search = ?sendmail=false
   const getQuery =
     !props.templateId &&
     window.location?.search &&
-    window.location?.search?.split("?");
+    window.location?.search?.split("?"); //['','sendmail=false']
 
+  //'sendmail=false'
   if (getQuery) {
-    sendmail = getQuery[1].split("=")[1];
+    sendmail = getQuery[1].split("=")[1]; //false
   }
-  const checkSplit = route && route?.split("/");
-
+  const checkSplit = route && route?.split("/"); // ['', 'load', 'recipientSignPdf', 'TOAVuhXbfw', 'fPAKdK1qgX']
   if (checkSplit && checkSplit.length > 4) {
     isGuestSignFlow = true;
     getDocId = checkSplit[3];
@@ -298,6 +301,20 @@ function PdfRequestFiles(props) {
           : [];
 
       if (documentData && documentData.length > 0) {
+        const url =
+          documentData[0] &&
+          (documentData[0]?.SignedUrl || documentData[0]?.URL);
+        if (url) {
+          //convert document url in array buffer format to use embed widgets in pdf using pdf-lib
+          const arrayBuffer = await convertPdfArrayBuffer(url);
+          if (arrayBuffer === "Error") {
+            setHandleError(t("something-went-wrong-mssg"));
+          } else {
+            setPdfArrayBuffer(arrayBuffer);
+          }
+        } else {
+          setHandleError(t("something-went-wrong-mssg"));
+        }
         setIsPublicTemplate(true);
         const getPublicRole = documentData[0]?.PublicRole[0];
         const getUniqueIdDetails = documentData[0]?.Placeholders.find(
@@ -361,6 +378,20 @@ function PdfRequestFiles(props) {
       //getting document details
       const documentData = await contractDocument(documentId || docId);
       if (documentData && documentData.length > 0) {
+        const url =
+          documentData[0] &&
+          (documentData[0]?.SignedUrl || documentData[0]?.URL);
+        if (url) {
+          //convert document url in array buffer format to use embed widgets in pdf using pdf-lib
+          const arrayBuffer = await convertPdfArrayBuffer(url);
+          if (arrayBuffer === "Error") {
+            setHandleError(t("something-went-wrong-mssg"));
+          } else {
+            setPdfArrayBuffer(arrayBuffer);
+          }
+        } else {
+          setHandleError(t("something-went-wrong-mssg"));
+        }
         setExtUserId(documentData[0]?.ExtUserPtr?.objectId);
         const isCompleted =
           documentData[0].IsCompleted && documentData[0].IsCompleted;
@@ -817,30 +848,9 @@ function PdfRequestFiles(props) {
             setIsUiLoading(true);
             // `widgets` is Used to return widgets details with page number of current user
             const widgets = checkUser?.[0]?.placeHolder;
-            let pdfArrBuffer;
-            //`contractDocument` function used to get updated SignedUrl
-            //resolved issue of sign document by multiple signers simultaneously
-            const documentData = await contractDocument(documentId);
-            if (documentData && documentData.length > 0) {
-              const url = documentData[0]?.SignedUrl || documentData[0]?.URL;
-              //convert document url in array buffer format to use embed widgets in pdf using pdf-lib
-              const arrayBuffer = await convertPdfArrayBuffer(url);
-              if (arrayBuffer === "Error") {
-                setHandleError(t("invalid-document"));
-              } else {
-                pdfArrBuffer = arrayBuffer;
-              }
-            } else if (
-              documentData === "Error: Something went wrong!" ||
-              (documentData.result && documentData.result.error)
-            ) {
-              setHandleError(t("something-went-wrong-mssg"));
-            } else {
-              setHandleError(t("document-not-found"));
-            }
 
             // Load a PDFDocument from the existing PDF bytes
-            const existingPdfBytes = pdfArrBuffer;
+            const existingPdfBytes = pdfArrayBuffer;
             try {
               const pdfDoc = await PDFDocument.load(existingPdfBytes);
               const isSignYourSelfFlow = false;
@@ -1316,7 +1326,6 @@ function PdfRequestFiles(props) {
   const handleDontShow = (isChecked) => {
     setIsDontShow(isChecked);
   };
-  // console.log("signerpos", signerPos);
   //function to close tour and save tour status
   const closeRequestSignTour = async () => {
     setRequestSignTour(true);
@@ -1591,6 +1600,12 @@ function PdfRequestFiles(props) {
     });
   };
 
+  const clickOnZoomIn = () => {
+    onClickZoomIn(scale, zoomPercent, setScale, setZoomPercent);
+  };
+  const clickOnZoomOut = () => {
+    onClickZoomOut(zoomPercent, scale, setZoomPercent, setScale);
+  };
   return (
     <DndProvider backend={HTML5Backend}>
       <Title title={props.templateId ? "Public Sign" : "Request Sign"} />
@@ -1712,9 +1727,7 @@ function PdfRequestFiles(props) {
                 <ModalUi
                   isOpen={isPublicContact}
                   title={isOtp ? t("verify-email-1") : t("contact-details")}
-                  handleClose={() => {
-                    handleCloseOtp();
-                  }}
+                  handleClose={() => handleCloseOtp()}
                 >
                   <div className="h-full p-[20px]">
                     {isOtp ? (
@@ -1742,9 +1755,7 @@ function PdfRequestFiles(props) {
                           <div className="flex gap-2">
                             <button
                               className="op-btn op-btn-ghost"
-                              onClick={() => {
-                                handleCloseOtp();
-                              }}
+                              onClick={() => handleCloseOtp()}
                             >
                               {t("cancel")}
                             </button>
@@ -1834,9 +1845,7 @@ function PdfRequestFiles(props) {
                           <div className="flex gap-2">
                             <button
                               className="op-btn op-btn-ghost"
-                              onClick={() => {
-                                handleCloseOtp();
-                              }}
+                              onClick={() => handleCloseOtp()}
                             >
                               {t("close")}
                             </button>
@@ -1914,20 +1923,18 @@ function PdfRequestFiles(props) {
                 {/* pdf render view */}
                 <div className=" w-full md:w-[57%] flex mr-4">
                   <PdfZoom
-                    setScale={setScale}
-                    scale={scale}
-                    containerWH={containerWH}
-                    setZoomPercent={setZoomPercent}
-                    zoomPercent={zoomPercent}
+                    clickOnZoomIn={clickOnZoomIn}
+                    clickOnZoomOut={clickOnZoomOut}
+                    isDisableRotate={true}
                   />
                   <div className=" w-full md:w-[95%] ">
                     {/* this modal is used show this document is already sign */}
                     <ModalUi
                       isOpen={isCompleted.isModal}
                       title={t("document-signed")}
-                      handleClose={() => {
-                        setIsCompleted((prev) => ({ ...prev, isModal: false }));
-                      }}
+                      handleClose={() =>
+                        setIsCompleted((prev) => ({ ...prev, isModal: false }))
+                      }
                       reduceWidth={
                         !isCompleted?.message &&
                         "md:min-w-[440px] md:max-w-[400px]"
@@ -2059,15 +2066,11 @@ function PdfRequestFiles(props) {
                       currentSigner={currentSigner}
                       pdfUrl={pdfUrl}
                       alreadySign={alreadySign}
-                      totalZoomPercent={totalZoomPercent}
-                      setTotalZoomPercent={setTotalZoomPercent}
-                      setScale={setScale}
-                      scale={scale}
-                      pdfOriginalWH={pdfOriginalWH}
                       containerWH={containerWH}
-                      setZoomPercent={setZoomPercent}
-                      zoomPercent={zoomPercent}
                       isPublicTemplate={isPublicTemplate}
+                      clickOnZoomIn={clickOnZoomIn}
+                      clickOnZoomOut={clickOnZoomOut}
+                      isDisableRotate={true}
                     />
 
                     <div ref={divRef} data-tut="pdfArea" className="h-[95%]">
@@ -2101,7 +2104,6 @@ function PdfRequestFiles(props) {
                           divRef={divRef}
                           setIsResize={setIsResize}
                           isResize={isResize}
-                          setTotalZoomPercent={setTotalZoomPercent}
                           setScale={setScale}
                           scale={scale}
                           uniqueId={uniqueId}
@@ -2181,9 +2183,7 @@ function PdfRequestFiles(props) {
           <ModalUi
             isOpen={validateAlert}
             title={t("validation-alert")}
-            handleClose={() => {
-              setValidateAlert(false);
-            }}
+            handleClose={() => setValidateAlert(false)}
           >
             <div className="h-[100%] p-[20px]">
               <p>{t("validation-alert-1")}</p>

@@ -604,5 +604,8 @@
   "Add-seats": "Add Seats",
   "user-name-exist": "user name already exist",
   "format": "format",
-  "select-date-format": "Select a date format"
+  "select-date-format": "Select a date format",
+  "rotate-right": "Rotate right",
+  "rotate-left": "Rotate left",
+  "rotate-alert-mssg": "All widgets on this page will be lost. Are you sure you want to proceed?"
 }
