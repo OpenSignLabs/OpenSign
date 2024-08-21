@@ -26,7 +26,13 @@ import {
   radioButtonWidget,
   fetchSubscription,
   getContainerScale,
-  openInNewTab
+  openInNewTab,
+  convertBase64ToFile,
+  rotatePdfPage,
+  onClickZoomOut,
+  onClickZoomIn,
+  handleRemoveWidgets,
+  handleRotateWarning
 } from "../constant/Utils";
 import RenderPdf from "../components/pdf/RenderPdf";
 import "../styles/AddUser.css";
@@ -43,6 +49,7 @@ import { useSelector } from "react-redux";
 import PdfZoom from "../components/pdf/PdfZoom";
 import { paidUrl } from "../json/plansArr";
 import { useTranslation } from "react-i18next";
+import RotateAlert from "../components/RotateAlert";
 const TemplatePlaceholder = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -63,6 +70,10 @@ const TemplatePlaceholder = () => {
   const [isSendAlert, setIsSendAlert] = useState(false);
   const [isCreateDocModal, setIsCreateDocModal] = useState(false);
   const [isSubscribe, setIsSubscribe] = useState(false);
+  const [isRotate, setIsRotate] = useState({
+    status: false,
+    degree: 0
+  });
   const [isLoading, setIsLoading] = useState({
     isLoad: true,
     message: t("loading-mssg")
@@ -93,6 +104,7 @@ const TemplatePlaceholder = () => {
   const [isNameModal, setIsNameModal] = useState(false);
   const [isTextSetting, setIsTextSetting] = useState(false);
   const [pdfLoad, setPdfLoad] = useState(false);
+  const [pdfRotateBase64, setPdfRotatese64] = useState("");
   const color = [
     "#93a3db",
     "#e6c3db",
@@ -731,6 +743,7 @@ const TemplatePlaceholder = () => {
       handleSaveTemplate();
     }
   };
+
   const handleSaveTemplate = async () => {
     if (signersdata?.length) {
       const loadObj = {
@@ -752,6 +765,17 @@ const TemplatePlaceholder = () => {
           }
         });
       }
+      let pdfUrl = pdfDetails[0]?.URL;
+      if (pdfRotateBase64) {
+        try {
+          pdfUrl = await convertBase64ToFile(
+            pdfDetails[0].Name,
+            pdfRotateBase64
+          );
+        } catch (e) {
+          console.log("error to convertBase64ToFile in placeholder flow", e);
+        }
+      }
       try {
         const data = {
           Placeholders: signerPos,
@@ -762,7 +786,8 @@ const TemplatePlaceholder = () => {
           SendinOrder: pdfDetails[0]?.SendinOrder || false,
           AutomaticReminders: pdfDetails[0]?.AutomaticReminders,
           RemindOnceInEvery: parseInt(pdfDetails[0]?.RemindOnceInEvery),
-          NextReminderDate: pdfDetails[0]?.NextReminderDate
+          NextReminderDate: pdfDetails[0]?.NextReminderDate,
+          URL: pdfUrl
         };
         const updateTemplate = new Parse.Object("contracts_Template");
         updateTemplate.id = templateId;
@@ -902,8 +927,21 @@ const TemplatePlaceholder = () => {
   const handleCreateDocModal = async () => {
     setIsCreateDocModal(false);
     setIsCreateDoc(true);
+    let pdfUrl = pdfDetails[0]?.URL;
+    if (pdfRotateBase64) {
+      try {
+        pdfUrl = await convertBase64ToFile(pdfDetails[0].Name, pdfRotateBase64);
+      } catch (e) {
+        console.log("error to convertBase64ToFile in placeholder flow", e);
+      }
+    }
     // handle create document
-    const res = await createDocument(pdfDetails, signerPos, signersdata);
+    const res = await createDocument(
+      pdfDetails,
+      signerPos,
+      signersdata,
+      pdfUrl
+    );
     if (res.status === "success") {
       navigate(`/placeHolderSign/${res.id}`, {
         state: { title: "Use Template" }
@@ -1289,6 +1327,38 @@ const TemplatePlaceholder = () => {
     setIsCheckbox(false);
   };
 
+  const clickOnZoomIn = () => {
+    onClickZoomIn(scale, zoomPercent, setScale, setZoomPercent);
+  };
+  const clickOnZoomOut = () => {
+    onClickZoomOut(zoomPercent, scale, setZoomPercent, setScale);
+  };
+  //`handleRotationFun` function is used to roatate pdf particular page
+  const handleRotationFun = async (rotateDegree) => {
+    const isRotate = handleRotateWarning(signerPos, pageNumber);
+    if (isRotate) {
+      setIsRotate({ status: true, degree: rotateDegree });
+    } else {
+      const urlDetails = await rotatePdfPage(
+        pdfDetails[0].URL,
+        rotateDegree,
+        pageNumber - 1,
+        pdfRotateBase64
+      );
+      setPdfRotatese64(urlDetails.base64);
+    }
+  };
+  const handleRemovePlaceholder = async () => {
+    handleRemoveWidgets(setSignerPos, signerPos, pageNumber, setIsRotate);
+    const urlDetails = await rotatePdfPage(
+      pdfDetails[0].URL,
+      isRotate.degree,
+      pageNumber - 1,
+      pdfRotateBase64
+    );
+    setPdfRotatese64(urlDetails.base64);
+  };
+
   return (
     <>
       <Title title={"Template"} />
@@ -1336,11 +1406,9 @@ const TemplatePlaceholder = () => {
               {/* pdf render view */}
               <div className=" w-full md:w-[57%] flex mr-4">
                 <PdfZoom
-                  setScale={setScale}
-                  scale={scale}
-                  containerWH={containerWH}
-                  setZoomPercent={setZoomPercent}
-                  zoomPercent={zoomPercent}
+                  clickOnZoomIn={clickOnZoomIn}
+                  clickOnZoomOut={clickOnZoomOut}
+                  handleRotationFun={handleRotationFun}
                 />
                 <div className="w-full md:w-[95%]">
                   {/* this modal is used show alert set placeholder for all signers before send mail */}
@@ -1483,6 +1551,9 @@ const TemplatePlaceholder = () => {
                     currentSigner={true}
                     setIsEditTemplate={handleEditTemplateModal}
                     dataTut4="reactourFour"
+                    handleRotationFun={handleRotationFun}
+                    clickOnZoomIn={clickOnZoomIn}
+                    clickOnZoomOut={clickOnZoomOut}
                   />
                   <div
                     ref={divRef}
@@ -1528,6 +1599,7 @@ const TemplatePlaceholder = () => {
                         setScale={setScale}
                         scale={scale}
                         setIsSelectId={setIsSelectId}
+                        pdfRotateBase64={pdfRotateBase64}
                         fontSize={fontSize}
                         setFontSize={setFontSize}
                         fontColor={fontColor}
@@ -1670,6 +1742,11 @@ const TemplatePlaceholder = () => {
           setFontSize={setFontSize}
           fontColor={fontColor}
           setFontColor={setFontColor}
+        />
+        <RotateAlert
+          isRotate={isRotate.status}
+          setIsRotate={setIsRotate}
+          handleRemoveWidgets={handleRemovePlaceholder}
         />
       </DndProvider>
     </>
