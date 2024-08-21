@@ -124,7 +124,6 @@ function PdfRequestFiles(props) {
   const [otp, setOtp] = useState("");
   const [contractName, setContractName] = useState("");
   const [zoomPercent, setZoomPercent] = useState(0);
-  const [totalZoomPercent, setTotalZoomPercent] = useState();
   const [scale, setScale] = useState(1);
   const [uniqueId, setUniqueId] = useState("");
   const [isPublicTemplate, setIsPublicTemplate] = useState(false);
@@ -144,8 +143,6 @@ function PdfRequestFiles(props) {
   let sendmail;
   let getDocId = "";
   const route = !props.templateId && window.location.pathname; //'/load/recipientSignPdf/TOAVuhXbfw/fPAKdK1qgX'
-  console.log(" window.location?.search", window.location?.search);
-
   //window.location.search = ?sendmail=false
   const getQuery =
     !props.templateId &&
@@ -2075,14 +2072,7 @@ function PdfRequestFiles(props) {
                       currentSigner={currentSigner}
                       pdfUrl={pdfUrl}
                       alreadySign={alreadySign}
-                      totalZoomPercent={totalZoomPercent}
-                      setTotalZoomPercent={setTotalZoomPercent}
-                      setScale={setScale}
-                      scale={scale}
-                      pdfOriginalWH={pdfOriginalWH}
                       containerWH={containerWH}
-                      setZoomPercent={setZoomPercent}
-                      zoomPercent={zoomPercent}
                       isPublicTemplate={isPublicTemplate}
                       clickOnZoomIn={clickOnZoomIn}
                       clickOnZoomOut={clickOnZoomOut}
@@ -2120,7 +2110,6 @@ function PdfRequestFiles(props) {
                           divRef={divRef}
                           setIsResize={setIsResize}
                           isResize={isResize}
-                          setTotalZoomPercent={setTotalZoomPercent}
                           setScale={setScale}
                           scale={scale}
                           uniqueId={uniqueId}
