@@ -5,6 +5,7 @@ import Loader from "../primitives/Loader";
 import { useTranslation } from "react-i18next";
 import Parse from "parse";
 import ModalUi from "../primitives/ModalUi";
+import { isEnableSubscription } from "../constant/const";
 const BulkSendUi = (props) => {
   const { t } = useTranslation();
   const [forms, setForms] = useState([]);
@@ -32,24 +33,36 @@ const BulkSendUi = (props) => {
 
   //function to check atleast one signature field exist
   const signatureExist = async () => {
-    setIsSubmit(true);
-    try {
-      const allowedquicksend = await Parse.Cloud.run("allowedquicksend");
-      if (allowedquicksend > 0) {
-        setIsBulkAvailable(true);
-        const getPlaceholder = props.item?.Placeholders;
-        const checkIsSignatureExistt = getPlaceholder?.every((placeholderObj) =>
-          placeholderObj?.placeHolder?.some((holder) =>
-            holder?.pos?.some((posItem) => posItem?.type === "signature")
-          )
-        );
-        setIsSignatureExist(checkIsSignatureExistt);
+    if (isEnableSubscription) {
+      setIsSubmit(true);
+      try {
+        const allowedquicksend = await Parse.Cloud.run("allowedquicksend");
+        if (allowedquicksend > 0) {
+          setIsBulkAvailable(true);
+          const getPlaceholder = props.item?.Placeholders;
+          const checkIsSignatureExistt = getPlaceholder?.every(
+            (placeholderObj) =>
+              placeholderObj?.placeHolder?.some((holder) =>
+                holder?.pos?.some((posItem) => posItem?.type === "signature")
+              )
+          );
+          setIsSignatureExist(checkIsSignatureExistt);
+        }
+        setAmount((obj) => ({ ...obj, totalQuickSend: allowedquicksend }));
+        setIsSubmit(false);
+      } catch (err) {
+        setIsSubmit(false);
+        console.log("Err", err);
       }
-      setAmount((obj) => ({ ...obj, totalQuickSend: allowedquicksend }));
-      setIsSubmit(false);
-    } catch (err) {
-      setIsSubmit(false);
-      console.log("Err", err);
+    } else {
+      setIsBulkAvailable(true);
+      const getPlaceholder = props.item?.Placeholders;
+      const checkIsSignatureExistt = getPlaceholder?.every((placeholderObj) =>
+        placeholderObj?.placeHolder?.some((holder) =>
+          holder?.pos?.some((posItem) => posItem?.type === "signature")
+        )
+      );
+      setIsSignatureExist(checkIsSignatureExistt);
     }
   };
   useEffect(() => {
@@ -99,7 +112,9 @@ const BulkSendUi = (props) => {
   const handleAddForm = (e) => {
     e.preventDefault();
     // Check if the quick send limit has been reached
-    if (forms.length <= amount.totalQuickSend) {
+    if (isEnableSubscription && forms.length >= amount.totalQuickSend) {
+      setIsQuotaReached(true);
+    } else {
       if (forms?.length < allowedForm) {
         if (props?.Placeholders.length > 0) {
           let newForm = [];
@@ -124,8 +139,6 @@ const BulkSendUi = (props) => {
         // If the limit has been reached, throw an error with the appropriate message
         alert(t("quick-send-alert-4"));
       }
-    } else {
-      setIsQuotaReached(true);
     }
   };
 
@@ -319,7 +332,7 @@ const BulkSendUi = (props) => {
                         </button>
                         <button
                           type="submit"
-                          className="op-btn op-btn-secondary focus:outline-none"
+                          className="op-btn op-btn-accent focus:outline-none"
                         >
                           <i className="fa-light fa-paper-plane"></i>{" "}
                           <span>{t("send")}</span>

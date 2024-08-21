@@ -249,10 +249,10 @@ function GenerateToken() {
                 </div>
               </div>
             </ModalUi>
-            {/* buy apis */}
+            {/* buy APIs */}
             <ModalUi
               isOpen={isModal.buyapis}
-              title={"Addon apis"}
+              title={"Buy Addon APIs"}
               handleClose={handleBuyAPIsModal}
             >
               {isFormLoader && (
@@ -261,9 +261,6 @@ function GenerateToken() {
                 </div>
               )}
               <form onSubmit={handleAddOnApiSubmit} className="p-3">
-                <p className="flex justify-center text-center mx-2 mb-3 text-base op-text-accent font-medium">
-                  {t("additionalapis")}
-                </p>
                 <div className="mb-3 flex justify-between">
                   <label
                     htmlFor="quantity"
