@@ -74,15 +74,7 @@ const ReportTable = (props) => {
   const extClass = Extand_Class && JSON.parse(Extand_Class);
   const startIndex = (currentPage - 1) * props.docPerPage;
   const { isMoreDocs, setIsNextRecord } = props;
-  // For loop is used to calculate page numbers visible below table
-  // Initialize pageNumbers using useMemo to avoid unnecessary re-creation
-  // const pageNumbers = useMemo(() => {
-  //   const calculatedPageNumbers = [];
-  //   for (let i = 1; i <= Math.ceil(props.List.length / props.docPerPage); i++) {
-  //     calculatedPageNumbers.push(i);
-  //   }
-  //   return calculatedPageNumbers;
-  // }, [props.List, props.docPerPage]);
+
   const getPaginationRange = () => {
     const totalPageNumbers = 7; // Adjust this value to show more/less page numbers
     const pages = [];
@@ -449,7 +441,6 @@ const ReportTable = (props) => {
     }
     setReason("");
   };
-
   const handleShare = (item) => {
     setActLoader({ [item.objectId]: true });
     const host = window.location.origin;
@@ -791,13 +782,13 @@ const ReportTable = (props) => {
       if (count > 1) {
         setAlertMsg({
           type: "success",
-          message: count + t("document-sent-alert")
+          message: count + " " + t("document-sent-alert")
         });
         setTimeout(() => setIsAlert(false), 1500);
       } else {
         setAlertMsg({
           type: "success",
-          message: count + t("document-sent-alert")
+          message: count + " " + t("document-sent-alert")
         });
         setTimeout(() => setIsAlert(false), 1500);
       }
@@ -839,10 +830,7 @@ const ReportTable = (props) => {
       console.log("err in fetch template in bulk modal", err);
       setIsBulkSend({});
       setIsAlert(true);
-      setAlertMsg({
-        type: "danger",
-        message: t("something-went-wrong-mssg")
-      });
+      setAlertMsg({ type: "danger", message: t("something-went-wrong-mssg") });
       setTimeout(() => setIsAlert(false), 1500);
     }
   };

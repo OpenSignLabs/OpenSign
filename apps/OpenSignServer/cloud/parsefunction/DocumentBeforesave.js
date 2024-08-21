@@ -5,7 +5,7 @@ async function DocumentBeforesave(request) {
     const oldDocument = request.original;
 
     // Check if SignedUrl field has been added (transition from undefined to defined)
-    if (!oldDocument?.get('SignedUrl') && document?.get('SignedUrl')) {
+    if (oldDocument && !oldDocument?.get('SignedUrl') && document?.get('SignedUrl')) {
       // Update count in contracts_Users class
       const query = new Parse.Query('contracts_Users');
       query.equalTo('objectId', oldDocument.get('ExtUserPtr').id);

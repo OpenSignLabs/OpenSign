@@ -1,4 +1,4 @@
-export default async function AllowedUsers(request) {
+export default async function AllowedApis(request) {
   if (!request?.user) {
     throw new Parse.Error(Parse.Error.INVALID_SESSION_TOKEN, 'User is not authenticated.');
   }
@@ -22,25 +22,14 @@ export default async function AllowedUsers(request) {
       const resSub = await subscription.first({ useMasterKey: true });
       if (resSub) {
         const _resSub = JSON.parse(JSON.stringify(resSub));
-        const count = _resSub?.UsersCount || 0;
-        if (count > 0) {
-          const allowedUser = resSub.get('AllowedUsers') || 0;
-          const remainUsers = allowedUser - count;
-          if (remainUsers > 0) {
-            return remainUsers;
-          } else {
-            return 0;
-          }
-        } else {
-          const alloweduser = resSub.get('AllowedUsers') || 0;
-          return alloweduser;
-        }
+        const allowedapis = _resSub?.AllowedApis || 0;
+        return allowedapis;
       }
     } else {
       throw new Parse.Error(Parse.Error.OBJECT_NOT_FOUND, 'User not found.');
     }
   } catch (err) {
-    console.log('err in allowedusers', err);
+    console.log('err in allowedapis', err);
     const code = err?.code || 400;
     const msg = err?.message || 'Something went wrong.';
     throw new Parse.Error(code, msg);
