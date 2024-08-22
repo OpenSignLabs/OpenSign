@@ -54,7 +54,7 @@ function DraftDocument() {
       navigate(`/recipientSignPdf/${data.objectId}`);
     }
     //checking if document has completed and signyour-self flow
-    else if (!signerExist && !isPlaceholder) {
+    else if ((!signerExist && !isPlaceholder) || data?.IsSignyourself) {
       navigate(`/signaturePdf/${data.objectId}`);
     }
     //checking if document has declined by someone
