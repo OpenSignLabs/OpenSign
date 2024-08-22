@@ -107,7 +107,11 @@ function GenerateToken() {
   };
 
   const handleBuyAPIsModal = () => {
-    setIsModal((obj) => ({ ...obj, buyapis: !obj.buyapis }));
+    if (!validplan[isSubscribe.plan] && isEnableSubscription) {
+      setIsTour(true);
+    } else {
+      setIsModal((obj) => ({ ...obj, buyapis: !obj.buyapis }));
+    }
   };
 
   const handlePricePerAPIs = (e) => {
