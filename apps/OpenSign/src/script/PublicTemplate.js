@@ -56,7 +56,7 @@ document.head.appendChild(tailwindCssLink);
 // Create a root and render the wrapper component with initial props
 const root = ReactDOM.createRoot(document.getElementById("script-component"));
 root.render(
-  <div>
+  <div data-theme="opensigncss">
     <Provider store={store}>
       <PublicScriptFileWrapper initialProps={{ text: "templateId" }} />
     </Provider>
