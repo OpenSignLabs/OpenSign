@@ -1669,7 +1669,7 @@ const ReportTable = (props) => {
                               handleClose={() => setIsBulkSend({})}
                             >
                               {isLoader[item.objectId] ? (
-                                <div className="w-full h-[100px] flex justify-center items-center bg-opacity-30 z-30">
+                                <div className="w-full h-[100px] flex justify-center items-center z-30">
                                   <Loader />
                                 </div>
                               ) : (
