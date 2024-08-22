@@ -27,15 +27,10 @@ const AddUser = (props) => {
     password: "",
     role: ""
   });
-  const [amount, setAmount] = useState({
-    quantity: 1,
-    price: 0,
-    totalPrice: 0
-  });
+  const [amount, setAmount] = useState({ quantity: 1, price: 0 });
   const [planInfo, setPlanInfo] = useState({
     priceperUser: 0,
     price: 0,
-    totalPrice: 0,
     totalAllowedUser: 0
   });
   const [isFormLoader, setIsFormLoader] = useState(false);
@@ -59,14 +54,9 @@ const AddUser = (props) => {
           setPlanInfo((prev) => ({
             ...prev,
             priceperUser: resSub.price,
-            totalPrice: resSub.totalPrice,
             totalAllowedUser: resSub.totalAllowedUser
           }));
-          setAmount((prev) => ({
-            ...prev,
-            price: resSub.price,
-            totalPrice: resSub.price + resSub.totalPrice
-          }));
+          setAmount((prev) => ({ ...prev, price: resSub.price }));
           const res = await Parse.Cloud.run("allowedusers");
           if (props.setFormHeader) {
             if (res > 0) {
@@ -287,13 +277,7 @@ const AddUser = (props) => {
   const handlePricePerUser = (e) => {
     const quantity = e.target.value;
     const price = e.target?.value > 0 ? planInfo.priceperUser * quantity : 0;
-    const totalprice = price + planInfo.totalPrice;
-    setAmount((prev) => ({
-      ...prev,
-      quantity: quantity,
-      price: price,
-      totalPrice: totalprice
-    }));
+    setAmount((prev) => ({ ...prev, quantity: quantity, price: price }));
   };
   const handleAddOnSubmit = async (e) => {
     e.preventDefault();
@@ -529,15 +513,7 @@ const AddUser = (props) => {
                     </div>
                   </div>
                   <hr className="text-base-content mb-3" />
-                  <div className=" flex justify-between">
-                    <label className="block text-sm text-gray-700 font-semibold">
-                      {t("Total-price-for-next-time")}
-                    </label>
-                    <div className="w-1/4 flex justify-center items-center text-sm font-semibold">
-                      USD {amount.totalPrice}
-                    </div>
-                  </div>
-                  <button className="op-btn op-btn-primary w-full mt-2">
+                  <button className="op-btn op-btn-primary w-full">
                     {t("Proceed")}
                   </button>
                 </form>
