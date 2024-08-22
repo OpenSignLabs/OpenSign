@@ -165,7 +165,7 @@ function SignYourSelf() {
     })
   });
 
-  const index = xyPostion.findIndex((object) => {
+  const index = xyPostion?.findIndex((object) => {
     return object.pageNumber === pageNumber;
   });
   //   rowlevel={JSON.parse(localStorage.getItem("rowlevel"))}
@@ -211,7 +211,6 @@ function SignYourSelf() {
 
     // Use setTimeout to wait for the transition to complete
     const timer = setTimeout(updateSize, 100); // match the transition duration
-
     return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [divRef.current, isHeader]);
@@ -226,6 +225,11 @@ function SignYourSelf() {
       if (documentData && documentData.length > 0) {
         setPdfDetails(documentData);
         setExtUserId(documentData[0]?.ExtUserPtr?.objectId);
+        const placeholders =
+          documentData[0]?.Placeholders?.length > 0
+            ? documentData[0]?.Placeholders
+            : [];
+        setXyPostion(placeholders);
         const url = documentData[0] && documentData[0]?.URL;
         if (url) {
           //convert document url in array buffer format to use embed widgets in pdf using pdf-lib
@@ -238,21 +242,17 @@ function SignYourSelf() {
         } else {
           setHandleError(t("something-went-wrong-mssg"));
         }
-        isCompleted =
-          documentData[0].IsCompleted && documentData[0].IsCompleted;
+        isCompleted = documentData?.[0]?.IsCompleted;
         if (isCompleted) {
           setIsCelebration(true);
-          setTimeout(() => {
-            setIsCelebration(false);
-          }, 5000);
+          setTimeout(() => setIsCelebration(false), 5000);
           setIsCompleted(true);
           setPdfUrl(documentData[0].SignedUrl);
-          const alreadySign = {
-            status: true,
-            mssg: t("document-signed-alert")
-          };
           if (showComplete) {
-            setShowAlreadySignDoc(alreadySign);
+            setShowAlreadySignDoc({
+              status: true,
+              mssg: t("document-signed-alert")
+            });
           } else {
             setIsUiLoading(false);
             setIsSignPad(false);
@@ -265,17 +265,11 @@ function SignYourSelf() {
         documentData === "Error: Something went wrong!" ||
         (documentData.result && documentData.result.error)
       ) {
-        const loadObj = {
-          isLoad: false
-        };
         setHandleError(t("something-went-wrong-mssg"));
-        setIsLoading(loadObj);
+        setIsLoading({ isLoad: false });
       } else {
         setHandleError(t("no-data-avaliable"));
-        const loadObj = {
-          isLoad: false
-        };
-        setIsLoading(loadObj);
+        setIsLoading({ isLoad: false });
       }
       //function to get default signatur eof current user from `contracts_Signature` class
       const defaultSignRes = await getDefaultSignature(jsonSender.objectId);
@@ -284,17 +278,12 @@ function SignYourSelf() {
         setMyInitial(defaultSignRes?.res?.defaultInitial);
       } else if (defaultSignRes?.status === "error") {
         setHandleError("Error: Something went wrong!");
-        setIsLoading({
-          isLoad: false
-        });
+        setIsLoading({ isLoad: false });
       }
       const contractUsersRes = await contractUsers();
       if (contractUsersRes === "Error: Something went wrong!") {
-        const loadObj = {
-          isLoad: false
-        };
         setHandleError(t("something-went-wrong-mssg"));
-        setIsLoading(loadObj);
+        setIsLoading({ isLoad: false });
       } else if (contractUsersRes[0] && contractUsersRes.length > 0) {
         setActiveMailAdapter(contractUsersRes[0]?.active_mail_adapter);
         setContractName("_Users");
@@ -374,51 +363,32 @@ function SignYourSelf() {
   const addWidgetOptions = (type) => {
     switch (type) {
       case "signature":
-        return {
-          name: "signature"
-        };
+        return { name: "signature" };
       case "stamp":
-        return {
-          name: "stamp"
-        };
+        return { name: "stamp" };
       case "checkbox":
-        return {
-          name: "checkbox"
-        };
+        return { name: "checkbox" };
       case textWidget:
-        return {
-          name: "text"
-        };
+        return { name: "text" };
       case "initials":
-        return {
-          name: "initials"
-        };
+        return { name: "initials" };
       case "name":
         return {
           name: "name",
           defaultValue: getWidgetValue(type),
-          validation: {
-            type: "text",
-            pattern: ""
-          }
+          validation: { type: "text", pattern: "" }
         };
       case "company":
         return {
           name: "company",
           defaultValue: getWidgetValue(type),
-          validation: {
-            type: "text",
-            pattern: ""
-          }
+          validation: { type: "text", pattern: "" }
         };
       case "job title":
         return {
           name: "job title",
           defaultValue: getWidgetValue(type),
-          validation: {
-            type: "text",
-            pattern: ""
-          }
+          validation: { type: "text", pattern: "" }
         };
       case "date":
         return {
@@ -427,17 +397,12 @@ function SignYourSelf() {
           validation: { format: "MM/dd/yyyy", type: "date-format" }
         };
       case "image":
-        return {
-          name: "image"
-        };
+        return { name: "image" };
       case "email":
         return {
           name: "email",
           defaultValue: getWidgetValue(type),
-          validation: {
-            type: "email",
-            pattern: ""
-          }
+          validation: { type: "email", pattern: "" }
         };
       default:
         return {};
@@ -449,7 +414,7 @@ function SignYourSelf() {
     const key = randomId();
     let dropData = [];
     let dropObj = {};
-    let filterDropPos = xyPostion.filter(
+    let filterDropPos = xyPostion?.filter(
       (data) => data.pageNumber === pageNumber
     );
     const dragTypeValue = item?.text ? item.text : monitor.type;
@@ -486,7 +451,6 @@ function SignYourSelf() {
         Height: getHeight / (containerScale * scale),
         options: addWidgetOptions(dragTypeValue)
       };
-
       dropData.push(dropObj);
     } else {
       //This method returns the offset of the current pointer (mouse) position relative to the client viewport.
@@ -519,25 +483,18 @@ function SignYourSelf() {
         options: addWidgetOptions(dragTypeValue),
         scale: containerScale
       };
-
       dropData.push(dropObj);
     }
-    if (filterDropPos.length > 0) {
-      const index = xyPostion.findIndex((object) => {
+    if (filterDropPos?.length > 0) {
+      const index = xyPostion?.findIndex((object) => {
         return object.pageNumber === pageNumber;
       });
-      const updateData = filterDropPos[0].pos;
+      const updateData = filterDropPos?.[0].pos;
       const newSignPos = updateData.concat(dropData);
-      let xyPos = {
-        pageNumber: pageNumber,
-        pos: newSignPos
-      };
-      xyPostion.splice(index, 1, xyPos);
+      let xyPos = { pageNumber: pageNumber, pos: newSignPos };
+      xyPostion?.splice(index, 1, xyPos);
     } else {
-      const xyPos = {
-        pageNumber: pageNumber,
-        pos: dropData
-      };
+      const xyPos = { pageNumber: pageNumber, pos: dropData };
       setXyPostion((prev) => [...prev, xyPos]);
     }
 
@@ -549,7 +506,6 @@ function SignYourSelf() {
     ) {
       setIsSignPad(true);
     }
-
     if (dragTypeValue === "stamp" || dragTypeValue === "image") {
       setIsStamp(true);
     } else if (dragTypeValue === "initials") {
@@ -611,6 +567,30 @@ function SignYourSelf() {
   const handleVerifyBtn = async () => {
     setIsVerifyModal(true);
     await handleSendOTP(Parse.User.current().getEmail());
+  };
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (xyPostion?.length > 0) {
+        autosavedetails();
+      }
+    }, 2000);
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [xyPostion]);
+
+  // `autosavedetails` is used to save doc details after every 2 sec when changes are happern in placeholder like drag-drop widgets, remove signers
+  const autosavedetails = async () => {
+    try {
+      const docCls = new Parse.Object("contracts_Document");
+      docCls.id = documentId;
+      docCls.set("Placeholders", xyPostion);
+      docCls.set("IsSignyourself", true);
+      const res = await docCls.save();
+      console.log("Res", res);
+    } catch (e) {
+      console.log("error", e);
+      alert(t("something-went-wrong-mssg"));
+    }
   };
   //function for send placeholder's co-ordinate(x,y) position embed signature url or stamp url
   async function embedWidgetsData() {
@@ -791,7 +771,6 @@ function SignYourSelf() {
     const getNewse64 = await changeImageWH(base64Sign);
     //remove suffiix of base64
     const suffixbase64 = getNewse64 && getNewse64.split(",").pop();
-
     const params = {
       pdfFile: base64Url,
       docId: documentId,
@@ -825,10 +804,10 @@ function SignYourSelf() {
         containerWH
       );
       if (dragKey >= 0) {
-        const filterDropPos = xyPostion.filter(
+        const filterDropPos = xyPostion?.filter(
           (data) => data.pageNumber === pageNumber
         );
-        if (filterDropPos.length > 0) {
+        if (filterDropPos?.length > 0) {
           const getXYdata = xyPostion[index].pos;
           const getPosData = getXYdata;
           const addSign = getPosData.map((url) => {
@@ -899,15 +878,11 @@ function SignYourSelf() {
     setIsSignPad(false);
     setIsImageSelect(false);
     setImage();
-
     if (isDefaultSign) {
       const img = new Image();
       img.src = defaultSignImg;
       if (img.complete) {
-        imgWH = {
-          width: img.width,
-          height: img.height
-        };
+        imgWH = { width: img.width, height: img.height };
       }
     }
     const getUpdatePosition = onSaveSign(
@@ -932,19 +907,11 @@ function SignYourSelf() {
       const touch = e.touches[0]; // Get the first touch point
       mouseX = touch.clientX - divRect.left;
       mouseY = touch.clientY - divRect.top;
-      setSignBtnPosition([
-        {
-          xPos: mouseX,
-          yPos: mouseY
-        }
-      ]);
+      setSignBtnPosition([{ xPos: mouseX, yPos: mouseY }]);
     } else {
       mouseX = e.clientX - divRect.left;
       mouseY = e.clientY - divRect.top;
-      const xyPosition = {
-        xPos: mouseX,
-        yPos: mouseY
-      };
+      const xyPosition = { xPos: mouseX, yPos: mouseY };
       setXYSignature(xyPosition);
     }
   };
@@ -962,9 +929,7 @@ function SignYourSelf() {
   const handleDeleteSign = (key) => {
     setCurrWidgetsDetails({});
     const updateResizeData = [];
-
     let filterData = xyPostion[index].pos.filter((data) => data.key !== key);
-
     //delete and update block position
     if (filterData.length > 0) {
       updateResizeData.push(filterData);
@@ -1243,7 +1208,6 @@ function SignYourSelf() {
               <Confetti width={window.innerWidth} height={window.innerHeight} />
             </div>
           )}
-
           <div className="relative op-card overflow-hidden flex flex-col md:flex-row justify-between bg-base-300">
             {!isEmailVerified && (
               <VerifyEmail
