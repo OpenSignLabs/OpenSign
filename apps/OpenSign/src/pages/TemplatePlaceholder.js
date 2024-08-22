@@ -714,19 +714,11 @@ const TemplatePlaceholder = () => {
       const touch = e.touches[0]; // Get the first touch point
       mouseX = touch.clientX - divRect.left;
       mouseY = touch.clientY - divRect.top;
-      setSignBtnPosition([
-        {
-          xPos: mouseX,
-          yPos: mouseY
-        }
-      ]);
+      setSignBtnPosition([{ xPos: mouseX, yPos: mouseY }]);
     } else {
       mouseX = e.clientX - divRect.left;
       mouseY = e.clientY - divRect.top;
-      const xyPosition = {
-        xPos: mouseX,
-        yPos: mouseY
-      };
+      const xyPosition = { xPos: mouseX, yPos: mouseY };
       setXYSignature(xyPosition);
     }
   };
@@ -744,12 +736,45 @@ const TemplatePlaceholder = () => {
     }
   };
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (signerPos?.length > 0) {
+        autosavedetails();
+      }
+    }, 2000);
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [signerPos]);
+
+  // `autosavedetails` is used to save template details after every 2 sec when changes are happern in placeholder like drag-drop widgets, remove signers
+  const autosavedetails = async () => {
+    let signers = [];
+    if (signersdata?.length > 0) {
+      signersdata.forEach((x) => {
+        if (x.objectId) {
+          const obj = {
+            __type: "Pointer",
+            className: "contracts_Contactbook",
+            objectId: x.objectId
+          };
+          signers.push(obj);
+        }
+      });
+    }
+    try {
+      const templateCls = new Parse.Object("contracts_Template");
+      templateCls.id = templateId;
+      templateCls.set("Placeholders", signerPos);
+      templateCls.set("Signers", signers);
+      await templateCls.save();
+    } catch (err) {
+      console.log("error in autosave template", err);
+    }
+  };
+
   const handleSaveTemplate = async () => {
     if (signersdata?.length) {
-      const loadObj = {
-        isLoad: true,
-        message: t("loading-mssg")
-      };
+      const loadObj = { isLoad: true, message: t("loading-mssg") };
       setIsLoading(loadObj);
       setIsSendAlert(false);
       let signers = [];
@@ -794,16 +819,10 @@ const TemplatePlaceholder = () => {
         for (const key in data) {
           updateTemplate.set(key, data[key]);
         }
-        await updateTemplate.save(null, {
-          sessionToken: localStorage.getItem("accesstoken")
-        });
-
+        await updateTemplate.save();
         setIsCreateDocModal(true);
         setIsMailSend(true);
-        const loadObj = {
-          isLoad: false
-        };
-        setIsLoading(loadObj);
+        setIsLoading({ isLoad: false });
       } catch (e) {
         setIsLoading(false);
         alert(t("something-went-wrong-mssg"));
@@ -1005,11 +1024,12 @@ const TemplatePlaceholder = () => {
     setIsMailSend(false);
   };
 
-  //  `handleLinkUser` is used to open Add/Choose Signer Modal when user can link existing or new User with placeholder
+  // `handleLinkUser` is used to open Add/Choose Signer Modal when user can link existing or new User with placeholder
   // and update entry in signersList
   const handleLinkUser = (id) => {
     setIsAddUser({ [id]: true });
   };
+  // `handleAddUser` is used to adduser
   const handleAddUser = (data) => {
     const signerPtr = {
       __type: "Pointer",
@@ -1319,6 +1339,7 @@ const TemplatePlaceholder = () => {
     setCurrWidgetsDetails({});
     handleNameModal();
   };
+
   const handleNameModal = () => {
     setIsNameModal(false);
     setCurrWidgetsDetails({});

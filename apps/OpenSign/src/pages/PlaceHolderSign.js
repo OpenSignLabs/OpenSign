@@ -77,7 +77,7 @@ function PlaceHolderSign() {
   const [signBtnPosition, setSignBtnPosition] = useState([]);
   const [xySignature, setXYSignature] = useState({});
   const [dragKey, setDragKey] = useState();
-  const [signersdata, setSignersData] = useState();
+  const [signersdata, setSignersData] = useState([]);
   const [signerObjId, setSignerObjId] = useState();
   const [signerPos, setSignerPos] = useState([]);
   const [isSelectListId, setIsSelectId] = useState();
@@ -165,24 +165,14 @@ function PlaceHolderSign() {
 
   const [{ isDragSign }, dragSignature] = useDrag({
     type: "BOX",
-    item: {
-      type: "BOX",
-      id: 1,
-      text: "signature"
-    },
-
+    item: { type: "BOX", id: 1, text: "signature" },
     collect: (monitor) => ({
       isDragSign: !!monitor.isDragging()
     })
   });
   const [{ isDragStamp }, dragStamp] = useDrag({
     type: "BOX",
-    item: {
-      type: "BOX",
-      id: 2,
-      text: "stamp"
-    },
-
+    item: { type: "BOX", id: 2, text: "stamp" },
     collect: (monitor) => ({
       isDragStamp: !!monitor.isDragging()
     })
@@ -202,7 +192,6 @@ function PlaceHolderSign() {
         `Parse/${localStorage.getItem("parseAppId")}/currentUser`
       )
     );
-
     if (user) {
       try {
         const defaultRequestBody = `<p>Hi {{receiver_name}},</p><br><p>We hope this email finds you well. {{sender_name}}&nbsp;has requested you to review and sign&nbsp;{{document_title}}.</p><p>Your signature is crucial to proceed with the next steps as it signifies your agreement and authorization.</p><br><p>{{signing_url}}</p><br><p>If you have any questions or need further clarification regarding the document or the signing process,  please contact the sender.</p><br><p>Thanks</p><p> Team OpenSign™</p><br>`;
@@ -241,10 +230,8 @@ function PlaceHolderSign() {
         setZoomPercent(0);
       }
     };
-
     // Use setTimeout to wait for the transition to complete
     const timer = setTimeout(updateSize, 100); // match the transition duration
-
     return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [divRef.current, isHeader]);
@@ -345,11 +332,13 @@ function PlaceHolderSign() {
         ) {
           setSignerPos(documentData[0].Placeholders);
           let signers = [...documentData[0].Signers];
-          let updatedSigners = documentData[0].Placeholders.map((x) => {
+          const placeholder = documentData[0]?.Placeholders.filter(
+            (data) => data.Role !== "prefill"
+          );
+          let updatedSigners = placeholder.map((x) => {
             let matchingSigner = signers.find(
               (y) => x.signerObjId && x.signerObjId === y.objectId
             );
-
             if (matchingSigner) {
               return {
                 ...matchingSigner,
@@ -358,11 +347,7 @@ function PlaceHolderSign() {
                 blockColor: x.blockColor
               };
             } else {
-              return {
-                Role: x.Role,
-                Id: x.Id,
-                blockColor: x.blockColor
-              };
+              return { Role: x.Role, Id: x.Id, blockColor: x.blockColor };
             }
           });
           setSignersData(updatedSigners);
@@ -385,14 +370,12 @@ function PlaceHolderSign() {
           documentData[0].Placeholders &&
           documentData[0].Placeholders.length > 0
         ) {
-          let updatedSigners = documentData[0].Placeholders.map((x) => {
-            return {
-              Role: x.Role,
-              Id: x.Id,
-              blockColor: x.blockColor
-            };
+          const placeholder = documentData[0]?.Placeholders.filter(
+            (data) => data.Role !== "prefill"
+          );
+          let updatedSigners = placeholder.map((x) => {
+            return { Role: x.Role, Id: x.Id, blockColor: x.blockColor };
           });
-
           setSignerPos(documentData[0].Placeholders);
           setSignersData(updatedSigners);
           setIsSelectId(0);
@@ -404,25 +387,16 @@ function PlaceHolderSign() {
       documentData === "Error: Something went wrong!" ||
       (documentData.result && documentData.result.error)
     ) {
-      const loadObj = {
-        isLoad: false
-      };
       setHandleError(t("something-went-wrong-mssg"));
-      setIsLoading(loadObj);
+      setIsLoading({ isLoad: false });
     } else {
       setHandleError(t("no-data-avaliable"));
-      const loadObj = {
-        isLoad: false
-      };
-      setIsLoading(loadObj);
+      setIsLoading({ isLoad: false });
     }
     const res = await contractUsers();
     if (res === "Error: Something went wrong!") {
-      const loadObj = {
-        isLoad: false
-      };
       setHandleError(t("something-went-wrong-mssg"));
-      setIsLoading(loadObj);
+      setIsLoading({ isLoad: false });
     } else if (res.length && res[0]?.objectId) {
       setActiveMailAdapter(res[0]?.active_mail_adapter);
       setSignerUserId(res[0].objectId);
@@ -439,16 +413,10 @@ function PlaceHolderSign() {
           setCheckTourStatus(checkTourRecipients[0].placeholder);
         }
       }
-      const loadObj = {
-        isLoad: false
-      };
-      setIsLoading(loadObj);
+      setIsLoading({ isLoad: false });
     } else if (res.length === 0) {
       setHandleError(t("no-data-avaliable"));
-      const loadObj = {
-        isLoad: false
-      };
-      setIsLoading(loadObj);
+      setIsLoading({ isLoad: false });
     }
   };
 
@@ -495,10 +463,7 @@ function PlaceHolderSign() {
           Height: widgetHeight / (containerScale * scale)
         };
         dropData.push(dropObj);
-        placeHolder = {
-          pageNumber: pageNumber,
-          pos: dropData
-        };
+        placeHolder = { pageNumber: pageNumber, pos: dropData };
       } else {
         const offset = monitor.getClientOffset();
         //This method returns the offset of the current pointer (mouse) position relative to the client viewport.
@@ -528,12 +493,8 @@ function PlaceHolderSign() {
           Width: widgetWidth / (containerScale * scale),
           Height: widgetHeight / (containerScale * scale)
         };
-
         dropData.push(dropObj);
-        placeHolder = {
-          pageNumber: pageNumber,
-          pos: dropData
-        };
+        placeHolder = { pageNumber: pageNumber, pos: dropData };
       }
       setSelectWidgetId(key);
       if (signer) {
@@ -554,15 +515,11 @@ function PlaceHolderSign() {
           const getPageNumer = getPlaceHolder.filter(
             (data) => data.pageNumber === pageNumber
           );
-
           //add entry of position for same signer on multiple page
           if (getPageNumer.length > 0) {
             const getPos = getPageNumer[0].pos;
             const newSignPos = getPos.concat(dropData);
-            let xyPos = {
-              pageNumber: pageNumber,
-              pos: newSignPos
-            };
+            let xyPos = { pageNumber: pageNumber, pos: newSignPos };
             updatePlace.push(xyPos);
             let updatesignerPos;
             if (dragTypeValue === textWidget) {
@@ -574,7 +531,6 @@ function PlaceHolderSign() {
                 x.Id === uniqueId ? { ...x, placeHolder: updatePlace } : x
               );
             }
-
             setSignerPos(updatesignerPos);
           } else {
             let updatesignerPos;
@@ -706,14 +662,11 @@ function PlaceHolderSign() {
 
         if (filterSignerPos.length > 0) {
           const getPlaceHolder = filterSignerPos[0].placeHolder;
-
           const getPageNumer = getPlaceHolder.filter(
             (data) => data.pageNumber === pageNumber
           );
-
           if (getPageNumer.length > 0) {
             const getXYdata = getPageNumer[0].pos;
-
             const getPosData = getXYdata;
             const addSignPos = getPosData.map((url) => {
               if (url.key === keyValue) {
@@ -742,36 +695,28 @@ function PlaceHolderSign() {
                   return { ...obj, placeHolder: newUpdateSignPos };
                 }
               }
-
               return obj;
             });
-
             setSignerPos(newUpdateSigner);
           }
         }
       }
     }
-    setTimeout(() => {
-      setIsDragging(false);
-    }, 200);
+    setTimeout(() => setIsDragging(false), 200);
   };
   //function for delete signature block
   const handleDeleteSign = (key, Id) => {
     const updateData = [];
     const filterSignerPos = signerPos.filter((data) => data.Id === Id);
-
     if (filterSignerPos.length > 0) {
       const getPlaceHolder = filterSignerPos[0].placeHolder;
-
       const getPageNumer = getPlaceHolder.filter(
         (data) => data.pageNumber === pageNumber
       );
-
       if (getPageNumer.length > 0) {
         const getXYdata = getPageNumer[0].pos.filter(
           (data) => data.key !== key
         );
-
         if (getXYdata.length > 0) {
           updateData.push(getXYdata);
           const newUpdatePos = getPlaceHolder.map((obj) => {
@@ -804,7 +749,6 @@ function PlaceHolderSign() {
             let signerupdate = [];
             signerupdate = signerPos.filter((data) => data.Id !== Id);
             signerupdate.push(newUpdatePos[0]);
-
             setSignerPos(signerupdate);
           } else {
             setSignerPos(updateFilter);
@@ -829,20 +773,11 @@ function PlaceHolderSign() {
       const touch = e.touches[0]; // Get the first touch point
       mouseX = touch.clientX - divRect.left;
       mouseY = touch.clientY - divRect.top;
-      setSignBtnPosition([
-        {
-          xPos: mouseX,
-          yPos: mouseY
-        }
-      ]);
+      setSignBtnPosition([{ xPos: mouseX, yPos: mouseY }]);
     } else {
       mouseX = e.clientX - divRect.left;
       mouseY = e.clientY - divRect.top;
-      const xyPosition = {
-        xPos: mouseX,
-        yPos: mouseY
-      };
-      setXYSignature(xyPosition);
+      setXYSignature({ xPos: mouseX, yPos: mouseY });
     }
   };
 
@@ -925,18 +860,11 @@ function PlaceHolderSign() {
       }
       if (!signatureExist) {
         isSignatureExist = false;
-        setIsSendAlert({
-          mssg: "sure",
-          alert: true
-        });
+        setIsSendAlert({ mssg: "sure", alert: true });
       }
     }
-
     if (getPrefill && isLabel) {
-      setIsSendAlert({
-        mssg: textWidget,
-        alert: true
-      });
+      setIsSendAlert({ mssg: textWidget, alert: true });
     } else if (isSignatureExist) {
       if (filterPrefill.length === signersdata.length) {
         const IsSignerNotExist = filterPrefill?.filter((x) => !x.signerObjId);
@@ -949,11 +877,40 @@ function PlaceHolderSign() {
           saveDocumentDetails();
         }
       } else {
-        setIsSendAlert({
-          mssg: "sure",
-          alert: true
-        });
+        setIsSendAlert({ mssg: "sure", alert: true });
       }
+    }
+  };
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (signerPos?.length > 0) {
+        autosavedetails();
+      }
+    }, 2000);
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [signerPos]);
+
+  // `autosavedetails` is used to save doc details after every 2 sec when changes are happern in placeholder like drag-drop widgets, remove signers
+  const autosavedetails = async () => {
+    const signers = signersdata?.filter(
+      (x) =>
+        x?.Role !== "prefill" && {
+          __type: "Pointer",
+          className: "contracts_Contactbook",
+          objectId: x.objectId
+        }
+    );
+    try {
+      const docCls = new Parse.Object("contracts_Document");
+      docCls.id = documentId;
+      docCls.set("Placeholders", signerPos);
+      docCls.set("Signers", signers);
+      await docCls.save();
+    } catch (e) {
+      console.log("error", e);
+      alert(t("something-went-wrong-mssg"));
     }
   };
   //function to use save placeholder details in contracts_document
@@ -995,10 +952,7 @@ function PlaceHolderSign() {
           SignedUrl: pdfUrl,
           Signers: signers,
           SentToOthers: true,
-          ExpiryDate: {
-            iso: updateExpiryDate,
-            __type: "Date"
-          }
+          ExpiryDate: { iso: updateExpiryDate, __type: "Date" }
         };
       } else {
         data = {
@@ -1024,15 +978,10 @@ function PlaceHolderSign() {
         )
         .then(() => {
           setIsMailSend(true);
-          setIsLoading({
-            isLoad: false
-          });
+          setIsLoading({ isLoad: false });
           setIsUiLoading(false);
           setSignerPos([]);
-          setIsSendAlert({
-            mssg: "confirm",
-            alert: true
-          });
+          setIsSendAlert({ mssg: "confirm", alert: true });
         })
         .catch((err) => {
           console.log("axois err ", err);
@@ -1047,9 +996,7 @@ function PlaceHolderSign() {
   const copytoclipboard = (text) => {
     copytoData(text);
     setCopied(true);
-    setTimeout(() => {
-      setCopied(false);
-    }, 1500); // Reset copied state after 1.5 seconds
+    setTimeout(() => setCopied(false), 1500); // Reset copied state after 1.5 seconds
   };
   //function show signer list and share link to share signUrl
   const handleShareList = () => {
@@ -1085,12 +1032,7 @@ function PlaceHolderSign() {
               <i className="fa-light fa-link" aria-hidden="true"></i>
               <span className=" hidden md:block ml-1 ">{t("copy-link")}</span>
             </button>
-            <RWebShare
-              data={{
-                url: data.url,
-                title: t("sign-url")
-              }}
-            >
+            <RWebShare data={{ url: data.url, title: t("sign-url") }}>
               <i className="fa-light fa-share-from-square op-link op-link-secondary no-underline"></i>
             </RWebShare>
           </div>
@@ -1219,9 +1161,7 @@ function PlaceHolderSign() {
             SendMail: true
           };
         } else {
-          data = {
-            SendMail: true
-          };
+          data = { SendMail: true };
         }
 
         await axios
@@ -1339,14 +1279,11 @@ function PlaceHolderSign() {
     const filterSignerPos = signerPos.filter((data) => data.Id === uniqueId);
     if (filterSignerPos.length > 0) {
       const getPlaceHolder = filterSignerPos[0].placeHolder;
-
       const getPageNumer = getPlaceHolder.filter(
         (data) => data.pageNumber === pageNumber
       );
-
       if (getPageNumer.length > 0) {
         const getXYdata = getPageNumer[0].pos;
-
         const getPosData = getXYdata;
         const addSignPos = getPosData.map((position) => {
           if (position.key === signKey) {
@@ -1631,9 +1568,7 @@ function PlaceHolderSign() {
         }
         return { ...x };
       });
-
       setSignerPos(updatePlaceHolder);
-
       const updateSigner = signersdata.map((x) => {
         if (x.Id === uniqueId) {
           return { ...x, ...data, className: "contracts_Contactbook" };
@@ -1687,7 +1622,7 @@ function PlaceHolderSign() {
     {
       selector: '[data-tut="assignSigner"]',
       content:
-        " You need to attach a Signer to every role. You can do that by clicking this icon. Once you select a Signer it will be attached to all the fields associated with that role which appear in the same colour. ",
+        "You need to attach a Signer to every role. You can do that by clicking this icon. Once you select a Signer it will be attached to all the fields associated with that role which appear in the same colour. ",
       position: "top",
       style: { fontSize: "13px" }
     }
@@ -1712,7 +1647,6 @@ function PlaceHolderSign() {
       setIsSelectId(index);
       setBlockColor(color[index]);
     }
-
     setSignerPos(updatePlaceholderUser);
     setIsMailSend(false);
   };
@@ -1817,7 +1751,6 @@ function PlaceHolderSign() {
                 />
                 <div className=" w-full md:w-[95%] ">
                   {/* this modal is used show alert set placeholder for all signers before send mail */}
-
                   <ModalUi
                     isOpen={isSendAlert.alert}
                     title={
@@ -1948,7 +1881,6 @@ function PlaceHolderSign() {
                             {t("yes")}
                           </button>
                         )}
-
                         <button
                           onClick={() => {
                             setIsSend(false);
@@ -2206,7 +2138,6 @@ function PlaceHolderSign() {
             </div>
           </div>
         )}
-
         <ModalUi
           isOpen={isAlreadyPlace.status}
           title={t("document-alert")}
