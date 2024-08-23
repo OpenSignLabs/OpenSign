@@ -400,13 +400,13 @@ const BulkSendUi = (props) => {
               {isFreePlan ? (
                 <div className="w-full h-[130px] flex flex-col justify-center items-center text-center p-4">
                   <p className="text-base font-medium mb-2.5">
-                    Please upgrade to Professional or Team plan to use quicksend
+                    {t("bulksendsubcriptionalert")}
                   </p>
                   <button
                     onClick={() => handleNavigation()}
                     className="op-btn op-btn-primary"
                   >
-                    Upgrade Now
+                    {t("upgrade-now")}
                   </button>
                 </div>
               ) : (
