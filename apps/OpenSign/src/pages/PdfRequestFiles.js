@@ -34,7 +34,8 @@ import {
   openInNewTab,
   getDefaultSignature,
   onClickZoomIn,
-  onClickZoomOut
+  onClickZoomOut,
+  fetchUrl
 } from "../constant/Utils";
 import LoaderWithMsg from "../primitives/LoaderWithMsg";
 import HandleError from "../primitives/HandleError";
@@ -340,23 +341,17 @@ function PdfRequestFiles(props) {
         }
         setUnSignedSigners(placeholdersOrSigners);
         setPdfDetails(documentData);
-        setIsLoading({
-          isLoad: false
-        });
+        setIsLoading({ isLoad: false });
       } else if (
         documentData === "Error: Something went wrong!" ||
         (documentData.result && documentData.result.error)
       ) {
         console.log("err in get template details ");
         setHandleError(t("something-went-wrong-mssg"));
-        setIsLoading({
-          isLoad: false
-        });
+        setIsLoading({ isLoad: false });
       } else {
         setHandleError(t("no-data"));
-        setIsLoading({
-          isLoad: false
-        });
+        setIsLoading({ isLoad: false });
       }
     } catch (err) {
       console.log("err in get template details ", err);
@@ -424,16 +419,11 @@ function PdfRequestFiles(props) {
         }
         if (isCompleted) {
           setIsSigned(true);
-          const data = {
-            isCertificate: true,
-            isModal: true
-          };
+          const data = { isCertificate: true, isModal: true };
           setAlreadySign(true);
           setIsCompleted(data);
           setIsCelebration(true);
-          setTimeout(() => {
-            setIsCelebration(false);
-          }, 5000);
+          setTimeout(() => setIsCelebration(false), 5000);
         } else if (declined) {
           const currentDecline = {
             currnt: "another",
@@ -449,9 +439,7 @@ function PdfRequestFiles(props) {
         } // Check if the current signer is not a last signer and handle the complete message.
         else if (isNextUser) {
           setIsCelebration(true);
-          setTimeout(() => {
-            setIsCelebration(false);
-          }, 5000);
+          setTimeout(() => setIsCelebration(false), 5000);
           setIsCompleted({
             isModal: true,
             message: t("document-signed-alert-1")
@@ -478,7 +466,8 @@ function PdfRequestFiles(props) {
           documentData[0].AuditTrail.length > 0 &&
           documentData[0].AuditTrail.filter(
             (data) =>
-              data.UserPtr.objectId === currUserId && data.Activity === "Signed"
+              data.UserPtr?.objectId === currUserId &&
+              data.Activity === "Signed"
           );
         if (
           checkAlreadySign &&
@@ -558,15 +547,15 @@ function PdfRequestFiles(props) {
           for (const item of placeholdersOrSigners) {
             const checkEmail = item?.email;
             //if email exist then compare user signed by using email else signers objectId
-            const emailOrId = checkEmail ? item.email : item.objectId;
+            const emailOrId = checkEmail ? item.email : item?.objectId;
             //`isSignedSignature` variable to handle break loop whenever it get true
             let isSignedSignature = false;
             //checking the signer who signed the document by using audit trail details.
             //and save signedSigners and unsignedSigners details
             for (const doc of audittrailData) {
               const signedExist = checkEmail
-                ? doc?.UserPtr.Email
-                : doc?.UserPtr.objectId;
+                ? doc?.UserPtr?.Email
+                : doc?.UserPtr?.objectId;
 
               if (emailOrId === signedExist) {
                 signers.push({ ...item });
@@ -644,15 +633,11 @@ function PdfRequestFiles(props) {
         (documentData.result && documentData.result.error)
       ) {
         setHandleError(t("something-went-wrong-mssg"));
-        setIsLoading({
-          isLoad: false
-        });
+        setIsLoading({ isLoad: false });
         console.log("err in  getDocument cloud function ");
       } else {
         setHandleError(t("no-data"));
-        setIsUiLoading({
-          isLoad: false
-        });
+        setIsUiLoading({ isLoad: false });
       }
       //function to get default signatur eof current user from `contracts_Signature` class
       const defaultSignRes = await getDefaultSignature(jsonSender.objectId);
@@ -662,15 +647,11 @@ function PdfRequestFiles(props) {
       } else if (defaultSignRes?.status === "error") {
         setHandleError("Error: Something went wrong!");
       }
-      setIsLoading({
-        isLoad: false
-      });
+      setIsLoading({ isLoad: false });
     } catch (err) {
       console.log("Error: error in getDocumentDetails", err);
       setHandleError("Error: Something went wrong!");
-      setIsLoading({
-        isLoad: false
-      });
+      setIsLoading({ isLoad: false });
     }
   };
   //function for embed signature or image url in pdf
@@ -1028,9 +1009,7 @@ function PdfRequestFiles(props) {
                             openSignUrl +
                             " target=_blank>here</a>.</p> </div></div></body> </html>"
                       };
-                      await axios.post(url, params, {
-                        headers: headers
-                      });
+                      await axios.post(url, params, { headers: headers });
                     } catch (error) {
                       console.log("error", error);
                     }
@@ -1193,10 +1172,7 @@ function PdfRequestFiles(props) {
       const img = new Image();
       img.src = defaultSignImg;
       if (img.complete) {
-        imgWH = {
-          width: img.width,
-          height: img.height
-        };
+        imgWH = { width: img.width, height: img.height };
       }
     }
     //get current signer placeholder position data
@@ -1256,10 +1232,7 @@ function PdfRequestFiles(props) {
       .then(async (result) => {
         const res = result.data;
         if (res) {
-          const currentDecline = {
-            currnt: "YouDeclined",
-            isDeclined: true
-          };
+          const currentDecline = { currnt: "YouDeclined", isDeclined: true };
           setIsDecline(currentDecline);
           setIsUiLoading(false);
           const params = {
@@ -1318,10 +1291,7 @@ function PdfRequestFiles(props) {
       x.signerObjId === signerObjectId ? { ...x, placeHolder: updatePlace } : x
     );
     setSignerPos(updatesignerPos);
-    setDefaultSignAlert({
-      isShow: false,
-      alertMessage: ""
-    });
+    setDefaultSignAlert({ isShow: false, alertMessage: "" });
   };
   const handleDontShow = (isChecked) => {
     setIsDontShow(isChecked);
@@ -1502,7 +1472,6 @@ function PdfRequestFiles(props) {
   const SendOtp = async () => {
     try {
       const params = { email: contact.email, docId: res.docId };
-
       const Otp = await axios.post(
         `${localStorage.getItem("baseUrl")}/functions/SendOTPMailV1`,
         params,
@@ -1540,10 +1509,7 @@ function PdfRequestFiles(props) {
           "Content-Type": "application/json",
           "X-Parse-Application-Id": parseId
         };
-        let body = {
-          email: contact.email,
-          otp: otp
-        };
+        let body = { email: contact.email, otp: otp };
         let user = await axios.post(url, body, { headers: headers });
         if (user.data.result === "Invalid Otp") {
           alert(t("invalid-otp"));
@@ -1575,9 +1541,7 @@ function PdfRequestFiles(props) {
           // document.getElementById("my_modal").close();
           setIsPublicContact(false);
           setIsPublicTemplate(false);
-          setIsLoading({
-            isLoad: false
-          });
+          setIsLoading({ isLoad: false });
           setDocumentId(res?.docId);
           getDocumentDetails(res?.docId);
         }
@@ -1593,11 +1557,7 @@ function PdfRequestFiles(props) {
     setLoading(false);
     setIsOtp(false);
     setOtp();
-    setContact({
-      name: "",
-      email: "",
-      phone: ""
-    });
+    setContact({ name: "", email: "", phone: "" });
   };
 
   const clickOnZoomIn = () => {
@@ -1605,6 +1565,11 @@ function PdfRequestFiles(props) {
   };
   const clickOnZoomOut = () => {
     onClickZoomOut(zoomPercent, scale, setZoomPercent, setScale);
+  };
+  const handleDownloadBtn = async () => {
+    const url = pdfDetails?.[0]?.SignedUrl || pdfDetails?.[0]?.URL;
+    const name = pdfDetails?.[0]?.Name;
+    await fetchUrl(url, name);
   };
   return (
     <DndProvider backend={HTML5Backend}>
@@ -1696,9 +1661,9 @@ function PdfRequestFiles(props) {
                   headMsg={t("document-decline")}
                   bodyMssg={
                     isDecline.currnt === "Sure"
-                      ? t("decline-alert-2")
+                      ? t("decline-alert-1")
                       : isDecline.currnt === "YouDeclined"
-                        ? t("decline-alert-1")
+                        ? t("decline-alert-2")
                         : isDecline.currnt === "another" && t("decline-alert-3")
                   }
                   footerMessage={isDecline.currnt === "Sure"}
@@ -1710,6 +1675,8 @@ function PdfRequestFiles(props) {
                   show={isExpired}
                   headMsg={t("expired-doc-title")}
                   bodyMssg={t("expired-on-mssg", { expiredDate })}
+                  isDownloadBtn={true}
+                  handleDownloadBtn={handleDownloadBtn}
                 />
                 {!isEmailVerified && (
                   <VerifyEmail
@@ -1723,7 +1690,6 @@ function PdfRequestFiles(props) {
                     handleResend={handleResend}
                   />
                 )}
-
                 <ModalUi
                   isOpen={isPublicContact}
                   title={isOtp ? t("verify-email-1") : t("contact-details")}
