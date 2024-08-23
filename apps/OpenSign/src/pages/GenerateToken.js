@@ -9,7 +9,6 @@ import Tooltip from "../primitives/Tooltip";
 import Loader from "../primitives/Loader";
 import SubscribeCard from "../primitives/SubscribeCard";
 import Tour from "reactour";
-import { validplan } from "../json/plansArr";
 import { useTranslation } from "react-i18next";
 import Parse from "parse";
 
@@ -65,7 +64,7 @@ function GenerateToken() {
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!validplan[isSubscribe.plan] && isEnableSubscription) {
+    if (isSubscribe?.plan === "freeplan" && isEnableSubscription) {
       setIsTour(true);
     } else {
       setIsLoader(true);
@@ -103,11 +102,15 @@ function GenerateToken() {
     setTimeout(() => setIsAlert({ type: "success", msg: "" }), 1500); // Reset copied state after 1.5 seconds
   };
   const handleModal = () => {
-    setIsModal((obj) => ({ ...obj, generateapi: !obj.generateapi }));
+    if (isSubscribe?.plan === "freeplan" && isEnableSubscription) {
+      setIsTour(true);
+    } else {
+      setIsModal((obj) => ({ ...obj, generateapi: !obj.generateapi }));
+    }
   };
 
   const handleBuyAPIsModal = () => {
-    if (!validplan[isSubscribe.plan] && isEnableSubscription) {
+    if (isSubscribe?.plan === "freeplan" && isEnableSubscription) {
       setIsTour(true);
     } else {
       setIsModal((obj) => ({ ...obj, buyapis: !obj.buyapis }));
@@ -176,16 +179,18 @@ function GenerateToken() {
                   <span
                     id="token"
                     className={`${
-                      validplan[isSubscribe.plan]
-                        ? ""
-                        : "bg-white/20 pointer-events-none select-none"
+                      isSubscribe?.plan === "freeplan"
+                        ? "bg-white/20 pointer-events-none select-none"
+                        : ""
                     } md:text-end py-2 md:py-0`}
                   >
                     <span
                       className="cursor-pointer"
                       onClick={() => copytoclipboard(apiToken)}
                     >
-                      {apiToken ? apiToken : "_____"}
+                      {isSubscribe?.plan !== "freeplan" && apiToken
+                        ? apiToken
+                        : "_____"}
                     </span>
                     <button
                       className="op-btn op-btn-accent op-btn-outline op-btn-sm ml-2 cursor-pointer"
@@ -303,9 +308,9 @@ function GenerateToken() {
               </form>
             </ModalUi>
           </div>
-          {!validplan[isSubscribe.plan] && isEnableSubscription && (
+          {isSubscribe?.plan === "freeplan" && isEnableSubscription && (
             <div data-tut="apisubscribe">
-              <SubscribeCard plan_code={isSubscribe.plan} />
+              <SubscribeCard plan_code={isSubscribe?.plan} />
             </div>
           )}
         </>
