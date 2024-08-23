@@ -616,5 +616,6 @@
   "buycredits": "Acheter des crédits",
   "rotate-right"  :"Faire pivoter à droite",
   "rotate-left" :"Faire pivoter à gauche",
-  "rotate-alert-mssg" :"Tous les widgets de cette page seront perdus. Êtes-vous sûr de vouloir continuer ?"
+  "rotate-alert-mssg" :"Tous les widgets de cette page seront perdus. Êtes-vous sûr de vouloir continuer ?",
+  "bulksendsubcriptionalert":"Veuillez passer au forfait Professionnel ou Équipe pour utiliser Quicksend."
 }

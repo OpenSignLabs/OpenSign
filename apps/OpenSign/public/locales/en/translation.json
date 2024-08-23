@@ -616,5 +616,6 @@
   "buycredits": "Buy credits",
   "rotate-right":"Rotate right",
   "rotate-left":"Rotate left",
-  "rotate-alert-mssg":"All widgets on this page will be lost. Are you sure you want to proceed?"
+  "rotate-alert-mssg":"All widgets on this page will be lost. Are you sure you want to proceed?",
+  "bulksendsubcriptionalert":"Please upgrade to Professional or Team plan to use quicksend."
 }
