@@ -7,7 +7,7 @@ title: My Signature
 
 This guide provides instructions on how to save your signature and initials using the OpenSign application. Once saved, you can use them with one click when signing documents. To create your signature, start by clicking the "My Signature" link under "settings" menu. 
 
-<img width="820" alt="image" src="https://github.com/OpenSignLabs/OpenSign/assets/5486116/0b1457c2-c130-477c-bedd-da054297a9d1"></img>
+<img width="820" alt="image" src="https://github.com/user-attachments/assets/febd5fa0-08a1-4de4-93cd-14a66ab005f4"></img>
 
 ## Creating and Saving Your Signature
 
