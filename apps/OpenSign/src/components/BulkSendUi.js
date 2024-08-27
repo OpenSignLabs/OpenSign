@@ -6,8 +6,11 @@ import { useTranslation } from "react-i18next";
 import Parse from "parse";
 import ModalUi from "../primitives/ModalUi";
 import { isEnableSubscription } from "../constant/const";
+import { fetchSubscription } from "../constant/Utils";
+import { useNavigate } from "react-router-dom";
 const BulkSendUi = (props) => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [forms, setForms] = useState([]);
   const [formId, setFormId] = useState(2);
   const formRef = useRef(null);
@@ -25,6 +28,7 @@ const BulkSendUi = (props) => {
   });
   const [isQuotaReached, setIsQuotaReached] = useState(false);
   const [isLoader, setIsLoader] = useState(false);
+  const [isFreePlan, setIsFreePlan] = useState(false);
   const allowedSigners = 50;
   useEffect(() => {
     signatureExist();
@@ -36,6 +40,10 @@ const BulkSendUi = (props) => {
     if (isEnableSubscription) {
       setIsLoader(true);
       try {
+        const subscription = await fetchSubscription();
+        if (subscription?.plan === "freeplan") {
+          setIsFreePlan(true);
+        }
         const allowedquicksend = await Parse.Cloud.run("allowedquicksend");
         if (allowedquicksend > 0) {
           setIsBulkAvailable(true);
@@ -273,6 +281,9 @@ const BulkSendUi = (props) => {
   const handleCloseQuotaReached = () => {
     setIsQuotaReached(false);
   };
+  const handleNavigation = () => {
+    navigate("/subscription");
+  };
   return (
     <>
       {isLoader ? (
@@ -385,46 +396,62 @@ const BulkSendUi = (props) => {
               )}
             </>
           ) : (
-            <form onSubmit={handleAddOnQuickSubmit} className="p-3">
-              <p className="flex justify-center text-center mx-2 mb-3 text-base op-text-accent font-medium">
-                {t("additional-quicksend")}
-              </p>
-              <div className="mb-3 flex justify-between">
-                <label
-                  htmlFor="quantity"
-                  className="block text-xs text-gray-700 font-semibold"
-                >
-                  {t("quantityofquicksend")}
-                  <span className="text-[red] text-[13px]">*</span>
-                </label>
-                <select
-                  value={amount.quantity}
-                  onChange={(e) => handlePricePerQuick(e)}
-                  name="quantity"
-                  className="op-select op-select-bordered op-select-sm focus:outline-none hover:border-base-content w-1/4 text-xs"
-                  required
-                >
-                  {quantityList.length > 0 &&
-                    quantityList.map((x) => (
-                      <option key={x} value={x}>
-                        {x}
-                      </option>
-                    ))}
-                </select>
-              </div>
-              <div className="mb-3 flex justify-between">
-                <label className="block text-xs text-gray-700 font-semibold">
-                  {t("Price")} (1 * {amount.priceperbulksend})
-                </label>
-                <div className="w-1/4 flex justify-center items-center text-sm">
-                  USD {amount.price}
+            <>
+              {isFreePlan ? (
+                <div className="w-full h-[130px] flex flex-col justify-center items-center text-center p-4">
+                  <p className="text-base font-medium mb-2.5">
+                    {t("bulksendsubcriptionalert")}
+                  </p>
+                  <button
+                    onClick={() => handleNavigation()}
+                    className="op-btn op-btn-primary"
+                  >
+                    {t("upgrade-now")}
+                  </button>
                 </div>
-              </div>
-              <hr className="text-base-content mb-3" />
-              <button className="op-btn op-btn-primary w-full mt-2">
-                {t("Proceed")}
-              </button>
-            </form>
+              ) : (
+                <form onSubmit={handleAddOnQuickSubmit} className="p-3">
+                  <p className="flex justify-center text-center mx-2 mb-3 text-base op-text-accent font-medium">
+                    {t("additional-quicksend")}
+                  </p>
+                  <div className="mb-3 flex justify-between">
+                    <label
+                      htmlFor="quantity"
+                      className="block text-xs text-gray-700 font-semibold"
+                    >
+                      {t("quantityofquicksend")}
+                      <span className="text-[red] text-[13px]">*</span>
+                    </label>
+                    <select
+                      value={amount.quantity}
+                      onChange={(e) => handlePricePerQuick(e)}
+                      name="quantity"
+                      className="op-select op-select-bordered op-select-sm focus:outline-none hover:border-base-content w-1/4 text-xs"
+                      required
+                    >
+                      {quantityList.length > 0 &&
+                        quantityList.map((x) => (
+                          <option key={x} value={x}>
+                            {x}
+                          </option>
+                        ))}
+                    </select>
+                  </div>
+                  <div className="mb-3 flex justify-between">
+                    <label className="block text-xs text-gray-700 font-semibold">
+                      {t("Price")} (1 * {amount.priceperbulksend})
+                    </label>
+                    <div className="w-1/4 flex justify-center items-center text-sm">
+                      USD {amount.price}
+                    </div>
+                  </div>
+                  <hr className="text-base-content mb-3" />
+                  <button className="op-btn op-btn-primary w-full mt-2">
+                    {t("Proceed")}
+                  </button>
+                </form>
+              )}
+            </>
           )}
         </>
       )}
