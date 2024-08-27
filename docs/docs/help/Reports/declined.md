@@ -20,7 +20,7 @@ The "Declined Documents" report is displayed in a tabular format, presenting key
 
 - **Sr.No:** This column displays the serial number for each document in the list, helping you quickly identify and reference documents.
 
-- **Title:** The "Title" column displays the name of the document, which often reflects the specific type of document it represents.
+- **Title:** The "Title" column displays the name of the document.
   
 - **Reason:** This section contains the reasons for declining the document.
 
@@ -30,11 +30,11 @@ The "Declined Documents" report is displayed in a tabular format, presenting key
 
 - **Owner:** This column shows the name of the person who created the document.
 
-- **Signers:** The "Signers" column indicates whether the document has been signed and by whom. If the document has signers, you can click **"View"** to see details of who signed it.
+- **Signers:** The "Signers" column displays the names and email addresses of the signers assigned to that document for signature. Click the "View" button to see the signers
 
-### Interactive Features
+### Action buttons
 
-The "Declined Documents" report also includes several interactive icons for each document:
+The "Declined Documents" report also includes several action icons for each document:
 
 - **View Document:** The eye icon allows you to preview the document directly within OpenSign without needing to download it.
 - **Delete Document:** The trash bin icon enables you to permanently delete a document from your declined list. Be cautious, as this action cannot be undone.
