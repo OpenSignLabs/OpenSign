@@ -355,6 +355,13 @@ export default function reportJson(id) {
               action: "redirect"
             },
             {
+              btnId: "2434",
+              btnLabel: "Embed",
+              hoverLabel: "Embed",
+              btnIcon: "fa-light fa-code",
+              action: "Embed"
+            },
+            {
               btnId: "1834",
               btnLabel: "Delete",
               hoverLabel: "Delete",
