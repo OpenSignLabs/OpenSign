@@ -134,7 +134,7 @@ On the Manage templates page you will see a list of templates you have created o
 
 **Use Template**: To use a template, click the "+ USE" button next to the desired template. This will open the template, enabling you to create a document for a signature request. Simply assign the signers and send it for signatures.
 
-**Quick Send**: For faster processing, click the "QUICK SEND" button. This will allow you to quickly send the template to recipients for signing.
+**Quick Send**: For faster processing, the Quick Send feature allows you to swiftly create and send a document to a signer using the selected template.
 
 **Share With Team**: Collaboration is essential for any successful team, and OpenSign simplifies sharing document templates with your team. Here's how you can utilize the "Share With Team" feature:
 Click on the three dots next to the template you want to share.
