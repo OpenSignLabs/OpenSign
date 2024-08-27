@@ -126,7 +126,8 @@
     "Share with team": "Share with team",
     "Share": "Share",
     "View": "View",
-    "option": "Option"
+    "option": "Option",
+    "Embed":"Embed"
   },
   "report-heading": {
     "Sr.No": "Sr.No",
@@ -616,5 +617,6 @@
   "buycredits": "Buy credits",
   "rotate-right":"Rotate right",
   "rotate-left":"Rotate left",
-  "rotate-alert-mssg":"All widgets on this page will be lost. Are you sure you want to proceed?"
+  "rotate-alert-mssg":"All widgets on this page will be lost. Are you sure you want to proceed?",
+  "templateid":"Template-Id"
 }

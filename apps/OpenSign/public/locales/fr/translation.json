@@ -146,7 +146,8 @@
     "Share with team": "Partager avec l'équipe",
     "Share": "Partager",
     "View": "Voir",
-    "option": "Option"
+    "option": "Option",
+    "Embed":"Intégrer"
   },
   "report-help": {
     "Draft Documents": "Il s'agit de documents que vous avez commencés mais que vous n'avez pas finalisés pour envoi.",
@@ -616,5 +617,6 @@
   "buycredits": "Acheter des crédits",
   "rotate-right"  :"Faire pivoter à droite",
   "rotate-left" :"Faire pivoter à gauche",
-  "rotate-alert-mssg" :"Tous les widgets de cette page seront perdus. Êtes-vous sûr de vouloir continuer ?"
+  "rotate-alert-mssg" :"Tous les widgets de cette page seront perdus. Êtes-vous sûr de vouloir continuer ?",
+  "templateid":"ID de modèle"
 }
