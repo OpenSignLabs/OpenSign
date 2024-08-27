@@ -17,7 +17,7 @@ Upon clicking "Need Your Sign," you will be presented with a list of documents a
 
 - **Sr.No**: This column provides a serial number for each document in the list, allowing for easy identification and reference.
  
-- **Title**: The title of the document is displayed here, providing a clear indication of what the document is about.
+- **Title**: The "Title" column displays the name of the document.
  
 - **Note**: This section includes any notes or instructions related to the document.
   
@@ -27,11 +27,11 @@ Upon clicking "Need Your Sign," you will be presented with a list of documents a
   
 - **Owner**: The owner column indicates who owns or initiated the document.
   
-- **Signers**: This column shows the current signers of the document. By clicking "View," you can see who else is involved in the signing process.
+- **Signers**: The "Signers" column displays the names and email addresses of the signers assigned to that document for signature. Click the "View" button to see the signers
   
 - **Sign**: The "SIGN" button is prominently displayed next to each document. Clicking this button will open the document in the signing interface, allowing you to review and apply your signature.
 
-## Interactive Features
+## Action button
 
 - **View Document**: By clicking "View" under the "Signers" column, you can get more details about the document, including the list of individuals who have already signed or are expected to sign it.
   
