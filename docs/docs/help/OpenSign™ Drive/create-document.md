@@ -57,7 +57,7 @@ OpenSign Drive provides a variety of tools to manage your documents efficiently.
 OpenSign Drive provides a powerful and easy-to-use interface for managing your documents. To help you quickly find and organize your files, OpenSign Drive offers several sorting and filtering options, allowing you to arrange your documents by name or date, in either ascending or descending order.
 
 <div>
-  <img width="861" alt="OpenSign_filters" src="https://github.com/user-attachments/assets/af51e68a-730c-4203-8015-54b30da572f6"/>
+  <img width="861" alt="OpenSign_filters" src="https://github.com/user-attachments/assets/af51e68a-730c-4203-8015-54b30da572f6" />
 </div>
 
 - **Sorting Documents by Name:**
