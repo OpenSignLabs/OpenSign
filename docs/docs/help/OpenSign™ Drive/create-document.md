@@ -29,7 +29,9 @@ To create a document for self-signing or by requesting a signature, you can do s
 **Step 2:** This time, choose "Sign Yourself" or "Request Signatures" depending on whether you want to sign the document yourself or send it to others for their signatures.  
 **Step 3:** When you select the "Sign Yourself" or "Request Signature" option, the document creation page will open, allowing you to enter details such as the document title, description, notes, and other necessary information. You can also choose an OpenSign Drive folder to store your document. Once you’ve selected the folder and created the document, it will be saved in that folder, making it easily accessible from your OpenSign Drive.
 
+
 <img width="828" alt="Create new document" src="https://github.com/user-attachments/assets/97bd75ec-ea9d-4f1d-b514-b9e04ce856aa" />
+
 
 ### 4. Organizing Documents
 After creating or uploading documents, it's crucial to organize them effectively. Here are some options available in OpenSign Drive for managing your documents:
