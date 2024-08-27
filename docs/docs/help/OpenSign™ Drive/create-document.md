@@ -29,9 +29,7 @@ To create a document for self-signing or by requesting a signature, you can do s
 **Step 2:** This time, choose "Sign Yourself" or "Request Signatures" depending on whether you want to sign the document yourself or send it to others for their signatures.  
 **Step 3:** When you select the "Sign Yourself" or "Request Signature" option, the document creation page will open, allowing you to enter details such as the document title, description, notes, and other necessary information. You can also choose an OpenSign Drive folder to store your document. Once you’ve selected the folder and created the document, it will be saved in that folder, making it easily accessible from your OpenSign Drive.
 
-
 <img width="828" alt="Create new document" src="https://github.com/user-attachments/assets/97bd75ec-ea9d-4f1d-b514-b9e04ce856aa" />
-
 
 ### 4. Organizing Documents
 After creating or uploading documents, it's crucial to organize them effectively. Here are some options available in OpenSign Drive for managing your documents:
@@ -49,28 +47,37 @@ After creating or uploading documents, it's crucial to organize them effectively
 Organizing your documents properly ensures that you can easily find and manage them whenever needed.
 
 ### 5. Managing Documents
-OpenSign Drive provides a variety of tools to manage your documents efficiently.
 
-- **Status Indicators:** Icons on your documents show the status, such as whether they’ve been signed, are pending signature, or are in draft form.
-  
+OpenSign Drive offers a variety of tools to help you manage your documents efficiently, one of the most useful being the Status Indicators system.
+
+**Status Indicators** 
+
+These indicators are represented by different icons on your documents, allowing you to instantly recognize their current status:
+
+- **Signed (Green Check Mark):** This icon signifies that the document has been fully signed and is complete.
+- **Pending Signature (Yellow Paper Airplane):** Documents with this icon are awaiting signatures from one or more parties.
+- **Draft (Blue Paper Clip):** A Blue Paper Clip indicates that the document is in draft form and has not yet been sent out for signatures.
+- **Declined document (Red Exclamation Mark):** This icon highlights documents that require immediate action, indicating that the document has been declined.
+- **Expired (Gray Hourglass):** A gray hourglass indicates that the document is expired.
+
+  <img width="828" alt="Create new folder" src="https://github.com/user-attachments/assets/b488ef24-3db5-4323-a3b3-ed3c12a04291" />
+
 ### 6. Filter and Sort Documents in OpenSign Drive
 OpenSign Drive provides a powerful and easy-to-use interface for managing your documents. To help you quickly find and organize your files, OpenSign Drive offers several sorting and filtering options, allowing you to arrange your documents by name or date, in either ascending or descending order.
 
-<div>
-  <img width="861" alt="OpenSign_filters" src="https://github.com/user-attachments/assets/af51e68a-730c-4203-8015-54b30da572f6" />
-</div>
+<img width="861" alt="OpenSign filters" src="https://github.com/user-attachments/assets/af51e68a-730c-4203-8015-54b30da572f6" />
 
 - **Sorting Documents by Name:**
 To sort your documents alphabetically:
 
-1. Click on the "Date" dropdown menu in the upper right corner of the OpenSign Drive interface.
+1. Click on the Sort dropdown menu in the upper right corner of the OpenSign Drive interface.
 2. Select "Name" from the dropdown list. This will arrange your documents alphabetically by their titles.
 3. You can then choose to order them in ascending (A-Z) or descending (Z-A) order by toggling the "Ascending" or "Descending" option.
 
 - **Sorting Documents by Date:**
 If you prefer to sort your documents based on when they were created or modified:
 
-1. Click the "Date" dropdown menu in the top right corner.
+1. Click the Sort dropdown menu in the top right corner.
 2. Ensure that "Date" is selected. This will organize your documents based on their creation or modification date.
 3. Select "Ascending" to arrange documents from the oldest to the newest, or choose "Descending" to list them from the newest to the oldest.
 
