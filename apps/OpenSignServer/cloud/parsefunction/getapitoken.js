@@ -1,7 +1,17 @@
+import axios from 'axios';
+import { cloudServerUrl } from '../../Utils.js';
+
 export default async function getapitoken(request) {
   try {
-    if (request?.user) {
-      const userId = request?.user?.id;
+    const serverUrl = cloudServerUrl; //process.env.SERVER_URL;
+    const userRes = await axios.get(serverUrl + '/users/me', {
+      headers: {
+        'X-Parse-Application-Id': process.env.APP_ID,
+        'X-Parse-Session-Token': request.headers['sessiontoken'],
+      },
+    });
+    const userId = userRes.data && userRes.data.objectId;
+    if (userId) {
       const tokenQuery = new Parse.Query('appToken');
       tokenQuery.equalTo('userId', { __type: 'Pointer', className: '_User', objectId: userId });
       const res = await tokenQuery.first({ useMasterKey: true });

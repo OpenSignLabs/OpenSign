@@ -554,7 +554,7 @@ function RenderPdf({
                         </React.Fragment>
                       );
                     })
-                  : xyPostion.map((data, ind) => {
+                  : xyPostion?.map((data, ind) => {
                       // signyourself flow
                       return (
                         <React.Fragment key={ind}>
