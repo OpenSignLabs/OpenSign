@@ -14,8 +14,8 @@ import Parse from "parse";
 
 function GenerateToken() {
   const { t } = useTranslation();
-  const [parseBaseUrl] = useState(localStorage.getItem("baseUrl"));
-  const [parseAppId] = useState(localStorage.getItem("parseAppId"));
+  const parseBaseUrl = localStorage.getItem("baseUrl");
+  const parseAppId = localStorage.getItem("parseAppId");
   const [apiToken, SetApiToken] = useState("");
   const [isLoader, setIsLoader] = useState(true);
   const [isModal, setIsModal] = useState({
@@ -49,11 +49,17 @@ function GenerateToken() {
         const subscribe = await checkIsSubscribed();
         setIsSubscribe(subscribe);
       }
-      const res = await Parse.Cloud.run("getapitoken");
+      const url = parseBaseUrl + "functions/getapitoken";
+      const headers = {
+        "Content-Type": "application/json",
+        "X-Parse-Application-Id": parseAppId,
+        sessiontoken: localStorage.getItem("accesstoken")
+      };
+      const res = await axios.post(url, {}, { headers: headers });
       if (res) {
         const allowedapis = await Parse.Cloud.run("allowedapis");
         setAmount((obj) => ({ ...obj, totalapis: allowedapis }));
-        SetApiToken(res?.result);
+        SetApiToken(res?.data?.result?.result);
       }
       setIsLoader(false);
     } catch (err) {
@@ -122,7 +128,7 @@ function GenerateToken() {
     const price =
       quantity > 0
         ? (Math.round(quantity * amount.priceperapi * 100) / 100).toFixed(2)
-        : 500 * amount.priceperapi;
+        : (Math.round(500 * amount.priceperapi * 100) / 100).toFixed(2);
     setAmount((prev) => ({ ...prev, quantity: quantity, price: price }));
   };
   const handleAddOnApiSubmit = async (e) => {
@@ -138,7 +144,7 @@ function GenerateToken() {
         if (_resAddon.status === "success") {
           setAmount((obj) => ({
             ...obj,
-            quantity: 1,
+            quantity: 500,
             priceperapi: 0.15,
             price: (75.0).toFixed(2),
             totalapis: _resAddon.addon
