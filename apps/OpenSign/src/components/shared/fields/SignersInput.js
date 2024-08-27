@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import Select from "react-select";
+import AsyncSelect from "react-select/async";
 import AddSigner from "../../AddSigner";
 import Parse from "parse";
 import Tooltip from "../../../primitives/Tooltip";
@@ -35,7 +35,6 @@ const AddSignerModal = ({ isOpen, children }) => {
 const SignersInput = (props) => {
   const { t } = useTranslation();
   const [state, setState] = useState(undefined);
-  // const [editFormData, setEditFormData] = useState([]);
   const [selected, setSelected] = useState([]);
   const [isModal, setIsModel] = useState(false);
   const onChange = (selectedOptions) => setSelected(selectedOptions);
@@ -46,40 +45,6 @@ const SignersInput = (props) => {
     setSelected(newValue);
   };
 
-  const GetSelectListData = async () => {
-    try {
-      const currentUser = Parse.User.current();
-      const contactbook = new Parse.Query("contracts_Contactbook");
-      contactbook.equalTo(
-        "CreatedBy",
-        Parse.User.createWithoutData(currentUser.id)
-      );
-      contactbook.notEqualTo("IsDeleted", true);
-      const contactRes = await contactbook.find();
-      if (contactRes) {
-        const res = JSON.parse(JSON.stringify(contactRes));
-        let list = [];
-
-        // let _selected = [];
-        res.forEach((x) => {
-          let obj = {
-            label: x.Name,
-            value: x.objectId,
-            isChecked: true
-          };
-
-          list.push(obj);
-        });
-        setState(list);
-      }
-    } catch (error) {
-      console.log("err", error);
-    }
-  };
-
-  useEffect(() => {
-    GetSelectListData();
-  }, []);
   useEffect(() => {
     if (props.isReset && props.isReset === true) {
       setSelected([]);
@@ -118,7 +83,46 @@ const SignersInput = (props) => {
       setSelected([data]);
     }
   };
+  const loadOptions = async (inputValue) => {
+    try {
+      const currentUser = Parse.User.current();
+      const contactbook = new Parse.Query("contracts_Contactbook");
+      contactbook.equalTo(
+        "CreatedBy",
+        Parse.User.createWithoutData(currentUser.id)
+      );
+      if (inputValue.length > 1) {
+        contactbook.matches("Name", new RegExp(inputValue, "i"));
+      }
+      contactbook.notEqualTo("IsDeleted", true);
+      const contactRes = await contactbook.find();
+      if (contactRes) {
+        const res = JSON.parse(JSON.stringify(contactRes));
+        //compareArrays is a function where compare between two array (total signersList and dcument signers list)
+        //and filter signers from total signer's list which already present in document's signers list
+        const compareArrays = (res, signerObj) => {
+          return res.filter(
+            (item1) =>
+              !signerObj.find((item2) => item2.objectId === item1.objectId)
+          );
+        };
 
+        //get update signer's List if signersdata is present
+        const updateSignersList =
+          props?.signersData && compareArrays(res, props?.signersData);
+
+        const result = updateSignersList ? updateSignersList : res;
+        setState(result);
+        return await result.map((item) => ({
+          label: item.Name,
+          value: item.objectId,
+          isChecked: true
+        }));
+      }
+    } catch (error) {
+      console.log("err", error);
+    }
+  };
   return (
     <div className="text-xs mt-2 ">
       <label className="block relative">
@@ -130,16 +134,20 @@ const SignersInput = (props) => {
       </label>
       <div className="flex gap-x-[5px]">
         <div className="w-full">
-          <Select
+          <AsyncSelect
             onSortEnd={onSortEnd}
             distance={4}
             isMulti
+            cacheOptions
+            defaultOptions
             options={state || []}
             value={selected}
             onChange={onChange}
             closeMenuOnSelect={false}
             required={props.required}
+            loadingMessage={() => t("loading")}
             noOptionsMessage={() => t("contact-not-found")}
+            loadOptions={loadOptions}
             unstyled
             classNames={{
               control: () =>
