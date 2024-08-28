@@ -1,8 +1,8 @@
 ---
 sidebar_position: 5
-title: Declined Documents report
+title: Declined 
 ---
-## Understanding the "Declined Documents" Report
+# The "Declined Documents" Report
 
 The "Declined Documents" report within OpenSign serves as a vital tool for managing and reviewing all declined documents that have been processed through the platform. This guide will walk you through the key features and functionalities of the "Declined Documents" report, enabling you to efficiently navigate and manage your signed documents.
 
