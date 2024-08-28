@@ -1,6 +1,6 @@
 ---
 sidebar_position: 5
-title: Declined
+title: Declined Documents report
 ---
 ## Understanding the "Declined Documents" Report
 
