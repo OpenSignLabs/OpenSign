@@ -20,9 +20,9 @@ The "Completed Documents" report is displayed in a tabular format, presenting ke
 
 - **Sr.No:** This column displays the serial number for each document in the list, helping you quickly identify and reference documents.
 
-- **Title:** The "Title" column displays the name of the document, which often reflects the specific type of document it represents.
+- **Title:** The "Title" column displays the name of the document.
   
-- **Note:** This section contains any notes that were added during the document's creation process. Notes can serve as reminders or provide additional context, like "Note to myself" or "Please review and sign."
+- **Note:** This section contains any notes that were added during the document's creation process.
 
 - **Folder:** The "Folder" column indicates the location where the document is stored within OpenSign Drive, ensuring you can easily locate the document later.
 
@@ -30,11 +30,11 @@ The "Completed Documents" report is displayed in a tabular format, presenting ke
 
 - **Owner:** This column shows the name of the person who created the document.
 
-- **Signers:** The "Signers" column indicates whether the document has been signed and by whom. If the document has signers, you can click **"View"** to see details of who signed it.
+- **Signers:** The "Signers" column displays the names and email addresses of the signers assigned to that document for signature. Click the "View" button to see the signers.
 
-### Interactive Features
+### Action buttons
 
-The "Completed Documents" report also includes several interactive icons for each document:
+The "Completed Documents" report also includes several actions icons for each document:
 
 - **View Document:** The eye icon allows you to preview the document directly within OpenSign without needing to download it.
 
