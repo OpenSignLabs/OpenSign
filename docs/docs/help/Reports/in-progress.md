@@ -2,7 +2,7 @@
 sidebar_position: 2
 title: In Progress
 ---
-## Understanding the "In-Progress Documents" Report
+# Understanding the "In-Progress Documents" Report
 The In-Progress Documents report in OpenSign helps you monitor and manage documents that are currently in the signing process. This report enables you to monitor the status of your documents, manually share the document URL, track document progress, resend reminders, revoke access, or delete documents that are no longer required. Here’s a detailed guide on how to use the In-Progress Documents report effectively.
 
 ### Navigating to the In-Progress Documents Report
