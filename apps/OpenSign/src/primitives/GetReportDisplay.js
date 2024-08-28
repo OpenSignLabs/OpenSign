@@ -1053,14 +1053,18 @@ const ReportTable = (props) => {
       setTimeout(() => setIsAlert(false), 1500);
     }
   };
-  const handleEmbedFunction = (item) => {
-    setIsPublicProfile({
-      [item.objectId]: props.isPublic[item.objectId]
+  const handleEmbedFunction = async (item) => {
+    await window.navigator.share({
+      text: item.objectId,
+      title: "templateId share"
     });
-    let extendUser = JSON.parse(localStorage.getItem("Extand_Class"));
-    setIsPublicUserName(extendUser[0]?.UserName || "");
+    // setIsPublicProfile({
+    //   [item.objectId]: props.isPublic[item.objectId]
+    // });
+    // let extendUser = JSON.parse(localStorage.getItem("Extand_Class"));
+    // setIsPublicUserName(extendUser[0]?.UserName || "");
   };
-  console.log("ispublic", props.isPublic);
+
   return (
     <div className="relative">
       {Object.keys(actLoader)?.length > 0 && (
@@ -1397,7 +1401,8 @@ const ReportTable = (props) => {
                                           <div className="flex items-center gap-2">
                                             <RWebShare
                                               data={{
-                                                text: item.objectId
+                                                text: item.objectId,
+                                                title: "templateId"
                                               }}
                                             >
                                               <button className="op-btn op-btn-primary op-btn-outline op-btn-xs md:op-btn-sm ">
