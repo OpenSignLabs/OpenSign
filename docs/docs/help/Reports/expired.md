@@ -1,9 +1,9 @@
 ---
-sidebar_position: 1
+sidebar_position: 6
 title: Expired
 ---
 
-# Declined Documents Report in OpenSign
+# Expired Documents Report
 
 The **Expired Documents** report in OpenSign allows you to manage and review documents that have reached their expiration date without being signed. This feature is essential for maintaining an organized record of inactive documents that may require follow-up or archival.
 
@@ -14,8 +14,8 @@ To view your expired documents:
 1. Log in to your OpenSign account.
 2. Navigate to the left sidebar.
 3. Click on the `Expired` link under the Reports section.
-
-![OpenSignExpired Document](https://github.com/OpenSignLabs/OpenSign/assets/5486116/33151953-f2a2-44a2-b930-734c5d737798)
+   
+<img width="828" alt="Expired document" src="https://github.com/user-attachments/assets/01f3626f-d694-4d3b-82da-2f2b77693b76" />
 
 ## Understanding the Report
 
