@@ -1060,12 +1060,6 @@ const ReportTable = (props) => {
     let extendUser = JSON.parse(localStorage.getItem("Extand_Class"));
     setIsPublicUserName(extendUser[0]?.UserName || "");
   };
-  const handleShareTemplateid = async (templateId) => {
-    await window.navigator.share({
-      text: templateId,
-      title: "Template-Id"
-    });
-  };
   return (
     <div className="relative">
       {Object.keys(actLoader)?.length > 0 && (
