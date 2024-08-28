@@ -1054,17 +1054,18 @@ const ReportTable = (props) => {
     }
   };
   const handleEmbedFunction = async (item) => {
-    await window.navigator.share({
-      text: item.objectId,
-      title: "templateId share"
+    setIsPublicProfile({
+      [item.objectId]: props.isPublic[item.objectId]
     });
-    // setIsPublicProfile({
-    //   [item.objectId]: props.isPublic[item.objectId]
-    // });
-    // let extendUser = JSON.parse(localStorage.getItem("Extand_Class"));
-    // setIsPublicUserName(extendUser[0]?.UserName || "");
+    let extendUser = JSON.parse(localStorage.getItem("Extand_Class"));
+    setIsPublicUserName(extendUser[0]?.UserName || "");
   };
-
+  const handleShareTemplateid = async (templateId) => {
+    await window.navigator.share({
+      text: templateId,
+      title: "Template-Id"
+    });
+  };
   return (
     <div className="relative">
       {Object.keys(actLoader)?.length > 0 && (
@@ -1399,19 +1400,20 @@ const ReportTable = (props) => {
                                             </span>
                                           </div>
                                           <div className="flex items-center gap-2">
-                                            <RWebShare
-                                              data={{
-                                                text: item.objectId,
-                                                title: "templateId"
-                                              }}
+                                            <button
+                                              onClick={() =>
+                                                handleShareTemplateid(
+                                                  item.objectId
+                                                )
+                                              }
+                                              className="op-btn op-btn-primary op-btn-outline op-btn-xs md:op-btn-sm "
                                             >
-                                              <button className="op-btn op-btn-primary op-btn-outline op-btn-xs md:op-btn-sm ">
-                                                <i className="fa-light fa-share-from-square"></i>{" "}
-                                                <span className="hidden md:inline-block">
-                                                  {t("btnLabel.Share")}
-                                                </span>
-                                              </button>
-                                            </RWebShare>
+                                              <i className="fa-light fa-share-from-square"></i>{" "}
+                                              <span className="hidden md:inline-block">
+                                                {t("btnLabel.Share")}
+                                              </span>
+                                            </button>
+
                                             <button
                                               className="op-btn op-btn-primary op-btn-outline op-btn-xs md:op-btn-sm"
                                               onClick={() =>
