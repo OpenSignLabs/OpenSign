@@ -1401,20 +1401,6 @@ const ReportTable = (props) => {
                                           </div>
                                           <div className="flex items-center gap-2">
                                             <button
-                                              onClick={() =>
-                                                handleShareTemplateid(
-                                                  item.objectId
-                                                )
-                                              }
-                                              className="op-btn op-btn-primary op-btn-outline op-btn-xs md:op-btn-sm "
-                                            >
-                                              <i className="fa-light fa-share-from-square"></i>{" "}
-                                              <span className="hidden md:inline-block">
-                                                {t("btnLabel.Share")}
-                                              </span>
-                                            </button>
-
-                                            <button
                                               className="op-btn op-btn-primary op-btn-outline op-btn-xs md:op-btn-sm"
                                               onClick={() =>
                                                 copyTemplateId(item.objectId)
