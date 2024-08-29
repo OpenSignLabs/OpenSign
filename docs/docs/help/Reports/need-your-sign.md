@@ -31,7 +31,7 @@ Upon clicking "Need Your Sign," you will be presented with a list of documents a
   
 - **Sign**: The "SIGN" button is prominently displayed next to each document. Clicking this button will open the document in the signing interface, allowing you to review and apply your signature.
 
-## Action button
+## Action buttons
 
 - **View Document**: By clicking "View" under the "Signers" column, you can get more details about the document, including the list of individuals who have already signed or are expected to sign it.
   
