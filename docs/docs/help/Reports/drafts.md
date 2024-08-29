@@ -2,7 +2,7 @@
 sidebar_position: 4
 title: Drafts
 ---
-## Understanding the "Draft Documents" Report
+# The Draft Documents Report
 
 The Draft Documents section in OpenSign helps you manage all your in-progress documents easily. This feature allows you to save, review, and edit documents before sending them for signature. Here's a detailed overview of how to navigate and use the Draft Documents report effectively.
 
