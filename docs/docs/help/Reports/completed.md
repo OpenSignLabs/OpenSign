@@ -2,7 +2,8 @@
 sidebar_position: 3
 title: Completed
 ---
-## Understanding the "Completed Documents" Report
+# Completed Documents Report
+---
 
 The "Completed Documents" report within OpenSign serves as a vital tool for managing and reviewing all finalized documents that have been processed through the platform. This guide will walk you through the key features and functionalities of the "Completed Documents" report, enabling you to efficiently navigate and manage your signed documents.
 
