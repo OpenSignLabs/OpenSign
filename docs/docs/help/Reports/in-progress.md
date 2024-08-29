@@ -2,7 +2,7 @@
 sidebar_position: 2
 title: In Progress
 ---
-## Understanding the "In-Progress Documents" Report
+# In-Progress Documents Report
 The In-Progress Documents report in OpenSign helps you monitor and manage documents that are currently in the signing process. This report enables you to monitor the status of your documents, manually share the document URL, track document progress, resend reminders, revoke access, or delete documents that are no longer required. Here’s a detailed guide on how to use the In-Progress Documents report effectively.
 
 ### Navigating to the In-Progress Documents Report
@@ -39,7 +39,10 @@ The "In progress Documents" report also includes several actions icons for each 
 
 <img width="816" alt="Inprogress documents" src="https://github.com/user-attachments/assets/51fdd74a-c621-419d-8987-26b250892a9a" />
 
-Upon clicking the Share icon, a pop-up window titled Copy link will appear. This window provides multiple options to share the document link with designated recipients. Here’s how to use the options within this pop-up:
+Upon clicking the Share icon, a pop-up window titled Copy link will appear. This window provides multiple options to share the document link with designated recipients. 
+
+**Here’s how to use the options within this pop-up:**
+
 The pop-up will display a list of email addresses of the intended recipients or signers of the document. Each email corresponds to a person who needs access to the document.
 
 - 
