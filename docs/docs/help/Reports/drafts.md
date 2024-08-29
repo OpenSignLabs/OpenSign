@@ -12,7 +12,7 @@ The Draft Documents section in OpenSign helps you manage all your in-progress do
 2. Click on **"Reports"** to expand the available options.
 3. Select **"Drafts"** under the Reports section. This will display all your saved draft documents.
 
-### Understanding the Completed Documents Report
+### Understanding the Draft Documents Report
 
 The Draft Documents section provides an organized list of all documents that are saved as drafts. Each draft entry contains key details that help you quickly identify and manage your documents. Here’s a breakdown of the information available:
 
