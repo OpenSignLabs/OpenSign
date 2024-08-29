@@ -300,58 +300,66 @@ function PdfRequestFiles(props) {
         templateDeatils.data && templateDeatils.data.result
           ? [templateDeatils.data.result]
           : [];
-
-      if (documentData && documentData.length > 0) {
-        const url =
-          documentData[0] &&
-          (documentData[0]?.SignedUrl || documentData[0]?.URL);
-        if (url) {
-          //convert document url in array buffer format to use embed widgets in pdf using pdf-lib
-          const arrayBuffer = await convertPdfArrayBuffer(url);
-          if (arrayBuffer === "Error") {
+      if (documentData && documentData[0]?.error) {
+        props?.setTemplateStatus({
+          status: "Invalid"
+        });
+      } else if (documentData && documentData.length > 0) {
+        if (documentData[0]?.IsPublic) {
+          props?.setTemplateStatus({
+            status: "Success"
+          });
+          const url =
+            documentData[0] &&
+            (documentData[0]?.SignedUrl || documentData[0]?.URL);
+          if (url) {
+            //convert document url in array buffer format to use embed widgets in pdf using pdf-lib
+            const arrayBuffer = await convertPdfArrayBuffer(url);
+            if (arrayBuffer === "Error") {
+              setHandleError(t("something-went-wrong-mssg"));
+            } else {
+              setPdfArrayBuffer(arrayBuffer);
+            }
+          } else {
             setHandleError(t("something-went-wrong-mssg"));
-          } else {
-            setPdfArrayBuffer(arrayBuffer);
           }
+          setIsPublicTemplate(true);
+          const getPublicRole = documentData[0]?.PublicRole[0];
+          const getUniqueIdDetails = documentData[0]?.Placeholders.find(
+            (x) => x.Role === getPublicRole
+          );
+          if (getUniqueIdDetails) {
+            setUniqueId(getUniqueIdDetails.Id);
+          }
+          setSignerPos(documentData[0]?.Placeholders);
+          let placeholdersOrSigners = [];
+          // const placeholder = documentData[0]?.Placeholders;
+          for (const placeholder of documentData[0].Placeholders) {
+            //`emailExist` variable to handle condition for quick send flow and show unsigned signers list
+            const signerIdExist = placeholder?.signerObjId;
+            if (signerIdExist) {
+              const getSignerData = documentData[0].Signers.find(
+                (data) => data.objectId === placeholder?.signerObjId
+              );
+              placeholdersOrSigners.push(getSignerData);
+            } else {
+              placeholdersOrSigners.push(placeholder);
+            }
+          }
+          setUnSignedSigners(placeholdersOrSigners);
+          setPdfDetails(documentData);
+          setIsLoading({
+            isLoad: false
+          });
         } else {
-          setHandleError(t("something-went-wrong-mssg"));
+          props?.setTemplateStatus({
+            status: "Private"
+          });
         }
-        setIsPublicTemplate(true);
-        const getPublicRole = documentData[0]?.PublicRole[0];
-        const getUniqueIdDetails = documentData[0]?.Placeholders.find(
-          (x) => x.Role === getPublicRole
-        );
-        if (getUniqueIdDetails) {
-          setUniqueId(getUniqueIdDetails.Id);
-        }
-        setSignerPos(documentData[0]?.Placeholders);
-        let placeholdersOrSigners = [];
-        // const placeholder = documentData[0]?.Placeholders;
-        for (const placeholder of documentData[0].Placeholders) {
-          //`emailExist` variable to handle condition for quick send flow and show unsigned signers list
-          const signerIdExist = placeholder?.signerObjId;
-          if (signerIdExist) {
-            const getSignerData = documentData[0].Signers.find(
-              (data) => data.objectId === placeholder?.signerObjId
-            );
-            placeholdersOrSigners.push(getSignerData);
-          } else {
-            placeholdersOrSigners.push(placeholder);
-          }
-        }
-        setUnSignedSigners(placeholdersOrSigners);
-        setPdfDetails(documentData);
-        setIsLoading({ isLoad: false });
-      } else if (
-        documentData === "Error: Something went wrong!" ||
-        (documentData.result && documentData.result.error)
-      ) {
-        console.log("err in get template details ");
-        setHandleError(t("something-went-wrong-mssg"));
-        setIsLoading({ isLoad: false });
       } else {
-        setHandleError(t("no-data"));
-        setIsLoading({ isLoad: false });
+        props?.setTemplateStatus({
+          status: "Invalid"
+        });
       }
     } catch (err) {
       console.log("err in get template details ", err);

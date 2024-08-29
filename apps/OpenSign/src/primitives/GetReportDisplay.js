@@ -362,6 +362,8 @@ const ReportTable = (props) => {
         setSelectedTeam(formatedList);
       }
       setIsShareWith({ [item.objectId]: true });
+    } else if (act.action === "Embed") {
+      handleEmbedFunction(item);
     }
   };
   // Get current list
@@ -834,7 +836,6 @@ const ReportTable = (props) => {
       setTimeout(() => setIsAlert(false), 1500);
     }
   };
-
   //function to make template public and set public role
   const handlePublicTemplate = async (item) => {
     if (selectedPublicRole || !props.isPublic[item.objectId]) {
@@ -994,9 +995,26 @@ const ReportTable = (props) => {
       type: "success",
       message: t("copied")
     });
-    setTimeout(() => setIsAlert(false), 1500);
+    setCopied({ ...copied, publicprofile: true });
+    setTimeout(() => {
+      setIsAlert(false);
+      setCopied(false);
+    }, 1500);
   };
 
+  const copyTemplateId = (templateid) => {
+    copytoData(templateid);
+    setIsAlert(true);
+    setAlertMsg({
+      type: "success",
+      message: t("copied")
+    });
+    setCopied({ ...copied, templateid: true });
+    setTimeout(() => {
+      setIsAlert(false);
+      setCopied(false);
+    }, 1500);
+  };
   const handleShowRole = (item) => {
     const getRole = item.Placeholders.find((data) => !data.signerObjId);
     return getRole?.Role;
@@ -1035,7 +1053,13 @@ const ReportTable = (props) => {
       setTimeout(() => setIsAlert(false), 1500);
     }
   };
-
+  const handleEmbedFunction = async (item) => {
+    setIsPublicProfile({
+      [item.objectId]: props.isPublic[item.objectId]
+    });
+    let extendUser = JSON.parse(localStorage.getItem("Extand_Class"));
+    setIsPublicUserName(extendUser[0]?.UserName || "");
+  };
   return (
     <div className="relative">
       {Object.keys(actLoader)?.length > 0 && (
@@ -1312,16 +1336,78 @@ const ReportTable = (props) => {
                                     {publicUserName ? (
                                       <div className="font-normal text-black">
                                         <p>{t("public-url-copy-mssg")}</p>
-                                        <div className=" flex items-center gap-3 mt-2  p-[2px] ">
-                                          <span className="font-bold">
-                                            {t("public-url")}:
-                                          </span>
-                                          <span
-                                            onClick={() => copytoProfileLink()}
-                                            className="underline underline-offset-2 w-[150px] md:w-[350px] whitespace-nowrap overflow-hidden text-ellipsis cursor-pointer"
-                                          >
-                                            {publicUrl()}
-                                          </span>
+                                        <div className=" flex items-center justify-between gap-3 mt-2  p-[2px] ">
+                                          <div className="w-[280px] whitespace-nowrap overflow-hidden text-ellipsis">
+                                            <span className="font-bold">
+                                              {t("public-url")} :
+                                            </span>
+                                            <span
+                                              onClick={() =>
+                                                copytoProfileLink()
+                                              }
+                                              className="ml-[2px] underline underline-offset-2 cursor-pointer"
+                                            >
+                                              {publicUrl()}
+                                            </span>
+                                          </div>
+                                          <div className="flex items-center gap-2">
+                                            <RWebShare
+                                              data={{
+                                                url: publicUrl(),
+                                                title: "Public url"
+                                              }}
+                                            >
+                                              <button className="op-btn op-btn-primary op-btn-outline op-btn-xs md:op-btn-sm ">
+                                                <i className="fa-light fa-share-from-square"></i>{" "}
+                                                <span className="hidden md:inline-block">
+                                                  {t("btnLabel.Share")}
+                                                </span>
+                                              </button>
+                                            </RWebShare>
+                                            <button
+                                              className="op-btn op-btn-primary op-btn-outline op-btn-xs md:op-btn-sm"
+                                              onClick={() =>
+                                                copytoProfileLink()
+                                              }
+                                            >
+                                              <i className="fa-light fa-link"></i>{" "}
+                                              <span className="hidden md:inline-block">
+                                                {copied["publicprofile"]
+                                                  ? t("copied")
+                                                  : t("copy")}
+                                              </span>
+                                            </button>
+                                          </div>
+                                        </div>
+                                        <div className=" flex items-center justify-between gap-3 mt-2  p-[2px] ">
+                                          <div>
+                                            <span className="font-bold">
+                                              {t("templateid")} :
+                                            </span>
+                                            <span
+                                              onClick={() =>
+                                                copyTemplateId(item.objectId)
+                                              }
+                                              className="underline ml-[2px] underline-offset-2 w-[150px] md:w-[350px] whitespace-nowrap overflow-hidden text-ellipsis cursor-pointer"
+                                            >
+                                              {item.objectId}
+                                            </span>
+                                          </div>
+                                          <div className="flex items-center gap-2">
+                                            <button
+                                              className="op-btn op-btn-primary op-btn-outline op-btn-xs md:op-btn-sm"
+                                              onClick={() =>
+                                                copyTemplateId(item.objectId)
+                                              }
+                                            >
+                                              <i className="fa-light fa-link"></i>{" "}
+                                              <span className="hidden md:inline-block">
+                                                {copied["templateid"]
+                                                  ? t("copied")
+                                                  : t("copy")}
+                                              </span>
+                                            </button>
+                                          </div>
                                         </div>
                                       </div>
                                     ) : (
@@ -1376,33 +1462,65 @@ const ReportTable = (props) => {
                                         {isOption[item.objectId] &&
                                           act.action === "option" && (
                                             <ul className="absolute -right-1 top-auto z-[70] w-max op-dropdown-content op-menu shadow bg-base-100 text-base-content rounded-box">
-                                              {act.subaction?.map((subact) => (
-                                                <li
-                                                  key={subact.btnId}
-                                                  onClick={() =>
-                                                    handleActionBtn(
-                                                      subact,
-                                                      item
-                                                    )
-                                                  }
-                                                  title={t(
-                                                    `btnLabel.${subact.btnLabel}`
-                                                  )}
-                                                >
-                                                  <span>
-                                                    <i
-                                                      className={`${subact.btnIcon} mr-1.5`}
-                                                    ></i>
-                                                    {subact.btnLabel && (
-                                                      <span className="text-[13px] capitalize font-medium">
-                                                        {t(
-                                                          `btnLabel.${subact.btnLabel}`
+                                              {act.subaction?.map((subact) =>
+                                                props.isPublic[
+                                                  item.objectId
+                                                ] ? (
+                                                  <li
+                                                    key={subact.btnId}
+                                                    onClick={() =>
+                                                      handleActionBtn(
+                                                        subact,
+                                                        item
+                                                      )
+                                                    }
+                                                    title={t(
+                                                      `btnLabel.${subact.btnLabel}`
+                                                    )}
+                                                  >
+                                                    <span>
+                                                      <i
+                                                        className={`${subact.btnIcon} mr-1.5`}
+                                                      ></i>
+                                                      {subact.btnLabel && (
+                                                        <span className="text-[13px] capitalize font-medium">
+                                                          {t(
+                                                            `btnLabel.${subact.btnLabel}`
+                                                          )}
+                                                        </span>
+                                                      )}
+                                                    </span>
+                                                  </li>
+                                                ) : (
+                                                  subact.action !== "Embed" && (
+                                                    <li
+                                                      key={subact.btnId}
+                                                      onClick={() =>
+                                                        handleActionBtn(
+                                                          subact,
+                                                          item
+                                                        )
+                                                      }
+                                                      title={t(
+                                                        `btnLabel.${subact.btnLabel}`
+                                                      )}
+                                                    >
+                                                      <span>
+                                                        <i
+                                                          className={`${subact.btnIcon} mr-1.5`}
+                                                        ></i>
+                                                        {subact.btnLabel && (
+                                                          <span className="text-[13px] capitalize font-medium">
+                                                            {t(
+                                                              `btnLabel.${subact.btnLabel}`
+                                                            )}
+                                                          </span>
                                                         )}
                                                       </span>
-                                                    )}
-                                                  </span>
-                                                </li>
-                                              ))}
+                                                    </li>
+                                                  )
+                                                )
+                                              )}
                                             </ul>
                                           )}
                                       </div>
