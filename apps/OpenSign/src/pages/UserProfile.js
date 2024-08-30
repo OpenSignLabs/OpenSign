@@ -59,7 +59,7 @@ function UserProfile() {
   const [otpLoader, setOtpLoader] = useState(false);
   const [isEmailVerified, setIsEmailVerified] = useState(false);
   const [tagLine, setTagLine] = useState(
-    extendUser && extendUser?.[0]?.Tagline
+    (extendUser && extendUser?.[0]?.Tagline) || ""
   );
   const [isPlan, setIsPlan] = useState({ plan: "", isValid: false });
   const [profileTour, setProfileTour] = useState(true);
@@ -610,11 +610,8 @@ function UserProfile() {
                         message={t("tagline-help")}
                       />
                     </span>
-                    <div
-                      data-tut="tagline"
-                      className="flex md:flex-row flex-col md:items-center"
-                    >
-                      {editmode ? (
+                    <div data-tut="tagline" className=" md:items-center">
+                      {editmode || !extendUser?.[0]?.Tagline ? (
                         <input
                           onChange={handleOnchangeTagLine}
                           value={tagLine}
