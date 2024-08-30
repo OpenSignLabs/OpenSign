@@ -62,7 +62,10 @@ function UserProfile() {
     extendUser && extendUser?.[0]?.Tagline
   );
   const [isPlan, setIsPlan] = useState({ plan: "", isValid: false });
-  const [profileTour, setProfileTour] = useState(true);
+  const [tourStatus, setTourStatus] = useState([]);
+  const [isProfileTour, setIsProfileTour] = useState(false);
+  const [isDontShow, setIsDontShow] = useState(false);
+  const [isPublicInfo, setIsPublicInfo] = useState({});
   const getPublicUrl = isStaging
     ? `https://staging.opensign.me/${extendUser?.[0]?.UserName}`
     : `https://opensign.me/${extendUser?.[0]?.UserName}`;
@@ -75,6 +78,19 @@ function UserProfile() {
     setIsLoader(true);
     const extClass = localStorage.getItem("Extand_Class");
     const jsonSender = JSON.parse(extClass);
+
+    const tourstatuss = jsonSender[0]?.TourStatus && jsonSender[0].TourStatus;
+    if (tourstatuss && tourstatuss.length > 0) {
+      setTourStatus(tourstatuss);
+      const checkTourRecipients = tourstatuss.filter(
+        (data) => data.profileTour
+      );
+      if (checkTourRecipients && checkTourRecipients.length > 0) {
+        setIsProfileTour(checkTourRecipients[0]?.profileTour);
+      }
+    } else {
+      setIsProfileTour(false);
+    }
     const HeaderDocId = jsonSender[0]?.HeaderDocId;
     if (isEnableSubscription) {
       const subscribe = await checkIsSubscribed();
@@ -339,10 +355,8 @@ function UserProfile() {
       selector: '[data-tut="username"]',
       content: () => (
         <TourContentWithBtn
-          message="Enter your username to generate your public profile. Once added, 
-          you can visit `https://opensign.me/your-username` to view your public template."
-          // {t("tour-mssg.username")}
-          isChecked={true}
+          message={t("tour-mssg.username")}
+          isChecked={handleDontShow}
           image={userName}
         />
       ),
@@ -353,10 +367,8 @@ function UserProfile() {
       selector: '[data-tut="tagline"]',
       content: () => (
         <TourContentWithBtn
-          message="Add your tagline here! You can view your tagline by 
-          visiting `https://opensign.me/your-username` replacing your-username with your actual username."
-          // {t("tour-mssg.tagline")}
-          isChecked={true}
+          message={t("tour-mssg.tagline")}
+          isChecked={handleDontShow}
           image={userName}
         />
       ),
@@ -367,10 +379,8 @@ function UserProfile() {
       selector: '[data-tut="publicTemplate"]',
       content: () => (
         <TourContentWithBtn
-          message="Here's an example of how to make any template public and accessible via a URL.
-           For instance, visiting `https://opensign.me/your-username` will allow you to view your public template and make it available for public signing."
-          // {t("tour-mssg.tagline")}
-          isChecked={true}
+          message={t("tour-mssg.public-template")}
+          isChecked={handleDontShow}
           video={publicRole}
         />
       ),
@@ -380,7 +390,64 @@ function UserProfile() {
   ];
   //function for update TourStatus
   const closeTour = async () => {
-    setProfileTour(false);
+    setIsProfileTour(true);
+    if (isDontShow) {
+      let updatedTourStatus = [];
+      if (tourStatus.length > 0) {
+        updatedTourStatus = [...tourStatus];
+        const profileIndex = tourStatus.findIndex(
+          (obj) => obj["profileTour"] === false || obj["profileTour"] === true
+        );
+        if (profileIndex !== -1) {
+          updatedTourStatus[profileIndex] = { profileTour: true };
+        } else {
+          updatedTourStatus.push({ profileTour: true });
+        }
+      } else {
+        updatedTourStatus = [{ profileTour: true }];
+      }
+      await axios
+        .put(
+          `${localStorage.getItem("baseUrl")}classes/contracts_Users/${
+            extendUser?.[0]?.objectId
+          }`,
+          {
+            TourStatus: updatedTourStatus
+          },
+          {
+            headers: {
+              "Content-Type": "application/json",
+              "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
+              sessionToken: localStorage.getItem("accesstoken")
+            }
+          }
+        )
+        .then(() => {
+          // const json = Listdata.data;
+        })
+        .catch((err) => {
+          console.log("axois err ", err);
+          alert(t("something-went-wrong-mssg"));
+        });
+    }
+  };
+  const handleDontShow = (isChecked) => {
+    setIsDontShow(isChecked);
+  };
+  const handleTooltipClick = (type) => {
+    if (type === "public") {
+      setIsPublicInfo({
+        status: true,
+        message: t("tour-mssg.username"),
+        image: userName
+      });
+    } else if (type === "tagline") {
+      setIsPublicInfo({
+        status: true,
+        message: t("tour-mssg.tagline"),
+        image: userName
+      });
+    }
   };
   return (
     <React.Fragment>
@@ -399,7 +466,7 @@ function UserProfile() {
           <Tour
             onRequestClose={closeTour}
             steps={tourConfig}
-            isOpen={profileTour}
+            isOpen={!isProfileTour}
             rounded={5}
             closeWithMask={false}
           />
@@ -460,7 +527,7 @@ function UserProfile() {
                   <input
                     type="text"
                     value={name}
-                    className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content text-sm"
+                    className="op-input op-input-bordered op-input-sm w-[180px] focus:outline-none hover:border-base-content text-sm"
                     onChange={(e) => SetName(e.target.value)}
                   />
                 ) : (
@@ -476,7 +543,7 @@ function UserProfile() {
                 {editmode ? (
                   <input
                     type="text"
-                    className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content text-sm"
+                    className="op-input op-input-bordered op-input-sm w-[180px] focus:outline-none hover:border-base-content text-sm"
                     onChange={(e) => SetPhone(e.target.value)}
                     value={Phone}
                   />
@@ -498,7 +565,7 @@ function UserProfile() {
                   <input
                     type="text"
                     value={company}
-                    className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content text-sm"
+                    className="op-input op-input-bordered op-input-sm w-[180px] focus:outline-none hover:border-base-content text-sm"
                     onChange={(e) => setCompany(e.target.value)}
                   />
                 ) : (
@@ -515,7 +582,7 @@ function UserProfile() {
                   <input
                     type="text"
                     value={jobTitle}
-                    className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content text-sm"
+                    className="op-input op-input-bordered op-input-sm w-[180px] focus:outline-none hover:border-base-content text-sm"
                     onChange={(e) => setJobTitle(e.target.value)}
                   />
                 ) : (
@@ -543,41 +610,43 @@ function UserProfile() {
               </li>
               {isEnableSubscription && (
                 <>
-                  <li className="flex md:flex-row flex-col md:justify-between md:items-center border-t-[1px] border-gray-300 py-2 break-all">
+                  <li className="flex flex-row justify-between md:items-center border-t-[1px] border-gray-300 py-2 break-all">
                     <span className="font-semibold flex gap-1">
                       {t("public-profile")} :{" "}
                       <Tooltip
-                        maxWidth="max-w-[250px]"
-                        message={t("public-profile-help")}
+                        handleTooltipClick={handleTooltipClick}
+                        type="public"
                       />
                     </span>
                     <div
                       data-tut="username"
-                      className="flex md:flex-row flex-col md:items-center"
+                      className="flex flex-row items-center gap-1"
                     >
                       {editmode || !extendUser?.[0]?.UserName ? (
-                        <input
-                          maxLength={40}
-                          style={{
-                            border:
-                              !isSubscribe &&
-                              publicUserName?.length > 0 &&
-                              publicUserName?.length < 9 &&
-                              "solid red"
-                          }}
-                          onChange={handleOnchangeUserName}
-                          value={publicUserName}
-                          disabled={!editmode}
-                          placeholder="enter user name"
-                          className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content text-sm"
-                        />
+                        <>
+                          <input
+                            maxLength={40}
+                            style={{
+                              border:
+                                !isSubscribe &&
+                                publicUserName?.length > 0 &&
+                                publicUserName?.length < 9 &&
+                                "solid red"
+                            }}
+                            onChange={handleOnchangeUserName}
+                            value={publicUserName}
+                            disabled={!editmode}
+                            placeholder="enter user name"
+                            className="op-input op-input-bordered op-input-sm w-[180px] focus:outline-none hover:border-base-content text-sm"
+                          />
+                        </>
                       ) : (
                         <div className="flex flex-row gap-1 items-center justify-between md:justify-start">
                           <span
                             rel="noreferrer"
                             target="_blank"
                             onClick={() => openInNewTab(getPublicUrl)}
-                            className="cursor-pointer underline hover:text-blue-800 w-[200px] md:w-[150px] whitespace-nowrap overflow-hidden text-ellipsis"
+                            className="cursor-pointer underline hover:text-blue-800 w-[110px] md:w-[150px] whitespace-nowrap overflow-hidden text-ellipsis"
                           >
                             {isStaging
                               ? `staging.opensign.me/${extendUser?.[0]?.UserName}`
@@ -602,22 +671,26 @@ function UserProfile() {
                       )}
                     </div>
                   </li>
-                  <li className="flex md:flex-row flex-col md:justify-between md:items-center border-t-[1px] border-gray-300 py-2 break-all">
+                  <li className="flex flex-row justify-between items-center border-t-[1px] border-gray-300 py-2 break-all">
                     <span className="font-semibold flex gap-1">
                       {t("tagline")} :{" "}
                       <Tooltip
-                        maxWidth="max-w-[250px]"
-                        message={t("tagline-help")}
+                        handleTooltipClick={handleTooltipClick}
+                        type="tagline"
                       />
                     </span>
-                    <div data-tut="tagline" className=" md:items-center">
+                    <div
+                      data-tut="tagline"
+                      className="flex flex-row md:items-center gap-1"
+                    >
                       {editmode || !extendUser?.[0]?.Tagline ? (
                         <input
+                          maxLength={40}
                           onChange={handleOnchangeTagLine}
                           value={tagLine}
                           disabled={!editmode}
                           placeholder="enter tagline"
-                          className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content text-sm"
+                          className="op-input op-input-bordered op-input-sm w-[180px] focus:outline-none hover:border-base-content text-sm"
                         />
                       ) : (
                         <span>{extendUser?.[0]?.Tagline}</span>
@@ -745,6 +818,29 @@ function UserProfile() {
               )}
             </ModalUi>
           )}
+
+          <ModalUi
+            isOpen={isPublicInfo.status}
+            title={t("validation-alert")}
+            handleClose={() => setIsPublicInfo({})}
+          >
+            <div className="p-[20px] h-full">
+              <p>{isPublicInfo.message}</p>
+              <div className="my-2">
+                <img src={isPublicInfo.image} />
+              </div>
+
+              <div className="h-[1px] w-full my-[15px] bg-[#9f9f9f]"></div>
+              <button
+                onClick={() => setIsPublicInfo({})}
+                type="button"
+                className="op-btn op-btn-ghost shadow-md"
+              >
+                {t("close")}
+              </button>
+            </div>
+          </ModalUi>
+
           {isUpgrade && (
             <div className="op-modal op-modal-open">
               <div className="max-h-90 bg-base-100 w-[95%] md:max-w-[500px] rounded-box relative">

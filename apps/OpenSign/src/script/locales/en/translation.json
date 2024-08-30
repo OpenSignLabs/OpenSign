@@ -4,6 +4,7 @@
   "language": "Language",
   "name": "Name",
   "phone": "Phone",
+  "phone-optional": "optional",
   "email": "Email",
   "company": "Company",
   "job-title": "Job title",
@@ -126,7 +127,8 @@
     "Share with team": "Share with team",
     "Share": "Share",
     "View": "View",
-    "option": "Option"
+    "option": "Option",
+    "Embed": "Embed"
   },
   "report-heading": {
     "Sr.No": "Sr.No",
@@ -309,7 +311,7 @@
   "contact-details": "Contact Details",
   "verify-email": "Please verify your email !",
   "send-otp": " Send OTP",
-  "otp-placeholder": "Enter OTP received over email",
+  "otp-placeholder": "Enter verification code received over email",
   "loading-doc": "Loading Document..",
   "widgets-name": {
     "signature": "signature",
@@ -369,7 +371,8 @@
   "copy-type": {
     "All pages": "All pages",
     "All pages but last": "All pages but last",
-    "All pages but first": "All pages but first"
+    "All pages but first": "All pages but first",
+    "Beside to widget": "Beside to widget"
   },
   "options": "Options",
   "minimun-check": "Minimun check",
@@ -446,7 +449,7 @@
   "decline-alert-3": "You can not sign this document as it has been declined/revoked.",
   "sign here": "Sign here",
   "guest-email-alert": "verification code is sent to your email",
-  "get-otp-alert": "you will get a OTP via Email",
+  "get-otp-alert": "you will get a verification code via Email",
   "user-already-exist": "User already exist.",
   "server-error": "Internal server error !",
   "fill-required-details!": "Please fill required details!",
@@ -585,7 +588,10 @@
     "Out for signatures": "Clicking on this card will take you to a list of documents awaiting signature.",
     "Recent signature requests": "This is a list of documents that are waiting for your signature.",
     "Recently sent for signatures": "This is a list of documents you've sent to other parties for signature.",
-    "Drafts": "This are documents you have started but have not finalized for sending."
+    "Drafts": "This are documents you have started but have not finalized for sending.",
+    "username": "Enter your username to generate your public profile. Once added, you can visit `https://opensign.me/your-username` to view your public template.",
+    "tagline": "Add your tagline here! You can view your tagline by visiting `https://opensign.me/your-username` replacing your-username with your actual username.",
+    "public-template": "Here's an example of how to make any template public and accessible via a URL. For instance, visiting `https://opensign.me/your-username` will allow you to view your public template and make it available for public signing."
   },
   "enter-email-plaholder": "Add an email address and hit enter",
   "success-email-alert": "Email sent successfully!",
@@ -605,7 +611,17 @@
   "user-name-exist": "user name already exist",
   "format": "format",
   "select-date-format": "Select a date format",
+  "buyapiaddon": "Buy APIs Credits",
+  "quantityofapis": "Quantity of APIs",
+  "additionalapis": "Please purchase add-on APIs",
+  "remainingapis": "Remaining APIs Credits:",
+  "additional-quicksend": "Please purchase add-on quick send",
+  "quantityofquicksend": "Quantity of Quick send",
+  "quotaerrquicksend": "Quota Reached, You don't have enough credits.",
+  "buycredits": "Buy credits",
   "rotate-right": "Rotate right",
   "rotate-left": "Rotate left",
-  "rotate-alert-mssg": "All widgets on this page will be lost. Are you sure you want to proceed?"
+  "rotate-alert-mssg": "All widgets on this page will be lost. Are you sure you want to proceed?",
+  "templateid": "Template-Id",
+  "bulksendsubcriptionalert": "Please upgrade to Professional or Team plan to use quicksend."
 }

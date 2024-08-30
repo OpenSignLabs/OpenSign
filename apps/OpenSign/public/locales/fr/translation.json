@@ -1,11 +1,10 @@
-
 {
   "create-account": "Créer un compte",
   "login": "Se Connecter",
   "language": "Langue",
   "name": "Nom et Prénom",
   "phone": "Téléphone",
-  "phone-optional":"Téléphone (facultatif)",
+  "phone-optional": "(facultatif)",
   "email": "E-mail",
   "company": "Organisation",
   "job-title": "Votre Fonction",
@@ -148,7 +147,7 @@
     "Share": "Partager",
     "View": "Voir",
     "option": "Option",
-    "Embed":"Intégrer"
+    "Embed": "Intégrer"
   },
   "report-help": {
     "Draft Documents": "Il s'agit de documents que vous avez commencés mais que vous n'avez pas finalisés pour envoi.",
@@ -311,7 +310,7 @@
   "contact-details": "Coordonnées",
   "verify-email": "Veuillez vérifier votre email!",
   "send-otp": "envoyer un code à usage unique",
-  "otp-placeholder":"Entrez le code de vérification reçu par e-mail",
+  "otp-placeholder": "Entrez le code de vérification reçu par e-mail",
   "loading-doc": "Chargement du document..",
   "widgets-name": {
     "signature": "signature",
@@ -588,7 +587,10 @@
     "Out for signatures": "En cliquant sur cette carte, vous accéderez à une liste de documents en attente de signature.",
     "Recent signature requests": "Voici une liste de documents qui attendent votre signature.",
     "Recently sent for signatures": "Il s'agit d'une liste de documents que vous avez envoyés à d'autres parties pour signature.",
-    "Drafts": "Il s'agit de documents que vous avez commencés mais que vous n'avez pas finalisés pour envoi."
+    "Drafts": "Il s'agit de documents que vous avez commencés mais que vous n'avez pas finalisés pour envoi.",
+    "username": "Entrez votre nom d'utilisateur pour générer votre profil public. Une fois créé, vous pouvez partager et copier l'URL du profil ou le visiter pour afficher votre modèle public sur `https://opensign.me/your-username` ",
+    "tagline": "Ajoutez votre slogan ici ! Pour voir votre slogan, visitez l'URL publique en remplaçant votre nom d'utilisateur par votre nom d'utilisateur réel : https://opensign.me/your-username.",
+    "public-template": "Voici un exemple de la façon de rendre n'importe quel modèle public et accessible via une URL. Par exemple, visiter `https://opensign.me/your-username` vous permettra de visualiser votre modèle public et de le rendre disponible pour la signature publique. "
   },
   "enter-email-plaholder": "Ajoutez une adresse email et appuyez sur Entrée",
   "success-email-alert": "E-mail envoyé avec succès!",
@@ -608,17 +610,17 @@
   "Add-seats": "Ajouter des sièges",
   "format": "format",
   "select-date-format": "Sélectionnez un format de date",
-  "buyapiaddon":"Acheter des API Crédits",
-  "quantityofapis":"Quantité d'API",
-  "additionalapis":"Veuillez acheter des API complémentaires",
-  "remainingapis":"API restantes Crédits:",
-  "additional-quicksend":"Veuillez acheter le module complémentaire quick send",
+  "buyapiaddon": "Acheter des API Crédits",
+  "quantityofapis": "Quantité d'API",
+  "additionalapis": "Veuillez acheter des API complémentaires",
+  "remainingapis": "API restantes Crédits:",
+  "additional-quicksend": "Veuillez acheter le module complémentaire quick send",
   "quantityofquicksend": "Quantité de Quick send",
   "quotaerrquicksend": "Quota atteint, vous n'avez pas assez de crédits.",
   "buycredits": "Acheter des crédits",
-  "rotate-right"  :"Faire pivoter à droite",
-  "rotate-left" :"Faire pivoter à gauche",
-  "rotate-alert-mssg" :"Tous les widgets de cette page seront perdus. Êtes-vous sûr de vouloir continuer ?",
-  "templateid":"ID de modèle",
-  "bulksendsubcriptionalert":"Veuillez passer au forfait Professionnel ou Équipe pour utiliser Quicksend."
+  "rotate-right": "Faire pivoter à droite",
+  "rotate-left": "Faire pivoter à gauche",
+  "rotate-alert-mssg": "Tous les widgets de cette page seront perdus. Êtes-vous sûr de vouloir continuer ?",
+  "templateid": "ID de modèle",
+  "bulksendsubcriptionalert": "Veuillez passer au forfait Professionnel ou Équipe pour utiliser Quicksend."
 }

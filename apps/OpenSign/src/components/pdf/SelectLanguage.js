@@ -28,8 +28,8 @@ function SelectLanguage(props) {
         value={lang}
         onChange={handleChangeLang}
         className={`${
-          !props.isProfile && " md:w-[15%] w-[50%]"
-        } op-select op-select-bordered  bg-white op-select-sm`}
+          !props.isProfile ? " md:w-[15%] w-[50%]" : "w-[180px]"
+        } op-select op-select-bordered  bg-white op-select-sm `}
       >
         <option disabled selected>
           select
