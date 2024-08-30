@@ -13,6 +13,7 @@ import { useTranslation } from "react-i18next";
 import Parse from "parse";
 
 function GenerateToken() {
+  const origin = window.location.origin;
   const { t } = useTranslation();
   const parseBaseUrl = localStorage.getItem("baseUrl");
   const parseAppId = localStorage.getItem("parseAppId");
@@ -221,7 +222,12 @@ function GenerateToken() {
             <ul className="w-full flex flex-col p-2 text-sm">
               <li className="flex flex-col md:flex-row justify-between items-center border-y-[1px] border-gray-300 break-all py-2">
                 <div className="w-full md:w-[70%] flex-col md:flex-row text-xs md:text-[15px] flex items-center gap-x-5">
-                  <span className="ml-1">API Test Token :</span>{" "}
+                  <span className="ml-1">
+                    <span className="font-medium">API Test Token : </span>
+                    <span className="text-xs">
+                      <Tooltip message={t("help-test-token")} />
+                    </span>
+                  </span>
                   <span id="token" className="md:text-end py-2 md:py-0">
                     <span
                       className="cursor-pointer"
@@ -239,8 +245,7 @@ function GenerateToken() {
                 </div>
                 <button
                   onClick={handleGenerateTestToken}
-                  // onClick={apitestToken ? handleModal : handleGenerateTestToken}
-                  className="op-btn op-btn-primary"
+                  className="op-btn op-btn-primary w-[180px] md:w-auto"
                 >
                   {apitestToken
                     ? t("regenerate-test-token")
@@ -249,7 +254,12 @@ function GenerateToken() {
               </li>
               <li className="flex flex-col md:flex-row justify-between items-center border-y-[1px] border-gray-300 break-all py-2">
                 <div className="w-full md:w-[70%] flex-col md:flex-row text-xs md:text-[15px] flex items-center gap-x-5">
-                  <span className="ml-1">{t("api-token")}:</span>{" "}
+                  <span className="ml-1">
+                    <span className="font-medium">{t("api-token")} : </span>
+                    <span className="text-xs">
+                      <Tooltip message={t("help-api-token", { origin })} />
+                    </span>
+                  </span>
                   <span
                     id="token"
                     className={`${
@@ -276,13 +286,14 @@ function GenerateToken() {
                 </div>
                 <button
                   onClick={apiToken ? handleModal : handleSubmit}
-                  className="op-btn op-btn-primary"
+                  className="op-btn op-btn-primary w-[180px] md:w-auto"
                 >
                   {apiToken ? t("regenerate-token") : t("generate-token")}
                 </button>
               </li>
               <div className="text-xs md:text-[15px] my-4">
-                {t("remainingapis")} {amount.totalapis}{" "}
+                <span className="font-medium">{t("remainingapis")}</span>{" "}
+                {amount.totalapis}
               </div>
               <hr />
             </ul>
@@ -294,14 +305,14 @@ function GenerateToken() {
                     "https://docs.opensignlabs.com/docs/API-docs/opensign-api-v-1"
                   )
                 }
-                className="op-btn op-btn-secondary mt-2 md:mb-3 px-8"
+                className="op-btn op-btn-secondary mt-2 md:mb-3 px-8 w-[180px] md:w-auto"
               >
                 {t("view-docs")}
               </button>
               <button
                 type="button"
                 onClick={() => handleBuyAPIsModal()}
-                className="op-btn op-btn-secondary mt-2 mb-3 px-8"
+                className="op-btn op-btn-secondary mt-2 mb-3 px-8 w-[180px] md:w-auto"
               >
                 {t("buyapiaddon")}
               </button>

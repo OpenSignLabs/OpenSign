@@ -553,7 +553,7 @@
     "home-layout-1": "You have logged in successfully! Let's take a look.",
     "home-layout-2": "To upload documents for self-signing or to request others’ signatures, simply select the respective buttons.",
     "home-layout-3": "You are ready to start using OpenSign! If you need support feel free to contact us.",
-    "generate-token": "Upgrade now to generate API token",
+    "generate-token": "Upgrade now to generate production API token.",
     "opensign-drive-1": "Click on the breadcrumb links to easily navigate through the folder hierarchy and view the documents within each folder.",
     "opensign-drive-2": "Click the add button to create a new folder or document.",
     "opensign-drive-3": "Sort your documents by Date or Name using this menu.",
@@ -621,5 +621,7 @@
   "templateid":"Template-Id",
   "bulksendsubcriptionalert":"Please upgrade to Professional or Team plan to use quicksend.",
   "generate-test-token":"Generate Test Token",
-  "regenerate-test-token":"Regenerate Test Token"
+  "regenerate-test-token":"Regenerate Test Token",
+  "help-test-token":"This token can be used to test the APIs at the https://sandbox.opensignlabs.com/api/v1 endpoint, allowing you to conduct unlimited document signatures. Please note that the sandbox API will sign your documents with self-signed certificates, which may not be recognized as valid by Adobe. Once you’ve completed your testing, you can upgrade to one of our paid plans to generate a production token.",
+  "help-api-token":"This token can be used to access the production APIs at the {{origin}}/api/v1 endpoint. It can only be generated on one of our paid plans."
 }
