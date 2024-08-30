@@ -22,6 +22,10 @@ import { useTranslation } from "react-i18next";
 import SelectLanguage from "../components/pdf/SelectLanguage";
 import { RWebShare } from "react-web-share";
 import Alert from "../primitives/Alert";
+import Tour from "reactour";
+import TourContentWithBtn from "../primitives/TourContentWithBtn";
+import userName from "../assets/images/user-name-image.png";
+import publicRole from "../assets/images/public-role.mp4";
 
 function UserProfile() {
   const navigate = useNavigate();
@@ -58,6 +62,7 @@ function UserProfile() {
     extendUser && extendUser?.[0]?.Tagline
   );
   const [isPlan, setIsPlan] = useState({ plan: "", isValid: false });
+  const [profileTour, setProfileTour] = useState(true);
   const getPublicUrl = isStaging
     ? `https://staging.opensign.me/${extendUser?.[0]?.UserName}`
     : `https://opensign.me/${extendUser?.[0]?.UserName}`;
@@ -329,6 +334,54 @@ function UserProfile() {
     setTimeout(() => setIsAlert({}), 3000);
   };
 
+  const tourConfig = [
+    {
+      selector: '[data-tut="username"]',
+      content: () => (
+        <TourContentWithBtn
+          message="Enter your username to generate your public profile. Once added, 
+          you can visit `https://opensign.me/your-username` to view your public template."
+          // {t("tour-mssg.username")}
+          isChecked={true}
+          image={userName}
+        />
+      ),
+      position: "top",
+      style: { fontSize: "13px" }
+    },
+    {
+      selector: '[data-tut="tagline"]',
+      content: () => (
+        <TourContentWithBtn
+          message="Add your tagline here! You can view your tagline by 
+          visiting `https://opensign.me/your-username` replacing your-username with your actual username."
+          // {t("tour-mssg.tagline")}
+          isChecked={true}
+          image={userName}
+        />
+      ),
+      position: "top",
+      style: { fontSize: "13px" }
+    },
+    {
+      selector: '[data-tut="publicTemplate"]',
+      content: () => (
+        <TourContentWithBtn
+          message="Here's an example of how to make any template public and accessible via a URL.
+           For instance, visiting `https://opensign.me/your-username` will allow you to view your public template and make it available for public signing."
+          // {t("tour-mssg.tagline")}
+          isChecked={true}
+          video={publicRole}
+        />
+      ),
+      position: "top",
+      style: { fontSize: "13px" }
+    }
+  ];
+  //function for update TourStatus
+  const closeTour = async () => {
+    setProfileTour(false);
+  };
   return (
     <React.Fragment>
       <Title title={"Profile"} />
@@ -343,6 +396,13 @@ function UserProfile() {
               {isAlert.message}
             </Alert>
           )}
+          <Tour
+            onRequestClose={closeTour}
+            steps={tourConfig}
+            isOpen={profileTour}
+            rounded={5}
+            closeWithMask={false}
+          />
           <div className="bg-base-100 text-base-content flex flex-col justify-center shadow-md rounded-box w-[450px]">
             <div className="flex flex-col justify-center items-center my-4">
               <div className="w-[200px] h-[200px] overflow-hidden rounded-full">
@@ -491,7 +551,10 @@ function UserProfile() {
                         message={t("public-profile-help")}
                       />
                     </span>
-                    <div className="flex md:flex-row flex-col md:items-center">
+                    <div
+                      data-tut="username"
+                      className="flex md:flex-row flex-col md:items-center"
+                    >
                       {editmode || !extendUser?.[0]?.UserName ? (
                         <input
                           maxLength={40}
@@ -506,7 +569,7 @@ function UserProfile() {
                           value={publicUserName}
                           disabled={!editmode}
                           placeholder="enter user name"
-                          className="op-input op-input-bordered focus:outline-none hover:border-base-content op-input-xs"
+                          className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content text-sm"
                         />
                       ) : (
                         <div className="flex flex-row gap-1 items-center justify-between md:justify-start">
@@ -547,22 +610,20 @@ function UserProfile() {
                         message={t("tagline-help")}
                       />
                     </span>
-                    <div className="flex md:flex-row flex-col md:items-center">
+                    <div
+                      data-tut="tagline"
+                      className="flex md:flex-row flex-col md:items-center"
+                    >
                       {editmode ? (
                         <input
                           onChange={handleOnchangeTagLine}
                           value={tagLine}
                           disabled={!editmode}
                           placeholder="enter tagline"
-                          className="op-input op-input-bordered focus:outline-none hover:border-base-content op-input-xs"
+                          className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content text-sm"
                         />
                       ) : (
-                        <input
-                          value={extendUser?.[0]?.Tagline}
-                          disabled
-                          placeholder="enter tagline"
-                          className="op-input op-input-bordered op-input-xs"
-                        />
+                        <span>{extendUser?.[0]?.Tagline}</span>
                       )}
                     </div>
                   </li>
