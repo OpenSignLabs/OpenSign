@@ -21,7 +21,6 @@ import {
   saveLanguageInLocal
 } from "../constant/Utils";
 import Loader from "../primitives/Loader";
-import { paidUrl } from "../json/plansArr";
 import { useTranslation } from "react-i18next";
 import SelectLanguage from "../components/pdf/SelectLanguage";
 
@@ -81,13 +80,8 @@ function Login() {
     }
     setState({ ...state, [name]: value });
   };
-  const handlePaidRoute = (plan) => {
-    const route = paidUrl(plan);
-    if (route === "/subscription") {
-      navigate(route);
-    } else {
-      openInNewTab(route, "_self");
-    }
+  const handlePaidRoute = () => {
+    navigate("/subscription");
   };
   const handleSubmit = async (event) => {
     localStorage.removeItem("accesstoken");
