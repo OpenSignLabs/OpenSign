@@ -59,7 +59,7 @@ function UserProfile() {
   const [otpLoader, setOtpLoader] = useState(false);
   const [isEmailVerified, setIsEmailVerified] = useState(false);
   const [tagLine, setTagLine] = useState(
-    (extendUser && extendUser?.[0]?.Tagline) || ""
+    extendUser && extendUser?.[0]?.Tagline
   );
   const [isPlan, setIsPlan] = useState({ plan: "", isValid: false });
   const [profileTour, setProfileTour] = useState(true);
