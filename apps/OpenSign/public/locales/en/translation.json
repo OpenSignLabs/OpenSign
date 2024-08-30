@@ -623,5 +623,7 @@
   "rotate-left": "Rotate left",
   "rotate-alert-mssg": "All widgets on this page will be lost. Are you sure you want to proceed?",
   "templateid": "Template-Id",
-  "bulksendsubcriptionalert": "Please upgrade to Professional or Team plan to use quicksend."
+  "bulksendsubcriptionalert": "Please upgrade to Professional or Team plan to use quicksend.",
+  "generate-test-token":"Generate Test Token",
+  "regenerate-test-token":"Regenerate Test Token"
 }
