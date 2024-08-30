@@ -32,6 +32,7 @@ function GenerateToken() {
     price: (75.0).toFixed(2)
   });
   const [isFormLoader, setIsFormLoader] = useState(false);
+  const [apitestToken, setApiTestToken] = useState("");
   const quantityList = [500, 1000, 5000, 50000];
   useEffect(() => {
     fetchToken();
@@ -61,11 +62,15 @@ function GenerateToken() {
         setAmount((obj) => ({ ...obj, totalapis: allowedapis }));
         SetApiToken(res?.data?.result?.result);
       }
-      setIsLoader(false);
+      const body = { email: Parse?.User?.current()?.getEmail() || "" };
+      const testurl = "https://sandbox.opensignlabs.com/api/gettesttoken";
+      const testRes = await axios.post(testurl, body);
+      setApiTestToken(testRes.data?.token);
     } catch (err) {
       SetApiToken();
-      setIsLoader(false);
       console.log("Err", err);
+    } finally {
+      setIsLoader(false);
     }
   };
   const handleSubmit = async (e) => {
@@ -160,6 +165,41 @@ function GenerateToken() {
       setIsFormLoader(false);
     }
   };
+
+  const handleGenerateTestToken = async (e) => {
+    e.preventDefault();
+    setIsLoader(true);
+    // setIsModal((obj) => ({ ...obj, generateapi: false }));
+    try {
+      const url = "https://sandbox.opensignlabs.com/api/generatetesttoken";
+      const headers = {
+        "Content-Type": "application/json",
+        token: apitestToken || "1"
+      };
+      const extUser = JSON.parse(localStorage.getItem("Extand_Class"))?.[0];
+      const body = {
+        name: extUser?.Name,
+        email: extUser?.Email,
+        phone: extUser?.Phone,
+        company: extUser?.Company,
+        jobTitle: extUser?.JobTitle
+      };
+      const res = await axios.post(url, body, { headers: headers });
+      if (res) {
+        setApiTestToken(res.data?.token);
+        setIsAlert({ type: "success", msg: t("token-generated") });
+      } else {
+        console.error("Error while generating Token");
+        setIsAlert({ type: "danger", msg: t("something-went-wrong-mssg") });
+      }
+    } catch (error) {
+      setIsAlert({ type: "danger", msg: t("something-went-wrong-mssg") });
+      console.log("while generating Token", error);
+    } finally {
+      setIsLoader(false);
+      setTimeout(() => setIsAlert({ type: "success", msg: "" }), 1500);
+    }
+  };
   return (
     <React.Fragment>
       <Title title={"API Token"} />
@@ -179,6 +219,34 @@ function GenerateToken() {
               />
             </h1>
             <ul className="w-full flex flex-col p-2 text-sm">
+              <li className="flex flex-col md:flex-row justify-between items-center border-y-[1px] border-gray-300 break-all py-2">
+                <div className="w-full md:w-[70%] flex-col md:flex-row text-xs md:text-[15px] flex items-center gap-x-5">
+                  <span className="ml-1">API Test Token :</span>{" "}
+                  <span id="token" className="md:text-end py-2 md:py-0">
+                    <span
+                      className="cursor-pointer"
+                      onClick={() => copytoclipboard(apitestToken)}
+                    >
+                      {apitestToken ? apitestToken : "_____"}
+                    </span>
+                    <button
+                      className="op-btn op-btn-accent op-btn-outline op-btn-sm ml-2 cursor-pointer"
+                      onClick={() => copytoclipboard(apitestToken)}
+                    >
+                      <i className="fa-light fa-copy"></i>
+                    </button>
+                  </span>
+                </div>
+                <button
+                  onClick={handleGenerateTestToken}
+                  // onClick={apitestToken ? handleModal : handleGenerateTestToken}
+                  className="op-btn op-btn-primary"
+                >
+                  {apitestToken
+                    ? t("regenerate-test-token")
+                    : t("generate-test-token")}
+                </button>
+              </li>
               <li className="flex flex-col md:flex-row justify-between items-center border-y-[1px] border-gray-300 break-all py-2">
                 <div className="w-full md:w-[70%] flex-col md:flex-row text-xs md:text-[15px] flex items-center gap-x-5">
                   <span className="ml-1">{t("api-token")}:</span>{" "}

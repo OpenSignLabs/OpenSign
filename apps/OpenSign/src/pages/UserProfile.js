@@ -390,24 +390,25 @@ function UserProfile() {
   ];
   //function for update TourStatus
   const closeTour = async () => {
-    setIsProfileTour(true);
-    if (isDontShow) {
-      let updatedTourStatus = [];
-      if (tourStatus.length > 0) {
-        updatedTourStatus = [...tourStatus];
-        const profileIndex = tourStatus.findIndex(
-          (obj) => obj["profileTour"] === false || obj["profileTour"] === true
-        );
-        if (profileIndex !== -1) {
-          updatedTourStatus[profileIndex] = { profileTour: true };
+    try {
+      setIsProfileTour(true);
+      if (isDontShow) {
+        let updatedTourStatus = [];
+        if (tourStatus.length > 0) {
+          updatedTourStatus = [...tourStatus];
+          const profileIndex = tourStatus.findIndex(
+            (obj) => obj["profileTour"] === false || obj["profileTour"] === true
+          );
+          if (profileIndex !== -1) {
+            updatedTourStatus[profileIndex] = { profileTour: true };
+          } else {
+            updatedTourStatus.push({ profileTour: true });
+          }
         } else {
-          updatedTourStatus.push({ profileTour: true });
+          updatedTourStatus = [{ profileTour: true }];
         }
-      } else {
-        updatedTourStatus = [{ profileTour: true }];
-      }
-      await axios
-        .put(
+
+        await axios.put(
           `${localStorage.getItem("baseUrl")}classes/contracts_Users/${
             extendUser?.[0]?.objectId
           }`,
@@ -421,14 +422,15 @@ function UserProfile() {
               sessionToken: localStorage.getItem("accesstoken")
             }
           }
-        )
-        .then(() => {
-          // const json = Listdata.data;
-        })
-        .catch((err) => {
-          console.log("axois err ", err);
-          alert(t("something-went-wrong-mssg"));
-        });
+        );
+        const res = await Parse.Cloud.run("getUserDetails");
+        const json = JSON.parse(JSON.stringify([res]));
+        const extRes = JSON.stringify(json);
+        localStorage.setItem("Extand_Class", extRes);
+      }
+    } catch (err) {
+      console.log("axois err ", err);
+      alert(t("something-went-wrong-mssg"));
     }
   };
   const handleDontShow = (isChecked) => {
