@@ -14,7 +14,7 @@ async function ExtUserAftersave(request) {
         const updateSub = new Parse.Object('contracts_Subscriptions');
         updateSub.id = resSub.id;
         updateSub.increment('UsersCount', 1);
-        updateSub.save(null, { useMasterKey: true });
+        await updateSub.save(null, { useMasterKey: true });
       } else {
         const addSub = new Parse.Object('contracts_Subscriptions');
         addSub.set('UsersCount', 1);
@@ -33,7 +33,7 @@ async function ExtUserAftersave(request) {
           className: 'partners_Tenant',
           objectId: extUser.get('TenantId').id,
         });
-        addSub.save(null, { useMasterKey: true });
+        await addSub.save(null, { useMasterKey: true });
       }
     }
   } catch (err) {
