@@ -553,7 +553,7 @@
     "home-layout-1": "Vous vous êtes connecté avec succès ! Jetons un coup d'oeil.",
     "home-layout-2": "Pour télécharger des documents à auto-signature ou pour demander la signature d'autres personnes, sélectionnez simplement les boutons correspondants.",
     "home-layout-3": "Vous êtes prêt à commencer à utiliser OpenSign ! Si vous avez besoin d'aide, n'hésitez pas à nous contacter.",
-    "generate-token": "Mettez à niveau maintenant pour générer un jeton API",
+    "generate-token": "Effectuez la mise à niveau maintenant pour générer un jeton API de production.",
     "opensign-drive-1": "Cliquez sur les liens du fil d'Ariane pour naviguer facilement dans la hiérarchie des dossiers et afficher les documents dans chaque dossier.",
     "opensign-drive-2": "Cliquez sur le bouton Ajouter pour créer un nouveau dossier ou document.",
     "opensign-drive-3": "Triez vos documents par date ou par nom à l'aide de ce menu.",
@@ -621,5 +621,8 @@
   "templateid":"ID de modèle",
   "bulksendsubcriptionalert":"Veuillez passer au forfait Professionnel ou Équipe pour utiliser Quicksend.",
   "generate-test-token": "Générer jeton de test",
-  "regenerate-test-token":"Régénérer le jeton de test"
+  "regenerate-test-token":"Régénérer le jeton de test",
+  "help-test-token":"Ce jeton peut être utilisé pour tester les API au niveau du point de terminaison https://sandbox.opensignlabs.com/api/v1, vous permettant ainsi d'effectuer un nombre illimité de signatures de documents. Veuillez noter que l'API sandbox signera vos documents avec des certificats auto-signés, qui peuvent ne pas être reconnus comme valides par Adobe. Une fois vos tests terminés, vous pouvez passer à l’un de nos forfaits payants pour générer un jeton de production.",
+  "help-api-token":"Ce jeton peut être utilisé pour accéder aux API de production au point de terminaison {{origin}}/api/v1. Il ne peut être généré que sur l'un de nos forfaits payants."
+
 }
