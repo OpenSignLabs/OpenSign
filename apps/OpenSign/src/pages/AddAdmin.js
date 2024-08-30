@@ -459,13 +459,13 @@ const AddAdmin = () => {
                       <input
                         type="checkbox"
                         className="op-checkbox op-checkbox-sm"
-                        id="termsandcondition"
+                        id="subscribetoopensign"
                         checked={isSubscribeNews}
                         onChange={(e) => setIsSubscribeNews(e.target.checked)}
                       />
                       <label
                         className="text-xs cursor-pointer ml-1 mb-0"
-                        htmlFor="termsandcondition"
+                        htmlFor="subscribetoopensign"
                       >
                         {t("subscribe-to-opensign")}
                       </label>
