@@ -19,14 +19,14 @@ export default function TourContentWithBtn({
     <div>
       <p>{message}</p>
       {image && (
-        <div className="flex items-center justify-center my-[10px]">
-          <img width={800} height={100} src={image} />
+        <div className="flex items-center justify-center my-[10px] border-[1px] border-gray-400 rounded-sm">
+          <img src={image} />
         </div>
       )}
       {video && (
-        <div className="flex items-center justify-center">
-          <video width="320" height="240" autoPlay loop muted playsInline>
-            <source src={video} type="video/mp4" />
+        <div className="flex items-center justify-center my-[10px] border-[1px] border-gray-400 rounded-sm">
+          <video autoPlay loop muted playsInline>
+            <source className="w-[100%]" src={video} type="video/mp4" />
           </video>
         </div>
       )}

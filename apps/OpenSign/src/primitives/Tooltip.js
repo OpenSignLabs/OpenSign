@@ -1,9 +1,20 @@
 import React from "react";
 import { Tooltip as ReactTooltip } from "react-tooltip";
 import { openInNewTab } from "../constant/Utils";
-const Tooltip = ({ id, message, url, iconColor, maxWidth }) =>
-  url ? (
-    <button onClick={() => openInNewTab(url)} className={"text-center"}>
+const Tooltip = ({
+  id,
+  message,
+  url,
+  iconColor,
+  maxWidth,
+  handleTooltipClick,
+  type
+}) =>
+  url || type ? (
+    <button
+      onClick={() => (type ? handleTooltipClick(type) : openInNewTab(url))}
+      className={"text-center cursor-pointer"}
+    >
       <sup>
         <i
           className="fa-light fa-question rounded-full border-[1px] py-[1.5px] px-[4px] text-[13px]"
