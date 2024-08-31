@@ -24,7 +24,7 @@ const BulkSendUi = (props) => {
     price: (75.0).toFixed(2),
     quantity: 500,
     priceperbulksend: 0.15,
-    totalQuickSend: 0
+    totalcredits: 0
   });
   const [isQuotaReached, setIsQuotaReached] = useState(false);
   const [isLoader, setIsLoader] = useState(false);
@@ -44,11 +44,16 @@ const BulkSendUi = (props) => {
         if (subscription?.plan === "freeplan") {
           setIsFreePlan(true);
         }
-        const allowedquicksend = await Parse.Cloud.run("allowedquicksend");
-        if (allowedquicksend > 0) {
-          setIsBulkAvailable(true);
+        const resCredits = await Parse.Cloud.run("allowedcredits");
+        if (resCredits) {
+          const allowedcredits = resCredits?.allowedcredits || 0;
+          const addoncredits = resCredits?.addoncredits || 0;
+          const totalcredits = allowedcredits + addoncredits;
+          if (totalcredits > 0) {
+            setIsBulkAvailable(true);
+          }
+          setAmount((obj) => ({ ...obj, totalcredits: totalcredits }));
         }
-        setAmount((obj) => ({ ...obj, totalQuickSend: allowedquicksend }));
         const getPlaceholder = props.item?.Placeholders;
         const checkIsSignatureExistt = getPlaceholder?.every((placeholderObj) =>
           placeholderObj?.placeHolder?.some((holder) =>
@@ -121,7 +126,7 @@ const BulkSendUi = (props) => {
   const handleAddForm = (e) => {
     e.preventDefault();
     // Check if the quick send limit has been reached
-    if (isEnableSubscription && forms.length >= amount.totalQuickSend) {
+    if (isEnableSubscription && forms.length >= amount.totalcredits) {
       setIsQuotaReached(true);
     } else {
       if (forms?.length < allowedForm) {
@@ -244,8 +249,8 @@ const BulkSendUi = (props) => {
     e.stopPropagation();
     setIsSubmit(true);
     try {
-      const resAddon = await Parse.Cloud.run("buyquicksend", {
-        quicksend: amount.quantity
+      const resAddon = await Parse.Cloud.run("buycredits", {
+        credits: amount.quantity
       });
       if (resAddon) {
         const _resAddon = JSON.parse(JSON.stringify(resAddon));
@@ -257,7 +262,7 @@ const BulkSendUi = (props) => {
             quantity: 500,
             priceperbulksend: 0.15,
             price: (75.0).toFixed(2),
-            totalQuickSend: _resAddon.addon
+            totalcredits: _resAddon.addon
           }));
         }
       }
@@ -345,13 +350,15 @@ const BulkSendUi = (props) => {
                             ))}
                           </div>
                           <div className="flex flex-col mx-4 mb-4 gap-3">
-                            <button
-                              onClick={handleAddForm}
-                              className="op-btn op-btn-primary focus:outline-none"
-                            >
-                              <i className="fa-light fa-plus"></i>{" "}
-                              <span>{t("add-new")}</span>
-                            </button>
+                            {isEnableSubscription && (
+                              <button
+                                onClick={handleAddForm}
+                                className="op-btn op-btn-primary focus:outline-none"
+                              >
+                                <i className="fa-light fa-plus"></i>{" "}
+                                <span>{t("add-new")}</span>
+                              </button>
+                            )}
                             <button
                               type="submit"
                               className="op-btn op-btn-accent focus:outline-none"

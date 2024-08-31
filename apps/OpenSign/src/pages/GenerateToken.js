@@ -29,7 +29,8 @@ function GenerateToken() {
   const [amount, setAmount] = useState({
     quantity: 500,
     priceperapi: 0.15,
-    totalapis: 0,
+    allowedcredits: 0,
+    addoncredits: 0,
     price: (75.0).toFixed(2)
   });
   const [isFormLoader, setIsFormLoader] = useState(false);
@@ -59,8 +60,12 @@ function GenerateToken() {
       };
       const res = await axios.post(url, {}, { headers: headers });
       if (res) {
-        const allowedapis = await Parse.Cloud.run("allowedapis");
-        setAmount((obj) => ({ ...obj, totalapis: allowedapis }));
+        const resCredits = await Parse.Cloud.run("allowedcredits");
+        setAmount((obj) => ({
+          ...obj,
+          allowedcredits: resCredits.allowedcredits,
+          addoncredits: resCredits.addoncredits
+        }));
         SetApiToken(res?.data?.result?.result);
       }
       const body = { email: Parse?.User?.current()?.getEmail() || "" };
@@ -142,8 +147,8 @@ function GenerateToken() {
     e.stopPropagation();
     setIsFormLoader(true);
     try {
-      const resAddon = await Parse.Cloud.run("buyapis", {
-        apis: amount.quantity
+      const resAddon = await Parse.Cloud.run("buycredits", {
+        credits: amount.quantity
       });
       if (resAddon) {
         const _resAddon = JSON.parse(JSON.stringify(resAddon));
@@ -153,7 +158,7 @@ function GenerateToken() {
             quantity: 500,
             priceperapi: 0.15,
             price: (75.0).toFixed(2),
-            totalapis: _resAddon.addon
+            addoncredits: _resAddon.addon
           }));
         }
       }
@@ -293,7 +298,11 @@ function GenerateToken() {
               </li>
               <div className="text-xs md:text-[15px] my-4">
                 <span className="font-medium">{t("remainingapis")}</span>{" "}
-                {amount.totalapis}
+                {amount.allowedcredits}
+              </div>
+              <div className="text-xs md:text-[15px] my-4">
+                <span className="font-medium">Addon credits: </span>{" "}
+                {amount.addoncredits}
               </div>
               <hr />
             </ul>
