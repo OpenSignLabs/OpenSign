@@ -1456,7 +1456,13 @@ const ReportTable = (props) => {
                                         <i className={act.btnIcon}></i>
                                         {act.btnLabel && (
                                           <span className="uppercase font-medium">
-                                            {t(`btnLabel.${act.btnLabel}`)}
+                                            {act.btnLabel.includes(
+                                              "Quick send"
+                                            ) && isEnableSubscription
+                                              ? "Bulk Send"
+                                              : `${t(
+                                                  `btnLabel.${act.btnLabel}`
+                                                )}`}
                                           </span>
                                         )}
                                         {isOption[item.objectId] &&
@@ -1783,7 +1789,11 @@ const ReportTable = (props) => {
                           {isBulkSend[item.objectId] && (
                             <ModalUi
                               isOpen
-                              title={t("quick-send")}
+                              title={
+                                isEnableSubscription
+                                  ? "Bulk send"
+                                  : t("quick-send")
+                              }
                               handleClose={() => setIsBulkSend({})}
                             >
                               {isLoader[item.objectId] ? (

@@ -68,6 +68,8 @@ import AllowedQuicksend from './parsefunction/AllowedQuicksend.js';
 import BuyQuickSend from './parsefunction/BuyQuicksend.js';
 import ExtUserAftersave from './parsefunction/ExtUserAftersave.js';
 import ExtUserAfterdelete from './parsefunction/ExtUserAfterdelete.js';
+import AllowedCredits from './parsefunction/AllowedCredits.js';
+import BuyCredits from './parsefunction/BuyCredits.js';
 
 // This afterSave function triggers after an object is added or updated in the specified class, allowing for post-processing logic.
 Parse.Cloud.afterSave('contracts_Document', DocumentAftersave);
@@ -147,3 +149,5 @@ Parse.Cloud.define('allowedapis', AllowedApis);
 Parse.Cloud.define('allowedquicksend', AllowedQuicksend);
 Parse.Cloud.define('buyapis', BuyApis);
 Parse.Cloud.define('buyquicksend', BuyQuickSend);
+Parse.Cloud.define('allowedcredits', AllowedCredits);
+Parse.Cloud.define('buycredits', BuyCredits);
