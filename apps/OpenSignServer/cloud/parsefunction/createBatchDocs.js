@@ -217,7 +217,7 @@ export default async function createBatchDocs(request) {
               const allowedCredits = _resSub?.AllowedCredits || 0;
               const addonCredits = _resSub?.AddonCredits || 0;
               const totalcredits = allowedCredits + addonCredits;
-              if (docsCount <= totalcredits) {
+              if (requests?.length <= totalcredits) {
                 const response = await axios.post('batch', { requests: requests }, parseConfig);
                 // // Handle the batch query response
                 // console.log('Batch query response:', response.data);
@@ -257,11 +257,11 @@ export default async function createBatchDocs(request) {
             }
           }
         } catch (error) {
-          const code = err?.response?.data?.code || err?.response?.status || err?.code || 400;
+          const code = error?.response?.data?.code || error?.response?.status || error?.code || 400;
           const msg =
-            err?.response?.data?.error ||
-            err?.response?.data ||
-            err?.message ||
+            error?.response?.data?.error ||
+            error?.response?.data ||
+            error?.message ||
             'Something went wrong.';
           console.log('Error performing batch query:', code, msg);
           throw new Parse.Error(code, msg);

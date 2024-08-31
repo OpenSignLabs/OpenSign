@@ -68,10 +68,14 @@ function GenerateToken() {
         }));
         SetApiToken(res?.data?.result?.result);
       }
-      const body = { email: Parse?.User?.current()?.getEmail() || "" };
-      const testurl = "https://sandbox.opensignlabs.com/api/gettesttoken";
-      const testRes = await axios.post(testurl, body);
-      setApiTestToken(testRes.data?.token);
+      try {
+        const body = { email: Parse?.User?.current()?.getEmail() || "" };
+        const testurl = "https://sandbox.opensignlabs.com/api/gettesttoken";
+        const testRes = await axios.post(testurl, body);
+        setApiTestToken(testRes.data?.token);
+      } catch (err) {
+        console.log("err in fetch test token", err);
+      }
     } catch (err) {
       SetApiToken();
       console.log("Err", err);
