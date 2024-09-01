@@ -31,6 +31,7 @@ function GenerateToken() {
     priceperapi: 0.15,
     allowedcredits: 0,
     addoncredits: 0,
+    totalcredits: 0,
     price: (75.0).toFixed(2)
   });
   const [isFormLoader, setIsFormLoader] = useState(false);
@@ -61,10 +62,14 @@ function GenerateToken() {
       const res = await axios.post(url, {}, { headers: headers });
       if (res) {
         const resCredits = await Parse.Cloud.run("allowedcredits");
+        const allowedcredits = resCredits?.allowedcredits || 0;
+        const addoncredits = resCredits?.addoncredits || 0;
+        const totalcredits = allowedcredits + addoncredits;
         setAmount((obj) => ({
           ...obj,
-          allowedcredits: resCredits.allowedcredits,
-          addoncredits: resCredits.addoncredits
+          allowedcredits: allowedcredits,
+          addoncredits: addoncredits,
+          totalcredits: totalcredits
         }));
         SetApiToken(res?.data?.result?.result);
       }
@@ -162,7 +167,8 @@ function GenerateToken() {
             quantity: 500,
             priceperapi: 0.15,
             price: (75.0).toFixed(2),
-            addoncredits: _resAddon.addon
+            totalcredits: obj?.totalcredits + _resAddon.addon,
+            addoncredits: obj?.addoncredits + _resAddon.addon
           }));
         }
       }
@@ -229,7 +235,7 @@ function GenerateToken() {
               />
             </h1>
             <ul className="w-full flex flex-col p-2 text-sm">
-              <li className="flex flex-col md:flex-row justify-between items-center border-y-[1px] border-gray-300 break-all py-2">
+              <li className="flex flex-col md:flex-row justify-between items-center border-t-[1px] border-gray-300 break-all py-2">
                 <div className="w-full md:w-[70%] flex-col md:flex-row text-xs md:text-[15px] flex items-center gap-x-5">
                   <span className="ml-1">
                     <span className="font-medium">API Test Token : </span>
@@ -254,7 +260,7 @@ function GenerateToken() {
                 </div>
                 <button
                   onClick={handleGenerateTestToken}
-                  className="op-btn op-btn-primary w-[180px] md:w-auto"
+                  className="op-btn op-btn-primary w-[200px] md:w-auto"
                 >
                   {apitestToken
                     ? t("regenerate-test-token")
@@ -295,18 +301,26 @@ function GenerateToken() {
                 </div>
                 <button
                   onClick={apiToken ? handleModal : handleSubmit}
-                  className="op-btn op-btn-primary w-[180px] md:w-auto"
+                  className="op-btn op-btn-primary w-[200px] md:w-auto"
                 >
                   {apiToken ? t("regenerate-token") : t("generate-token")}
                 </button>
               </li>
-              <div className="text-xs md:text-[15px] my-4">
-                <span className="font-medium">{t("remainingapis")}</span>{" "}
-                {amount.allowedcredits}
-              </div>
-              <div className="text-xs md:text-[15px] my-4">
-                <span className="font-medium">Addon credits: </span>{" "}
-                {amount.addoncredits}
+              <div className="text-xs md:text-[15px] my-3 w-full md:w-[70%] flex-col md:flex-row flex items-center gap-x-5">
+                <span className="font-medium">
+                  {t("remainingcredits")}{" "}
+                  <span className="text-xs">
+                    <Tooltip
+                      message={t("remainingcreditshelp", {
+                        allowedcredits: amount?.allowedcredits || 0,
+                        addoncredits: amount?.addoncredits || 0
+                      })}
+                    />
+                  </span>
+                </span>
+                <span className="md:text-end py-2 md:py-0">
+                  {amount.totalcredits}
+                </span>
               </div>
               <hr />
             </ul>
@@ -318,16 +332,16 @@ function GenerateToken() {
                     "https://docs.opensignlabs.com/docs/API-docs/opensign-api-v-1"
                   )
                 }
-                className="op-btn op-btn-secondary mt-2 md:mb-3 px-8 w-[180px] md:w-auto"
+                className="op-btn op-btn-secondary mt-2 md:mb-3 px-8 w-[200px] md:w-auto"
               >
                 {t("view-docs")}
               </button>
               <button
                 type="button"
                 onClick={() => handleBuyAPIsModal()}
-                className="op-btn op-btn-secondary mt-2 mb-3 px-8 w-[180px] md:w-auto"
+                className="op-btn op-btn-secondary mt-2 mb-3 px-8 w-[200px] md:w-auto"
               >
-                {t("buyapiaddon")}
+                {t("buycredits")}
               </button>
             </div>
             <ModalUi
@@ -359,7 +373,7 @@ function GenerateToken() {
             {/* buy APIs */}
             <ModalUi
               isOpen={isModal.buyapis}
-              title={"Buy Addon APIs"}
+              title={"Buy Credits"}
               handleClose={handleBuyAPIsModal}
             >
               {isFormLoader && (
@@ -373,7 +387,7 @@ function GenerateToken() {
                     htmlFor="quantity"
                     className="block text-xs text-gray-700 font-semibold"
                   >
-                    {t("quantityofapis")}
+                    {t("quantityofcredits")}
                     <span className="text-[red] text-[13px]"> *</span>
                   </label>
                   <select

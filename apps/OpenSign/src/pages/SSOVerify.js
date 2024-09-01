@@ -3,12 +3,11 @@ import { useLocation, useNavigate } from "react-router-dom";
 import Parse from "parse";
 import { appInfo } from "../constant/appinfo";
 import { isEnableSubscription } from "../constant/const";
-import { fetchSubscription, openInNewTab } from "../constant/Utils";
+import { fetchSubscription } from "../constant/Utils";
 import { useDispatch } from "react-redux";
 import { showTenant } from "../redux/reducers/ShowTenant";
 import ModalUi from "../primitives/ModalUi";
 import Loader from "../primitives/Loader";
-import { paidUrl } from "../json/plansArr";
 import { useTranslation } from "react-i18next";
 
 const SSOVerify = () => {
@@ -51,13 +50,8 @@ const SSOVerify = () => {
       console.log("err", err.message);
     }
   };
-  const handlePaidRoute = (plan) => {
-    const route = paidUrl(plan);
-    if (route === "/subscription") {
-      navigate(route);
-    } else {
-      openInNewTab(route, "_self");
-    }
+  const handlePaidRoute = () => {
+    navigate("/subscription");
   };
   const checkExtUser = async (ssosign) => {
     const params = { email: ssosign?.email };

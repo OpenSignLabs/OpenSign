@@ -189,34 +189,3 @@ export default async function AddAdmin(request) {
     console.log('Err ', err);
   }
 }
-
-// async function saveSubscription(extUserId, UserId, tenantId, subscription) {
-//   const SubscriptionId = subscription?.data?.subscription?.subscription_id || '';
-//   const Next_billing_date = subscription?.data?.subscription?.next_billing_at || '';
-//   const planCode = subscription?.data?.subscription?.plan?.plan_code || '';
-//   try {
-//     const createSubscription = new Parse.Object('contracts_Subscriptions');
-//     createSubscription.set('SubscriptionId', SubscriptionId);
-//     createSubscription.set('SubscriptionDetails', subscription);
-//     createSubscription.set('ExtUserPtr', {
-//       __type: 'Pointer',
-//       className: 'contracts_Users',
-//       objectId: extUserId,
-//     });
-//     createSubscription.set('CreatedBy', {
-//       __type: 'Pointer',
-//       className: '_User',
-//       objectId: UserId,
-//     });
-//     createSubscription.set('TenantId', {
-//       __type: 'Pointer',
-//       className: 'partners_Tenant',
-//       objectId: tenantId,
-//     });
-//     createSubscription.set('Next_billing_date', new Date(Next_billing_date));
-//     createSubscription.set('PlanCode', planCode);
-//     await createSubscription.save(null, { useMasterKey: true });
-//   } catch (err) {
-//     console.log('err in save subscription pgsignup', err);
-//   }
-// }

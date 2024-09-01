@@ -27,7 +27,6 @@ const plans = [
       "Decline document support",
       "Email notifications",
       "Recipient authentication using OTP",
-      "Bulk send (upto 5 docs)",
       "Public profiles",
       "And much more"
     ],
@@ -46,7 +45,6 @@ const plans = [
       "Decline document support",
       "Email notifications",
       "Recipient authentication using OTP",
-      "Bulk send (upto 5 docs)",
       "Public profiles",
       "And much more"
     ]
@@ -77,10 +75,10 @@ const plans = [
       "Webhooks",
       "Zapier integration",
       "API Access",
-      "100 API signatures included",
+      "upto 100 API signatures",
       "Custom email templates",
       "Auto reminders",
-      "Bulk send (upto 20 docs)",
+      "Bulk send (upto 100 docs)",
       "Premium Public profile usernames",
       "Embedding (coming soon)"
     ],
@@ -92,10 +90,10 @@ const plans = [
       "Webhooks",
       "Zapier integration",
       "API Access",
-      "240 API signatures included",
+      "upto 240 API signatures",
       "Custom email templates",
       "Auto reminders",
-      "Bulk send (upto 20 docs)",
+      "Bulk send (upto 240 docs)",
       "Premium Public profile usernames",
       "Embedding (coming soon)"
     ]
@@ -118,23 +116,23 @@ const plans = [
     target: "_self",
     benefits: [
       "Everything in OpenSign™ professional",
-      "100 API signatures included",
+      "upto 100 API signatures",
       "Teams and Organizations",
       "Share Templates with teams",
       "Share Templates with individuals",
       "DocumentId removal from signed docs",
-      "Bulk send (upto 50 docs)",
+      "Bulk send (upto 100 docs)",
       "Request Payments (coming soon)",
       "Mobile app (coming soon)"
     ],
     yearlyBenefits: [
       "Everything in OpenSign™ professional",
-      "500 API signatures included",
+      "upto 500 API signatures",
       "Teams and Organizations",
       "Share Templates with teams",
       "Share Templates with individuals",
       "DocumentId removal from signed docs",
-      "Bulk send (upto 50 docs)",
+      "Bulk send (upto 500 docs)",
       "Request Payments (coming soon)",
       "Mobile app (coming soon)"
     ]
