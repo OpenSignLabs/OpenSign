@@ -55,9 +55,24 @@ export default async function saveSubscription(request, response) {
         if (existAddon > 0) {
           updateSubscription.set('AllowedUsers', parseInt(existAddon));
         }
-        if (credits > 0) {
-          updateSubscription.set('AllowedCredits', credits);
+        const isSameAsPrevPlan = subscription?.get('PlanCode') === planCode;
+        if (isSameAsPrevPlan) {
+          const planCredits = subscription?.get('PlanCredits');
+          if (planCredits) {
+            updateSubscription.set('AllowedCredits', planCredits);
+          } else {
+            if (credits > 0) {
+              updateSubscription.set('AllowedCredits', credits);
+              updateSubscription.set('PlanCredits', credits);
+            }
+          }
+        } else {
+          if (credits > 0) {
+            updateSubscription.set('AllowedCredits', credits);
+            updateSubscription.set('PlanCredits', credits);
+          }
         }
+
         await updateSubscription.save(null, { useMasterKey: true });
         return response.status(200).json({ status: 'update subscription!' });
       } else {
