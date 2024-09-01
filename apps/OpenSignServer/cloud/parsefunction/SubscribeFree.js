@@ -21,6 +21,7 @@ export default async function SubscribeFree(request) {
           const updateSubscription = new Parse.Object('contracts_Subscriptions');
           updateSubscription.id = subcripitions.id;
           updateSubscription.set('PlanCode', 'freeplan');
+          updateSubscription.set('AllowedCredits', 0);
           await updateSubscription.save(null, { useMasterKey: true });
           return { status: 'success', result: 'subscribed!' };
         } catch (err) {
@@ -34,6 +35,7 @@ export default async function SubscribeFree(request) {
           const updateSubscription = new Parse.Object('contracts_Subscriptions');
           updateSubscription.id = subcripitions.id;
           updateSubscription.set('PlanCode', 'freeplan');
+          updateSubscription.set('AllowedCredits', 0);
           await updateSubscription.save(null, { useMasterKey: true });
           return { status: 'success', result: 'subscribed!' };
         } catch (err) {
@@ -61,6 +63,7 @@ export default async function SubscribeFree(request) {
               objectId: extUser.get('TenantId').id,
             });
           }
+          createSubscription.set('AllowedCredits', 0);
           await createSubscription.save(null, { useMasterKey: true });
           return { status: 'success', result: 'subscribed!' };
         } catch (err) {

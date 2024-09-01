@@ -1,3 +1,5 @@
+import { planCredits } from '../../Utils.js';
+
 export default async function saveSubscription(request, response) {
   const SubscriptionId = request.body?.data?.subscription?.subscription_id;
   const body = request.body;
@@ -5,6 +7,7 @@ export default async function saveSubscription(request, response) {
   const Next_billing_date = request.body?.data?.subscription?.next_billing_at;
   const planCode = request.body?.data?.subscription?.plan?.plan_code;
   const addons = request.body?.data?.subscription?.addons || [];
+  const credits = planCredits?.[planCode] || 0;
   let existAddon = 0;
   if (addons?.length > 0) {
     let allowedUsersMonthly = 0;
@@ -52,6 +55,9 @@ export default async function saveSubscription(request, response) {
         if (existAddon > 0) {
           updateSubscription.set('AllowedUsers', parseInt(existAddon));
         }
+        if (credits > 0) {
+          updateSubscription.set('AllowedCredits', credits);
+        }
         await updateSubscription.save(null, { useMasterKey: true });
         return response.status(200).json({ status: 'update subscription!' });
       } else {
@@ -81,6 +87,9 @@ export default async function saveSubscription(request, response) {
         createSubscription.set('PlanCode', planCode);
         if (existAddon > 0) {
           createSubscription.set('AllowedUsers', parseInt(existAddon));
+        }
+        if (credits > 0) {
+          createSubscription.set('AllowedCredits', credits);
         }
         await createSubscription.save(null, { useMasterKey: true });
         return response.status(200).json({ status: 'create subscription!' });

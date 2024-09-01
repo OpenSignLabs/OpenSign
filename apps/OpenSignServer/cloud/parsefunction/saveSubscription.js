@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { cloudServerUrl } from '../../Utils.js';
+import { cloudServerUrl, planCredits } from '../../Utils.js';
 export default async function saveSubscription(request) {
   const serverUrl = cloudServerUrl; //process.env.SERVER_URL;
   const appId = process.env.APP_ID;
@@ -8,6 +8,7 @@ export default async function saveSubscription(request) {
   const body = subscription;
   const Next_billing_date = subscription.data.subscription.next_billing_at;
   const planCode = subscription.data.subscription.plan.plan_code;
+  const credits = planCredits?.[planCode] || 0;
   let existAddon = 0;
   try {
     const userRes = await axios.get(serverUrl + '/users/me', {
@@ -69,6 +70,9 @@ export default async function saveSubscription(request) {
           if (existAddon > 0) {
             updateSubscription.set('AllowedUsers', parseInt(existAddon));
           }
+          if (credits > 0) {
+            updateSubscription.set('AllowedCredits', credits);
+          }
           await updateSubscription.save(null, { useMasterKey: true });
           return { status: 'update subscription!' };
         } else {
@@ -94,6 +98,9 @@ export default async function saveSubscription(request) {
           createSubscription.set('PlanCode', planCode);
           if (existAddon > 0) {
             createSubscription.set('AllowedUsers', parseInt(existAddon));
+          }
+          if (credits > 0) {
+            createSubscription.set('AllowedCredits', credits);
           }
           await createSubscription.save(null, { useMasterKey: true });
           return { status: 'create subscription!' };
