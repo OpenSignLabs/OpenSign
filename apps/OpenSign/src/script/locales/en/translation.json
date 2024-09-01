@@ -38,7 +38,7 @@
   "upgrade-now": "Upgrade now",
   "upgrade-to": "Upgrade to",
   "plan": "Plan",
-  "subscribe-card-plan": "Sign 100 docs using API. Only $0.15/doc after that.",
+  "subscribe-card-plan": "Unlock premium features starting at just {{premiumPrice}}/month. Enjoy enhanced performance and only {{addonPrice}} per additional credit after your included premium credits.",
   "user-name-limit-char": "To have a username less than 8 character please subscribe",
   "tour-content": "Don't show this again",
   "pro": "PRO",

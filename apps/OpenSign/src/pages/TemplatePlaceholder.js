@@ -26,7 +26,6 @@ import {
   radioButtonWidget,
   fetchSubscription,
   getContainerScale,
-  openInNewTab,
   convertBase64ToFile,
   rotatePdfPage,
   onClickZoomOut,
@@ -47,7 +46,6 @@ import DropdownWidgetOption from "../components/pdf/DropdownWidgetOption";
 import Parse from "parse";
 import { useSelector } from "react-redux";
 import PdfZoom from "../components/pdf/PdfZoom";
-import { paidUrl } from "../json/plansArr";
 import { useTranslation } from "react-i18next";
 import RotateAlert from "../components/RotateAlert";
 const TemplatePlaceholder = () => {
@@ -196,13 +194,8 @@ const TemplatePlaceholder = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [divRef.current, isHeader]);
 
-  const handleNavigation = (plan) => {
-    const route = paidUrl(plan);
-    if (route === "/subscription") {
-      navigate(route);
-    } else {
-      openInNewTab(route, "_self");
-    }
+  const handleNavigation = () => {
+    navigate("/subscription");
   };
   async function checkIsSubscribed() {
     const res = await fetchSubscription();

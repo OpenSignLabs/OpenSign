@@ -378,7 +378,7 @@ const BulkSendUi = (props) => {
                             </p>
                             <button
                               onClick={() => setIsBulkAvailable(false)}
-                              className=" op-btn op-btn-primary w-28"
+                              className=" op-btn op-btn-primary w-[200px]"
                             >
                               {t("buycredits")}
                             </button>
@@ -419,14 +419,14 @@ const BulkSendUi = (props) => {
               ) : (
                 <form onSubmit={handleAddOnQuickSubmit} className="p-3">
                   <p className="flex justify-center text-center mx-2 mb-3 text-base op-text-accent font-medium">
-                    {t("additional-quicksend")}
+                    {t("additional-credits")}
                   </p>
                   <div className="mb-3 flex justify-between">
                     <label
                       htmlFor="quantity"
                       className="block text-xs text-gray-700 font-semibold"
                     >
-                      {t("quantityofquicksend")}
+                      {t("quantityofcredits")}
                       <span className="text-[red] text-[13px]">*</span>
                     </label>
                     <select

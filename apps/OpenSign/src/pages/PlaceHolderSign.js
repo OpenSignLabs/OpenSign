@@ -35,7 +35,6 @@ import {
   fetchSubscription,
   convertPdfArrayBuffer,
   getContainerScale,
-  openInNewTab,
   convertBase64ToFile,
   onClickZoomIn,
   onClickZoomOut,
@@ -60,7 +59,6 @@ import Loader from "../primitives/Loader";
 import { useSelector } from "react-redux";
 import PdfZoom from "../components/pdf/PdfZoom";
 import LottieWithLoader from "../primitives/DotLottieReact";
-import { paidUrl } from "../json/plansArr";
 import { useTranslation } from "react-i18next";
 import RotateAlert from "../components/RotateAlert";
 
@@ -235,13 +233,8 @@ function PlaceHolderSign() {
     return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [divRef.current, isHeader]);
-  const handleNavigation = (plan) => {
-    const route = paidUrl(plan);
-    if (route === "/subscription") {
-      navigate(route);
-    } else {
-      openInNewTab(route, "_self");
-    }
+  const handleNavigation = () => {
+    navigate("/subscription");
   };
   async function checkIsSubscribed() {
     const res = await fetchSubscription();
