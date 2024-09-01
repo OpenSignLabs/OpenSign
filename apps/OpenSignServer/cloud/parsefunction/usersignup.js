@@ -160,6 +160,7 @@ async function saveSubscription(extUserId, UserId, tenantId, subscription) {
     createSubscription.set('PlanCode', planCode);
     if (credits > 0) {
       createSubscription.set('AllowedCredits', credits);
+      createSubscription.set('PlanCredits', credits);
     }
     await createSubscription.save(null, { useMasterKey: true });
   } catch (err) {
