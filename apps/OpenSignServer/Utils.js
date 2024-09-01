@@ -210,3 +210,14 @@ export const useLocal = process.env.USE_LOCAL ? process.env.USE_LOCAL.toLowerCas
 export const smtpsecure = process.env.SMTP_PORT && process.env.SMTP_PORT !== '465' ? false : true;
 export const smtpenable =
   process.env.SMTP_ENABLE && process.env.SMTP_ENABLE.toLowerCase() === 'true' ? true : false;
+
+export const planCredits = {
+  'pro-weekly': 100,
+  'pro-yearly': 240,
+  'professional-monthly': 100,
+  'professional-yearly': 240,
+  'team-weekly': 100,
+  'team-yearly': 500,
+  'teams-monthly': 100,
+  'teams-yearly': 500,
+};

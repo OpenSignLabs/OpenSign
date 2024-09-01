@@ -11,7 +11,7 @@ import {
   saveLanguageInLocal
 } from "../constant/Utils";
 import { isEnableSubscription, isStaging } from "../constant/const";
-import { paidUrl, validplan } from "../json/plansArr";
+import { validplan } from "../json/plansArr";
 import { useTranslation } from "react-i18next";
 
 const Header = ({ showSidebar }) => {
@@ -101,25 +101,18 @@ const Header = ({ showSidebar }) => {
     }
   };
   const handleNavigation = () => {
-    const route = paidUrl(isTeam.plan);
-    if (route === "/subscription") {
-      navigate(route);
-    } else {
-      openInNewTab(route, "_self");
-    }
+    navigate("/subscription");
   };
   return (
     <div>
       {isEnableSubscription && (
         <div className="shadow py-1 text-center bg-[#CAE4FA] text-[14px] p-1">
-          New Feature: Public Profiles are now live! Create and share public
-          templates with ease—
+          {t("headernews")} —
           <span
             className="cursor-pointer font-medium underline text-blue-800"
             onClick={() => navigate("/profile")}
           >
-            {" "}
-            Setup Now.
+            {" " + t("headernewsbtn") + "."}
           </span>
         </div>
       )}

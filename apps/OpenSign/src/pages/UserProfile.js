@@ -17,7 +17,7 @@ import {
 import Upgrade from "../primitives/Upgrade";
 import ModalUi from "../primitives/ModalUi";
 import Loader from "../primitives/Loader";
-import { paidUrl, validplan } from "../json/plansArr";
+import { validplan } from "../json/plansArr";
 import { useTranslation } from "react-i18next";
 import SelectLanguage from "../components/pdf/SelectLanguage";
 import { RWebShare } from "react-web-share";
@@ -315,12 +315,7 @@ function UserProfile() {
     setIsDisableDocId(extendUser?.[0]?.HeaderDocId);
   };
   const handlePaidRoute = () => {
-    const route = paidUrl(isPlan.plan);
-    if (route === "/subscription") {
-      navigate(route);
-    } else {
-      openInNewTab(route, "_self");
-    }
+    navigate("/subscription");
   };
 
   const copytoclipboard = () => {
