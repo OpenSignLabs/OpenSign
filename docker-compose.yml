@@ -9,7 +9,7 @@ services:
     env_file: .env.prod
     environment:
       - NODE_ENV=production
-      - SERVER_URL=${HOST_URL:-https://localhost:3001/app}
+      - SERVER_URL=${HOST_URL:-https://localhost:3001}/app
     networks:
       - app-network
   mongo:

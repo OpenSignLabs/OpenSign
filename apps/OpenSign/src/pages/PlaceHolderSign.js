@@ -61,6 +61,7 @@ import PdfZoom from "../components/pdf/PdfZoom";
 import LottieWithLoader from "../primitives/DotLottieReact";
 import { useTranslation } from "react-i18next";
 import RotateAlert from "../components/RotateAlert";
+import QuotaCard from "../primitives/QuotaCard";
 
 function PlaceHolderSign() {
   const { t } = useTranslation();
@@ -150,8 +151,8 @@ function PlaceHolderSign() {
   const [isCustomize, setIsCustomize] = useState(false);
   const [zoomPercent, setZoomPercent] = useState(0);
   const [scale, setScale] = useState(1);
-
   const [pdfRotateBase64, setPdfRotatese64] = useState("");
+  const [planCode, setPlanCode] = useState("");
   const isMobile = window.innerWidth < 767;
   const [, drop] = useDrop({
     accept: "BOX",
@@ -240,6 +241,7 @@ function PlaceHolderSign() {
     const res = await fetchSubscription();
     const plan = res.plan;
     const billingDate = res.billingDate;
+    setPlanCode(plan);
     if (plan === "freeplan") {
       return true;
     } else if (billingDate) {
@@ -1079,7 +1081,7 @@ function PlaceHolderSign() {
       try {
         const imgPng =
           "https://qikinnovation.ams3.digitaloceanspaces.com/logo.png";
-        let url = `${localStorage.getItem("baseUrl")}functions/sendmailv3/`;
+        let url = `${localStorage.getItem("baseUrl")}functions/sendmailv3`;
         const headers = {
           "Content-Type": "application/json",
           "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
@@ -1134,6 +1136,7 @@ function PlaceHolderSign() {
             ? replaceVar?.subject
             : `${senderName} has requested you to sign "${documentName}"`,
           from: senderEmail,
+          plan: planCode,
           html: isCustomize
             ? replaceVar?.body
             : "<html><head><meta http-equiv='Content-Type' content='text/html; charset=UTF-8' /> </head>   <body> <div style='background-color: #f5f5f5; padding: 20px'=> <div   style=' box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;background: white;padding-bottom: 20px;'> <div style='padding:10px 10px 0 10px'><img src=" +
@@ -1164,7 +1167,7 @@ function PlaceHolderSign() {
         console.log("error", error);
       }
     }
-    if (sendMail.data.result.status === "success") {
+    if (sendMail?.data?.result?.status === "success") {
       setMailStatus("success");
       try {
         let data;
@@ -1177,9 +1180,8 @@ function PlaceHolderSign() {
         } else {
           data = { SendMail: true };
         }
-
-        await axios
-          .put(
+        try {
+          await axios.put(
             `${localStorage.getItem(
               "baseUrl"
             )}classes/contracts_Document/${documentId}`,
@@ -1191,21 +1193,21 @@ function PlaceHolderSign() {
                 "X-Parse-Session-Token": localStorage.getItem("accesstoken")
               }
             }
-          )
-          .then(() => {})
-          .catch((err) => {
-            console.log("axois err ", err);
-          });
+          );
+        } catch (err) {
+          console.log("axois err ", err);
+        }
       } catch (e) {
         console.log("error", e);
       }
-
       setIsSend(true);
       setIsMailSend(true);
-      const loadObj = {
-        isLoad: false
-      };
-      setIsLoading(loadObj);
+      setIsLoading({ isLoad: false });
+      setIsUiLoading(false);
+    } else if (sendMail?.data?.result?.status === "quota-reached") {
+      setMailStatus("quotareached");
+      setIsSend(true);
+      setIsMailSend(true);
       setIsUiLoading(false);
     } else {
       setMailStatus("failed");
@@ -1862,7 +1864,7 @@ function PlaceHolderSign() {
                             <span className="ml-[5px] mr-[5px]">{t("or")}</span>
                             <span className="h-[1px] w-[20%] bg-[#ccc]"></span>
                           </div>
-                          <div className="mt-3 mb-3">{handleShareList()}</div>
+                          <div className="my-3">{handleShareList()}</div>
                         </>
                       )}
                     </div>
@@ -1871,7 +1873,11 @@ function PlaceHolderSign() {
                   {/* this modal is used show send mail  message and after send mail success message */}
                   <ModalUi
                     isOpen={isSend}
-                    title={t("Mails Sent")}
+                    title={
+                      mailStatus === "quotareached"
+                        ? t("quotamailhead")
+                        : t("Mails Sent")
+                    }
                     handleClose={() => {
                       setIsSend(false);
                       setSignerPos([]);
@@ -1885,40 +1891,53 @@ function PlaceHolderSign() {
                           <p>{t("placeholder-alert-4")}</p>
                           {isCurrUser && <p>{t("placeholder-alert-5")}</p>}
                         </div>
+                      ) : mailStatus === "quotareached" ? (
+                        <div className="flex flex-col gap-y-3">
+                          <QuotaCard
+                            handleClose={() => {
+                              setIsSend(false);
+                              setSignerPos([]);
+                              navigate("/report/1MwEuxLEkF");
+                            }}
+                          />
+                          <div className="my-3">{handleShareList()}</div>
+                        </div>
                       ) : (
                         <p>{t("placeholder-alert-6")}</p>
                       )}
                       {!mailStatus && (
                         <div className="w-full h-[1px] bg-[#9f9f9f] my-[15px]"></div>
                       )}
-                      <div
-                        className={
-                          mailStatus === "success"
-                            ? "flex justify-center mt-1"
-                            : ""
-                        }
-                      >
-                        {isCurrUser && (
-                          <button
-                            onClick={() => handleRecipientSign()}
-                            type="button"
-                            className="op-btn op-btn-primary mr-1"
-                          >
-                            {t("yes")}
-                          </button>
-                        )}
-                        <button
-                          onClick={() => {
-                            setIsSend(false);
-                            setSignerPos([]);
-                            navigate("/report/1MwEuxLEkF");
-                          }}
-                          type="button"
-                          className="op-btn op-btn-ghost"
+                      {mailStatus !== "quotareached" && (
+                        <div
+                          className={
+                            mailStatus === "success"
+                              ? "flex justify-center mt-1"
+                              : ""
+                          }
                         >
-                          {isCurrUser ? t("no") : t("close")}
-                        </button>
-                      </div>
+                          {isCurrUser && (
+                            <button
+                              onClick={() => handleRecipientSign()}
+                              type="button"
+                              className="op-btn op-btn-primary mr-1"
+                            >
+                              {t("yes")}
+                            </button>
+                          )}
+                          <button
+                            onClick={() => {
+                              setIsSend(false);
+                              setSignerPos([]);
+                              navigate("/report/1MwEuxLEkF");
+                            }}
+                            type="button"
+                            className="op-btn op-btn-ghost"
+                          >
+                            {isCurrUser ? t("no") : t("close")}
+                          </button>
+                        </div>
+                      )}
                     </div>
                   </ModalUi>
                   <ModalUi
