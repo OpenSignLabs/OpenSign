@@ -1,10 +1,10 @@
 import axios from 'axios';
-export default async function BuyQuickSend(request) {
-  const apis = request.params.quicksend;
+export default async function BuyCredits(request) {
+  const credits = request.params.credits;
   if (!request?.user) {
     throw new Parse.Error(Parse.Error.INVALID_SESSION_TOKEN, 'User is not authenticated.');
   }
-  if (apis) {
+  if (credits) {
     try {
       const extUser = new Parse.Query('contracts_Users');
       extUser.equalTo('UserId', {
@@ -37,34 +37,37 @@ export default async function BuyQuickSend(request) {
           formData.append('grant_type', 'refresh_token');
 
           const headers = { 'Content-Type': 'application/x-www-form-urlencoded' };
+
           // Make the POST request using Axios
           const res = await axios.post(url, formData, { headers });
           if (res.data.access_token) {
             const subscriptionId = _resSub.SubscriptionId;
             const plan_code = _resSub?.SubscriptionDetails?.data?.subscription?.plan?.plan_code;
-            const quantity = parseInt(apis);
-            const addoncode = 'bulk-signatures';
+            const quantity = parseInt(credits);
+            const addoncode = 'addon-credits';
             const data = JSON.stringify({
               plan: { plan_code: plan_code },
               addons: [
-                { addon_code: addoncode, addon_description: 'Bulk Signatures', quantity: quantity },
+                { addon_code: addoncode, addon_description: 'addon credits', quantity: quantity },
               ],
             });
-            const apiUrl = `https://www.zohoapis.in/billing/v1/subscriptions/${subscriptionId}/buyonetimeaddon`;
-            const resAPis = await axios.post(apiUrl, data, {
+            const creditsUrl = `https://www.zohoapis.in/billing/v1/subscriptions/${subscriptionId}/buyonetimeaddon`;
+            const resCredits = await axios.post(creditsUrl, data, {
               headers: {
                 Authorization: 'Zoho-oauthtoken ' + res.data.access_token,
                 'X-com-zoho-subscriptions-organizationid': process.env.ZOHO_BILLING_ORG_ID,
               },
             });
-            if (resAPis.data) {
-              const existQuickSend = _resSub?.AllowedQuicksend ? _resSub.AllowedQuicksend : 0;
-              const allowedQuicksend = existQuickSend + quantity;
+            // console.log('resCredits ', resCredits.data);
+            if (resCredits.data) {
+              const existAddonCredits = _resSub?.AddonCredits ? _resSub.AddonCredits : 0;
+              const addonCredits = existAddonCredits + quantity;
               const updateSub = new Parse.Object('contracts_Subscriptions');
               updateSub.id = resSub.id;
-              updateSub.set('AllowedQuicksend', allowedQuicksend);
+              updateSub.set('AddonCredits', addonCredits);
               const resupdateSub = await updateSub.save(null, { useMasterKey: true });
-              return { status: 'success', addon: allowedQuicksend };
+              // console.log('resupdateSub ', resupdateSub);
+              return { status: 'success', addon: addonCredits };
             }
           } else {
             throw new Parse.Error('400', 'Invalid access token.');
@@ -80,7 +83,7 @@ export default async function BuyQuickSend(request) {
         err?.response?.data ||
         err?.message ||
         'Something went wrong.';
-      console.log('err in buyaddon', code, msg);
+      console.log('err in Buyaddonusers', code, msg);
       throw new Parse.Error(code, msg);
     }
   } else {

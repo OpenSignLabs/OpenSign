@@ -40,7 +40,7 @@
   "upgrade-to": "Mettre à niveau vers",
   "pro": "PRO",
   "plan": "Offre",
-  "subscribe-card-plan": "Signez 100 documents à l'aide de l'API. Seulement 0,15 $/doc par la suite.",
+  "subscribe-card-plan": "Débloquez des fonctionnalités premium à partir de seulement {{premiumPrice}}/mois. Bénéficiez de performances améliorées et de seulement {{addonPrice}} par crédit supplémentaire après vos crédits premium inclus.",
   "user-name-limit-char": "Pour avoir un nom d'utilisateur de moins de 8 caractères s'il vous plaît s'abonner",
   "tour-content": "Ne plus afficher",
   "team": "Équipe",

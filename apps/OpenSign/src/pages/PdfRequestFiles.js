@@ -31,7 +31,6 @@ import {
   handleDownloadPdf,
   handleToPrint,
   handleDownloadCertificate,
-  openInNewTab,
   getDefaultSignature,
   onClickZoomIn,
   onClickZoomOut,
@@ -51,7 +50,6 @@ import { useSelector } from "react-redux";
 import SignerListComponent from "../components/pdf/SignerListComponent";
 import VerifyEmail from "../components/pdf/VerifyEmail";
 import PdfZoom from "../components/pdf/PdfZoom";
-import { paidUrl } from "../json/plansArr";
 import { useTranslation } from "react-i18next";
 
 function PdfRequestFiles(props) {
@@ -239,13 +237,8 @@ function PdfRequestFiles(props) {
     await handleSendOTP(currentUser?.email);
   };
 
-  const handleNavigation = (plan) => {
-    const route = paidUrl(plan);
-    if (route === "/subscription") {
-      window.location.href = route;
-    } else {
-      openInNewTab(route, "_self");
-    }
+  const handleNavigation = () => {
+    window.location.href = "/subscription";
   };
   async function checkIsSubscribed(extUserId, contactId) {
     const isGuestSign = isGuestSignFlow || false;

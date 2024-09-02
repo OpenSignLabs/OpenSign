@@ -3,35 +3,28 @@ import { cloudServerUrl } from '../../Utils.js';
 
 const serverUrl = cloudServerUrl; //process.env.SERVER_URL;
 const appId = process.env.APP_ID;
-async function deductcount(tenantId, docs, extUserId) {
+const licenseKey = process.env.LICENSE_KEY;
+async function deductcount(docsCount, extUserId, subscription) {
   try {
-    const subscription = new Parse.Query('contracts_Subscriptions');
-    subscription.equalTo('TenantId', {
-      __type: 'Pointer',
-      className: 'partners_Tenant',
-      objectId: tenantId,
-    });
-    subscription.include('ExtUserPtr');
-    subscription.greaterThan('AllowedQuicksend', 0);
-    const resSub = await subscription.first({ useMasterKey: true });
-    if (resSub) {
-      const updateApiCount =
-        resSub?.get('AllowedQuicksend') && resSub.get('AllowedQuicksend') > 0
-          ? resSub.get('AllowedQuicksend') - docs
-          : 0;
+    if (licenseKey) {
+      const allowedCredits = subscription?.AllowedCredits || 0;
+      const addonCredits = subscription?.AddonCredits || 0;
       const subscriptionCls = new Parse.Object('contracts_Subscriptions');
-      subscriptionCls.id = resSub.id;
-      if (updateApiCount > 0) {
-        subscriptionCls.set('AllowedQuicksend', updateApiCount);
+      subscriptionCls.id = subscription.objectId;
+      if (docsCount <= allowedCredits) {
+        const updateAllowedcredits = allowedCredits - docsCount;
+        subscriptionCls.set('AllowedCredits', updateAllowedcredits);
       } else {
-        subscriptionCls.set('AllowedQuicksend', 0);
+        const remaingCount = docsCount - allowedCredits;
+        const updateAddonCredits = addonCredits - remaingCount;
+        subscriptionCls.set('AllowedCredits', 0);
+        subscriptionCls.set('AddonCredits', updateAddonCredits);
       }
-      const resSubcription = await subscriptionCls.save(null, { useMasterKey: true });
+      await subscriptionCls.save(null, { useMasterKey: true });
     }
-
     const extCls = new Parse.Object('contracts_Users');
     extCls.id = extUserId;
-    extCls.increment('DocumentCount', docs);
+    extCls.increment('DocumentCount', docsCount);
     const resExt = await extCls.save(null, { useMasterKey: true });
   } catch (err) {
     console.log('Err in deduct in quick send', err);
@@ -210,37 +203,72 @@ export default async function createBatchDocs(request) {
             };
           });
           // console.log('requests ', requests);
-
-          const response = await axios.post('batch', { requests: requests }, parseConfig);
-          // // Handle the batch query response
-          // console.log('Batch query response:', response.data);
-          if (response.data && response.data.length > 0) {
-            const updateDocuments = Documents.map((x, i) => ({
-              ...x,
-              objectId: response.data[i]?.success?.objectId,
-              createdAt: response.data[i]?.success?.createdAt,
-            }));
-            deductcount(_resExt.TenantId.objectId, response.data.length, resExt.id);
-            for (let i = 0; i < updateDocuments.length; i++) {
-              sendMail(updateDocuments[i], sessionToken);
+          if (licenseKey) {
+            const subscription = new Parse.Query('contracts_Subscriptions');
+            subscription.equalTo('TenantId', {
+              __type: 'Pointer',
+              className: 'partners_Tenant',
+              objectId: _resExt.TenantId.objectId,
+            });
+            subscription.include('ExtUserPtr');
+            const resSub = await subscription.first({ useMasterKey: true });
+            if (resSub) {
+              const _resSub = JSON.parse(JSON.stringify(resSub));
+              const allowedCredits = _resSub?.AllowedCredits || 0;
+              const addonCredits = _resSub?.AddonCredits || 0;
+              const totalcredits = allowedCredits + addonCredits;
+              if (requests?.length <= totalcredits) {
+                const response = await axios.post('batch', { requests: requests }, parseConfig);
+                // // Handle the batch query response
+                // console.log('Batch query response:', response.data);
+                if (response.data && response.data.length > 0) {
+                  const updateDocuments = Documents.map((x, i) => ({
+                    ...x,
+                    objectId: response.data[i]?.success?.objectId,
+                    createdAt: response.data[i]?.success?.createdAt,
+                  }));
+                  deductcount(response.data.length, resExt.id, _resSub);
+                  for (let i = 0; i < updateDocuments.length; i++) {
+                    sendMail(updateDocuments[i], sessionToken);
+                  }
+                  return 'success';
+                }
+              } else {
+                throw new Parse.Error(
+                  429,
+                  'Quota reached, Please buy credits and try again later.'
+                );
+              }
+            } else {
+              throw new Parse.Error(Parse.Error.INVALID_QUERY, 'Please buy subscriptions.');
             }
-            return 'success';
+          } else {
+            const response = await axios.post('batch', { requests: requests[0] }, parseConfig);
+            // // Handle the batch query response
+            // console.log('Batch query response:', response.data);
+            if (response.data && response.data.length > 0) {
+              const updateDocuments = {
+                objectId: response.data[0]?.success?.objectId,
+                createdAt: response.data[0]?.success?.createdAt,
+              };
+              deductcount(response.data.length, resExt.id, _resSub);
+              sendMail(updateDocuments, sessionToken);
+              return 'success';
+            }
           }
-
-          // Handle individual responses within response.data.results
         } catch (error) {
-          const code = err?.response?.data?.code || err?.response?.status || err?.code || 400;
+          const code = error?.response?.data?.code || error?.response?.status || error?.code || 400;
           const msg =
-            err?.response?.data?.error ||
-            err?.response?.data ||
-            err?.message ||
+            error?.response?.data?.error ||
+            error?.response?.data ||
+            error?.message ||
             'Something went wrong.';
           console.log('Error performing batch query:', code, msg);
           throw new Parse.Error(code, msg);
         }
       }
     } else {
-      new Parse.Error(Parse.Error.OBJECT_NOT_FOUND, 'User not found.');
+      throw new Parse.Error(Parse.Error.OBJECT_NOT_FOUND, 'User not found.');
     }
   } catch (err) {
     console.log('err in createbatchdoc', err);
