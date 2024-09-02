@@ -262,7 +262,7 @@ const BulkSendUi = (props) => {
             quantity: 500,
             priceperbulksend: 0.15,
             price: (75.0).toFixed(2),
-            totalcredits: _resAddon.addon
+            totalcredits: obj?.totalcredits + _resAddon.addon
           }));
         }
       }
