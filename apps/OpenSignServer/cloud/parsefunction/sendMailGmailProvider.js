@@ -142,8 +142,7 @@ export default async function sendMailGmailProvider(_extRes, template) {
           raw: email,
         },
       });
-      //   console.log('response ', response);
-
+      console.log('gmail provider res: ', response?.status);
       return { code: 200, message: 'Email sent successfully' };
     } catch (error) {
       console.error('Error sending email:', error);
