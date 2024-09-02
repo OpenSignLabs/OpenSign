@@ -15,7 +15,8 @@ function EmailComponent({
   sender,
   setIsAlert,
   extUserId,
-  activeMailAdapter
+  activeMailAdapter,
+  planCode
 }) {
   const { t } = useTranslation();
   const [emailList, setEmailList] = useState([]);
@@ -34,7 +35,7 @@ function EmailComponent({
         const imgPng =
           "https://qikinnovation.ams3.digitaloceanspaces.com/logo.png";
 
-        let url = `${localStorage.getItem("baseUrl")}functions/sendmailv3/`;
+        let url = `${localStorage.getItem("baseUrl")}functions/sendmailv3`;
         const headers = {
           "Content-Type": "application/json",
           "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
@@ -50,6 +51,7 @@ function EmailComponent({
           recipient: emailList[i],
           subject: `${sender.name} has signed the doc - ${pdfName}`,
           from: sender.email,
+          plan: planCode,
           html:
             "<html><head><meta http-equiv='Content-Type' content='text/html; charset=UTF-8' /></head><body>  <div style='background-color:#f5f5f5;padding:20px'>    <div style='box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;background-color:white;'> <div><img src=" +
             imgPng +
@@ -74,24 +76,19 @@ function EmailComponent({
         });
       }
     }
-
-    if (sendMail && sendMail.data.result.status === "success") {
+    if (sendMail?.data?.result?.status === "success") {
       setSuccessEmail(true);
+      setIsEmail(false);
       setTimeout(() => {
         setSuccessEmail(false);
-        setIsEmail(false);
         setEmailValue("");
         setEmailList([]);
       }, 1500);
-
       setIsLoading(false);
-    } else if (sendMail && sendMail.data.result.status === "error") {
+    } else if (sendMail?.data?.result?.status === "quota-reached") {
       setIsLoading(false);
       setIsEmail(false);
-      setIsAlert({
-        isShow: true,
-        alertMessage: t("something-went-wrong-mssg")
-      });
+      setIsAlert({ isShow: true, alertMessage: "quotareached" });
       setEmailValue("");
       setEmailList([]);
     } else {

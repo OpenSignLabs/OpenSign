@@ -21,9 +21,11 @@ const ModalUi = ({
           >
             {showHeader && (
               <>
-                <h3 className="text-base-content font-bold text-lg pt-[15px] px-[20px]">
-                  {title}
-                </h3>
+                {title && (
+                  <h3 className="text-base-content font-bold text-lg pt-[15px] px-[20px]">
+                    {title}
+                  </h3>
+                )}
                 {showClose && (
                   <button
                     className="op-btn op-btn-sm op-btn-circle op-btn-ghost text-base-content absolute right-2 top-2"
