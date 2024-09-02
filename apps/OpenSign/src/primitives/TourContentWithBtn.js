@@ -33,7 +33,7 @@ export default function TourContentWithBtn({
           >
             Open in new tab
           </a>
-          <div className="flex items-center justify-center my-[10px] border-[1px] border-gray-400 rounded-sm">
+          <div className="flex items-center justify-center my-[10px] border-[1.3px] border-gray-400 rounded-sm">
             <iframe
               src="https://www.youtube.com/embed/aGjaMfm7Gqo?si=2Ul0nUlFovlVoZ1U"
               title="YouTube video player"
