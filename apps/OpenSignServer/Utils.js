@@ -91,7 +91,7 @@ const saveDataFile = async (size, fileUrl, tenantPtr) => {
   }
 };
 
-export const updateMailCount = async extUserId => {
+export const updateMailCount = async (extUserId, plan, monthchange) => {
   // Update count in contracts_Users class
   const query = new Parse.Query('contracts_Users');
   query.equalTo('objectId', extUserId);
@@ -100,13 +100,23 @@ export const updateMailCount = async extUserId => {
     const contractUser = await query.first({ useMasterKey: true });
     if (contractUser) {
       contractUser.increment('EmailCount', 1);
+      if (plan === 'freeplan') {
+        if (monthchange) {
+          contractUser.set('LastEmailCountReset', new Date());
+          contractUser.set('MontlyfreeEmails', 1);
+        } else {
+          if (contractUser?.get('MontlyfreeEmails')) {
+            contractUser.increment('MontlyfreeEmails', 1);
+            if (contractUser?.get('LastEmailCountReset')) {
+              contractUser.set('LastEmailCountReset', new Date());
+            }
+          } else {
+            contractUser.set('MontlyfreeEmails', 1);
+            contractUser.set('LastEmailCountReset', new Date());
+          }
+        }
+      }
       await contractUser.save(null, { useMasterKey: true });
-    } else {
-      // Create new entry if not found
-      const ContractsUsers = Parse.Object.extend('contracts_Users');
-      const newContractUser = new ContractsUsers();
-      newContractUser.set('EmailCount', 1);
-      await newContractUser.save(null, { useMasterKey: true });
     }
   } catch (error) {
     console.log('Error updating EmailCount in contracts_Users: ' + error.message);
