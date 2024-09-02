@@ -1619,7 +1619,9 @@ function PdfRequestFiles(props) {
                       ? "none"
                       : "auto"
                 }}
-                className="relative op-card overflow-hidden flex flex-col md:flex-row justify-between bg-base-300"
+                className={`${
+                  props.templateId && "m-1 border-[0.5px] border-gray-300"
+                } relative op-card overflow-hidden flex flex-col md:flex-row justify-between bg-base-300`}
               >
                 {!requestSignTour &&
                   signerObjectId &&
@@ -2021,6 +2023,7 @@ function PdfRequestFiles(props) {
                       clickOnZoomIn={clickOnZoomIn}
                       clickOnZoomOut={clickOnZoomOut}
                       isDisableRotate={true}
+                      templateId={props.templateId}
                     />
 
                     <div ref={divRef} data-tut="pdfArea" className="h-[95%]">
