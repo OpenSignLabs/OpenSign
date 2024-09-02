@@ -70,9 +70,9 @@ export default async function saveSubscription(request) {
           if (existAddon > 0) {
             updateSubscription.set('AllowedUsers', parseInt(existAddon));
           }
-          const isSameAsPrevPlan = subscription?.get('PlanCode') === planCode;
+          const isSameAsPrevPlan = resSubscription?.get('PlanCode') === planCode;
           if (isSameAsPrevPlan) {
-            const planCredits = subscription?.get('PlanCredits');
+            const planCredits = resSubscription?.get('PlanCredits');
             if (planCredits) {
               updateSubscription.set('AllowedCredits', planCredits);
             } else {
