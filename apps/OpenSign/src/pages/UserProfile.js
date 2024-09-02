@@ -73,14 +73,14 @@ function UserProfile() {
     getUserDetail();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
   const getUserDetail = async () => {
     setIsLoader(true);
     const extClass = localStorage.getItem("Extand_Class");
     const jsonSender = JSON.parse(extClass);
-
     const tourstatuss = jsonSender[0]?.TourStatus && jsonSender[0].TourStatus;
-    if (tourstatuss && tourstatuss.length > 0) {
+    if (!isEnableSubscription) {
+      setIsProfileTour(true);
+    } else if (tourstatuss && tourstatuss.length > 0) {
       setTourStatus(tourstatuss);
       const checkTourRecipients = tourstatuss.filter(
         (data) => data.profileTour
@@ -88,8 +88,6 @@ function UserProfile() {
       if (checkTourRecipients && checkTourRecipients.length > 0) {
         setIsProfileTour(checkTourRecipients[0]?.profileTour);
       }
-    } else {
-      setIsProfileTour(false);
     }
     const HeaderDocId = jsonSender[0]?.HeaderDocId;
     if (isEnableSubscription) {
