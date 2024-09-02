@@ -381,11 +381,11 @@ const TemplatePlaceholder = () => {
           containerWH
         );
         const key = randomId();
-        let filterSignerPos = signerPos.filter((data) => data.Id === uniqueId);
         const dragTypeValue = item?.text ? item.text : monitor.type;
         const widgetWidth = defaultWidthHeight(dragTypeValue).width;
         const widgetHeight = defaultWidthHeight(dragTypeValue).height;
-        let dropData = [];
+        let dropData = [],
+          currentPagePosition;
         let placeHolder;
         if (item === "onclick") {
           const dropObj = {
@@ -446,65 +446,35 @@ const TemplatePlaceholder = () => {
             pos: dropData
           };
         }
-        const { blockColor, Role } = signer;
-        //adding placholder in existing signer pos array (placaholder)
-        if (filterSignerPos.length > 0) {
-          const getPlaceHolder = filterSignerPos[0].placeHolder;
+
+        const getPlaceHolder = signer?.placeHolder;
+        if (getPlaceHolder) {
+          //checking exist placeholder on same page
+          currentPagePosition = getPlaceHolder.find(
+            (data) => data.pageNumber === pageNumber
+          );
+        }
+        //checking current page has already some placeholders then update that placeholder and add upcoming placehoder position
+        if (getPlaceHolder && currentPagePosition) {
           const updatePlace = getPlaceHolder.filter(
             (data) => data.pageNumber !== pageNumber
           );
-          const getPageNumer = getPlaceHolder.filter(
-            (data) => data.pageNumber === pageNumber
+          const getPos = currentPagePosition?.pos;
+          const newSignPos = getPos.concat(dropData);
+          let xyPos = {
+            pageNumber: pageNumber,
+            pos: newSignPos
+          };
+          updatePlace.push(xyPos);
+          const updatesignerPos = signerPos.map((x) =>
+            x.Id === uniqueId ? { ...x, placeHolder: updatePlace } : x
           );
-
-          //add entry of position for same signer on multiple page
-          if (getPageNumer.length > 0) {
-            const getPos = getPageNumer[0].pos;
-            const newSignPos = getPos.concat(dropData);
-            let xyPos = {
-              pageNumber: pageNumber,
-              pos: newSignPos
-            };
-            updatePlace.push(xyPos);
-            const updatesignerPos = signerPos.map((x) =>
-              x.Id === uniqueId ? { ...x, placeHolder: updatePlace } : x
-            );
-            setSignerPos(updatesignerPos);
-          } else {
-            const updatesignerPos = signerPos.map((x) =>
-              x.Id === uniqueId
-                ? { ...x, placeHolder: [...x.placeHolder, placeHolder] }
-                : x
-            );
-            setSignerPos(updatesignerPos);
-          }
+          setSignerPos(updatesignerPos);
         } else {
-          //adding new placeholder for selected signer in pos array (placeholder)
-          let placeHolderPos;
-          if (contractName) {
-            placeHolderPos = {
-              signerPtr: {
-                __type: "Pointer",
-                className: `${contractName}`,
-                objectId: signerObjId
-              },
-              signerObjId: signerObjId,
-              blockColor: blockColor ? blockColor : color[isSelectListId],
-              placeHolder: [placeHolder],
-              Role: Role ? Role : roleName,
-              Id: uniqueId
-            };
-          } else {
-            placeHolderPos = {
-              signerPtr: {},
-              signerObjId: "",
-              blockColor: blockColor ? blockColor : color[isSelectListId],
-              placeHolder: [placeHolder],
-              Role: Role ? Role : roleName,
-              Id: uniqueId
-            };
-          }
-          setSignerPos((prev) => [...prev, placeHolderPos]);
+          const updatesignerPos = signerPos.map((x) =>
+            x.Id === uniqueId ? { ...x, placeHolder: [placeHolder] } : x
+          );
+          setSignerPos(updatesignerPos);
         }
 
         if (dragTypeValue === "dropdown") {
@@ -964,7 +934,6 @@ const TemplatePlaceholder = () => {
       setIsCreateDoc(false);
     }
   };
-
   // `handleAddSigner` is used to open Add Role Modal
   const handleAddSigner = () => {
     setIsModalRole(true);
@@ -986,6 +955,15 @@ const TemplatePlaceholder = () => {
       blockColor: color[index]
     };
     setSignersData((prevArr) => [...prevArr, obj]);
+    const signerPosObj = {
+      signerPtr: {},
+      signerObjId: "",
+      blockColor: color[index],
+      Role: roleName || "User " + count,
+      Id: Id
+    };
+
+    setSignerPos((prev) => [...prev, signerPosObj]);
     setIsModalRole(false);
     setRoleName("");
     setUniqueId(Id);
