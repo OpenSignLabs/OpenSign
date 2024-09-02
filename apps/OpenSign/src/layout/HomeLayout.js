@@ -11,10 +11,9 @@ import ModalUi from "../primitives/ModalUi";
 import { useNavigate, useLocation, Outlet } from "react-router-dom";
 import { isEnableSubscription } from "../constant/const";
 import { useCookies } from "react-cookie";
-import { fetchSubscription, openInNewTab } from "../constant/Utils";
+import { fetchSubscription } from "../constant/Utils";
 import Loader from "../primitives/Loader";
 import { showHeader } from "../redux/reducers/showHeader";
-import { paidUrl } from "../json/plansArr";
 import { useTranslation } from "react-i18next";
 
 const HomeLayout = () => {
@@ -96,13 +95,8 @@ const HomeLayout = () => {
       domain: updateDomain
     });
   };
-  const handleNavigation = (plan) => {
-    const route = paidUrl(plan);
-    if (route === "/subscription") {
-      navigate(route);
-    } else {
-      openInNewTab(route, "_self");
-    }
+  const handleNavigation = () => {
+    navigate("/subscription");
   };
   async function checkIsSubscribed() {
     if (isEnableSubscription) {

@@ -1,4 +1,4 @@
-export default async function AllowedQuicksend(request) {
+export default async function AllowedCredits(request) {
   if (!request?.user) {
     throw new Parse.Error(Parse.Error.INVALID_SESSION_TOKEN, 'User is not authenticated.');
   }
@@ -22,14 +22,15 @@ export default async function AllowedQuicksend(request) {
       const resSub = await subscription.first({ useMasterKey: true });
       if (resSub) {
         const _resSub = JSON.parse(JSON.stringify(resSub));
-        const allowedquicksend = _resSub?.AllowedQuicksend || 0;
-        return allowedquicksend;
+        const AllowedCredits = _resSub?.AllowedCredits || 0;
+        const AddonCredits = _resSub?.AddonCredits || 0;
+        return { allowedcredits: AllowedCredits, addoncredits: AddonCredits };
       }
     } else {
       throw new Parse.Error(Parse.Error.OBJECT_NOT_FOUND, 'User not found.');
     }
   } catch (err) {
-    console.log('err in allowedapis', err);
+    console.log('err in allowedCredits', err);
     const code = err?.code || 400;
     const msg = err?.message || 'Something went wrong.';
     throw new Parse.Error(code, msg);
