@@ -67,7 +67,7 @@ export default async function BuyCredits(request) {
               updateSub.set('AddonCredits', addonCredits);
               const resupdateSub = await updateSub.save(null, { useMasterKey: true });
               // console.log('resupdateSub ', resupdateSub);
-              return { status: 'success', addon: addonCredits };
+              return { status: 'success', addon: quantity };
             }
           } else {
             throw new Parse.Error('400', 'Invalid access token.');
