@@ -13,7 +13,6 @@ export default function TourContentWithBtn({ message, isChecked, video }) {
   return (
     <div>
       <p>{message}</p>
-
       {video && (
         <div className="flex items-center justify-center my-[10px] border-[1.3px] border-gray-400 rounded-sm">
           <iframe
@@ -24,7 +23,6 @@ export default function TourContentWithBtn({ message, isChecked, video }) {
           ></iframe>
         </div>
       )}
-
       <label className="flex items-center justify-center mb-0">
         <input
           type="checkbox"

@@ -591,9 +591,7 @@
     "Recent signature requests": "Voici une liste de documents qui attendent votre signature.",
     "Recently sent for signatures": "Il s'agit d'une liste de documents que vous avez envoyés à d'autres parties pour signature.",
     "Drafts": "Il s'agit de documents que vous avez commencés mais que vous n'avez pas finalisés pour envoi.",
-    "username": "Entrez votre nom d'utilisateur pour générer votre profil public. Une fois créé, vous pouvez partager et copier l'URL du profil ou le visiter pour afficher votre modèle public sur `https://opensign.me/your-username` ",
-    "tagline": "Ajoutez votre slogan ici ! Pour voir votre slogan, visitez l'URL publique en remplaçant votre nom d'utilisateur par votre nom d'utilisateur réel : https://opensign.me/your-username.",
-    "public-template": "Voici un exemple de la façon de rendre n'importe quel modèle public et accessible via une URL. Par exemple, visiter `https://opensign.me/your-username` vous permettra de visualiser votre modèle public et de le rendre disponible pour la signature publique. "
+    "public-template": "Cette vidéo montre comment configurer votre profil public personnalisé, tel que 'https://opensign.me/your-username'. Vous apprendrez également comment personnaliser votre slogan et rendre vos modèles disponibles pour la signature publique."
   },
   "enter-email-plaholder": "Ajoutez une adresse email et appuyez sur Entrée",
   "success-email-alert": "E-mail envoyé avec succès!",
