@@ -1285,6 +1285,8 @@ function PdfRequestFiles(props) {
       })
       .catch((err) => {
         console.log("error updating field is decline ", err);
+        setIsLoading({ isLoad: false });
+        setHandleError(t("something-went-wrong-mssg"));
       });
   };
   //function to add default signature for all requested placeholder of sign
