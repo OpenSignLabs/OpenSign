@@ -260,7 +260,7 @@ function GenerateToken() {
                 </div>
                 <button
                   onClick={handleGenerateTestToken}
-                  className="op-btn op-btn-primary w-[200px] md:w-auto"
+                  className="op-btn op-btn-primary w-[210px] md:w-auto"
                 >
                   {apitestToken
                     ? t("regenerate-test-token")
@@ -301,7 +301,7 @@ function GenerateToken() {
                 </div>
                 <button
                   onClick={apiToken ? handleModal : handleSubmit}
-                  className="op-btn op-btn-primary w-[200px] md:w-auto"
+                  className="op-btn op-btn-primary w-[210px] md:w-auto"
                 >
                   {apiToken ? t("regenerate-token") : t("generate-token")}
                 </button>
@@ -332,14 +332,14 @@ function GenerateToken() {
                     "https://docs.opensignlabs.com/docs/API-docs/opensign-api-v-1"
                   )
                 }
-                className="op-btn op-btn-secondary mt-2 md:mb-3 px-8 w-[200px] md:w-auto"
+                className="op-btn op-btn-secondary mt-2 md:mb-3 px-8 w-[210px] md:w-auto"
               >
                 {t("view-docs")}
               </button>
               <button
                 type="button"
                 onClick={() => handleBuyAPIsModal()}
-                className="op-btn op-btn-secondary mt-2 mb-3 px-8 w-[200px] md:w-auto"
+                className="op-btn op-btn-accent mt-2 mb-3 px-8 w-[210px] md:w-auto"
               >
                 {t("buycredits")}
               </button>
@@ -420,9 +420,9 @@ function GenerateToken() {
               </form>
             </ModalUi>
           </div>
-          {isSubscribe?.plan === "freeplan" && isEnableSubscription && (
+          {isEnableSubscription && isSubscribe?.plan === "freeplan" && (
             <div data-tut="apisubscribe">
-              <SubscribeCard plan_code={isSubscribe?.plan} />
+              <SubscribeCard />
             </div>
           )}
         </>
