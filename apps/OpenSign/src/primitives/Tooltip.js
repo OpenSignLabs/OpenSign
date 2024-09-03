@@ -7,12 +7,13 @@ const Tooltip = ({
   url,
   iconColor,
   maxWidth,
-  handleTooltipClick,
-  type
+  handleOnlickHelp
 }) =>
-  url || type ? (
+  url || handleOnlickHelp ? (
     <button
-      onClick={() => (type ? handleTooltipClick(type) : openInNewTab(url))}
+      onClick={() =>
+        handleOnlickHelp ? handleOnlickHelp() : openInNewTab(url)
+      }
       className={"text-center cursor-pointer"}
     >
       <sup>

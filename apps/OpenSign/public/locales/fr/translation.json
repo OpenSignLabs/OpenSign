@@ -362,7 +362,7 @@
   "initial-teb": "Initiales",
   "signature-tab": "Signature",
   "your-signature": "Votre signature",
-  "copy-to-all-pages": "Copier sur toutes les pages",
+  "copy-title": "Copier le widget vers",
   "contact-delete-alert": "Êtes-vous sûr de vouloir supprimer ce contact ?",
   "reset-password": "Le lien de réinitialisation du mot de passe a été envoyé à votre identifiant de messagerie",
   "reset-password-alert-2": "Veuillez configurer l'adaptateur de messagerie",
@@ -373,7 +373,7 @@
     "All pages": "Toutes les pages",
     "All pages but last": "Toutes les pages sauf la dernière",
     "All pages but first": "Toutes les pages sauf la première",
-    "Beside to widget": "À côté du widget"
+    "Next to current widget": "À côté du widget actuel"
   },
   "options": "Possibilités",
   "minimun-check": "Vérification minimale",

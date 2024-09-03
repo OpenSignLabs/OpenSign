@@ -24,7 +24,6 @@ import { RWebShare } from "react-web-share";
 import Alert from "../primitives/Alert";
 import Tour from "reactour";
 import TourContentWithBtn from "../primitives/TourContentWithBtn";
-import userName from "../assets/images/user-name-image.png";
 import publicRole from "../assets/images/public-role.mp4";
 
 function UserProfile() {
@@ -65,7 +64,6 @@ function UserProfile() {
   const [tourStatus, setTourStatus] = useState([]);
   const [isProfileTour, setIsProfileTour] = useState(false);
   const [isDontShow, setIsDontShow] = useState(false);
-  const [isPublicInfo, setIsPublicInfo] = useState({});
   const getPublicUrl = isStaging
     ? `https://staging.opensign.me/${extendUser?.[0]?.UserName}`
     : `https://opensign.me/${extendUser?.[0]?.UserName}`;
@@ -345,31 +343,6 @@ function UserProfile() {
 
   const tourConfig = [
     {
-      selector: '[data-tut="username"]',
-      content: () => (
-        <TourContentWithBtn
-          message={t("tour-mssg.username")}
-          isChecked={handleDontShow}
-          image={userName}
-        />
-      ),
-      position: "top",
-      style: { fontSize: "13px" }
-    },
-    {
-      selector: '[data-tut="tagline"]',
-      content: () => (
-        <TourContentWithBtn
-          message={t("tour-mssg.tagline")}
-          isChecked={handleDontShow}
-          image={userName}
-        />
-      ),
-      position: "top",
-      style: { fontSize: "13px" }
-    },
-    {
-      selector: '[data-tut="publicTemplate"]',
       content: () => (
         <TourContentWithBtn
           message={t("tour-mssg.public-template")}
@@ -429,20 +402,8 @@ function UserProfile() {
   const handleDontShow = (isChecked) => {
     setIsDontShow(isChecked);
   };
-  const handleTooltipClick = (type) => {
-    if (type === "public") {
-      setIsPublicInfo({
-        status: true,
-        message: t("tour-mssg.username"),
-        image: userName
-      });
-    } else if (type === "tagline") {
-      setIsPublicInfo({
-        status: true,
-        message: t("tour-mssg.tagline"),
-        image: userName
-      });
-    }
+  const handleOnlickHelp = () => {
+    setIsProfileTour(false);
   };
   return (
     <React.Fragment>
@@ -501,17 +462,6 @@ function UserProfile() {
               </div>
             </div>
             <ul className="w-full flex flex-col p-2 text-sm">
-              <li
-                className={`flex justify-between items-center border-t-[1px] border-gray-300 break-all ${
-                  editmode ? "py-1.5" : "py-2"
-                }`}
-              >
-                <span className="font-semibold">{t("language")}:</span>{" "}
-                <SelectLanguage
-                  isProfile={true}
-                  updateExtUser={updateExtUser}
-                />
-              </li>
               <li
                 className={`flex justify-between items-center border-t-[1px] border-gray-300 break-all ${
                   editmode ? "py-1.5" : "py-2"
@@ -608,26 +558,13 @@ function UserProfile() {
                   <li className="flex flex-row justify-between md:items-center border-t-[1px] border-gray-300 py-2 break-all">
                     <span className="font-semibold flex gap-1">
                       {t("public-profile")} :{" "}
-                      <Tooltip
-                        handleTooltipClick={handleTooltipClick}
-                        type="public"
-                      />
+                      <Tooltip handleOnlickHelp={handleOnlickHelp} />
                     </span>
-                    <div
-                      data-tut="username"
-                      className="flex flex-row items-center gap-1"
-                    >
+                    <div className="flex flex-row items-center gap-1">
                       {editmode || !extendUser?.[0]?.UserName ? (
                         <>
                           <input
                             maxLength={40}
-                            style={{
-                              border:
-                                !isSubscribe &&
-                                publicUserName?.length > 0 &&
-                                publicUserName?.length < 9 &&
-                                "solid red"
-                            }}
                             onChange={handleOnchangeUserName}
                             value={publicUserName}
                             disabled={!editmode}
@@ -669,15 +606,9 @@ function UserProfile() {
                   <li className="flex flex-row justify-between items-center border-t-[1px] border-gray-300 py-2 break-all">
                     <span className="font-semibold flex gap-1">
                       {t("tagline")} :{" "}
-                      <Tooltip
-                        handleTooltipClick={handleTooltipClick}
-                        type="tagline"
-                      />
+                      <Tooltip handleOnlickHelp={handleOnlickHelp} />
                     </span>
-                    <div
-                      data-tut="tagline"
-                      className="flex flex-row md:items-center gap-1"
-                    >
+                    <div className="flex flex-row md:items-center gap-1">
                       {editmode || !extendUser?.[0]?.Tagline ? (
                         <input
                           maxLength={40}
@@ -734,6 +665,17 @@ function UserProfile() {
                   </div>
                 </li>
               )}
+              <li
+                className={`flex justify-between items-center border-b-[1px] border-gray-300 break-all ${
+                  editmode ? "py-1.5" : "py-2"
+                }`}
+              >
+                <span className="font-semibold">{t("language")}:</span>{" "}
+                <SelectLanguage
+                  isProfile={true}
+                  updateExtUser={updateExtUser}
+                />
+              </li>
             </ul>
             <div
               className={`${
@@ -744,6 +686,7 @@ function UserProfile() {
                 type="button"
                 onClick={(e) => {
                   if (
+                    editmode &&
                     !isSubscribe &&
                     publicUserName?.length > 0 &&
                     publicUserName?.length < 9
@@ -813,28 +756,6 @@ function UserProfile() {
               )}
             </ModalUi>
           )}
-
-          <ModalUi
-            isOpen={isPublicInfo.status}
-            title={t("validation-alert")}
-            handleClose={() => setIsPublicInfo({})}
-          >
-            <div className="p-[20px] h-full">
-              <p>{isPublicInfo.message}</p>
-              <div className="my-2">
-                <img src={isPublicInfo.image} />
-              </div>
-
-              <div className="h-[1px] w-full my-[15px] bg-[#9f9f9f]"></div>
-              <button
-                onClick={() => setIsPublicInfo({})}
-                type="button"
-                className="op-btn op-btn-ghost shadow-md"
-              >
-                {t("close")}
-              </button>
-            </div>
-          </ModalUi>
 
           {isUpgrade && (
             <div className="op-modal op-modal-open">
