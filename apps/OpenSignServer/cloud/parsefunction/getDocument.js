@@ -22,6 +22,7 @@ export default async function getDocument(request) {
         query.include('Signers');
         query.include('AuditTrail.UserPtr');
         query.include('Placeholders');
+        query.include('DeclineBy');
         query.notEqualTo('IsArchive', true);
         const res = await query.first({ useMasterKey: true });
         if (res) {
