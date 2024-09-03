@@ -77,7 +77,6 @@ function PlaceHolderSign() {
   const [xySignature, setXYSignature] = useState({});
   const [dragKey, setDragKey] = useState();
   const [signersdata, setSignersData] = useState([]);
-  const [signerObjId, setSignerObjId] = useState();
   const [signerPos, setSignerPos] = useState([]);
   const [isSelectListId, setIsSelectId] = useState();
   const [isSendAlert, setIsSendAlert] = useState({});
@@ -98,7 +97,6 @@ function PlaceHolderSign() {
   const [tourStatus, setTourStatus] = useState([]);
   const [signerUserId, setSignerUserId] = useState();
   const [pdfOriginalWH, setPdfOriginalWH] = useState([]);
-  const [contractName, setContractName] = useState("");
   const [containerWH, setContainerWH] = useState();
   const { docId } = useParams();
   const signRef = useRef(null);
@@ -341,8 +339,6 @@ function PlaceHolderSign() {
       else if (documentData[0].Signers && documentData[0].Signers.length > 0) {
         const currEmail = documentData[0].ExtUserPtr.Email;
         setCurrentId(currEmail);
-        setSignerObjId(documentData[0].Signers[0].objectId);
-        setContractName(documentData[0].Signers[0].className);
         setIsSelectId(0);
         //if condition when placeholder array present then update signers local array according to placeholder length
         if (
@@ -466,8 +462,6 @@ function PlaceHolderSign() {
     getSignerPos(item, monitor);
   };
   const getSignerPos = (item, monitor) => {
-    //  setSignerObjId("");
-    // setContractName("");
     if (uniqueId) {
       const posZIndex = zIndex + 1;
       setZIndex(posZIndex);
@@ -583,7 +577,6 @@ function PlaceHolderSign() {
               Role: "prefill",
               Id: key
             };
-
             signerPos.push(prefileTextWidget);
             setSignerPos(signerPos);
           } else {
@@ -760,9 +753,10 @@ function PlaceHolderSign() {
           } else {
             const updatedData = signerPos.map((item) => {
               if (item.Id === Id) {
-                // Destructuring to remove the name field
-                const { placeHolder, ...rest } = item;
-                return rest;
+                // Create a copy of the item object and delete the placeHolder field
+                const updatedItem = { ...item };
+                delete updatedItem.placeHolder;
+                return updatedItem;
               }
               return item;
             });
@@ -848,9 +842,9 @@ function PlaceHolderSign() {
     const filterPrefill = signerPos?.filter((data) => data.Role !== "prefill");
     const getPrefill = signerPos?.filter((data) => data.Role === "prefill");
     let isLabel = false;
+    const prefillPlaceholder = getPrefill[0]?.placeHolder;
     //condition is used to check text widget data is empty or have response
     if (getPrefill && getPrefill.length > 0) {
-      const prefillPlaceholder = getPrefill[0].placeHolder;
       if (prefillPlaceholder) {
         prefillPlaceholder.map((data) => {
           if (!isLabel) {
@@ -860,28 +854,33 @@ function PlaceHolderSign() {
       }
     }
     let isSignatureExist = true; // variable is used to check a signature widget exit or not then execute other code
-    //for loop is used to check signature widget exist or not
-    for (let item of filterPrefill) {
-      let signatureExist = false; // Reset for each iteration
-      for (let x of item.placeHolder) {
-        if (!signatureExist) {
-          const typeExist = x.pos.some((data) => data?.type);
-          if (typeExist) {
-            signatureExist = x.pos.some((data) => data?.type === "signature");
-          } else {
-            signatureExist = x.pos.some((data) => !data.isStamp);
+    if (prefillPlaceholder) {
+      //for loop is used to check signature widget exist or not
+      for (let item of filterPrefill) {
+        let signatureExist = false; // Reset for each iteration
+        for (let x of item.placeHolder) {
+          if (!signatureExist) {
+            const typeExist = x.pos.some((data) => data?.type);
+            if (typeExist) {
+              signatureExist = x.pos.some((data) => data?.type === "signature");
+            } else {
+              signatureExist = x.pos.some((data) => !data.isStamp);
+            }
           }
         }
-      }
-      if (!signatureExist) {
-        isSignatureExist = false;
-        setIsSendAlert({ mssg: "sure", alert: true });
+        if (!signatureExist) {
+          isSignatureExist = false;
+          setIsSendAlert({ mssg: "sure", alert: true });
+        }
       }
     }
     if (getPrefill && isLabel) {
       setIsSendAlert({ mssg: textWidget, alert: true });
     } else if (isSignatureExist) {
-      if (filterPrefill.length === signersdata.length) {
+      const isPlaceholderExist = filterPrefill.every(
+        (data) => data.placeHolder
+      );
+      if (isPlaceholderExist) {
         const IsSignerNotExist = filterPrefill?.filter((x) => !x.signerObjId);
         if (IsSignerNotExist && IsSignerNotExist?.length > 0) {
           setSignerExistModal(true);
@@ -1629,8 +1628,6 @@ function PlaceHolderSign() {
     setUniqueId(newId);
     setIsSelectId(signersdata.length - 1);
     setBlockColor(color[signersdata.length]);
-    setContractName("contracts_Contactbook");
-    setSignerObjId(data.objectId);
   };
 
   const closePopup = () => {
@@ -2063,7 +2060,6 @@ function PlaceHolderSign() {
                         setIsPageCopy={setIsPageCopy}
                         signersdata={signersdata}
                         setSignKey={setSignKey}
-                        setSignerObjId={setSignerObjId}
                         handleLinkUser={handleLinkUser}
                         setUniqueId={setUniqueId}
                         isDragging={isDragging}
@@ -2112,9 +2108,7 @@ function PlaceHolderSign() {
                         signerPos={signerPos}
                         signersdata={signersdata}
                         isSelectListId={isSelectListId}
-                        setSignerObjId={setSignerObjId}
                         setIsSelectId={setIsSelectId}
-                        setContractName={setContractName}
                         isSigners={true}
                         setIsShowEmail={setIsShowEmail}
                         isMailSend={isMailSend}
@@ -2143,9 +2137,7 @@ function PlaceHolderSign() {
                           signerPos={signerPos}
                           signersdata={signersdata}
                           isSelectListId={isSelectListId}
-                          setSignerObjId={setSignerObjId}
                           setIsSelectId={setIsSelectId}
-                          setContractName={setContractName}
                           setUniqueId={setUniqueId}
                           setRoleName={setRoleName}
                           sendInOrder={pdfDetails[0].SendinOrder}

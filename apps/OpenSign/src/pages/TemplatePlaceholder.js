@@ -62,7 +62,6 @@ const TemplatePlaceholder = () => {
   const [xySignature, setXYSignature] = useState({});
   const [dragKey, setDragKey] = useState();
   const [signersdata, setSignersData] = useState([]);
-  const [signerObjId, setSignerObjId] = useState();
   const [signerPos, setSignerPos] = useState([]);
   const [isSelectListId, setIsSelectId] = useState();
   const [isSendAlert, setIsSendAlert] = useState(false);
@@ -84,7 +83,6 @@ const TemplatePlaceholder = () => {
   const [tourStatus, setTourStatus] = useState([]);
   const [signerUserId, setSignerUserId] = useState();
   const [pdfOriginalWH, setPdfOriginalWH] = useState([]);
-  const [contractName, setContractName] = useState("");
   const [containerWH, setContainerWH] = useState();
   const signRef = useRef(null);
   const dragRef = useRef(null);
@@ -241,8 +239,6 @@ const TemplatePlaceholder = () => {
         setPdfDetails(documentData);
         setIsSigners(true);
         if (documentData[0].Signers && documentData[0].Signers.length > 0) {
-          setSignerObjId(documentData[0].Signers[0].objectId);
-          setContractName(documentData[0].Signers[0].className);
           setIsSelectId(0);
           if (
             documentData[0].Placeholders &&
@@ -446,8 +442,8 @@ const TemplatePlaceholder = () => {
             pos: dropData
           };
         }
-
-        const getPlaceHolder = signer?.placeHolder;
+        let filterSignerPos = signerPos.find((data) => data.Id === uniqueId);
+        const getPlaceHolder = filterSignerPos?.placeHolder;
         if (getPlaceHolder) {
           //checking exist placeholder on same page
           currentPagePosition = getPlaceHolder.find(
@@ -601,10 +597,6 @@ const TemplatePlaceholder = () => {
   //function for delete signature block
   const handleDeleteSign = (key, Id) => {
     const updateData = [];
-    // const filterSignerPos = signerPos.filter(
-    //   (data) => data.signerObjId === signerId
-    // );
-
     const filterSignerPos = signerPos.filter((data) => data.Id === Id);
 
     if (filterSignerPos.length > 0) {
@@ -637,11 +629,11 @@ const TemplatePlaceholder = () => {
 
           setSignerPos(newUpdateSigner);
         } else {
-          const updateFilter = signerPos.filter((data) => data.Id !== Id);
           const getRemainPage = filterSignerPos[0].placeHolder.filter(
             (data) => data.pageNumber !== pageNumber
           );
-
+          //condition to check placeholder length is greater than 1 do not need to remove whole placeholder
+          //array only resove particular widgets
           if (getRemainPage && getRemainPage.length > 0) {
             const newUpdatePos = filterSignerPos.map((obj) => {
               if (obj.Id === Id) {
@@ -655,7 +647,16 @@ const TemplatePlaceholder = () => {
 
             setSignerPos(signerupdate);
           } else {
-            setSignerPos(updateFilter);
+            const updatedData = signerPos.map((item) => {
+              if (item.Id === Id) {
+                // Create a copy of the item object and delete the placeHolder field
+                const updatedItem = { ...item };
+                delete updatedItem.placeHolder;
+                return updatedItem;
+              }
+              return item;
+            });
+            setSignerPos(updatedData);
           }
         }
       }
@@ -690,12 +691,12 @@ const TemplatePlaceholder = () => {
   const handleMouseLeave = () => {
     setSignBtnPosition([xySignature]);
   };
-
   const alertSendEmail = async () => {
-    if (signerPos.length !== signersdata.length) {
-      setIsSendAlert(true);
-    } else {
+    const isPlaceholderExist = signerPos.every((data) => data.placeHolder);
+    if (isPlaceholderExist) {
       handleSaveTemplate();
+    } else {
+      setIsSendAlert(true);
     }
   };
 
@@ -944,8 +945,6 @@ const TemplatePlaceholder = () => {
   // save Role in entry in signerList and user
   const handleAddRole = (e) => {
     e.preventDefault();
-    setSignerObjId("");
-    setContractName("");
     const count = signersdata.length > 0 ? signersdata.length + 1 : 1;
     const Id = randomId();
     const index = signersdata.length;
@@ -1577,7 +1576,6 @@ const TemplatePlaceholder = () => {
                         signersdata={signersdata}
                         setIsPageCopy={setIsPageCopy}
                         setSignKey={setSignKey}
-                        setSignerObjId={setSignerObjId}
                         isDragging={isDragging}
                         setShowDropdown={setShowDropdown}
                         setCurrWidgetsDetails={setCurrWidgetsDetails}
@@ -1620,9 +1618,7 @@ const TemplatePlaceholder = () => {
                     signerPos={signerPos}
                     signersdata={signersdata}
                     isSelectListId={isSelectListId}
-                    setSignerObjId={setSignerObjId}
                     setIsSelectId={setIsSelectId}
-                    setContractName={setContractName}
                     isSigners={isSigners}
                     setIsShowEmail={setIsShowEmail}
                     isMailSend={isMailSend}
@@ -1652,10 +1648,8 @@ const TemplatePlaceholder = () => {
                       setSignerPos={setSignerPos}
                       signersdata={signersdata}
                       isSelectListId={isSelectListId}
-                      setSignerObjId={setSignerObjId}
                       setRoleName={setRoleName}
                       setIsSelectId={setIsSelectId}
-                      setContractName={setContractName}
                       handleAddSigner={handleAddSigner}
                       setUniqueId={setUniqueId}
                       handleDeleteUser={handleDeleteUser}

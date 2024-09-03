@@ -329,7 +329,6 @@ function Placeholder(props) {
 
     //condition for only placeholder and template flow
     if (props.data && props?.pos?.type !== textWidget) {
-      props.setSignerObjId(props?.data?.signerObjId);
       props.setUniqueId(props?.data?.Id);
       const checkIndex = props.xyPostion.findIndex(
         (data) => data.Id === props.data.Id
@@ -360,7 +359,6 @@ function Placeholder(props) {
     //and on save or cancel button of copy all page popup i have set this temp signer Id in unique id
 
     if (props.data && props?.pos?.type !== textWidget) {
-      props.setSignerObjId(props?.data?.signerObjId);
       props.setUniqueId(props?.data?.Id);
       const checkIndex = props.xyPostion.findIndex(
         (data) => data.Id === props.data.Id
@@ -369,7 +367,6 @@ function Placeholder(props) {
       props.setIsSelectId(checkIndex || 0);
     } else if (props.data && props.pos.type === textWidget) {
       props.setTempSignerId(props.uniqueId);
-      props.setSignerObjId(props?.data?.signerObjId);
       props.setUniqueId(props?.data?.Id);
       const checkIndex = props.xyPostion.findIndex(
         (data) => data.Id === props.data.Id
