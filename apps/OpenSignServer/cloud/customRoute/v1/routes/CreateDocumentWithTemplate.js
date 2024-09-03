@@ -81,7 +81,6 @@ export default async function createDocumentWithTemplate(request, response) {
         objectId: extUser.get('TenantId').id,
       });
       subscription.include('ExtUserPtr');
-      subscription.greaterThan('AllowedApis', 0);
       const resSub = await subscription.first({ useMasterKey: true });
       if (resSub) {
         const _resSub = JSON.parse(JSON.stringify(resSub));

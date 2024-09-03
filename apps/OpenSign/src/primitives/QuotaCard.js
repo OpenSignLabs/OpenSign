@@ -18,7 +18,7 @@ const QuotaCard = ({ isSignyourself, handlClose }) => {
           <h2 className="op-card-title">
             {t("upgrade-to") + " Paid " + t("plan")}
           </h2>
-          <p className="text-primary-content">{t("quotamailselfsign")}</p>
+          <p>{t("quotamailselfsign")}</p>
           <div className="op-card-actions justify-end">
             <button
               onClick={() => navigate("/subscription")}
@@ -34,8 +34,8 @@ const QuotaCard = ({ isSignyourself, handlClose }) => {
     <>
       <div className="op-card op-bg-primary text-primary-content w-full shadow-lg">
         <div className="op-card-body">
-          <p className="text-primary-content">{t("quotamail")}</p>
-          <p className="text-primary-content">{t("quotamailTip")}</p>
+          <p>{t("quotamail")}</p>
+          <p>{t("quotamailTip")}</p>
           <div className="op-card-actions justify-end">
             <button
               onClick={() => navigate("/subscription")}
