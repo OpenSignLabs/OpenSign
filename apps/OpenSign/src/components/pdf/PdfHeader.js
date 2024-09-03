@@ -38,7 +38,8 @@ function Header({
   clickOnZoomIn,
   clickOnZoomOut,
   handleRotationFun,
-  isDisableRotate
+  isDisableRotate,
+  templateId
 }) {
   const { t } = useTranslation();
   const filterPrefill =
@@ -52,7 +53,6 @@ function Header({
     const currentDecline = { currnt: "Sure", isDeclined: true };
     setIsDecline(currentDecline);
   };
-
   return (
     <div className="flex py-[5px]">
       {isMobile && isShowHeader ? (
@@ -266,6 +266,15 @@ function Header({
                     </DropdownMenu.Root>
                   </div>
                 )}
+                {isPublicTemplate && (
+                  <div
+                    data-tut="reactourThird"
+                    onClick={() => embedWidgetsData()}
+                    className="border-none font-[650] text-[14px] op-link op-link-primary no-underline"
+                  >
+                    {t("sign-now")}
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -374,15 +383,32 @@ function Header({
               </div>
             ) : (
               <div className="flex" data-tut="reactourFifth">
-                <button
-                  onClick={() => window.history.go(-2)}
-                  type="button"
-                  className="op-btn op-btn-ghost op-btn-sm mr-[3px]"
-                >
-                  {t("back")}
-                </button>
+                {!templateId && (
+                  <button
+                    onClick={() => window.history.go(-2)}
+                    type="button"
+                    className="op-btn op-btn-ghost op-btn-sm mr-[3px]"
+                  >
+                    {t("back")}
+                  </button>
+                )}
                 {currentSigner && (
                   <>
+                    {templateId && (
+                      <button
+                        onClick={() =>
+                          handleDownloadPdf(
+                            pdfDetails,
+                            pdfUrl,
+                            setIsDownloading
+                          )
+                        }
+                        type="button"
+                        className="op-btn op-btn-ghost op-btn-sm mr-[3px]"
+                      >
+                        <span className="hidden lg:block">{t("download")}</span>
+                      </button>
+                    )}
                     <button
                       className="op-btn op-btn-secondary op-btn-sm mr-[3px] shadow"
                       onClick={() => handleDeclinePdfAlert()}
@@ -396,16 +422,22 @@ function Header({
                     >
                       {t("finish")}
                     </button>
-                    <button
-                      type="button"
-                      className="op-btn op-btn-neutral op-btn-sm mr-[3px] shadow"
-                      onClick={() =>
-                        handleDownloadPdf(pdfDetails, pdfUrl, setIsDownloading)
-                      }
-                    >
-                      <i className="fa-light fa-arrow-down font-semibold lg:hidden"></i>
-                      <span className="hidden lg:block">{t("download")}</span>
-                    </button>
+                    {!templateId && (
+                      <button
+                        type="button"
+                        className="op-btn op-btn-neutral op-btn-sm mr-[3px] shadow"
+                        onClick={() =>
+                          handleDownloadPdf(
+                            pdfDetails,
+                            pdfUrl,
+                            setIsDownloading
+                          )
+                        }
+                      >
+                        <i className="fa-light fa-arrow-down font-semibold lg:hidden"></i>
+                        <span className="hidden lg:block">{t("download")}</span>
+                      </button>
+                    )}
                   </>
                 )}
               </div>

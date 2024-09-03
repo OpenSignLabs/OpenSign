@@ -1,9 +1,12 @@
 {
+  "headernews": "New feature: Public profiles are now live! Easily create and share public templates",
+  "headernewsbtn": "Setup Now",
   "create-account": "Create Account",
   "login": "Login",
   "language": "Language",
   "name": "Name",
   "phone": "Phone",
+  "phone-optional": "optional",
   "email": "Email",
   "company": "Company",
   "job-title": "Job title",
@@ -38,6 +41,7 @@
   "upgrade-now": "Upgrade now",
   "upgrade-to": "Upgrade to",
   "plan": "Plan",
+  "subscribe-card-teamplan":"Unlock the full power of collaboration! Create unlimited organizations, teams, and hierarchies. Share templates seamlessly across teams and assign custom user roles. Elevate your workflow today!",
   "subscribe-card-plan": "Unlock premium features starting at just {{premiumPrice}}/month. Enjoy enhanced performance and only {{addonPrice}} per additional credit after your included premium credits.",
   "user-name-limit-char": "To have a username less than 8 character please subscribe",
   "tour-content": "Don't show this again",
@@ -126,7 +130,8 @@
     "Share with team": "Share with team",
     "Share": "Share",
     "View": "View",
-    "option": "Option"
+    "option": "Option",
+    "Embed": "Embed"
   },
   "report-heading": {
     "Sr.No": "Sr.No",
@@ -213,8 +218,8 @@
   "initials": "Initials",
   "API": "API",
   "api-token": "API Token",
-  "regenerate-token": "Regenerate Token",
-  "generate-token": "Generate Token",
+  "regenerate-token": "Regenerate Live Token",
+  "generate-token": "Generate Live Token",
   "view-docs": "View Docs",
   "generate-token-alert": "Are you sure you want to regenerate token it will expire old token?",
   "yes": "Yes",
@@ -309,7 +314,7 @@
   "contact-details": "Contact Details",
   "verify-email": "Please verify your email !",
   "send-otp": " Send OTP",
-  "otp-placeholder": "Enter OTP received over email",
+  "otp-placeholder": "Enter verification code received over email",
   "loading-doc": "Loading Document..",
   "widgets-name": {
     "signature": "signature",
@@ -359,7 +364,7 @@
   "initial-teb": "Initials",
   "signature-tab": "Signature",
   "your-signature": "Your signature",
-  "copy-to-all-pages": "Copy to all pages",
+  "copy-title": "Copy widget to",
   "contact-delete-alert": "Are you sure you want to delete this contact?",
   "reset-password-alert-1": "Reset password link has been sent to your email id",
   "reset-password-alert-2": "Please setup email adapter ",
@@ -369,7 +374,8 @@
   "copy-type": {
     "All pages": "All pages",
     "All pages but last": "All pages but last",
-    "All pages but first": "All pages but first"
+    "All pages but first": "All pages but first",
+    "Next to current widget": "Next to current widget"
   },
   "options": "Options",
   "minimun-check": "Minimun check",
@@ -446,7 +452,7 @@
   "decline-alert-3": "You can not sign this document as it has been declined/revoked.",
   "sign here": "Sign here",
   "guest-email-alert": "verification code is sent to your email",
-  "get-otp-alert": "you will get a OTP via Email",
+  "get-otp-alert": "you will get a verification code via Email",
   "user-already-exist": "User already exist.",
   "server-error": "Internal server error !",
   "fill-required-details!": "Please fill required details!",
@@ -551,7 +557,7 @@
     "home-layout-1": "You have logged in successfully! Let's take a look.",
     "home-layout-2": "To upload documents for self-signing or to request others’ signatures, simply select the respective buttons.",
     "home-layout-3": "You are ready to start using OpenSign! If you need support feel free to contact us.",
-    "generate-token": "Upgrade now to generate API token",
+    "generate-token": "Upgrade now to generate production API token.",
     "opensign-drive-1": "Click on the breadcrumb links to easily navigate through the folder hierarchy and view the documents within each folder.",
     "opensign-drive-2": "Click the add button to create a new folder or document.",
     "opensign-drive-3": "Sort your documents by Date or Name using this menu.",
@@ -585,7 +591,8 @@
     "Out for signatures": "Clicking on this card will take you to a list of documents awaiting signature.",
     "Recent signature requests": "This is a list of documents that are waiting for your signature.",
     "Recently sent for signatures": "This is a list of documents you've sent to other parties for signature.",
-    "Drafts": "This are documents you have started but have not finalized for sending."
+    "Drafts": "This are documents you have started but have not finalized for sending.",
+    "public-template": "This video demonstrates how to set up your personalized public profile, such as ‘https://opensign.me/your-username’. You’ll also learn how to customize your tagline and make your templates available for public signing."
   },
   "enter-email-plaholder": "Add an email address and hit enter",
   "success-email-alert": "Email sent successfully!",
@@ -605,7 +612,25 @@
   "user-name-exist": "user name already exist",
   "format": "format",
   "select-date-format": "Select a date format",
-  "rotate-right": "Rotate right",
-  "rotate-left": "Rotate left",
-  "rotate-alert-mssg": "All widgets on this page will be lost. Are you sure you want to proceed?"
+  "quantityofcredits": "Quantity of premium credits",
+  "remainingcredits": "Premium credits available:",
+  "remainingcreditshelp":"Use premium credits for API document signing, bulk sending, or embedding OpenSign integration on your website. You have {{allowedcredits}} included credits and {{addoncredits}} additional purchased credits remaining.",
+  "additional-credits": "Please purchase premium credits",
+  "quotaerrquicksend": "Quota Reached, You don't have enough credits.",
+  "buycredits": "Buy Premium Credits",
+  "rotate-right":"Rotate right",
+  "rotate-left":"Rotate left",
+  "rotate-alert-mssg":"All widgets on this page will be lost. Are you sure you want to proceed?",
+  "templateid":"Template-Id",
+  "bulksendsubcriptionalert":"Please upgrade to Professional or Team plan to use bulk send.",
+  "generate-test-token":"Generate Test Token",
+  "regenerate-test-token":"Regenerate Test Token",
+  "help-test-token":"This token can be used to test the APIs at the https://sandbox.opensignlabs.com/api/v1 endpoint, allowing you to conduct unlimited document signatures. Please note that the sandbox API will sign your documents with self-signed certificates, which may not be recognized as valid by Adobe. Once you’ve completed your testing, you can upgrade to one of our paid plans to generate a production token.",
+  "help-api-token":"This token can be used to access the production APIs at the {{origin}}/api/v1 endpoint. It can only be generated on one of our paid plans.",
+  "Add-Webhook":"Add Webhook",
+  "quotamailselfsign": "You've reached your limit of 20 emails for this month. Upgrade now to continue sending emails directly.",
+  "quotamail": "You've reached your limit of 20 signature request emails for this month. Upgrade now to continue sending emails directly.",
+  "quotamailTip":"Tip: You can still sign unlimited documents by manually sharing the signing request links below.",
+  "quotamailhead":"Quota Reached"
+
 }
