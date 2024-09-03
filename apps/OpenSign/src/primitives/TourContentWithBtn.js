@@ -17,7 +17,7 @@ export default function TourContentWithBtn({ message, isChecked, video }) {
       {video && (
         <div className="flex items-center justify-center my-[10px] border-[1.3px] border-gray-400 rounded-sm">
           <iframe
-            src="https://www.youtube.com/embed/aGjaMfm7Gqo?si=2Ul0nUlFovlVoZ1U"
+            src={video}
             title="YouTube video player"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
             allowFullScreen

@@ -24,7 +24,6 @@ import { RWebShare } from "react-web-share";
 import Alert from "../primitives/Alert";
 import Tour from "reactour";
 import TourContentWithBtn from "../primitives/TourContentWithBtn";
-import publicRole from "../assets/images/public-role.mp4";
 
 function UserProfile() {
   const navigate = useNavigate();
@@ -347,7 +346,7 @@ function UserProfile() {
         <TourContentWithBtn
           message={t("tour-mssg.public-template")}
           isChecked={handleDontShow}
-          video={publicRole}
+          video="https://www.youtube.com/embed/aGjaMfm7Gqo?si=2Ul0nUlFovlVoZ1U"
         />
       ),
       position: "top",
