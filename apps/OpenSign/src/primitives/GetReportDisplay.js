@@ -1661,8 +1661,8 @@ const ReportTable = (props) => {
                                       )}
                                     </>
                                   )}
-                                {!validplan[isSubscribe.plan] &&
-                                  isEnableSubscription && (
+                                {isEnableSubscription &&
+                                  !validplan[isSubscribe.plan] && (
                                     <>
                                       <div
                                         className="op-btn op-btn-sm op-btn-circle op-btn-ghost text-primary-content absolute right-2 top-2 z-40"
@@ -1670,14 +1670,11 @@ const ReportTable = (props) => {
                                       >
                                         ✕
                                       </div>
-                                      <SubscribeCard
-                                        plan={"TEAMS"}
-                                        price={"20"}
-                                      />
+                                      <SubscribeCard plan="TEAMS" />
                                     </>
                                   )}
-                                {validplan[isSubscribe.plan] &&
-                                  !isEnableSubscription && (
+                                {!isEnableSubscription &&
+                                  validplan[isSubscribe.plan] && (
                                     <>
                                       <h3 className="text-base-content font-bold text-lg pt-[15px] px-[20px]">
                                         {t("share-with")}

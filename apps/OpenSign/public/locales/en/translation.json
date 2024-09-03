@@ -41,6 +41,7 @@
   "upgrade-now": "Upgrade now",
   "upgrade-to": "Upgrade to",
   "plan": "Plan",
+  "subscribe-card-teamplan":"Unlock the full power of collaboration! Create unlimited organizations, teams, and hierarchies. Share templates seamlessly across teams and assign custom user roles. Elevate your workflow today!",
   "subscribe-card-plan": "Unlock premium features starting at just {{premiumPrice}}/month. Enjoy enhanced performance and only {{addonPrice}} per additional credit after your included premium credits.",
   "user-name-limit-char": "To have a username less than 8 character please subscribe",
   "tour-content": "Don't show this again",
@@ -217,8 +218,8 @@
   "initials": "Initials",
   "API": "API",
   "api-token": "API Token",
-  "regenerate-token": "Regenerate Token",
-  "generate-token": "Generate Token",
+  "regenerate-token": "Regenerate Live Token",
+  "generate-token": "Generate Live Token",
   "view-docs": "View Docs",
   "generate-token-alert": "Are you sure you want to regenerate token it will expire old token?",
   "yes": "Yes",
@@ -633,5 +634,11 @@
   "generate-test-token":"Generate Test Token",
   "regenerate-test-token":"Regenerate Test Token",
   "help-test-token":"This token can be used to test the APIs at the https://sandbox.opensignlabs.com/api/v1 endpoint, allowing you to conduct unlimited document signatures. Please note that the sandbox API will sign your documents with self-signed certificates, which may not be recognized as valid by Adobe. Once you’ve completed your testing, you can upgrade to one of our paid plans to generate a production token.",
-  "help-api-token":"This token can be used to access the production APIs at the {{origin}}/api/v1 endpoint. It can only be generated on one of our paid plans."
+  "help-api-token":"This token can be used to access the production APIs at the {{origin}}/api/v1 endpoint. It can only be generated on one of our paid plans.",
+  "Add-Webhook":"Add Webhook",
+  "quotamailselfsign": "You've reached your limit of 20 emails for this month. Upgrade now to continue sending emails directly.",
+  "quotamail": "You've reached your limit of 20 signature request emails for this month. Upgrade now to continue sending emails directly.",
+  "quotamailTip":"Tip: You can still sign unlimited documents by manually sharing the signing request links below.",
+  "quotamailhead":"Quota Reached"
+
 }

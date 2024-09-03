@@ -57,6 +57,7 @@ import PdfZoom from "../components/pdf/PdfZoom";
 import Loader from "../primitives/Loader";
 import { useTranslation } from "react-i18next";
 import RotateAlert from "../components/RotateAlert";
+import QuotaCard from "../primitives/QuotaCard";
 //For signYourself inProgress section signer can add sign and complete doc sign.
 function SignYourSelf() {
   const { t } = useTranslation();
@@ -128,56 +129,37 @@ function SignYourSelf() {
   const isHeader = useSelector((state) => state.showHeader);
   const [scale, setScale] = useState(1);
   const [pdfRotateBase64, setPdfRotatese64] = useState("");
-  const [isRotate, setIsRotate] = useState({
-    status: false,
-    degree: 0
-  });
+  const [isRotate, setIsRotate] = useState({ status: false, degree: 0 });
+  const [isSubscribe, setIsSubscribe] = useState({ plan: "", isValid: true });
   const divRef = useRef(null);
   const nodeRef = useRef(null);
   const [, drop] = useDrop({
     accept: "BOX",
     drop: (item, monitor) => addPositionOfSignature(item, monitor),
-    collect: (monitor) => ({
-      isOver: !!monitor.isOver()
-    })
+    collect: (monitor) => ({ isOver: !!monitor.isOver() })
   });
   const pdfRef = useRef();
   const [{ isDragSign }, dragSignature] = useDrag({
     type: "BOX",
-    item: {
-      id: 1,
-      text: "signature"
-    },
-    collect: (monitor) => ({
-      isDragSign: !!monitor.isDragging()
-    })
+    item: { id: 1, text: "signature" },
+    collect: (monitor) => ({ isDragSign: !!monitor.isDragging() })
   });
-
   const [{ isDragStamp }, dragStamp] = useDrag({
     type: "BOX",
-    item: {
-      id: 2,
-      text: "stamp"
-    },
-
-    collect: (monitor) => ({
-      isDragStamp: !!monitor.isDragging()
-    })
+    item: { id: 2, text: "stamp" },
+    collect: (monitor) => ({ isDragStamp: !!monitor.isDragging() })
   });
 
   const index = xyPostion?.findIndex((object) => {
     return object.pageNumber === pageNumber;
   });
-  //   rowlevel={JSON.parse(localStorage.getItem("rowlevel"))}
   const rowLevel =
     localStorage.getItem("rowlevel") &&
     JSON.parse(localStorage.getItem("rowlevel"));
-
   const signObjId =
     rowLevel && rowLevel?.id
       ? rowLevel.id
       : rowLevel?.objectId && rowLevel.objectId;
-
   const documentId = docId ? docId : signObjId && signObjId;
   const senderUser =
     localStorage.getItem(
@@ -217,6 +199,12 @@ function SignYourSelf() {
 
   //function for get document details for perticular signer with signer'object id
   const getDocumentDetails = async (showComplete) => {
+    try {
+      const subscribe = await checkIsSubscribed();
+      setIsSubscribe(subscribe);
+    } catch (err) {
+      console.log("err in fetch sub", err);
+    }
     try {
       let isCompleted;
       //getting document details
@@ -585,8 +573,7 @@ function SignYourSelf() {
       docCls.id = documentId;
       docCls.set("Placeholders", xyPostion);
       docCls.set("IsSignyourself", true);
-      const res = await docCls.save();
-      console.log("Res", res);
+      await docCls.save();
     } catch (e) {
       console.log("error", e);
       alert(t("something-went-wrong-mssg"));
@@ -730,7 +717,7 @@ function SignYourSelf() {
   //function for get digital signature
   const signPdfFun = async (base64Url, documentId) => {
     let isCustomCompletionMail = false;
-    const getIsSubscribe = await checkIsSubscribed();
+
     const tenantDetails = await getTenantDetails(jsonSender.objectId);
     if (tenantDetails && tenantDetails === "user does not exist!") {
       alert(t("user-not-exist"));
@@ -738,7 +725,7 @@ function SignYourSelf() {
       if (
         tenantDetails?.CompletionBody &&
         tenantDetails?.CompletionSubject &&
-        getIsSubscribe.isValid
+        isSubscribe?.isValid
       ) {
         isCustomCompletionMail = true;
       }
@@ -1255,14 +1242,29 @@ function SignYourSelf() {
               <div className="w-full md:w-[95%]">
                 <ModalUi
                   isOpen={isAlert.isShow}
-                  title={isAlert?.header || t("alert")}
+                  title={
+                    isAlert.alertMessage === "quotareached"
+                      ? false
+                      : isAlert?.header || t("alert")
+                  }
                   handleClose={() =>
-                    setIsAlert({ isShow: false, alertMessage: "" })
+                    isAlert.alertMessage === "quotareached"
+                      ? false
+                      : setIsAlert({ isShow: false, alertMessage: "" })
                   }
                 >
-                  <div className="p-[20px] h-full">
-                    <p>{isAlert.alertMessage}</p>
-                  </div>
+                  {isAlert.alertMessage === "quotareached" ? (
+                    <QuotaCard
+                      isSignyourself={true}
+                      handlClose={() =>
+                        setIsAlert({ isShow: false, alertMessage: "" })
+                      }
+                    />
+                  ) : (
+                    <div className="p-[20px] h-full">
+                      <p>{isAlert.alertMessage}</p>
+                    </div>
+                  )}
                 </ModalUi>
 
                 {/* this modal is used show this document is already sign */}
@@ -1342,6 +1344,7 @@ function SignYourSelf() {
                   setIsAlert={setIsAlert}
                   extUserId={extUserId}
                   activeMailAdapter={activeMailAdapter}
+                  planCode={isSubscribe?.plan}
                 />
                 {/* pdf header which contain funish back button */}
                 <Header

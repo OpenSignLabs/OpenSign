@@ -10,7 +10,6 @@ import Tooltip from "../primitives/Tooltip";
 import Loader from "../primitives/Loader";
 import SubscribeCard from "../primitives/SubscribeCard";
 import Tour from "reactour";
-import { validplan } from "../json/plansArr";
 import { useTranslation } from "react-i18next";
 
 function Webhook() {
@@ -90,7 +89,7 @@ function Webhook() {
   };
 
   const handleModal = () => {
-    if (!validplan[isSubscribe.plan] && isEnableSubscription) {
+    if (!isSubscribe?.isValid && isEnableSubscription) {
       setIsTour(true);
     } else {
       setIsModal(!isModal);
@@ -146,7 +145,7 @@ function Webhook() {
             </div>
             <ModalUi
               isOpen={isModal}
-              title={"Regenerate Token"}
+              title={t("Add-Webhook")}
               handleClose={handleModal}
             >
               {error && <Alert type="danger">{error}</Alert>}
@@ -178,9 +177,9 @@ function Webhook() {
               </div>
             </ModalUi>
           </div>
-          {!validplan[isSubscribe.plan] && isEnableSubscription && (
+          {isEnableSubscription && !isSubscribe?.isValid && (
             <div data-tut="webhooksubscribe">
-              <SubscribeCard plan_code={isSubscribe.plan} />
+              <SubscribeCard />
             </div>
           )}
         </>
