@@ -592,9 +592,7 @@
     "Recent signature requests": "This is a list of documents that are waiting for your signature.",
     "Recently sent for signatures": "This is a list of documents you've sent to other parties for signature.",
     "Drafts": "This are documents you have started but have not finalized for sending.",
-    "username":"Enter your username to generate your public profile. After it's created, you can share and copy the profile URL or visit it to view your public template at `https://opensign.me/your-username`",
-    "tagline": "Add your tagline here! To see your tagline, visit the public URL by replacing 'your-username' with your actual username: `https://opensign.me/your-username`",
-    "public-template": "Here's an example of how to make any template public and accessible via a URL. For instance, visiting `https://opensign.me/your-username` will allow you to view your public template and make it available for public signing."
+    "public-template": "This video demonstrates how to set up your personalized public profile, such as ‘https://opensign.me/your-username’. You’ll also learn how to customize your tagline and make your templates available for public signing."
   },
   "enter-email-plaholder": "Add an email address and hit enter",
   "success-email-alert": "Email sent successfully!",
