@@ -1,4 +1,3 @@
-
 {
   "headernews": "Nouvelle fonctionnalité : les profils publics sont désormais en ligne ! Créez et partagez facilement des modèles publics",
   "headernewsbtn": "Configurer maintenant",
@@ -7,6 +6,7 @@
   "language": "Langue",
   "name": "Nom et Prénom",
   "phone": "Téléphone",
+  "phone-optional": "(facultatif)",
   "email": "E-mail",
   "company": "Organisation",
   "job-title": "Votre Fonction",
@@ -150,7 +150,7 @@
     "Share": "Partager",
     "View": "Voir",
     "option": "Option",
-    "Embed":"Intégrer"
+    "Embed": "Intégrer"
   },
   "report-help": {
     "Draft Documents": "Il s'agit de documents que vous avez commencés mais que vous n'avez pas finalisés pour envoi.",
@@ -313,7 +313,7 @@
   "contact-details": "Coordonnées",
   "verify-email": "Veuillez vérifier votre email!",
   "send-otp": "envoyer un code à usage unique",
-  "otp-placeholder": "Saisissez l'OTP reçu par e-mail",
+  "otp-placeholder": "Entrez le code de vérification reçu par e-mail",
   "loading-doc": "Chargement du document..",
   "widgets-name": {
     "signature": "signature",
@@ -363,7 +363,7 @@
   "initial-teb": "Initiales",
   "signature-tab": "Signature",
   "your-signature": "Votre signature",
-  "copy-to-all-pages": "Copier sur toutes les pages",
+  "copy-title": "Copier le widget vers",
   "contact-delete-alert": "Êtes-vous sûr de vouloir supprimer ce contact ?",
   "reset-password": "Le lien de réinitialisation du mot de passe a été envoyé à votre identifiant de messagerie",
   "reset-password-alert-2": "Veuillez configurer l'adaptateur de messagerie",
@@ -374,7 +374,7 @@
     "All pages": "Toutes les pages",
     "All pages but last": "Toutes les pages sauf la dernière",
     "All pages but first": "Toutes les pages sauf la première",
-    "Beside to widget": "À côté du widget"
+    "Next to current widget": "À côté du widget actuel"
   },
   "options": "Possibilités",
   "minimun-check": "Vérification minimale",
@@ -451,7 +451,7 @@
   "decline-alert-3": "Vous ne pouvez pas signer ce document car il a été refusé/révoqué.",
   "sign here": "Signer ici",
   "guest-email-alert": "le code de vérification a été envoyé sur votre e-mail",
-  "get-otp-alert": "vous recevrez un mot de passe à usage unique par e-mail",
+  "get-otp-alert": "vous recevrez un code de vérification par e-mail",
   "user-already-exist": "L'utilisateur existe déjà.",
   "server-error": "Erreur interne du serveur !",
   "fill-required-details!": "Veuillez remplir les informations requises !",
@@ -590,7 +590,8 @@
     "Out for signatures": "En cliquant sur cette carte, vous accéderez à une liste de documents en attente de signature.",
     "Recent signature requests": "Voici une liste de documents qui attendent votre signature.",
     "Recently sent for signatures": "Il s'agit d'une liste de documents que vous avez envoyés à d'autres parties pour signature.",
-    "Drafts": "Il s'agit de documents que vous avez commencés mais que vous n'avez pas finalisés pour envoi."
+    "Drafts": "Il s'agit de documents que vous avez commencés mais que vous n'avez pas finalisés pour envoi.",
+    "public-template": "Cette vidéo montre comment configurer votre profil public personnalisé, tel que 'https://opensign.me/your-username'. Vous apprendrez également comment personnaliser votre slogan et rendre vos modèles disponibles pour la signature publique."
   },
   "enter-email-plaholder": "Ajoutez une adresse email et appuyez sur Entrée",
   "success-email-alert": "E-mail envoyé avec succès!",
