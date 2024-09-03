@@ -1411,7 +1411,7 @@ export const multiSignEmbed = async (
       };
       const color = position?.options?.fontColor;
       const updateColorInRgb = getWidgetsFontColor(color);
-      const fontSize = parseInt(position?.options?.fontSize);
+      const fontSize = parseInt(position?.options?.fontSize || 13);
       const widgetTypeExist = [
         textWidget,
         textInputWidget,
