@@ -421,13 +421,9 @@ const UserList = () => {
           )}
         </>
       )}
-      {!validplan[isSubscribe.plan] && isEnableSubscription && !isLoader && (
+      {isEnableSubscription && !validplan[isSubscribe.plan] && !isLoader && (
         <div data-tut="apisubscribe">
-          <SubscribeCard
-            plan={"TEAMS"}
-            price={"20"}
-            plan_code={isSubscribe.plan}
-          />
+          <SubscribeCard plan="TEAMS" />
         </div>
       )}
     </div>
