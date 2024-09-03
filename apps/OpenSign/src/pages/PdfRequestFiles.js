@@ -1216,7 +1216,15 @@ function PdfRequestFiles(props) {
     );
     const jsonSender = JSON.parse(senderUser);
     setIsDecline({ isDeclined: false });
-    const data = { IsDeclined: true, DeclineReason: reason };
+    const data = {
+      IsDeclined: true,
+      DeclineReason: reason,
+      DeclineBy: {
+        __type: "Pointer",
+        className: "_User",
+        objectId: jsonSender?.objectId
+      }
+    };
     setIsUiLoading(true);
 
     await axios
@@ -1277,6 +1285,8 @@ function PdfRequestFiles(props) {
       })
       .catch((err) => {
         console.log("error updating field is decline ", err);
+        setIsUiLoading(false);
+        alert(t("something-went-wrong-mssg"));
       });
   };
   //function to add default signature for all requested placeholder of sign
@@ -1575,6 +1585,23 @@ function PdfRequestFiles(props) {
     const name = pdfDetails?.[0]?.Name;
     await fetchUrl(url, name);
   };
+  const handleDeclineMssg = () => {
+    const user = pdfDetails[0]?.DeclineBy?.email;
+    return (
+      <div>
+        {t("decline-alert-3")}
+        <div className="mt-2">
+          {" "}
+          <span className="font-medium">{t("reason")}</span> :{" "}
+          {pdfDetails[0]?.DeclineReason}{" "}
+        </div>
+        <div className="mt-2">
+          {" "}
+          <span className="font-medium">{t("decline-by")}</span> : {user}
+        </div>
+      </div>
+    );
+  };
   return (
     <DndProvider backend={HTML5Backend}>
       <Title title={props.templateId ? "Public Sign" : "Request Sign"} />
@@ -1664,13 +1691,17 @@ function PdfRequestFiles(props) {
                 {/* this modal is used to show decline alert */}
                 <PdfDeclineModal
                   show={isDecline.isDeclined}
-                  headMsg={t("document-decline")}
+                  headMsg={
+                    pdfDetails[0]?.IsDeclined
+                      ? t("document-declined")
+                      : t("document-decline")
+                  }
                   bodyMssg={
                     isDecline.currnt === "Sure"
                       ? t("decline-alert-1")
                       : isDecline.currnt === "YouDeclined"
                         ? t("decline-alert-2")
-                        : isDecline.currnt === "another" && t("decline-alert-3")
+                        : isDecline.currnt === "another" && handleDeclineMssg()
                   }
                   footerMessage={isDecline.currnt === "Sure"}
                   declineDoc={declineDoc}

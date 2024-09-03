@@ -473,9 +473,21 @@ const ReportTable = (props) => {
   };
   //function to handle revoke/decline docment
   const handleRevoke = async (item) => {
+    const senderUser = localStorage.getItem(
+      `Parse/${localStorage.getItem("parseAppId")}/currentUser`
+    );
+    const jsonSender = JSON.parse(senderUser);
     setIsRevoke({});
     setActLoader({ [`${item.objectId}`]: true });
-    const data = { IsDeclined: true, DeclineReason: reason };
+    const data = {
+      IsDeclined: true,
+      DeclineReason: reason,
+      DeclineBy: {
+        __type: "Pointer",
+        className: "_User",
+        objectId: jsonSender?.objectId
+      }
+    };
     await axios
       .put(
         `${localStorage.getItem("baseUrl")}classes/contracts_Document/${
