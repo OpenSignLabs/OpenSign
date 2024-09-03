@@ -581,7 +581,11 @@ function PlaceHolderSign() {
             setSignerPos(signerPos);
           } else {
             updatesignerPos = signerPos.map((x) =>
-              x.Id === uniqueId ? { ...x, placeHolder: [placeHolder] } : x
+              x.Id === uniqueId && x?.placeHolder
+                ? { ...x, placeHolder: [...x.placeHolder, placeHolder] }
+                : x.Id === uniqueId
+                  ? { ...x, placeHolder: [placeHolder] }
+                  : x
             );
             setSignerPos(updatesignerPos);
           }
