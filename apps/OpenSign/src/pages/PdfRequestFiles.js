@@ -1600,7 +1600,6 @@ function PdfRequestFiles(props) {
       </div>
     );
   };
-  console.log("signerpos", signerPos);
   return (
     <DndProvider backend={HTML5Backend}>
       <Title title={props.templateId ? "Public Sign" : "Request Sign"} />
