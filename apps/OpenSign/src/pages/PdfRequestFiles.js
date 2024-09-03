@@ -133,6 +133,7 @@ function PdfRequestFiles(props) {
   const [documentId, setDocumentId] = useState("");
   const [isPublicContact, setIsPublicContact] = useState(false);
   const [pdfArrayBuffer, setPdfArrayBuffer] = useState("");
+  const [plancode, setPlanCode] = useState("");
   const isHeader = useSelector((state) => state.showHeader);
   const divRef = useRef(null);
 
@@ -246,6 +247,7 @@ function PdfRequestFiles(props) {
     const plan = res.plan;
     const billingDate = res?.billingDate;
     const status = res?.status;
+    setPlanCode(plan);
     if (plan === "freeplan") {
       return true;
     } else if (billingDate) {
@@ -986,6 +988,7 @@ function PdfRequestFiles(props) {
                           ? replaceVar?.subject
                           : `${pdfDetails?.[0].ExtUserPtr.Name} has requested you to sign "${pdfDetails?.[0].Name}"`,
                         from: senderEmail,
+                        plan: plancode,
                         html: requestBody
                           ? replaceVar?.body
                           : "<html><head><meta http-equiv='Content-Type' content='text/html; charset=UTF-8' /> </head>   <body> <div style='background-color: #f5f5f5; padding: 20px'=> <div   style=' box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;background: white;padding-bottom: 20px;'> <div style='padding:10px 10px 0 10px'><img src=" +
