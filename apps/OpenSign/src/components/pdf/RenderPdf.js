@@ -41,7 +41,6 @@ function RenderPdf({
   setUniqueId,
   signersdata,
   setIsPageCopy,
-  setSignerObjId,
   setShowDropdown,
   setIsInitial,
   setIsValidate,
@@ -319,7 +318,6 @@ function RenderPdf({
                                           index={pageNumber}
                                           xyPostion={signerPos}
                                           setXyPostion={setSignerPos}
-                                          setSignerObjId={setSignerObjId}
                                           data={data}
                                           setIsResize={setIsResize}
                                           setShowDropdown={setShowDropdown}
@@ -508,7 +506,6 @@ function RenderPdf({
                                             index={pageNumber}
                                             xyPostion={signerPos}
                                             setXyPostion={setSignerPos}
-                                            setSignerObjId={setSignerObjId}
                                             data={data}
                                             setIsResize={setIsResize}
                                             setShowDropdown={setShowDropdown}

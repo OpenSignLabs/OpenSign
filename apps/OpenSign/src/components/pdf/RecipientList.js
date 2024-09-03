@@ -16,7 +16,7 @@ const RecipientList = (props) => {
   //function for onhover signer name change background color
   const inputRef = useRef(null);
   const isWidgetExist = (Id) => {
-    return props.signerPos.some((x) => x.Id === Id);
+    return props.signerPos.some((x) => x.Id === Id && x.placeHolder);
   };
 
   //handle drag start
@@ -63,9 +63,7 @@ const RecipientList = (props) => {
     remainingItems.splice(index, 0, ...draggedItem);
     //set current draggable recipient details,objectId,index,contract_className ... after replace recipient list
     props?.setSignersData(remainingItems);
-    props?.setSignerObjId(remainingItems[index]?.objectId || "");
     props?.setIsSelectId(index);
-    props?.setContractName(remainingItems[index]?.className || "");
     props?.setUniqueId(remainingItems[index]?.Id);
     props?.setRoleName(remainingItems[index]?.Role);
     props?.setBlockColor(remainingItems[index]?.blockColor);
@@ -121,9 +119,7 @@ const RecipientList = (props) => {
               }}
               onClick={(e) => {
                 e.preventDefault();
-                props.setSignerObjId(obj?.objectId || "");
                 props.setIsSelectId(ind);
-                props.setContractName(obj?.className || "");
                 props.setUniqueId(obj.Id);
                 props.setRoleName(obj.Role);
                 props.setBlockColor(obj?.blockColor);

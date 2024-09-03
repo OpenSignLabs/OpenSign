@@ -20,9 +20,7 @@ function WidgetComponent({
   addPositionOfSignature,
   signersdata,
   isSelectListId,
-  setSignerObjId,
   setIsSelectId,
-  setContractName,
   isSigners,
   dataTut,
   isMailSend,
@@ -360,9 +358,7 @@ function WidgetComponent({
                 signerPos={signerPos}
                 signersdata={signersdata}
                 isSelectListId={isSelectListId}
-                setSignerObjId={setSignerObjId}
                 setIsSelectId={setIsSelectId}
-                setContractName={setContractName}
                 setUniqueId={setUniqueId}
                 setRoleName={setRoleName}
                 handleDeleteUser={handleDeleteUser}
