@@ -363,7 +363,7 @@
   "initial-teb": "Initials",
   "signature-tab": "Signature",
   "your-signature": "Your signature",
-  "copy-to-all-pages": "Copy to all pages",
+  "copy-title": "Copy widget to",
   "contact-delete-alert": "Are you sure you want to delete this contact?",
   "reset-password-alert-1": "Reset password link has been sent to your email id",
   "reset-password-alert-2": "Please setup email adapter ",
@@ -374,7 +374,7 @@
     "All pages": "All pages",
     "All pages but last": "All pages but last",
     "All pages but first": "All pages but first",
-    "Beside to widget": "Beside to widget"
+    "Next to current widget": "Next to current widget"
   },
   "options": "Options",
   "minimun-check": "Minimun check",

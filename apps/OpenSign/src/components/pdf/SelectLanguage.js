@@ -21,7 +21,7 @@ function SelectLanguage(props) {
   return (
     <div
       className={`${
-        !props.isProfile && " mt-3 pb-2 md:pb-0 "
+        !props.isProfile && " mt-[9px] pb-2 md:pb-0 "
       } flex justify-center items-center `}
     >
       <select
