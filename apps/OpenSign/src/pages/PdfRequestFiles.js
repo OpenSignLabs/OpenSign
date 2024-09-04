@@ -1592,12 +1592,12 @@ function PdfRequestFiles(props) {
         {t("decline-alert-3")}
         <div className="mt-2">
           {" "}
-          <span className="font-medium">{t("reason")}</span> :{" "}
-          {pdfDetails[0]?.DeclineReason}{" "}
+          <span className="font-medium">{t("decline-by")}</span> : {user}
         </div>
         <div className="mt-2">
           {" "}
-          <span className="font-medium">{t("decline-by")}</span> : {user}
+          <span className="font-medium">{t("reason")}</span> :{" "}
+          {pdfDetails[0]?.DeclineReason}{" "}
         </div>
       </div>
     );
