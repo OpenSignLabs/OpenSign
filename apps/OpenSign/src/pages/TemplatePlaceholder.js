@@ -384,14 +384,12 @@ const TemplatePlaceholder = () => {
           currentPagePosition;
         let placeHolder;
         if (item === "onclick") {
+          // `getBoundingClientRect()` is used to get accurate measurement height of the div
+          const divHeight = divRef.current.getBoundingClientRect().height;
           const dropObj = {
             //onclick put placeholder center on pdf
-            xPosition:
-              (containerWH.width / 2 - widgetWidth / 2) /
-              (containerScale * scale),
-            yPosition:
-              (containerWH.height / 2 - widgetHeight / 2) /
-              (containerScale * scale),
+            xPosition: widgetWidth / 4 + containerWH.width / 2,
+            yPosition: widgetHeight + divHeight / 2,
             isStamp:
               (dragTypeValue === "stamp" || dragTypeValue === "image") && true,
             key: key,
