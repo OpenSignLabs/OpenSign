@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
-export default function TourContentWithBtn({ message, isChecked }) {
+export default function TourContentWithBtn({ message, isChecked, video }) {
   const { t } = useTranslation();
   const [isCheck, setIsCheck] = useState(false);
 
@@ -13,6 +13,16 @@ export default function TourContentWithBtn({ message, isChecked }) {
   return (
     <div>
       <p>{message}</p>
+      {video && (
+        <div className="flex items-center justify-center my-[10px] border-[1.3px] border-gray-400 rounded-sm">
+          <iframe
+            src={video}
+            title="YouTube video player"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowFullScreen
+          ></iframe>
+        </div>
+      )}
       <label className="flex items-center justify-center mb-0">
         <input
           type="checkbox"

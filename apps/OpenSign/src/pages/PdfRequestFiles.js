@@ -1216,7 +1216,15 @@ function PdfRequestFiles(props) {
     );
     const jsonSender = JSON.parse(senderUser);
     setIsDecline({ isDeclined: false });
-    const data = { IsDeclined: true, DeclineReason: reason };
+    const data = {
+      IsDeclined: true,
+      DeclineReason: reason,
+      DeclineBy: {
+        __type: "Pointer",
+        className: "_User",
+        objectId: jsonSender?.objectId
+      }
+    };
     setIsUiLoading(true);
 
     await axios
@@ -1277,6 +1285,8 @@ function PdfRequestFiles(props) {
       })
       .catch((err) => {
         console.log("error updating field is decline ", err);
+        setIsUiLoading(false);
+        alert(t("something-went-wrong-mssg"));
       });
   };
   //function to add default signature for all requested placeholder of sign
@@ -1575,6 +1585,23 @@ function PdfRequestFiles(props) {
     const name = pdfDetails?.[0]?.Name;
     await fetchUrl(url, name);
   };
+  const handleDeclineMssg = () => {
+    const user = pdfDetails[0]?.DeclineBy?.email;
+    return (
+      <div>
+        {t("decline-alert-3")}
+        <div className="mt-2">
+          {" "}
+          <span className="font-medium">{t("decline-by")}</span> : {user}
+        </div>
+        <div className="mt-2">
+          {" "}
+          <span className="font-medium">{t("reason")}</span> :{" "}
+          {pdfDetails[0]?.DeclineReason}{" "}
+        </div>
+      </div>
+    );
+  };
   return (
     <DndProvider backend={HTML5Backend}>
       <Title title={props.templateId ? "Public Sign" : "Request Sign"} />
@@ -1622,7 +1649,9 @@ function PdfRequestFiles(props) {
                       ? "none"
                       : "auto"
                 }}
-                className="relative op-card overflow-hidden flex flex-col md:flex-row justify-between bg-base-300"
+                className={`${
+                  props.templateId && "m-1 border-[0.5px] border-gray-300"
+                } relative op-card overflow-hidden flex flex-col md:flex-row justify-between bg-base-300`}
               >
                 {!requestSignTour &&
                   signerObjectId &&
@@ -1662,13 +1691,17 @@ function PdfRequestFiles(props) {
                 {/* this modal is used to show decline alert */}
                 <PdfDeclineModal
                   show={isDecline.isDeclined}
-                  headMsg={t("document-decline")}
+                  headMsg={
+                    pdfDetails[0]?.IsDeclined
+                      ? t("document-declined")
+                      : t("document-decline")
+                  }
                   bodyMssg={
                     isDecline.currnt === "Sure"
                       ? t("decline-alert-1")
                       : isDecline.currnt === "YouDeclined"
                         ? t("decline-alert-2")
-                        : isDecline.currnt === "another" && t("decline-alert-3")
+                        : isDecline.currnt === "another" && handleDeclineMssg()
                   }
                   footerMessage={isDecline.currnt === "Sure"}
                   declineDoc={declineDoc}
@@ -1702,130 +1735,113 @@ function PdfRequestFiles(props) {
                   <div className="h-full p-[20px]">
                     {isOtp ? (
                       <form onSubmit={VerifyOTP}>
-                        <div className="flex flex-col gap-2">
-                          <span>{t("get-otp-alert")}</span>
-                          <label className="op-input op-input-bordered flex items-center gap-2 ">
-                            <input
-                              type="number"
-                              name="otp"
-                              className="grow"
-                              placeholder={t("otp-placeholder")}
-                              onInvalid={(e) =>
-                                e.target.setCustomValidity(t("input-required"))
-                              }
-                              onInput={(e) => e.target.setCustomValidity("")}
-                              required
-                              value={otp}
-                              onChange={(e) => setOtp(e.target.value)}
-                              disabled={loading}
-                            />
+                        <div className="mb-[0.75rem]">
+                          <label className="block text-xs font-semibold mb-2">
+                            {t("get-otp-alert")}
+                            <span className="text-[13px] text-[red]"> *</span>
                           </label>
+                          <input
+                            type="number"
+                            name="otp"
+                            placeholder={t("otp-placeholder")}
+                            onInvalid={(e) =>
+                              e.target.setCustomValidity(t("input-required"))
+                            }
+                            onInput={(e) => e.target.setCustomValidity("")}
+                            required
+                            value={otp}
+                            onChange={(e) => setOtp(e.target.value)}
+                            disabled={loading}
+                            className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
+                          />
                         </div>
-                        <div className="op-modal-action">
-                          <div className="flex gap-2">
-                            <button
-                              className="op-btn op-btn-ghost"
-                              onClick={() => handleCloseOtp()}
-                            >
-                              {t("cancel")}
-                            </button>
-                            <button
-                              className="op-btn op-btn-primary"
-                              disabled={loading}
-                            >
-                              {loading ? t("loading") : t("verify")}
-                            </button>
-                          </div>
+                        <div className="mt-6 flex justify-start gap-2">
+                          <button
+                            className="op-btn op-btn-primary"
+                            disabled={loading}
+                          >
+                            {loading ? t("loading") : t("verify")}
+                          </button>
+                          <button
+                            className="op-btn op-btn-ghost"
+                            onClick={() => handleCloseOtp()}
+                          >
+                            {t("cancel")}
+                          </button>
                         </div>
                       </form>
                     ) : (
-                      <form onSubmit={handlePublicUser}>
-                        <div className="flex flex-col gap-2">
-                          <label className="op-input op-input-bordered  flex items-center gap-2  ">
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              viewBox="0 0 16 16"
-                              fill="currentColor"
-                              className="w-4 h-4 opacity-70"
-                            >
-                              <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM12.735 14c.618 0 1.093-.561.872-1.139a6.002 6.002 0 0 0-11.215 0c-.22.578.254 1.139.872 1.139h9.47Z" />
-                            </svg>
-                            <input
-                              type="text"
-                              className="grow"
-                              name="name"
-                              value={contact.name}
-                              onChange={handleInputChange}
-                              placeholder={t("name")}
-                              onInvalid={(e) =>
-                                e.target.setCustomValidity(t("input-required"))
-                              }
-                              onInput={(e) => e.target.setCustomValidity("")}
-                              required
-                              disabled={loading}
-                            />
+                      <form
+                        className="text-base-content p-2 mx-auto"
+                        onSubmit={handlePublicUser}
+                      >
+                        <div className="mb-[0.75rem]">
+                          <label className="block text-xs font-semibold mb-[5px]">
+                            {t("name")}
+                            <span className="text-[13px] text-[red]"> *</span>
                           </label>
-                          <label className="op-input op-input-bordered flex items-center gap-2 ">
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              viewBox="0 0 16 16"
-                              fill="currentColor"
-                              className="w-4 h-4 opacity-70"
-                            >
-                              <path d="M2.5 3A1.5 1.5 0 0 0 1 4.5v.793c.026.009.051.02.076.032L7.674 8.51c.206.1.446.1.652 0l6.598-3.185A.755.755 0 0 1 15 5.293V4.5A1.5 1.5 0 0 0 13.5 3h-11Z" />
-                              <path d="M15 6.954 8.978 9.86a2.25 2.25 0 0 1-1.956 0L1 6.954V11.5A1.5 1.5 0 0 0 2.5 13h11a1.5 1.5 0 0 0 1.5-1.5V6.954Z" />
-                            </svg>
-                            <input
-                              type="email"
-                              className="grow"
-                              name="email"
-                              value={contact.email}
-                              onChange={handleInputChange}
-                              placeholder={t("email")}
-                              onInvalid={(e) =>
-                                e.target.setCustomValidity(t("input-required"))
-                              }
-                              onInput={(e) => e.target.setCustomValidity("")}
-                              required
-                              disabled={loading}
-                            />
-                          </label>
-
-                          <label className="op-input op-input-bordered flex items-center gap-2 ">
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              viewBox="0 0 16 16"
-                              fill="currentColor"
-                              className="w-4 h-4 opacity-70"
-                            >
-                              <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM12.735 14c.618 0 1.093-.561.872-1.139a6.002 6.002 0 0 0-11.215 0c-.22.578.254 1.139.872 1.139h9.47Z" />
-                            </svg>
-                            <input
-                              value={contact.phone}
-                              onChange={handleInputChange}
-                              type="text"
-                              name="phone"
-                              className="grow"
-                              placeholder={t("phone")}
-                              disabled={loading}
-                            />
-                          </label>
+                          <input
+                            type="text"
+                            id="name"
+                            name="name"
+                            value={contact.name}
+                            onChange={handleInputChange}
+                            onInvalid={(e) =>
+                              e.target.setCustomValidity(t("input-required"))
+                            }
+                            onInput={(e) => e.target.setCustomValidity("")}
+                            required
+                            disabled={loading}
+                            className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
+                          />
                         </div>
-                        <div className="op-modal-action">
-                          <div className="flex gap-2">
-                            <button
-                              className="op-btn op-btn-ghost"
-                              onClick={() => handleCloseOtp()}
-                            >
-                              {t("close")}
-                            </button>
-                            <button
-                              className="op-btn op-btn-primary"
-                              disabled={loading}
-                            >
-                              {loading ? t("loading") : t("submit")}
-                            </button>
-                          </div>
+                        <div className="mb-[0.75rem]">
+                          <label className="block text-xs font-semibold mb-[5px]">
+                            {t("email")}
+                            <span className="text-[13px] text-[red]"> *</span>
+                          </label>
+                          <input
+                            type="email"
+                            name="email"
+                            value={contact.email}
+                            onChange={handleInputChange}
+                            onInvalid={(e) =>
+                              e.target.setCustomValidity(t("input-required"))
+                            }
+                            onInput={(e) => e.target.setCustomValidity("")}
+                            required
+                            disabled={loading}
+                            className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
+                          />
+                        </div>
+                        <div className="mb-[0.75rem]">
+                          <label className="block text-xs font-semibold mb-[5px]">
+                            {t("phone")}
+                          </label>
+                          <input
+                            value={contact.phone}
+                            onChange={handleInputChange}
+                            type="text"
+                            name="phone"
+                            placeholder={t("phone-optional")}
+                            disabled={loading}
+                            className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
+                          />
+                        </div>
+
+                        <div className="mt-6 flex justify-start gap-2">
+                          <button
+                            className="op-btn op-btn-primary"
+                            disabled={loading}
+                          >
+                            {loading ? t("loading") : t("submit")}
+                          </button>
+                          <button
+                            className="op-btn op-btn-ghost"
+                            onClick={() => handleCloseOtp()}
+                          >
+                            {t("close")}
+                          </button>
                         </div>
                       </form>
                     )}
@@ -2041,6 +2057,7 @@ function PdfRequestFiles(props) {
                       clickOnZoomIn={clickOnZoomIn}
                       clickOnZoomOut={clickOnZoomOut}
                       isDisableRotate={true}
+                      templateId={props.templateId}
                     />
 
                     <div ref={divRef} data-tut="pdfArea" className="h-[95%]">

@@ -14,35 +14,37 @@ export default async function SubscribeFree(request) {
       });
       subscriptionCls.descending('createdAt');
       const subcripitions = await subscriptionCls.first({ useMasterKey: true });
-      if (subcripitions?.get('PlanCode') === 'freeplan') {
-        return { status: 'success', result: 'already subscribed!' };
-      } else if (subcripitions?.get('Next_billing_date') < new Date()) {
-        try {
-          const updateSubscription = new Parse.Object('contracts_Subscriptions');
-          updateSubscription.id = subcripitions.id;
-          updateSubscription.set('PlanCode', 'freeplan');
-          updateSubscription.set('AllowedCredits', 0);
-          updateSubscription.set('PlanCredits', 0);
-          await updateSubscription.save(null, { useMasterKey: true });
-          return { status: 'success', result: 'subscribed!' };
-        } catch (err) {
-          console.log('err ', err);
-          return { status: 'error', result: err.message };
-        }
-      } else if (subcripitions?.get('Next_billing_date') > new Date()) {
-        return { status: 'success', result: 'already subscribed!' };
-      } else if (!subcripitions?.get('PlanCode')) {
-        try {
-          const updateSubscription = new Parse.Object('contracts_Subscriptions');
-          updateSubscription.id = subcripitions.id;
-          updateSubscription.set('PlanCode', 'freeplan');
-          updateSubscription.set('AllowedCredits', 0);
-          updateSubscription.set('PlanCredits', 0);
-          await updateSubscription.save(null, { useMasterKey: true });
-          return { status: 'success', result: 'subscribed!' };
-        } catch (err) {
-          console.log('err ', err);
-          return { status: 'error', result: err.message };
+      if (subcripitions) {
+        if (subcripitions?.get('PlanCode') === 'freeplan') {
+          return { status: 'success', result: 'already subscribed!' };
+        } else if (subcripitions?.get('Next_billing_date') < new Date()) {
+          try {
+            const updateSubscription = new Parse.Object('contracts_Subscriptions');
+            updateSubscription.id = subcripitions.id;
+            updateSubscription.set('PlanCode', 'freeplan');
+            updateSubscription.set('AllowedCredits', 0);
+            updateSubscription.set('PlanCredits', 0);
+            await updateSubscription.save(null, { useMasterKey: true });
+            return { status: 'success', result: 'subscribed!' };
+          } catch (err) {
+            console.log('err ', err);
+            return { status: 'error', result: err.message };
+          }
+        } else if (subcripitions?.get('Next_billing_date') > new Date()) {
+          return { status: 'success', result: 'already subscribed!' };
+        } else {
+          try {
+            const updateSubscription = new Parse.Object('contracts_Subscriptions');
+            updateSubscription.id = subcripitions.id;
+            updateSubscription.set('PlanCode', 'freeplan');
+            updateSubscription.set('AllowedCredits', 0);
+            updateSubscription.set('PlanCredits', 0);
+            await updateSubscription.save(null, { useMasterKey: true });
+            return { status: 'success', result: 'subscribed!' };
+          } catch (err) {
+            console.log('err ', err);
+            return { status: 'error', result: err.message };
+          }
         }
       } else {
         try {

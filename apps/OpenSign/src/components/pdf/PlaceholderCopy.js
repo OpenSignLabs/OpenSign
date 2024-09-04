@@ -13,7 +13,7 @@ function PlaceholderCopy(props) {
     { id: 1, type: "All pages" },
     { id: 2, type: "All pages but last" },
     { id: 3, type: "All pages but first" },
-    { id: 4, type: "Beside to widget" }
+    { id: 4, type: "Next to current widget" }
   ];
   const [selectCopyType, setSelectCopyType] = useState(1);
   //function for get copy placeholder position
@@ -239,7 +239,7 @@ function PlaceholderCopy(props) {
   return (
     <ModalUi
       isOpen={props.isPageCopy}
-      title={t("copy-to-all-pages")}
+      title={t("copy-title")}
       handleClose={() => handleUniqueId()}
     >
       <div className="h-full p-[20px] text-base-content">
