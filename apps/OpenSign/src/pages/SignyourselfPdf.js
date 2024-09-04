@@ -415,7 +415,6 @@ function SignYourSelf() {
       pageNumber,
       containerWH
     );
-    console.log("container", widgetTypeExist, dragTypeValue, widgetValue);
     //adding and updating drop position in array when user drop signature button in div
     if (item === "onclick") {
       // `getBoundingClientRect()` is used to get accurate measurement height of the div
