@@ -386,7 +386,12 @@ function DriveBody(props) {
               </svg>
               {rename === data.objectId ? (
                 <input
-                  onFocus={() => inputRef.current.select()}
+                  onFocus={() => {
+                    const input = inputRef.current;
+                    if (input) {
+                      input.select();
+                    }
+                  }}
                   autoFocus={true}
                   type="text"
                   onBlur={() => handledRenameDoc(data)}
@@ -451,7 +456,12 @@ function DriveBody(props) {
                       <input
                         autoFocus={true}
                         type="text"
-                        onFocus={() => inputRef.current.select()}
+                        onFocus={() => {
+                          const input = inputRef.current;
+                          if (input) {
+                            input.select();
+                          }
+                        }}
                         onBlur={() => handledRenameDoc(data)}
                         onKeyDown={(e) => handleEnterPress(e, data)}
                         ref={inputRef}
