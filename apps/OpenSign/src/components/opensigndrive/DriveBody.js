@@ -371,12 +371,7 @@ function DriveBody(props) {
             <div
               data-tut={props.dataTutSeventh}
               onClick={() => {
-                if (rename) {
-                  inputRef.current.setSelectionRange(
-                    inputRef.current.value.length,
-                    inputRef.current.value.length
-                  );
-                } else {
+                if (!rename) {
                   handleOnclikFolder(data);
                 }
               }}
@@ -439,12 +434,7 @@ function DriveBody(props) {
                   <div
                     data-tut={props.dataTutSixth}
                     onClick={() => {
-                      if (rename) {
-                        inputRef.current.setSelectionRange(
-                          inputRef.current.value.length,
-                          inputRef.current.value.length
-                        );
-                      } else {
+                      if (!rename) {
                         checkPdfStatus(data);
                       }
                     }}
