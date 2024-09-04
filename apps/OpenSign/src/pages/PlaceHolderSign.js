@@ -568,6 +568,7 @@ function PlaceHolderSign() {
           setSignerPos(updatesignerPos);
         } else {
           let updatesignerPos;
+          //if condition when widget type is prefill label text widget
           if (dragTypeValue === textWidget) {
             const prefileTextWidget = {
               signerPtr: {},
@@ -580,6 +581,7 @@ function PlaceHolderSign() {
             signerPos.push(prefileTextWidget);
             setSignerPos(signerPos);
           } else {
+            //else condition to add placeholder widgets on multiple page first time
             updatesignerPos = signerPos.map((x) =>
               x.Id === uniqueId && x?.placeHolder
                 ? { ...x, placeHolder: [...x.placeHolder, placeHolder] }
@@ -846,6 +848,7 @@ function PlaceHolderSign() {
     const filterPrefill = signerPos?.filter((data) => data.Role !== "prefill");
     const getPrefill = signerPos?.filter((data) => data.Role === "prefill");
     let isLabel = false;
+    //checking all signers placeholder exist or not
     const isPlaceholderExist = filterPrefill.every((data) => data.placeHolder);
     const prefillPlaceholder = getPrefill[0]?.placeHolder;
     //condition is used to check text widget data is empty or have response

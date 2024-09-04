@@ -450,7 +450,6 @@ const TemplatePlaceholder = () => {
             (data) => data.pageNumber === pageNumber
           );
         }
-
         //checking current page has already some placeholders then update that placeholder and add upcoming placehoder position
         if (getPlaceHolder && currentPagePosition) {
           const updatePlace = getPlaceHolder.filter(
@@ -468,6 +467,7 @@ const TemplatePlaceholder = () => {
           );
           setSignerPos(updatesignerPos);
         } else {
+          //else condition to add placeholder widgets on multiple page first time
           const updatesignerPos = signerPos.map((x) =>
             x.Id === uniqueId && x?.placeHolder
               ? { ...x, placeHolder: [...x.placeHolder, placeHolder] }
