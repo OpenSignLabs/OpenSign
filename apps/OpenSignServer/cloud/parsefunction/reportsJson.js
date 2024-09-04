@@ -28,6 +28,7 @@ export default function reportJson(id, userId) {
           'Signers.Email',
           'Signers.Phone',
           'Placeholders',
+          'IsSignyourself',
         ],
       };
 
@@ -137,6 +138,7 @@ export default function reportJson(id, userId) {
           'Signers.Phone',
           'TimeToCompleteDays',
           'Placeholders',
+          'IsSignyourself',
         ],
       };
     //  declined documents report
