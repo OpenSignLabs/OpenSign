@@ -533,13 +533,13 @@ function PlaceHolderSign() {
       }
       setSelectWidgetId(key);
       if (signer) {
-        let signerData, currentPagePosition;
+        let filterSignerPos, currentPagePosition;
         if (dragTypeValue === textWidget) {
-          signerData = signerPos.find((data) => data.Role === "prefill");
+          filterSignerPos = signerPos.find((data) => data.Role === "prefill");
         } else {
-          signerData = signerPos.find((data) => data.Id === uniqueId);
+          filterSignerPos = signerPos.find((data) => data.Id === uniqueId);
         }
-        const getPlaceHolder = signerData?.placeHolder;
+        const getPlaceHolder = filterSignerPos?.placeHolder;
         if (getPlaceHolder) {
           //checking exist placeholder on same page
           currentPagePosition = getPlaceHolder.find(
@@ -846,6 +846,7 @@ function PlaceHolderSign() {
     const filterPrefill = signerPos?.filter((data) => data.Role !== "prefill");
     const getPrefill = signerPos?.filter((data) => data.Role === "prefill");
     let isLabel = false;
+    const isPlaceholderExist = filterPrefill.every((data) => data.placeHolder);
     const prefillPlaceholder = getPrefill[0]?.placeHolder;
     //condition is used to check text widget data is empty or have response
     if (getPrefill && getPrefill.length > 0) {
@@ -858,7 +859,7 @@ function PlaceHolderSign() {
       }
     }
     let isSignatureExist = true; // variable is used to check a signature widget exit or not then execute other code
-    if (prefillPlaceholder) {
+    if (isPlaceholderExist) {
       //for loop is used to check signature widget exist or not
       for (let item of filterPrefill) {
         let signatureExist = false; // Reset for each iteration
@@ -881,9 +882,6 @@ function PlaceHolderSign() {
     if (getPrefill && isLabel) {
       setIsSendAlert({ mssg: textWidget, alert: true });
     } else if (isSignatureExist) {
-      const isPlaceholderExist = filterPrefill.every(
-        (data) => data.placeHolder
-      );
       if (isPlaceholderExist) {
         const IsSignerNotExist = filterPrefill?.filter((x) => !x.signerObjId);
         if (IsSignerNotExist && IsSignerNotExist?.length > 0) {
