@@ -406,7 +406,6 @@ export default async function createDocumentwithCoordinate(request, response) {
               })),
               message: 'Document sent successfully!',
             });
-            // }
           } else {
             if (request.posthog) {
               request.posthog?.capture({

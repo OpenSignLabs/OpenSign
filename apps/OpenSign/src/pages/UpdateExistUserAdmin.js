@@ -21,7 +21,7 @@ const UpdateExistUserAdmin = () => {
     try {
       const isAdminExist = await Parse.Cloud.run("checkadminexist");
       if (isAdminExist !== "not_exist") {
-        console.log("isAdminExist ", isAdminExist);
+        // console.log("isAdminExist ", isAdminExist);
         setErrMsg("Admin already exists.");
       }
     } catch (err) {

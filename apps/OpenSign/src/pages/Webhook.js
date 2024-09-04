@@ -177,9 +177,9 @@ function Webhook() {
               </div>
             </ModalUi>
           </div>
-          {!isSubscribe?.isValid && isEnableSubscription && (
+          {isEnableSubscription && !isSubscribe?.isValid && (
             <div data-tut="webhooksubscribe">
-              <SubscribeCard plan_code={isSubscribe.plan} />
+              <SubscribeCard />
             </div>
           )}
         </>
