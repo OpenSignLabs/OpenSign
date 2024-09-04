@@ -479,14 +479,12 @@ function PlaceHolderSign() {
       const widgetHeight = defaultWidthHeight(dragTypeValue).height;
       //adding and updating drop position in array when user drop signature button in div
       if (item === "onclick") {
+        const divHeight = divRef.current.getBoundingClientRect().height;
+        // `getBoundingClientRect()` is used to get accurate measurement height of the div
         const dropObj = {
           //onclick put placeholder center on pdf
-          xPosition:
-            (containerWH.width / 2 - widgetWidth / 2) /
-            (containerScale * scale),
-          yPosition:
-            (containerWH.height / 2 - widgetHeight / 2) /
-            (containerScale * scale),
+          xPosition: widgetWidth / 4 + containerWH.width / 2,
+          yPosition: widgetHeight + divHeight / 2,
           isStamp:
             (dragTypeValue === "stamp" || dragTypeValue === "image") && true,
           key: key,
