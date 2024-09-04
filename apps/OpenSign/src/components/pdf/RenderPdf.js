@@ -554,7 +554,8 @@ function RenderPdf({
                         </React.Fragment>
                       );
                     })
-                  : xyPostion?.map((data, ind) => {
+                  : !pdfDetails?.[0]?.IsCompleted &&
+                    xyPostion?.map((data, ind) => {
                       // signyourself flow
                       return (
                         <React.Fragment key={ind}>
