@@ -62,7 +62,6 @@ const TemplatePlaceholder = () => {
   const [xySignature, setXYSignature] = useState({});
   const [dragKey, setDragKey] = useState();
   const [signersdata, setSignersData] = useState([]);
-  const [signerObjId, setSignerObjId] = useState();
   const [signerPos, setSignerPos] = useState([]);
   const [isSelectListId, setIsSelectId] = useState();
   const [isSendAlert, setIsSendAlert] = useState(false);
@@ -84,7 +83,6 @@ const TemplatePlaceholder = () => {
   const [tourStatus, setTourStatus] = useState([]);
   const [signerUserId, setSignerUserId] = useState();
   const [pdfOriginalWH, setPdfOriginalWH] = useState([]);
-  const [contractName, setContractName] = useState("");
   const [containerWH, setContainerWH] = useState();
   const signRef = useRef(null);
   const dragRef = useRef(null);
@@ -241,8 +239,6 @@ const TemplatePlaceholder = () => {
         setPdfDetails(documentData);
         setIsSigners(true);
         if (documentData[0].Signers && documentData[0].Signers.length > 0) {
-          setSignerObjId(documentData[0].Signers[0].objectId);
-          setContractName(documentData[0].Signers[0].className);
           setIsSelectId(0);
           if (
             documentData[0].Placeholders &&
@@ -381,11 +377,11 @@ const TemplatePlaceholder = () => {
           containerWH
         );
         const key = randomId();
-        let filterSignerPos = signerPos.filter((data) => data.Id === uniqueId);
         const dragTypeValue = item?.text ? item.text : monitor.type;
         const widgetWidth = defaultWidthHeight(dragTypeValue).width;
         const widgetHeight = defaultWidthHeight(dragTypeValue).height;
-        let dropData = [];
+        let dropData = [],
+          currentPagePosition;
         let placeHolder;
         if (item === "onclick") {
           const dropObj = {
@@ -446,65 +442,40 @@ const TemplatePlaceholder = () => {
             pos: dropData
           };
         }
-        const { blockColor, Role } = signer;
-        //adding placholder in existing signer pos array (placaholder)
-        if (filterSignerPos.length > 0) {
-          const getPlaceHolder = filterSignerPos[0].placeHolder;
+        let filterSignerPos = signerPos.find((data) => data.Id === uniqueId);
+        const getPlaceHolder = filterSignerPos?.placeHolder;
+        if (getPlaceHolder) {
+          //checking exist placeholder on same page
+          currentPagePosition = getPlaceHolder.find(
+            (data) => data.pageNumber === pageNumber
+          );
+        }
+        //checking current page has already some placeholders then update that placeholder and add upcoming placehoder position
+        if (getPlaceHolder && currentPagePosition) {
           const updatePlace = getPlaceHolder.filter(
             (data) => data.pageNumber !== pageNumber
           );
-          const getPageNumer = getPlaceHolder.filter(
-            (data) => data.pageNumber === pageNumber
+          const getPos = currentPagePosition?.pos;
+          const newSignPos = getPos.concat(dropData);
+          let xyPos = {
+            pageNumber: pageNumber,
+            pos: newSignPos
+          };
+          updatePlace.push(xyPos);
+          const updatesignerPos = signerPos.map((x) =>
+            x.Id === uniqueId ? { ...x, placeHolder: updatePlace } : x
           );
-
-          //add entry of position for same signer on multiple page
-          if (getPageNumer.length > 0) {
-            const getPos = getPageNumer[0].pos;
-            const newSignPos = getPos.concat(dropData);
-            let xyPos = {
-              pageNumber: pageNumber,
-              pos: newSignPos
-            };
-            updatePlace.push(xyPos);
-            const updatesignerPos = signerPos.map((x) =>
-              x.Id === uniqueId ? { ...x, placeHolder: updatePlace } : x
-            );
-            setSignerPos(updatesignerPos);
-          } else {
-            const updatesignerPos = signerPos.map((x) =>
-              x.Id === uniqueId
-                ? { ...x, placeHolder: [...x.placeHolder, placeHolder] }
-                : x
-            );
-            setSignerPos(updatesignerPos);
-          }
+          setSignerPos(updatesignerPos);
         } else {
-          //adding new placeholder for selected signer in pos array (placeholder)
-          let placeHolderPos;
-          if (contractName) {
-            placeHolderPos = {
-              signerPtr: {
-                __type: "Pointer",
-                className: `${contractName}`,
-                objectId: signerObjId
-              },
-              signerObjId: signerObjId,
-              blockColor: blockColor ? blockColor : color[isSelectListId],
-              placeHolder: [placeHolder],
-              Role: Role ? Role : roleName,
-              Id: uniqueId
-            };
-          } else {
-            placeHolderPos = {
-              signerPtr: {},
-              signerObjId: "",
-              blockColor: blockColor ? blockColor : color[isSelectListId],
-              placeHolder: [placeHolder],
-              Role: Role ? Role : roleName,
-              Id: uniqueId
-            };
-          }
-          setSignerPos((prev) => [...prev, placeHolderPos]);
+          //else condition to add placeholder widgets on multiple page first time
+          const updatesignerPos = signerPos.map((x) =>
+            x.Id === uniqueId && x?.placeHolder
+              ? { ...x, placeHolder: [...x.placeHolder, placeHolder] }
+              : x.Id === uniqueId
+                ? { ...x, placeHolder: [placeHolder] }
+                : x
+          );
+          setSignerPos(updatesignerPos);
         }
 
         if (dragTypeValue === "dropdown") {
@@ -631,10 +602,6 @@ const TemplatePlaceholder = () => {
   //function for delete signature block
   const handleDeleteSign = (key, Id) => {
     const updateData = [];
-    // const filterSignerPos = signerPos.filter(
-    //   (data) => data.signerObjId === signerId
-    // );
-
     const filterSignerPos = signerPos.filter((data) => data.Id === Id);
 
     if (filterSignerPos.length > 0) {
@@ -667,11 +634,11 @@ const TemplatePlaceholder = () => {
 
           setSignerPos(newUpdateSigner);
         } else {
-          const updateFilter = signerPos.filter((data) => data.Id !== Id);
           const getRemainPage = filterSignerPos[0].placeHolder.filter(
             (data) => data.pageNumber !== pageNumber
           );
-
+          //condition to check placeholder length is greater than 1 do not need to remove whole placeholder
+          //array only resove particular widgets
           if (getRemainPage && getRemainPage.length > 0) {
             const newUpdatePos = filterSignerPos.map((obj) => {
               if (obj.Id === Id) {
@@ -685,7 +652,16 @@ const TemplatePlaceholder = () => {
 
             setSignerPos(signerupdate);
           } else {
-            setSignerPos(updateFilter);
+            const updatedData = signerPos.map((item) => {
+              if (item.Id === Id) {
+                // Create a copy of the item object and delete the placeHolder field
+                const updatedItem = { ...item };
+                delete updatedItem.placeHolder;
+                return updatedItem;
+              }
+              return item;
+            });
+            setSignerPos(updatedData);
           }
         }
       }
@@ -720,12 +696,12 @@ const TemplatePlaceholder = () => {
   const handleMouseLeave = () => {
     setSignBtnPosition([xySignature]);
   };
-
   const alertSendEmail = async () => {
-    if (signerPos.length !== signersdata.length) {
-      setIsSendAlert(true);
-    } else {
+    const isPlaceholderExist = signerPos.every((data) => data.placeHolder);
+    if (isPlaceholderExist) {
       handleSaveTemplate();
+    } else {
+      setIsSendAlert(true);
     }
   };
 
@@ -964,7 +940,6 @@ const TemplatePlaceholder = () => {
       setIsCreateDoc(false);
     }
   };
-
   // `handleAddSigner` is used to open Add Role Modal
   const handleAddSigner = () => {
     setIsModalRole(true);
@@ -975,8 +950,6 @@ const TemplatePlaceholder = () => {
   // save Role in entry in signerList and user
   const handleAddRole = (e) => {
     e.preventDefault();
-    setSignerObjId("");
-    setContractName("");
     const count = signersdata.length > 0 ? signersdata.length + 1 : 1;
     const Id = randomId();
     const index = signersdata.length;
@@ -986,6 +959,15 @@ const TemplatePlaceholder = () => {
       blockColor: color[index]
     };
     setSignersData((prevArr) => [...prevArr, obj]);
+    const signerPosObj = {
+      signerPtr: {},
+      signerObjId: "",
+      blockColor: color[index],
+      Role: roleName || "User " + count,
+      Id: Id
+    };
+
+    setSignerPos((prev) => [...prev, signerPosObj]);
     setIsModalRole(false);
     setRoleName("");
     setUniqueId(Id);
@@ -1599,7 +1581,6 @@ const TemplatePlaceholder = () => {
                         signersdata={signersdata}
                         setIsPageCopy={setIsPageCopy}
                         setSignKey={setSignKey}
-                        setSignerObjId={setSignerObjId}
                         isDragging={isDragging}
                         setShowDropdown={setShowDropdown}
                         setCurrWidgetsDetails={setCurrWidgetsDetails}
@@ -1642,9 +1623,7 @@ const TemplatePlaceholder = () => {
                     signerPos={signerPos}
                     signersdata={signersdata}
                     isSelectListId={isSelectListId}
-                    setSignerObjId={setSignerObjId}
                     setIsSelectId={setIsSelectId}
-                    setContractName={setContractName}
                     isSigners={isSigners}
                     setIsShowEmail={setIsShowEmail}
                     isMailSend={isMailSend}
@@ -1674,10 +1653,8 @@ const TemplatePlaceholder = () => {
                       setSignerPos={setSignerPos}
                       signersdata={signersdata}
                       isSelectListId={isSelectListId}
-                      setSignerObjId={setSignerObjId}
                       setRoleName={setRoleName}
                       setIsSelectId={setIsSelectId}
-                      setContractName={setContractName}
                       handleAddSigner={handleAddSigner}
                       setUniqueId={setUniqueId}
                       handleDeleteUser={handleDeleteUser}

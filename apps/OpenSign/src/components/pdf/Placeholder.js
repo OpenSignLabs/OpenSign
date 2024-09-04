@@ -116,6 +116,7 @@ function Placeholder(props) {
         : ""
   });
   const [dateFormat, setDateFormat] = useState([]);
+  const [clickonWidget, setClickonWidget] = useState({});
   const [startDate, setStartDate] = useState(
     props.pos.type === "date" &&
       getDefaultdate(
@@ -329,7 +330,6 @@ function Placeholder(props) {
 
     //condition for only placeholder and template flow
     if (props.data && props?.pos?.type !== textWidget) {
-      props.setSignerObjId(props?.data?.signerObjId);
       props.setUniqueId(props?.data?.Id);
       const checkIndex = props.xyPostion.findIndex(
         (data) => data.Id === props.data.Id
@@ -360,7 +360,6 @@ function Placeholder(props) {
     //and on save or cancel button of copy all page popup i have set this temp signer Id in unique id
 
     if (props.data && props?.pos?.type !== textWidget) {
-      props.setSignerObjId(props?.data?.signerObjId);
       props.setUniqueId(props?.data?.Id);
       const checkIndex = props.xyPostion.findIndex(
         (data) => data.Id === props.data.Id
@@ -369,7 +368,6 @@ function Placeholder(props) {
       props.setIsSelectId(checkIndex || 0);
     } else if (props.data && props.pos.type === textWidget) {
       props.setTempSignerId(props.uniqueId);
-      props.setSignerObjId(props?.data?.signerObjId);
       props.setUniqueId(props?.data?.Id);
       const checkIndex = props.xyPostion.findIndex(
         (data) => data.Id === props.data.Id
@@ -522,6 +520,7 @@ function Placeholder(props) {
                 props.setCurrWidgetsDetails(props.pos);
                 setIsDateModal(!isDateModal);
                 e.stopPropagation();
+                setClickonWidget(props.pos);
                 if (props.data) {
                   props.setSignKey(props.pos.key);
                   props.setUniqueId(props.data.Id);
@@ -926,11 +925,7 @@ function Placeholder(props) {
             <span>{t("font-size")} :</span>
             <select
               className="ml-[3px] md:ml:[7px] op-select op-select-bordered op-select-sm focus:outline-none hover:border-base-content text-xs"
-              value={
-                props.fontSize ||
-                props.currWidgetsDetails?.options?.fontSize ||
-                "12"
-              }
+              value={props.fontSize || clickonWidget.options?.fontSize || "12"}
               onChange={(e) => props.setFontSize(e.target.value)}
             >
               {fontsizeArr.map((size, ind) => {
@@ -945,7 +940,7 @@ function Placeholder(props) {
               <span>{t("color")}: </span>
               <select
                 value={
-                  props.fontColor || props.pos.options?.fontColor || "black"
+                  props.fontColor || clickonWidget.options?.fontColor || "black"
                 }
                 onChange={(e) => props.setFontColor(e.target.value)}
                 className="ml-[4px] md:ml[7px] op-select op-select-bordered op-select-sm focus:outline-none hover:border-base-content text-xs"

@@ -77,7 +77,6 @@ function PlaceHolderSign() {
   const [xySignature, setXYSignature] = useState({});
   const [dragKey, setDragKey] = useState();
   const [signersdata, setSignersData] = useState([]);
-  const [signerObjId, setSignerObjId] = useState();
   const [signerPos, setSignerPos] = useState([]);
   const [isSelectListId, setIsSelectId] = useState();
   const [isSendAlert, setIsSendAlert] = useState({});
@@ -98,7 +97,6 @@ function PlaceHolderSign() {
   const [tourStatus, setTourStatus] = useState([]);
   const [signerUserId, setSignerUserId] = useState();
   const [pdfOriginalWH, setPdfOriginalWH] = useState([]);
-  const [contractName, setContractName] = useState("");
   const [containerWH, setContainerWH] = useState();
   const { docId } = useParams();
   const signRef = useRef(null);
@@ -315,12 +313,34 @@ function PlaceHolderSign() {
         }
       }
       setPdfDetails(documentData);
-      if (documentData[0].Signers && documentData[0].Signers.length > 0) {
+      //condition when placeholder have empty array with role details and signers array have signers data
+      //and both array length are same
+      //this case happen using placeholder form in auto save funtionality to save draft type document without adding any placehlder
+      if (
+        documentData[0]?.Placeholders?.length ===
+        documentData[0]?.Signers?.length
+      ) {
+        const signersArr = documentData[0].Signers;
+        const placeholder = documentData[0].Placeholders;
+        const updatedSigners = signersArr.map((x, index) => ({
+          ...x,
+          Id: placeholder[index]?.Id,
+          Role: placeholder[index]?.Role,
+          blockColor: placeholder[index]?.blockColor
+        }));
+        setSignerPos(placeholder);
+        setSignersData(updatedSigners);
+        setIsSelectId(0);
+        setUniqueId(placeholder[0].Id);
+        setBlockColor(placeholder[0].blockColor);
+      }
+      //else condition when signers array have some signer's data
+      //this case happen using placeholder form and load first time
+      else if (documentData[0].Signers && documentData[0].Signers.length > 0) {
         const currEmail = documentData[0].ExtUserPtr.Email;
         setCurrentId(currEmail);
-        setSignerObjId(documentData[0].Signers[0].objectId);
-        setContractName(documentData[0].Signers[0].className);
         setIsSelectId(0);
+        //if condition when placeholder array present then update signers local array according to placeholder length
         if (
           documentData[0].Placeholders &&
           documentData[0].Placeholders.length > 0
@@ -349,6 +369,9 @@ function PlaceHolderSign() {
           setUniqueId(updatedSigners[0].Id);
           setBlockColor(updatedSigners[0].blockColor);
         } else {
+          //else condition when signers length present but placeholder empty then
+          //update signers array with add role,id and add empty object in placeholder with signers details
+          //in placeholder array
           const updatedSigners = documentData[0].Signers.map((x, index) => ({
             ...x,
             Id: randomId(),
@@ -356,10 +379,29 @@ function PlaceHolderSign() {
             blockColor: color[index % color.length]
           }));
           setSignersData(updatedSigners);
+          const updatedPlaceholder = documentData[0].Signers.map((x, index) => {
+            return {
+              // Role: updatedSigners[index].Role,
+              Id: updatedSigners[index].Id,
+              blockColor: color[index % color.length],
+              signerPtr: {
+                __type: "Pointer",
+                className: x?.className || "contracts_Contactbook",
+                objectId: x?.objectId
+              },
+              signerObjId: x?.objectId
+            };
+          });
+
+          setSignerPos(updatedPlaceholder);
+          setSignersData(updatedSigners);
           setUniqueId(updatedSigners[0].Id);
           setBlockColor(updatedSigners[0].blockColor);
         }
       } else {
+        //when user create document using template where signers data not present and only placeholders present
+        //else condition when signers array is empty then check placeholders array length
+        //if placeholders have some data then update signers data according to placeholders length
         // setRoleName("User 1");
         if (
           documentData[0].Placeholders &&
@@ -420,8 +462,6 @@ function PlaceHolderSign() {
     getSignerPos(item, monitor);
   };
   const getSignerPos = (item, monitor) => {
-    //  setSignerObjId("");
-    // setContractName("");
     if (uniqueId) {
       const posZIndex = zIndex + 1;
       setZIndex(posZIndex);
@@ -493,62 +533,44 @@ function PlaceHolderSign() {
       }
       setSelectWidgetId(key);
       if (signer) {
-        let filterSignerPos;
+        let filterSignerPos, currentPagePosition;
         if (dragTypeValue === textWidget) {
-          filterSignerPos = signerPos.filter((data) => data.Role === "prefill");
+          filterSignerPos = signerPos.find((data) => data.Role === "prefill");
         } else {
-          filterSignerPos = signerPos.filter((data) => data.Id === uniqueId);
+          filterSignerPos = signerPos.find((data) => data.Id === uniqueId);
         }
-
-        const { blockColor, Role } = signer;
-        //adding placholder in existing signer pos array (placaholder)
-        if (filterSignerPos.length > 0) {
-          const getPlaceHolder = filterSignerPos[0].placeHolder;
+        const getPlaceHolder = filterSignerPos?.placeHolder;
+        if (getPlaceHolder) {
+          //checking exist placeholder on same page
+          currentPagePosition = getPlaceHolder.find(
+            (data) => data.pageNumber === pageNumber
+          );
+        }
+        //checking current page has already some placeholders then update that placeholder and add upcoming placehoder position
+        if (getPlaceHolder && currentPagePosition) {
           const updatePlace = getPlaceHolder.filter(
             (data) => data.pageNumber !== pageNumber
           );
-          const getPageNumer = getPlaceHolder.filter(
-            (data) => data.pageNumber === pageNumber
-          );
-          //add entry of position for same signer on multiple page
-          if (getPageNumer.length > 0) {
-            const getPos = getPageNumer[0].pos;
-            const newSignPos = getPos.concat(dropData);
-            let xyPos = { pageNumber: pageNumber, pos: newSignPos };
-            updatePlace.push(xyPos);
-            let updatesignerPos;
-            if (dragTypeValue === textWidget) {
-              updatesignerPos = signerPos.map((x) =>
-                x.Role === "prefill" ? { ...x, placeHolder: updatePlace } : x
-              );
-            } else {
-              updatesignerPos = signerPos.map((x) =>
-                x.Id === uniqueId ? { ...x, placeHolder: updatePlace } : x
-              );
-            }
-            setSignerPos(updatesignerPos);
-          } else {
-            let updatesignerPos;
-            if (dragTypeValue === textWidget) {
-              updatesignerPos = signerPos.map((x) =>
-                x.Role === "prefill"
-                  ? { ...x, placeHolder: [...x.placeHolder, placeHolder] }
-                  : x
-              );
-            } else {
-              updatesignerPos = signerPos.map((x) =>
-                x.Id === uniqueId
-                  ? { ...x, placeHolder: [...x.placeHolder, placeHolder] }
-                  : x
-              );
-            }
-            setSignerPos(updatesignerPos);
-          }
-        } else {
-          //adding new placeholder for selected signer in pos array (placeholder)
-          let placeHolderPos;
+          const getPos = currentPagePosition?.pos;
+          const newSignPos = getPos.concat(dropData);
+          let xyPos = { pageNumber: pageNumber, pos: newSignPos };
+          updatePlace.push(xyPos);
+          let updatesignerPos;
           if (dragTypeValue === textWidget) {
-            placeHolderPos = {
+            updatesignerPos = signerPos.map((x) =>
+              x.Role === "prefill" ? { ...x, placeHolder: updatePlace } : x
+            );
+          } else {
+            updatesignerPos = signerPos.map((x) =>
+              x.Id === uniqueId ? { ...x, placeHolder: updatePlace } : x
+            );
+          }
+          setSignerPos(updatesignerPos);
+        } else {
+          let updatesignerPos;
+          //if condition when widget type is prefill label text widget
+          if (dragTypeValue === textWidget) {
+            const prefileTextWidget = {
               signerPtr: {},
               signerObjId: "",
               blockColor: "#f58f8c",
@@ -556,33 +578,21 @@ function PlaceHolderSign() {
               Role: "prefill",
               Id: key
             };
+            signerPos.push(prefileTextWidget);
+            setSignerPos(signerPos);
           } else {
-            if (contractName) {
-              placeHolderPos = {
-                signerPtr: {
-                  __type: "Pointer",
-                  className: `${contractName}`,
-                  objectId: signerObjId
-                },
-                signerObjId: signerObjId,
-                blockColor: blockColor ? blockColor : color[isSelectListId],
-                placeHolder: [placeHolder],
-                Role: Role ? Role : roleName,
-                Id: uniqueId
-              };
-            } else {
-              placeHolderPos = {
-                signerPtr: {},
-                signerObjId: "",
-                blockColor: blockColor ? blockColor : color[isSelectListId],
-                placeHolder: [placeHolder],
-                Role: Role ? Role : roleName,
-                Id: uniqueId
-              };
-            }
+            //else condition to add placeholder widgets on multiple page first time
+            updatesignerPos = signerPos.map((x) =>
+              x.Id === uniqueId && x?.placeHolder
+                ? { ...x, placeHolder: [...x.placeHolder, placeHolder] }
+                : x.Id === uniqueId
+                  ? { ...x, placeHolder: [placeHolder] }
+                  : x
+            );
+            setSignerPos(updatesignerPos);
           }
-          setSignerPos((prev) => [...prev, placeHolderPos]);
         }
+
         if (dragTypeValue === "dropdown") {
           setShowDropdown(true);
         } else if (dragTypeValue === "checkbox") {
@@ -712,6 +722,7 @@ function PlaceHolderSign() {
         const getXYdata = getPageNumer[0].pos.filter(
           (data) => data.key !== key
         );
+        //condition to check on same has multiple widgets so do not delete all widgets
         if (getXYdata.length > 0) {
           updateData.push(getXYdata);
           const newUpdatePos = getPlaceHolder.map((obj) => {
@@ -729,11 +740,11 @@ function PlaceHolderSign() {
           });
           setSignerPos(newUpdateSigner);
         } else {
-          const updateFilter = signerPos.filter((data) => data.Id !== Id);
           const getRemainPage = filterSignerPos[0].placeHolder.filter(
             (data) => data.pageNumber !== pageNumber
           );
-
+          //condition to check placeholder length is greater than 1 do not need to remove whole placeholder
+          //array only resove particular widgets
           if (getRemainPage && getRemainPage.length > 0) {
             const newUpdatePos = filterSignerPos.map((obj) => {
               if (obj.Id === Id) {
@@ -746,7 +757,16 @@ function PlaceHolderSign() {
             signerupdate.push(newUpdatePos[0]);
             setSignerPos(signerupdate);
           } else {
-            setSignerPos(updateFilter);
+            const updatedData = signerPos.map((item) => {
+              if (item.Id === Id) {
+                // Create a copy of the item object and delete the placeHolder field
+                const updatedItem = { ...item };
+                delete updatedItem.placeHolder;
+                return updatedItem;
+              }
+              return item;
+            });
+            setSignerPos(updatedData);
           }
         }
       }
@@ -828,9 +848,11 @@ function PlaceHolderSign() {
     const filterPrefill = signerPos?.filter((data) => data.Role !== "prefill");
     const getPrefill = signerPos?.filter((data) => data.Role === "prefill");
     let isLabel = false;
+    //checking all signers placeholder exist or not
+    const isPlaceholderExist = filterPrefill.every((data) => data.placeHolder);
+    const prefillPlaceholder = getPrefill[0]?.placeHolder;
     //condition is used to check text widget data is empty or have response
     if (getPrefill && getPrefill.length > 0) {
-      const prefillPlaceholder = getPrefill[0].placeHolder;
       if (prefillPlaceholder) {
         prefillPlaceholder.map((data) => {
           if (!isLabel) {
@@ -840,28 +862,30 @@ function PlaceHolderSign() {
       }
     }
     let isSignatureExist = true; // variable is used to check a signature widget exit or not then execute other code
-    //for loop is used to check signature widget exist or not
-    for (let item of filterPrefill) {
-      let signatureExist = false; // Reset for each iteration
-      for (let x of item.placeHolder) {
-        if (!signatureExist) {
-          const typeExist = x.pos.some((data) => data?.type);
-          if (typeExist) {
-            signatureExist = x.pos.some((data) => data?.type === "signature");
-          } else {
-            signatureExist = x.pos.some((data) => !data.isStamp);
+    if (isPlaceholderExist) {
+      //for loop is used to check signature widget exist or not
+      for (let item of filterPrefill) {
+        let signatureExist = false; // Reset for each iteration
+        for (let x of item.placeHolder) {
+          if (!signatureExist) {
+            const typeExist = x.pos.some((data) => data?.type);
+            if (typeExist) {
+              signatureExist = x.pos.some((data) => data?.type === "signature");
+            } else {
+              signatureExist = x.pos.some((data) => !data.isStamp);
+            }
           }
         }
-      }
-      if (!signatureExist) {
-        isSignatureExist = false;
-        setIsSendAlert({ mssg: "sure", alert: true });
+        if (!signatureExist) {
+          isSignatureExist = false;
+          setIsSendAlert({ mssg: "sure", alert: true });
+        }
       }
     }
     if (getPrefill && isLabel) {
       setIsSendAlert({ mssg: textWidget, alert: true });
     } else if (isSignatureExist) {
-      if (filterPrefill.length === signersdata.length) {
+      if (isPlaceholderExist) {
         const IsSignerNotExist = filterPrefill?.filter((x) => !x.signerObjId);
         if (IsSignerNotExist && IsSignerNotExist?.length > 0) {
           setSignerExistModal(true);
@@ -885,13 +909,14 @@ function PlaceHolderSign() {
     }, 2000);
     return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [signerPos]);
+  }, [signerPos, signersdata]);
 
   // `autosavedetails` is used to save doc details after every 2 sec when changes are happern in placeholder like drag-drop widgets, remove signers
   const autosavedetails = async () => {
     const signers = signersdata?.filter(
       (x) =>
-        x?.Role !== "prefill" && {
+        x?.Role !== "prefill" &&
+        x.objectId && {
           __type: "Pointer",
           className: "contracts_Contactbook",
           objectId: x.objectId
@@ -1587,17 +1612,27 @@ function PlaceHolderSign() {
   //function to add new signer in document signers list
   const handleAddNewRecipients = (data) => {
     const newId = randomId();
+    const backgroundColor = color[signersdata.length];
     signersdata.push({
       ...data,
       className: "contracts_Contactbook",
       Id: newId,
-      blockColor: color[signersdata.length]
+      blockColor: backgroundColor
     });
+    const signerPosObj = {
+      signerPtr: {
+        __type: "Pointer",
+        className: "contracts_Contactbook",
+        objectId: data.objectId
+      },
+      signerObjId: data.objectId,
+      blockColor: backgroundColor,
+      Id: newId
+    };
+    setSignerPos((prev) => [...prev, signerPosObj]);
     setUniqueId(newId);
     setIsSelectId(signersdata.length - 1);
     setBlockColor(color[signersdata.length]);
-    setContractName("contracts_Contactbook");
-    setSignerObjId(data.objectId);
   };
 
   const closePopup = () => {
@@ -2030,7 +2065,6 @@ function PlaceHolderSign() {
                         setIsPageCopy={setIsPageCopy}
                         signersdata={signersdata}
                         setSignKey={setSignKey}
-                        setSignerObjId={setSignerObjId}
                         handleLinkUser={handleLinkUser}
                         setUniqueId={setUniqueId}
                         isDragging={isDragging}
@@ -2079,9 +2113,7 @@ function PlaceHolderSign() {
                         signerPos={signerPos}
                         signersdata={signersdata}
                         isSelectListId={isSelectListId}
-                        setSignerObjId={setSignerObjId}
                         setIsSelectId={setIsSelectId}
-                        setContractName={setContractName}
                         isSigners={true}
                         setIsShowEmail={setIsShowEmail}
                         isMailSend={isMailSend}
@@ -2110,9 +2142,7 @@ function PlaceHolderSign() {
                           signerPos={signerPos}
                           signersdata={signersdata}
                           isSelectListId={isSelectListId}
-                          setSignerObjId={setSignerObjId}
                           setIsSelectId={setIsSelectId}
-                          setContractName={setContractName}
                           setUniqueId={setUniqueId}
                           setRoleName={setRoleName}
                           sendInOrder={pdfDetails[0].SendinOrder}

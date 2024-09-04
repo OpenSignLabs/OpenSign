@@ -1246,7 +1246,7 @@ const ReportTable = (props) => {
                           {formatRow(item?.ExtUserPtr)}
                         </td>
                         <td className="px-4 py-2">
-                          {item?.Placeholders ? (
+                          {!item?.IsSignyourself && item?.Placeholders ? (
                             <button
                               onClick={() => handleViewSigners(item)}
                               className="op-link op-link-primary"
@@ -1749,20 +1749,26 @@ const ReportTable = (props) => {
                                   </tr>
                                 </thead>
                                 <tbody>
-                                  {item.Placeholders.map((x, i) => (
-                                    <tr key={i} className="text-sm font-medium">
-                                      {props.ReportName === "Templates" && (
-                                        <td className="text-[12px] p-2 pl-3 w-[30%]">
-                                          {x.Role && x.Role}
-                                        </td>
-                                      )}
-                                      <td className="pl-3 text-[12px] py-2 break-all">
-                                        {x.email
-                                          ? x.email
-                                          : x?.signerPtr?.Email || "-"}
-                                      </td>
-                                    </tr>
-                                  ))}
+                                  {item.Placeholders.map(
+                                    (x, i) =>
+                                      x.Role !== "prefill" && (
+                                        <tr
+                                          key={i}
+                                          className="text-sm font-medium"
+                                        >
+                                          {props.ReportName === "Templates" && (
+                                            <td className="text-[12px] p-2 pl-3 w-[30%]">
+                                              {x.Role && x.Role}
+                                            </td>
+                                          )}
+                                          <td className="pl-3 text-[12px] py-2 break-all">
+                                            {x.email
+                                              ? x.email
+                                              : x?.signerPtr?.Email || "-"}
+                                          </td>
+                                        </tr>
+                                      )
+                                  )}
                                 </tbody>
                               </table>
                             </ModalUi>
