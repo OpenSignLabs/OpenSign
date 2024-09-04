@@ -1246,7 +1246,7 @@ const ReportTable = (props) => {
                           {formatRow(item?.ExtUserPtr)}
                         </td>
                         <td className="px-4 py-2">
-                          {item?.Placeholders ? (
+                          {!item?.IsSignyourself && item?.Placeholders ? (
                             <button
                               onClick={() => handleViewSigners(item)}
                               className="op-link op-link-primary"
