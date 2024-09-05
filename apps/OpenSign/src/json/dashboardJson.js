@@ -36,7 +36,7 @@ const dashboardJson = [
             queryType: "",
             class: "contracts_Document",
             query:
-              'where={"Type":{"#*ne":"Folder"},"Signers":{"#*exists":true,"#*ne":[]},"Placeholders":{"#*ne":null},"IsCompleted":{"#*ne":true},"IsDeclined":{"#*ne":true},"IsArchive":{"#*ne":true},"CreatedBy":{"__type":"Pointer","className":"_User","objectId":"#UserId.objectId#"},"ExpiryDate":{"#*gt":{"__type":"#Date#","iso":"#today#"}}}&count=1',
+              'where={"Type":{"#*ne":"Folder"},"Signers":{"#*exists":true,"#*ne":[]},"Placeholders":{"#*ne":null},"SignedUrl":{"#*ne":null},"IsCompleted":{"#*ne":true},"IsDeclined":{"#*ne":true},"IsArchive":{"#*ne":true},"CreatedBy":{"__type":"Pointer","className":"_User","objectId":"#UserId.objectId#"},"ExpiryDate":{"#*gt":{"__type":"#Date#","iso":"#today#"}}}&count=1',
             key: "count",
             Redirect_type: "Report",
             Redirect_id: "1MwEuxLEkF",
