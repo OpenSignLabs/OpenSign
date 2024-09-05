@@ -56,7 +56,7 @@ export async function fetchSubscription(
       ? { contactId: contactObjId }
       : { extUserId: extUser };
     const tenatRes = await axios.post(url, params, { headers: headers });
-    let plan, status, billingDate;
+    let plan, status, billingDate, adminId;
     if (isGuestSign) {
       plan = tenatRes.data?.result?.result?.plan;
       status = tenatRes.data?.result?.result?.isSubscribed;
@@ -64,12 +64,13 @@ export async function fetchSubscription(
       plan = tenatRes.data?.result?.result?.PlanCode;
       billingDate = tenatRes.data?.result?.result?.Next_billing_date?.iso;
       const allowedUsers = tenatRes.data?.result?.result?.AllowedUsers || 0;
+      adminId = tenatRes?.data?.result?.result?.ExtUserPtr?.objectId;
       localStorage.setItem("allowedUsers", allowedUsers);
     }
-    return { plan, billingDate, status };
+    return { plan, billingDate, status, adminId };
   } catch (err) {
     console.log("Err in fetch subscription", err);
-    return { plan: "", billingDate: "" };
+    return { plan: "", billingDate: "", status: "", adminId: "" };
   }
 }
 
@@ -122,22 +123,22 @@ export async function checkIsSubscribed() {
   try {
     const res = await fetchSubscription();
     if (res.plan === "freeplan") {
-      return { plan: res.plan, isValid: false };
+      return { plan: res.plan, isValid: false, adminId: res?.adminId };
     } else if (res.billingDate) {
       const plan = validplan[res.plan] || false;
       if (plan && new Date(res.billingDate) > new Date()) {
-        return { plan: res.plan, isValid: true };
+        return { plan: res.plan, isValid: true, adminId: res?.adminId };
       } else if (new Date(res.billingDate) > new Date()) {
-        return { plan: res.plan, isValid: true };
+        return { plan: res.plan, isValid: true, adminId: res?.adminId };
       } else {
-        return { plan: res.plan, isValid: false };
+        return { plan: res.plan, isValid: false, adminId: res?.adminId };
       }
     } else {
-      return { plan: res.plan, isValid: false };
+      return { plan: res.plan, isValid: false, adminId: res?.adminId };
     }
   } catch (err) {
     console.log("Err in fetch subscription", err);
-    return { plan: "no-plan", isValid: false };
+    return { plan: "no-plan", isValid: false, adminId: "" };
   }
 }
 
