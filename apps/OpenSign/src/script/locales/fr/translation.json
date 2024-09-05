@@ -474,7 +474,7 @@
   "role-not-found": "Rôle introuvable.",
   "do-not-access": "Vous n'y avez pas accès, veuillez contacter l'administrateur.",
   "add-admin": "Ajouter un administrateur",
-  "opensign-setup": "Configuration d'Opensign",
+  "opensign-setup": "Configuration d'OpenSign",
   "join-discord": "Rejoignez notre serveur Discord",
   "admin-already-exist": "L'administrateur existe déjà.",
   "password-update-alert-1": "Mot de passe mis à jour avec succès.",
@@ -530,7 +530,7 @@
   "filed-required-correctly": "Veuillez remplir correctement les informations requises.",
   "admin-created": "Administrateur créé",
   "invalid-masterkey": "Clé principale invalide",
-  "opensign-Setup": "Configuration d'Opensign",
+  "opensign-Setup": "Configuration d'OpenSign",
   "master-key": "La clef maitresse",
   "profile-update-alert": "Mise à jour du profil réussie.",
   "date": "Date",
@@ -631,6 +631,7 @@
   "quotamailselfsign": "Vous avez atteint votre limite de 20 e-mails pour ce mois. Mettez à niveau maintenant pour continuer à envoyer des e-mails directement.",
   "quotamail": "Vous avez atteint votre limite de 20 e-mails de demande de signature pour ce mois. Mettez à niveau maintenant pour continuer à envoyer des e-mails directement.",
   "quotamailTip":"Astuce : Vous pouvez toujours signer un nombre illimité de documents en partageant manuellement les liens de demande de signature ci-dessous.",
-  "quotamailhead":"Quota atteint"
+  "quotamailhead":"Quota atteint",
+  "unauthorized-modal":"Vous n'êtes pas autorisé à effectuer cette action, veuillez contacter {{adminName}}<{{adminEmail}}>."
 
 }

@@ -8,8 +8,10 @@ export default async function saveSubscription(request) {
   const body = subscription;
   const Next_billing_date = subscription.data.subscription.next_billing_at;
   const planCode = subscription.data.subscription.plan.plan_code;
+  const event = subscription?.data?.event_type || '';
   const credits = planCredits?.[planCode] || 0;
-  let existAddon = 0;
+  const isTeamPlan = planCode?.includes('team');
+  let newAddons = 0;
   try {
     const userRes = await axios.get(serverUrl + '/users/me', {
       headers: {
@@ -47,7 +49,7 @@ export default async function saveSubscription(request) {
             }
           });
           if (allowedUsersMonthly > 0 || allowedUsersYearly > 0) {
-            existAddon = allowedUsersMonthly + allowedUsersYearly + 1;
+            newAddons = allowedUsersMonthly + allowedUsersYearly + 1; // + 1 is Admin user
           }
         } else {
           if (
@@ -55,39 +57,90 @@ export default async function saveSubscription(request) {
             planCode === 'teams-monthly' ||
             planCode === 'team-weekly'
           ) {
-            existAddon = 1;
+            newAddons = 1; // 1 is Admin user
           }
         }
-
-        // const existAddon = addons.reduce((acc, curr) => acc + curr.quantity, 1);
         if (resSubscription) {
+          const _resSub = JSON.parse(JSON.stringify(resSubscription));
           const updateSubscription = new Parse.Object('contracts_Subscriptions');
           updateSubscription.id = resSubscription.id;
           updateSubscription.set('SubscriptionId', SubscriptionId);
           updateSubscription.set('SubscriptionDetails', body);
           updateSubscription.set('Next_billing_date', new Date(Next_billing_date));
           updateSubscription.set('PlanCode', planCode);
-          if (existAddon > 0) {
-            updateSubscription.set('AllowedUsers', parseInt(existAddon));
+          if (newAddons > 0) {
+            updateSubscription.set('AllowedUsers', parseInt(newAddons));
+          }
+          let existAddon = 0;
+          let allowedUsersMonthly = 0;
+          let allowedUsersYearly = 0;
+          _resSub.SubscriptionDetails?.data?.subscription?.addons?.forEach(item => {
+            if (item.addon_code === 'extra-teams-users-monthly') {
+              allowedUsersMonthly += item.quantity;
+            } else if (item.addon_code === 'extra-teams-users-yearly') {
+              allowedUsersYearly += item.quantity;
+            } else if (item.addon_code === 'extra-users') {
+              allowedUsersMonthly += item.quantity;
+            }
+          });
+          if (allowedUsersMonthly > 0 || allowedUsersYearly > 0) {
+            existAddon = allowedUsersMonthly + allowedUsersYearly + 1; // + 1 is Admin user
+          } else {
+            if (
+              planCode === 'teams-yearly' ||
+              planCode === 'teams-monthly' ||
+              planCode === 'team-weekly'
+            ) {
+              existAddon = 1; // 1 is Admin user
+            }
           }
           const isSameAsPrevPlan = resSubscription?.get('PlanCode') === planCode;
           if (isSameAsPrevPlan) {
             const planCredits = resSubscription?.get('PlanCredits');
+            const existAllowedCredits = resSubscription?.get('AllowedCredits') || 0;
             if (planCredits) {
-              updateSubscription.set('AllowedCredits', planCredits);
+              const oldAddons = existAddon;
+              const substractedAddon = newAddons - oldAddons;
+              if (isTeamPlan && substractedAddon > 0) {
+                const newCredits = existAllowedCredits + substractedAddon * planCredits;
+                updateSubscription.set('AllowedCredits', newCredits);
+                if (event === 'subscription_created') {
+                  updateSubscription.set('PlanCredits', credits);
+                }
+              } else if (isTeamPlan) {
+                const existCredits = existAddon * planCredits;
+                updateSubscription.set('AllowedCredits', existCredits);
+                if (event === 'subscription_created') {
+                  updateSubscription.set('PlanCredits', credits);
+                }
+              } else {
+                updateSubscription.set('AllowedCredits', planCredits);
+                if (event === 'subscription_created') {
+                  updateSubscription.set('PlanCredits', credits);
+                }
+              }
             } else {
-              if (credits > 0) {
+              if (isTeamPlan) {
+                const newCredits = newAddons * credits;
+                updateSubscription.set('AllowedCredits', newCredits);
+                updateSubscription.set('PlanCredits', credits);
+              } else {
                 updateSubscription.set('AllowedCredits', credits);
                 updateSubscription.set('PlanCredits', credits);
               }
             }
           } else {
             if (credits > 0) {
-              updateSubscription.set('AllowedCredits', credits);
-              updateSubscription.set('PlanCredits', credits);
+              if (isTeamPlan) {
+                const newCredits = newAddons * credits;
+                updateSubscription.set('AllowedCredits', newCredits);
+                updateSubscription.set('PlanCredits', credits);
+              } else {
+                updateSubscription.set('AllowedCredits', credits);
+                updateSubscription.set('PlanCredits', credits);
+              }
             }
           }
-
           await updateSubscription.save(null, { useMasterKey: true });
           return { status: 'update subscription!' };
         } else {
@@ -111,12 +164,18 @@ export default async function saveSubscription(request) {
           });
           createSubscription.set('Next_billing_date', new Date(Next_billing_date));
           createSubscription.set('PlanCode', planCode);
-          if (existAddon > 0) {
-            createSubscription.set('AllowedUsers', parseInt(existAddon));
+          if (newAddons > 0) {
+            createSubscription.set('AllowedUsers', parseInt(newAddons));
           }
           if (credits > 0) {
-            createSubscription.set('AllowedCredits', credits);
-            createSubscription.set('PlanCredits', credits);
+            if (isTeamPlan) {
+              const totalCredits = parseInt(newAddons) * credits;
+              createSubscription.set('AllowedCredits', totalCredits);
+              createSubscription.set('PlanCredits', credits);
+            } else {
+              createSubscription.set('AllowedCredits', credits);
+              createSubscription.set('PlanCredits', credits);
+            }
           }
           await createSubscription.save(null, { useMasterKey: true });
           return { status: 'create subscription!' };
