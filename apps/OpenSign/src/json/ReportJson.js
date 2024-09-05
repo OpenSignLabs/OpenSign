@@ -363,8 +363,8 @@ export default function reportJson(id) {
             },
             {
               btnId: "2434",
-              btnLabel: "CopyTemplateId",
-              hoverLabel: "CopyTemplateId",
+              btnLabel: "Copy TemplateId",
+              hoverLabel: "Copy TemplateId",
               btnIcon: "fa-light fa-copy",
               action: "CopyTemplateId"
             },
