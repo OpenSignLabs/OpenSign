@@ -216,7 +216,7 @@ async function sendmailv3(req) {
           }
         } else {
           if (Plan && Plan === 'freeplan') {
-            let MontlyfreeEmails = _extRes?.MontlyfreeEmails || 0;
+            let MonthlyFreeEmails = _extRes?.MonthlyFreeEmails || 0;
             if (_extRes?.LastEmailCountReset?.iso) {
               const lastDate = new Date(_extRes?.LastEmailCountReset?.iso);
               const newDate = new Date();
@@ -225,7 +225,7 @@ async function sendmailv3(req) {
                 const nonCustomMail = await sendMailProvider(req, Plan, true);
                 return nonCustomMail;
               } else {
-                if (MontlyfreeEmails >= 20) {
+                if (MonthlyFreeEmails >= 20) {
                   return { status: 'quota-reached' };
                 } else {
                   const nonCustomMail = await sendMailProvider(req, Plan);
