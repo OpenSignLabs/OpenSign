@@ -595,7 +595,7 @@ function UserProfile() {
                               className="op-btn op-btn-primary op-btn-outline op-btn-xs md:op-btn-sm"
                               onClick={() => copytoclipboard()}
                             >
-                              <i className="fa-light fa-link"></i>{" "}
+                              <i className="fa-light fa-copy" />
                             </button>
                           </div>
                         </div>

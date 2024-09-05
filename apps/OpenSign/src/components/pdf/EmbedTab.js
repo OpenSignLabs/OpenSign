@@ -2,10 +2,12 @@ import React, { useState } from "react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { tomorrow } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { copytoData } from "../../constant/Utils";
+import { useTranslation } from "react-i18next";
 
 function EmbedTab(props) {
+  const { t } = useTranslation();
   const tabName = [
-    { title: "React/Next", icon: "fa-brands fa-react", color: "#61dafb" },
+    { title: "React/Next.js", icon: "fa-brands fa-react", color: "#61dafb" },
     { title: "Angular", icon: "fa-brands fa-angular", color: "#ff5733" }
   ];
   const [activeTab, setActiveTab] = useState(0);
@@ -14,7 +16,7 @@ function EmbedTab(props) {
   const codeData = [
     {
       id: 0,
-      title: "Installation command",
+      title: "Installation",
       codeString: `
 npm install opensign-react`
     },
@@ -76,15 +78,22 @@ export function App() {
             {codeData.map((data, ind) => {
               return (
                 <div key={ind}>
-                  <p className="font-medium text-[15px]">{data.title}</p>
+                  <p className="font-medium text-[18px]">
+                    {t(`${data.title}`)}
+                  </p>
+                  {ind === 0 && (
+                    <p className="text-[13px] mt-2">
+                      {t("public-template-mssg-1")}
+                    </p>
+                  )}
                   <div className="relative p-1">
                     <div
                       onClick={() => handleCopy(data.codeString, ind)}
                       className="absolute top-[20px] right-[20px] cursor-pointer"
                     >
-                      <i className="fa-light fa-link text-white"></i>{" "}
+                      <i className="fa-light fa-copy text-white mr-[2px]" />
                       <span className=" text-white">
-                        {isCopied[ind] ? "COPIED" : "COPY"}
+                        {isCopied[ind] ? t("copied-code") : t("copy-code")}
                       </span>
                     </div>
                     <SyntaxHighlighter
@@ -97,9 +106,32 @@ export function App() {
                       {data.codeString}
                     </SyntaxHighlighter>
                   </div>
+                  {ind === 0 && (
+                    <p className="text-[13px] mb-3">
+                      {t("public-template-mssg-2")}
+                    </p>
+                  )}
                 </div>
               );
             })}
+
+            <p className="font-medium text-[15px]">
+              {t("public-template-mssg-3")}
+            </p>
+            <p className="my-[6px]">
+              {" "}
+              {t("public-template-mssg-4")}
+              <a
+                href="https://www.npmjs.com/package/opensign-react"
+                target="_blank"
+                rel="noreferrer"
+                className="cursor-pointer text-blue-700  "
+              >
+                {" "}
+                OpenSign React package{" "}
+              </a>
+              {t("public-template-mssg-5")}
+            </p>
           </div>
         ) : (
           activeTab === 1 && (
