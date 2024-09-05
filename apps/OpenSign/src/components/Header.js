@@ -48,11 +48,13 @@ const Header = ({ showSidebar }) => {
       }
       setIsTeam(subscribe);
       setIsSubscribe(subscribe.isValid);
-      const extUser =
-        localStorage.getItem("Extand_Class") &&
-        JSON.parse(localStorage.getItem("Extand_Class"))?.[0];
-      const MonthlyFreeEmails = extUser?.MonthlyFreeEmails || 0;
-      setEmailUsed(MonthlyFreeEmails);
+      try {
+        const extUser = await Parse.Cloud.run("getUserDetails");
+        const MonthlyFreeEmails = extUser?.get("MonthlyFreeEmails") || 0;
+        setEmailUsed(MonthlyFreeEmails);
+      } catch (err) {
+        console.log("err in while fetching monthlyfreeEmails", err);
+      }
     }
   }
 
