@@ -417,26 +417,25 @@ function SignYourSelf() {
     );
     //adding and updating drop position in array when user drop signature button in div
     if (item === "onclick") {
+      // `getBoundingClientRect()` is used to get accurate measurement height of the div
+      const divHeight = divRef.current.getBoundingClientRect().height;
       const getWidth = widgetTypeExist
         ? calculateInitialWidthHeight(dragTypeValue, widgetValue).getWidth
-        : dragTypeValue === "initials"
-          ? defaultWidthHeight(dragTypeValue).width
-          : "";
+        : defaultWidthHeight(dragTypeValue).width;
       const getHeight = widgetTypeExist
         ? calculateInitialWidthHeight(dragTypeValue, widgetValue).getHeight
-        : dragTypeValue === "initials"
-          ? defaultWidthHeight(dragTypeValue).height
-          : "";
+        : defaultWidthHeight(dragTypeValue).height;
+
       dropObj = {
-        xPosition: containerWH.width / 2,
-        yPosition: containerWH.height / 2,
+        xPosition: getWidth / 2 + containerWH.width / 2,
+        yPosition: getHeight + divHeight / 2,
         isStamp:
           (dragTypeValue === "stamp" || dragTypeValue === "image") && true,
         key: key,
         type: dragTypeValue,
         scale: containerScale,
-        Width: getWidth / (containerScale * scale),
-        Height: getHeight / (containerScale * scale),
+        Width: getWidth,
+        Height: getHeight,
         options: addWidgetOptions(dragTypeValue)
       };
       dropData.push(dropObj);
