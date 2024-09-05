@@ -44,6 +44,7 @@
     "react-scrollbars-custom": "^4.1.1",
     "react-select": "^5.8.0",
     "react-signature-canvas": "^1.0.6",
+    "react-syntax-highlighter": "^15.5.0",
     "react-tooltip": "^5.28.0",
     "react-web-share": "^2.0.2",
     "reactour": "^1.19.4",
