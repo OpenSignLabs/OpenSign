@@ -30,6 +30,7 @@ import SubscribeCard from "./SubscribeCard";
 import { validplan } from "../json/plansArr";
 import { serverUrl_fn } from "../constant/appinfo";
 import { useTranslation } from "react-i18next";
+import EmbedTab from "../components/pdf/EmbedTab";
 
 const ReportTable = (props) => {
   const { t } = useTranslation();
@@ -1421,6 +1422,7 @@ const ReportTable = (props) => {
                                             </button>
                                           </div>
                                         </div>
+                                        <EmbedTab templateId={item.objectId} />
                                       </div>
                                     ) : (
                                       <div className="font-normal text-black">
