@@ -364,7 +364,8 @@ function RenderPdf({
                         </React.Fragment>
                       );
                     })
-                  : xyPostion.map((data, ind) => {
+                  : !pdfDetails?.[0]?.IsCompleted &&
+                    xyPostion.map((data, ind) => {
                       return (
                         <React.Fragment key={ind}>
                           {data.pageNumber === pageNumber &&
