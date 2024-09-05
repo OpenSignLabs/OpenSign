@@ -150,7 +150,8 @@
     "Share": "Partager",
     "View": "Voir",
     "option": "Option",
-    "Embed": "Intégrer"
+    "Embed": "Intégrer",
+    "CopyTemplateId": "Copier l'ID du modèle"
   },
   "report-help": {
     "Draft Documents": "Il s'agit de documents que vous avez commencés mais que vous n'avez pas finalisés pour envoi.",
@@ -262,7 +263,8 @@
   "make-template-private-alert": "Êtes-vous sûr de vouloir rendre ce modèle privé ? Cela le supprimera de votre profil public.",
   "public-role": "Rôle public",
   "public-url": "URL publique",
-  "public-url-copy-mssg": "Voici votre URL publique : copiez-la ou partagez-le avec le signataire et vous pouvoir voir tous vos paramètres publics modèles.",
+  "public-url-copy": "Voici votre URL publique : ",
+  "public-url-copy-mssg": "copiez-la ou partagez-le avec le signataire et vous pouvoir voir tous vos paramètres publics modèles.",
   "add-public-url-alert": "Veuillez ajouter votre URL publique et vous pourra rendre public modèle.",
   "share-with-alert": "Vous ne pouvez pas partager un modèle si des contacts sont déjà attribués à des rôles. Veuillez supprimer toutes les attributions de contacts des rôles avant de partager le modèle.",
   "share-with": "Partager avec",
@@ -634,6 +636,16 @@
   "quotamailselfsign": "Vous avez atteint votre limite de 20 e-mails pour ce mois. Mettez à niveau maintenant pour continuer à envoyer des e-mails directement.",
   "quotamail": "Vous avez atteint votre limite de 20 e-mails de demande de signature pour ce mois. Mettez à niveau maintenant pour continuer à envoyer des e-mails directement.",
   "quotamailTip":"Astuce : Vous pouvez toujours signer un nombre illimité de documents en partageant manuellement les liens de demande de signature ci-dessous.",
-  "quotamailhead":"Quota atteint"
-
+  "quotamailhead":"Quota atteint",
+  "public-template-mssg-1" :"Pour intégrer OpenSign dans votre projet React ou Next.js, exécutez simplement la commande suivante :",
+  "public-template-mssg-2" :"Assurez-vous que npm ou Yarn est configuré dans votre projet. Si vous utilisez Yarn, vous pouvez remplacer npm install par Yarn Add opensign-react.",
+  "public-template-mssg-3" :"Besoin de plus de détails ou d'exemples ?",
+  "public-template-mssg-4": "Visitez le",
+  "public-template-mssg-5":  "npm pour les dernières mises à jour, une documentation détaillée et l'historique des versions.",
+  "public-template-mssg-6":"Vous devez définir ce modèle comme public avant de pouvoir utiliser cet extrait de code.",
+  "copy-code":"COPIE",
+  "copied-code":"COPIÉ",
+  "Installation":"Installation",
+  "Usage" :"Usage"
+ 
 }

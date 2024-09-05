@@ -362,6 +362,13 @@ export default function reportJson(id) {
               action: "Embed"
             },
             {
+              btnId: "2434",
+              btnLabel: "CopyTemplateId",
+              hoverLabel: "CopyTemplateId",
+              btnIcon: "fa-light fa-copy",
+              action: "CopyTemplateId"
+            },
+            {
               btnId: "1834",
               btnLabel: "Delete",
               hoverLabel: "Delete",
