@@ -12,23 +12,35 @@ body {
 }
 
 .hide-scrollbar {
-  -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
+}
+
+@media screen and (max-width: 766px) {
+  .bBofGr {
+    width: 14px !important;
+  }
 }
 
 /* below css class replace bootstrap background color with daisy */
 .op-bg-primary {
   @apply bg-primary;
 }
+
 .op-bg-secondary {
   @apply bg-secondary;
 }
+
 .op-bg-info {
   @apply bg-info;
 }
+
 .op-bg-success {
   @apply bg-success;
 }
+
 .op-bg-warning {
   @apply bg-warning;
 }
@@ -37,28 +49,37 @@ body {
 .op-text-primary {
   @apply text-primary;
 }
+
 .op-text-secondary {
   @apply text-secondary;
 }
+
 .op-text-info {
   @apply text-info;
 }
+
 .op-text-accent {
   @apply text-accent;
 }
+
 .op-text-success {
   @apply text-success;
 }
+
 .op-text-warning {
   @apply text-warning;
 }
+
 .op-border-primary {
   @apply border-primary;
 }
+
 /* CSS for scrollbar customization */
 * {
-  scrollbar-width: thin; /* For Firefox */
-  scrollbar-color: gray; /* For Firefox */
+  scrollbar-width: thin;
+  /* For Firefox */
+  scrollbar-color: gray;
+  /* For Firefox */
 }
 
 /* For webkit-based browsers like Chrome, Safari */
