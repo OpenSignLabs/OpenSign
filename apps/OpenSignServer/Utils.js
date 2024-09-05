@@ -103,15 +103,15 @@ export const updateMailCount = async (extUserId, plan, monthchange) => {
       if (plan === 'freeplan') {
         if (monthchange) {
           contractUser.set('LastEmailCountReset', new Date());
-          contractUser.set('MontlyfreeEmails', 1);
+          contractUser.set('MonthlyFreeEmails', 1);
         } else {
-          if (contractUser?.get('MontlyfreeEmails')) {
-            contractUser.increment('MontlyfreeEmails', 1);
+          if (contractUser?.get('MonthlyFreeEmails')) {
+            contractUser.increment('MonthlyFreeEmails', 1);
             if (contractUser?.get('LastEmailCountReset')) {
               contractUser.set('LastEmailCountReset', new Date());
             }
           } else {
-            contractUser.set('MontlyfreeEmails', 1);
+            contractUser.set('MonthlyFreeEmails', 1);
             contractUser.set('LastEmailCountReset', new Date());
           }
         }
