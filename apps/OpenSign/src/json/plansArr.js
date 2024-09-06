@@ -13,7 +13,7 @@ const plans = [
     url: "",
     target: "_blank",
     benefits: [
-      "Unlimited envelopes",
+      "Unlimited digital signatures",
       "Sign documents yourself",
       "Request signatures from others",
       "14 field types",
@@ -31,7 +31,7 @@ const plans = [
       "And much more"
     ],
     yearlyBenefits: [
-      "Unlimited envelopes",
+      "Unlimited digital signatures",
       "Sign documents yourself",
       "Request signatures from others",
       "14 field types",

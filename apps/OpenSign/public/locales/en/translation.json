@@ -631,10 +631,12 @@
   "decline-by":"Declined/revoked by",
   "document-declined": "Document declined",
   "Add-Webhook":"Add Webhook",
+  "quotamailinfohead":"Monthly request signatures email limit",
   "quotamailinfo": "You can send upto 15 signature request emails every month. Upgrade now to send unlimited signing requests directly.",
   "quotamail": "You've reached your limit of 15 signature request emails for this month. Upgrade now to continue sending emails directly.",
-  "quotamailTip":"Tip: You can still sign unlimited documents by manually sharing the signing request links.",
+  "quotamailTip":"Tip: You can still sign <1>unlimited documents</1> by manually sharing the signing request links.",
   "quotamailhead":"Quota Reached",
-  "unauthorized-modal":"You don't have permission to perform this action, please contact {{adminName}}<{{adminEmail}}>."
+  "unauthorized-modal":"You don't have permission to perform this action, please contact {{adminName}}<{{adminEmail}}>.",
+  "sent-this-month":"Sent this month"
 
 }
