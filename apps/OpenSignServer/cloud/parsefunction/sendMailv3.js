@@ -225,7 +225,7 @@ async function sendmailv3(req) {
                 const nonCustomMail = await sendMailProvider(req, Plan, true);
                 return nonCustomMail;
               } else {
-                if (MonthlyFreeEmails >= 20) {
+                if (MonthlyFreeEmails >= 15) {
                   return { status: 'quota-reached' };
                 } else {
                   const nonCustomMail = await sendMailProvider(req, Plan);

@@ -13,6 +13,8 @@ import {
 import { isEnableSubscription, isStaging } from "../constant/const";
 import { validplan } from "../json/plansArr";
 import { useTranslation } from "react-i18next";
+import ModalUi from "../primitives/ModalUi";
+import QuotaCard from "../primitives/QuotaCard";
 
 const Header = ({ showSidebar }) => {
   const { t, i18n } = useTranslation();
@@ -27,6 +29,7 @@ const Header = ({ showSidebar }) => {
     localStorage.getItem("appLogo") || " "
   );
   const [emailUsed, setEmailUsed] = useState(0);
+  const [isModal, setIsModal] = useState(false);
 
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
@@ -110,6 +113,9 @@ const Header = ({ showSidebar }) => {
   };
   const handleNavigation = () => {
     navigate("/subscription");
+  };
+  const handleMailUsed = () => {
+    setIsModal(!isModal);
   };
   return (
     <div>
@@ -203,14 +209,6 @@ const Header = ({ showSidebar }) => {
               tabIndex={0}
               className="mt-3 z-[1] p-2 shadow op-menu op-menu-sm op-dropdown-content text-base-content bg-base-100 rounded-box w-52"
             >
-              {isEnableSubscription && isTeam?.plan === "freeplan" && (
-                <li className="cursor-pointer">
-                  <span>
-                    <i className="fa-light fa-envelope"></i> Email used:{" "}
-                    {emailUsed}/20
-                  </span>
-                </li>
-              )}
               <li onClick={() => openInNewTab("https://docs.opensignlabs.com")}>
                 <span>
                   <i className="fa-light fa-book"></i> {t("docs")}
@@ -241,6 +239,14 @@ const Header = ({ showSidebar }) => {
                   <i className="fa-light fa-id-card"></i> Console
                 </span>
               </li>
+              {isEnableSubscription && isTeam?.plan === "freeplan" && (
+                <li className="cursor-pointer" onClick={handleMailUsed}>
+                  <span>
+                    <i className="fa-light fa-envelope"></i>
+                    {emailUsed}/20 sent this month
+                  </span>
+                </li>
+              )}
               <li onClick={closeDropdown}>
                 <span>
                   <i className="fa-light fa-arrow-right-from-bracket"></i>{" "}
@@ -251,6 +257,9 @@ const Header = ({ showSidebar }) => {
           </div>
         </div>
       </div>
+      <ModalUi isOpen={isModal}>
+        <QuotaCard isPaidInfo={true} handlClose={handleMailUsed} />
+      </ModalUi>
     </div>
   );
 };
