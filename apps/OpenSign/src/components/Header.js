@@ -243,7 +243,7 @@ const Header = ({ showSidebar }) => {
                 <li className="cursor-pointer" onClick={handleMailUsed}>
                   <span>
                     <i className="fa-light fa-envelope"></i>
-                    {emailUsed}/20 {t("sent-this-month")}
+                    {emailUsed}/15 {t("sent-this-month")}
                   </span>
                 </li>
               )}
