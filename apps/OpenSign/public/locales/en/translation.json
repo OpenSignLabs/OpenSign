@@ -477,7 +477,7 @@
   "role-not-found": "Role not found.",
   "do-not-access": "You don't have access, please contact the admin.",
   "add-admin": "Add admin",
-  "opensign-setup": "Opensign Setup",
+  "opensign-setup": "OpenSign Setup",
   "join-discord": "Join our discord server",
   "admin-already-exist": "Admin already exist.",
   "password-update-alert-1": "Password updated successfully.",
@@ -533,7 +533,7 @@
   "filed-required-correctly": "Please fill required details correctly.",
   "admin-created": "Admin created",
   "invalid-masterkey": "Invalid masterkey",
-  "opensign-Setup": "Opensign Setup",
+  "opensign-Setup": "OpenSign Setup",
   "master-key": " Master key",
   "profile-update-alert": "Profile updated successfully.",
   "date": "Date",
@@ -595,7 +595,7 @@
     "Recently sent for signatures": "This is a list of documents you've sent to other parties for signature.",
     "Drafts": "This are documents you have started but have not finalized for sending.",
     "public-template": "This video demonstrates how to set up your personalized public profile, such as ‘https://opensign.me/your-username’. You’ll also learn how to customize your tagline and make your templates available for public signing."
-  },
+   },
   "enter-email-plaholder": "Add an email address and hit enter",
   "success-email-alert": "Email sent successfully!",
   "expired-doc-title": "Expired Document",
@@ -646,6 +646,7 @@
   "copy-code":"COPY",
   "copied-code":"COPIED",
   "Installation":"Installation",
-  "Usage" :"Usage"
+  "Usage" :"Usage",
+  "unauthorized-modal":"You don't have permission to perform this action, please contact {{adminName}}<{{adminEmail}}>."
 
 }

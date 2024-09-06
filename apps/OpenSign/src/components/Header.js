@@ -18,7 +18,7 @@ const Header = ({ showSidebar }) => {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const { width } = useWindowSize();
-  let username = localStorage.getItem("username");
+  const username = localStorage.getItem("username") || "";
   const image = localStorage.getItem("profileImg") || dp;
   const [isOpen, setIsOpen] = useState(false);
   const [isSubscribe, setIsSubscribe] = useState(true);
@@ -26,6 +26,7 @@ const Header = ({ showSidebar }) => {
   const [applogo, setAppLogo] = useState(
     localStorage.getItem("appLogo") || " "
   );
+  const [emailUsed, setEmailUsed] = useState(0);
 
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
@@ -47,6 +48,13 @@ const Header = ({ showSidebar }) => {
       }
       setIsTeam(subscribe);
       setIsSubscribe(subscribe.isValid);
+      try {
+        const extUser = await Parse.Cloud.run("getUserDetails");
+        const MonthlyFreeEmails = extUser?.get("MonthlyFreeEmails") || 0;
+        setEmailUsed(MonthlyFreeEmails);
+      } catch (err) {
+        console.log("err in while fetching monthlyfreeEmails", err);
+      }
     }
   }
 
@@ -195,6 +203,14 @@ const Header = ({ showSidebar }) => {
               tabIndex={0}
               className="mt-3 z-[1] p-2 shadow op-menu op-menu-sm op-dropdown-content text-base-content bg-base-100 rounded-box w-52"
             >
+              {isEnableSubscription && isTeam?.plan === "freeplan" && (
+                <li className="cursor-pointer">
+                  <span>
+                    <i className="fa-light fa-envelope"></i> Email used:{" "}
+                    {emailUsed}/20
+                  </span>
+                </li>
+              )}
               <li onClick={() => openInNewTab("https://docs.opensignlabs.com")}>
                 <span>
                   <i className="fa-light fa-book"></i> {t("docs")}

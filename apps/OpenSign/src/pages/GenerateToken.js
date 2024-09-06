@@ -21,9 +21,16 @@ function GenerateToken() {
   const [isLoader, setIsLoader] = useState(true);
   const [isModal, setIsModal] = useState({
     generateapi: false,
-    buyapis: false
+    buyapis: false,
+    unauthorized: false
   });
-  const [isSubscribe, setIsSubscribe] = useState({ plan: "", isValid: false });
+  const [isSubscribe, setIsSubscribe] = useState({
+    plan: "",
+    isValid: false,
+    adminId: "",
+    adminName: "",
+    adminEmail: ""
+  });
   const [isAlert, setIsAlert] = useState({ type: "success", msg: "" });
   const [isTour, setIsTour] = useState(false);
   const [amount, setAmount] = useState({
@@ -139,10 +146,24 @@ function GenerateToken() {
     if (isSubscribe?.plan === "freeplan" && isEnableSubscription) {
       setIsTour(true);
     } else {
-      setIsModal((obj) => ({ ...obj, buyapis: !obj.buyapis }));
+      const extUser =
+        localStorage.getItem("Extand_Class") &&
+        JSON.parse(localStorage.getItem("Extand_Class"))?.[0];
+      if (isSubscribe?.adminId && extUser?.objectId === isSubscribe?.adminId) {
+        setIsModal((obj) => ({ ...obj, buyapis: !obj.buyapis }));
+      } else {
+        setIsSubscribe((obj) => ({
+          ...obj,
+          adminName: extUser?.CreatedBy?.name,
+          adminEmail: extUser?.CreatedBy?.email
+        }));
+        setIsModal((obj) => ({ ...obj, unauthorized: !obj.unauthorized }));
+      }
     }
   };
-
+  const handleCloseModal = () => {
+    setIsModal({ generateapi: false, buyapis: false, unauthorized: false });
+  };
   const handlePricePerAPIs = (e) => {
     const quantity = e.target?.value;
     const price =
@@ -374,7 +395,7 @@ function GenerateToken() {
             <ModalUi
               isOpen={isModal.buyapis}
               title={"Buy Credits"}
-              handleClose={handleBuyAPIsModal}
+              handleClose={handleCloseModal}
             >
               {isFormLoader && (
                 <div className="absolute w-full h-full inset-0 flex justify-center items-center bg-base-content/30 z-50">
@@ -418,6 +439,18 @@ function GenerateToken() {
                   {t("Proceed")}
                 </button>
               </form>
+            </ModalUi>
+            <ModalUi
+              isOpen={isModal.unauthorized}
+              title={"Unauthorized"}
+              handleClose={handleCloseModal}
+            >
+              <div className="m-8 flex justify-center text-center items-center font-medium break-all">
+                {t("unauthorized-modal", {
+                  adminName: isSubscribe?.adminName,
+                  adminEmail: isSubscribe?.adminEmail
+                })}
+              </div>
             </ModalUi>
           </div>
           {isEnableSubscription && isSubscribe?.plan === "freeplan" && (

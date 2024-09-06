@@ -357,7 +357,7 @@ function DriveBody(props) {
                 e.stopPropagation();
                 handleMenuItemClick("Download", data);
               }}
-              className="fa-light fa-download mr-[8px] op-text-primary"
+              className="fa-light fa-download mr-[8px] op-text-primary cursor-pointer"
               aria-hidden="true"
             ></i>
           </td>
@@ -370,7 +370,11 @@ function DriveBody(props) {
             {/* folder */}
             <div
               data-tut={props.dataTutSeventh}
-              onClick={() => handleOnclikFolder(data)}
+              onClick={() => {
+                if (!rename) {
+                  handleOnclikFolder(data);
+                }
+              }}
               className="cursor-pointer"
             >
               <svg
@@ -383,7 +387,6 @@ function DriveBody(props) {
               {rename === data.objectId ? (
                 <input
                   onFocus={() => {
-                    inputRef.current.setSelectionRange(0, 0);
                     const input = inputRef.current;
                     if (input) {
                       input.select();
@@ -395,9 +398,8 @@ function DriveBody(props) {
                   onKeyDown={(e) => handleEnterPress(e, data)}
                   ref={inputRef}
                   defaultValue={renameValue}
-                  // value={renameValue}
                   onChange={(e) => setRenameValue(e.target.value)}
-                  className="w-[100px] border-[1.5px] border-black rounded-sm text-[10px]"
+                  className="op-input op-input-bordered op-input-xs w-[100px] focus:outline-none hover:border-base-content text-[10px]"
                 />
               ) : (
                 <span className="fileName">{data.Name}</span>
@@ -423,7 +425,11 @@ function DriveBody(props) {
         </ContextMenu.Root>
       </div>
     ) : (
-      <HoverCard.Root openDelay={0} closeDelay={100}>
+      <HoverCard.Root
+        open={rename ? false : undefined}
+        openDelay={0}
+        closeDelay={100}
+      >
         <HoverCard.Trigger asChild>
           <div>
             <ContextMenu.Root>
@@ -432,7 +438,11 @@ function DriveBody(props) {
                   {/* pdf */}
                   <div
                     data-tut={props.dataTutSixth}
-                    onClick={() => checkPdfStatus(data)}
+                    onClick={() => {
+                      if (!rename) {
+                        checkPdfStatus(data);
+                      }
+                    }}
                     className="cursor-pointer"
                   >
                     <svg
@@ -447,7 +457,6 @@ function DriveBody(props) {
                         autoFocus={true}
                         type="text"
                         onFocus={() => {
-                          inputRef.current.setSelectionRange(0, 0);
                           const input = inputRef.current;
                           if (input) {
                             input.select();
@@ -457,9 +466,8 @@ function DriveBody(props) {
                         onKeyDown={(e) => handleEnterPress(e, data)}
                         ref={inputRef}
                         defaultValue={renameValue}
-                        // value={renameValue}
                         onChange={(e) => setRenameValue(e.target.value)}
-                        className="w-[100px] border-[1.5px] border-black rounded-sm text-[10px]"
+                        className="op-input op-input-bordered op-input-xs w-[100px] focus:outline-none hover:border-base-content text-[10px]"
                       />
                     ) : (
                       <span className="fileName">{data.Name}</span>

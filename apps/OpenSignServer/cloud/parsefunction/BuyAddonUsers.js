@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { planCredits } from '../../Utils.js';
 export default async function BuyAddonUsers(request) {
   const users = request.params.users;
   if (!request?.user) {
@@ -88,10 +89,15 @@ export default async function BuyAddonUsers(request) {
             );
             const subscriptionInfo = { data: updatedSubscription.data };
             const allowedUsers = quantity + 1;
+            const existAllowedCredits = _resSub?.AllowedCredits || 0;
+            const credits = resSub?.PlanCredits || planCredits[plan_code];
+            const newAllowedCredits = users * credits;
+            const totalCredits = existAllowedCredits + newAllowedCredits;
             const updateSub = new Parse.Object('contracts_Subscriptions');
             updateSub.id = resSub.id;
             updateSub.set('SubscriptionDetails', subscriptionInfo);
             updateSub.set('AllowedUsers', allowedUsers);
+            updateSub.set('AllowedCredits', totalCredits);
             const resupdateSub = await updateSub.save(null, { useMasterKey: true });
             return { status: 'success', addon: allowedUsers };
           } else {
