@@ -15,8 +15,7 @@ function EmailComponent({
   sender,
   setIsAlert,
   extUserId,
-  activeMailAdapter,
-  planCode
+  activeMailAdapter
 }) {
   const { t } = useTranslation();
   const [emailList, setEmailList] = useState([]);
@@ -51,7 +50,6 @@ function EmailComponent({
           recipient: emailList[i],
           subject: `${sender.name} has signed the doc - ${pdfName}`,
           from: sender.email,
-          plan: planCode,
           html:
             "<html><head><meta http-equiv='Content-Type' content='text/html; charset=UTF-8' /></head><body>  <div style='background-color:#f5f5f5;padding:20px'>    <div style='box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;background-color:white;'> <div><img src=" +
             imgPng +
@@ -85,12 +83,6 @@ function EmailComponent({
         setEmailList([]);
       }, 1500);
       setIsLoading(false);
-    } else if (sendMail?.data?.result?.status === "quota-reached") {
-      setIsLoading(false);
-      setIsEmail(false);
-      setIsAlert({ isShow: true, alertMessage: "quotareached" });
-      setEmailValue("");
-      setEmailList([]);
     } else {
       setIsLoading(false);
       setIsEmail(false);
