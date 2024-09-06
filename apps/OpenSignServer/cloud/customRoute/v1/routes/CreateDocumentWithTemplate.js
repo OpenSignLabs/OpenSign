@@ -81,6 +81,7 @@ export default async function createDocumentWithTemplate(request, response) {
         objectId: extUser.get('TenantId').id,
       });
       subscription.include('ExtUserPtr');
+      subscription.greaterThanOrEqualTo('Next_billing_date', new Date());
       const resSub = await subscription.first({ useMasterKey: true });
       if (resSub) {
         const _resSub = JSON.parse(JSON.stringify(resSub));
@@ -404,7 +405,9 @@ export default async function createDocumentWithTemplate(request, response) {
             .json({ error: 'Quota reached, Please buy credits and try again later.' });
         }
       } else {
-        return response.status(400).json({ error: 'Please buy subscriptions.' });
+        return response.status(400).json({
+          error: 'Please purchase or renew your subscription.',
+        });
       }
     } else {
       return response.status(405).json({ error: 'Invalid API Token!' });

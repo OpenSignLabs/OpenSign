@@ -211,6 +211,7 @@ export default async function createBatchDocs(request) {
               objectId: _resExt.TenantId.objectId,
             });
             subscription.include('ExtUserPtr');
+            subscription.greaterThanOrEqualTo('Next_billing_date', new Date());
             const resSub = await subscription.first({ useMasterKey: true });
             if (resSub) {
               const _resSub = JSON.parse(JSON.stringify(resSub));
@@ -240,7 +241,10 @@ export default async function createBatchDocs(request) {
                 );
               }
             } else {
-              throw new Parse.Error(Parse.Error.INVALID_QUERY, 'Please buy subscriptions.');
+              throw new Parse.Error(
+                Parse.Error.INVALID_QUERY,
+                'Please purchase or renew your subscription.'
+              );
             }
           } else {
             const response = await axios.post('batch', { requests: requests[0] }, parseConfig);
