@@ -2,10 +2,10 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 
-const QuotaCard = ({ isSignyourself, handlClose }) => {
+const QuotaCard = ({ isPaidInfo, handlClose }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  return isSignyourself ? (
+  return isPaidInfo ? (
     <>
       <div
         className="op-btn op-btn-sm op-btn-circle op-btn-ghost text-primary-content absolute right-2 top-2 z-40"
@@ -18,7 +18,8 @@ const QuotaCard = ({ isSignyourself, handlClose }) => {
           <h2 className="op-card-title">
             {t("upgrade-to") + " Paid " + t("plan")}
           </h2>
-          <p>{t("quotamailselfsign")}</p>
+          <p>{t("quotamailinfo")}</p>
+          <p>{t("quotamailTip")}</p>
           <div className="op-card-actions justify-end">
             <button
               onClick={() => navigate("/subscription")}
