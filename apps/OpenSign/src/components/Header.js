@@ -121,12 +121,12 @@ const Header = ({ showSidebar }) => {
     <div>
       {isEnableSubscription && (
         <div className="shadow py-1 text-center bg-[#CAE4FA] text-[14px] p-1">
-          {t("headernews")} —
+          {t("header-news")} —
           <span
             className="cursor-pointer font-medium underline text-blue-800"
             onClick={() => navigate("/profile")}
           >
-            {" " + t("headernewsbtn") + "."}
+            {" " + t("header-news-btn") + "."}
           </span>
         </div>
       )}

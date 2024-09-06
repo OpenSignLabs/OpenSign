@@ -404,13 +404,13 @@ const BulkSendUi = (props) => {
                         >
                           <div className="p-4 flex justify-center items-center flex-col gap-y-3">
                             <p className="text-center text-base-content">
-                              {t("quotaerrquicksend")}
+                              {t("quota-err-quicksend")}
                             </p>
                             <button
                               onClick={() => setIsBulkAvailable(false)}
                               className=" op-btn op-btn-primary w-[200px]"
                             >
-                              {t("buycredits")}
+                              {t("buy-credits")}
                             </button>
                           </div>
                         </ModalUi>
@@ -437,7 +437,7 @@ const BulkSendUi = (props) => {
               {isFreePlan ? (
                 <div className="w-full h-[130px] flex flex-col justify-center items-center text-center p-4">
                   <p className="text-base font-medium mb-2.5">
-                    {t("bulksendsubcriptionalert")}
+                    {t("bulk-send-subcription-alert")}
                   </p>
                   <button
                     onClick={() => handleNavigation()}
@@ -458,7 +458,7 @@ const BulkSendUi = (props) => {
                           htmlFor="quantity"
                           className="block text-xs text-gray-700 font-semibold"
                         >
-                          {t("quantityofcredits")}
+                          {t("quantity-of-credits")}
                           <span className="text-[red] text-[13px]">*</span>
                         </label>
                         <select
