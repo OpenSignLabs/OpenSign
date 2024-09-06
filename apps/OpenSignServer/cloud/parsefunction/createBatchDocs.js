@@ -247,15 +247,17 @@ export default async function createBatchDocs(request) {
               );
             }
           } else {
-            const response = await axios.post('batch', { requests: requests[0] }, parseConfig);
-            // // Handle the batch query response
+            const response = await axios.post('batch', { requests: requests }, parseConfig);
+            // Handle the batch query response
             // console.log('Batch query response:', response.data);
             if (response.data && response.data.length > 0) {
+              const document = Documents?.[0];
               const updateDocuments = {
+                ...document,
                 objectId: response.data[0]?.success?.objectId,
                 createdAt: response.data[0]?.success?.createdAt,
               };
-              deductcount(response.data.length, resExt.id, _resSub);
+              deductcount(response.data.length, resExt.id);
               sendMail(updateDocuments, sessionToken);
               return 'success';
             }
