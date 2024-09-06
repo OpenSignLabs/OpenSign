@@ -1,5 +1,5 @@
 import React from "react";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 
 const QuotaCard = ({ isPaidInfo, handlClose }) => {
@@ -15,11 +15,14 @@ const QuotaCard = ({ isPaidInfo, handlClose }) => {
       </div>
       <div className="op-card op-bg-primary text-primary-content w-full shadow-lg">
         <div className="op-card-body">
-          <h2 className="op-card-title">
-            {t("upgrade-to") + " Paid " + t("plan")}
-          </h2>
+          <h2 className="op-card-title">{t("quotamailinfohead")}</h2>
           <p>{t("quotamailinfo")}</p>
-          <p>{t("quotamailTip")}</p>
+          <p>
+            <Trans i18nKey={"quotamailTip"}>
+              Tip: You can still sign <strong>unlimited documents</strong> by
+              manually sharing the signing request links.
+            </Trans>
+          </p>
           <div className="op-card-actions justify-end">
             <button
               onClick={() => navigate("/subscription")}
