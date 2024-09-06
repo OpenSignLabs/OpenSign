@@ -476,7 +476,7 @@
   "role-not-found": "Rôle introuvable.",
   "do-not-access": "Vous n'y avez pas accès, veuillez contacter l'administrateur.",
   "add-admin": "Ajouter un administrateur",
-  "opensign-setup": "Configuration d'Opensign",
+  "opensign-setup": "Configuration d'OpenSign",
   "join-discord": "Rejoignez notre serveur Discord",
   "admin-already-exist": "L'administrateur existe déjà.",
   "password-update-alert-1": "Mot de passe mis à jour avec succès.",
@@ -532,7 +532,7 @@
   "filed-required-correctly": "Veuillez remplir correctement les informations requises.",
   "admin-created": "Administrateur créé",
   "invalid-masterkey": "Clé principale invalide",
-  "opensign-Setup": "Configuration d'Opensign",
+  "opensign-Setup": "Configuration d'OpenSign",
   "master-key": "La clef maitresse",
   "profile-update-alert": "Mise à jour du profil réussie.",
   "date": "Date",
@@ -646,6 +646,7 @@
   "copy-code":"COPIE",
   "copied-code":"COPIÉ",
   "Installation":"Installation",
-  "Usage" :"Usage"
- 
+  "Usage" :"Usage",
+  "unauthorized-modal":"Vous n'êtes pas autorisé à effectuer cette action, veuillez contacter {{adminName}}<{{adminEmail}}>."
+
 }

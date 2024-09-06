@@ -243,6 +243,7 @@ export default function reportJson(id, userId) {
         reportName: 'Recent signature requests',
         params: {
           Type: { $ne: 'Folder' },
+          SignedUrl: { $ne: null },
           IsCompleted: { $ne: true },
           IsDeclined: { $ne: true },
           IsArchive: { $ne: true },
