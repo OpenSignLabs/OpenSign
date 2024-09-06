@@ -628,9 +628,9 @@
   "help-test-token":"This token can be used to test the APIs at the https://sandbox.opensignlabs.com/api/v1 endpoint, allowing you to conduct unlimited document signatures. Please note that the sandbox API will sign your documents with self-signed certificates, which may not be recognized as valid by Adobe. Once you’ve completed your testing, you can upgrade to one of our paid plans to generate a production token.",
   "help-api-token":"This token can be used to access the production APIs at the {{origin}}/api/v1 endpoint. It can only be generated on one of our paid plans.",
   "Add-Webhook":"Add Webhook",
-  "quotamailselfsign": "You've reached your limit of 20 emails for this month. Upgrade now to continue sending emails directly.",
-  "quotamail": "You've reached your limit of 20 signature request emails for this month. Upgrade now to continue sending emails directly.",
-  "quotamailTip":"Tip: You can still sign unlimited documents by manually sharing the signing request links below.",
+  "quotamailinfo": "You can send upto 15 signature request emails every month. Upgrade now to send unlimited signing requests directly.",
+  "quotamail": "You've reached your limit of 15 signature request emails for this month. Upgrade now to continue sending emails directly.",
+  "quotamailTip":"Tip: You can still sign unlimited documents by manually sharing the signing request links.",
   "quotamailhead":"Quota Reached",
   "unauthorized-modal":"You don't have permission to perform this action, please contact {{adminName}}<{{adminEmail}}>."
 

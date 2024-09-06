@@ -57,7 +57,6 @@ import PdfZoom from "../components/pdf/PdfZoom";
 import Loader from "../primitives/Loader";
 import { useTranslation } from "react-i18next";
 import RotateAlert from "../components/RotateAlert";
-import QuotaCard from "../primitives/QuotaCard";
 //For signYourself inProgress section signer can add sign and complete doc sign.
 function SignYourSelf() {
   const { t } = useTranslation();
@@ -1241,29 +1240,14 @@ function SignYourSelf() {
               <div className="w-full md:w-[95%]">
                 <ModalUi
                   isOpen={isAlert.isShow}
-                  title={
-                    isAlert.alertMessage === "quotareached"
-                      ? false
-                      : isAlert?.header || t("alert")
-                  }
+                  title={isAlert?.header || t("alert")}
                   handleClose={() =>
-                    isAlert.alertMessage === "quotareached"
-                      ? false
-                      : setIsAlert({ isShow: false, alertMessage: "" })
+                    setIsAlert({ isShow: false, alertMessage: "" })
                   }
                 >
-                  {isAlert.alertMessage === "quotareached" ? (
-                    <QuotaCard
-                      isSignyourself={true}
-                      handlClose={() =>
-                        setIsAlert({ isShow: false, alertMessage: "" })
-                      }
-                    />
-                  ) : (
-                    <div className="p-[20px] h-full">
-                      <p>{isAlert.alertMessage}</p>
-                    </div>
-                  )}
+                  <div className="p-[20px] h-full">
+                    <p>{isAlert.alertMessage}</p>
+                  </div>
                 </ModalUi>
 
                 {/* this modal is used show this document is already sign */}
@@ -1343,7 +1327,6 @@ function SignYourSelf() {
                   setIsAlert={setIsAlert}
                   extUserId={extUserId}
                   activeMailAdapter={activeMailAdapter}
-                  planCode={isSubscribe?.plan}
                 />
                 {/* pdf header which contain funish back button */}
                 <Header
