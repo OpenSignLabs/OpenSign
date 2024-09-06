@@ -631,9 +631,9 @@
   "decline-by" :"Refusé/révoqué par",
   "document-declined":"document refusé",
   "Add-Webhook":"Ajouter Webhook",
-  "quotamailselfsign": "Vous avez atteint votre limite de 20 e-mails pour ce mois. Mettez à niveau maintenant pour continuer à envoyer des e-mails directement.",
-  "quotamail": "Vous avez atteint votre limite de 20 e-mails de demande de signature pour ce mois. Mettez à niveau maintenant pour continuer à envoyer des e-mails directement.",
-  "quotamailTip":"Astuce : Vous pouvez toujours signer un nombre illimité de documents en partageant manuellement les liens de demande de signature ci-dessous.",
+  "quotamailinfo": "Vous pouvez envoyer jusqu'à 15 e-mails de demande de signature chaque mois. Mettez à niveau maintenant pour envoyer directement des demandes de signature illimitées.",
+  "quotamail": "Vous avez atteint votre limite de 15 e-mails de demande de signature pour ce mois. Mettez à niveau maintenant pour continuer à envoyer des e-mails directement.",
+  "quotamailTip":"Astuce : Vous pouvez toujours signer un nombre illimité de documents en partageant manuellement les liens de demande de signature.",
   "quotamailhead":"Quota atteint",
   "unauthorized-modal":"Vous n'êtes pas autorisé à effectuer cette action, veuillez contacter {{adminName}}<{{adminEmail}}>."
 
