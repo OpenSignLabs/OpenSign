@@ -77,7 +77,9 @@ const BulkSendUi = (props) => {
           const addoncredits = resCredits?.addoncredits || 0;
           const totalcredits = allowedcredits + addoncredits;
           if (totalcredits > 0) {
-            setIsBulkAvailable(true);
+            if (subscription?.plan !== "freeplan") {
+              setIsBulkAvailable(true);
+            }
           }
           setAmount((obj) => ({ ...obj, totalcredits: totalcredits }));
         }
