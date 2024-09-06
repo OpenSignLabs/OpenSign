@@ -1875,7 +1875,7 @@ function PlaceHolderSign() {
                     isOpen={isSend}
                     title={
                       mailStatus === "quotareached"
-                        ? t("quotamailhead")
+                        ? t("quota-mail-head")
                         : t("Mails Sent")
                     }
                     handleClose={() => {
