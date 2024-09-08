@@ -10,10 +10,10 @@ jobs:
     strategy:
       matrix:
         include:
-          - image: amolshejole/OpenSign
-            dockerfile: apps/OpenSign/Dockerfile
-          - image: amolshejole/OpenSignServer
-            dockerfile: apps/OpenSignServer/Dockerfile
+          - image: opensign/opensign
+            dockerfile: apps/OpenSign/Dockerhubfile
+          - image: opensign/opensignserver
+            dockerfile: apps/OpenSignServer/Dockerhubfile
     steps:
       -
         name: Checkout
@@ -31,8 +31,11 @@ jobs:
         with:
           images: ${{ matrix.image }}
       -
-        name: Debug - List files
+        name: Debug - List files opensign
         run: ls -R apps/OpenSign/  # Adjust the path as needed
+      -
+        name: Debug - List files opensignserver
+        run: ls -R apps/OpenSignServer/  # Adjust the path as needed  
       -
         name: Build and push
         uses: docker/build-push-action@v4

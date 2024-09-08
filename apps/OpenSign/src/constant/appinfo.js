@@ -1,9 +1,23 @@
 import logo from "../assets/images/logo.png";
+import { isEnableSubscription } from "./const";
+
+export function serverUrl_fn() {
+  let baseUrl;
+  if (isEnableSubscription) {
+    baseUrl = process.env.REACT_APP_SERVERURL
+      ? process.env.REACT_APP_SERVERURL
+      : window.location.origin + "/api/app";
+  } else {
+    baseUrl = process.env.REACT_APP_SERVERURL
+      ? process.env.REACT_APP_SERVERURL
+      : window.location.origin + "/app";
+  }
+  return baseUrl;
+}
 export const appInfo = {
-  appTitle: "contracts",
   applogo: logo,
-  appname: "contracts",
-  baseurl: process.env.REACT_APP_SERVERURL,
+  appId: process.env.REACT_APP_APPID ? process.env.REACT_APP_APPID : "opensign",
+  baseUrl: serverUrl_fn(),
   defaultRole: "contracts_User",
   fbAppId: process.env.REACT_APP_FBAPPID
     ? `${process.env.REACT_APP_FBAPPID}`
@@ -15,22 +29,34 @@ export const appInfo = {
     : "",
   metaDescription:
     "The fastest way to sign PDFs & request signatures from others.",
-  objectId: "aIPmIvMzGM",
   settings: [
-    {
-      role: "contracts_User",
-      menuId: "H9vRfEYKhT",
-      pageType: "dashboard",
-      pageId: "35KBoSgoAK",
-      extended_class: "contracts_Users"
-    },
     {
       role: "contracts_Admin",
       menuId: "VPh91h0ZHk",
       pageType: "dashboard",
       pageId: "35KBoSgoAK",
       extended_class: "contracts_Users"
+    },
+    {
+      role: "contracts_OrgAdmin",
+      menuId: "VPh91h0ZHk",
+      pageType: "dashboard",
+      pageId: "35KBoSgoAK",
+      extended_class: "contracts_Users"
+    },
+    {
+      role: "contracts_Editor",
+      menuId: "H9vRfEYKhT",
+      pageType: "dashboard",
+      pageId: "35KBoSgoAK",
+      extended_class: "contracts_Users"
+    },
+    {
+      role: "contracts_User",
+      menuId: "H9vRfEYKhT",
+      pageType: "dashboard",
+      pageId: "35KBoSgoAK",
+      extended_class: "contracts_Users"
     }
-  ],
-  version: "0.1"
+  ]
 };

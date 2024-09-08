@@ -1,8 +1,11 @@
 import React, { useState, useRef } from "react";
 import Parse from "parse";
-import jwtDecode from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 import { useScript } from "../hook/useScript";
-
+import ModalUi from "../primitives/ModalUi";
+import Loader from "../primitives/Loader";
+import { useTranslation } from "react-i18next";
+import { saveLanguageInLocal } from "../constant/Utils";
 /*
  * `GoogleSignInBtn`as it's name indicates it render google sign in button
  * and in this `useScript` in which we have created for generate google sign button
@@ -15,6 +18,7 @@ const GoogleSignInBtn = ({
   thirdpartyLoader,
   setThirdpartyLoader
 }) => {
+  const { t, i18n } = useTranslation();
   const [isModal, setIsModal] = useState(false);
   const googleBtn = useRef();
   const [userDetails, setUserDetails] = useState({
@@ -46,32 +50,21 @@ const GoogleSignInBtn = ({
     if (Parse.User.current()) {
       await Parse.User.logOut();
     }
-    let baseUrl = localStorage.getItem("BaseUrl12");
-    let appid = localStorage.getItem("AppID12");
+    let baseUrl = localStorage.getItem("baseUrl");
+    let appid = localStorage.getItem("parseAppId");
     let applogo = localStorage.getItem("appLogo");
-    let domain = localStorage.getItem("domain");
-    let appversion = localStorage.getItem("appVersion");
-    let appTitle = localStorage.getItem("appTitle");
     let defaultmenuid = localStorage.getItem("defaultmenuid");
     let PageLanding = localStorage.getItem("PageLanding");
-    let _appName = localStorage.getItem("_appName");
-    let _app_objectId = localStorage.getItem("_app_objectId");
-    let appName = localStorage.getItem("appName");
     let userSettings = localStorage.getItem("userSettings");
 
     localStorage.clear();
+    saveLanguageInLocal(i18n);
 
-    localStorage.setItem("BaseUrl12", baseUrl);
-    localStorage.setItem("AppID12", appid);
+    localStorage.setItem("baseUrl", baseUrl);
+    localStorage.setItem("parseAppId", appid);
     localStorage.setItem("appLogo", applogo);
-    localStorage.setItem("domain", domain);
-    localStorage.setItem("appversion", appversion);
-    localStorage.setItem("appTitle", appTitle);
     localStorage.setItem("defaultmenuid", defaultmenuid);
     localStorage.setItem("PageLanding", PageLanding);
-    localStorage.setItem("_appName", _appName);
-    localStorage.setItem("_app_objectId", _app_objectId);
-    localStorage.setItem("appName", appName);
     localStorage.setItem("userSettings", userSettings);
     localStorage.setItem("baseUrl", baseUrl);
     localStorage.setItem("parseAppId", appid);
@@ -84,10 +77,7 @@ const GoogleSignInBtn = ({
       const data = jwtDecode(response.credential);
       // console.log("data ", data);
       if (data.sub && data.email) {
-        const details = {
-          Email: data.email,
-          Name: data.name
-        };
+        const details = { Email: data.email, Name: data.name };
         setUserDetails({ ...userDetails, ...details });
         const Gdetails = {
           Id: data.sub,
@@ -101,29 +91,21 @@ const GoogleSignInBtn = ({
     }
   };
   const checkExtUser = async (details) => {
-    // const extUser = new Parse.Query("contracts_Users");
-    // extUser.equalTo("Email", details.Gmail);
-    // const extRes = await extUser.first();
     const params = { email: details.Gmail };
     const extRes = await Parse.Cloud.run("getUserDetails", params);
-    // console.log("extRes ", extRes);
     if (extRes) {
-      const params = { ...details, Phone: extRes.get("Phone") };
+      // const params = { ...details, Phone: extRes?.get("Phone") || "" };
+      const params = { ...details, extUserId: extRes.objectId };
       const payload = await Parse.Cloud.run("googlesign", params);
-      // console.log("payload ", payload);
       if (payload && payload.sessiontoken) {
-        // setThirdpartyLoader(true);
-        const billingDate =
-          extRes.get("Next_billing_date") && extRes.get("Next_billing_date");
-        // console.log("billingDate expired", billingDate > new Date());
         const LocalUserDetails = {
           name: details.Name,
           email: details.Gmail,
-          phone: extRes.get("Phone"),
-          company: extRes.get("Company")
+          phone: payload?.phone || "",
+          company: payload.company
         };
         localStorage.setItem("userDetails", JSON.stringify(LocalUserDetails));
-        thirdpartyLoginfn(payload.sessiontoken, billingDate);
+        thirdpartyLoginfn(payload.sessiontoken);
       }
       return { msg: "exist" };
     } else {
@@ -137,7 +119,7 @@ const GoogleSignInBtn = ({
       setThirdpartyLoader(true);
       // e.preventDefault()
       // console.log("handelSubmit", userDetails);
-      const params = { ...googleDetails, Phone: userDetails.Phone };
+      const params = { ...googleDetails, Phone: userDetails?.Phone };
       const payload = await Parse.Cloud.run("googlesign", params);
 
       // console.log("payload ", payload);
@@ -147,8 +129,8 @@ const GoogleSignInBtn = ({
             name: userDetails.Name,
             email: userDetails.Email,
             // "passsword":userDetails.Phone,
-            phone: userDetails.Phone,
-            role: "contracts_Admin",
+            phone: userDetails?.Phone || "",
+            role: "contracts_User",
             company: userDetails.Company,
             jobTitle: userDetails.Destination
           }
@@ -159,7 +141,7 @@ const GoogleSignInBtn = ({
           const LocalUserDetails = {
             name: userDetails.Name,
             email: userDetails.Email,
-            phone: userDetails.Phone,
+            phone: userDetails?.Phone || "",
             company: userDetails.Company
             // jobTitle: userDetails.JobTitle
           };
@@ -172,10 +154,10 @@ const GoogleSignInBtn = ({
         payload &&
         payload.message.replace(/ /g, "_") === "Internal_server_err"
       ) {
-        alert("Internal server error !");
+        alert(t("server-error"));
       }
     } else {
-      alert("Please fill required details!");
+      alert(t("fill-required-details!"));
     }
   };
   const handleCloseModal = () => {
@@ -184,165 +166,108 @@ const GoogleSignInBtn = ({
 
     let appdata = localStorage.getItem("userSettings");
     let applogo = localStorage.getItem("appLogo");
-    let appName = localStorage.getItem("appName");
     let defaultmenuid = localStorage.getItem("defaultmenuid");
     let PageLanding = localStorage.getItem("PageLanding");
-    let domain = localStorage.getItem("domain");
-    let _appName = localStorage.getItem("_appName");
-    let baseUrl = localStorage.getItem("BaseUrl12");
-    let appid = localStorage.getItem("AppID12");
+    let baseUrl = localStorage.getItem("baseUrl");
+    let appid = localStorage.getItem("parseAppId");
 
     localStorage.clear();
-
+    saveLanguageInLocal(i18n);
     localStorage.setItem("appLogo", applogo);
-    localStorage.setItem("appName", appName);
-    localStorage.setItem("_appName", _appName);
     localStorage.setItem("defaultmenuid", defaultmenuid);
     localStorage.setItem("PageLanding", PageLanding);
-    localStorage.setItem("domain", domain);
     localStorage.setItem("userSettings", appdata);
-    localStorage.setItem("BaseUrl12", baseUrl);
-    localStorage.setItem("AppID12", appid);
+    localStorage.setItem("baseUrl", baseUrl);
+    localStorage.setItem("parseAppId", appid);
   };
   return (
-    <div style={{ position: "relative" }}>
+    <div className="relative">
       {thirdpartyLoader && (
-        <div
-          style={{
-            position: "fixed",
-            width: "100vw",
-            height: "100vh",
-            backgroundColor: "rgba(0,0,0,0.2)",
-            top: 0,
-            left: 0,
-            zIndex: 2
-          }}
-        >
-          <div
-            style={{
-              position: "fixed",
-              fontSize: "50px",
-              color: "#3ac9d6",
-              top: "50%",
-              left: "45%"
-            }}
-            className="loader-37"
-          ></div>
+        <div className="fixed flex justify-center items-center inset-0 bg-black bg-opacity-25 z-20 ">
+          <Loader />
         </div>
       )}
       <div ref={googleBtn} className="text-sm"></div>
-
-      {isModal && (
-        <div
-          className="modal fade show"
-          id="exampleModal"
-          tabIndex="-1"
-          role="dialog"
-          style={{ display: "block", zIndex: 1 }}
-        >
-          <div className="modal-dialog" role="document">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title">Sign up form</h5>
-                <span>
-                  <span></span>
-                </span>
-              </div>
-              <div className="modal-body">
-                <form>
-                  <div className="form-group">
-                    <label
-                      htmlFor="Phone"
-                      style={{ display: "flex" }}
-                      className="col-form-label"
-                    >
-                      Phone{" "}
-                      <span style={{ fontSize: 13, color: "red" }}>*</span>
-                    </label>
-                    <input
-                      type="tel"
-                      className="form-control"
-                      id="Phone"
-                      value={userDetails.Phone}
-                      onChange={(e) =>
-                        setUserDetails({
-                          ...userDetails,
-                          Phone: e.target.value
-                        })
-                      }
-                      required
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label
-                      htmlFor="Company"
-                      style={{ display: "flex" }}
-                      className="col-form-label"
-                    >
-                      Company{" "}
-                      <span style={{ fontSize: 13, color: "red" }}>*</span>
-                    </label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      id="Company"
-                      value={userDetails.Company}
-                      onChange={(e) =>
-                        setUserDetails({
-                          ...userDetails,
-                          Company: e.target.value
-                        })
-                      }
-                      required
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label
-                      htmlFor="JobTitle"
-                      style={{ display: "flex" }}
-                      className="col-form-label"
-                    >
-                      Job Title{" "}
-                      <span style={{ fontSize: 13, color: "red" }}>*</span>
-                    </label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      id="JobTitle"
-                      value={userDetails.Destination}
-                      onChange={(e) =>
-                        setUserDetails({
-                          ...userDetails,
-                          Destination: e.target.value
-                        })
-                      }
-                      required
-                    />
-                  </div>
-                  <div>
-                    <button
-                      type="button"
-                      className="bg-[#17a2b8] p-2 text-white rounded"
-                      onClick={() => handleSubmitbtn()}
-                      style={{ marginRight: 10 }}
-                    >
-                      Sign up
-                    </button>
-                    <button
-                      type="button"
-                      className="bg-[#6c757d] p-2 text-white rounded"
-                      onClick={handleCloseModal}
-                      style={{ width: 90 }}
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                </form>
-              </div>
-            </div>
+      <ModalUi showClose={false} isOpen={isModal} title={t("sign-up-form")}>
+        <form className="px-4 py-3 text-base-content">
+          <div className="mb-3">
+            <label htmlFor="Phone" className="block text-xs font-semibold">
+              {t("phone")} <span className="text-[13px] text-[red]">*</span>
+            </label>
+            <input
+              type="tel"
+              className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
+              id="Phone"
+              value={userDetails.Phone}
+              onChange={(e) =>
+                setUserDetails({
+                  ...userDetails,
+                  Phone: e.target.value
+                })
+              }
+              onInvalid={(e) => e.target.setCustomValidity(t("input-required"))}
+              onInput={(e) => e.target.setCustomValidity("")}
+              required
+            />
           </div>
-        </div>
-      )}
+          <div className="mb-3">
+            <label htmlFor="Company" className="block text-xs font-semibold">
+              {t("company")} <span className="text-[13px] text-[red]">*</span>
+            </label>
+            <input
+              type="text"
+              className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
+              id="Company"
+              value={userDetails.Company}
+              onChange={(e) =>
+                setUserDetails({
+                  ...userDetails,
+                  Company: e.target.value
+                })
+              }
+              onInvalid={(e) => e.target.setCustomValidity(t("input-required"))}
+              onInput={(e) => e.target.setCustomValidity("")}
+              required
+            />
+          </div>
+          <div className="mb-3">
+            <label htmlFor="JobTitle" className="block text-xs font-semibold">
+              {t("job-title")} <span className="text-[13px] text-[red]">*</span>
+            </label>
+            <input
+              type="text"
+              className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
+              id="JobTitle"
+              value={userDetails.Destination}
+              onChange={(e) =>
+                setUserDetails({
+                  ...userDetails,
+                  Destination: e.target.value
+                })
+              }
+              onInvalid={(e) => e.target.setCustomValidity(t("input-required"))}
+              onInput={(e) => e.target.setCustomValidity("")}
+              required
+            />
+          </div>
+          <div className="flex flex-row gap-2">
+            <button
+              type="button"
+              className="op-btn op-btn-primary"
+              onClick={() => handleSubmitbtn()}
+            >
+              {t("sign-up")}
+            </button>
+            <button
+              type="button"
+              className="op-btn op-btn-ghost"
+              onClick={handleCloseModal}
+            >
+              {t("cancel")}
+            </button>
+          </div>
+        </form>
+      </ModalUi>
     </div>
   );
 };

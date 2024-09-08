@@ -1,62 +1,58 @@
-version: '3.7'
-
 services:
   server:
-    build:
-      context: ./apps/OpenSignServer
-      dockerfile: Dockerfile
-    image: opensignserver-image
+    image: opensign/opensignserver:main
     container_name: OpenSignServer-container
-    command: /usr/src/app/node_modules/.bin/nodemon server.js
-    volumes:
-      - ./apps/OpenSignServer/:/usr/src/app
-      - /usr/src/app/node_modules
     ports:
       - "8080:8080"
     depends_on:
       - mongo
-    env_file: .env
+    env_file: .env.prod
     environment:
-      - NODE_ENV=development
+      - NODE_ENV=production
+      - SERVER_URL=${HOST_URL:-https://localhost:3001}/app
     networks:
       - app-network
   mongo:
-    build:
-      context: ./apps/mongo
-      dockerfile: Dockerfile
+    image: mongo:latest
     container_name: mongo-container
-    image: opensign-mongo
     volumes:
       - data-volume:/data/db
-      - ./apps/mongo/mongo-init.sh:/docker-entrypoint-initdb.d/mongo-init.sh:ro
     ports:
-      - "27017:27017"
+      - "27018:27017"
     networks:
       - app-network
   client:
-    build:
-      context: ./apps/OpenSign
-      dockerfile: Dockerfile
-    image: opensign-image
+    image: opensign/opensign:main
     container_name: OpenSign-container
-    command: npm start
-    env_file: .env
-    volumes:
-      - ./apps/OpenSign/:/usr/app
-      - /usr/app/node_modules
     depends_on:
       - server
+    env_file: .env.prod  
     ports:
       - "3000:3000"
     networks:
       - app-network
-
+  caddy:
+    image: caddy:latest
+    container_name: caddy-container
+    ports:
+      - "3001:3001"
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      - app-network
+    environment:
+      - HOST_URL=${HOST_URL:-localhost:3001}
 networks:
-    app-network:
-        driver: bridge
+  app-network:
+    driver: bridge
 
 volumes:
-    data-volume:
-    node_modules:
-    web-root:
-      driver: local
+  data-volume:
+  web-root:
+  caddy_data:
+  caddy_config:

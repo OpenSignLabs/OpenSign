@@ -1,7 +1,8 @@
 import axios from 'axios';
+import { cloudServerUrl } from '../../Utils.js';
 
 export default async function getDocument(request) {
-  const serverUrl = process.env.SERVER_URL;
+  const serverUrl = cloudServerUrl; //process.env.SERVER_URL;
   const docId = request.params.docId;
 
   try {
@@ -21,6 +22,8 @@ export default async function getDocument(request) {
         query.include('Signers');
         query.include('AuditTrail.UserPtr');
         query.include('Placeholders');
+        query.include('DeclineBy');
+        query.notEqualTo('IsArchive', true);
         const res = await query.first({ useMasterKey: true });
         if (res) {
           const acl = res.getACL();
@@ -40,7 +43,7 @@ export default async function getDocument(request) {
       return { error: 'Please pass required parameters!' };
     }
   } catch (err) {
-    console.log('err');
+    console.log('err', err);
     if (err.code == 209) {
       return { error: 'Invalid session token' };
     } else {

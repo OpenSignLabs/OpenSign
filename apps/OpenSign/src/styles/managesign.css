@@ -1,0 +1,62 @@
+.customwarning {
+  position: absolute;
+  padding: 8px;
+  border: 1px solid black;
+  background: white;
+  border-radius: 5px;
+  animation: inAnimation 2s ease-in-out;
+  z-index: 1;
+}
+
+.signWarning {
+  bottom: 70px;
+  left: 50px;
+}
+
+.signWarning::before {
+  content: "";
+  width: 0px;
+  height: 0px;
+  border-style: outset;
+  border-width: 0px 10px 10px 10px;
+  border-color: transparent transparent black transparent;
+  display: inline-block;
+  position: absolute;
+  top: -29%;
+  left: 0;
+  right: 75%;
+  margin: 0 auto;
+}
+
+@keyframes inAnimation {
+  0% {
+    opacity: 0;
+    visibility: hidden;
+  }
+
+  100% {
+    opacity: 1;
+    visibility: visible;
+  }
+}
+
+.signature {
+  color: white;
+  cursor: pointer;
+  padding: 10px 14px 10px;
+  background: #15b4e9;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 2px;
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.1),
+    0 1px 2px rgba(0, 0, 0, 0.18);
+}
+
+.signature:hover {
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.1),
+    0 2px 4px rgba(0, 0, 0, 0.18);
+  background: #13a8da;
+  color: white;
+}

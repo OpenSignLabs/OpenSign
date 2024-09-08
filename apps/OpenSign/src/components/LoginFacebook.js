@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import Parse from "parse";
+import Loader from "../primitives/Loader";
+import { useTranslation } from "react-i18next";
 // import FacebookLogin from "react-facebook-login";
 
 const LoginFacebook = ({
@@ -8,6 +10,7 @@ const LoginFacebook = ({
   thirdpartyLoader,
   setThirdpartyLoader
 }) => {
+  const { t } = useTranslation();
   const [isModal, setIsModal] = useState(false);
   const [userDetails, setUserDetails] = useState({
     Phone: "",
@@ -49,7 +52,7 @@ const LoginFacebook = ({
     const extRes = await Parse.Cloud.run("getUserDetails", params);
     // console.log("extRes ", extRes);
     if (extRes) {
-      const params = { ...details, Phone: extRes.get("Phone") };
+      const params = { ...details, Phone: extRes?.get("Phone") || "" };
       const payload = await Parse.Cloud.run("facebooksign", params);
       //   console.log("payload ", payload);
       if (payload && payload.sessiontoken) {
@@ -59,7 +62,7 @@ const LoginFacebook = ({
         const LocalUserDetails = {
           name: details.Name,
           email: details.Email,
-          phone: extRes.get("Phone"),
+          phone: extRes?.get("Phone") || "",
           company: extRes.get("Company")
         };
         localStorage.setItem("userDetails", JSON.stringify(LocalUserDetails));
@@ -75,7 +78,7 @@ const LoginFacebook = ({
   const handleSubmitbtn = async () => {
     if (userDetails.Phone && userDetails.Company) {
       setThirdpartyLoader(true);
-      const params = { ...fBDetails, Phone: userDetails.Phone };
+      const params = { ...fBDetails, Phone: userDetails?.Phone || "" };
       const payload = await Parse.Cloud.run("facebooksign", params);
       // console.log("payload ", payload);
 
@@ -85,8 +88,8 @@ const LoginFacebook = ({
             name: userDetails.Name,
             email: userDetails.Email,
             // "passsword":userDetails.Phone,
-            phone: userDetails.Phone,
-            role: "contracts_Admin",
+            phone: userDetails?.Phone || "",
+            role: "contracts_User",
             company: userDetails.Company
           }
         };
@@ -96,7 +99,7 @@ const LoginFacebook = ({
           const LocalUserDetails = {
             name: userDetails.Name,
             email: userDetails.Email,
-            phone: userDetails.Phone,
+            phone: userDetails?.Phone || "",
             company: userDetails.Company
           };
           localStorage.setItem("userDetails", JSON.stringify(LocalUserDetails));
@@ -105,36 +108,17 @@ const LoginFacebook = ({
           alert(userSignUp.message);
         }
       } else {
-        alert("Internal server error !");
+        alert(t("server-error"));
       }
     } else {
-      alert("Please fill required details!");
+      alert(t("fill-required-details!"));
     }
   };
   return (
-    <div style={{ position: "relative" }}>
+    <div className="relative">
       {thirdpartyLoader && (
-        <div
-          style={{
-            position: "fixed",
-            width: "100vw",
-            height: "100vh",
-            backgroundColor: "rgba(0,0,0,0.2)",
-            top: 0,
-            left: 0,
-            zIndex: 2
-          }}
-        >
-          <div
-            style={{
-              position: "fixed",
-              fontSize: "50px",
-              color: "#3ac9d6",
-              top: "50%",
-              left: "45%"
-            }}
-            className="loader-37"
-          ></div>
+        <div className="fixed flex justify-center items-center inset-0 bg-black bg-opacity-25 z-20 ">
+          <Loader />
         </div>
       )}
       {/* <FacebookLogin
@@ -146,16 +130,15 @@ const LoginFacebook = ({
       /> */}
       {isModal && (
         <div
-          className="modal fade show"
+          className="modal fade show block z-[1]"
           id="exampleModal"
           tabIndex="-1"
           role="dialog"
-          style={{ display: "block", zIndex: 1 }}
         >
           <div className="modal-dialog" role="document">
             <div className="modal-content">
               <div className="modal-header">
-                <h5 className="modal-title">Sign up form</h5>
+                <h5 className="modal-title">{t("sign-up-form")}</h5>
                 <span>
                   <span></span>
                 </span>
@@ -163,13 +146,9 @@ const LoginFacebook = ({
               <div className="modal-body">
                 <form>
                   <div className="form-group">
-                    <label
-                      htmlFor="Phone"
-                      style={{ display: "flex" }}
-                      className="col-form-label"
-                    >
-                      Phone{" "}
-                      <span style={{ fontSize: 13, color: "red" }}>*</span>
+                    <label htmlFor="Phone" className="col-form-label">
+                      {t("phone")}{" "}
+                      <span className="text-[red] text-[13px]">*</span>
                     </label>
                     <input
                       type="tel"
@@ -182,17 +161,17 @@ const LoginFacebook = ({
                           Phone: e.target.value
                         })
                       }
+                      onInvalid={(e) =>
+                        e.target.setCustomValidity(t("input-required"))
+                      }
+                      onInput={(e) => e.target.setCustomValidity("")}
                       required
                     />
                   </div>
                   <div className="form-group">
-                    <label
-                      htmlFor="Company"
-                      style={{ display: "flex" }}
-                      className="col-form-label"
-                    >
-                      Company{" "}
-                      <span style={{ fontSize: 13, color: "red" }}>*</span>
+                    <label htmlFor="Company" className="col-form-label">
+                      {t("company")}{" "}
+                      <span className="text-[red] text-[13px]">*</span>
                     </label>
                     <input
                       type="text"
@@ -205,6 +184,10 @@ const LoginFacebook = ({
                           Company: e.target.value
                         })
                       }
+                      onInvalid={(e) =>
+                        e.target.setCustomValidity(t("input-required"))
+                      }
+                      onInput={(e) => e.target.setCustomValidity("")}
                       required
                     />
                   </div>
@@ -212,18 +195,16 @@ const LoginFacebook = ({
                     <button
                       type="button"
                       onClick={() => handleSubmitbtn()}
-                      className="btn btn-info"
-                      style={{ marginRight: 10 }}
+                      className="btn btn-info mr-[10px]"
                     >
-                      Sign up
+                      {t("sign-up")}
                     </button>
                     <button
                       type="button"
-                      className="btn btn-secondary"
+                      className="btn btn-secondary w-[90px]"
                       onClick={() => setIsModal(false)}
-                      style={{ width: 90 }}
                     >
-                      Cancel
+                      {t("cancel")}
                     </button>
                   </div>
                 </form>

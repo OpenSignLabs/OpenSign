@@ -2,11 +2,13 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Parse from "parse";
 import getReplacedHashQuery from "../../constant/getReplacedHashQuery";
-import "../../styles/loader.css";
 import { useNavigate } from "react-router-dom";
+import Tooltip from "../../primitives/Tooltip";
+import { useTranslation } from "react-i18next";
 
 const DashboardCard = (props) => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [parseBaseUrl] = useState(localStorage.getItem("baseUrl"));
   const [parseAppId] = useState(localStorage.getItem("parseAppId"));
   const [response, setresponse] = useState("");
@@ -23,20 +25,12 @@ const DashboardCard = (props) => {
           sessionToken: localStorage.getItem("accesstoken")
         };
         let body = {};
-        let currentUser;
-
-        Parse.serverURL = parseBaseUrl;
-        Parse.initialize(parseAppId);
-        let currentUser1 = Parse.User.current();
-        currentUser = currentUser1.id;
         let res;
         if (localStorage.getItem("Extand_Class")) {
           let data = JSON.parse(localStorage.getItem("Extand_Class"));
           res = data[0];
         } else {
-          res = await Parse.Cloud.run("getUserDetails", {
-            email: currentUser.get("email")
-          });
+          res = await Parse.Cloud.run("getUserDetails");
           if (res) res = res.toJSON();
         }
         if (res) {
@@ -82,8 +76,6 @@ const DashboardCard = (props) => {
     } else {
       setLoading(true);
       try {
-        Parse.serverURL = parseBaseUrl;
-        Parse.initialize(parseAppId);
         const currentUser = Parse.User.current();
         let reg1 = /(\#.*?\#)/gi; // eslint-disable-line
         let _query = props.Data.query;
@@ -99,9 +91,7 @@ const DashboardCard = (props) => {
             let data = JSON.parse(localStorage.getItem("Extand_Class"));
             resr = data[0];
           } else {
-            resr = await Parse.Cloud.run("getUserDetails", {
-              email: currentUser.get("email")
-            });
+            resr = await Parse.Cloud.run("getUserDetails");
             if (resr) resr = resr.toJSON();
           }
 
@@ -153,7 +143,7 @@ const DashboardCard = (props) => {
               }
             })
             .then((res) => {
-              const listData = res.data?.result.filter(
+              const listData = res.data?.result?.filter(
                 (x) => x.Signers.length > 0
               );
               let arr = [];
@@ -223,17 +213,12 @@ const DashboardCard = (props) => {
 
         if (restr.includes("#")) {
           try {
-            Parse.serverURL = parseBaseUrl;
-            Parse.initialize(parseAppId);
-            const currentUser = Parse.User.current();
             let res;
             if (localStorage.getItem("Extand_Class")) {
               let data = JSON.parse(localStorage.getItem("Extand_Class"));
               res = data[0];
             } else {
-              let resr = await Parse.Cloud.run("getUserDetails", {
-                email: currentUser.get("email")
-              });
+              let resr = await Parse.Cloud.run("getUserDetails");
               if (res) res = resr.toJSON();
             }
 
@@ -268,21 +253,14 @@ const DashboardCard = (props) => {
               }
             }
             body = str;
-            await axios
-              .post(url, body, { headers: headers })
-              .then((response) => {
-                try {
-                  if (response.data.result.length > 0) {
-                    setresponse(response.data.result[0][props.FilterData.key]);
-                    setLoading(false);
-                  } else {
-                    setresponse("0");
-                    setLoading(false);
-                  }
-                } catch (error) {
-                  setLoading(false);
-                }
-              });
+            const response = await axios.post(url, body, { headers: headers });
+            if (response.data.result.length > 0) {
+              setresponse(response.data.result[0][props.FilterData.key]);
+              setLoading(false);
+            } else {
+              setresponse("0");
+              setLoading(false);
+            }
           } catch (error) {
             setLoading(false);
           }
@@ -335,6 +313,7 @@ const DashboardCard = (props) => {
       }
     }
   }
+
   return (
     <div
       onClick={() => openReport()}
@@ -342,22 +321,33 @@ const DashboardCard = (props) => {
         props.Data && props.Data.Redirect_type
           ? "cursor-pointer"
           : "cursor-default"
-      } w-full h-[140px] px-3 pt-4 pb-10 text-white rounded-md shadow overflow-hidden`}
+      }`}
     >
-      <div className="flex items-center justify-start gap-5">
-        <span className="rounded-full bg-black bg-opacity-20 w-[60px] h-[60px]  self-start flex justify-center items-center">
+      <div className="flex items-center justify-start gap-5 text-white">
+        <span className="rounded-full bg-base-300 bg-opacity-20 w-[60px] h-[60px] self-start flex justify-center items-center">
           <i
             className={`${
-              props.Icon ? props.Icon : "fa fa-solid fa-info"
+              props.Icon ? props.Icon : "fa-light fa-info"
             } text-[25px] lg:text-[30px]`}
           ></i>
         </span>
-        <div className="">
-          <div className="text-base lg:text-lg"> {props.Label}</div>
+
+        <div className="font-medium">
+          <div className="text-base lg:text-lg">
+            {t(`dashboard-card.${props.Label}`)}
+          </div>
           <div className="text-2xl font-light">
             {loading ? <div className="loader-01"></div> : setFormat(response)}
           </div>
         </div>
+      </div>
+      <div className="text-xs absolute top-3 right-2">
+        <Tooltip
+          id={props.Label}
+          iconColor={"white"}
+          message={t(`tour-mssg.${props.Label}`)}
+          // {props?.Data?.tourMessage}
+        />
       </div>
     </div>
   );

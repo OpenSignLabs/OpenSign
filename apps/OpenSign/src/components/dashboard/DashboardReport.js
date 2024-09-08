@@ -3,7 +3,10 @@ import Parse from "parse";
 import ReportTable from "../../primitives/GetReportDisplay";
 import reportJson from "../../json/ReportJson";
 import axios from "axios";
+import Loader from "../../primitives/Loader";
+import { useTranslation } from "react-i18next";
 function DashboardReport(props) {
+  const { t } = useTranslation();
   // console.log("props ", props)
   const [List, setList] = useState([]);
   const [isLoader, setIsLoader] = useState(true);
@@ -45,18 +48,16 @@ function DashboardReport(props) {
       setActions(json.actions);
       setReportName(json.reportName);
       setHeading(json.heading);
-      Parse.serverURL = localStorage.getItem("BaseUrl12");
-      Parse.initialize(localStorage.getItem("AppID12"));
       const currentUser = Parse.User.current().id;
 
       const headers = {
         "Content-Type": "application/json",
-        "X-Parse-Application-Id": localStorage.getItem("AppID12"),
+        "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
         sessiontoken: localStorage.getItem("accesstoken")
       };
       try {
         const params = { reportId: id, skip: skipUserRecord, limit: limit };
-        const url = `${localStorage.getItem("BaseUrl12")}/functions/getReport`;
+        const url = `${localStorage.getItem("baseUrl")}/functions/getReport`;
         const res = await axios.post(url, params, {
           headers: headers,
           signal: abortController.signal // is used to cancel fetch query
@@ -99,11 +100,13 @@ function DashboardReport(props) {
             setIsMoreDocs(false);
           }
           setIsNextRecord(false);
-          setList((prevRecord) =>
-            prevRecord.length > 0
-              ? [...prevRecord, ...res.data.result]
-              : res.data.result
-          );
+          if (!res.data.result.error) {
+            setList((prevRecord) =>
+              prevRecord.length > 0
+                ? [...prevRecord, ...res.data.result]
+                : res.data.result
+            );
+          }
         }
         setIsLoader(false);
       } catch (err) {
@@ -112,6 +115,7 @@ function DashboardReport(props) {
           console.log("err ", err);
           setIsLoader(false);
         }
+        setIsLoader(false);
       }
     } else {
       setIsLoader(false);
@@ -120,21 +124,8 @@ function DashboardReport(props) {
   return (
     <>
       {isLoader ? (
-        <div
-          style={{
-            height: "100vh",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center"
-          }}
-        >
-          <div
-            style={{
-              fontSize: "45px",
-              color: "#3dd3e0"
-            }}
-            className="loader-37"
-          ></div>
+        <div className="h-[250px] flex justify-center items-center">
+          <Loader />
         </div>
       ) : (
         <>
@@ -152,7 +143,7 @@ function DashboardReport(props) {
           ) : (
             <div className="flex items-center justify-center h-[100px] w-full bg-white rounded">
               <div className="text-center">
-                <p className="text-xl text-black">Report Not Found</p>
+                <p className="text-xl text-black">{t("report-not-found")}</p>
               </div>
             </div>
           )}

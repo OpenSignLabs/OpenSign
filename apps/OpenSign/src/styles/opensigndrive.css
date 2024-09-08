@@ -1,0 +1,294 @@
+@import "@radix-ui/colors/black-alpha.css";
+@import "@radix-ui/colors/mauve.css";
+@import "@radix-ui/colors/violet.css";
+
+.ContextMenuContent,
+.ContextMenuSubContent {
+  min-width: 135px;
+  background-color: white;
+  border-radius: 6px;
+  overflow: hidden;
+  padding: 5px;
+  box-shadow:
+    0px 10px 38px -10px rgba(22, 23, 24, 0.35),
+    0px 10px 20px -15px rgba(22, 23, 24, 0.2);
+  z-index: 99;
+}
+
+.ContextMenuItem,
+.ContextMenuCheckboxItem,
+.ContextMenuRadioItem,
+.ContextMenuSubTrigger {
+  font-size: 13px;
+  line-height: 1;
+  color: var(--violet-11);
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  height: 25px;
+  padding: 0 5px;
+  position: relative;
+  padding-left: 15px;
+  user-select: none;
+  outline: none;
+}
+
+.ContextMenuSubTrigger[data-state="open"] {
+  background-color: gray;
+  color: var(--violet-11);
+}
+
+.ContextMenuItem[data-disabled],
+.ContextMenuCheckboxItem[data-disabled],
+.ContextMenuRadioItem[data-disabled],
+.ContextMenuSubTrigger[data-disabled] {
+  color: var(--mauve-8);
+  pointer-events: "none";
+}
+
+.ContextMenuItem[data-highlighted],
+.ContextMenuCheckboxItem[data-highlighted],
+.ContextMenuRadioItem[data-highlighted],
+.ContextMenuSubTrigger[data-highlighted] {
+  background-color: #dad9db;
+  color: var(--violet-11);
+}
+
+.ContextMenuLabel {
+  padding-left: 25px;
+  font-size: 12px;
+  line-height: 25px;
+  color: var(--mauve-11);
+}
+
+.ContextMenuItemIndicator {
+  position: absolute;
+  left: 0;
+  width: 25px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.RightSlot {
+  margin-left: auto;
+  padding-left: 20px;
+  color: var(--mauve-11);
+}
+
+[data-highlighted] > .RightSlot {
+  color: white;
+}
+
+[data-disabled] .RightSlot {
+  color: var(--mauve-8);
+}
+
+.dropdown-menu {
+  min-width: 10rem;
+}
+
+.dropdown-item {
+  display: block;
+  width: 100%;
+  padding: 0.3rem 1.2rem;
+  clear: both;
+  font-weight: 400;
+  color: #393a39;
+  text-align: inherit;
+  white-space: nowrap;
+  background-color: transparent;
+  border: 0;
+  cursor: pointer;
+}
+
+.dropdown-item:hover {
+  background-color: #dad9db;
+  color: var(--violet-11);
+}
+
+.modal {
+  margin-top: 50px;
+}
+.pdfName {
+  font-size: 10px;
+  font-weight: 600;
+}
+
+
+.hrStyle {
+  margin-top: 0rem !important;
+  margin-bottom: 0rem !important;
+  border: 0;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.status-badge {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background-color: #fff;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.status-badge i {
+  font-size: 12px;
+}
+
+/* Status-specific colors */
+.completed {
+  background-color: #4caf50;
+  color: #fff;
+}
+
+.in-progress {
+  background-color: #ffc107;
+  color: #fff;
+}
+
+.declined {
+  background-color: #f44336;
+  color: #fff;
+}
+
+.expired {
+  background-color: #9e9e9e;
+  color: #fff;
+}
+
+.draft {
+  background-color: #079cdc;
+  color: #fff;
+}
+
+
+.sort {
+  padding: 8px 15px;
+  margin: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.sort:hover {
+  box-shadow: 0 2px 4px rgba(168, 204, 206, 0.1);
+  background-color: var(--mauve-3);
+  border-radius: 2px;
+}
+
+.fileName {
+  display: inline-block;
+  width: 100px;
+  white-space: nowrap;
+  overflow: hidden !important;
+  text-overflow: ellipsis;
+  font-size: 11px;
+  text-align: center;
+  font-weight: 480;
+}
+
+a {
+  all: unset;
+}
+
+.HoverCardContent {
+  border-radius: 6px;
+  padding: 5px 10px;
+  width: 170px;
+  background-color: white;
+  box-shadow:
+    hsl(206 22% 7% / 35%) 0px 10px 38px -10px,
+    hsl(206 22% 7% / 20%) 0px 10px 20px -15px;
+  animation-duration: 400ms;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform, opacity;
+  text-align: center;
+  align-items: center;
+}
+
+.HoverCardContent[data-side="top"] {
+  animation-name: slideDownAndFade;
+}
+
+.HoverCardContent[data-side="right"] {
+  animation-name: slideLeftAndFade;
+}
+
+.HoverCardContent[data-side="bottom"] {
+  animation-name: slideUpAndFade;
+}
+
+.HoverCardContent[data-side="left"] {
+  animation-name: slideRightAndFade;
+}
+
+.HoverCardArrow {
+  fill: white;
+}
+
+@keyframes slideUpAndFade {
+  0% {
+    opacity: 0;
+    transform: translateY(2px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideRightAndFade {
+  0% {
+    opacity: 0;
+    transform: translateX(-2px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideDownAndFade {
+  0% {
+    opacity: 0;
+    transform: translateY(-2px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideLeftAndFade {
+  0% {
+    opacity: 0;
+    transform: translateX(2px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@media (min-width: 310px) and (max-width: 550px) {
+  .sort {
+    padding: 2px;
+  }
+}
+
+@media screen and (max-width: 309px) {
+  .sort {
+    padding: 2px;
+  }
+}

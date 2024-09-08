@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from "react";
 import Package from "../../package.json";
 import axios from "axios";
+import { openInNewTab } from "../constant/Utils";
+import { useTranslation } from "react-i18next";
 const Footer = () => {
+  const { t } = useTranslation();
   const [showButton, setShowButton] = useState(false);
   const [version, setVersion] = useState("");
   useEffect(() => {
@@ -37,20 +40,31 @@ const Footer = () => {
   }, []);
 
   const appName = "OpenSign™";
-
+  const openUrl = () => {
+    openInNewTab(
+      "https://github.com/OpenSignLabs/OpenSign/releases/tag/" + version
+    );
+  };
   return (
     <>
-      <div className="bg-[#222c3c] text-[#98a6ba] text-center text-[13px] py-3">
-        All Rights Reserved &copy; {new Date().getFullYear()} &nbsp;
-        {appName} ( version: {version ? version : `${Package.version} `})
-      </div>
+      <footer className="op-footer op-footer-center py-3 bg-base-300 text-base-content text-center text-[13px]">
+        <aside>
+          <p>
+            {t("all-right")} &copy; {new Date().getFullYear()} &nbsp;
+            <span onClick={openUrl} className="hover:underline cursor-pointer">
+              {appName} ( {t("version")}:{" "}
+              {version ? version : `${Package.version} `})
+            </span>
+          </p>
+        </aside>
+      </footer>
       <button
         className={`${
           showButton ? "block" : "hidden"
-        } fixed bottom-4 right-4 px-3 p-2 text-xl bg-blue-500 text-white rounded focus:outline-none`}
+        } fixed bottom-4 right-4 px-3 p-2 text-xl op-bg-secondary text-white rounded focus:outline-none`}
         onClick={scrollToTop}
       >
-        <i className="fa-solid fa-angle-up"></i>
+        <i className="fa-light fa-angle-up"></i>
       </button>
     </>
   );

@@ -3,6 +3,7 @@ import multer from 'multer';
 import multerS3 from 'multer-s3';
 import aws from 'aws-sdk';
 import dotenv from 'dotenv';
+import { cloudServerUrl, useLocal } from '../../Utils.js';
 dotenv.config();
 
 function sanitizeFileName(fileName) {
@@ -47,53 +48,78 @@ async function uploadFile(req, res) {
     const DO_ACCESS_KEY_ID = process.env.DO_ACCESS_KEY_ID;
     const DO_SECRET_ACCESS_KEY = process.env.DO_SECRET_ACCESS_KEY;
     const DO_SPACE = process.env.DO_SPACE;
-    const spacesEndpoint = new aws.Endpoint(DO_ENDPOINT);
-    const s3 = new aws.S3({
-      endpoint: spacesEndpoint,
-      accessKeyId: DO_ACCESS_KEY_ID,
-      secretAccessKey: DO_SECRET_ACCESS_KEY,
-      signatureVersion: 'v4',
-      region: process.env.DO_REGION,
-    });
 
-    const parseBaseUrl = process.env.SERVER_URL;
+    const parseBaseUrl = cloudServerUrl; //process.env.SERVER_URL;
     const parseAppId = process.env.APP_ID;
-
-    if (process.env.USE_LOCAL == "TRUE") {
-      var fileStorage = multer.diskStorage({
-        destination: function(req, file, cb) {
-          cb(null, "files/files");
+    let fileStorage;
+    if (useLocal === 'true') {
+      fileStorage = multer.diskStorage({
+        destination: function (req, file, cb) {
+          cb(null, 'files/files');
         },
         metadata: function (req, file, cb) {
           cb(null, { fieldName: 'OPENSIGN_METADATA' });
         },
-        filename: function(req, file, cb) {
+        filename: function (req, file, cb) {
           let filename = file.originalname;
           let newFileName = filename.split('.')[0];
           let extension = filename.split('.')[1];
-          newFileName = sanitizeFileName(newFileName + '_' + new Date().toISOString() + '.' + extension)
+          newFileName = sanitizeFileName(
+            newFileName + '_' + new Date().toISOString() + '.' + extension
+          );
           console.log(newFileName);
           cb(null, newFileName);
-        }
+        },
       });
     } else {
-      var fileStorage = multerS3({
-        acl: 'public-read',
-        s3,
-        bucket: DO_SPACE,
-        metadata: function (req, file, cb) {
-          cb(null, { fieldName: 'OPENSIGN_METADATA' });
-        },
-        key: function (req, file, cb) {
-          //console.log(file);
-          let filename = file.originalname;
-          let newFileName = filename.split('.')[0];
-          let extension = filename.split('.')[1];
-          newFileName = sanitizeFileName(newFileName + '_' + new Date().toISOString() + '.' + extension)
-          console.log(newFileName);
-          cb(null, newFileName);
-        }
-      });
+      try {
+        const spacesEndpoint = new aws.Endpoint(DO_ENDPOINT);
+        const s3 = new aws.S3({
+          endpoint: spacesEndpoint,
+          accessKeyId: DO_ACCESS_KEY_ID,
+          secretAccessKey: DO_SECRET_ACCESS_KEY,
+          signatureVersion: 'v4',
+          region: process.env.DO_REGION,
+        });
+        fileStorage = multerS3({
+          acl: 'public-read',
+          s3,
+          bucket: DO_SPACE,
+          metadata: function (req, file, cb) {
+            cb(null, { fieldName: 'OPENSIGN_METADATA' });
+          },
+          key: function (req, file, cb) {
+            //console.log(file);
+            let filename = file.originalname;
+            let newFileName = filename.split('.')[0];
+            let extension = filename.split('.')[1];
+            newFileName = sanitizeFileName(
+              newFileName + '_' + new Date().toISOString() + '.' + extension
+            );
+            console.log(newFileName);
+            cb(null, newFileName);
+          },
+        });
+      } catch (err) {
+        fileStorage = multer.diskStorage({
+          destination: function (req, file, cb) {
+            cb(null, 'files/files');
+          },
+          metadata: function (req, file, cb) {
+            cb(null, { fieldName: 'OPENSIGN_METADATA' });
+          },
+          filename: function (req, file, cb) {
+            let filename = file.originalname;
+            let newFileName = filename.split('.')[0];
+            let extension = filename.split('.')[1];
+            newFileName = sanitizeFileName(
+              newFileName + '_' + new Date().toISOString() + '.' + extension
+            );
+            console.log(newFileName);
+            cb(null, newFileName);
+          },
+        });
+      }
     }
 
     // const s3 = new aws.S3();
@@ -122,7 +148,7 @@ async function uploadFile(req, res) {
       const status = 'Success';
       //res.header("Access-Control-Allow-Headers", "Content-Type");
       //res.setHeader("Access-Control-Allow-Origin", "*");
-      if (process.env.USE_LOCAL == "TRUE") {
+      if (useLocal === 'true') {
         console.log(req.file);
         var fileUrl = `${parseBaseUrl}/files/${parseAppId}/${req.file.filename}`;
       } else {

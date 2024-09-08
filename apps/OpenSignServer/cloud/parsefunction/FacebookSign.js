@@ -1,6 +1,7 @@
-import axios from "axios";
+import axios from 'axios';
+import { cloudServerUrl } from '../../Utils.js';
 
-const serverUrl = process.env.SERVER_URL;
+const serverUrl = cloudServerUrl; //process.env.SERVER_URL;
 const APPID = process.env.APP_ID;
 const masterKEY = process.env.MASTER_KEY;
 
@@ -18,23 +19,23 @@ export default async function FacebookSign(request) {
   const userGoogleId = request.params.Id;
   const userAccessToken = request.params.AccessToken;
   const userEmail = request.params.Email;
-  const phone = request.params.Phone;
+  const phone = request.params?.Phone || '';
   const name = request.params.Name;
   const authData = {
     facebook: { id: userGoogleId, access_token: userAccessToken },
   };
   const userQuery = new Parse.Query(Parse.User);
-  userQuery.equalTo("email", userEmail);
+  userQuery.equalTo('email', userEmail);
   const res = await userQuery.first({ useMasterKey: true });
   if (res) {
     try {
       const SignIn = await axios.put(
-        serverUrl + "/users/" + res.id,
+        serverUrl + '/users/' + res.id,
         { authData: authData },
         {
           headers: {
-            "X-Parse-Application-Id": APPID,
-            "X-Parse-Master-key": masterKEY,
+            'X-Parse-Application-Id': APPID,
+            'X-Parse-Master-key': masterKEY,
           },
         }
       );
@@ -42,22 +43,22 @@ export default async function FacebookSign(request) {
       if (SignIn.data) {
         // console.log("google Sign in", SignIn);
         const sessiontoken = SignIn.data.sessionToken;
-        console.log("Google sessiontoken", sessiontoken);
+        console.log('Google sessiontoken', sessiontoken);
         return {
           email: userEmail,
-          message: "User Sign In",
+          message: 'User Sign In',
           sessiontoken: sessiontoken,
         };
       }
     } catch (err) {
-      console.log("err in user google sign in", err);
-      return { message: "Internal server error" };
+      console.log('err in user google sign in', err);
+      return { message: 'Internal server error' };
     }
   } else {
     // console.log("in sign up condition");
     try {
       const SignUp = await axios.post(
-        serverUrl + "/users",
+        serverUrl + '/users',
         {
           authData: authData,
           username: userEmail,
@@ -67,8 +68,8 @@ export default async function FacebookSign(request) {
         },
         {
           headers: {
-            "X-Parse-Application-Id": APPID,
-            "X-Parse-Revocable-Session": "1",
+            'X-Parse-Application-Id': APPID,
+            'X-Parse-Revocable-Session': '1',
           },
         }
       );
@@ -79,14 +80,14 @@ export default async function FacebookSign(request) {
         const sessiontoken = SignUp.data.sessionToken;
         const payload = {
           email: userEmail,
-          message: "User Sign Up",
+          message: 'User Sign Up',
           sessiontoken: sessiontoken,
         };
         return payload;
       }
     } catch (err) {
-      console.log("err in user google sign up", err);
-      return { message: "Internal server err" };
+      console.log('err in user google sign up', err);
+      return { message: 'Internal server err' };
     }
   }
 }
