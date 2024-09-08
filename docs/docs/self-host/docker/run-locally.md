@@ -86,6 +86,7 @@ openssl req -key ./local_dev.key -new -x509 -days 365 -out ./local_dev.crt
 openssl pkcs12 -inkey ./local_dev.key -in ./local_dev.crt -export -out ./local_dev.pfx
 openssl base64 -in ./local_dev.pfx -out ./base64_pfx
 ```
+Please note that when signing a document using a certificate generated through this process, it won’t be recognized as valid by Adobe Acrobat. To get the green tick on your signed documents, you'll need to purchase a document signing certificate (a p12 certificate in pfx format) from an [AATL-approved Certificate Authority](https://helpx.adobe.com/in/acrobat/kb/approved-trust-list1.html).
 
 # CORS Configuration
 
