@@ -3,6 +3,8 @@ title: Self-host OpenSign™ with Docker on Linux/MacOS/Windows
 ---
 import ReactPlayer from 'react-player';
 
+OpenSign™ is available of x86/x64 and Apple M-series CPU architectures. ARM64 is not currently supported.
+
 ## Steps to run OpenSign™ with docker on Linux/MacOS/Windows:
   1. Firstly, install [Docker](https://www.docker.com/products/docker-desktop/) and ensure it is running before proceeding to the next steps.
   2. Now, start Docker and ensure it runs in the background. Open the terminal and type the following command:
