@@ -32,10 +32,10 @@ We are excited to announce that OpenSign is participating in Hacktoberfest! Hack
 
 - Fork the [OpenSign repository](https://github.com/OpenSignLabs/OpenSign) to your GitHub account.
 - Clone your fork locally: `git clone https://github.com/your-username/OpenSign.git`
-- Create a new branch for your contribution: `git checkout -b feature/your-feature-name`
+- Create a new branch for your contribution: `git checkout -b feature/your-feature-name` - if making code changes then branch from `staging`, if making documentation changes then branch from `feat-docs`.
 - Make your contributions.
 - Push your branch to your fork: `git push origin feature/your-feature-name`
-- Create a Pull Request from your fork to the OpenSign repository.
+- Create a Pull Request from your fork to the OpenSign repository (ensure the correct base branch is picked - e.g., if making a docs change then be sure to change this from `staging` to `feat-docs`).
 
 ## Code of Conduct
 
