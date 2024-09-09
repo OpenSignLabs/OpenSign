@@ -234,11 +234,13 @@ const Header = ({ showSidebar }) => {
                   <i className="fa-light fa-lock"></i> {t("change-password")}
                 </span>
               </li>
-              <li onClick={() => handleConsoleRedirect()}>
-                <span>
-                  <i className="fa-light fa-id-card"></i> Console
-                </span>
-              </li>
+              {isEnableSubscription && (
+                <li onClick={() => handleConsoleRedirect()}>
+                  <span>
+                    <i className="fa-light fa-id-card"></i> Console
+                  </span>
+                </li>
+              )}
               {isEnableSubscription && isTeam?.plan === "freeplan" && (
                 <li className="cursor-pointer" onClick={handleMailUsed}>
                   <span>
