@@ -33,14 +33,15 @@ export const openInNewTab = (url, target) => {
 export async function fetchSubscription(
   extUserId,
   contactObjId,
-  isGuestSign = false
+  isGuestSign = false,
+  isPublic = false
 ) {
   try {
     const Extand_Class = localStorage.getItem("Extand_Class");
     const extClass = Extand_Class && JSON.parse(Extand_Class);
     // console.log("extClass ", extClass);
     let extUser;
-    if (extClass && extClass.length > 0) {
+    if (extClass && extClass.length > 0 && !isPublic) {
       extUser = extClass[0].objectId;
     } else {
       extUser = extUserId;
@@ -54,8 +55,10 @@ export async function fetchSubscription(
     };
     const params = isGuestSign
       ? { contactId: contactObjId }
-      : { extUserId: extUser };
+      : { extUserId: extUser, ispublic: isPublic };
+    console.log("params", params);
     const tenatRes = await axios.post(url, params, { headers: headers });
+    console.log("tenantRes", tenatRes);
     let plan, status, billingDate, adminId;
     if (isGuestSign) {
       plan = tenatRes.data?.result?.result?.plan;

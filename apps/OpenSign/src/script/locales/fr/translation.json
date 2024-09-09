@@ -632,6 +632,7 @@
   "quotamail": "Vous avez atteint votre limite de 15 e-mails de demande de signature pour ce mois. Mettez à niveau maintenant pour continuer à envoyer des e-mails directement.",
   "quotamailTip":"Astuce : Vous pouvez toujours signer un nombre illimité de documents en partageant manuellement les liens de demande de signature.",
   "quotamailhead":"Quota atteint",
-  "unauthorized-modal":"Vous n'êtes pas autorisé à effectuer cette action, veuillez contacter {{adminName}}<{{adminEmail}}>."
-
+  "unauthorized-modal":"Vous n'êtes pas autorisé à effectuer cette action, veuillez contacter {{adminName}}<{{adminEmail}}>.",
+ "insufficient-credits":"Crédits de signature insuffisants",
+  "insufficient-credits-mssg" :"Le propriétaire de ce document ne dispose actuellement pas des crédits OpenSign nécessaires pour que vous puissiez le signer. Veuillez contacter le propriétaire si vous avez besoin de plus de détails."
 }
