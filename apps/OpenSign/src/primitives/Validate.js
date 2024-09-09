@@ -37,9 +37,9 @@ const Validate = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleLoginBtn = () => {
+  const handleLoginBtn = async () => {
     try {
-      Parse.User.logOut();
+      await Parse.User.logOut();
     } catch (err) {
       console.log("err ", err);
     } finally {
