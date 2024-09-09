@@ -15,11 +15,7 @@ function ForgotPassword() {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [state, setState] = useState({
-    email: "",
-    password: "",
-    hideNav: ""
-  });
+  const [state, setState] = useState({ email: "", password: "", hideNav: "" });
   const [sentStatus, setSentStatus] = useState("");
   const [image, setImage] = useState();
 
@@ -65,6 +61,11 @@ function ForgotPassword() {
     // eslint-disable-next-line
   }, []);
   const saveLogo = async () => {
+    try {
+      await Parse.User.logOut();
+    } catch (err) {
+      console.log("err while logging out ", err);
+    }
     if (isEnableSubscription) {
       const app = await getAppLogo();
       if (app?.logo) {

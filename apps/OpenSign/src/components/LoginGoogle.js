@@ -47,8 +47,10 @@ const GoogleSignInBtn = ({
     });
   });
   const clearStorage = async () => {
-    if (Parse.User.current()) {
+    try {
       await Parse.User.logOut();
+    } catch (err) {
+      console.log("Err while logging out", err);
     }
     let baseUrl = localStorage.getItem("baseUrl");
     let appid = localStorage.getItem("parseAppId");
@@ -160,10 +162,13 @@ const GoogleSignInBtn = ({
       alert(t("fill-required-details!"));
     }
   };
-  const handleCloseModal = () => {
+  const handleCloseModal = async () => {
     setIsModal(false);
-    Parse.User.logOut();
-
+    try {
+      await Parse.User.logOut();
+    } catch (err) {
+      console.log("Err while logging out", err);
+    }
     let appdata = localStorage.getItem("userSettings");
     let applogo = localStorage.getItem("appLogo");
     let defaultmenuid = localStorage.getItem("defaultmenuid");

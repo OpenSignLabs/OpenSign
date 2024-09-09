@@ -61,14 +61,12 @@ const Header = ({ showSidebar }) => {
     }
   }
 
-  const closeDropdown = () => {
+  const closeDropdown = async () => {
     setIsOpen(false);
-    if (Parse?.User?.current()) {
-      try {
-        Parse.User.logOut();
-      } catch (err) {
-        console.log("Err", err);
-      }
+    try {
+      await Parse.User.logOut();
+    } catch (err) {
+      console.log("Err while logging out", err);
     }
     let appdata = localStorage.getItem("userSettings");
     let applogo = localStorage.getItem("appLogo");

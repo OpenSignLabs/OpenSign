@@ -228,10 +228,12 @@ const SSOVerify = () => {
     }
   };
   // `handleCloseModal` is triggered when the user wants to close the new user flow modal
-  const handleCloseModal = () => {
+  const handleCloseModal = async () => {
     setIsModal(false);
-    if (Parse?.User?.current()) {
-      Parse.User.logOut();
+    try {
+      await Parse.User.logOut();
+    } catch (err) {
+      console.log("Err while logging out", err);
     }
   };
 
