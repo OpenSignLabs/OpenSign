@@ -575,10 +575,12 @@ function Login() {
     }
   };
 
-  const logOutUser = () => {
+  const logOutUser = async () => {
     setIsModal(false);
-    if (Parse?.User?.current()) {
-      Parse.User.logOut();
+    try {
+      await Parse.User.logOut();
+    } catch (err) {
+      console.log("Err while logging out", err);
     }
     let appdata = localStorage.getItem("userSettings");
     let applogo = localStorage.getItem("appLogo");
