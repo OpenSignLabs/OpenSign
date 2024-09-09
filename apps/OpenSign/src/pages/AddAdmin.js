@@ -56,8 +56,10 @@ const AddAdmin = () => {
     }
   };
   const clearStorage = async () => {
-    if (Parse.User.current()) {
+    try {
       await Parse.User.logOut();
+    } catch (err) {
+      console.log("Err while logging out", err);
     }
     const baseUrl = localStorage.getItem("baseUrl");
     const appid = localStorage.getItem("parseAppId");
