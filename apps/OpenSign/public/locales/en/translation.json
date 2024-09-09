@@ -647,6 +647,7 @@
   "copied-code":"COPIED",
   "Installation":"Installation",
   "Usage" :"Usage",
-  "unauthorized-modal":"You don't have permission to perform this action, please contact {{adminName}}<{{adminEmail}}>."
-
+  "unauthorized-modal":"You don't have permission to perform this action, please contact {{adminName}}<{{adminEmail}}>.",
+  "insufficient-credits":"Insufficient Signing Credits",
+  "insufficient-credits-mssg":"The owner of this document currently lacks the necessary OpenSign credits for you to sign. Please reach out to the owner if you require further details."
 }
