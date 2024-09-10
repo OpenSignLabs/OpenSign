@@ -31,7 +31,8 @@ const AddUser = (props) => {
   const [planInfo, setPlanInfo] = useState({
     priceperUser: 0,
     price: 0,
-    totalAllowedUser: 0
+    totalAllowedUser: 0,
+    adminId: ""
   });
   const [isFormLoader, setIsFormLoader] = useState(false);
   const [isLoader, setIsLoader] = useState(false);
@@ -39,7 +40,9 @@ const AddUser = (props) => {
   const [allowedUser, setAllowedUser] = useState(0);
   const [err, setErr] = useState("");
   const role = ["OrgAdmin", "Editor", "User"];
-
+  const extUser =
+    localStorage.getItem("Extand_Class") &&
+    JSON.parse(localStorage.getItem("Extand_Class"))?.[0];
   useEffect(() => {
     getTeamList();
     // eslint-disable-next-line
@@ -54,7 +57,8 @@ const AddUser = (props) => {
           setPlanInfo((prev) => ({
             ...prev,
             priceperUser: resSub.price,
-            totalAllowedUser: resSub.totalAllowedUser
+            totalAllowedUser: resSub.totalAllowedUser,
+            adminId: resSub.adminId
           }));
           setAmount((prev) => ({ ...prev, price: resSub.price }));
           const res = await Parse.Cloud.run("allowedusers");
@@ -62,7 +66,11 @@ const AddUser = (props) => {
             if (res > 0) {
               props.setFormHeader(t("add-user"));
             } else {
-              props.setFormHeader(t("Add-seats"));
+              props.setFormHeader(
+                resSub.adminId !== extUser?.objectId
+                  ? "Unauthorized"
+                  : t("Add-seats")
+              );
             }
           }
           setAllowedUser(res);
@@ -483,40 +491,51 @@ const AddUser = (props) => {
                   </div>
                 </form>
               ) : (
-                <form onSubmit={handleAddOnSubmit}>
-                  <p className="flex justify-center text-center mx-2 mb-3 text-base op-text-accent font-medium">
-                    {t("additional-users")}
-                  </p>
-                  <div className="mb-3 flex justify-between">
-                    <label
-                      htmlFor="quantity"
-                      className="block text-xs text-gray-700 font-semibold"
-                    >
-                      {t("Quantity-of-users")}
-                      <span className="text-[red] text-[13px]"> *</span>
-                    </label>
-                    <input
-                      type="number"
-                      name="quantity"
-                      value={amount.quantity}
-                      onChange={(e) => handlePricePerUser(e)}
-                      className="w-1/4 op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content text-xs"
-                      required
-                    />
-                  </div>
-                  <div className="mb-3 flex justify-between">
-                    <label className="block text-xs text-gray-700 font-semibold">
-                      {t("Price")} (1 * {planInfo.priceperUser})
-                    </label>
-                    <div className="w-1/4 flex justify-center items-center text-sm">
-                      USD {amount.price}
+                <>
+                  {planInfo.adminId !== extUser?.objectId ? (
+                    <div className="mb-3 mt-1 flex justify-center text-center items-center font-medium break-all">
+                      {t("unauthorized-modal", {
+                        adminName: extUser?.CreatedBy?.name,
+                        adminEmail: extUser?.CreatedBy?.email
+                      })}
                     </div>
-                  </div>
-                  <hr className="text-base-content mb-3" />
-                  <button className="op-btn op-btn-primary w-full">
-                    {t("Proceed")}
-                  </button>
-                </form>
+                  ) : (
+                    <form onSubmit={handleAddOnSubmit}>
+                      <p className="flex justify-center text-center mx-2 mb-3 text-base op-text-accent font-medium">
+                        {t("additional-users")}
+                      </p>
+                      <div className="mb-3 flex justify-between">
+                        <label
+                          htmlFor="quantity"
+                          className="block text-xs text-gray-700 font-semibold"
+                        >
+                          {t("Quantity-of-users")}
+                          <span className="text-[red] text-[13px]"> *</span>
+                        </label>
+                        <input
+                          type="number"
+                          name="quantity"
+                          value={amount.quantity}
+                          onChange={(e) => handlePricePerUser(e)}
+                          className="w-1/4 op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content text-xs"
+                          required
+                        />
+                      </div>
+                      <div className="mb-3 flex justify-between">
+                        <label className="block text-xs text-gray-700 font-semibold">
+                          {t("Price")} (1 * {planInfo.priceperUser})
+                        </label>
+                        <div className="w-1/4 flex justify-center items-center text-sm">
+                          USD {amount.price}
+                        </div>
+                      </div>
+                      <hr className="text-base-content mb-3" />
+                      <button className="op-btn op-btn-primary w-full">
+                        {t("Proceed")}
+                      </button>
+                    </form>
+                  )}
+                </>
               )}
             </div>
           )}
