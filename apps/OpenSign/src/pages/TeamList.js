@@ -146,8 +146,18 @@ const TeamList = () => {
   };
 
   // Change page
-  const paginateFront = () => setCurrentPage(currentPage + 1);
-  const paginateBack = () => setCurrentPage(currentPage - 1);
+  const paginateFront = () => {
+    if (currentPage < Math.max(...pageNumbers)) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const paginateBack = () => {
+    if (startIndex > 0) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
   const handleActionBtn = (act, item) => {
     if (act.action === "edit") {
       setIsEditModal({ [item.objectId]: true });
