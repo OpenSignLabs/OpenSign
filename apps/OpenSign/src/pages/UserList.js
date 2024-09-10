@@ -128,13 +128,18 @@ const UserList = () => {
   };
 
   // Change page
-  const paginateFront = () => setCurrentPage(currentPage + 1);
-  const paginateBack = () => setCurrentPage(currentPage - 1);
-  // const handleActionBtn = (act, item) => {
-  //   if (act.action === "delete") {
-  //     setIsDeleteModal({ [item.objectId]: true });
-  //   }
-  // };
+  const paginateFront = () => {
+    if (currentPage < Math.max(...pageNumbers)) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const paginateBack = () => {
+    if (startIndex > 0) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
   const handleUserData = (userData) => {
     setUserList((prev) => [userData, ...prev]);
   };
@@ -296,49 +301,6 @@ const UserList = () => {
                                 )}
                               </td>
                             )}
-                            {/* <td className="px-3 py-2 text-white grid grid-cols-2">
-                        {actions?.length > 0 &&
-                          actions.map((act, index) => (
-                            <button
-                              key={index}
-                              onClick={() => handleActionBtn(act, item)}
-                              title={act.hoverLabel}
-                              className={`${
-                                act?.btnColor ? act.btnColor : ""
-                              } op-btn op-btn-sm`}
-                            >
-                              <i className={act.btnIcon}></i>
-                            </button>
-                          ))}
-                        {isDeleteModal[item.objectId] && (
-                          <ModalUi
-                            isOpen
-                            title={t("delete-user")}
-                            handleClose={handleClose}
-                          >
-                            <div className="m-[20px]">
-                              <div className="text-lg font-normal text-black">
-                                  {t( "are-you-sure")} {t("delete")}    {t("this-user")}?
-                              </div>
-                              <hr className="bg-[#ccc] mt-4 " />
-                              <div className="flex items-center mt-3 gap-2 text-white">
-                                <button
-                                  onClick={() => handleDelete(item)}
-                                  className="op-btn op-btn-primary"
-                                >
-                                  {t("yes")}
-                                </button>
-                                <button
-                                  onClick={handleClose}
-                                  className="op-btn op-btn-secondary"
-                                >
-                                  {('no)}
-                                </button>
-                              </div>
-                            </div>
-                          </ModalUi>
-                        )}
-                      </td> */}
                           </tr>
                         ))}
                       </>
