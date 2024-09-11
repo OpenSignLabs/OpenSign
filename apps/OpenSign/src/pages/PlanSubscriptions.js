@@ -121,9 +121,9 @@ const PlanSubscriptions = () => {
   };
   const handleLogout = async () => {
     try {
-      Parse?.User?.logOut();
+      await Parse?.User?.logOut();
     } catch (err) {
-      console.log("Err", err);
+      console.log("Err while logging out", err);
     }
     let appdata = localStorage.getItem("userSettings");
     let applogo = localStorage.getItem("appLogo");
