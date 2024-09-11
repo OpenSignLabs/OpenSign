@@ -100,17 +100,19 @@ export async function fetchSubscriptionInfo() {
       const planId =
         tenatRes.data?.result?.result?.SubscriptionDetails?.data?.subscription
           ?.subscription_id;
-      const plan_code =
-        tenatRes.data?.result?.result?.SubscriptionDetails?.data?.subscription
-          ?.plan?.plan_code;
+      const plan_code = tenatRes.data?.result?.result?.PlanCode;
       const totalAllowedUser = tenatRes.data?.result?.result?.AllowedUsers || 0;
+      const adminId =
+        tenatRes?.data?.result?.result?.ExtUserPtr?.objectId || "";
+
       return {
         status: "success",
         price: price,
         totalPrice: totalPrice,
         planId: planId,
         plan_code: plan_code,
-        totalAllowedUser: totalAllowedUser
+        totalAllowedUser: totalAllowedUser,
+        adminId: adminId
       };
     }
   } catch (err) {
