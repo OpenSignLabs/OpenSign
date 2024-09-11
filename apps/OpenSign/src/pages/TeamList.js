@@ -135,7 +135,7 @@ const TeamList = () => {
   const handleFormModal = () => {
     setIsModal(!isModal);
   };
-  // Get current list
+  // to slice out 10 objects from array for current page
   const indexOfLastDoc = currentPage * recordperPage;
   const indexOfFirstDoc = indexOfLastDoc - recordperPage;
   const currentList = teamList?.slice(indexOfFirstDoc, indexOfLastDoc);
@@ -147,7 +147,8 @@ const TeamList = () => {
 
   // Change page
   const paginateFront = () => {
-    if (currentPage < Math.max(...pageNumbers)) {
+    const lastValue = pageNumbers?.[pageNumbers?.length - 1];
+    if (currentPage < lastValue) {
       setCurrentPage(currentPage + 1);
     }
   };
