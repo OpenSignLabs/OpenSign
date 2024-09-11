@@ -29,11 +29,7 @@ async function uploadFile(pdfName, filepath) {
 // `updateDoc` is used to update signedUrl, AuditTrail, Iscompleted in document
 async function updateDoc(docId, url, userId, ipAddress, data, className, sign) {
   try {
-    const UserPtr = {
-      __type: 'Pointer',
-      className: className,
-      objectId: userId,
-    };
+    const UserPtr = { __type: 'Pointer', className: className, objectId: userId };
     const obj = {
       UserPtr: UserPtr,
       SignedUrl: url,
@@ -66,11 +62,7 @@ async function updateDoc(docId, url, userId, ipAddress, data, className, sign) {
     } else {
       isCompleted = true;
     }
-    const body = {
-      SignedUrl: url,
-      AuditTrail: updateAuditTrail,
-      IsCompleted: isCompleted,
-    };
+    const body = { SignedUrl: url, AuditTrail: updateAuditTrail, IsCompleted: isCompleted };
     const signedRes = await axios.put(serverUrl + '/classes/contracts_Document/' + docId, body, {
       headers: {
         'Content-Type': 'application/json',
@@ -164,29 +156,16 @@ async function sendCompletedMail(obj) {
       'X-Parse-Master-Key': masterKEY,
     },
   });
-  // console.log('Res ', res);
 }
 
 // `sendDoctoWebhook` is used to send res data of document on webhook
 async function sendDoctoWebhook(doc, Url, event, signUser, certificateUrl) {
   let signers = [];
   if (signUser) {
-    signers = {
-      name: signUser?.Name,
-      email: signUser?.Email,
-      phone: signUser?.Phone,
-    };
+    signers = { name: signUser?.Name, email: signUser?.Email, phone: signUser?.Phone };
   } else {
-    signers = doc?.Signers?.map(x => ({
-      name: x.Name,
-      email: x.Email,
-      phone: x.Phone,
-    })) || [
-      {
-        name: doc?.ExtUserPtr?.Name,
-        email: doc?.ExtUserPtr?.Email,
-        phone: doc?.ExtUserPtr?.Phone,
-      },
+    signers = doc?.Signers?.map(x => ({ name: x.Name, email: x.Email, phone: x.Phone })) || [
+      { name: doc?.ExtUserPtr?.Name, email: doc?.ExtUserPtr?.Email, phone: doc?.ExtUserPtr?.Phone },
     ];
   }
 
@@ -213,7 +192,6 @@ async function sendDoctoWebhook(doc, Url, event, signUser, certificateUrl) {
       })
       .then(res => {
         try {
-          // console.log('res ', res);
           const webhook = new Parse.Object('contracts_Webhook');
           webhook.set('Log', res?.status);
           webhook.set('UserId', {
@@ -241,7 +219,6 @@ async function sendDoctoWebhook(doc, Url, event, signUser, certificateUrl) {
           console.log('err save in contracts_Webhook', err.message);
         }
       });
-    // console.log('res ', res.data);
   }
 }
 
@@ -281,15 +258,9 @@ const sendMailsaveCertifcate = async (doc, P12Buffer, url, isCustomMail, mailPro
   if (doc.IsSendMail === false) {
     console.log("don't send mail");
   } else {
-    const mailObj = {
-      url: url,
-      isCustomMail: isCustomMail,
-      doc: doc,
-      mailProvider: mailProvider,
-    };
+    const mailObj = { url: url, isCustomMail: isCustomMail, doc: doc, mailProvider: mailProvider };
     sendCompletedMail(mailObj);
   }
-
   saveFileUsage(CertificateBuffer.length, file.imageUrl, userId);
   sendDoctoWebhook(doc, url, 'completed', '', file.imageUrl);
 };
@@ -304,8 +275,7 @@ async function PDF(req) {
     if (!req?.user) {
       throw new Parse.Error(Parse.Error.INVALID_SESSION_TOKEN, 'User is not authenticated.');
     } else {
-      const password = '';
-      const authUser = req?.user?.toJSON();
+      const userIP = req.headers['x-real-ip']; // client IPaddress
       const docId = req.params.docId;
       const reqUserId = req.params.userId;
       const isCustomMail = req.params.isCustomCompletionMail || false;
@@ -320,7 +290,6 @@ async function PDF(req) {
         throw new Parse.Error(Parse.Error.OBJECT_NOT_FOUND, 'Document not found.');
       }
       const _resDoc = resDoc?.toJSON();
-
       let signUser;
       let className;
       // `reqUserId` is send throught pdfrequest signing flow
@@ -346,18 +315,8 @@ async function PDF(req) {
         // const P12Buffer = fs.readFileSync();
         const P12Buffer = Buffer.from(pfxFile, 'base64');
         const p12Cert = new P12Signer(P12Buffer, { passphrase: process.env.PASS_PHRASE || null });
-
-        const UserPtr = {
-          __type: 'Pointer',
-          className: className,
-          objectId: signUser.objectId,
-        };
-        const obj = {
-          UserPtr: UserPtr,
-          SignedUrl: '',
-          Activity: 'Signed',
-          ipAddress: req.headers['x-real-ip'],
-        };
+        const UserPtr = { __type: 'Pointer', className: className, objectId: signUser.objectId };
+        const obj = { UserPtr: UserPtr, SignedUrl: '', Activity: 'Signed', ipAddress: userIP };
         let updateAuditTrail;
         if (_resDoc.AuditTrail && _resDoc.AuditTrail.length > 0) {
           updateAuditTrail = [..._resDoc.AuditTrail, obj];
@@ -430,13 +389,13 @@ async function PDF(req) {
             req.params.docId, //docId
             data.imageUrl, // url
             signUser.objectId, // userID
-            req.headers['x-real-ip'], // client ipAddress,
+            userIP, // client ipAddress,
             _resDoc, // auditTrail, signers, etc data
-            className,
-            sign
+            className, // className based on flow
+            sign // sign base64
           );
           sendDoctoWebhook(_resDoc, data.imageUrl, 'signed', signUser);
-          saveFileUsage(pdfSize, data.imageUrl, authUser.objectId);
+          saveFileUsage(pdfSize, data.imageUrl, _resDoc?.CreatedBy?.objectId);
           if (updatedDoc && updatedDoc.isCompleted) {
             const doc = { ..._resDoc, AuditTrail: updatedDoc.AuditTrail };
             sendMailsaveCertifcate(
@@ -445,7 +404,7 @@ async function PDF(req) {
               data.imageUrl,
               isCustomMail,
               mailProvider,
-              authUser.objectId
+              _resDoc?.CreatedBy?.objectId
             );
           }
           // `fs.unlinkSync` is used to remove exported signed pdf file from exports folder

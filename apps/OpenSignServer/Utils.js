@@ -42,36 +42,38 @@ export function replaceMailVaribles(subject, body, variables) {
 export const saveFileUsage = async (size, fileUrl, userId) => {
   //checking server url and save file's size
   try {
-    const tenantQuery = new Parse.Query('partners_Tenant');
-    tenantQuery.equalTo('UserId', {
-      __type: 'Pointer',
-      className: '_User',
-      objectId: userId,
-    });
-    const tenant = await tenantQuery.first();
-    if (tenant) {
-      const tenantPtr = { __type: 'Pointer', className: 'partners_Tenant', objectId: tenant.id };
-      try {
-        const tenantCredits = new Parse.Query('partners_TenantCredits');
-        tenantCredits.equalTo('PartnersTenant', tenantPtr);
-        const res = await tenantCredits.first({ useMasterKey: true });
-        if (res) {
-          const response = JSON.parse(JSON.stringify(res));
-          const usedStorage = response?.usedStorage ? response.usedStorage + size : size;
-          const updateCredit = new Parse.Object('partners_TenantCredits');
-          updateCredit.id = res.id;
-          updateCredit.set('usedStorage', usedStorage);
-          await updateCredit.save(null, { useMasterKey: true });
-        } else {
-          const newCredit = new Parse.Object('partners_TenantCredits');
-          newCredit.set('usedStorage', size);
-          newCredit.set('PartnersTenant', tenantPtr);
-          await newCredit.save(null, { useMasterKey: true });
+    if (userId) {
+      const tenantQuery = new Parse.Query('partners_Tenant');
+      tenantQuery.equalTo('UserId', {
+        __type: 'Pointer',
+        className: '_User',
+        objectId: userId,
+      });
+      const tenant = await tenantQuery.first();
+      if (tenant) {
+        const tenantPtr = { __type: 'Pointer', className: 'partners_Tenant', objectId: tenant.id };
+        try {
+          const tenantCredits = new Parse.Query('partners_TenantCredits');
+          tenantCredits.equalTo('PartnersTenant', tenantPtr);
+          const res = await tenantCredits.first({ useMasterKey: true });
+          if (res) {
+            const response = JSON.parse(JSON.stringify(res));
+            const usedStorage = response?.usedStorage ? response.usedStorage + size : size;
+            const updateCredit = new Parse.Object('partners_TenantCredits');
+            updateCredit.id = res.id;
+            updateCredit.set('usedStorage', usedStorage);
+            await updateCredit.save(null, { useMasterKey: true });
+          } else {
+            const newCredit = new Parse.Object('partners_TenantCredits');
+            newCredit.set('usedStorage', size);
+            newCredit.set('PartnersTenant', tenantPtr);
+            await newCredit.save(null, { useMasterKey: true });
+          }
+        } catch (err) {
+          console.log('err in save usage', err);
         }
-      } catch (err) {
-        console.log('err in save usage', err);
+        saveDataFile(size, fileUrl, tenantPtr);
       }
-      saveDataFile(size, fileUrl, tenantPtr);
     }
   } catch (err) {
     console.log('err in fetch tenant Id', err);
