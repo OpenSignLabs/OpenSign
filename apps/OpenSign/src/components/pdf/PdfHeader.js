@@ -77,7 +77,7 @@ function Header({
               allPages={allPages}
               changePage={changePage}
             />
-            {isCompleted && alreadySign ? (
+            {isCompleted || alreadySign ? (
               <DropdownMenu.Root>
                 <DropdownMenu.Trigger asChild>
                   <div className="op-link op-link-primary no-underline text-[16px] font-semibold pr-[3px] pl-[5px]">
