@@ -185,7 +185,13 @@ const UserList = () => {
   };
 
   const handleUserData = (userData) => {
-    setUserList((prev) => [userData, ...prev]);
+    if (userData) {
+      setUserCounts((obj) => ({
+        ...obj,
+        allowed: obj?.allowed > 0 ? obj.allowed - 1 : 1
+      }));
+      setUserList((prev) => [userData, ...prev]);
+    }
   };
   // `formatRow` is used to show data in poper manner like
   // if data is of array type then it will join array items with ","
