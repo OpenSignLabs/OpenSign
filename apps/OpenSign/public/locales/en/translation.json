@@ -636,6 +636,8 @@
   "quota-mail-tip":"Tip: You can still sign <1>unlimited documents</1> by manually sharing the signing request links.",
   "quota-mail-head":"Quota Reached",
   "unauthorized-modal":"You don't have permission to perform this action, please contact {{adminName}}<{{adminEmail}}>.",
-  "sent-this-month":"Sent this month"
+  "sent-this-month":"Sent this month",
+  "available-seats":"Available seats",
+  "buy-users":"Buy more users"
 
 }
