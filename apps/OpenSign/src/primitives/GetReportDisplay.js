@@ -373,7 +373,8 @@ const ReportTable = (props) => {
 
   // Change page
   const paginateFront = () => {
-    if (currentPage < Math.max(...pageNumbers)) {
+    const lastValue = pageNumbers?.[pageNumbers?.length - 1];
+    if (currentPage < lastValue) {
       setCurrentPage(currentPage + 1);
     }
   };

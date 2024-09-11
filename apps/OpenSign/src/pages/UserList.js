@@ -85,6 +85,10 @@ const UserList = () => {
     return pages;
   };
   const pageNumbers = getPaginationRange();
+  // to slice out 10 objects from array for current page
+  const indexOfLastDoc = currentPage * recordperPage;
+  const indexOfFirstDoc = indexOfLastDoc - recordperPage;
+  const currentList = userList?.slice(indexOfFirstDoc, indexOfLastDoc);
   useEffect(() => {
     fetchUserList();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -129,7 +133,8 @@ const UserList = () => {
 
   // Change page
   const paginateFront = () => {
-    if (currentPage < Math.max(...pageNumbers)) {
+    const lastValue = pageNumbers?.[pageNumbers?.length - 1];
+    if (currentPage < lastValue) {
       setCurrentPage(currentPage + 1);
     }
   };
@@ -237,7 +242,7 @@ const UserList = () => {
                   <tbody className="text-[12px]">
                     {userList?.length > 0 && (
                       <>
-                        {userList.map((item, index) => (
+                        {currentList.map((item, index) => (
                           <tr className="border-y-[1px]" key={index}>
                             {heading.includes("Sr.No") && (
                               <th className="px-4 py-2">
