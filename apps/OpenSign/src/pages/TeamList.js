@@ -135,7 +135,7 @@ const TeamList = () => {
   const handleFormModal = () => {
     setIsModal(!isModal);
   };
-  // Get current list
+  // to slice out 10 objects from array for current page
   const indexOfLastDoc = currentPage * recordperPage;
   const indexOfFirstDoc = indexOfLastDoc - recordperPage;
   const currentList = teamList?.slice(indexOfFirstDoc, indexOfLastDoc);
@@ -146,8 +146,19 @@ const TeamList = () => {
   };
 
   // Change page
-  const paginateFront = () => setCurrentPage(currentPage + 1);
-  const paginateBack = () => setCurrentPage(currentPage - 1);
+  const paginateFront = () => {
+    const lastValue = pageNumbers?.[pageNumbers?.length - 1];
+    if (currentPage < lastValue) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const paginateBack = () => {
+    if (startIndex > 0) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
   const handleActionBtn = (act, item) => {
     if (act.action === "edit") {
       setIsEditModal({ [item.objectId]: true });

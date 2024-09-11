@@ -61,14 +61,12 @@ const Header = ({ showSidebar }) => {
     }
   }
 
-  const closeDropdown = () => {
+  const closeDropdown = async () => {
     setIsOpen(false);
-    if (Parse?.User?.current()) {
-      try {
-        Parse.User.logOut();
-      } catch (err) {
-        console.log("Err", err);
-      }
+    try {
+      await Parse.User.logOut();
+    } catch (err) {
+      console.log("Err while logging out", err);
     }
     let appdata = localStorage.getItem("userSettings");
     let applogo = localStorage.getItem("appLogo");
@@ -234,11 +232,13 @@ const Header = ({ showSidebar }) => {
                   <i className="fa-light fa-lock"></i> {t("change-password")}
                 </span>
               </li>
-              <li onClick={() => handleConsoleRedirect()}>
-                <span>
-                  <i className="fa-light fa-id-card"></i> Console
-                </span>
-              </li>
+              {isEnableSubscription && (
+                <li onClick={() => handleConsoleRedirect()}>
+                  <span>
+                    <i className="fa-light fa-id-card"></i> Console
+                  </span>
+                </li>
+              )}
               {isEnableSubscription && isTeam?.plan === "freeplan" && (
                 <li className="cursor-pointer" onClick={handleMailUsed}>
                   <span>
