@@ -124,11 +124,10 @@ const UserList = () => {
           setAmount((prev) => ({ ...prev, price: subscribe.price }));
           try {
             const res = await Parse.Cloud.run("allowedusers");
-            console.log("res ", res);
             setUserCounts((obj) => ({
               ...obj,
-              allowed: res,
-              totalAllowed: subscribe?.totalAllowedUser || 0
+              allowed: parseInt(res),
+              totalAllowed: parseInt(subscribe?.totalAllowedUser) || 0
             }));
           } catch (err) {
             console.log("err while get users", err);
@@ -207,9 +206,8 @@ const UserList = () => {
       return "-";
     }
   };
-  const handleClose = () => {
-    setIsActiveModal({});
-  };
+  const handleClose = () => setIsActiveModal({});
+
   const handleToggleSubmit = async (user) => {
     const index = userList.findIndex((obj) => obj.objectId === user.objectId);
     if (index !== -1) {
@@ -248,16 +246,17 @@ const UserList = () => {
     setIsBuyLoader(true);
     try {
       const resAddon = await Parse.Cloud.run("buyaddonusers", {
-        users: amount.quantity
+        users: parseInt(amount.quantity)
       });
       if (resAddon) {
         const _resAddon = JSON.parse(JSON.stringify(resAddon));
         if (_resAddon.status === "success") {
           setUserCounts((obj) => ({
             ...obj,
-            allowed: obj.allowed + amount.quantity,
-            totalAllowed: _resAddon.addon
+            allowed: parseInt(obj.allowed) + parseInt(amount.quantity),
+            totalAllowed: parseInt(_resAddon.addon)
           }));
+          setAmount((obj) => ({ ...obj, quantity: 1 }));
         }
       }
     } catch (err) {
@@ -273,6 +272,15 @@ const UserList = () => {
     const quantity = e.target.value;
     const price = e.target?.value > 0 ? isSubscribe.priceperUser * quantity : 0;
     setAmount((prev) => ({ ...prev, quantity: quantity, price: price }));
+  };
+  const handleBuyUsers = (allowed, totalAllowed) => {
+    if (allowed && totalAllowed) {
+      setUserCounts((obj) => ({
+        ...obj,
+        allowed: parseInt(obj.allowed) + parseInt(allowed),
+        totalAllowed: parseInt(totalAllowed)
+      }));
+    }
   };
   return (
     <div className="relative">
@@ -482,6 +490,7 @@ const UserList = () => {
                 <AddUser
                   setIsAlert={setIsAlert}
                   handleUserData={handleUserData}
+                  handleBuyUsers={handleBuyUsers}
                   closePopup={() => handleModal("form")}
                   setFormHeader={setFormHeader}
                 />

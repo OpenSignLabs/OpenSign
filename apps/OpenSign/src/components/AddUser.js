@@ -301,6 +301,9 @@ const AddUser = (props) => {
           setAllowedUser(amount.quantity);
           setPlanInfo((obj) => ({ ...obj, totalAllowedUser: _resAddon.addon }));
         }
+        if (props.handleBuyUsers) {
+          props.handleBuyUsers(amount.quantity, _resAddon.addon);
+        }
       }
     } catch (err) {
       console.log("Err in buy addon", err);
