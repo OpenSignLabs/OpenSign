@@ -51,7 +51,7 @@
   "devDependencies": {
     "@babel/eslint-parser": "^7.25.1",
     "eslint": "^9.9.1",
-    "jasmine": "^5.2.0",
+    "jasmine": "^5.3.0",
     "mongodb-runner": "^5.6.6",
     "nodemon": "^3.1.4",
     "nyc": "^17.0.0",
