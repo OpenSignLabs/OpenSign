@@ -12,6 +12,7 @@ async function getUserDetails(request) {
       }
       userQuery.include('TenantId');
       userQuery.include('UserId');
+      userQuery.include('CreatedBy');
       userQuery.exclude('google_refresh_token');
       if (userId) {
         userQuery.equalTo('CreatedBy', { __type: 'Pointer', className: '_User', objectId: userId });
