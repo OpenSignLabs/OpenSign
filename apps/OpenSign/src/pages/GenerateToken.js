@@ -28,7 +28,6 @@ function GenerateToken() {
     plan: "",
     isValid: false,
     adminId: "",
-    adminName: "",
     adminEmail: ""
   });
   const [isAlert, setIsAlert] = useState({ type: "success", msg: "" });
@@ -154,8 +153,7 @@ function GenerateToken() {
       } else {
         setIsSubscribe((obj) => ({
           ...obj,
-          adminName: extUser?.CreatedBy?.name,
-          adminEmail: extUser?.CreatedBy?.email
+          adminEmail: extUser?.TenantId?.EmailAddress
         }));
         setIsModal((obj) => ({ ...obj, unauthorized: !obj.unauthorized }));
       }
@@ -447,7 +445,6 @@ function GenerateToken() {
             >
               <div className="m-8 flex justify-center text-center items-center font-medium break-all">
                 {t("unauthorized-modal", {
-                  adminName: isSubscribe?.adminName,
                   adminEmail: isSubscribe?.adminEmail
                 })}
               </div>
