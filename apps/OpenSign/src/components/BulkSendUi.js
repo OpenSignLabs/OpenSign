@@ -31,7 +31,6 @@ const BulkSendUi = (props) => {
   const [isFreePlan, setIsFreePlan] = useState(false);
   const [admin, setAdmin] = useState({
     objectId: "",
-    name: "",
     email: "",
     isAdmin: true
   });
@@ -63,8 +62,7 @@ const BulkSendUi = (props) => {
           setAdmin((obj) => ({
             ...obj,
             isAdmin: false,
-            name: extUser?.CreatedBy?.name,
-            email: extUser?.CreatedBy?.email
+            email: extUser?.TenantId?.EmailAddress
           }));
         }
         setAdmin((obj) => ({ ...obj, objectId: subscription?.adminId }));
@@ -491,10 +489,7 @@ const BulkSendUi = (props) => {
                     </form>
                   ) : (
                     <div className="mx-8 mt-4 mb-8 flex justify-center text-center items-center font-medium break-all">
-                      {t("unauthorized-modal", {
-                        adminName: admin?.name,
-                        adminEmail: admin?.email
-                      })}
+                      {t("unauthorized-modal", { adminEmail: admin?.email })}
                     </div>
                   )}
                 </>
