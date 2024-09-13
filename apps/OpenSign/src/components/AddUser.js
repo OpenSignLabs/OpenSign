@@ -498,8 +498,7 @@ const AddUser = (props) => {
                   {planInfo.adminId !== extUser?.objectId ? (
                     <div className="mb-3 mt-1 flex justify-center text-center items-center font-medium break-all">
                       {t("unauthorized-modal", {
-                        adminName: extUser?.CreatedBy?.name,
-                        adminEmail: extUser?.CreatedBy?.email
+                        adminEmail: extUser?.TenantId?.EmailAddress
                       })}
                     </div>
                   ) : (
