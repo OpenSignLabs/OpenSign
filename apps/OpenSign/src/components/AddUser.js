@@ -301,6 +301,9 @@ const AddUser = (props) => {
           setAllowedUser(amount.quantity);
           setPlanInfo((obj) => ({ ...obj, totalAllowedUser: _resAddon.addon }));
         }
+        if (props.handleBuyUsers) {
+          props.handleBuyUsers(amount.quantity, _resAddon.addon);
+        }
       }
     } catch (err) {
       console.log("Err in buy addon", err);
@@ -495,8 +498,7 @@ const AddUser = (props) => {
                   {planInfo.adminId !== extUser?.objectId ? (
                     <div className="mb-3 mt-1 flex justify-center text-center items-center font-medium break-all">
                       {t("unauthorized-modal", {
-                        adminName: extUser?.CreatedBy?.name,
-                        adminEmail: extUser?.CreatedBy?.email
+                        adminEmail: extUser?.TenantId?.EmailAddress
                       })}
                     </div>
                   ) : (

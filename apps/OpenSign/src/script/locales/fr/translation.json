@@ -631,8 +631,9 @@
   "quota-mail": "Vous avez atteint votre limite de 15 e-mails de demande de signature pour ce mois. Mettez à niveau maintenant pour continuer à envoyer des e-mails directement.",
   "quota-mail-tip":"Astuce : Vous pouvez toujours signer un nombre <1>illimité de documents</1> en partageant manuellement les liens de demande de signature.",
   "quota-mail-head":"Quota atteint",
-  "unauthorized-modal":"Vous n'êtes pas autorisé à effectuer cette action, veuillez contacter {{adminName}}<{{adminEmail}}>.",
-  "sent-this-month":"envoyé ce mois-ci"
-
+  "unauthorized-modal":"Vous n'êtes pas autorisé à effectuer cette action, veuillez contacter {{adminEmail}}.",
+  "sent-this-month":"envoyé ce mois-ci",
+  "available-seats":"Disponible sièges",
+  "buy-users":"Acheter plus d'utilisateurs"
 
 }
