@@ -199,6 +199,7 @@ export default async function createBatchDocs(request) {
                 TimeToCompleteDays: x.TimeToCompleteDays || 15,
                 OriginIp: Ip,
                 DocSentAt: { __type: 'Date', iso: isoDate },
+                IsDisableOTP: x?.IsDisableOTP || false,
               },
             };
           });
