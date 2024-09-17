@@ -1741,9 +1741,7 @@ export const contactBook = async (objectId) => {
 
 //function for getting document details from contract_Documents class
 export const contractDocument = async (documentId) => {
-  const data = {
-    docId: documentId
-  };
+  const data = { docId: documentId };
   const documentDeatils = await axios
     .post(`${localStorage.getItem("baseUrl")}functions/getDocument`, data, {
       headers: {
@@ -2047,11 +2045,12 @@ export const handleDownloadPdf = async (
 ) => {
   const pdfName = pdfDetails[0] && pdfDetails[0].Name;
   setIsDownloading("pdf");
+  const docId = pdfDetails?.[0]?.IsDisableOTP ? pdfDetails?.[0]?.objectId : "";
   try {
     // const url = await Parse.Cloud.run("getsignedurl", { url: pdfUrl });
     const axiosRes = await axios.post(
       `${localStorage.getItem("baseUrl")}/functions/getsignedurl`,
-      { url: pdfUrl },
+      { url: pdfUrl, docId: docId },
       {
         headers: {
           "content-type": "Application/json",
@@ -2075,16 +2074,24 @@ export const sanitizeFileName = (pdfName) => {
   return pdfName.replace(/ /g, "_");
 };
 //function for print digital sign pdf
-export const handleToPrint = async (event, pdfUrl, setIsDownloading) => {
+export const handleToPrint = async (
+  event,
+  pdfUrl,
+  setIsDownloading,
+  pdfDetails
+) => {
   event.preventDefault();
   setIsDownloading("pdf");
   try {
+    const docId = pdfDetails?.[0]?.IsDisableOTP
+      ? pdfDetails?.[0]?.objectId
+      : "";
     // const url = await Parse.Cloud.run("getsignedurl", { url: pdfUrl });
     //`localStorage.getItem("baseUrl")` is also use in public-profile flow for public-sign
     //if we give this `appInfo.baseUrl` as a base url then in public-profile it will create base url of it's window.location.origin ex- opensign.me which is not base url
     const axiosRes = await axios.post(
       `${localStorage.getItem("baseUrl")}/functions/getsignedurl`,
-      { url: pdfUrl },
+      { url: pdfUrl, docId: docId },
       {
         headers: {
           "content-type": "Application/json",

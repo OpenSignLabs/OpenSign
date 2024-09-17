@@ -142,23 +142,23 @@ function PdfRequestFiles(props) {
   let isGuestSignFlow = false;
   let sendmail;
   let getDocId = "";
-  const route = !props.templateId && window.location.pathname; //'/load/recipientSignPdf/TOAVuhXbfw/fPAKdK1qgX'
-  //window.location.search = ?sendmail=false
-  const getQuery =
-    !props.templateId &&
-    window.location?.search &&
-    window.location?.search?.split("?"); //['','sendmail=false']
-
-  //'sendmail=false'
+  let contactBookId = "";
+  const route = !props.templateId && window.location.pathname;
+  const getQuery = !props.templateId && window.location?.search?.split("?"); //['','sendmail=false']
   if (getQuery) {
-    sendmail = getQuery[1].split("=")[1]; //false
+    sendmail = getQuery?.[1]?.split("=")[1]; //false
   }
-  const checkSplit = route && route?.split("/"); // ['', 'load', 'recipientSignPdf', 'TOAVuhXbfw', 'fPAKdK1qgX']
-  if (checkSplit && checkSplit.length > 4) {
+
+  const routeId = route && route?.split("/"); // ['', 'load', 'recipientSignPdf', ':docId', ':contactBookId']
+  if (routeId && routeId.length > 4) {
+    // this condition will be occur only in guest flow in which load routeId will be include
     isGuestSignFlow = true;
-    getDocId = checkSplit[3];
+    getDocId = routeId[3];
+    contactBookId = routeId[4];
   } else {
-    getDocId = checkSplit[2];
+    // this condition will be occur only in if user is logged in and load routeId will be exclude
+    getDocId = routeId[2];
+    contactBookId = routeId?.[3] || "";
   }
   let getDocumentId = getDocId || documentId;
   useEffect(() => {
@@ -372,6 +372,7 @@ function PdfRequestFiles(props) {
         `Parse/${localStorage.getItem("parseAppId")}/currentUser`
       );
       const jsonSender = JSON.parse(senderUser);
+      // `currUserId` will be contactId or extUserId
       let currUserId;
       //getting document details
       const documentData = await contractDocument(documentId || docId);
@@ -399,13 +400,13 @@ function PdfRequestFiles(props) {
         const expireUpdateDate = new Date(expireDate).getTime();
         const currDate = new Date().getTime();
         const getSigners = documentData[0].Signers;
-        const getCurrentSigner =
-          getSigners &&
-          getSigners.filter(
-            (data) => data.UserId.objectId === jsonSender?.objectId
-          );
+        const getCurrentSigner = getSigners?.find(
+          (data) => data.UserId.objectId === jsonSender?.objectId
+        );
 
-        currUserId = getCurrentSigner[0] ? getCurrentSigner[0].objectId : "";
+        currUserId = getCurrentSigner?.objectId
+          ? getCurrentSigner.objectId
+          : contactBookId || "";
         if (isEnableSubscription) {
           await checkIsSubscribed(
             documentData[0]?.ExtUserPtr?.objectId,
@@ -428,10 +429,7 @@ function PdfRequestFiles(props) {
           setIsCelebration(true);
           setTimeout(() => setIsCelebration(false), 5000);
         } else if (declined) {
-          const currentDecline = {
-            currnt: "another",
-            isDeclined: true
-          };
+          const currentDecline = { currnt: "another", isDeclined: true };
           setIsDecline(currentDecline);
         } else if (currDate > expireUpdateDate) {
           const expireDateFormat = moment(new Date(expireDate)).format(
@@ -457,36 +455,24 @@ function PdfRequestFiles(props) {
             }
           }
         }
-        const audittrailData =
-          documentData[0].AuditTrail &&
-          documentData[0].AuditTrail.length > 0 &&
-          documentData[0].AuditTrail.filter(
-            (data) => data.Activity === "Signed"
-          );
-
+        const audittrailData = documentData?.[0]?.AuditTrail?.filter(
+          (data) => data.Activity === "Signed"
+        );
         const checkAlreadySign =
-          documentData[0].AuditTrail &&
-          documentData[0].AuditTrail.length > 0 &&
-          documentData[0].AuditTrail.filter(
+          documentData?.[0]?.AuditTrail?.some(
             (data) =>
-              data.UserPtr?.objectId === currUserId &&
+              data?.UserPtr?.objectId === currUserId &&
               data.Activity === "Signed"
-          );
-        if (
-          checkAlreadySign &&
-          checkAlreadySign[0] &&
-          checkAlreadySign.length > 0
-        ) {
+          ) || false;
+        if (checkAlreadySign) {
           setAlreadySign(true);
         } else {
           const obj = documentData?.[0];
           setSendInOrder(obj?.SendinOrder || false);
           if (
             obj &&
-            obj.Signers &&
-            obj.Signers.length > 0 &&
-            obj.Placeholders &&
-            obj.Placeholders.length > 0
+            obj?.Signers?.length > 0 &&
+            obj?.Placeholders?.length > 0
           ) {
             const params = {
               event: "viewed",
@@ -502,7 +488,10 @@ function PdfRequestFiles(props) {
                   email: x?.Email,
                   phone: x?.Phone
                 })),
-                viewedBy: jsonSender.email,
+                viewedBy:
+                  documentData?.[0].Signers?.find(
+                    (x) => x.objectId === currUserId
+                  )?.Email || jsonSender?.email,
                 viewedAt: new Date(),
                 createdAt: documentData?.[0].createdAt
               }
@@ -583,40 +572,51 @@ function PdfRequestFiles(props) {
         //checking if condition current user already sign or owner does not exist as a signer or document has been declined by someone or document has been expired
         //then stop to display tour message
         if (
-          (checkAlreadySign &&
-            checkAlreadySign[0] &&
-            checkAlreadySign.length > 0) ||
+          checkAlreadySign ||
           !currUserId ||
           declined ||
           currDate > expireUpdateDate
         ) {
           setRequestSignTour(true);
         } else {
-          //else condition to check current user exist in contracts_Users class and check tour message status
-          //if not then check user exist in contracts_Contactbook class and check tour message statu
-          const res = await contractUsers();
-          if (res === "Error: Something went wrong!") {
-            setHandleError(t("something-went-wrong-mssg"));
-          } else if (res[0] && res?.length) {
-            setContractName("_Users");
-            currUserId = res[0].objectId;
-            setSignerUserId(currUserId);
-            const tourData = res[0].TourStatus && res[0].TourStatus;
-            if (tourData && tourData.length > 0) {
-              const checkTourRequest = tourData.filter(
-                (data) => data?.requestSign
+          const isDisableOTP = documentData?.[0]?.IsDisableOTP || false;
+          if (isDisableOTP) {
+            try {
+              const resContact = await axios.post(
+                `${localStorage.getItem("baseUrl")}functions/getcontact`,
+                {
+                  contactId: currUserId
+                },
+                {
+                  headers: {
+                    "Content-Type": "application/json",
+                    "X-Parse-Application-Id": localStorage.getItem("parseAppId")
+                  }
+                }
               );
-              setTourStatus(tourData);
-              setRequestSignTour(checkTourRequest[0]?.requestSign || false);
+              const contact = resContact?.data?.result;
+              setContractName("_Contactbook");
+              setSignerUserId(contact?.objectId);
+              const tourData = contact?.TourStatus && contact?.TourStatus;
+              if (tourData && tourData.length > 0) {
+                const checkTourRequest =
+                  tourData?.some((data) => data?.requestSign) || false;
+                setTourStatus(tourData);
+                setRequestSignTour(checkTourRequest);
+              }
+            } catch (err) {
+              console.log("err while getting tourstatus", err);
             }
-          } else if (res?.length === 0) {
-            const res = await contactBook(currUserId);
+          } else {
+            //else condition to check current user exist in contracts_Users class and check tour message status
+            //if not then check user exist in contracts_Contactbook class and check tour message status
+            const res = await contractUsers();
             if (res === "Error: Something went wrong!") {
               setHandleError(t("something-went-wrong-mssg"));
-            } else if (res[0] && res.length) {
-              setContractName("_Contactbook");
-              const objectId = res[0].objectId;
-              setSignerUserId(objectId);
+            } else if (res[0] && res?.length) {
+              setContractName("_Users");
+              currUserId = res[0].objectId;
+              setSignerUserId(currUserId);
               const tourData = res[0].TourStatus && res[0].TourStatus;
               if (tourData && tourData.length > 0) {
                 const checkTourRequest = tourData.filter(
@@ -625,8 +625,25 @@ function PdfRequestFiles(props) {
                 setTourStatus(tourData);
                 setRequestSignTour(checkTourRequest[0]?.requestSign || false);
               }
-            } else if (res.length === 0) {
-              setHandleError(t("user-not-exist"));
+            } else if (res?.length === 0) {
+              const res = await contactBook(currUserId);
+              if (res === "Error: Something went wrong!") {
+                setHandleError(t("something-went-wrong-mssg"));
+              } else if (res[0] && res.length) {
+                setContractName("_Contactbook");
+                const objectId = res[0].objectId;
+                setSignerUserId(objectId);
+                const tourData = res[0].TourStatus && res[0].TourStatus;
+                if (tourData && tourData.length > 0) {
+                  const checkTourRequest = tourData.filter(
+                    (data) => data?.requestSign
+                  );
+                  setTourStatus(tourData);
+                  setRequestSignTour(checkTourRequest[0]?.requestSign || false);
+                }
+              } else if (res.length === 0) {
+                setHandleError(t("user-not-exist"));
+              }
             }
           }
         }
@@ -643,12 +660,12 @@ function PdfRequestFiles(props) {
         setIsUiLoading({ isLoad: false });
       }
       //function to get default signatur eof current user from `contracts_Signature` class
-      const defaultSignRes = await getDefaultSignature(jsonSender.objectId);
+      const defaultSignRes = await getDefaultSignature(jsonSender?.objectId);
       if (defaultSignRes?.status === "success") {
-        setDefaultSignImg(defaultSignRes?.res?.defaultSignature);
-        setMyInitial(defaultSignRes?.res?.defaultInitial);
-      } else if (defaultSignRes?.status === "error") {
-        setHandleError("Error: Something went wrong!");
+        const sign = defaultSignRes?.res?.defaultSignature || "";
+        const initials = defaultSignRes?.res?.defaultInitial || "";
+        setDefaultSignImg(sign);
+        setMyInitial(initials);
       }
       setIsLoading({ isLoad: false });
     } catch (err) {
@@ -664,20 +681,30 @@ function PdfRequestFiles(props) {
       `Parse/${localStorage.getItem("parseAppId")}/currentUser`
     );
     let currentUser = JSON.parse(localuser);
+    let isEmailVerified = currentUser?.emailVerified;
+    const isDisableOTP = pdfDetails?.[0]?.IsDisableOTP || false;
     //if emailVerified data is not present in local user details then fetch again in _User class
-    if (!currentUser?.emailVerified) {
-      const userQuery = new Parse.Query(Parse.User);
-      const getUser = await userQuery.get(currentUser?.objectId, {
-        sessionToken: currentUser?.sessionToken
-      });
-      if (getUser) {
-        currentUser = JSON.parse(JSON.stringify(getUser));
+    if (!isDisableOTP) {
+      try {
+        if (!currentUser?.emailVerified) {
+          const userQuery = new Parse.Query(Parse.User);
+          const getUser = await userQuery.get(currentUser?.objectId, {
+            sessionToken:
+              currentUser?.sessionToken || localStorage.getItem("accesstoken")
+          });
+          if (getUser) {
+            currentUser = JSON.parse(JSON.stringify(getUser));
+          }
+        }
+        isEmailVerified = currentUser?.emailVerified;
+        setIsEmailVerified(isEmailVerified);
+      } catch (err) {
+        console.log("err in get email verification ", err);
+        setHandleError(t("something-went-wrong-mssg"));
       }
     }
-    let isEmailVerified = currentUser?.emailVerified;
     //check if isEmailVerified then go on next step
-    if (isEmailVerified) {
-      setIsEmailVerified(isEmailVerified);
+    if (isDisableOTP || isEmailVerified) {
       try {
         const checkUser = signerPos.filter(
           (data) => data.signerObjId === signerObjectId
@@ -858,17 +885,9 @@ function PdfRequestFiles(props) {
               // console.log("pdfte", pdfBytes);
               //get ExistUserPtr object id of user class to get tenantDetails
               const objectId = pdfDetails?.[0]?.ExtUserPtr?.UserId?.objectId;
-              //get ExistUserPtr email to get userDetails
-              const res = await contractUsers();
-              let activeMailAdapter = "";
-              if (res === "Error: Something went wrong!") {
-                setHandleError(t("something-went-wrong-mssg"));
-                setIsLoading({ isLoad: false });
-              } else if (!res || res?.length === 0) {
-                activeMailAdapter = "";
-              } else if (res[0] && res.length) {
-                activeMailAdapter = res[0]?.active_mail_adapter;
-              }
+              let activeMailAdapter =
+                pdfDetails?.[0]?.ExtUserPtr?.active_mail_adapter;
+
               //function for call to embed signature in pdf and get digital signature pdf
               const resSign = await signPdfFun(
                 pdfBytes,
@@ -880,13 +899,13 @@ function PdfRequestFiles(props) {
                 widgets
               );
               if (resSign && resSign.status === "success") {
-                setPdfUrl(res.data);
+                setPdfUrl(resSign.data);
                 setIsSigned(true);
                 setSignedSigners([]);
                 setUnSignedSigners([]);
                 getDocumentDetails(true);
-                const index = pdfDetails?.[0].Signers.findIndex(
-                  (x) => x.Email === currentUser?.email
+                const index = pdfDetails?.[0]?.Signers.findIndex(
+                  (x) => x.objectId === signerObjectId
                 );
                 const newIndex = index + 1;
                 const usermail = {
@@ -1053,21 +1072,6 @@ function PdfRequestFiles(props) {
           isShow: true,
           alertMessage: t("something-went-wrong-mssg")
         });
-      }
-    } else {
-      //else verify users email
-      try {
-        const userQuery = new Parse.Query(Parse.User);
-        const user = await userQuery.get(currentUser?.objectId, {
-          sessionToken: localStorage.getItem("accesstoken")
-        });
-        if (user) {
-          isEmailVerified = user?.get("emailVerified");
-          setIsEmailVerified(isEmailVerified);
-        }
-      } catch (e) {
-        console.log("error in save user's emailVerified in user class");
-        setHandleError(t("something-went-wrong-mssg"));
       }
     }
   }
@@ -1314,38 +1318,58 @@ function PdfRequestFiles(props) {
   const closeRequestSignTour = async () => {
     setRequestSignTour(true);
     if (isDontShow) {
-      let updatedTourStatus = [];
-      if (tourStatus.length > 0) {
-        updatedTourStatus = [...tourStatus];
-        const requestSignIndex = tourStatus.findIndex(
-          (obj) => obj["requestSign"] === false || obj["requestSign"] === true
-        );
-        if (requestSignIndex !== -1) {
-          updatedTourStatus[requestSignIndex] = { requestSign: true };
-        } else {
-          updatedTourStatus.push({ requestSign: true });
+      const isDisableOTP = pdfDetails?.[0]?.IsDisableOTP || false;
+      if (isDisableOTP) {
+        try {
+          await axios.post(
+            `${localStorage.getItem("baseUrl")}functions/updatecontacttour`,
+            {
+              contactId: signerObjectId
+            },
+            {
+              headers: {
+                "Content-Type": "application/json",
+                "X-Parse-Application-Id": localStorage.getItem("parseAppId")
+              }
+            }
+          );
+        } catch (e) {
+          console.log("update tour messages error", e);
         }
       } else {
-        updatedTourStatus = [{ requestSign: true }];
-      }
-      try {
-        await axios.put(
-          `${localStorage.getItem(
-            "baseUrl"
-          )}classes/contracts${contractName}/${signerUserId}`,
-          {
-            TourStatus: updatedTourStatus
-          },
-          {
-            headers: {
-              "Content-Type": "application/json",
-              "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
-              "X-Parse-Session-Token": localStorage.getItem("accesstoken")
-            }
+        let updatedTourStatus = [];
+        if (tourStatus.length > 0) {
+          updatedTourStatus = [...tourStatus];
+          const requestSignIndex = tourStatus.findIndex(
+            (obj) => obj["requestSign"] === false || obj["requestSign"] === true
+          );
+          if (requestSignIndex !== -1) {
+            updatedTourStatus[requestSignIndex] = { requestSign: true };
+          } else {
+            updatedTourStatus.push({ requestSign: true });
           }
-        );
-      } catch (e) {
-        console.log("update tour messages error", e);
+        } else {
+          updatedTourStatus = [{ requestSign: true }];
+        }
+        try {
+          await axios.put(
+            `${localStorage.getItem(
+              "baseUrl"
+            )}classes/contracts${contractName}/${signerUserId}`,
+            {
+              TourStatus: updatedTourStatus
+            },
+            {
+              headers: {
+                "Content-Type": "application/json",
+                "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
+                "X-Parse-Session-Token": localStorage.getItem("accesstoken")
+              }
+            }
+          );
+        } catch (e) {
+          console.log("update tour messages error", e);
+        }
       }
     }
   };
@@ -1938,7 +1962,12 @@ function PdfRequestFiles(props) {
                           <div className="flex mt-4 gap-1 px-[15px]">
                             <button
                               onClick={(e) =>
-                                handleToPrint(e, pdfUrl, setIsDownloading)
+                                handleToPrint(
+                                  e,
+                                  pdfUrl,
+                                  setIsDownloading,
+                                  pdfDetails
+                                )
                               }
                               type="button"
                               className="font-[500] text-[13px] mr-[5px] op-btn op-btn-neutral"

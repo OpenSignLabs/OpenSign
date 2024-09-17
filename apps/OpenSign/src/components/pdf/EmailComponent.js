@@ -154,7 +154,9 @@ function EmailComponent({
             <div className="flex flex-row">
               {!isAndroid && (
                 <button
-                  onClick={(e) => handleToPrint(e, pdfUrl, setIsDownloading)}
+                  onClick={(e) =>
+                    handleToPrint(e, pdfUrl, setIsDownloading, pdfDetails)
+                  }
                   className="op-btn op-btn-neutral op-btn-sm text-[15px]"
                 >
                   <i className="fa-light fa-print" aria-hidden="true"></i>
