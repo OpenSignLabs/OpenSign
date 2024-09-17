@@ -638,6 +638,14 @@
   "unauthorized-modal":"You don't have permission to perform this action, please contact {{adminEmail}}.",
   "sent-this-month":"Sent this month",
   "available-seats":"Available seats",
-  "buy-users":"Buy more users"
-
+  "buy-users":"Buy more users",
+  "isdisable-otp": "Enable OTP verification",
+  "isdisable-otp-help": {
+    "p1": "Would you like to enable the verification process using a one-time password (OTP)?",
+    "p2": "Selecting this option will enable OTP verification. Users will receive a verification code via email, which they must enter to sign the document.",
+    "p3": "Selecting this option will disable OTP verification, allowing users to sign the document directly without additional steps.",
+    "p4": "Please choose the option that best suits your document signing requirements."
+  },
+  "advanced-options":"Advanced options",
+  "hide-advanced-options":"Hide Advanced options"
 }
