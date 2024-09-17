@@ -142,7 +142,7 @@ function Header({
                     <DropdownMenu.Item
                       className="DropdownMenuItem"
                       onClick={(e) =>
-                        handleToPrint(e, pdfUrl, setIsDownloading)
+                        handleToPrint(e, pdfUrl, setIsDownloading, pdfDetails)
                       }
                     >
                       <div className="flex flex-row">
@@ -342,7 +342,9 @@ function Header({
             alreadySign ? (
               <div className="flex flex-row">
                 <button
-                  onClick={(e) => handleToPrint(e, pdfUrl, setIsDownloading)}
+                  onClick={(e) =>
+                    handleToPrint(e, pdfUrl, setIsDownloading, pdfDetails)
+                  }
                   type="button"
                   className="op-btn op-btn-neutral op-btn-sm mr-[3px] shadow"
                 >
@@ -459,7 +461,9 @@ function Header({
                 </button>
               )}
               <button
-                onClick={(e) => handleToPrint(e, pdfUrl, setIsDownloading)}
+                onClick={(e) =>
+                  handleToPrint(e, pdfUrl, setIsDownloading, pdfDetails)
+                }
                 type="button"
                 className="op-btn op-btn-neutral op-btn-sm gap-0 font-medium text-[12px] mr-[3px] shadow"
               >

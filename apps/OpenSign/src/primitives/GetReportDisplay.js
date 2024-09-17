@@ -266,7 +266,8 @@ const ReportTable = (props) => {
                 Signers: signers,
                 SendinOrder: Doc?.SendinOrder || false,
                 AutomaticReminders: Doc?.AutomaticReminders || false,
-                RemindOnceInEvery: Doc?.RemindOnceInEvery || 5
+                RemindOnceInEvery: Doc?.RemindOnceInEvery || 5,
+                IsDisableOTP: Doc?.IsDisableOTP || false
               };
               try {
                 const res = await axios.post(
