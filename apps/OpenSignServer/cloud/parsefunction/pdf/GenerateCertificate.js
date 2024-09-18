@@ -32,7 +32,7 @@ export default async function GenerateCertificate(docDetails) {
   const OriginIp = docDetails?.OriginIp || '';
   const company = docDetails?.ExtUserPtr?.Company || '';
   const createdAt = docDetails?.DocSentAt?.iso || docDetails.createdAt;
-  const isDisableOTP = docDetails?.IsDisableOTP || false;
+  const IsEnableOTP = docDetails?.IsEnableOTP || false;
   const auditTrail =
     docDetails?.Signers?.length > 0
       ? docDetails.AuditTrail.map(x => {
@@ -349,7 +349,7 @@ export default async function GenerateCertificate(docDetails) {
       font: timesRomanFont,
       color: textValueColor,
     });
-    if (!isDisableOTP) {
+    if (IsEnableOTP) {
       page.drawText('Security level :', {
         x: half + 55,
         y: yPosition4 + 10,

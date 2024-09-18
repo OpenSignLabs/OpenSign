@@ -62,7 +62,7 @@ const Forms = (props) => {
     file: "",
     remindOnceInEvery: 5,
     autoreminder: false,
-    IsDisableOTP: "false"
+    IsEnableOTP: "false"
   });
   const [fileupload, setFileUpload] = useState("");
   const [fileload, setfileload] = useState(false);
@@ -404,11 +404,11 @@ const Forms = (props) => {
           object.set("AutomaticReminders", formData.autoreminder);
           object.set("RemindOnceInEvery", parseInt(formData.remindOnceInEvery));
           if (isEnableSubscription) {
-            const IsDisableOTP =
-              formData.IsDisableOTP === "false" ? true : false;
-            object.set("IsDisableOTP", IsDisableOTP);
+            const IsEnableOTP =
+              formData?.IsEnableOTP === "false" ? false : true;
+            object.set("IsEnableOTP", IsEnableOTP);
           } else {
-            object.set("IsDisableOTP", true);
+            object.set("IsEnableOTP", false);
           }
         }
         object.set("URL", fileupload);
@@ -446,7 +446,7 @@ const Forms = (props) => {
             file: "",
             remindOnceInEvery: 5,
             autoreminder: false,
-            IsDisableOTP: "false"
+            IsEnableOTP: "false"
           });
           setFileUpload("");
           setpercentage(0);
@@ -496,7 +496,7 @@ const Forms = (props) => {
       file: "",
       remindOnceInEvery: 5,
       autoreminder: false,
-      IsDisableOTP: "false"
+      IsEnableOTP: "false"
     });
     setFileUpload("");
     setpercentage(0);
@@ -896,9 +896,9 @@ const Forms = (props) => {
                       <div className="text-xs mt-2">
                         <label className="block">
                           <span className={isSubscribe ? "" : " text-gray-300"}>
-                            {t("isdisable-otp")}{" "}
+                            {t("isenable-otp")}{" "}
                             <a
-                              data-tooltip-id="isdisableotp-tooltip"
+                              data-tooltip-id="isenableotp-tooltip"
                               className="ml-1"
                             >
                               <sup>
@@ -909,27 +909,27 @@ const Forms = (props) => {
                               <Upgrade />
                             )}
                           </span>
-                          <Tooltip id="isdisableotp-tooltip" className="z-50">
+                          <Tooltip id="isenableotp-tooltip" className="z-50">
                             <div className="max-w-[200px] md:max-w-[450px]">
-                              <p className="font-bold">{t("isdisable-otp")}</p>
-                              <p>{t("isdisable-otp-help.p1")}</p>
+                              <p className="font-bold">{t("isenable-otp")}</p>
+                              <p>{t("isenable-otp-help.p1")}</p>
                               <p className="p-[5px]">
                                 <ol className="list-disc">
                                   <li>
                                     <span className="font-bold">
                                       {t("yes")}:{" "}
                                     </span>
-                                    <span>{t("isdisable-otp-help.p2")}</span>
+                                    <span>{t("isenable-otp-help.p2")}</span>
                                   </li>
                                   <li>
                                     <span className="font-bold">
                                       {t("no")}:{" "}
                                     </span>
-                                    <span>{t("isdisable-otp-help.p3")}</span>
+                                    <span>{t("isenable-otp-help.p3")}</span>
                                   </li>
                                 </ol>
                               </p>
-                              <p>{t("isdisable-otp-help.p4")}</p>
+                              <p>{t("isenable-otp-help.p4")}</p>
                             </div>
                           </Tooltip>
                         </label>
@@ -942,8 +942,8 @@ const Forms = (props) => {
                             type="radio"
                             value={"true"}
                             className="op-radio op-radio-xs"
-                            name="IsDisableOTP"
-                            checked={formData.IsDisableOTP === "true"}
+                            name="IsEnableOTP"
+                            checked={formData.IsEnableOTP === "true"}
                             onChange={handleStrInput}
                           />
                           <div className="text-center">{t("yes")}</div>
@@ -956,9 +956,9 @@ const Forms = (props) => {
                           <input
                             type="radio"
                             value={"false"}
-                            name="IsDisableOTP"
+                            name="IsEnableOTP"
                             className="op-radio op-radio-xs"
-                            checked={formData.IsDisableOTP === "false"}
+                            checked={formData.IsEnableOTP === "false"}
                             onChange={handleStrInput}
                           />
                           <div className="text-center">{t("no")}</div>
@@ -969,15 +969,16 @@ const Forms = (props) => {
                 )}
               </div>
             )}
-            <div
-              onClick={() => setIsAdvanceOpt(!isAdvanceOpt)}
-              className={`mt-2.5 op-link op-link-primary text-sm`}
-            >
-              {isAdvanceOpt
-                ? t("hide-advanced-options")
-                : t("advanced-options")}
-            </div>
-
+            {props.title !== "Sign Yourself" && (
+              <div
+                onClick={() => setIsAdvanceOpt(!isAdvanceOpt)}
+                className={`mt-2.5 op-link op-link-primary text-sm`}
+              >
+                {isAdvanceOpt
+                  ? t("hide-advanced-options")
+                  : t("advanced-options")}
+              </div>
+            )}
             <div className="flex items-center mt-3 gap-2">
               <button
                 className={`${

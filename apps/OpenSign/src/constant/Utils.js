@@ -2045,7 +2045,7 @@ export const handleDownloadPdf = async (
 ) => {
   const pdfName = pdfDetails[0] && pdfDetails[0].Name;
   setIsDownloading("pdf");
-  const docId = pdfDetails?.[0]?.IsDisableOTP ? pdfDetails?.[0]?.objectId : "";
+  const docId = !pdfDetails?.[0]?.IsEnableOTP ? pdfDetails?.[0]?.objectId : "";
   try {
     // const url = await Parse.Cloud.run("getsignedurl", { url: pdfUrl });
     const axiosRes = await axios.post(
@@ -2082,10 +2082,8 @@ export const handleToPrint = async (
 ) => {
   event.preventDefault();
   setIsDownloading("pdf");
+  const docId = !pdfDetails?.[0]?.IsEnableOTP ? pdfDetails?.[0]?.objectId : "";
   try {
-    const docId = pdfDetails?.[0]?.IsDisableOTP
-      ? pdfDetails?.[0]?.objectId
-      : "";
     // const url = await Parse.Cloud.run("getsignedurl", { url: pdfUrl });
     //`localStorage.getItem("baseUrl")` is also use in public-profile flow for public-sign
     //if we give this `appInfo.baseUrl` as a base url then in public-profile it will create base url of it's window.location.origin ex- opensign.me which is not base url

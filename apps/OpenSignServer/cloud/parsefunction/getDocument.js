@@ -19,8 +19,8 @@ export default async function getDocument(request) {
         query.notEqualTo('IsArchive', true);
         const res = await query.first({ useMasterKey: true });
         if (res) {
-          const IsDisableOTP = res?.get('IsDisableOTP') || false;
-          if (IsDisableOTP) {
+          const IsEnableOTP = res?.get('IsEnableOTP') || false;
+          if (!IsEnableOTP) {
             return res;
           } else {
             if (request?.headers?.['sessiontoken']) {

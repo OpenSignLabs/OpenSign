@@ -48,6 +48,9 @@ export default async function updateTemplate(request, response) {
                 objectId: request?.body?.folderId,
               });
             }
+            if (request.body?.enableOTP) {
+              updateQuery.set('IsEnableOTP', request.body?.enableOTP);
+            }
             const updatedRes = await updateQuery.save(null, { useMasterKey: true });
             if (updatedRes) {
               if (request.posthog) {

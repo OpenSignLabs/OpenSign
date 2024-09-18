@@ -579,8 +579,8 @@ function PdfRequestFiles(props) {
         ) {
           setRequestSignTour(true);
         } else {
-          const isDisableOTP = documentData?.[0]?.IsDisableOTP || false;
-          if (isDisableOTP) {
+          const isEnableOTP = documentData?.[0]?.IsEnableOTP || false;
+          if (!isEnableOTP) {
             try {
               const resContact = await axios.post(
                 `${localStorage.getItem("baseUrl")}functions/getcontact`,
@@ -682,9 +682,9 @@ function PdfRequestFiles(props) {
     );
     let currentUser = JSON.parse(localuser);
     let isEmailVerified = currentUser?.emailVerified;
-    const isDisableOTP = pdfDetails?.[0]?.IsDisableOTP || false;
+    const isEnableOTP = pdfDetails?.[0]?.IsEnableOTP || false;
     //if emailVerified data is not present in local user details then fetch again in _User class
-    if (!isDisableOTP) {
+    if (isEnableOTP) {
       try {
         if (!currentUser?.emailVerified) {
           const userQuery = new Parse.Query(Parse.User);
@@ -704,7 +704,7 @@ function PdfRequestFiles(props) {
       }
     }
     //check if isEmailVerified then go on next step
-    if (isDisableOTP || isEmailVerified) {
+    if (!isEnableOTP || isEmailVerified) {
       try {
         const checkUser = signerPos.filter(
           (data) => data.signerObjId === signerObjectId
@@ -1318,8 +1318,8 @@ function PdfRequestFiles(props) {
   const closeRequestSignTour = async () => {
     setRequestSignTour(true);
     if (isDontShow) {
-      const isDisableOTP = pdfDetails?.[0]?.IsDisableOTP || false;
-      if (isDisableOTP) {
+      const isEnableOTP = pdfDetails?.[0]?.IsEnableOTP || false;
+      if (!isEnableOTP) {
         try {
           await axios.post(
             `${localStorage.getItem("baseUrl")}functions/updatecontacttour`,

@@ -9,6 +9,7 @@ export default async function createTemplate(request, response) {
   const SendinOrder = request.body.sendInOrder || false;
   const fileData = request.files?.[0] ? request.files[0].buffer : null;
   const baseUrl = new URL(process.env.PUBLIC_URL);
+  const isEnableOTP = request.body?.enableOTP === true ? true : false;
 
   try {
     const reqToken = request.headers['x-api-token'];
@@ -65,6 +66,7 @@ export default async function createTemplate(request, response) {
       object.set('URL', fileUrl);
       object.set('CreatedBy', userPtr);
       object.set('ExtUserPtr', extUserPtr);
+      object.set('IsEnableOTP', isEnableOTP);
       if (SendinOrder) {
         object.set('SendinOrder', SendinOrder);
       }
