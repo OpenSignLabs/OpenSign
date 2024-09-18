@@ -1654,7 +1654,7 @@ components:
           example: document description
         folderId:
           type: string
-          example: "",
+          example: ""
         enableOTP:
           type: boolean
           example: false    
