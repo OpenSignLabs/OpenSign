@@ -31,8 +31,8 @@ function SignPad({
   const [isTab, setIsTab] = useState("draw");
   const [isSignImg, setIsSignImg] = useState("");
   const [signValue, setSignValue] = useState("");
-  const [textWidth, setTextWidth] = useState(null);
-  const [textHeight, setTextHeight] = useState(null);
+  const [textWidth, setTextWidth] = useState(0);
+  const [textHeight, setTextHeight] = useState(0);
   const [signatureType, setSignatureType] = useState("draw");
   const fontOptions = [
     { value: "Fasthand" },
@@ -51,7 +51,7 @@ function SignPad({
       `Parse/${localStorage.getItem("parseAppId")}/currentUser`
     );
   const jsonSender = JSON.parse(senderUser);
-  const currentUserName = jsonSender && jsonSender.name;
+  const currentUserName = jsonSender && jsonSender?.name;
 
   //function for clear signature image
   const handleClear = () => {
@@ -137,7 +137,7 @@ function SignPad({
             (isTab === "draw" && isSignImg) ||
             (isTab === "image" && image) ||
             (isTab === "mysignature" && isDefaultSign) ||
-            (isTab === "type" && textWidth)
+            (isTab === "type" && signValue)
               ? false
               : image
                 ? false
@@ -169,10 +169,10 @@ function SignPad({
       }
     }
 
-    const trimmedName = currentUserName && currentUserName.trim();
+    const trimmedName = currentUserName && currentUserName?.trim();
     const firstCharacter = trimmedName?.charAt(0);
     const userName = isInitial ? firstCharacter : currentUserName;
-    setSignValue(userName);
+    setSignValue(userName || "");
     setFontSelect("Fasthand");
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -200,8 +200,10 @@ function SignPad({
       canvasRef.current.fromDataURL(isSignImg);
     }
     if (isTab === "type") {
-      const trimmedName = signValue ? signValue.trim() : currentUserName.trim();
-      const firstCharacter = trimmedName.charAt(0);
+      const trimmedName = signValue
+        ? signValue?.trim()
+        : currentUserName?.trim();
+      const firstCharacter = trimmedName?.charAt(0);
       const userName = isInitial ? firstCharacter : signValue;
       setSignValue(userName);
       convertToImg(fontSelect, userName);
