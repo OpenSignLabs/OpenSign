@@ -1220,31 +1220,26 @@ function PdfRequestFiles(props) {
     );
     const jsonSender = JSON.parse(senderUser);
     setIsDecline({ isDeclined: false });
-    const data = {
-      IsDeclined: true,
-      DeclineReason: reason,
-      DeclineBy: {
-        __type: "Pointer",
-        className: "_User",
-        objectId: jsonSender?.objectId
-      }
-    };
     setIsUiLoading(true);
-
+    const email =
+      pdfDetails?.[0].Signers?.find((x) => x.objectId === signerObjectId)
+        ?.Email || jsonSender?.email;
+    const userId =
+      pdfDetails?.[0].Signers?.find((x) => x.objectId === signerObjectId)
+        ?.UserId?.objectId || jsonSender?.objectId;
+    const params = {
+      docId: pdfDetails?.[0].objectId,
+      reason: reason,
+      userId: userId
+    };
     await axios
-      .put(
-        `${localStorage.getItem(
-          "baseUrl"
-        )}classes/contracts_Document/${documentId}`,
-        data,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
-            "X-Parse-Session-Token": localStorage.getItem("accesstoken")
-          }
+      .post(`${localStorage.getItem("baseUrl")}functions/declinedoc`, params, {
+        headers: {
+          "Content-Type": "application/json",
+          "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
+          "X-Parse-Session-Token": localStorage.getItem("accesstoken")
         }
-      )
+      })
       .then(async (result) => {
         const res = result.data;
         if (res) {
@@ -1264,7 +1259,8 @@ function PdfRequestFiles(props) {
                 email: x?.Email,
                 phone: x?.Phone
               })),
-              declinedBy: jsonSender.email,
+              declinedBy: email,
+              declinedReason: reason,
               declinedAt: new Date(),
               createdAt: pdfDetails?.[0].createdAt
             }
@@ -1715,11 +1711,7 @@ function PdfRequestFiles(props) {
                 {/* this modal is used to show decline alert */}
                 <PdfDeclineModal
                   show={isDecline.isDeclined}
-                  headMsg={
-                    pdfDetails[0]?.IsDeclined
-                      ? t("document-declined")
-                      : t("document-decline")
-                  }
+                  headMsg={t("document-declined")}
                   bodyMssg={
                     isDecline.currnt === "Sure"
                       ? t("decline-alert-1")
