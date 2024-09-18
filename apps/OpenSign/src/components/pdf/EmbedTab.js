@@ -113,7 +113,9 @@ export class AppComponent{
                 className={`${tabData.icon}`}
                 style={{ color: tabData.color }}
               ></i>
-              <span className="ml-1">{tabData.title}</span>
+              <span className="ml-1 text-[10px] font-medium md:font-normal md:text-[15px]">
+                {tabData.title}
+              </span>
             </div>
           ))}
         </div>
@@ -150,9 +152,6 @@ export class AppComponent{
                       {data.codeString}
                     </SyntaxHighlighter>
                   </div>
-                  <p className="text-[13px] mb-3">
-                    {t("public-template-mssg-2")}
-                  </p>
                 </div>
               );
             })}
