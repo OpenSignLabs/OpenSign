@@ -245,47 +245,6 @@ paths:
                 $ref: '#/components/schemas/invalidtoken'
       security:
       - x-api-token: []
-  /draftdocument:
-    post:
-      tags:
-      - Documents
-      summary: Draft Document
-      description: |
-        The Draft Document API enables you to create and manage document drafts. These drafts can be further enriched by adding signers and incorporating interactive widgets through our user interface at [ https://app.opensignlabs.com]( https://app.opensignlabs.com) (for cloud version). This API is designed to streamline the process of document preparation, allowing for a seamless transition from draft to final document.
-
-        ### Features:
-        -  Save Document Drafts: Securely save your documents in a draft state.
-        -  Add Signers: Assign signers to your document directly from the API.
-        ### Note:
-        You cannot add roles and widgets from this API. You will have to do it from the link received in the response.
-      operationId: draftedocument
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/draftdocument_body'
-        required: true
-      responses:
-        "200":
-          description: Document created successfully!
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/inline_response_200_d'
-        "400":
-          description: "Something went wrong, please try again later!"
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/inline_response_400_1'
-        "405":
-          description: Invalid API Token!
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/invalidtoken'
-      security:
-      - x-api-token: []
   /createdocument:
     post:
       tags:
@@ -1200,7 +1159,7 @@ components:
             $ref: '#/components/schemas/template_Signers'
         sendInOrder:
           type: boolean
-          example: false
+          example: true
         createdAt:
           $ref: '#/components/schemas/date'
         updatedAt:
@@ -1340,7 +1299,7 @@ components:
             $ref: '#/components/schemas/template_Signers'
         sendInOrder:
           type: boolean
-          example: false
+          example: true
         createdAt:
           $ref: '#/components/schemas/date'
         updatedAt:
@@ -1463,7 +1422,7 @@ components:
             $ref: '#/components/schemas/draftdocument_body_signers'
         sendInOrder:
           type: boolean
-          example: false
+          example: true
         enableOTP:
           type: boolean
           example: false   
@@ -1516,7 +1475,7 @@ components:
           example: ""
         sendInOrder:
           type: boolean
-          example: false
+          example: true
         enableOTP:
           type: boolean
           example: false  
@@ -1585,7 +1544,7 @@ components:
           example: ""
         sendInOrder:
           type: boolean
-          example: false
+          example: true
         timeToCompleteDays:
           type: number
           description: time to complete days is used to calculate expiry date of your document
@@ -1723,7 +1682,7 @@ components:
             $ref: '#/components/schemas/createtemplate_body_signers'
         sendInOrder:
           type: boolean
-          example: false
+          example: true
         enableOTP:
           type: boolean
           example: false    
