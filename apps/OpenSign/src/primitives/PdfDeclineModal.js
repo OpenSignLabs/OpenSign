@@ -41,8 +41,8 @@ function CustomModal(props) {
                   className="op-btn op-btn-primary mr-2 px-6"
                   type="button"
                   onClick={() => {
-                    setReason("");
                     props.declineDoc(reason);
+                    setReason("");
                   }}
                 >
                   {t("yes")}
