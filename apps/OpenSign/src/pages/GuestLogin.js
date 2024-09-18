@@ -194,11 +194,11 @@ function GuestLogin() {
       setLoading(true);
       const linkContactRes = await Parse.Cloud.run("linkcontacttodoc", params);
       setContactId(linkContactRes.contactId);
-      const isDisableOTP = await navigateToDoc(
+      const IsEnableOTP = await navigateToDoc(
         documentId,
         linkContactRes.contactId
       );
-      if (!isDisableOTP) {
+      if (!IsEnableOTP) {
         setEnterOtp(true);
         await SendOtp();
       }
