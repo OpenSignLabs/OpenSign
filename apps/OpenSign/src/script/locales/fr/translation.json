@@ -635,8 +635,8 @@
   "sent-this-month": "envoyé ce mois-ci",
   "available-seats": "Disponible sièges",
   "buy-users": "Acheter plus d'utilisateurs",
-  "isdisable-otp": "Activer la vérification OTP",
-  "isdisable-otp-help": {
+  "isenable-otp": "Activer la vérification OTP",
+  "isenable-otp-help": {
     "p1": "Souhaitez-vous activer le processus de vérification à l'aide d'un mot de passe à usage unique (OTP)?",
     "p2": "La sélection de cette option activera la vérification OTP. Les utilisateurs recevront un code de vérification par e-mail, qu'ils devront saisir pour signer le document.",
     "p3": "La sélection de cette option désactivera la vérification OTP, permettant aux utilisateurs de signer le document directement sans étapes supplémentaires.",

@@ -4,12 +4,12 @@
  */
 exports.up = async Parse => {
   const templateSchema = new Parse.Schema('contracts_Template');
-  templateSchema.addBoolean('IsDisableOTP');
+  templateSchema.addBoolean('IsEnableOTP');
   await templateSchema.update();
 
   const className = 'contracts_Document';
   const schema = new Parse.Schema(className);
-  schema.addBoolean('IsDisableOTP');
+  schema.addBoolean('IsEnableOTP');
   return schema.update();
 };
 
@@ -19,11 +19,11 @@ exports.up = async Parse => {
  */
 exports.down = async Parse => {
   const templateSchema = new Parse.Schema('contracts_Template');
-  templateSchema.deleteField('IsDisableOTP');
+  templateSchema.deleteField('IsEnableOTP');
   await templateSchema.update();
 
   const className = 'contracts_Document';
   const schema = new Parse.Schema(className);
-  schema.deleteField('IsDisableOTP');
+  schema.deleteField('IsEnableOTP');
   return schema.update();
 };

@@ -639,8 +639,8 @@
   "sent-this-month":"Sent this month",
   "available-seats":"Available seats",
   "buy-users":"Buy more users",
-  "isdisable-otp": "Enable OTP verification",
-  "isdisable-otp-help": {
+  "isenable-otp": "Enable OTP verification",
+  "isenable-otp-help": {
     "p1": "Would you like to enable the verification process using a one-time password (OTP)?",
     "p2": "Selecting this option will enable OTP verification. Users will receive a verification code via email, which they must enter to sign the document.",
     "p3": "Selecting this option will disable OTP verification, allowing users to sign the document directly without additional steps.",

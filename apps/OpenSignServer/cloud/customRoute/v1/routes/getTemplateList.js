@@ -88,6 +88,7 @@ export default async function getTemplatetList(request, response) {
               ),
             })) || [],
           sendInOrder: template?.SendinOrder || false,
+          enableOTP: template?.IsEnableOTP || false,
           createdAt: template.createdAt,
           updatedAt: template.updatedAt,
         }));
