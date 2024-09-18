@@ -12,7 +12,7 @@ export default async function callWebhook(request) {
     const docRes = await docQuery.get(docId, { useMasterKey: true });
     const isEnableOTP = docRes?.get('IsEnableOTP') || false;
     let userId;
-    if (!isEnableOTP) {
+    if (isEnableOTP) {
       const userRes = await axios.get(serverUrl + '/users/me', {
         headers: {
           'X-Parse-Application-Id': appId,
