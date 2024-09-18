@@ -34,7 +34,7 @@ export async function getSignedUrl(request) {
       try {
         const query = new Parse.Query('contracts_Document');
         query.equalTo('objectId', docId);
-        query.equalTo('IsDisableOTP', true);
+        query.notEqualTo('IsEnableOTP', true);
         query.include('CreatedBy');
         query.include('Signers');
         query.include('AuditTrail.UserPtr');

@@ -286,9 +286,9 @@ async function PDF(req) {
     if (!resDoc) {
       throw new Parse.Error(Parse.Error.OBJECT_NOT_FOUND, 'Document not found.');
     }
-    const IsDisableOTP = resDoc?.get('IsDisableOTP') || false;
-    // if `IsDisableOTP` is true then we don't have to check authentication
-    if (!IsDisableOTP) {
+    const IsEnableOTP = resDoc?.get('IsEnableOTP') || false;
+    // if `IsEnableOTP` is false then we don't have to check authentication
+    if (IsEnableOTP) {
       if (!req?.user) {
         throw new Parse.Error(Parse.Error.INVALID_SESSION_TOKEN, 'User is not authenticated.');
       }

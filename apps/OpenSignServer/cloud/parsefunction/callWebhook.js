@@ -10,9 +10,9 @@ export default async function callWebhook(request) {
   try {
     const docQuery = new Parse.Query('contracts_Document');
     const docRes = await docQuery.get(docId, { useMasterKey: true });
-    const isDisableOTP = docRes?.get('IsDisableOTP') || false;
+    const isEnableOTP = docRes?.get('IsEnableOTP') || false;
     let userId;
-    if (!isDisableOTP) {
+    if (!isEnableOTP) {
       const userRes = await axios.get(serverUrl + '/users/me', {
         headers: {
           'X-Parse-Application-Id': appId,
@@ -21,7 +21,7 @@ export default async function callWebhook(request) {
       });
       userId = userRes.data && userRes.data.objectId;
     }
-    if (isDisableOTP || userId) {
+    if (!isEnableOTP || userId) {
       if (event === 'viewed' && contactId) {
         if (docRes) {
           const _docRes = docRes.toJSON();
