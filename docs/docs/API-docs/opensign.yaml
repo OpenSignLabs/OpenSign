@@ -1464,6 +1464,9 @@ components:
         sendInOrder:
           type: boolean
           example: false
+        enableOTP:
+          type: boolean
+          example: false   
     createdocument_body:
       required:
       - file
@@ -1514,6 +1517,9 @@ components:
         sendInOrder:
           type: boolean
           example: false
+        enableOTP:
+          type: boolean
+          example: false  
     inline_response_200_d:
       type: object
       properties:
@@ -1585,6 +1591,9 @@ components:
           description: time to complete days is used to calculate expiry date of your document
           format: number
           example: 15
+        enableOTP:
+          type: boolean
+          example: false   
     resendmail_body:
       required:
       - document_id
@@ -1645,7 +1654,10 @@ components:
           example: document description
         folderId:
           type: string
-          example: ""
+          example: "",
+        enableOTP:
+          type: boolean
+          example: false    
     inline_response_200_3:
       type: object
       properties:
@@ -1712,6 +1724,9 @@ components:
         sendInOrder:
           type: boolean
           example: false
+        enableOTP:
+          type: boolean
+          example: false    
     inline_response_200_5:
       type: object
       properties:
@@ -1745,6 +1760,9 @@ components:
         folderId:
           type: string
           example: ""
+        enableOTP:
+          type: boolean
+          example: false    
     inline_response_404_7:
       type: object
       properties:
