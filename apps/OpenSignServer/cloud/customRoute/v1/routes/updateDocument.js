@@ -10,7 +10,7 @@ export default async function updateDocument(request, response) {
     const token = await tokenQuery.first({ useMasterKey: true });
     if (token !== undefined) {
       // Valid Token then proceed request
-      const allowedKeys = ['name', 'note', 'description', 'folderId'];
+      const allowedKeys = ['name', 'note', 'description', 'folderId', 'enableOTP'];
       const objectKeys = Object.keys(request.body);
       const isValid = objectKeys.every(key => allowedKeys.includes(key)) && objectKeys.length > 0;
       const parseUser = JSON.parse(JSON.stringify(token));
