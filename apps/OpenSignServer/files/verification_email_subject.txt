@@ -1,1 +1,1 @@
-OpenSign™ Email Address Verification
+{{appName}} Email Address Verification
