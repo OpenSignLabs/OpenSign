@@ -100,6 +100,7 @@ export default async function getDocumentList(request, response) {
                 x?.Signers?.map(y => ({ name: y?.Name, email: y?.Email, phone: y?.Phone })) ||
                 [],
               sendInOrder: x?.SendinOrder || false,
+              enableOTP: x?.IsEnableOTP || false,
               createdAt: x.createdAt,
               updatedAt: x.updatedAt,
             }));

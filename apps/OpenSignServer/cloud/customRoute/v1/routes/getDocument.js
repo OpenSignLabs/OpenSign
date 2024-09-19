@@ -62,6 +62,7 @@ export default async function getDocument(request, response) {
             document?.Signers?.map(y => ({ name: y?.Name, email: y?.Email, phone: y?.Phone })) ||
             [],
           sendInOrder: document?.SendinOrder || false,
+          enableOTP: document?.IsEnableOTP || false,
           createdAt: document.createdAt,
           updatedAt: document.updatedAt,
         });

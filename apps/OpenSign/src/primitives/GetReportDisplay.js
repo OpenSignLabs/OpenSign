@@ -266,7 +266,8 @@ const ReportTable = (props) => {
                 Signers: signers,
                 SendinOrder: Doc?.SendinOrder || false,
                 AutomaticReminders: Doc?.AutomaticReminders || false,
-                RemindOnceInEvery: Doc?.RemindOnceInEvery || 5
+                RemindOnceInEvery: Doc?.RemindOnceInEvery || 5,
+                IsEnableOTP: Doc?.IsEnableOTP || false
               };
               try {
                 const res = await axios.post(
@@ -515,7 +516,6 @@ const ReportTable = (props) => {
       .then(async (result) => {
         const res = result.data;
         if (res) {
-          setReason("");
           setActLoader({});
           setIsAlert(true);
           setAlertMsg({
@@ -527,7 +527,43 @@ const ReportTable = (props) => {
             (x) => x.objectId !== item.objectId
           );
           props.setList(upldatedList);
+          const params = {
+            event: "declined",
+            body: {
+              objectId: item.objectId,
+              file: item?.SignedUrl || item?.URL,
+              name: item?.Name,
+              note: item?.Note || "",
+              description: item?.Description || "",
+              signers: item?.Signers?.map((x) => ({
+                name: x?.Name,
+                email: x?.Email,
+                phone: x?.Phone
+              })),
+              declinedBy: jsonSender?.email,
+              declinedReason: reason,
+              declinedAt: new Date(),
+              createdAt: item?.createdAt
+            }
+          };
+
+          try {
+            await axios.post(
+              `${localStorage.getItem("baseUrl")}functions/callwebhook`,
+              params,
+              {
+                headers: {
+                  "Content-Type": "application/json",
+                  "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
+                  sessiontoken: localStorage.getItem("accesstoken")
+                }
+              }
+            );
+          } catch (err) {
+            console.log("Err ", err);
+          }
         }
+        setReason("");
       })
       .catch((err) => {
         console.log("err", err);

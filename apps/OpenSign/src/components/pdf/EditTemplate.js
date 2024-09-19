@@ -3,6 +3,8 @@ import { checkIsSubscribed, getFileName } from "../../constant/Utils";
 import Upgrade from "../../primitives/Upgrade";
 import { isEnableSubscription } from "../../constant/const";
 import { useTranslation } from "react-i18next";
+import { Tooltip } from "react-tooltip";
+
 // import SelectFolder from "../../premitives/SelectFolder";
 
 const EditTemplate = ({ template, onSuccess }) => {
@@ -14,7 +16,8 @@ const EditTemplate = ({ template, onSuccess }) => {
     Description: template?.Description || "",
     SendinOrder: template?.SendinOrder ? `${template?.SendinOrder}` : "false",
     AutomaticReminders: template?.AutomaticReminders || false,
-    RemindOnceInEvery: template?.RemindOnceInEvery || 5
+    RemindOnceInEvery: template?.RemindOnceInEvery || 5,
+    IsEnableOTP: template?.IsEnableOTP ? `${template?.IsEnableOTP}` : "false"
   });
   const [isSubscribe, setIsSubscribe] = useState(false);
   useEffect(() => {
@@ -41,7 +44,7 @@ const EditTemplate = ({ template, onSuccess }) => {
     e.stopPropagation();
     const isChecked = formData.SendinOrder === "true" ? true : false;
     const AutoReminder = formData?.AutomaticReminders || false;
-
+    const IsEnableOTP = formData.IsEnableOTP === "true" ? true : false;
     let reminderDate = {};
     if (AutoReminder) {
       const RemindOnceInEvery = parseInt(formData?.RemindOnceInEvery);
@@ -49,7 +52,12 @@ const EditTemplate = ({ template, onSuccess }) => {
       ReminderDate.setDate(ReminderDate.getDate() + RemindOnceInEvery);
       reminderDate = { NextReminderDate: ReminderDate };
     }
-    const data = { ...formData, SendinOrder: isChecked, ...reminderDate };
+    const data = {
+      ...formData,
+      SendinOrder: isChecked,
+      IsEnableOTP: IsEnableOTP,
+      ...reminderDate
+    };
     onSuccess(data);
   };
   const handleAutoReminder = () => {
@@ -182,6 +190,70 @@ const EditTemplate = ({ template, onSuccess }) => {
                 onInput={(e) => e.target.setCustomValidity("")}
                 required
               />
+            </div>
+          )}
+          {isEnableSubscription && (
+            <div className="text-xs mt-2">
+              <label className="block">
+                <span className={isSubscribe ? "" : " text-gray-300"}>
+                  {t("isenable-otp")}{" "}
+                  <a data-tooltip-id="isenableotp-tooltip" className="ml-1">
+                    <sup>
+                      <i className="fa-light fa-question rounded-full border-[#33bbff] text-[#33bbff] text-[13px] border-[1px] py-[1.5px] px-[4px]"></i>
+                    </sup>
+                  </a>{" "}
+                  {!isSubscribe && isEnableSubscription && <Upgrade />}
+                </span>
+                <Tooltip id="isenableotp-tooltip" className="z-50">
+                  <div className="max-w-[200px] md:max-w-[450px]">
+                    <p className="font-bold">{t("isenable-otp")}</p>
+                    <p>{t("isenable-otp-help.p1")}</p>
+                    <p className="p-[5px]">
+                      <ol className="list-disc">
+                        <li>
+                          <span className="font-bold">{t("yes")}: </span>
+                          <span>{t("isenable-otp-help.p2")}</span>
+                        </li>
+                        <li>
+                          <span className="font-bold">{t("no")}: </span>
+                          <span>{t("isenable-otp-help.p3")}</span>
+                        </li>
+                      </ol>
+                    </p>
+                    <p>{t("isenable-otp-help.p4")}</p>
+                  </div>
+                </Tooltip>
+              </label>
+              <div
+                className={`${
+                  isSubscribe ? "" : "pointer-events-none opacity-50"
+                } flex items-center gap-2 ml-2 mb-1 `}
+              >
+                <input
+                  type="radio"
+                  value={"true"}
+                  className="op-radio op-radio-xs"
+                  name="IsEnableOTP"
+                  checked={formData.IsEnableOTP === "true"}
+                  onChange={handleStrInput}
+                />
+                <div className="text-center">{t("yes")}</div>
+              </div>
+              <div
+                className={`${
+                  isSubscribe ? "" : "pointer-events-none opacity-50"
+                } flex items-center gap-2 ml-2 mb-1 `}
+              >
+                <input
+                  type="radio"
+                  value={"false"}
+                  name="IsEnableOTP"
+                  className="op-radio op-radio-xs"
+                  checked={formData.IsEnableOTP === "false"}
+                  onChange={handleStrInput}
+                />
+                <div className="text-center">{t("no")}</div>
+              </div>
             </div>
           )}
           <div className="mt-[1rem] flex justify-start">
