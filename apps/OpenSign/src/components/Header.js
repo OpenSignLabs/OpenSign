@@ -61,14 +61,12 @@ const Header = ({ showSidebar }) => {
     }
   }
 
-  const closeDropdown = () => {
+  const closeDropdown = async () => {
     setIsOpen(false);
-    if (Parse?.User?.current()) {
-      try {
-        Parse.User.logOut();
-      } catch (err) {
-        console.log("Err", err);
-      }
+    try {
+      await Parse.User.logOut();
+    } catch (err) {
+      console.log("Err while logging out", err);
     }
     let appdata = localStorage.getItem("userSettings");
     let applogo = localStorage.getItem("appLogo");
@@ -121,12 +119,12 @@ const Header = ({ showSidebar }) => {
     <div>
       {isEnableSubscription && (
         <div className="shadow py-1 text-center bg-[#CAE4FA] text-[14px] p-1">
-          {t("headernews")} —
+          {t("header-news")} —
           <span
             className="cursor-pointer font-medium underline text-blue-800"
             onClick={() => navigate("/profile")}
           >
-            {" " + t("headernewsbtn") + "."}
+            {" " + t("header-news-btn") + "."}
           </span>
         </div>
       )}
@@ -234,16 +232,18 @@ const Header = ({ showSidebar }) => {
                   <i className="fa-light fa-lock"></i> {t("change-password")}
                 </span>
               </li>
-              <li onClick={() => handleConsoleRedirect()}>
-                <span>
-                  <i className="fa-light fa-id-card"></i> Console
-                </span>
-              </li>
+              {isEnableSubscription && (
+                <li onClick={() => handleConsoleRedirect()}>
+                  <span>
+                    <i className="fa-light fa-id-card"></i> Console
+                  </span>
+                </li>
+              )}
               {isEnableSubscription && isTeam?.plan === "freeplan" && (
                 <li className="cursor-pointer" onClick={handleMailUsed}>
                   <span>
                     <i className="fa-light fa-envelope"></i>
-                    {emailUsed}/20 sent this month
+                    {emailUsed}/15 {t("sent-this-month")}
                   </span>
                 </li>
               )}

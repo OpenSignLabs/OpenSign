@@ -28,7 +28,6 @@ function GenerateToken() {
     plan: "",
     isValid: false,
     adminId: "",
-    adminName: "",
     adminEmail: ""
   });
   const [isAlert, setIsAlert] = useState({ type: "success", msg: "" });
@@ -154,8 +153,7 @@ function GenerateToken() {
       } else {
         setIsSubscribe((obj) => ({
           ...obj,
-          adminName: extUser?.CreatedBy?.name,
-          adminEmail: extUser?.CreatedBy?.email
+          adminEmail: extUser?.TenantId?.EmailAddress
         }));
         setIsModal((obj) => ({ ...obj, unauthorized: !obj.unauthorized }));
       }
@@ -329,10 +327,10 @@ function GenerateToken() {
               </li>
               <div className="text-xs md:text-[15px] my-3 w-full md:w-[70%] flex-col md:flex-row flex items-center gap-x-5">
                 <span className="font-medium">
-                  {t("remainingcredits")}{" "}
+                  {t("remaining-credits")}{" "}
                   <span className="text-xs">
                     <Tooltip
-                      message={t("remainingcreditshelp", {
+                      message={t("remaining-credits-help", {
                         allowedcredits: amount?.allowedcredits || 0,
                         addoncredits: amount?.addoncredits || 0
                       })}
@@ -362,7 +360,7 @@ function GenerateToken() {
                 onClick={() => handleBuyAPIsModal()}
                 className="op-btn op-btn-accent mt-2 mb-3 px-8 w-[210px] md:w-auto"
               >
-                {t("buycredits")}
+                {t("buy-credits")}
               </button>
             </div>
             <ModalUi
@@ -408,7 +406,7 @@ function GenerateToken() {
                     htmlFor="quantity"
                     className="block text-xs text-gray-700 font-semibold"
                   >
-                    {t("quantityofcredits")}
+                    {t("quantity-of-credits")}
                     <span className="text-[red] text-[13px]"> *</span>
                   </label>
                   <select
@@ -447,7 +445,6 @@ function GenerateToken() {
             >
               <div className="m-8 flex justify-center text-center items-center font-medium break-all">
                 {t("unauthorized-modal", {
-                  adminName: isSubscribe?.adminName,
                   adminEmail: isSubscribe?.adminEmail
                 })}
               </div>

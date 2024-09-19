@@ -145,7 +145,7 @@ function Webhook() {
             </div>
             <ModalUi
               isOpen={isModal}
-              title={t("Add-Webhook")}
+              title={t("add-webhook")}
               handleClose={handleModal}
             >
               {error && <Alert type="danger">{error}</Alert>}

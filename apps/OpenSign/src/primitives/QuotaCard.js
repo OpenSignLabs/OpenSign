@@ -1,5 +1,5 @@
 import React from "react";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 
 const QuotaCard = ({ isPaidInfo, handlClose }) => {
@@ -15,11 +15,14 @@ const QuotaCard = ({ isPaidInfo, handlClose }) => {
       </div>
       <div className="op-card op-bg-primary text-primary-content w-full shadow-lg">
         <div className="op-card-body">
-          <h2 className="op-card-title">
-            {t("upgrade-to") + " Paid " + t("plan")}
-          </h2>
-          <p>{t("quotamailinfo")}</p>
-          <p>{t("quotamailTip")}</p>
+          <h2 className="op-card-title">{t("quota-mail-info-head")}</h2>
+          <p>{t("quota-mail-info")}</p>
+          <p>
+            <Trans i18nKey={"quota-mail-tip"}>
+              Tip: You can still sign <strong>unlimited documents</strong> by
+              manually sharing the signing request links.
+            </Trans>
+          </p>
           <div className="op-card-actions justify-end">
             <button
               onClick={() => navigate("/subscription")}
@@ -35,8 +38,8 @@ const QuotaCard = ({ isPaidInfo, handlClose }) => {
     <>
       <div className="op-card op-bg-primary text-primary-content w-full shadow-lg">
         <div className="op-card-body">
-          <p>{t("quotamail")}</p>
-          <p>{t("quotamailTip")}</p>
+          <p>{t("quota-mail")}</p>
+          <p>{t("quota-mail-tip")}</p>
           <div className="op-card-actions justify-end">
             <button
               onClick={() => navigate("/subscription")}

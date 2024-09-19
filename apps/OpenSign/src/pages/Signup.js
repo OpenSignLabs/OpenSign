@@ -45,8 +45,10 @@ const Signup = () => {
   const togglePasswordVisibility = () => setShowPassword(!showPassword);
 
   const clearStorage = async () => {
-    if (Parse.User.current()) {
+    try {
       await Parse.User.logOut();
+    } catch (err) {
+      console.log("Err while logging out", err);
     }
     let baseUrl = localStorage.getItem("baseUrl");
     let appid = localStorage.getItem("parseAppId");

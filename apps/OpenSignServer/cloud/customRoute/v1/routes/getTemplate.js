@@ -61,6 +61,7 @@ export default async function getTemplate(request, response) {
               ),
             })) || [],
           sendInOrder: template?.SendinOrder || false,
+          enableOTP: template?.IsEnableOTP || false,
           createdAt: template.createdAt,
           updatedAt: template.updatedAt,
         });

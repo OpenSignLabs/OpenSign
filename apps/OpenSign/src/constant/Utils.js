@@ -103,17 +103,19 @@ export async function fetchSubscriptionInfo() {
       const planId =
         tenatRes.data?.result?.result?.SubscriptionDetails?.data?.subscription
           ?.subscription_id;
-      const plan_code =
-        tenatRes.data?.result?.result?.SubscriptionDetails?.data?.subscription
-          ?.plan?.plan_code;
+      const plan_code = tenatRes.data?.result?.result?.PlanCode;
       const totalAllowedUser = tenatRes.data?.result?.result?.AllowedUsers || 0;
+      const adminId =
+        tenatRes?.data?.result?.result?.ExtUserPtr?.objectId || "";
+
       return {
         status: "success",
         price: price,
         totalPrice: totalPrice,
         planId: planId,
         plan_code: plan_code,
-        totalAllowedUser: totalAllowedUser
+        totalAllowedUser: totalAllowedUser,
+        adminId: adminId
       };
     }
   } catch (err) {
@@ -709,7 +711,8 @@ export const createDocument = async (
       Signers: signers,
       SendinOrder: Doc?.SendinOrder || false,
       AutomaticReminders: Doc?.AutomaticReminders || false,
-      RemindOnceInEvery: parseInt(Doc?.RemindOnceInEvery || 5)
+      RemindOnceInEvery: parseInt(Doc?.RemindOnceInEvery || 5),
+      IsEnableOTP: Doc?.IsEnableOTP || false
     };
 
     try {
@@ -1742,9 +1745,7 @@ export const contactBook = async (objectId) => {
 
 //function for getting document details from contract_Documents class
 export const contractDocument = async (documentId) => {
-  const data = {
-    docId: documentId
-  };
+  const data = { docId: documentId };
   const documentDeatils = await axios
     .post(`${localStorage.getItem("baseUrl")}functions/getDocument`, data, {
       headers: {
@@ -2048,11 +2049,12 @@ export const handleDownloadPdf = async (
 ) => {
   const pdfName = pdfDetails[0] && pdfDetails[0].Name;
   setIsDownloading("pdf");
+  const docId = !pdfDetails?.[0]?.IsEnableOTP ? pdfDetails?.[0]?.objectId : "";
   try {
     // const url = await Parse.Cloud.run("getsignedurl", { url: pdfUrl });
     const axiosRes = await axios.post(
       `${localStorage.getItem("baseUrl")}/functions/getsignedurl`,
-      { url: pdfUrl },
+      { url: pdfUrl, docId: docId },
       {
         headers: {
           "content-type": "Application/json",
@@ -2076,16 +2078,22 @@ export const sanitizeFileName = (pdfName) => {
   return pdfName.replace(/ /g, "_");
 };
 //function for print digital sign pdf
-export const handleToPrint = async (event, pdfUrl, setIsDownloading) => {
+export const handleToPrint = async (
+  event,
+  pdfUrl,
+  setIsDownloading,
+  pdfDetails
+) => {
   event.preventDefault();
   setIsDownloading("pdf");
+  const docId = !pdfDetails?.[0]?.IsEnableOTP ? pdfDetails?.[0]?.objectId : "";
   try {
     // const url = await Parse.Cloud.run("getsignedurl", { url: pdfUrl });
     //`localStorage.getItem("baseUrl")` is also use in public-profile flow for public-sign
     //if we give this `appInfo.baseUrl` as a base url then in public-profile it will create base url of it's window.location.origin ex- opensign.me which is not base url
     const axiosRes = await axios.post(
       `${localStorage.getItem("baseUrl")}/functions/getsignedurl`,
-      { url: pdfUrl },
+      { url: pdfUrl, docId: docId },
       {
         headers: {
           "content-type": "Application/json",

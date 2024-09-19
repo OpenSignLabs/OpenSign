@@ -29,11 +29,7 @@ async function uploadFile(pdfName, filepath) {
 // `updateDoc` is used to update signedUrl, AuditTrail, Iscompleted in document
 async function updateDoc(docId, url, userId, ipAddress, data, className, sign) {
   try {
-    const UserPtr = {
-      __type: 'Pointer',
-      className: className,
-      objectId: userId,
-    };
+    const UserPtr = { __type: 'Pointer', className: className, objectId: userId };
     const obj = {
       UserPtr: UserPtr,
       SignedUrl: url,
@@ -66,11 +62,7 @@ async function updateDoc(docId, url, userId, ipAddress, data, className, sign) {
     } else {
       isCompleted = true;
     }
-    const body = {
-      SignedUrl: url,
-      AuditTrail: updateAuditTrail,
-      IsCompleted: isCompleted,
-    };
+    const body = { SignedUrl: url, AuditTrail: updateAuditTrail, IsCompleted: isCompleted };
     const signedRes = await axios.put(serverUrl + '/classes/contracts_Document/' + docId, body, {
       headers: {
         'Content-Type': 'application/json',
@@ -164,29 +156,16 @@ async function sendCompletedMail(obj) {
       'X-Parse-Master-Key': masterKEY,
     },
   });
-  // console.log('Res ', res);
 }
 
 // `sendDoctoWebhook` is used to send res data of document on webhook
 async function sendDoctoWebhook(doc, Url, event, signUser, certificateUrl) {
   let signers = [];
   if (signUser) {
-    signers = {
-      name: signUser?.Name,
-      email: signUser?.Email,
-      phone: signUser?.Phone,
-    };
+    signers = { name: signUser?.Name, email: signUser?.Email, phone: signUser?.Phone };
   } else {
-    signers = doc?.Signers?.map(x => ({
-      name: x.Name,
-      email: x.Email,
-      phone: x.Phone,
-    })) || [
-      {
-        name: doc?.ExtUserPtr?.Name,
-        email: doc?.ExtUserPtr?.Email,
-        phone: doc?.ExtUserPtr?.Phone,
-      },
+    signers = doc?.Signers?.map(x => ({ name: x.Name, email: x.Email, phone: x.Phone })) || [
+      { name: doc?.ExtUserPtr?.Name, email: doc?.ExtUserPtr?.Email, phone: doc?.ExtUserPtr?.Phone },
     ];
   }
 
@@ -213,7 +192,6 @@ async function sendDoctoWebhook(doc, Url, event, signUser, certificateUrl) {
       })
       .then(res => {
         try {
-          // console.log('res ', res);
           const webhook = new Parse.Object('contracts_Webhook');
           webhook.set('Log', res?.status);
           webhook.set('UserId', {
@@ -241,7 +219,6 @@ async function sendDoctoWebhook(doc, Url, event, signUser, certificateUrl) {
           console.log('err save in contracts_Webhook', err.message);
         }
       });
-    // console.log('res ', res.data);
   }
 }
 
@@ -281,15 +258,9 @@ const sendMailsaveCertifcate = async (doc, P12Buffer, url, isCustomMail, mailPro
   if (doc.IsSendMail === false) {
     console.log("don't send mail");
   } else {
-    const mailObj = {
-      url: url,
-      isCustomMail: isCustomMail,
-      doc: doc,
-      mailProvider: mailProvider,
-    };
+    const mailObj = { url: url, isCustomMail: isCustomMail, doc: doc, mailProvider: mailProvider };
     sendCompletedMail(mailObj);
   }
-
   saveFileUsage(CertificateBuffer.length, file.imageUrl, userId);
   sendDoctoWebhook(doc, url, 'completed', '', file.imageUrl);
 };
@@ -301,169 +272,160 @@ const sendMailsaveCertifcate = async (doc, P12Buffer, url, isCustomMail, mailPro
  */
 async function PDF(req) {
   try {
-    if (!req?.user) {
-      throw new Parse.Error(Parse.Error.INVALID_SESSION_TOKEN, 'User is not authenticated.');
+    const userIP = req.headers['x-real-ip']; // client IPaddress
+    const docId = req.params.docId;
+    const reqUserId = req.params.userId;
+    const isCustomMail = req.params.isCustomCompletionMail || false;
+    const mailProvider = req.params.mailProvider || '';
+    const sign = req.params.signature || '';
+    // below bode is used to get info of docId
+    const docQuery = new Parse.Query('contracts_Document');
+    docQuery.include('ExtUserPtr,Signers');
+    docQuery.equalTo('objectId', docId);
+    const resDoc = await docQuery.first({ useMasterKey: true });
+    if (!resDoc) {
+      throw new Parse.Error(Parse.Error.OBJECT_NOT_FOUND, 'Document not found.');
+    }
+    const IsEnableOTP = resDoc?.get('IsEnableOTP') || false;
+    // if `IsEnableOTP` is false then we don't have to check authentication
+    if (IsEnableOTP) {
+      if (!req?.user) {
+        throw new Parse.Error(Parse.Error.INVALID_SESSION_TOKEN, 'User is not authenticated.');
+      }
+    }
+    const _resDoc = resDoc?.toJSON();
+    let signUser;
+    let className;
+    // `reqUserId` is send throught pdfrequest signing flow
+    if (reqUserId) {
+      // to get contracts_Contactbook details for currentuser from reqUserId
+      const _contractUser = _resDoc.Signers.find(x => x.objectId === reqUserId);
+      if (_contractUser) {
+        signUser = _contractUser;
+        className = 'contracts_Contactbook';
+      }
     } else {
-      const password = '';
-      const authUser = req?.user?.toJSON();
-      const docId = req.params.docId;
-      const reqUserId = req.params.userId;
-      const isCustomMail = req.params.isCustomCompletionMail || false;
-      const mailProvider = req.params.mailProvider || '';
-      const sign = req.params.signature || '';
-      // below bode is used to get info of docId
-      const docQuery = new Parse.Query('contracts_Document');
-      docQuery.include('ExtUserPtr,Signers');
-      docQuery.equalTo('objectId', docId);
-      const resDoc = await docQuery.first({ useMasterKey: true });
-      if (!resDoc) {
-        throw new Parse.Error(Parse.Error.OBJECT_NOT_FOUND, 'Document not found.');
-      }
-      const _resDoc = resDoc?.toJSON();
+      className = 'contracts_Users';
+      signUser = _resDoc.ExtUserPtr;
+    }
 
-      let signUser;
-      let className;
-      // `reqUserId` is send throught pdfrequest signing flow
-      if (reqUserId) {
-        // to get contracts_Contactbook details for currentuser from reqUserId
-        const _contractUser = _resDoc.Signers.find(x => x.objectId === reqUserId);
-        if (_contractUser) {
-          signUser = _contractUser;
-          className = 'contracts_Contactbook';
-        }
+    const username = signUser.Name;
+    const userEmail = signUser.Email;
+    if (req.params.pdfFile) {
+      //  `PdfBuffer` used to create buffer from pdf file
+      let PdfBuffer = Buffer.from(req.params.pdfFile, 'base64');
+      //  `P12Buffer` used to create buffer from p12 certificate
+      const pfxFile = process.env.PFX_BASE64;
+      // const P12Buffer = fs.readFileSync();
+      const P12Buffer = Buffer.from(pfxFile, 'base64');
+      const p12Cert = new P12Signer(P12Buffer, { passphrase: process.env.PASS_PHRASE || null });
+      const UserPtr = { __type: 'Pointer', className: className, objectId: signUser.objectId };
+      const obj = { UserPtr: UserPtr, SignedUrl: '', Activity: 'Signed', ipAddress: userIP };
+      let updateAuditTrail;
+      if (_resDoc.AuditTrail && _resDoc.AuditTrail.length > 0) {
+        updateAuditTrail = [..._resDoc.AuditTrail, obj];
       } else {
-        className = 'contracts_Users';
-        signUser = _resDoc.ExtUserPtr;
+        updateAuditTrail = [obj];
       }
 
-      const username = signUser.Name;
-      const userEmail = signUser.Email;
-      if (req.params.pdfFile) {
-        //  `PdfBuffer` used to create buffer from pdf file
-        let PdfBuffer = Buffer.from(req.params.pdfFile, 'base64');
-        //  `P12Buffer` used to create buffer from p12 certificate
-        const pfxFile = process.env.PFX_BASE64;
-        // const P12Buffer = fs.readFileSync();
-        const P12Buffer = Buffer.from(pfxFile, 'base64');
-        const p12Cert = new P12Signer(P12Buffer, { passphrase: process.env.PASS_PHRASE || null });
-
-        const UserPtr = {
-          __type: 'Pointer',
-          className: className,
-          objectId: signUser.objectId,
-        };
-        const obj = {
-          UserPtr: UserPtr,
-          SignedUrl: '',
-          Activity: 'Signed',
-          ipAddress: req.headers['x-real-ip'],
-        };
-        let updateAuditTrail;
-        if (_resDoc.AuditTrail && _resDoc.AuditTrail.length > 0) {
-          updateAuditTrail = [..._resDoc.AuditTrail, obj];
-        } else {
-          updateAuditTrail = [obj];
-        }
-
-        const auditTrail = updateAuditTrail.filter(x => x.Activity === 'Signed');
-        let isCompleted = false;
-        if (_resDoc.Signers && _resDoc.Signers.length > 0) {
-          if (auditTrail.length === _resDoc.Signers.length) {
-            isCompleted = true;
-          }
-        } else {
+      const auditTrail = updateAuditTrail.filter(x => x.Activity === 'Signed');
+      let isCompleted = false;
+      if (_resDoc.Signers && _resDoc.Signers.length > 0) {
+        if (auditTrail.length === _resDoc.Signers.length) {
           isCompleted = true;
         }
-        const randomNumber = Math.floor(Math.random() * 5000);
-        const name = `exported_file_${randomNumber}.pdf`;
-        const pdfName = `./exports/${name}`;
-        let pdfSize = PdfBuffer.length;
-        if (isCompleted) {
-          const signersName = _resDoc.Signers?.map(x => x.Name + ' <' + x.Email + '>');
-          if (signersName && signersName.length > 0) {
-            //  `pdflibAddPlaceholder` is used to add code of only digitial sign without widget
-            const pdfDoc = await PDFDocument.load(PdfBuffer);
-            pdflibAddPlaceholder({
-              pdfDoc: pdfDoc,
-              reason: 'Digitally signed by OpenSign for ' + signersName?.join(', '),
-              location: 'n/a',
-              name: eSignName,
-              contactInfo: eSigncontact,
-              signatureLength: 15000,
-            });
-            const pdfWithPlaceholderBytes = await pdfDoc.save();
-            PdfBuffer = Buffer.from(pdfWithPlaceholderBytes);
-          } else {
-            //  `pdflibAddPlaceholder` is used to add code of only digitial sign without widget (signyourself)
-            const pdfDoc = await PDFDocument.load(PdfBuffer);
-            pdflibAddPlaceholder({
-              pdfDoc: pdfDoc,
-              reason: 'Digitally signed by OpenSign for ' + username + ' <' + userEmail + '>',
-              location: 'n/a',
-              name: eSignName,
-              contactInfo: eSigncontact,
-              signatureLength: 15000,
-            });
-            const pdfWithPlaceholderBytes = await pdfDoc.save();
-            PdfBuffer = Buffer.from(pdfWithPlaceholderBytes);
-          }
-          //`new signPDF` create new instance of pdfBuffer and p12Buffer
-          const OBJ = new SignPdf();
-          // `signedDocs` is used to signpdf digitally
-          const signedDocs = await OBJ.sign(PdfBuffer, p12Cert);
-
-          //`saveUrl` is used to save signed pdf in exports folder
-          const saveUrl = fs.writeFileSync(pdfName, signedDocs);
-          pdfSize = signedDocs.length;
-        } else {
-          //`saveUrl` is used to save signed pdf in exports folder
-          const saveUrl = fs.writeFileSync(pdfName, PdfBuffer);
-          pdfSize = PdfBuffer.length;
-        }
-
-        // `uploadFile` is used to upload pdf to aws s3 and get it's url
-        const data = await uploadFile(name, pdfName);
-
-        if (data && data.imageUrl) {
-          // `axios` is used to update signed pdf url in contracts_Document classes for given DocId
-          const updatedDoc = await updateDoc(
-            req.params.docId, //docId
-            data.imageUrl, // url
-            signUser.objectId, // userID
-            req.headers['x-real-ip'], // client ipAddress,
-            _resDoc, // auditTrail, signers, etc data
-            className,
-            sign
-          );
-          sendDoctoWebhook(_resDoc, data.imageUrl, 'signed', signUser);
-          saveFileUsage(pdfSize, data.imageUrl, authUser.objectId);
-          if (updatedDoc && updatedDoc.isCompleted) {
-            const doc = { ..._resDoc, AuditTrail: updatedDoc.AuditTrail };
-            sendMailsaveCertifcate(
-              doc,
-              P12Buffer,
-              data.imageUrl,
-              isCustomMail,
-              mailProvider,
-              authUser.objectId
-            );
-          }
-          // `fs.unlinkSync` is used to remove exported signed pdf file from exports folder
-          fs.unlinkSync(pdfName);
-          console.log(`New Signed PDF created called: ${pdfName}`);
-          if (updatedDoc.message === 'success') {
-            return { status: 'success', data: data.imageUrl };
-          } else {
-            const error = new Error('Please provide required parameters!');
-            error.code = 400; // Set the error code (e.g., 400 for bad request)
-            throw error;
-          }
-        }
       } else {
-        const error = new Error('Pdf file not present!');
-        error.code = 400; // Set the error code (e.g., 400 for bad request)
-        throw error;
+        isCompleted = true;
       }
+      const randomNumber = Math.floor(Math.random() * 5000);
+      const name = `exported_file_${randomNumber}.pdf`;
+      const pdfName = `./exports/${name}`;
+      let pdfSize = PdfBuffer.length;
+      if (isCompleted) {
+        const signersName = _resDoc.Signers?.map(x => x.Name + ' <' + x.Email + '>');
+        if (signersName && signersName.length > 0) {
+          //  `pdflibAddPlaceholder` is used to add code of only digitial sign without widget
+          const pdfDoc = await PDFDocument.load(PdfBuffer);
+          pdflibAddPlaceholder({
+            pdfDoc: pdfDoc,
+            reason: 'Digitally signed by OpenSign for ' + signersName?.join(', '),
+            location: 'n/a',
+            name: eSignName,
+            contactInfo: eSigncontact,
+            signatureLength: 15000,
+          });
+          const pdfWithPlaceholderBytes = await pdfDoc.save();
+          PdfBuffer = Buffer.from(pdfWithPlaceholderBytes);
+        } else {
+          //  `pdflibAddPlaceholder` is used to add code of only digitial sign without widget (signyourself)
+          const pdfDoc = await PDFDocument.load(PdfBuffer);
+          pdflibAddPlaceholder({
+            pdfDoc: pdfDoc,
+            reason: 'Digitally signed by OpenSign for ' + username + ' <' + userEmail + '>',
+            location: 'n/a',
+            name: eSignName,
+            contactInfo: eSigncontact,
+            signatureLength: 15000,
+          });
+          const pdfWithPlaceholderBytes = await pdfDoc.save();
+          PdfBuffer = Buffer.from(pdfWithPlaceholderBytes);
+        }
+        //`new signPDF` create new instance of pdfBuffer and p12Buffer
+        const OBJ = new SignPdf();
+        // `signedDocs` is used to signpdf digitally
+        const signedDocs = await OBJ.sign(PdfBuffer, p12Cert);
+
+        //`saveUrl` is used to save signed pdf in exports folder
+        const saveUrl = fs.writeFileSync(pdfName, signedDocs);
+        pdfSize = signedDocs.length;
+      } else {
+        //`saveUrl` is used to save signed pdf in exports folder
+        const saveUrl = fs.writeFileSync(pdfName, PdfBuffer);
+        pdfSize = PdfBuffer.length;
+      }
+
+      // `uploadFile` is used to upload pdf to aws s3 and get it's url
+      const data = await uploadFile(name, pdfName);
+
+      if (data && data.imageUrl) {
+        // `axios` is used to update signed pdf url in contracts_Document classes for given DocId
+        const updatedDoc = await updateDoc(
+          req.params.docId, //docId
+          data.imageUrl, // url
+          signUser.objectId, // userID
+          userIP, // client ipAddress,
+          _resDoc, // auditTrail, signers, etc data
+          className, // className based on flow
+          sign // sign base64
+        );
+        sendDoctoWebhook(_resDoc, data.imageUrl, 'signed', signUser);
+        saveFileUsage(pdfSize, data.imageUrl, _resDoc?.CreatedBy?.objectId);
+        if (updatedDoc && updatedDoc.isCompleted) {
+          const doc = { ..._resDoc, AuditTrail: updatedDoc.AuditTrail };
+          sendMailsaveCertifcate(
+            doc,
+            P12Buffer,
+            data.imageUrl,
+            isCustomMail,
+            mailProvider,
+            _resDoc?.CreatedBy?.objectId
+          );
+        }
+        // `fs.unlinkSync` is used to remove exported signed pdf file from exports folder
+        fs.unlinkSync(pdfName);
+        console.log(`New Signed PDF created called: ${pdfName}`);
+        if (updatedDoc.message === 'success') {
+          return { status: 'success', data: data.imageUrl };
+        } else {
+          const error = new Error('Please provide required parameters!');
+          error.code = 400; // Set the error code (e.g., 400 for bad request)
+          throw error;
+        }
+      }
+    } else {
+      const error = new Error('Pdf file not present!');
+      error.code = 400; // Set the error code (e.g., 400 for bad request)
+      throw error;
     }
   } catch (err) {
     console.log('Err in signpdf', err);

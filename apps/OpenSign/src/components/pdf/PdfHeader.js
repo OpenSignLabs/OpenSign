@@ -77,7 +77,7 @@ function Header({
               allPages={allPages}
               changePage={changePage}
             />
-            {isCompleted && alreadySign ? (
+            {isCompleted || alreadySign ? (
               <DropdownMenu.Root>
                 <DropdownMenu.Trigger asChild>
                   <div className="op-link op-link-primary no-underline text-[16px] font-semibold pr-[3px] pl-[5px]">
@@ -142,7 +142,7 @@ function Header({
                     <DropdownMenu.Item
                       className="DropdownMenuItem"
                       onClick={(e) =>
-                        handleToPrint(e, pdfUrl, setIsDownloading)
+                        handleToPrint(e, pdfUrl, setIsDownloading, pdfDetails)
                       }
                     >
                       <div className="flex flex-row">
@@ -209,7 +209,7 @@ function Header({
                           sideOffset={5}
                         >
                           <DropdownMenu.Item
-                            className="flex flex-row justify-center items-center text-[13px] focus:outline-none cursor-pointer"
+                            className="DropdownMenuItem"
                             onClick={() =>
                               handleDownloadPdf(
                                 pdfDetails,
@@ -218,48 +218,62 @@ function Header({
                               )
                             }
                           >
-                            <i
-                              className="fa-light fa-arrow-down mr-[3px]"
-                              aria-hidden="true"
-                            ></i>
-                            <span className="font-[500]">{t("download")}</span>
+                            <div className="flex flex-row">
+                              <i
+                                className="fa-light fa-arrow-down mr-[3px]"
+                                aria-hidden="true"
+                              ></i>
+                              <span className="font-[500]">
+                                {t("download")}
+                              </span>
+                            </div>
                           </DropdownMenu.Item>
                           {!isDisableRotate && (
                             <>
                               <DropdownMenu.Item
-                                className="flex flex-row justify-center items-center text-[13px] focus:outline-none cursor-pointer"
+                                className="DropdownMenuItem"
                                 onClick={() => handleRotationFun(90)}
                               >
-                                <i className="fa-light fa-rotate-right text-gray-500 2xl:text-[30px] mr-[3px]"></i>
-                                <span className="font-[500]">
-                                  {t("rotate-right")}
-                                </span>
+                                <div className="flex flex-row">
+                                  <i className="fa-light fa-rotate-right text-gray-500 2xl:text-[30px] mr-[3px]"></i>
+                                  <span className="font-[500]">
+                                    {t("rotate-right")}
+                                  </span>
+                                </div>
                               </DropdownMenu.Item>
                               <DropdownMenu.Item
-                                className="flex flex-row justify-center items-center text-[13px] focus:outline-none cursor-pointer"
+                                className="DropdownMenuItem"
                                 onClick={() => handleRotationFun(-90)}
                               >
-                                <i className="fa-light fa-rotate-left text-gray-500 2xl:text-[30px] mr-[3px]"></i>
-                                <span className="font-[500]">
-                                  {t("rotate-left")}
-                                </span>
+                                <div className="flex flex-row">
+                                  <i className="fa-light fa-rotate-left text-gray-500 2xl:text-[30px] mr-[3px]"></i>
+                                  <span className="font-[500]">
+                                    {t("rotate-left")}
+                                  </span>
+                                </div>
                               </DropdownMenu.Item>
                             </>
                           )}
 
                           <DropdownMenu.Item
-                            className="flex flex-row justify-center items-center text-[13px] focus:outline-none cursor-pointer"
+                            className="DropdownMenuItem"
                             onClick={() => clickOnZoomIn()}
                           >
-                            <i className="fa-light fa-magnifying-glass-plus text-gray-500 2xl:text-[30px]"></i>
-                            <span className="font-[500]">{t("zoom-in")}</span>
+                            <div className="flex flex-row">
+                              <i className="fa-light fa-magnifying-glass-plus text-gray-500 2xl:text-[30px] mr-[3px]"></i>
+                              <span className="font-[500]">{t("zoom-in")}</span>
+                            </div>
                           </DropdownMenu.Item>
                           <DropdownMenu.Item
-                            className="flex flex-row justify-center items-center text-[13px] focus:outline-none cursor-pointer"
+                            className="DropdownMenuItem"
                             onClick={() => clickOnZoomOut()}
                           >
-                            <i className="fa-light fa-magnifying-glass-minus text-gray-500 2xl:text-[30px]"></i>
-                            <span className="font-[500]">{t("zoom-out")}</span>
+                            <div className="flex flex-row">
+                              <i className="fa-light fa-magnifying-glass-minus text-gray-500 2xl:text-[30px] mr-[3px]"></i>
+                              <span className="font-[500]">
+                                {t("zoom-out")}
+                              </span>
+                            </div>
                           </DropdownMenu.Item>
                         </DropdownMenu.Content>
                       </DropdownMenu.Portal>
@@ -342,7 +356,9 @@ function Header({
             alreadySign ? (
               <div className="flex flex-row">
                 <button
-                  onClick={(e) => handleToPrint(e, pdfUrl, setIsDownloading)}
+                  onClick={(e) =>
+                    handleToPrint(e, pdfUrl, setIsDownloading, pdfDetails)
+                  }
                   type="button"
                   className="op-btn op-btn-neutral op-btn-sm mr-[3px] shadow"
                 >
@@ -459,7 +475,9 @@ function Header({
                 </button>
               )}
               <button
-                onClick={(e) => handleToPrint(e, pdfUrl, setIsDownloading)}
+                onClick={(e) =>
+                  handleToPrint(e, pdfUrl, setIsDownloading, pdfDetails)
+                }
                 type="button"
                 className="op-btn op-btn-neutral op-btn-sm gap-0 font-medium text-[12px] mr-[3px] shadow"
               >

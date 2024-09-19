@@ -294,73 +294,76 @@ function RenderPdf({
                     );
                   })
                 : placeholder // placeholder mobile
-                  ? signerPos.map((data, ind) => {
+                  ? signerPos?.map((data, ind) => {
                       return (
                         <React.Fragment key={ind}>
-                          {data.placeHolder.map((placeData, index) => {
-                            return (
-                              <React.Fragment key={index}>
-                                {placeData.pageNumber === pageNumber &&
-                                  placeData.pos.map((pos) => {
-                                    return (
-                                      <React.Fragment key={pos.key}>
-                                        <Placeholder
-                                          pos={pos}
-                                          setIsPageCopy={setIsPageCopy}
-                                          setSignKey={setSignKey}
-                                          handleDeleteSign={handleDeleteSign}
-                                          setIsStamp={setIsStamp}
-                                          handleTabDrag={handleTabDrag}
-                                          handleStop={handleStop}
-                                          handleSignYourselfImageResize={
-                                            handleImageResize
-                                          }
-                                          index={pageNumber}
-                                          xyPostion={signerPos}
-                                          setXyPostion={setSignerPos}
-                                          data={data}
-                                          setIsResize={setIsResize}
-                                          setShowDropdown={setShowDropdown}
-                                          isShowBorder={true}
-                                          isPlaceholder={true}
-                                          setUniqueId={setUniqueId}
-                                          handleLinkUser={handleLinkUser}
-                                          handleUserName={handleUserName}
-                                          isSignYourself={false}
-                                          posWidth={posWidth}
-                                          posHeight={posHeight}
-                                          isDragging={isDragging}
-                                          setIsValidate={setIsValidate}
-                                          setWidgetType={setWidgetType}
-                                          setIsRadio={setIsRadio}
-                                          setIsCheckbox={setIsCheckbox}
-                                          setCurrWidgetsDetails={
-                                            setCurrWidgetsDetails
-                                          }
-                                          setSelectWidgetId={setSelectWidgetId}
-                                          selectWidgetId={selectWidgetId}
-                                          handleNameModal={handleNameModal}
-                                          setTempSignerId={setTempSignerId}
-                                          uniqueId={uniqueId}
-                                          handleTextSettingModal={
-                                            handleTextSettingModal
-                                          }
-                                          scale={scale}
-                                          containerWH={containerWH}
-                                          pdfOriginalWH={pdfOriginalWH}
-                                          pageNumber={pageNumber}
-                                          setIsSelectId={setIsSelectId}
-                                          fontSize={fontSize}
-                                          setFontSize={setFontSize}
-                                          fontColor={fontColor}
-                                          setFontColor={setFontColor}
-                                        />
-                                      </React.Fragment>
-                                    );
-                                  })}
-                              </React.Fragment>
-                            );
-                          })}
+                          {data?.placeHolder &&
+                            data?.placeHolder.map((placeData, index) => {
+                              return (
+                                <React.Fragment key={index}>
+                                  {placeData.pageNumber === pageNumber &&
+                                    placeData.pos.map((pos) => {
+                                      return (
+                                        <React.Fragment key={pos.key}>
+                                          <Placeholder
+                                            pos={pos}
+                                            setIsPageCopy={setIsPageCopy}
+                                            setSignKey={setSignKey}
+                                            handleDeleteSign={handleDeleteSign}
+                                            setIsStamp={setIsStamp}
+                                            handleTabDrag={handleTabDrag}
+                                            handleStop={handleStop}
+                                            handleSignYourselfImageResize={
+                                              handleImageResize
+                                            }
+                                            index={pageNumber}
+                                            xyPostion={signerPos}
+                                            setXyPostion={setSignerPos}
+                                            data={data}
+                                            setIsResize={setIsResize}
+                                            setShowDropdown={setShowDropdown}
+                                            isShowBorder={true}
+                                            isPlaceholder={true}
+                                            setUniqueId={setUniqueId}
+                                            handleLinkUser={handleLinkUser}
+                                            handleUserName={handleUserName}
+                                            isSignYourself={false}
+                                            posWidth={posWidth}
+                                            posHeight={posHeight}
+                                            isDragging={isDragging}
+                                            setIsValidate={setIsValidate}
+                                            setWidgetType={setWidgetType}
+                                            setIsRadio={setIsRadio}
+                                            setIsCheckbox={setIsCheckbox}
+                                            setCurrWidgetsDetails={
+                                              setCurrWidgetsDetails
+                                            }
+                                            setSelectWidgetId={
+                                              setSelectWidgetId
+                                            }
+                                            selectWidgetId={selectWidgetId}
+                                            handleNameModal={handleNameModal}
+                                            setTempSignerId={setTempSignerId}
+                                            uniqueId={uniqueId}
+                                            handleTextSettingModal={
+                                              handleTextSettingModal
+                                            }
+                                            scale={scale}
+                                            containerWH={containerWH}
+                                            pdfOriginalWH={pdfOriginalWH}
+                                            pageNumber={pageNumber}
+                                            setIsSelectId={setIsSelectId}
+                                            fontSize={fontSize}
+                                            setFontSize={setFontSize}
+                                            fontColor={fontColor}
+                                            setFontColor={setFontColor}
+                                          />
+                                        </React.Fragment>
+                                      );
+                                    })}
+                                </React.Fragment>
+                              );
+                            })}
                         </React.Fragment>
                       );
                     })

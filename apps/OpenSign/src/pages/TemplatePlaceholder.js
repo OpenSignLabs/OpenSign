@@ -779,6 +779,7 @@ const TemplatePlaceholder = () => {
           AutomaticReminders: pdfDetails[0]?.AutomaticReminders,
           RemindOnceInEvery: parseInt(pdfDetails[0]?.RemindOnceInEvery),
           NextReminderDate: pdfDetails[0]?.NextReminderDate,
+          IsEnableOTP: pdfDetails[0]?.IsEnableOTP === true ? true : false,
           URL: pdfUrl
         };
         const updateTemplate = new Parse.Object("contracts_Template");
