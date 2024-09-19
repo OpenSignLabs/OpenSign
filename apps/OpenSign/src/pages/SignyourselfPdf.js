@@ -1190,7 +1190,12 @@ function SignYourSelf() {
           )}
           {isCelebration && (
             <div className="relative z-[1000]">
-              <Confetti width={window.innerWidth} height={window.innerHeight} />
+              <Confetti
+                width={window.innerWidth}
+                height={window.innerHeight}
+                recycle={false} // Prevents confetti from repeating
+                gravity={0.1} // Adjust the gravity to control the speed
+              />
             </div>
           )}
           <div className="relative op-card overflow-hidden flex flex-col md:flex-row justify-between bg-base-300">
