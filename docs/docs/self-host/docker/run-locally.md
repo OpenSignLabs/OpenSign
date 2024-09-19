@@ -9,15 +9,15 @@ import ReactPlayer from 'react-player';
 
 Command for linux/MacOS 
 ```
-export HOST_URL=https://opensign.yourdomain.com && curl --remote-name-all https://raw.githubusercontent.com/OpenSignLabs/OpenSign/docker_beta/docker-compose.yml https://raw.githubusercontent.com/OpenSignLabs/OpenSign/docker_beta/Caddyfile https://raw.githubusercontent.com/OpenSignLabs/OpenSign/docker_beta/.env.local_dev && mv .env.local_dev .env.prod && docker compose up --force-recreate
+export HOST_URL=https://opensign.yourdomain.com && curl --remote-name-all https://raw.githubusercontent.com/OpenSignLabs/OpenSign/main/docker-compose.yml https://raw.githubusercontent.com/OpenSignLabs/OpenSign/main/Caddyfile https://raw.githubusercontent.com/OpenSignLabs/OpenSign/main/.env.local_dev && mv .env.local_dev .env.prod && docker compose up --force-recreate
 ```
 Command for Windows (Powershell)
 ```
-$env:HOST_URL="https://opensign.yourdomain.com"; Invoke-WebRequest -Uri https://raw.githubusercontent.com/OpenSignLabs/OpenSign/docker_beta/docker-compose.yml -OutFile docker-compose.yml; Invoke-WebRequest -Uri https://raw.githubusercontent.com/OpenSignLabs/OpenSign/docker_beta/Caddyfile -OutFile Caddyfile; Invoke-WebRequest -Uri https://raw.githubusercontent.com/OpenSignLabs/OpenSign/docker_beta/.env.local_dev -OutFile .env.local_dev; Rename-Item -Path .env.local_dev -NewName .env.prod; docker compose up --force-recreate
+$env:HOST_URL="https://opensign.yourdomain.com"; Invoke-WebRequest -Uri https://raw.githubusercontent.com/OpenSignLabs/OpenSign/main/docker-compose.yml -OutFile docker-compose.yml; Invoke-WebRequest -Uri https://raw.githubusercontent.com/OpenSignLabs/OpenSign/main/Caddyfile -OutFile Caddyfile; Invoke-WebRequest -Uri https://raw.githubusercontent.com/OpenSignLabs/OpenSign/main/.env.local_dev -OutFile .env.local_dev; Rename-Item -Path .env.local_dev -NewName .env.prod; docker compose up --force-recreate
 ```
 Command for Windows (CMD/Terminal)
 ```
-set HOST_URL=https://opensign.yourdomain.com && curl -O https://raw.githubusercontent.com/OpenSignLabs/OpenSign/docker_beta/docker-compose.yml && curl -O https://raw.githubusercontent.com/OpenSignLabs/OpenSign/docker_beta/Caddyfile && curl -O https://raw.githubusercontent.com/OpenSignLabs/OpenSign/docker_beta/.env.local_dev && rename .env.local_dev .env.prod && docker compose up --force-recreate
+set HOST_URL=https://opensign.yourdomain.com && curl -O https://raw.githubusercontent.com/OpenSignLabs/OpenSign/main/docker-compose.yml && curl -O https://raw.githubusercontent.com/OpenSignLabs/OpenSign/main/Caddyfile && curl -O https://raw.githubusercontent.com/OpenSignLabs/OpenSign/main/.env.local_dev && rename .env.local_dev .env.prod && docker compose up --force-recreate
 ```
   and Hit Enter to start the containers automatically. Make sure to replace the host URL with your subdomain where OpenSign will be accessible. You need to point the subdomain to the server where you are running these commands by adding the necessary A record to your DNS.
   
@@ -86,6 +86,7 @@ openssl req -key ./local_dev.key -new -x509 -days 365 -out ./local_dev.crt
 openssl pkcs12 -inkey ./local_dev.key -in ./local_dev.crt -export -out ./local_dev.pfx
 openssl base64 -in ./local_dev.pfx -out ./base64_pfx
 ```
+Please note that when signing a document using a certificate generated through this process, it won’t be recognized as valid by Adobe Acrobat. To get the green tick on your signed documents, you'll need to purchase a document signing certificate (a p12 certificate in pfx format) from an [AATL-approved Certificate Authority](https://helpx.adobe.com/in/acrobat/kb/approved-trust-list1.html).
 
 # CORS Configuration
 

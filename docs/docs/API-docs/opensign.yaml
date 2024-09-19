@@ -14,6 +14,7 @@ externalDocs:
   description: Find out more about OpenSign
   url: http://docs.opensignlabs.com
 servers:
+- url: https://sandbox.opensignlabs.com/api/v1
 - url: https://app.opensignlabs.com/api/v1
 - url: https://staging-app.opensignlabs.com/api/v1
 tags:
@@ -230,47 +231,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/inline_response_200'
-        "400":
-          description: "Something went wrong, please try again later!"
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/inline_response_400_1'
-        "405":
-          description: Invalid API Token!
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/invalidtoken'
-      security:
-      - x-api-token: []
-  /draftdocument:
-    post:
-      tags:
-      - Documents
-      summary: Draft Document
-      description: |
-        The Draft Document API enables you to create and manage document drafts. These drafts can be further enriched by adding signers and incorporating interactive widgets through our user interface at [ https://app.opensignlabs.com]( https://app.opensignlabs.com) (for cloud version). This API is designed to streamline the process of document preparation, allowing for a seamless transition from draft to final document.
-
-        ### Features:
-        -  Save Document Drafts: Securely save your documents in a draft state.
-        -  Add Signers: Assign signers to your document directly from the API.
-        ### Note:
-        You cannot add roles and widgets from this API. You will have to do it from the link received in the response.
-      operationId: draftedocument
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/draftdocument_body'
-        required: true
-      responses:
-        "200":
-          description: Document created successfully!
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/inline_response_200_d'
         "400":
           description: "Something went wrong, please try again later!"
           content:
@@ -865,7 +825,7 @@ paths:
       tags:
       - Webhook
       summary: Save or Update Webhook
-      description: "The save or update Webhook API allow you to save webhook url which is used to trigger events\n### events:\n\n1. **viewed:**\n    - When signer viewed document this event will trigger.\n    ```\n    {\n        \"event\": \"viewed\",\n        \"file\": \"DOCUMENT_URL\",\n        \"name\": \"DOCUMENT_NAME\",\n        \"note\": \"Please review and sign this document\",\n        \"description\": \"\",\n        \"signers\": [\n          {\n            \"name\": \"SIGNER_NAME\",\n            \"email\": \"SIGNER_EMAIL\",\n            \"phone\": \"SIGNER_PHONE\"\n          }\n        ],\n        \"viewedBy\": \"SIGNER_EMAIL\",\n        \"viewedAt\": \"TIMESTAMP\",\n        \"createdAt\": \"TIMESTAMP\"\n      }\n2. **created:**\n    - When document is created this event will trigger.\n    ```\n    {\n        \"event\": \"created\",\n        \"file\": \"DOCUMENT_URL\",\n        \"name\": \"DOCUMENT_NAME\",\n        \"note\": \"Please review and sign this document\",\n        \"description\": \"\",\n        \"signers\": [\n          {\n            \"name\": \"SIGNER_NAME\",\n            \"email\": \"SIGNER_EMAIL\",\n            \"phone\": \"SIGNER_PHONE\"\n          }\n        ],\n        \"createdAt\": \"TIMESTAMP\"\n      }\n    \n3. **signed:**\n    - When document is signed by signer this event will trigger.\n    ```\n    {\n        \"event\": \"signed\",\n        \"objectId\":\"DOCUMENT_ID\"\n        \"file\": \"DOCUMENT_URL\",\n        \"name\": \"DOCUMENT_NAME\",\n        \"note\": \"Please review and sign this document\",\n        \"description\": \"\",\n        \"signers\": [\n          {\n            \"name\": \"SIGNER_NAME\",\n            \"email\": \"SIGNER_EMAIL\",\n            \"phone\": \"SIGNER_PHONE\"\n          },\n        ]\n        \"signedAt\": \"TIMESTAMP\",\n        \"createdAt\": \"TIMESTAMP\"\n    }  \n4. **completed:**\n    - When document is signed by all signers this event will trigger.\n     ```\n    {\n        \"event\": \"completed\",\n        \"file\": \"DOCUMENT_URL\",\n        \"name\": \"DOCUMENT_NAME\",\n        \"note\": \"Please review and sign this document\",\n        \"description\": \"\",\n        \"signers\": [\n          {\n            \"name\": \"SIGNER_NAME\",\n            \"email\": \"SIGNER_EMAIL\",\n            \"phone\": \"SIGNER_PHONE\"\n          }\n        ],\n        \"completedAt\": \"TIMESTAMP\",\n        \"createdAt\": \"TIMESTAMP\"\n      }\n    \n5. **declined:**\n    - When document is declined by signer this event will trigger.\n    ```\n    {\n        \"event\": \"declined\",\n        \"file\": \"DOCUMENT_URL\",\n        \"name\": \"DOCUMENT_NAME\",\n        \"note\": \"Please review and sign this document\",\n        \"description\": \"\",\n        \"signers\": [\n          {\n            \"name\": \"SIGNER_NAME\",\n            \"email\": \"SIGNER_EMAIL\",\n            \"phone\": \"SIGNER_PHONE\"\n          }\n        ],\n        \"declinedBy\": \"SIGNER_EMAIL\",\n        \"declinedAt\": \"TIMESTAMP\",\n        \"createdAt\": \"TIMESTAMP\"\n      }\n"
+      description: "The save or update Webhook API allow you to save webhook url which is used to trigger events\n### events:\n\n1. **viewed:**\n    - When signer viewed document this event will trigger.\n    ```\n    {\n        \"event\": \"viewed\",\n        \"objectId\":\"DOCUMENT_ID\"\n        \"file\": \"DOCUMENT_URL\",\n        \"name\": \"DOCUMENT_NAME\",\n        \"note\": \"Please review and sign this document\",\n        \"description\": \"\",\n        \"signers\": [\n          {\n            \"name\": \"SIGNER_NAME\",\n            \"email\": \"SIGNER_EMAIL\",\n            \"phone\": \"SIGNER_PHONE\"\n          }\n        ],\n        \"viewedBy\": \"SIGNER_EMAIL\",\n        \"viewedAt\": \"TIMESTAMP\",\n        \"createdAt\": \"TIMESTAMP\"\n      }\n2. **created:**\n    - When document is created this event will trigger.\n    ```\n    {\n        \"event\": \"created\",\n        \"objectId\":\"DOCUMENT_ID\"\n        \"file\": \"DOCUMENT_URL\",\n        \"name\": \"DOCUMENT_NAME\",\n        \"note\": \"Please review and sign this document\",\n        \"description\": \"\",\n        \"signers\": [\n          {\n            \"name\": \"SIGNER_NAME\",\n            \"email\": \"SIGNER_EMAIL\",\n            \"phone\": \"SIGNER_PHONE\"\n          }\n        ],\n        \"createdAt\": \"TIMESTAMP\"\n      }\n    \n3. **signed:**\n    - When document is signed by signer this event will trigger.\n    ```\n    {\n        \"event\": \"signed\",\n        \"objectId\":\"DOCUMENT_ID\"\n        \"file\": \"DOCUMENT_URL\",\n        \"name\": \"DOCUMENT_NAME\",\n        \"note\": \"Please review and sign this document\",\n        \"description\": \"\",\n        \"signers\": [\n          {\n            \"name\": \"SIGNER_NAME\",\n            \"email\": \"SIGNER_EMAIL\",\n            \"phone\": \"SIGNER_PHONE\"\n          },\n        ]\n        \"signedAt\": \"TIMESTAMP\",\n        \"createdAt\": \"TIMESTAMP\"\n    }  \n4. **completed:**\n    - When document is signed by all signers this event will trigger.\n     ```\n    {\n        \"event\": \"completed\",\n        \"objectId\":\"DOCUMENT_ID\"\n        \"file\": \"DOCUMENT_URL\",\n        \"name\": \"DOCUMENT_NAME\",\n        \"note\": \"Please review and sign this document\",\n        \"description\": \"\",\n        \"signers\": [\n          {\n            \"name\": \"SIGNER_NAME\",\n            \"email\": \"SIGNER_EMAIL\",\n            \"phone\": \"SIGNER_PHONE\"\n          }\n        ],\n        \"completedAt\": \"TIMESTAMP\",\n        \"createdAt\": \"TIMESTAMP\"\n      }\n    \n5. **declined:**\n    - When document is declined by signer this event will trigger.\n    ```\n    {\n        \"event\": \"declined\",\n        \"objectId\":\"DOCUMENT_ID\"\n        \"file\": \"DOCUMENT_URL\",\n        \"name\": \"DOCUMENT_NAME\",\n        \"note\": \"Please review and sign this document\",\n        \"description\": \"\",\n        \"signers\": [\n          {\n            \"name\": \"SIGNER_NAME\",\n            \"email\": \"SIGNER_EMAIL\",\n            \"phone\": \"SIGNER_PHONE\"\n          }\n        ],\n        \"declinedBy\": \"SIGNER_EMAIL\",\n        \"declinedAt\": \"TIMESTAMP\",\n        \"createdAt\": \"TIMESTAMP\"\n      }\n"
       operationId: save&updateWebhook
       requestBody:
         description: Provide url to create Webhook
@@ -1199,7 +1159,7 @@ components:
             $ref: '#/components/schemas/template_Signers'
         sendInOrder:
           type: boolean
-          example: false
+          example: true
         createdAt:
           $ref: '#/components/schemas/date'
         updatedAt:
@@ -1339,7 +1299,7 @@ components:
             $ref: '#/components/schemas/template_Signers'
         sendInOrder:
           type: boolean
-          example: false
+          example: true
         createdAt:
           $ref: '#/components/schemas/date'
         updatedAt:
@@ -1462,7 +1422,10 @@ components:
             $ref: '#/components/schemas/draftdocument_body_signers'
         sendInOrder:
           type: boolean
-          example: false
+          example: true
+        enableOTP:
+          type: boolean
+          example: false   
     createdocument_body:
       required:
       - file
@@ -1512,7 +1475,10 @@ components:
           example: ""
         sendInOrder:
           type: boolean
-          example: false
+          example: true
+        enableOTP:
+          type: boolean
+          example: false  
     inline_response_200_d:
       type: object
       properties:
@@ -1578,12 +1544,15 @@ components:
           example: ""
         sendInOrder:
           type: boolean
-          example: false
+          example: true
         timeToCompleteDays:
           type: number
           description: time to complete days is used to calculate expiry date of your document
           format: number
           example: 15
+        enableOTP:
+          type: boolean
+          example: false   
     resendmail_body:
       required:
       - document_id
@@ -1645,6 +1614,9 @@ components:
         folderId:
           type: string
           example: ""
+        enableOTP:
+          type: boolean
+          example: false    
     inline_response_200_3:
       type: object
       properties:
@@ -1710,7 +1682,10 @@ components:
             $ref: '#/components/schemas/createtemplate_body_signers'
         sendInOrder:
           type: boolean
-          example: false
+          example: true
+        enableOTP:
+          type: boolean
+          example: false    
     inline_response_200_5:
       type: object
       properties:
@@ -1744,6 +1719,9 @@ components:
         folderId:
           type: string
           example: ""
+        enableOTP:
+          type: boolean
+          example: false    
     inline_response_404_7:
       type: object
       properties:
