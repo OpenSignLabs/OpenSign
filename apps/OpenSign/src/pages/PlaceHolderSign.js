@@ -1250,7 +1250,7 @@ function PlaceHolderSign() {
       selector: '[data-tut="addWidgets"]',
       content: () => (
         <TourContentWithBtn
-          message={t("tour-mssg.placeholder-sign-3")}
+          message={t("tour-mssg.placeholder-sign-4")}
           isChecked={handleDontShow}
         />
       ),
@@ -1261,19 +1261,18 @@ function PlaceHolderSign() {
       selector: '[data-tut="pdfArea"]',
       content: () => (
         <TourContentWithBtn
-          message={t("tour-mssg.placeholder-sign-4")}
+          message={t("tour-mssg.placeholder-sign-5")}
           isChecked={handleDontShow}
         />
       ),
       position: "top",
       style: { fontSize: "13px" }
     },
-
     {
       selector: '[data-tut="headerArea"]',
       content: () => (
         <TourContentWithBtn
-          message={t("tour-mssg.placeholder-sign-5")}
+          message={t("tour-mssg.placeholder-sign-6")}
           isChecked={handleDontShow}
         />
       ),
@@ -1875,7 +1874,7 @@ function PlaceHolderSign() {
                     isOpen={isSend}
                     title={
                       mailStatus === "quotareached"
-                        ? t("quotamailhead")
+                        ? t("quota-mail-head")
                         : t("Mails Sent")
                     }
                     handleClose={() => {

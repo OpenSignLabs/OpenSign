@@ -32,6 +32,7 @@ export default async function GenerateCertificate(docDetails) {
   const OriginIp = docDetails?.OriginIp || '';
   const company = docDetails?.ExtUserPtr?.Company || '';
   const createdAt = docDetails?.DocSentAt?.iso || docDetails.createdAt;
+  const IsEnableOTP = docDetails?.IsEnableOTP || false;
   const auditTrail =
     docDetails?.Signers?.length > 0
       ? docDetails.AuditTrail.map(x => {
@@ -348,22 +349,22 @@ export default async function GenerateCertificate(docDetails) {
       font: timesRomanFont,
       color: textValueColor,
     });
-    page.drawText('Security level :', {
-      x: half + 55,
-      y: yPosition4 + 10,
-      size: timeText,
-      font: timesRomanFont,
-      color: textKeyColor,
-    });
-
-    page.drawText(`Email, OTP Auth`, {
-      x: half + 125,
-      y: yPosition4 + 10,
-      size: timeText,
-      font: timesRomanFont,
-      color: textValueColor,
-    });
-
+    if (IsEnableOTP) {
+      page.drawText('Security level :', {
+        x: half + 55,
+        y: yPosition4 + 10,
+        size: timeText,
+        font: timesRomanFont,
+        color: textKeyColor,
+      });
+      page.drawText('Email, OTP Auth', {
+        x: half + 125,
+        y: yPosition4 + 10,
+        size: timeText,
+        font: timesRomanFont,
+        color: textValueColor,
+      });
+    }
     page.drawText('Signature :', {
       x: 30,
       y: yPosition5,

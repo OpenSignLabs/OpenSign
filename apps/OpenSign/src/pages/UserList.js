@@ -9,7 +9,7 @@ import Tooltip from "../primitives/Tooltip";
 import AddUser from "../components/AddUser";
 import SubscribeCard from "../primitives/SubscribeCard";
 import { isEnableSubscription } from "../constant/const";
-import { checkIsSubscribed } from "../constant/Utils";
+import { fetchSubscriptionInfo } from "../constant/Utils";
 import Title from "../components/Title";
 import { validplan } from "../json/plansArr";
 import { useTranslation } from "react-i18next";
@@ -19,7 +19,11 @@ const UserList = () => {
   const { t } = useTranslation();
   const [userList, setUserList] = useState([]);
   const [isLoader, setIsLoader] = useState(false);
-  const [isModal, setIsModal] = useState(false);
+  const [isModal, setIsModal] = useState({
+    form: false,
+    addseats: false,
+    options: false
+  });
   const location = useLocation();
   const isDashboard =
     location?.pathname === "/dashboard/35KBoSgoAK" ? true : false;
@@ -27,9 +31,16 @@ const UserList = () => {
   const [isAlert, setIsAlert] = useState({ type: "success", msg: "" });
   const [isActiveModal, setIsActiveModal] = useState({});
   const [isActLoader, setIsActLoader] = useState({});
-  const [isSubscribe, setIsSubscribe] = useState({ plan: "", isValid: false });
+  const [isSubscribe, setIsSubscribe] = useState({
+    plan: "",
+    isValid: false,
+    priceperUser: 0
+  });
   const [isAdmin, setIsAdmin] = useState(false);
   const [formHeader, setFormHeader] = useState(t("add-user"));
+  const [usersCount, setUserCounts] = useState({ allowed: 0, totalAllowed: 0 });
+  const [amount, setAmount] = useState({ quantity: 1, price: 0 });
+  const [isBuyLoader, setIsBuyLoader] = useState(false);
   const recordperPage = 10;
   const startIndex = (currentPage - 1) * recordperPage; // user per page
 
@@ -81,10 +92,13 @@ const UserList = () => {
         pages.push(lastPageIndex);
       }
     }
-
     return pages;
   };
   const pageNumbers = getPaginationRange();
+  // to slice out 10 objects from array for current page
+  const indexOfLastDoc = currentPage * recordperPage;
+  const indexOfFirstDoc = indexOfLastDoc - recordperPage;
+  const currentList = userList?.slice(indexOfFirstDoc, indexOfLastDoc);
   useEffect(() => {
     fetchUserList();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -92,13 +106,43 @@ const UserList = () => {
   async function fetchUserList() {
     try {
       setIsLoader(true);
+      const extUser =
+        localStorage.getItem("Extand_Class") &&
+        JSON.parse(localStorage.getItem("Extand_Class"))?.[0];
       if (isEnableSubscription) {
-        const subscribe = await checkIsSubscribed();
-        setIsSubscribe(subscribe);
+        const subscribe = await fetchSubscriptionInfo();
+        if (subscribe?.plan_code?.includes("team")) {
+          const isSupAdmin =
+            subscribe?.adminId && extUser?.objectId === subscribe?.adminId;
+          setIsSubscribe({
+            plan: subscribe.plan_code,
+            isValid: true,
+            adminId: subscribe.adminId,
+            priceperUser: subscribe.price,
+            isSuperAdmin: isSupAdmin
+          });
+          setAmount((prev) => ({ ...prev, price: subscribe.price }));
+          try {
+            const res = await Parse.Cloud.run("allowedusers");
+            setUserCounts((obj) => ({
+              ...obj,
+              allowed: parseInt(res),
+              totalAllowed: parseInt(subscribe?.totalAllowedUser) || 0
+            }));
+          } catch (err) {
+            console.log("err while get users", err);
+          }
+        } else {
+          setIsSubscribe({
+            plan: subscribe.plan_code,
+            isValid: false,
+            adminId: subscribe.adminId
+          });
+        }
       } else {
         setIsSubscribe({ plan: "teams-yearly", isValid: true });
       }
-      const extUser = JSON.parse(localStorage.getItem("Extand_Class"))?.[0];
+
       if (extUser) {
         const admin =
           extUser?.UserRole &&
@@ -117,26 +161,36 @@ const UserList = () => {
       console.log("Err in fetch userlist", err);
       setIsAlert({ type: "danger", msg: t("something-went-wrong-mssg") });
     } finally {
-      setTimeout(() => {
-        setIsAlert({ type: "success", msg: "" });
-      }, 1500);
+      setTimeout(() => setIsAlert({ type: "success", msg: "" }), 1500);
       setIsLoader(false);
     }
   }
-  const handleFormModal = () => {
-    setIsModal(!isModal);
+  const handleModal = (modalName) => {
+    setIsModal((obj) => ({ ...obj, [modalName]: !obj[modalName] }));
   };
 
   // Change page
-  const paginateFront = () => setCurrentPage(currentPage + 1);
-  const paginateBack = () => setCurrentPage(currentPage - 1);
-  // const handleActionBtn = (act, item) => {
-  //   if (act.action === "delete") {
-  //     setIsDeleteModal({ [item.objectId]: true });
-  //   }
-  // };
+  const paginateFront = () => {
+    const lastValue = pageNumbers?.[pageNumbers?.length - 1];
+    if (currentPage < lastValue) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const paginateBack = () => {
+    if (startIndex > 0) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
   const handleUserData = (userData) => {
-    setUserList((prev) => [userData, ...prev]);
+    if (userData) {
+      setUserCounts((obj) => ({
+        ...obj,
+        allowed: obj?.allowed > 0 ? obj.allowed - 1 : 1
+      }));
+      setUserList((prev) => [userData, ...prev]);
+    }
   };
   // `formatRow` is used to show data in poper manner like
   // if data is of array type then it will join array items with ","
@@ -152,9 +206,8 @@ const UserList = () => {
       return "-";
     }
   };
-  const handleClose = () => {
-    setIsActiveModal({});
-  };
+  const handleClose = () => setIsActiveModal({});
+
   const handleToggleSubmit = async (user) => {
     const index = userList.findIndex((obj) => obj.objectId === user.objectId);
     if (index !== -1) {
@@ -186,6 +239,49 @@ const UserList = () => {
   const handleToggleBtn = (user) => {
     setIsActiveModal({ [user.objectId]: true });
   };
+
+  const handleAddOnSubmit = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsBuyLoader(true);
+    try {
+      const resAddon = await Parse.Cloud.run("buyaddonusers", {
+        users: parseInt(amount.quantity)
+      });
+      if (resAddon) {
+        const _resAddon = JSON.parse(JSON.stringify(resAddon));
+        if (_resAddon.status === "success") {
+          setUserCounts((obj) => ({
+            ...obj,
+            allowed: parseInt(obj.allowed) + parseInt(amount.quantity),
+            totalAllowed: parseInt(_resAddon.addon)
+          }));
+          setAmount((obj) => ({ ...obj, quantity: 1 }));
+        }
+      }
+    } catch (err) {
+      console.log("Err in buy addon", err);
+      setIsAlert({ type: "danger", msg: t("something-went-wrong-mssg") });
+    } finally {
+      setTimeout(() => setIsAlert({ type: "success", msg: "" }), 2000);
+      setIsBuyLoader(false);
+      handleModal("addseats");
+    }
+  };
+  const handlePricePerUser = (e) => {
+    const quantity = e.target.value;
+    const price = e.target?.value > 0 ? isSubscribe.priceperUser * quantity : 0;
+    setAmount((prev) => ({ ...prev, quantity: quantity, price: price }));
+  };
+  const handleBuyUsers = (allowed, totalAllowed) => {
+    if (allowed && totalAllowed) {
+      setUserCounts((obj) => ({
+        ...obj,
+        allowed: parseInt(obj.allowed) + parseInt(allowed),
+        totalAllowed: parseInt(totalAllowed)
+      }));
+    }
+  };
   return (
     <div className="relative">
       <Title title={isAdmin ? "Users" : "Page not found"} />
@@ -195,7 +291,7 @@ const UserList = () => {
         </div>
       )}
       {Object.keys(isActLoader)?.length > 0 && (
-        <div className="absolute w-full h-full flex justify-center items-center bg-black bg-opacity-30 z-30 rounded-box">
+        <div className="absolute w-full h-full flex justify-center items-center bg-black/30 z-30 rounded-box">
           <Loader />
         </div>
       )}
@@ -206,19 +302,46 @@ const UserList = () => {
               {isAlert.msg && <Alert type={isAlert.type}>{isAlert.msg}</Alert>}
               <div className="flex flex-row items-center justify-between my-2 mx-3 text-[20px] md:text-[23px]">
                 <div className="font-light">
-                  {t("report-name.Users")}
+                  {t("report-name.Users")}{" "}
                   <span className="text-xs md:text-[13px] font-normal">
                     <Tooltip message={t("users-from-teams")} />
                   </span>
                 </div>
-                <div
-                  className="cursor-pointer"
-                  onClick={() => handleFormModal()}
-                >
-                  <i className="fa-light fa-square-plus text-accent text-[40px]"></i>
+                <div className="flex flex-row gap-2 items-center">
+                  {isEnableSubscription && isSubscribe?.isSuperAdmin && (
+                    <div
+                      className="hidden md:flex op-btn op-btn-sm h-[35px] op-btn-primary op-btn-outline text-xs mb-0.5"
+                      onClick={() => handleModal("addseats")}
+                    >
+                      {t("buy-users")}
+                    </div>
+                  )}
+                  <div
+                    className="cursor-pointer"
+                    onClick={() => handleModal("form")}
+                  >
+                    <i className="fa-light fa-square-plus text-accent text-[30px] md:text-[40px]"></i>
+                  </div>
+                  {isEnableSubscription && isSubscribe?.isSuperAdmin && (
+                    <div
+                      className="cursor-pointer relative md:hidden mb-0.5"
+                      onClick={() => handleModal("options")}
+                    >
+                      <i className="fa-light fa-ellipsis-vertical fa-xl"></i>
+                      {isModal?.options && (
+                        <ul className="absolute -right-3 top-auto z-[70] w-max op-menu op-menu-xs shadow bg-base-100 text-base-content rounded-box border">
+                          <li onClick={() => handleModal("addseats")}>
+                            <span className="text-[13px] capitalize font-medium">
+                              {t("buy-users")}
+                            </span>
+                          </li>
+                        </ul>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
-              <div className={` overflow-x-auto w-full`}>
+              <div className="overflow-x-auto w-full">
                 <table className="op-table border-collapse w-full">
                   <thead className="text-[14px]">
                     <tr className="border-y-[1px]">
@@ -232,7 +355,7 @@ const UserList = () => {
                   <tbody className="text-[12px]">
                     {userList?.length > 0 && (
                       <>
-                        {userList.map((item, index) => (
+                        {currentList.map((item, index) => (
                           <tr className="border-y-[1px]" key={index}>
                             {heading.includes("Sr.No") && (
                               <th className="px-4 py-2">
@@ -296,49 +419,6 @@ const UserList = () => {
                                 )}
                               </td>
                             )}
-                            {/* <td className="px-3 py-2 text-white grid grid-cols-2">
-                        {actions?.length > 0 &&
-                          actions.map((act, index) => (
-                            <button
-                              key={index}
-                              onClick={() => handleActionBtn(act, item)}
-                              title={act.hoverLabel}
-                              className={`${
-                                act?.btnColor ? act.btnColor : ""
-                              } op-btn op-btn-sm`}
-                            >
-                              <i className={act.btnIcon}></i>
-                            </button>
-                          ))}
-                        {isDeleteModal[item.objectId] && (
-                          <ModalUi
-                            isOpen
-                            title={t("delete-user")}
-                            handleClose={handleClose}
-                          >
-                            <div className="m-[20px]">
-                              <div className="text-lg font-normal text-black">
-                                  {t( "are-you-sure")} {t("delete")}    {t("this-user")}?
-                              </div>
-                              <hr className="bg-[#ccc] mt-4 " />
-                              <div className="flex items-center mt-3 gap-2 text-white">
-                                <button
-                                  onClick={() => handleDelete(item)}
-                                  className="op-btn op-btn-primary"
-                                >
-                                  {t("yes")}
-                                </button>
-                                <button
-                                  onClick={handleClose}
-                                  className="op-btn op-btn-secondary"
-                                >
-                                  {('no)}
-                                </button>
-                              </div>
-                            </div>
-                          </ModalUi>
-                        )}
-                      </td> */}
                           </tr>
                         ))}
                       </>
@@ -346,34 +426,42 @@ const UserList = () => {
                   </tbody>
                 </table>
               </div>
-              <div className="op-join flex flex-wrap items-center p-2">
-                {userList.length > recordperPage && (
-                  <button
-                    onClick={() => paginateBack()}
-                    className="op-join-item op-btn op-btn-sm"
-                  >
-                    {t("prev")}
-                  </button>
-                )}
-                {pageNumbers.map((x, i) => (
-                  <button
-                    key={i}
-                    onClick={() => setCurrentPage(x)}
-                    disabled={x === "..."}
-                    className={`${
-                      x === currentPage ? "op-btn-active" : ""
-                    } op-join-item op-btn op-btn-sm`}
-                  >
-                    {x}
-                  </button>
-                ))}
-                {userList.length > recordperPage && (
-                  <button
-                    onClick={() => paginateFront()}
-                    className="op-join-item op-btn op-btn-sm"
-                  >
-                    {t("next")}
-                  </button>
+              <div className="flex flex-row  justify-between items-center text-xs font-medium">
+                <div className="op-join flex flex-wrap items-center p-2">
+                  {userList.length > recordperPage && (
+                    <button
+                      onClick={() => paginateBack()}
+                      className="op-join-item op-btn op-btn-sm"
+                    >
+                      {t("prev")}
+                    </button>
+                  )}
+                  {pageNumbers.map((x, i) => (
+                    <button
+                      key={i}
+                      onClick={() => setCurrentPage(x)}
+                      disabled={x === "..."}
+                      className={`${
+                        x === currentPage ? "op-btn-active" : ""
+                      } op-join-item op-btn op-btn-sm`}
+                    >
+                      {x}
+                    </button>
+                  ))}
+                  {userList.length > recordperPage && (
+                    <button
+                      onClick={() => paginateFront()}
+                      className="op-join-item op-btn op-btn-sm"
+                    >
+                      {t("next")}
+                    </button>
+                  )}
+                </div>
+                {isEnableSubscription && isSubscribe?.isSuperAdmin && (
+                  <div>
+                    {t("available-seats")}: {usersCount.allowed}/
+                    {usersCount.totalAllowed}
+                  </div>
                 )}
               </div>
               {userList?.length <= 0 && (
@@ -395,16 +483,59 @@ const UserList = () => {
                 </div>
               )}
               <ModalUi
-                isOpen={isModal}
+                isOpen={isModal.form}
                 title={formHeader}
-                handleClose={handleFormModal}
+                handleClose={() => handleModal("form")}
               >
                 <AddUser
                   setIsAlert={setIsAlert}
                   handleUserData={handleUserData}
-                  closePopup={handleFormModal}
+                  handleBuyUsers={handleBuyUsers}
+                  closePopup={() => handleModal("form")}
                   setFormHeader={setFormHeader}
                 />
+              </ModalUi>
+              <ModalUi
+                isOpen={isModal.addseats}
+                title="Add Seats"
+                handleClose={() => handleModal("addseats")}
+              >
+                {isBuyLoader && (
+                  <div className="absolute w-full h-full inset-0 flex justify-center items-center bg-base-content/30 z-50">
+                    <Loader />
+                  </div>
+                )}
+                <form onSubmit={handleAddOnSubmit} className=" px-3 pb-6 pt-6">
+                  <div className="mb-3 flex justify-between">
+                    <label
+                      htmlFor="quantity"
+                      className="block text-xs text-gray-700 font-semibold"
+                    >
+                      {t("Quantity-of-users")}
+                      <span className="text-[red] text-[13px]"> *</span>
+                    </label>
+                    <input
+                      type="number"
+                      name="quantity"
+                      value={amount.quantity}
+                      onChange={(e) => handlePricePerUser(e)}
+                      className="w-1/4 op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content text-xs"
+                      required
+                    />
+                  </div>
+                  <div className="mb-3 flex justify-between">
+                    <label className="block text-xs text-gray-700 font-semibold">
+                      {t("Price")} (1 * {isSubscribe.priceperUser})
+                    </label>
+                    <div className="w-1/4 flex justify-center items-center text-sm">
+                      USD {amount.price}
+                    </div>
+                  </div>
+                  <hr className="text-base-content mb-3" />
+                  <button className="op-btn op-btn-primary w-full">
+                    {t("Proceed")}
+                  </button>
+                </form>
               </ModalUi>
             </div>
           ) : (

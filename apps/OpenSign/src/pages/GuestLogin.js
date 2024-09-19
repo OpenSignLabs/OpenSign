@@ -28,6 +28,28 @@ function GuestLogin() {
   const [contactId, setContactId] = useState(contactBookId);
   const [sendmail, setSendmail] = useState();
   const [contact, setContact] = useState({ name: "", phone: "", email: "" });
+  const navigateToDoc = async (docId, contactId) => {
+    try {
+      const docDetails = await Parse.Cloud.run("getDocument", {
+        docId: docId
+      });
+      if (!docDetails.error) {
+        if (sendmail === "false") {
+          navigate(
+            `/load/recipientSignPdf/${docId}/${contactId}?sendmail=${sendmail}`
+          );
+        } else {
+          navigate(`/load/recipientSignPdf/${docId}/${contactId}`);
+        }
+        return true;
+      } else {
+        return false;
+      }
+    } catch (err) {
+      console.log("err while getting doc", err);
+      return false;
+    }
+  };
   useEffect(() => {
     handleServerUrl();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -70,13 +92,14 @@ function GuestLogin() {
             "linkcontacttodoc",
             params
           );
-          // console.log("linkContactRes ", linkContactRes);
           setContactId(linkContactRes?.contactId);
+          await navigateToDoc(checkSplit[0], linkContactRes?.contactId);
         } catch (err) {
           console.log("Err in link ext contact", err);
         }
       } else {
         setContactId(checkSplit[2]);
+        await navigateToDoc(checkSplit[0], checkSplit[2]);
       }
     }
 
@@ -114,15 +137,12 @@ function GuestLogin() {
     if (OTP) {
       setLoading(true);
       try {
-        let url = `${serverUrl}functions/AuthLoginAsMail/`;
+        let url = `${serverUrl}functions/AuthLoginAsMail`;
         const headers = {
           "Content-Type": "application/json",
           "X-Parse-Application-Id": parseId
         };
-        let body = {
-          email: email,
-          otp: OTP
-        };
+        let body = { email: email, otp: OTP };
         let user = await axios.post(url, body, { headers: headers });
         if (user.data.result === "Invalid Otp") {
           alert(t("invalid-otp"));
@@ -140,7 +160,6 @@ function GuestLogin() {
             `Parse/${parseId}/currentUser`,
             JSON.stringify(_user)
           );
-          // console.log("contractUserDetails ", contractUserDetails);
           if (contractUserDetails && contractUserDetails.length > 0) {
             localStorage.setItem(
               "Extand_Class",
@@ -174,10 +193,15 @@ function GuestLogin() {
     try {
       setLoading(true);
       const linkContactRes = await Parse.Cloud.run("linkcontacttodoc", params);
-      // console.log("linkContactRes ", linkContactRes);
       setContactId(linkContactRes.contactId);
-      setEnterOtp(true);
-      await SendOtp();
+      const IsEnableOTP = await navigateToDoc(
+        documentId,
+        linkContactRes.contactId
+      );
+      if (!IsEnableOTP) {
+        setEnterOtp(true);
+        await SendOtp();
+      }
     } catch (err) {
       setLoading(false);
       alert(t("something-went-wrong-mssg"));
@@ -208,7 +232,7 @@ function GuestLogin() {
                   <div className="w-full md:w-[50%] text-base-content">
                     <h1 className="text-2xl md:text-[30px]">{t("welcome")}</h1>
                     <legend className="text-[12px] text-[#878787] mt-2 mb-1">
-                      {t("guest-email-alert")}
+                      {t("get-otp-alert")}
                     </legend>
                     <div className="p-[20px] outline outline-1 outline-slate-300/50 my-2 op-card shadow-md">
                       <input
@@ -236,7 +260,7 @@ function GuestLogin() {
                   >
                     <h1 className="text-2xl md:text-[30px]">{t("welcome")}</h1>
                     <legend className="text-[12px] text-[#878787] mt-2">
-                      {t("get-verification-code-2")}
+                      {t("guest-email-alert")}
                     </legend>
                     <div className="p-[20px] pt-[15px] outline outline-1 outline-slate-300/50 op-card my-2 shadow-md">
                       <p className="text-sm">{t("enter-verification-code")}</p>

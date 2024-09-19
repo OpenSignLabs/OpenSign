@@ -28,15 +28,42 @@ export default function getPresignedUrl(url) {
 
 export async function getSignedUrl(request) {
   try {
+    const docId = request.params.docId || '';
     const url = request.params.url;
-    if (!request?.user) {
-      throw new Parse.Error(Parse.Error.INVALID_SESSION_TOKEN, 'User is not authenticated.');
+    if (docId) {
+      try {
+        const query = new Parse.Query('contracts_Document');
+        query.equalTo('objectId', docId);
+        query.notEqualTo('IsEnableOTP', true);
+        query.include('CreatedBy');
+        query.include('Signers');
+        query.include('AuditTrail.UserPtr');
+        query.include('Placeholders');
+        query.include('DeclineBy');
+        query.notEqualTo('IsArchive', true);
+        const res = await query.first({ useMasterKey: true });
+        if (res) {
+          if (useLocal !== 'true') {
+            const presignedUrl = getPresignedUrl(url);
+            return presignedUrl;
+          } else {
+            return url;
+          }
+        }
+      } catch (err) {
+        console.log('Err in presigned url', err);
+        throw err;
+      }
     } else {
-      if (useLocal !== 'true') {
-        const presignedUrl = getPresignedUrl(url);
-        return presignedUrl;
+      if (!request?.user) {
+        throw new Parse.Error(Parse.Error.INVALID_SESSION_TOKEN, 'User is not authenticated.');
       } else {
-        return url;
+        if (useLocal !== 'true') {
+          const presignedUrl = getPresignedUrl(url);
+          return presignedUrl;
+        } else {
+          return url;
+        }
       }
     }
   } catch (err) {

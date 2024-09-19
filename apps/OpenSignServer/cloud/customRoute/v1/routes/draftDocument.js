@@ -12,6 +12,8 @@ export default async function draftDocument(request, response) {
   const send_email = request.body.send_email || true;
   const fileData = request.files?.[0] ? request.files[0].buffer : null;
   const SendinOrder = request.body.sendInOrder || false;
+  const isEnableOTP = request.body?.enableOTP === true ? true : false;
+
   // console.log('fileData ', fileData);
   const protocol = customAPIurl();
   const baseUrl = new URL(process.env.PUBLIC_URL);
@@ -83,6 +85,7 @@ export default async function draftDocument(request, response) {
         object.set('CreatedBy', userPtr);
         object.set('ExtUserPtr', extUserPtr);
         object.set('IsSendMail', send_email);
+        object.set('IsEnableOTP', isEnableOTP);
         if (signers && signers.length > 0) {
           let parseSigners;
           if (base64File) {

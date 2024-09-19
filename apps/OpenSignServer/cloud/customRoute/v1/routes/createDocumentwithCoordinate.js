@@ -63,6 +63,7 @@ export default async function createDocumentwithCoordinate(request, response) {
   const email_body = request.body.email_body;
   const sendInOrder = request.body.sendInOrder || false;
   const TimeToCompleteDays = request.body.timeToCompleteDays || 15;
+  const IsEnableOTP = request.body?.enableOTP === true ? true : false;
   // console.log('fileData ', fileData);
   const protocol = customAPIurl();
   const baseUrl = new URL(process.env.PUBLIC_URL);
@@ -162,6 +163,7 @@ export default async function createDocumentwithCoordinate(request, response) {
             if (TimeToCompleteDays) {
               object.set('TimeToCompleteDays', TimeToCompleteDays);
             }
+            object.set('IsEnableOTP', IsEnableOTP);
             object.set('IsSendMail', send_email);
             let contact = [];
             if (signers && signers.length > 0) {

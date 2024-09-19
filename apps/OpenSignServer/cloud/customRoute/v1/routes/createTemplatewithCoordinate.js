@@ -17,6 +17,8 @@ export default async function createTemplatewithCoordinate(request, response) {
   const base64File = request.body.file;
   const fileData = request.files?.[0] ? request.files[0].buffer : null;
   const SendinOrder = request.body.sendInOrder || false;
+  const isEnableOTP = request.body?.enableOTP === true ? true : false;
+
   // console.log('fileData ', fileData);
   const protocol = customAPIurl();
 
@@ -80,6 +82,7 @@ export default async function createTemplatewithCoordinate(request, response) {
         object.set('URL', fileUrl);
         object.set('CreatedBy', userPtr);
         object.set('ExtUserPtr', extUserPtr);
+        object.set('IsEnableOTP', isEnableOTP);
         let contact = [];
         if (signers && signers.length > 0) {
           let parseSigners;

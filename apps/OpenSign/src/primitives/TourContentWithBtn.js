@@ -14,8 +14,9 @@ export default function TourContentWithBtn({ message, isChecked, video }) {
     <div>
       <p>{message}</p>
       {video && (
-        <div className="flex items-center justify-center my-[10px] border-[1.3px] border-gray-400 rounded-sm">
+        <div className="flex items-center justify-center w-full md:h-[300px] my-[10px] border-[1.3px] border-gray-400 rounded-sm">
           <iframe
+            className="w-full h-full"
             src={video}
             title="YouTube video player"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"

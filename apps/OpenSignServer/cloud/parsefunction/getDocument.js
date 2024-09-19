@@ -6,14 +6,7 @@ export default async function getDocument(request) {
   const docId = request.params.docId;
 
   try {
-    const userRes = await axios.get(serverUrl + '/users/me', {
-      headers: {
-        'X-Parse-Application-Id': process.env.APP_ID,
-        'X-Parse-Session-Token': request.headers['sessiontoken'],
-      },
-    });
-    const userId = userRes.data && userRes.data.objectId;
-    if (docId && userId) {
+    if (docId) {
       try {
         const query = new Parse.Query('contracts_Document');
         query.equalTo('objectId', docId);
@@ -26,11 +19,32 @@ export default async function getDocument(request) {
         query.notEqualTo('IsArchive', true);
         const res = await query.first({ useMasterKey: true });
         if (res) {
-          const acl = res.getACL();
-          if (acl && acl.getReadAccess(userId)) {
+          const IsEnableOTP = res?.get('IsEnableOTP') || false;
+          if (!IsEnableOTP) {
             return res;
           } else {
-            return { error: "You don't have access of this document!" };
+            if (request?.headers?.['sessiontoken']) {
+              try {
+                const userRes = await axios.get(serverUrl + '/users/me', {
+                  headers: {
+                    'X-Parse-Application-Id': process.env.APP_ID,
+                    'X-Parse-Session-Token': request.headers['sessiontoken'],
+                  },
+                });
+                const userId = userRes.data && userRes.data?.objectId;
+                const acl = res.getACL();
+                if (userId && acl && acl.getReadAccess(userId)) {
+                  return res;
+                } else {
+                  return { error: "You don't have access of this document!" };
+                }
+              } catch (err) {
+                console.log('err user in not authenticated', err);
+                return { error: "You don't have access of this document!" };
+              }
+            } else {
+              return { error: "You don't have access of this document!" };
+            }
           }
         } else {
           return { error: "You don't have access of this document!" };
