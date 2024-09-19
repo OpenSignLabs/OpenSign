@@ -44,7 +44,7 @@ const EditTemplate = ({ template, onSuccess }) => {
     e.stopPropagation();
     const isChecked = formData.SendinOrder === "true" ? true : false;
     const AutoReminder = formData?.AutomaticReminders || false;
-
+    const IsEnableOTP = formData.IsEnableOTP === "true" ? true : false;
     let reminderDate = {};
     if (AutoReminder) {
       const RemindOnceInEvery = parseInt(formData?.RemindOnceInEvery);
@@ -52,7 +52,12 @@ const EditTemplate = ({ template, onSuccess }) => {
       ReminderDate.setDate(ReminderDate.getDate() + RemindOnceInEvery);
       reminderDate = { NextReminderDate: ReminderDate };
     }
-    const data = { ...formData, SendinOrder: isChecked, ...reminderDate };
+    const data = {
+      ...formData,
+      SendinOrder: isChecked,
+      IsEnableOTP: IsEnableOTP,
+      ...reminderDate
+    };
     onSuccess(data);
   };
   const handleAutoReminder = () => {

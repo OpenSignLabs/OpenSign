@@ -708,7 +708,8 @@ export const createDocument = async (
       Signers: signers,
       SendinOrder: Doc?.SendinOrder || false,
       AutomaticReminders: Doc?.AutomaticReminders || false,
-      RemindOnceInEvery: parseInt(Doc?.RemindOnceInEvery || 5)
+      RemindOnceInEvery: parseInt(Doc?.RemindOnceInEvery || 5),
+      IsEnableOTP: Doc?.IsEnableOTP || false
     };
 
     try {
