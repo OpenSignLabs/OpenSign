@@ -151,7 +151,8 @@
     "Name": "Name",
     "Status": "Status",
     "created-date": "Created Date",
-    "Type": "Type"
+    "Type": "Type",
+    "Logs": "Logs"
   },
   "report-help": {
     "Draft Documents": "These are documents you have started but have not finalized for sending.",
@@ -572,9 +573,10 @@
     "pdf-request-file-5": "You can click 'Auto Sign All' to automatically sign at all the locations meant to be signed by you. Make sure that you review the document properly before you click this button .",
     "placeholder-sign-1": "Select a recipient from this list to add a place-holder where he is supposed to sign.The placeholder will appear in the same colour as the recipient name once you drop it on the document.",
     "placeholder-sign-2": "Clicking 'Add recipients' button will allow you to add more signers.",
-    "placeholder-sign-3": "Drag or click on a field to add it to the document.",
-    "placeholder-sign-4": "The PDF content area already displays the template's existing placeholders. For your convenience, these placeholders will match the color of the recipient's name, making them easily identifiable.",
-    "placeholder-sign-5": "Clicking 'Send' will save the document. In the next step you can customize the emails to be sent out to the recipients or copy the signing links and share those with the recipients yourself.",
+    "placeholder-sign-3": "Click this button to add more recipients/signers to the document.",
+    "placeholder-sign-4": "Drag or click on a field to add it to the document.",
+    "placeholder-sign-5": "The PDF content area already displays the template's existing placeholders. For your convenience, these placeholders will match the color of the recipient's name, making them easily identifiable.",
+    "placeholder-sign-6": "Clicking 'Send' will save the document. In the next step you can customize the emails to be sent out to the recipients or copy the signing links and share those with the recipients yourself.",
     "report-1": "Click the 'Add' button to create a new template. Templates are reusable documents designed to quickly generate new documents with the same structure and varying signers. For example, an HR template for onboarding could have predefined roles like ‘HR Manager’ and ‘New Employee’. Each time you use the template, you can assign the ‘New Employee’ role to different incoming staff members, while the ‘HR Manager’ role remains constant, facilitating a seamless onboarding process for each recruit. ",
     "redirect": "Click the 'Use' button to create a new document from an existing template.",
     "bulksend": "To quickly create and send multiple documents using an existing template, click the 'Quick Send' button.",
@@ -647,5 +649,7 @@
     "p4": "Please choose the option that best suits your document signing requirements."
   },
   "advanced-options":"Advanced options",
-  "hide-advanced-options":"Hide Advanced options"
+  "hide-advanced-options":"Hide Advanced options",
+  "document-logs":"Document logs"
+
 }

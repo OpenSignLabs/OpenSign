@@ -69,6 +69,7 @@ const ReportTable = (props) => {
   const [publicUserName, setIsPublicUserName] = useState("");
   const [isViewShare, setIsViewShare] = useState({});
   const [isSubscribe, setIsSubscribe] = useState(true);
+  const [isModal, setIsModal] = useState({});
   const [reason, setReason] = useState("");
   const Extand_Class = localStorage.getItem("Extand_Class");
   const extClass = Extand_Class && JSON.parse(Extand_Class);
@@ -1128,7 +1129,12 @@ const ReportTable = (props) => {
       <div className="p-2 w-full overflow-auto bg-base-100 text-base-content op-card shadow-lg">
         {isCelebration && (
           <div className="relative z-[1000]">
-            <Confetti width={window.innerWidth} height={window.innerHeight} />
+            <Confetti
+              width={window.innerWidth}
+              height={window.innerHeight}
+              recycle={false} // Prevents confetti from repeating
+              gravity={0.1} // Adjust the gravity to control the speed
+            />
           </div>
         )}
         {isAlert && <Alert type={alertMsg.type}>{alertMsg.message}</Alert>}
@@ -1288,9 +1294,55 @@ const ReportTable = (props) => {
                             {item?.URL ? t("download") : "-"}
                           </button>
                         </td>
-                        <td className="px-4 py-2">
-                          {formatRow(item?.ExtUserPtr)}
-                        </td>
+                        {props.ReportName === "In-progress documents" ? (
+                          <td className="px-4 py-2">
+                            <button
+                              onClick={() =>
+                                item?.AuditTrail?.length > 0 &&
+                                setIsModal({ [item?.objectId]: true })
+                              }
+                              className={`${
+                                item?.AuditTrail?.length
+                                  ? "border-green-400"
+                                  : "cursor-default op-border-primary"
+                              } focus:outline-none w-[60px] border-[2px] text-[12px] rounded-full md:self-center`}
+                            >
+                              {item?.AuditTrail?.length ? "VIEWED" : "SENT"}
+                            </button>
+                            {isModal[item.objectId] && (
+                              <ModalUi
+                                isOpen
+                                title={t("document-logs")}
+                                handleClose={() => setIsModal({})}
+                              >
+                                {item?.AuditTrail?.map((x, i) => (
+                                  <div
+                                    key={i}
+                                    className="pl-3 first:mt-2 text-sm font-medium flex flex-col md:flex-row items-start md:gap-4 border-t-[1px] border-gray-600"
+                                  >
+                                    <div className="py-2 break-all font-bold md:text-[12px] md:col-span-2 w-full md:w-[210px]">
+                                      {x?.UserPtr?.Email || "-"}
+                                    </div>
+                                    <button className="px-2 cursor-default border-[2px] text-[12px] border-green-400 rounded-full md:self-center">
+                                      {x?.Activity?.toUpperCase() || "-"}
+                                    </button>
+                                    <div className=" text-[12px] py-2">
+                                      {x?.Activity === "Signed"
+                                        ? new Date(x?.SignedOn)?.toUTCString()
+                                        : new Date(
+                                            x?.ViewedOn
+                                          )?.toUTCString() || "-"}
+                                    </div>
+                                  </div>
+                                ))}
+                              </ModalUi>
+                            )}
+                          </td>
+                        ) : (
+                          <td className="px-4 py-2">
+                            {formatRow(item?.ExtUserPtr)}
+                          </td>
+                        )}
                         <td className="px-4 py-2">
                           {!item?.IsSignyourself && item?.Placeholders ? (
                             <button
@@ -1308,11 +1360,7 @@ const ReportTable = (props) => {
                             <td className=" pl-[20px] py-2">
                               {props.ReportName === "Templates" && (
                                 <div className="flex flex-row">
-                                  <label
-                                    className={
-                                      "cursor-pointer relative inline-flex items-center mb-0"
-                                    }
-                                  >
+                                  <label className="cursor-pointer relative inline-flex items-center mb-0">
                                     <input
                                       checked={props.isPublic?.[item.objectId]}
                                       onChange={(e) =>

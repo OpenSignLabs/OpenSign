@@ -1658,6 +1658,8 @@ function PdfRequestFiles(props) {
                   <Confetti
                     width={window.innerWidth}
                     height={window.innerHeight}
+                    recycle={false} // Prevents confetti from repeating
+                    gravity={0.1} // Adjust the gravity to control the speed
                   />
                 </div>
               )}
@@ -1670,7 +1672,8 @@ function PdfRequestFiles(props) {
                       : "auto"
                 }}
                 className={`${
-                  props.templateId && "m-1 border-[0.5px] border-gray-300"
+                  (props.templateId || isGuestSignFlow) &&
+                  "mx-2 border-[0.5px] border-gray-300"
                 } relative op-card overflow-hidden flex flex-col md:flex-row justify-between bg-base-300`}
               >
                 {!requestSignTour &&
