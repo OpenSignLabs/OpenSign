@@ -297,15 +297,15 @@ function PdfRequestFiles(props) {
           }
         }
       );
-      const documentData =
-        templateDeatils.data && templateDeatils.data.result
-          ? [templateDeatils.data.result]
-          : [];
+      const documentData = templateDeatils?.data?.result
+        ? [templateDeatils?.data?.result]
+        : [];
       if (documentData && documentData[0]?.error) {
         props?.setTemplateStatus &&
           props?.setTemplateStatus({
             status: "Invalid"
           });
+        throw new Error("error: Invalid TemplateId");
       } else if (documentData && documentData.length > 0) {
         if (documentData[0]?.IsPublic) {
           props?.setTemplateStatus &&
@@ -359,20 +359,30 @@ function PdfRequestFiles(props) {
             props?.setTemplateStatus({
               status: "Private"
             });
+          setIsLoading(false);
+          setHandleError(t("something-went-wrong-mssg"));
+          console.error("error:  TemplateId is not public");
+          return;
         }
       } else {
         props?.setTemplateStatus &&
           props?.setTemplateStatus({
             status: "Invalid"
           });
+        setIsLoading(false);
+        setHandleError(t("something-went-wrong-mssg"));
+        console.error("error: Invalid TemplateId");
+        return;
       }
     } catch (err) {
-      console.log("err in get template details ", err);
+      setIsLoading(false);
       if (err?.response?.data?.code === 101) {
         setHandleError(t("error-template"));
       } else {
         setHandleError(t("something-went-wrong-mssg"));
       }
+      console.error("error: Invalid TemplateId");
+      return;
     }
   };
   //function for get document details for perticular signer with signer'object id
@@ -1641,7 +1651,6 @@ function PdfRequestFiles(props) {
       </div>
     );
   };
-  console.log("templateId", props.templateId);
   return (
     <DndProvider backend={HTML5Backend}>
       <Title title={props.templateId ? "Public Sign" : "Request Sign"} />

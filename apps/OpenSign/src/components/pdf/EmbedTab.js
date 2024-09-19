@@ -246,7 +246,7 @@ export class AppComponent{
                 {" "}
                 {t("public-template-mssg-4")}
                 <a
-                  href="https://www.npmjs.com/package/opensignme-angular"
+                  href="https://www.npmjs.com/package/opensign-angular"
                   target="_blank"
                   rel="noreferrer"
                   className="cursor-pointer text-blue-700  "
