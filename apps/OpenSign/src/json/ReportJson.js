@@ -10,6 +10,15 @@ export default function reportJson(id) {
     "Owner",
     "Signers"
   ];
+  const iphead = [
+    "Sr.No",
+    "Title",
+    "Note",
+    "Folder",
+    "File",
+    "Logs",
+    "Signers"
+  ];
   const contactbook = ["Sr.No", "Name", "Email", "Phone"];
   const dashboardReportHead = ["Title", "File", "Owner", "Signers"];
   const templateReport = ["Sr.No", "Title", "File", "Owner", "Signers"];
@@ -63,7 +72,7 @@ export default function reportJson(id) {
     case "1MwEuxLEkF":
       return {
         reportName: "In-progress documents",
-        heading: head,
+        heading: iphead,
         actions: [
           {
             btnId: "8901",

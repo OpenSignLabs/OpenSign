@@ -151,7 +151,8 @@
     "Name": "Name",
     "Status": "Status",
     "created-date": "Created Date",
-    "Type": "Type"
+    "Type": "Type",
+    "Logs": "Logs"
   },
   "report-help": {
     "Draft Documents": "These are documents you have started but have not finalized for sending.",
@@ -648,5 +649,7 @@
     "p4": "Please choose the option that best suits your document signing requirements."
   },
   "advanced-options":"Advanced options",
-  "hide-advanced-options":"Hide Advanced options"
+  "hide-advanced-options":"Hide Advanced options",
+  "document-logs":"Document logs"
+
 }
