@@ -375,7 +375,7 @@ function PdfRequestFiles(props) {
       // `currUserId` will be contactId or extUserId
       let currUserId;
       //getting document details
-      const documentData = await contractDocument(documentId || docId);
+      const documentData = await contractDocument(docId);
       if (documentData && documentData.length > 0) {
         const url =
           documentData[0] &&
@@ -903,7 +903,7 @@ function PdfRequestFiles(props) {
                 setIsSigned(true);
                 setSignedSigners([]);
                 setUnSignedSigners([]);
-                getDocumentDetails(true);
+                getDocumentDetails(documentId, true);
                 const index = pdfDetails?.[0]?.Signers.findIndex(
                   (x) => x.objectId === signerObjectId
                 );
