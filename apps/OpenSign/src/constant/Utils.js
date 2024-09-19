@@ -56,9 +56,7 @@ export async function fetchSubscription(
     const params = isGuestSign
       ? { contactId: contactObjId }
       : { extUserId: extUser, ispublic: isPublic };
-    console.log("params", params);
     const tenatRes = await axios.post(url, params, { headers: headers });
-    console.log("tenantRes", tenatRes);
     let plan, status, billingDate, adminId;
     if (isGuestSign) {
       plan = tenatRes.data?.result?.result?.plan;
