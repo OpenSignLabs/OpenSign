@@ -647,6 +647,9 @@
     "p4": "Veuillez choisir l'option qui correspond le mieux à vos exigences en matière de signature de documents."
   },
   "advanced-options":"Options avancées",
-  "hide-advanced-options": "Masquer les options avancées"
+  "hide-advanced-options": "Masquer les options avancées",
+   "download-files" :"Télécharger des fichiers",
+   "download-pdf" :"Télécharger le PDF",
+  "pdf-certificate"  :"Télécharger Pdf + Certificat"
 
 }

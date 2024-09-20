@@ -648,5 +648,8 @@
     "p4": "Please choose the option that best suits your document signing requirements."
   },
   "advanced-options":"Advanced options",
-  "hide-advanced-options":"Hide Advanced options"
+  "hide-advanced-options":"Hide Advanced options",
+  "download-files":"Download files",
+  "download-pdf":"Download Pdf",
+  "pdf-certificate":"Download Pdf + Certificate"
 }

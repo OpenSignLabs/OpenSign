@@ -11,8 +11,6 @@ import RenderAllPdfPage from "../components/pdf/RenderAllPdfPage";
 import WidgetComponent from "../components/pdf/WidgetComponent";
 import Tour from "reactour";
 import { useLocation, useParams } from "react-router-dom";
-import LoaderWithMsg from "../primitives/LoaderWithMsg";
-import HandleError from "../primitives/HandleError";
 import SignerListPlace from "../components/pdf/SignerListPlace";
 import Header from "../components/pdf/PdfHeader";
 import { RWebShare } from "react-web-share";
@@ -45,23 +43,27 @@ import {
 import RenderPdf from "../components/pdf/RenderPdf";
 import { useNavigate } from "react-router-dom";
 import PlaceholderCopy from "../components/pdf/PlaceholderCopy";
-import LinkUserModal from "../primitives/LinkUserModal";
 import Title from "../components/Title";
-import TourContentWithBtn from "../primitives/TourContentWithBtn";
-import ModalUi from "../primitives/ModalUi";
 import DropdownWidgetOption from "../components/pdf/DropdownWidgetOption";
 import WidgetNameModal from "../components/pdf/WidgetNameModal";
 import { SaveFileSize } from "../constant/saveFileSize";
 import { EmailBody } from "../components/pdf/EmailBody";
-import Upgrade from "../primitives/Upgrade";
-import Alert from "../primitives/Alert";
-import Loader from "../primitives/Loader";
 import { useSelector } from "react-redux";
 import PdfZoom from "../components/pdf/PdfZoom";
-import LottieWithLoader from "../primitives/DotLottieReact";
 import { useTranslation } from "react-i18next";
 import RotateAlert from "../components/RotateAlert";
-import QuotaCard from "../primitives/QuotaCard";
+import {
+  TourContentWithBtn,
+  ModalUi,
+  HandleError,
+  LoaderWithMsg,
+  LinkUserModal,
+  QuotaCard,
+  LottieWithLoader,
+  Alert,
+  Upgrade,
+  ModalUi
+} from "../primitives";
 
 function PlaceHolderSign() {
   const { t } = useTranslation();

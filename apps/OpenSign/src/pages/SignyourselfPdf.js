@@ -4,7 +4,6 @@ import "../styles/signature.css";
 import Parse from "parse";
 import Confetti from "react-confetti";
 import axios from "axios";
-import LoaderWithMsg from "../primitives/LoaderWithMsg";
 import RenderAllPdfPage from "../components/pdf/RenderAllPdfPage";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
@@ -42,21 +41,25 @@ import {
 import { useParams } from "react-router-dom";
 import Tour from "reactour";
 import Signedby from "../components/pdf/Signedby";
-import HandleError from "../primitives/HandleError";
 import Header from "../components/pdf/PdfHeader";
 import RenderPdf from "../components/pdf/RenderPdf";
 import PlaceholderCopy from "../components/pdf/PlaceholderCopy";
-import TourContentWithBtn from "../primitives/TourContentWithBtn";
 import Title from "../components/Title";
-import ModalUi from "../primitives/ModalUi";
 import DropdownWidgetOption from "../components/pdf/DropdownWidgetOption";
 import { useSelector } from "react-redux";
 import TextFontSetting from "../components/pdf/TextFontSetting";
 import VerifyEmail from "../components/pdf/VerifyEmail";
 import PdfZoom from "../components/pdf/PdfZoom";
-import Loader from "../primitives/Loader";
 import { useTranslation } from "react-i18next";
 import RotateAlert from "../components/RotateAlert";
+import {
+  DownloadPdfZip,
+  Loader,
+  ModalUi,
+  TourContentWithBtn,
+  HandleError,
+  LoaderWithMsg
+} from "../primitives";
 //For signYourself inProgress section signer can add sign and complete doc sign.
 function SignYourSelf() {
   const { t } = useTranslation();
@@ -130,6 +133,7 @@ function SignYourSelf() {
   const [pdfRotateBase64, setPdfRotatese64] = useState("");
   const [isRotate, setIsRotate] = useState({ status: false, degree: 0 });
   const [isSubscribe, setIsSubscribe] = useState({ plan: "", isValid: true });
+  const [isDownloadModal, setIsDownloadModal] = useState(false);
   const divRef = useRef(null);
   const nodeRef = useRef(null);
   const [, drop] = useDrop({
@@ -1346,6 +1350,7 @@ function SignYourSelf() {
                   clickOnZoomIn={clickOnZoomIn}
                   clickOnZoomOut={clickOnZoomOut}
                   widgetsDetails={xyPostion}
+                  setIsDownloadModal={setIsDownloadModal}
                 />
                 <div ref={divRef} data-tut="reactourSecond" className="h-full">
                   {containerWH?.width && containerWH?.height && (
@@ -1449,6 +1454,11 @@ function SignYourSelf() {
         isRotate={isRotate.status}
         setIsRotate={setIsRotate}
         handleRemoveWidgets={handleRemoveWidgets}
+      />
+      <DownloadPdfZip
+        setIsDownloadModal={setIsDownloadModal}
+        isDownloadModal={isDownloadModal}
+        pdfDetails={pdfDetails}
       />
       <TextFontSetting
         isTextSetting={isTextSetting}
