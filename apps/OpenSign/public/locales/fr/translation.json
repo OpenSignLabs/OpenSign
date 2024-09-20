@@ -136,7 +136,8 @@
     "Name": "Nom",
     "Status": "Statut",
     "created-date": "Date de création",
-    "Type": "Saisir"
+    "Type": "Saisir",
+    "Logs": "Journaux"
   },
   "btnLabel": {
     "sign": "Signer",
@@ -650,6 +651,7 @@
   "hide-advanced-options": "Masquer les options avancées",
    "download-files" :"Télécharger des fichiers",
    "download-pdf" :"Télécharger le PDF",
-  "pdf-certificate"  :"Télécharger Pdf + Certificat"
+  "pdf-certificate"  :"Télécharger Pdf + Certificat",
+  "document-logs":"Journaux de documents"
 
 }

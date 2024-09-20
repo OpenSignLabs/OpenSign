@@ -1662,6 +1662,8 @@ function PdfRequestFiles(props) {
                   <Confetti
                     width={window.innerWidth}
                     height={window.innerHeight}
+                    recycle={false} // Prevents confetti from repeating
+                    gravity={0.1} // Adjust the gravity to control the speed
                   />
                 </div>
               )}

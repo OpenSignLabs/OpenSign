@@ -17,7 +17,7 @@ import { exec } from 'child_process';
 import { createTransport } from 'nodemailer';
 import { app as v1 } from './cloud/customRoute/v1/apiV1.js';
 import { PostHog } from 'posthog-node';
-import { cloudServerUrl, smtpenable, smtpsecure, useLocal } from './Utils.js';
+import { appName, cloudServerUrl, smtpenable, smtpsecure, useLocal } from './Utils.js';
 import { SSOAuth } from './auth/authadapter.js';
 let fsAdapter;
 if (useLocal !== 'true') {
@@ -102,7 +102,7 @@ export const config = {
   verifyUserEmails: false,
   publicServerURL: process.env.SERVER_URL || cloudServerUrl,
   // Your apps name. This will appear in the subject and body of the emails that are sent.
-  appName: 'Opensign',
+  appName: appName,
   allowClientClassCreation: false,
   allowExpiredAuthDataToken: false,
   encodeParseObjectInCloudFunction: true,
@@ -112,7 +112,7 @@ export const config = {
           module: 'parse-server-api-mail-adapter',
           options: {
             // The email address from which emails are sent.
-            sender: 'Opensign™' + ' <' + mailsender + '>',
+            sender: appName + ' <' + mailsender + '>',
             // The email templates.
             templates: {
               // The template used by Parse Server to send an email for password
@@ -141,12 +141,7 @@ export const config = {
       }
     : {}),
   filesAdapter: fsAdapter,
-  auth: {
-    google: {
-      enabled: true,
-    },
-    sso: SSOAuth,
-  },
+  auth: { google: { enabled: true }, sso: SSOAuth },
 };
 // Client-keys like the javascript key or the .NET key are not necessary with parse-server
 // If you wish you require them, you can set them as options in the initialization above:
