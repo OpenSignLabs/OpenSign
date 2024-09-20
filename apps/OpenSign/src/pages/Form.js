@@ -660,9 +660,7 @@ const Forms = (props) => {
             )}
             <div className="text-xs">
               <label className="block">
-                {`${t("report-heading.File")} (${t("file-type")}${
-                  isEnableSubscription ? ", docx)" : ")"
-                }`}
+                {`${t("report-heading.File")} (${t("file-type")}`}
                 <span className="text-red-500 text-[13px]">*</span>
               </label>
               {fileupload.length > 0 ? (

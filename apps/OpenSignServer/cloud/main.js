@@ -68,6 +68,8 @@ import BuyCredits from './parsefunction/BuyCredits.js';
 import getContact from './parsefunction/getContact.js';
 import updateContactTour from './parsefunction/updateContactTour.js';
 import declinedocument from './parsefunction/declinedocument.js';
+import addcustomsmtp from './parsefunction/addcustomsmtp.js';
+import deactivateMailAdapter from './parsefunction/deactivateMailAdapter.js';
 
 // This afterSave function triggers after an object is added or updated in the specified class, allowing for post-processing logic.
 Parse.Cloud.afterSave('contracts_Document', DocumentAftersave);
@@ -148,3 +150,5 @@ Parse.Cloud.define('buycredits', BuyCredits);
 Parse.Cloud.define('getcontact', getContact);
 Parse.Cloud.define('updatecontacttour', updateContactTour);
 Parse.Cloud.define('declinedoc', declinedocument);
+Parse.Cloud.define('addsmtp', addcustomsmtp);
+Parse.Cloud.define('deactivatemailadapter', deactivateMailAdapter);

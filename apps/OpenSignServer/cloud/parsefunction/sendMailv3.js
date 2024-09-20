@@ -187,6 +187,111 @@ async function sendMailProvider(req, plan, monthchange) {
     }
   }
 }
+async function sendcustomsmtp(extRes, req) {
+  const smtpsecure = extRes.SmtpConfig.port !== '465' ? false : true;
+  const transporterSMTP = createTransport({
+    host: extRes.SmtpConfig.host,
+    port: extRes.SmtpConfig.port,
+    secure: smtpsecure,
+    auth: { user: extRes.SmtpConfig.username, pass: extRes.SmtpConfig.password },
+  });
+  if (req.params.url) {
+    let Pdf = fs.createWriteStream('test.pdf');
+    const writeToLocalDisk = () => {
+      return new Promise((resolve, reject) => {
+        if (useLocal !== 'true') {
+          https.get(req.params.url, async function (response) {
+            response.pipe(Pdf);
+            response.on('end', () => resolve('success'));
+          });
+        } else {
+          const path = new URL(req.params.url)?.pathname;
+          const localurl = 'http://localhost:8080' + path;
+          http.get(localurl, async function (response) {
+            response.pipe(Pdf);
+            response.on('end', () => resolve('success'));
+          });
+        }
+      });
+    };
+    // `writeToLocalDisk` is used to create pdf file from doc url
+    const ress = await writeToLocalDisk();
+    if (ress) {
+      function readTolocal() {
+        return new Promise((resolve, reject) => {
+          setTimeout(() => {
+            let PdfBuffer = fs.readFileSync(Pdf.path);
+            resolve(PdfBuffer);
+          }, 100);
+        });
+      }
+      //  `PdfBuffer` used to create buffer from pdf file
+      let PdfBuffer = await readTolocal();
+      const pdfName = req.params.pdfName ? `${req.params.pdfName}.pdf` : 'exported.pdf';
+      const file = { filename: pdfName, content: PdfBuffer };
+      let attachment;
+      const certificatePath = './exports/certificate.pdf';
+      if (fs.existsSync(certificatePath)) {
+        try {
+          //  `certificateBuffer` used to create buffer from pdf file
+          const certificateBuffer = fs.readFileSync(certificatePath);
+          const certificate = { filename: 'certificate.pdf', content: certificateBuffer };
+          attachment = [file, certificate];
+        } catch (err) {
+          attachment = [file];
+          console.log('Err in read certificate sendmailv3', err);
+        }
+      } else {
+        attachment = [file];
+      }
+      const from = req.params.from || '';
+      const mailsender = extRes.SmtpConfig.username;
+
+      const messageParams = {
+        from: from + ' <' + mailsender + '>',
+        to: req.params.recipient,
+        subject: req.params.subject,
+        text: req.params.text || 'mail',
+        html: req.params.html || '',
+        attachments: attachment,
+      };
+      const res = await transporterSMTP.sendMail(messageParams);
+      console.log('custom smtp transporter res: ', res?.response);
+      if (!res.err) {
+        if (req.params?.extUserId) {
+          await updateMailCount(req.params.extUserId); //, plan, monthchange
+        }
+        if (fs.existsSync(certificatePath)) {
+          try {
+            fs.unlinkSync(certificatePath);
+          } catch (err) {
+            console.log('Err in unlink certificate sendmailv3');
+          }
+        }
+        return { status: 'success', code: 200 };
+      }
+    }
+  } else {
+    const from = req.params.from || '';
+    const mailsender = extRes.SmtpConfig.username;
+    const messageParams = {
+      from: from + ' <' + mailsender + '>',
+      to: req.params.recipient,
+      subject: req.params.subject,
+      text: req.params.text || 'mail',
+      html: req.params.html || '',
+    };
+
+    const res = await transporterSMTP.sendMail(messageParams);
+    console.log('custom smtp transporter res: ', res?.response);
+    if (!res.err) {
+      if (req.params?.extUserId) {
+        await updateMailCount(req.params.extUserId); //, plan, monthchange
+      }
+      return { status: 'success', code: 200 };
+    }
+  }
+}
 async function sendmailv3(req) {
   const mailProvider = req.params.mailProvider || 'default';
   if (mailProvider) {
@@ -206,8 +311,20 @@ async function sendmailv3(req) {
       const extRes = await extUserQuery.get(extUserId, { useMasterKey: true });
       if (extRes) {
         const _extRes = JSON.parse(JSON.stringify(extRes));
-        if (_extRes.google_refresh_token && mailProvider === 'google') {
+        if (
+          _extRes.active_mail_adapter === 'google' &&
+          _extRes.google_refresh_token &&
+          mailProvider === 'google'
+        ) {
           const res = await sendMailGmailProvider(_extRes, template);
+          if (res.code === 200) {
+            await updateMailCount(req.params.extUserId);
+            return { status: 'success' };
+          } else {
+            return { status: 'error' };
+          }
+        } else if (_extRes.active_mail_adapter === 'smtp' && mailProvider === 'smtp') {
+          const res = await sendcustomsmtp(_extRes, req);
           if (res.code === 200) {
             await updateMailCount(req.params.extUserId);
             return { status: 'success' };

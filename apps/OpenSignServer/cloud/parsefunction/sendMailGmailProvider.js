@@ -75,15 +75,21 @@ const makeEmail = async (to, from, subject, html, url, pdfName) => {
       }
     }
     const attachmentParts = attachments.map(attachment => {
-      const content = fs.readFileSync(attachment.path);
-      const encodedContent = content.toString('base64');
-      return [
-        `Content-Type: ${attachment.type}\n`,
-        'MIME-Version: 1.0\n',
-        `Content-Disposition: attachment; filename="${attachment.filename}"\n`,
-        `Content-Transfer-Encoding: base64\n\n`,
-        `${encodedContent}\n`,
-      ].join('');
+      if (fs.existsSync(attachment.path)) {
+        try {
+          const content = fs.readFileSync(attachment.path);
+          const encodedContent = content.toString('base64');
+          return [
+            `Content-Type: ${attachment.type}\n`,
+            'MIME-Version: 1.0\n',
+            `Content-Disposition: attachment; filename="${attachment.filename}"\n`,
+            `Content-Transfer-Encoding: base64\n\n`,
+            `${encodedContent}\n`,
+          ].join('');
+        } catch (err) {
+          console.log('Err in read attachments sendmailv3', attachment.path);
+        }
+      }
     });
 
     const attachmentBody = attachmentParts.join(`\n--${boundary}\n`);
