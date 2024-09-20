@@ -2039,11 +2039,20 @@ export const fetchUrl = async (url, pdfName) => {
   }
 };
 export const getSignedUrl = async (pdfUrl, docId) => {
-  const signedUrl = await Parse.Cloud.run("getsignedurl", {
-    url: pdfUrl,
-    docId: docId || ""
-  });
-  return signedUrl;
+  //use only axios here due to public template sign
+  const axiosRes = await axios.post(
+    `${localStorage.getItem("baseUrl")}/functions/getsignedurl`,
+    { url: pdfUrl, docId: docId || "" },
+    {
+      headers: {
+        "content-type": "Application/json",
+        "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
+        "X-Parse-Session-Token": localStorage.getItem("accesstoken")
+      }
+    }
+  );
+  const url = axiosRes.data.result;
+  return url;
 };
 //handle download signed pdf
 export const handleDownloadPdf = async (pdfDetails, setIsDownloading) => {

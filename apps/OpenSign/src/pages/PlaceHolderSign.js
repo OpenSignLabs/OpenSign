@@ -52,18 +52,16 @@ import { useSelector } from "react-redux";
 import PdfZoom from "../components/pdf/PdfZoom";
 import { useTranslation } from "react-i18next";
 import RotateAlert from "../components/RotateAlert";
-import {
-  TourContentWithBtn,
-  ModalUi,
-  HandleError,
-  LoaderWithMsg,
-  LinkUserModal,
-  QuotaCard,
-  LottieWithLoader,
-  Alert,
-  Upgrade,
-  Loader
-} from "../primitives";
+import Loader from "../primitives/Loader";
+import ModalUi from "../primitives/ModalUi";
+import TourContentWithBtn from "../primitives/TourContentWithBtn";
+import HandleError from "../primitives/HandleError";
+import LoaderWithMsg from "../primitives/LoaderWithMsg";
+import LinkUserModal from "../primitives/LinkUserModal";
+import QuotaCard from "../primitives/QuotaCard";
+import LottieWithLoader from "../primitives/DotLottieReact";
+import Alert from "../primitives/Alert";
+import Upgrade from "../primitives/Upgrade";
 
 function PlaceHolderSign() {
   const { t } = useTranslation();

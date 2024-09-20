@@ -44,15 +44,13 @@ import SignerListComponent from "../components/pdf/SignerListComponent";
 import VerifyEmail from "../components/pdf/VerifyEmail";
 import PdfZoom from "../components/pdf/PdfZoom";
 import { useTranslation } from "react-i18next";
-import {
-  DownloadPdfZip,
-  Loader,
-  TourContentWithBtn,
-  ModalUi,
-  PdfDeclineModal,
-  HandleError,
-  LoaderWithMsg
-} from "../primitives";
+import ModalUi from "../primitives/ModalUi";
+import TourContentWithBtn from "../primitives/TourContentWithBtn";
+import HandleError from "../primitives/HandleError";
+import LoaderWithMsg from "../primitives/LoaderWithMsg";
+import DownloadPdfZip from "../primitives/DownloadPdfZip";
+import Loader from "../primitives/Loader";
+import PdfDeclineModal from "../primitives/PdfDeclineModal";
 
 function PdfRequestFiles(props) {
   const { t } = useTranslation();
