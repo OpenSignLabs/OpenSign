@@ -165,9 +165,7 @@ function EmailComponent({
               )}
               <button
                 className="op-btn op-btn-primary op-btn-sm text-[15px] ml-2"
-                onClick={() =>
-                  handleDownloadPdf(pdfDetails, pdfUrl, setIsDownloading)
-                }
+                onClick={() => handleDownloadPdf(pdfDetails, setIsDownloading)}
               >
                 <i className="fa-light fa-download" aria-hidden="true"></i>
                 {t("download")}

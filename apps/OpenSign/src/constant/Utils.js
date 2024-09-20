@@ -2039,12 +2039,9 @@ export const fetchUrl = async (url, pdfName) => {
   }
 };
 //handle download signed pdf
-export const handleDownloadPdf = async (
-  pdfDetails,
-  pdfUrl,
-  setIsDownloading
-) => {
-  const pdfName = pdfDetails[0] && pdfDetails[0].Name;
+export const handleDownloadPdf = async (pdfDetails, setIsDownloading) => {
+  const pdfName = pdfDetails[0] && pdfDetails[0]?.Name;
+  const pdfUrl = pdfDetails?.[0]?.SignedUrl || pdfDetails?.[0]?.URL;
   setIsDownloading("pdf");
   const docId = !pdfDetails?.[0]?.IsEnableOTP ? pdfDetails?.[0]?.objectId : "";
   try {
@@ -2130,13 +2127,18 @@ export const handleToPrint = async (
 //handle download signed pdf
 export const handleDownloadCertificate = async (
   pdfDetails,
-  setIsDownloading
+  setIsDownloading,
+  isZip
 ) => {
   if (pdfDetails?.length > 0 && pdfDetails[0]?.CertificateUrl) {
     try {
       await fetch(pdfDetails[0] && pdfDetails[0]?.CertificateUrl);
       const certificateUrl = pdfDetails[0] && pdfDetails[0]?.CertificateUrl;
-      saveAs(certificateUrl, `Certificate_signed_by_OpenSign™.pdf`);
+      if (isZip) {
+        return certificateUrl;
+      } else {
+        saveAs(certificateUrl, `Certificate_signed_by_OpenSign™.pdf`);
+      }
     } catch (err) {
       console.log("err in download in certificate", err);
     }
@@ -2162,7 +2164,12 @@ export const handleDownloadCertificate = async (
         if (doc?.CertificateUrl) {
           await fetch(doc?.CertificateUrl);
           const certificateUrl = doc?.CertificateUrl;
-          saveAs(certificateUrl, `Certificate_signed_by_OpenSign™.pdf`);
+          if (isZip) {
+            return certificateUrl;
+          } else {
+            saveAs(certificateUrl, `Certificate_signed_by_OpenSign™.pdf`);
+          }
+
           setIsDownloading("");
         } else {
           setIsDownloading("certificate");
