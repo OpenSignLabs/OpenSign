@@ -1336,6 +1336,7 @@ function SignYourSelf() {
                   setIsAlert={setIsAlert}
                   extUserId={extUserId}
                   activeMailAdapter={activeMailAdapter}
+                  setIsDownloadModal={setIsDownloadModal}
                 />
                 {/* pdf header which contain funish back button */}
                 <Header
@@ -1464,6 +1465,7 @@ function SignYourSelf() {
         setIsDownloadModal={setIsDownloadModal}
         isDownloadModal={isDownloadModal}
         pdfDetails={pdfDetails}
+        isDocId={true}
       />
       <TextFontSetting
         isTextSetting={isTextSetting}

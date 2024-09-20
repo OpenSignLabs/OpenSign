@@ -139,6 +139,7 @@ export default function reportJson(id, userId) {
           'TimeToCompleteDays',
           'Placeholders',
           'IsSignyourself',
+          'IsCompleted',
         ],
       };
     //  declined documents report

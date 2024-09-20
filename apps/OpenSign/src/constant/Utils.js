@@ -2038,6 +2038,13 @@ export const fetchUrl = async (url, pdfName) => {
     console.error("Error downloading the file:", error);
   }
 };
+export const getSignedUrl = async (pdfUrl, docId) => {
+  const signedUrl = await Parse.Cloud.run("getsignedurl", {
+    url: pdfUrl,
+    docId: docId || ""
+  });
+  return signedUrl;
+};
 //handle download signed pdf
 export const handleDownloadPdf = async (pdfDetails, setIsDownloading) => {
   const pdfName = pdfDetails[0] && pdfDetails[0]?.Name;
@@ -2045,19 +2052,7 @@ export const handleDownloadPdf = async (pdfDetails, setIsDownloading) => {
   setIsDownloading("pdf");
   const docId = !pdfDetails?.[0]?.IsEnableOTP ? pdfDetails?.[0]?.objectId : "";
   try {
-    // const url = await Parse.Cloud.run("getsignedurl", { url: pdfUrl });
-    const axiosRes = await axios.post(
-      `${localStorage.getItem("baseUrl")}/functions/getsignedurl`,
-      { url: pdfUrl, docId: docId },
-      {
-        headers: {
-          "content-type": "Application/json",
-          "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
-          "X-Parse-Session-Token": localStorage.getItem("accesstoken")
-        }
-      }
-    );
-    const url = axiosRes.data.result;
+    const url = await getSignedUrl(pdfUrl, docId);
     await fetchUrl(url, pdfName);
     setIsDownloading("");
   } catch (err) {
@@ -2165,6 +2160,7 @@ export const handleDownloadCertificate = async (
           await fetch(doc?.CertificateUrl);
           const certificateUrl = doc?.CertificateUrl;
           if (isZip) {
+            setIsDownloading("");
             return certificateUrl;
           } else {
             saveAs(certificateUrl, `Certificate_signed_by_OpenSign™.pdf`);

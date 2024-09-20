@@ -28,7 +28,6 @@ import {
   contractUsers,
   handleSendOTP,
   contactBook,
-  handleDownloadPdf,
   handleToPrint,
   handleDownloadCertificate,
   getDefaultSignature,
@@ -2000,9 +1999,13 @@ function PdfRequestFiles(props) {
                             <button
                               type="button"
                               className="font-[500] text-[13px] mr-[5px] op-btn op-btn-primary"
-                              onClick={() =>
-                                handleDownloadPdf(pdfDetails, setIsDownloading)
-                              }
+                              onClick={() => {
+                                setIsCompleted((prev) => ({
+                                  ...prev,
+                                  isModal: false
+                                }));
+                                setIsDownloadModal(true);
+                              }}
                             >
                               <i
                                 className="fa-light fa-download"
@@ -2213,6 +2216,7 @@ function PdfRequestFiles(props) {
             setIsDownloadModal={setIsDownloadModal}
             isDownloadModal={isDownloadModal}
             pdfDetails={pdfDetails}
+            isDocId={true}
           />
         </>
       )}
