@@ -43,13 +43,12 @@ import { useSelector } from "react-redux";
 import PdfZoom from "../components/pdf/PdfZoom";
 import { useTranslation } from "react-i18next";
 import RotateAlert from "../components/RotateAlert";
-import {
-  TourContentWithBtn,
-  ModalUi,
-  HandleError,
-  LoaderWithMsg,
-  LinkUserModal
-} from "../primitives";
+import ModalUi from "../primitives/ModalUi";
+import TourContentWithBtn from "../primitives/TourContentWithBtn";
+import HandleError from "../primitives/HandleError";
+import LoaderWithMsg from "../primitives/LoaderWithMsg";
+import LinkUserModal from "../primitives/LinkUserModal";
+
 const TemplatePlaceholder = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();

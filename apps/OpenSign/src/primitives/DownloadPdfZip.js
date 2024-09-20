@@ -44,12 +44,12 @@ function DownloadPdfZip(props) {
           throw new Error(`Failed to fetch PDF: ${signedUrl}`);
         }
         const pdf1Blob = await pdf1Response.blob();
-
+        const isZip = true;
         // Fetch the Certificate (or generate its URL dynamically)
         const certificateUrl = await handleDownloadCertificate(
           pdfDetails,
           setIsDownloading,
-          true
+          isZip
         );
         const pdf2Response = await fetch(certificateUrl);
         if (!pdf2Response.ok) {

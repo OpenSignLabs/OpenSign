@@ -52,14 +52,12 @@ import VerifyEmail from "../components/pdf/VerifyEmail";
 import PdfZoom from "../components/pdf/PdfZoom";
 import { useTranslation } from "react-i18next";
 import RotateAlert from "../components/RotateAlert";
-import {
-  DownloadPdfZip,
-  Loader,
-  ModalUi,
-  TourContentWithBtn,
-  HandleError,
-  LoaderWithMsg
-} from "../primitives";
+import DownloadPdfZip from "../primitives/DownloadPdfZip";
+import Loader from "../primitives/Loader";
+import ModalUi from "../primitives/ModalUi";
+import TourContentWithBtn from "../primitives/TourContentWithBtn";
+import HandleError from "../primitives/HandleError";
+import LoaderWithMsg from "../primitives/LoaderWithMsg";
 //For signYourself inProgress section signer can add sign and complete doc sign.
 function SignYourSelf() {
   const { t } = useTranslation();
