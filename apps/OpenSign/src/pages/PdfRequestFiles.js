@@ -28,7 +28,6 @@ import {
   contractUsers,
   handleSendOTP,
   contactBook,
-  handleDownloadPdf,
   handleToPrint,
   handleDownloadCertificate,
   getDefaultSignature,
@@ -36,21 +35,22 @@ import {
   onClickZoomOut,
   fetchUrl
 } from "../constant/Utils";
-import LoaderWithMsg from "../primitives/LoaderWithMsg";
-import HandleError from "../primitives/HandleError";
 import Header from "../components/pdf/PdfHeader";
 import RenderPdf from "../components/pdf/RenderPdf";
-import PdfDeclineModal from "../primitives/PdfDeclineModal";
 import Title from "../components/Title";
 import DefaultSignature from "../components/pdf/DefaultSignature";
-import ModalUi from "../primitives/ModalUi";
-import TourContentWithBtn from "../primitives/TourContentWithBtn";
-import Loader from "../primitives/Loader";
 import { useSelector } from "react-redux";
 import SignerListComponent from "../components/pdf/SignerListComponent";
 import VerifyEmail from "../components/pdf/VerifyEmail";
 import PdfZoom from "../components/pdf/PdfZoom";
 import { useTranslation } from "react-i18next";
+import ModalUi from "../primitives/ModalUi";
+import TourContentWithBtn from "../primitives/TourContentWithBtn";
+import HandleError from "../primitives/HandleError";
+import LoaderWithMsg from "../primitives/LoaderWithMsg";
+import DownloadPdfZip from "../primitives/DownloadPdfZip";
+import Loader from "../primitives/Loader";
+import PdfDeclineModal from "../primitives/PdfDeclineModal";
 
 function PdfRequestFiles(props) {
   const { t } = useTranslation();
@@ -136,6 +136,7 @@ function PdfRequestFiles(props) {
   const [plancode, setPlanCode] = useState("");
   const isHeader = useSelector((state) => state.showHeader);
   const divRef = useRef(null);
+  const [isDownloadModal, setIsDownloadModal] = useState(false);
 
   const isMobile = window.innerWidth < 767;
 
@@ -1996,13 +1997,13 @@ function PdfRequestFiles(props) {
                             <button
                               type="button"
                               className="font-[500] text-[13px] mr-[5px] op-btn op-btn-primary"
-                              onClick={() =>
-                                handleDownloadPdf(
-                                  pdfDetails,
-                                  pdfUrl,
-                                  setIsDownloading
-                                )
-                              }
+                              onClick={() => {
+                                setIsCompleted((prev) => ({
+                                  ...prev,
+                                  isModal: false
+                                }));
+                                setIsDownloadModal(true);
+                              }}
                             >
                               <i
                                 className="fa-light fa-download"
@@ -2082,6 +2083,7 @@ function PdfRequestFiles(props) {
                       clickOnZoomOut={clickOnZoomOut}
                       isDisableRotate={true}
                       templateId={props.templateId}
+                      setIsDownloadModal={setIsDownloadModal}
                     />
 
                     <div ref={divRef} data-tut="pdfArea" className="h-[95%]">
@@ -2208,6 +2210,12 @@ function PdfRequestFiles(props) {
               </button>
             </div>
           </ModalUi>
+          <DownloadPdfZip
+            setIsDownloadModal={setIsDownloadModal}
+            isDownloadModal={isDownloadModal}
+            pdfDetails={pdfDetails}
+            isDocId={true}
+          />
         </>
       )}
     </DndProvider>

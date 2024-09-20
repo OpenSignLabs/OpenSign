@@ -39,7 +39,8 @@ function Header({
   clickOnZoomOut,
   handleRotationFun,
   isDisableRotate,
-  templateId
+  templateId,
+  setIsDownloadModal
 }) {
   const { t } = useTranslation();
   const filterPrefill =
@@ -94,9 +95,13 @@ function Header({
                   >
                     <DropdownMenu.Item
                       className="DropdownMenuItem"
-                      onClick={() =>
-                        handleDownloadPdf(pdfDetails, pdfUrl, setIsDownloading)
-                      }
+                      onClick={() => {
+                        if (isCompleted) {
+                          setIsDownloadModal(true);
+                        } else {
+                          handleDownloadPdf(pdfDetails, setIsDownloading);
+                        }
+                      }}
                     >
                       <div className="flex flex-row">
                         <i
@@ -211,11 +216,7 @@ function Header({
                           <DropdownMenu.Item
                             className="DropdownMenuItem"
                             onClick={() =>
-                              handleDownloadPdf(
-                                pdfDetails,
-                                pdfDetails[0]?.URL,
-                                setIsDownloading
-                              )
+                              handleDownloadPdf(pdfDetails, setIsDownloading)
                             }
                           >
                             <div className="flex flex-row">
@@ -386,9 +387,13 @@ function Header({
                 <button
                   type="button"
                   className="op-btn op-btn-primary op-btn-sm mr-[3px] shadow"
-                  onClick={() =>
-                    handleDownloadPdf(pdfDetails, pdfUrl, setIsDownloading)
-                  }
+                  onClick={() => {
+                    if (isCompleted) {
+                      setIsDownloadModal(true);
+                    } else {
+                      handleDownloadPdf(pdfDetails, setIsDownloading);
+                    }
+                  }}
                 >
                   <i
                     className="fa-light fa-download py-[3px]"
@@ -443,11 +448,7 @@ function Header({
                         type="button"
                         className="op-btn op-btn-neutral op-btn-sm mr-[3px] shadow"
                         onClick={() =>
-                          handleDownloadPdf(
-                            pdfDetails,
-                            pdfUrl,
-                            setIsDownloading
-                          )
+                          handleDownloadPdf(pdfDetails, setIsDownloading)
                         }
                       >
                         <i className="fa-light fa-arrow-down font-semibold lg:hidden"></i>
@@ -487,9 +488,9 @@ function Header({
               <button
                 type="button"
                 className="op-btn op-btn-primary op-btn-sm gap-0 font-medium text-[12px] mr-[3px] shadow"
-                onClick={() =>
-                  handleDownloadPdf(pdfDetails, pdfUrl, setIsDownloading)
-                }
+                onClick={() => {
+                  setIsDownloadModal(true);
+                }}
               >
                 <i className="fa-light fa-download" aria-hidden="true"></i>
                 <span className="hidden lg:block ml-1">{t("download")}</span>

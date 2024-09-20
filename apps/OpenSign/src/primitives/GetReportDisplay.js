@@ -14,6 +14,7 @@ import {
   checkIsSubscribed,
   copytoData,
   fetchUrl,
+  getSignedUrl,
   replaceMailVaribles
 } from "../constant/Utils";
 import Confetti from "react-confetti";
@@ -30,6 +31,7 @@ import SubscribeCard from "./SubscribeCard";
 import { validplan } from "../json/plansArr";
 import { serverUrl_fn } from "../constant/appinfo";
 import { useTranslation } from "react-i18next";
+import DownloadPdfZip from "./DownloadPdfZip";
 
 const ReportTable = (props) => {
   const { t } = useTranslation();
@@ -71,6 +73,7 @@ const ReportTable = (props) => {
   const [isSubscribe, setIsSubscribe] = useState(true);
   const [isModal, setIsModal] = useState({});
   const [reason, setReason] = useState("");
+  const [isDownloadModal, setIsDownloadModal] = useState(false);
   const Extand_Class = localStorage.getItem("Extand_Class");
   const extClass = Extand_Class && JSON.parse(Extand_Class);
   const startIndex = (currentPage - 1) * props.docPerPage;
@@ -649,10 +652,15 @@ const ReportTable = (props) => {
     setActLoader({ [`${item.objectId}`]: true });
     const url = item?.SignedUrl || item?.URL || "";
     const pdfName = item?.Name || "exported_file";
+    const isCompleted = item?.IsCompleted || false;
     if (url) {
       try {
-        const signedUrl = await Parse.Cloud.run("getsignedurl", { url: url });
-        await fetchUrl(signedUrl, pdfName);
+        if (isCompleted) {
+          setIsDownloadModal({ [item.objectId]: true });
+        } else {
+          const signedUrl = await getSignedUrl(url);
+          await fetchUrl(signedUrl, pdfName);
+        }
         setActLoader({});
       } catch (err) {
         console.log("err in getsignedurl", err);
@@ -2106,6 +2114,14 @@ const ReportTable = (props) => {
                                 ))}
                               </div>
                             </ModalUi>
+                          )}
+                          {isDownloadModal[item.objectId] && (
+                            <DownloadPdfZip
+                              setIsDownloadModal={setIsDownloadModal}
+                              isDownloadModal={isDownloadModal[item.objectId]}
+                              pdfDetails={[item]}
+                              isDocId={false}
+                            />
                           )}
                         </td>
                       </tr>

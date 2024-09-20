@@ -9,8 +9,6 @@ import { HTML5Backend } from "react-dnd-html5-backend";
 import { useDrag, useDrop } from "react-dnd";
 import WidgetComponent from "../components/pdf/WidgetComponent";
 import Tour from "reactour";
-import LoaderWithMsg from "../primitives/LoaderWithMsg";
-import HandleError from "../primitives/HandleError";
 import SignerListPlace from "../components/pdf/SignerListPlace";
 import Header from "../components/pdf/PdfHeader";
 import WidgetNameModal from "../components/pdf/WidgetNameModal";
@@ -36,18 +34,21 @@ import {
 import RenderPdf from "../components/pdf/RenderPdf";
 import "../styles/AddUser.css";
 import Title from "../components/Title";
-import LinkUserModal from "../primitives/LinkUserModal";
 import EditTemplate from "../components/pdf/EditTemplate";
-import ModalUi from "../primitives/ModalUi";
 import AddRoleModal from "../components/pdf/AddRoleModal";
 import PlaceholderCopy from "../components/pdf/PlaceholderCopy";
-import TourContentWithBtn from "../primitives/TourContentWithBtn";
 import DropdownWidgetOption from "../components/pdf/DropdownWidgetOption";
 import Parse from "parse";
 import { useSelector } from "react-redux";
 import PdfZoom from "../components/pdf/PdfZoom";
 import { useTranslation } from "react-i18next";
 import RotateAlert from "../components/RotateAlert";
+import ModalUi from "../primitives/ModalUi";
+import TourContentWithBtn from "../primitives/TourContentWithBtn";
+import HandleError from "../primitives/HandleError";
+import LoaderWithMsg from "../primitives/LoaderWithMsg";
+import LinkUserModal from "../primitives/LinkUserModal";
+
 const TemplatePlaceholder = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();

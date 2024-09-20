@@ -650,6 +650,9 @@
   },
   "advanced-options":"Advanced options",
   "hide-advanced-options":"Hide Advanced options",
+  "download-files":"Download files",
+  "download-pdf":"Download Pdf",
+  "pdf-certificate":"Download Pdf + Certificate",
   "document-logs":"Document logs"
 
 }

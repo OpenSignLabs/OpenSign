@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { handleDownloadPdf, handleToPrint } from "../../constant/Utils";
+import { handleToPrint } from "../../constant/Utils";
 import { themeColor, emailRegex } from "../../constant/const";
 import Loader from "../../primitives/Loader";
 import ModalUi from "../../primitives/ModalUi";
@@ -15,7 +15,8 @@ function EmailComponent({
   sender,
   setIsAlert,
   extUserId,
-  activeMailAdapter
+  activeMailAdapter,
+  setIsDownloadModal
 }) {
   const { t } = useTranslation();
   const [emailList, setEmailList] = useState([]);
@@ -129,6 +130,11 @@ function EmailComponent({
       }
     }
   };
+  const handleClose = () => {
+    setIsEmail(false);
+    setEmailValue("");
+    setEmailList([]);
+  };
   return (
     <div>
       {/* isEmail */}
@@ -165,9 +171,10 @@ function EmailComponent({
               )}
               <button
                 className="op-btn op-btn-primary op-btn-sm text-[15px] ml-2"
-                onClick={() =>
-                  handleDownloadPdf(pdfDetails, pdfUrl, setIsDownloading)
-                }
+                onClick={() => {
+                  handleClose();
+                  setIsDownloadModal(true);
+                }}
               >
                 <i className="fa-light fa-download" aria-hidden="true"></i>
                 {t("download")}
@@ -263,11 +270,7 @@ function EmailComponent({
             <button
               type="button"
               className="op-btn op-btn-ghost ml-2"
-              onClick={() => {
-                setIsEmail(false);
-                setEmailValue("");
-                setEmailList([]);
-              }}
+              onClick={() => handleClose()}
             >
               {t("close")}
             </button>
