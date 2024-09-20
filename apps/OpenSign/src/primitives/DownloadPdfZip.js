@@ -74,7 +74,6 @@ function DownloadPdfZip(props) {
       }
     }
   };
-  console.log("isDownloading", isDownloading);
   return (
     <ModalUi
       isOpen={props.isDownloadModal}
