@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import ModalUi from "./ModalUi";
 import {
+  getSignedUrl,
   handleDownloadCertificate,
   handleDownloadPdf,
   sanitizeFileName
@@ -21,8 +22,11 @@ function DownloadPdfZip(props) {
 
   const handleDownload = async () => {
     if (selectType === 1) {
-      handleDownloadPdf(props.pdfDetails, setIsDownloading);
+      await handleDownloadPdf(props.pdfDetails, setIsDownloading);
+      setSelectType(1);
+      props.setIsDownloadModal(false);
     } else if (selectType === 2) {
+      setIsDownloading("pdf");
       const zip = new JSZip();
       const pdfDetails = props.pdfDetails;
       const pdfName = pdfDetails?.[0]?.Name || "Document";
@@ -30,9 +34,14 @@ function DownloadPdfZip(props) {
 
       try {
         // Fetch the first PDF (Signed Document)
-        const pdf1Response = await fetch(pdfUrl);
+        const docId =
+          props.isDocId && !pdfDetails?.[0]?.IsEnableOTP
+            ? pdfDetails?.[0]?.objectId
+            : "";
+        const signedUrl = await getSignedUrl(pdfUrl, docId);
+        const pdf1Response = await fetch(signedUrl);
         if (!pdf1Response.ok) {
-          throw new Error(`Failed to fetch PDF: ${pdfUrl}`);
+          throw new Error(`Failed to fetch PDF: ${signedUrl}`);
         }
         const pdf1Blob = await pdf1Response.blob();
 
@@ -56,14 +65,16 @@ function DownloadPdfZip(props) {
 
         // Generate the ZIP and trigger download
         const zipBlob = await zip.generateAsync({ type: "blob" });
-        saveAs(zipBlob, "pdf-files.zip");
+        saveAs(zipBlob, `${sanitizeFileName(pdfName)}.zip`);
         setSelectType(1);
         props.setIsDownloadModal(false);
+        setIsDownloading("");
       } catch (error) {
         console.error("Error creating ZIP file:", error);
       }
     }
   };
+  console.log("isDownloading", isDownloading);
   return (
     <ModalUi
       isOpen={props.isDownloadModal}
