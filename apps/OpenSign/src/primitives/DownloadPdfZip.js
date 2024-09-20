@@ -65,7 +65,10 @@ function DownloadPdfZip(props) {
 
         // Generate the ZIP and trigger download
         const zipBlob = await zip.generateAsync({ type: "blob" });
-        saveAs(zipBlob, `${sanitizeFileName(pdfName)}.zip`);
+        saveAs(
+          zipBlob,
+          `${sanitizeFileName(pdfName)}_signed_by_OpenSign™.zip`
+        );
         setSelectType(1);
         props.setIsDownloadModal(false);
         setIsDownloading("");
@@ -83,7 +86,10 @@ function DownloadPdfZip(props) {
       <div className="p-[20px] h-full">
         {downloadType.map((data, ind) => {
           return (
-            <div key={ind} className="flex items-center gap-1 mb-2">
+            <label
+              key={ind}
+              className="flex items-center gap-1 mb-2 cursor-pointer"
+            >
               <input
                 className="mr-[8px] op-radio op-radio-xs"
                 type="radio"
@@ -91,8 +97,8 @@ function DownloadPdfZip(props) {
                 onChange={() => setSelectType(data.id)}
                 checked={selectType === data.id}
               />
-              <span>{data.label}</span>
-            </div>
+              {data.label}
+            </label>
           );
         })}
         <div className="h-[1px] w-full my-[15px] bg-[#9f9f9f]"></div>
