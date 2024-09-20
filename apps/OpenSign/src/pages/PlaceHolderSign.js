@@ -62,7 +62,7 @@ import {
   LottieWithLoader,
   Alert,
   Upgrade,
-  ModalUi
+  Loader
 } from "../primitives";
 
 function PlaceHolderSign() {
