@@ -9,7 +9,12 @@ import SignersInput from "../components/shared/fields/SignersInput";
 import Title from "../components/Title";
 import PageNotFound from "./PageNotFound";
 import { SaveFileSize } from "../constant/saveFileSize";
-import { checkIsSubscribed, getFileName, toDataUrl } from "../constant/Utils";
+import {
+  checkIsSubscribed,
+  generateTitleFromFilename,
+  getFileName,
+  toDataUrl
+} from "../constant/Utils";
 import { PDFDocument } from "pdf-lib";
 import axios from "axios";
 import { isEnableSubscription } from "../constant/const";
@@ -330,6 +335,8 @@ const Forms = (props) => {
       setfileload(false);
       if (response.url()) {
         const tenantId = localStorage.getItem("TenantId");
+        const title = generateTitleFromFilename(file.name);
+        setFormData((obj) => ({ ...obj, Name: title }));
         SaveFileSize(size, response.url(), tenantId);
         return response.url();
       }
@@ -367,9 +374,10 @@ const Forms = (props) => {
         });
         setFileUpload(response.url());
         setfileload(false);
-
         if (response.url()) {
           const tenantId = localStorage.getItem("TenantId");
+          const title = generateTitleFromFilename(file.name);
+          setFormData((obj) => ({ ...obj, Name: title }));
           SaveFileSize(size, response.url(), tenantId);
           return response.url();
         }
