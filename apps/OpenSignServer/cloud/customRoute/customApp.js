@@ -8,6 +8,7 @@ import saveInvoice from './saveInvoice.js';
 import savePayments from './savePayments.js';
 import gooogleauth from './googleauth.js';
 import autoReminder from './autoReminder.js';
+import validateSmtp from './validateSmtp.js';
 export const app = express();
 
 dotenv.config();
@@ -22,3 +23,4 @@ app.post('/saveinvoice', saveInvoice);
 app.post('/savepayment', savePayments);
 app.post('/googleauth', gooogleauth);
 app.post('/sendreminder', autoReminder);
+app.post('/validatesmtp', validateSmtp);
