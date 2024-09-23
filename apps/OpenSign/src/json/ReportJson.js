@@ -16,7 +16,7 @@ export default function reportJson(id) {
     "Note",
     "Folder",
     "File",
-    "Logs",
+    "Status",
     "Signers"
   ];
   const contactbook = ["Sr.No", "Name", "Email", "Phone"];
