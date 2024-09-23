@@ -785,8 +785,9 @@ const ReportTable = (props) => {
       "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
       sessionToken: localStorage.getItem("accesstoken")
     };
+    console.log("doc?.ExtUserPtr ", doc?.ExtUserPtr);
     let params = {
-      mailProvider: doc?.ExtUserPtr?.active_mail_adapter,
+      mailProvider: doc?.ExtUserPtr?.active_mail_adapter || "",
       extUserId: doc?.ExtUserPtr?.objectId,
       recipient: userDetails?.Email,
       subject: mail.subject,
