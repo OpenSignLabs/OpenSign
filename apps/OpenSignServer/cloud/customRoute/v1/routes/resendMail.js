@@ -41,6 +41,7 @@ export default async function resendMail(request, response) {
       if (resDoc) {
         const _resDoc = resDoc.toJSON();
         const contact = _resDoc.Signers.find(x => x.Email === userMail);
+        const activeMailAdapter = _resDoc?.ExtUserPtr?.active_mail_adapter || '';
         if (contact) {
           try {
             const imgPng = 'https://qikinnovation.ams3.digitaloceanspaces.com/logo.png';
@@ -131,6 +132,7 @@ export default async function resendMail(request, response) {
               from: sender,
               html: html,
               extUserId: _resDoc.ExtUserPtr.objectId,
+              mailProvider: activeMailAdapter,
             };
 
             const res = await axios.post(url, params, { headers: headers });
