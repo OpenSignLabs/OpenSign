@@ -315,6 +315,7 @@ export default async function createDocumentWithTemplate(request, response) {
                         from: sender,
                         html: html,
                         extUserId: template.ExtUserPtr.objectId,
+                        mailProvider: template?.ExtUserPtr?.active_mail_adapter || '',
                       };
                       sendMail = await axios.post(url, params, { headers: headers });
                     } catch (error) {
