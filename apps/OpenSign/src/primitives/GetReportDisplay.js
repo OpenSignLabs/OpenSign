@@ -1134,7 +1134,7 @@ const ReportTable = (props) => {
           <Loader />
         </div>
       )}
-      <div className="p-2 w-full overflow-auto bg-base-100 text-base-content op-card shadow-lg">
+      <div className="p-2 w-full overflow-hidden bg-base-100 text-base-content op-card shadow-lg">
         {isCelebration && (
           <div className="relative z-[1000]">
             <Confetti
@@ -1182,8 +1182,8 @@ const ReportTable = (props) => {
         </div>
         <div
           className={`${
-            isDashboard && props.List?.length > 0 ? "h-[317px]" : "h-full"
-          } w-full`}
+            isDashboard && props.List?.length > 0 ? "min-h-[317px]" : "h-full"
+          } overflow-auto w-full`}
         >
           <table className="op-table border-collapse w-full ">
             <thead className="text-[14px]">
@@ -1219,48 +1219,50 @@ const ReportTable = (props) => {
                         </td>
                         <td className="px-4 py-2 ">{item?.Email || "-"}</td>
                         <td className="px-4 py-2">{item?.Phone || "-"}</td>
-                        <td className="px-3 py-2 text-white grid grid-cols-2">
-                          {props.actions?.length > 0 &&
-                            props.actions.map((act, index) => (
-                              <button
-                                key={index}
-                                onClick={() => handleActionBtn(act, item)}
-                                title={t(`btnLabel.${act.hoverLabel}`)}
-                                className={`${
-                                  act?.btnColor ? act.btnColor : ""
-                                } op-btn op-btn-sm`}
+                        <td className="px-3 py-2">
+                          <div className="text-base-content min-w-max flex flex-row gap-x-2 gap-y-1 justify-start items-center">
+                            {props.actions?.length > 0 &&
+                              props.actions.map((act, index) => (
+                                <button
+                                  key={index}
+                                  onClick={() => handleActionBtn(act, item)}
+                                  title={t(`btnLabel.${act.hoverLabel}`)}
+                                  className={`${
+                                    act?.btnColor ? act.btnColor : ""
+                                  } op-btn op-btn-sm`}
+                                >
+                                  <i className={act.btnIcon}></i>
+                                </button>
+                              ))}
+                            {isDeleteModal[item.objectId] && (
+                              <ModalUi
+                                isOpen
+                                title={"Delete Contact"}
+                                handleClose={handleClose}
                               >
-                                <i className={act.btnIcon}></i>
-                              </button>
-                            ))}
-                          {isDeleteModal[item.objectId] && (
-                            <ModalUi
-                              isOpen
-                              title={"Delete Contact"}
-                              handleClose={handleClose}
-                            >
-                              <div className="m-[20px]">
-                                <div className="text-lg font-normal text-black">
-                                  {t("contact-delete-alert")}
+                                <div className="m-[20px]">
+                                  <div className="text-lg font-normal text-black">
+                                    {t("contact-delete-alert")}
+                                  </div>
+                                  <hr className="bg-[#ccc] mt-4 " />
+                                  <div className="flex items-center mt-3 gap-2 text-white">
+                                    <button
+                                      onClick={() => handleDelete(item)}
+                                      className="op-btn op-btn-primary"
+                                    >
+                                      {t("yes")}
+                                    </button>
+                                    <button
+                                      onClick={handleClose}
+                                      className="op-btn op-btn-secondary"
+                                    >
+                                      {t("no")}
+                                    </button>
+                                  </div>
                                 </div>
-                                <hr className="bg-[#ccc] mt-4 " />
-                                <div className="flex items-center mt-3 gap-2 text-white">
-                                  <button
-                                    onClick={() => handleDelete(item)}
-                                    className="op-btn op-btn-primary"
-                                  >
-                                    {t("yes")}
-                                  </button>
-                                  <button
-                                    onClick={handleClose}
-                                    className="op-btn op-btn-secondary"
-                                  >
-                                    {t("no")}
-                                  </button>
-                                </div>
-                              </div>
-                            </ModalUi>
-                          )}
+                              </ModalUi>
+                            )}
+                          </div>
                         </td>
                       </tr>
                     ) : (
@@ -1541,7 +1543,7 @@ const ReportTable = (props) => {
                             </td>
                           )}
                         <td className="px-2 py-2">
-                          <div className="text-base-content flex flex-row gap-x-2 gap-y-1 justify-start items-center">
+                          <div className="text-base-content min-w-max flex flex-row gap-x-2 gap-y-1 justify-start items-center">
                             {props.actions?.length > 0 &&
                               props.actions.map((act, index) =>
                                 props.ReportName === "Templates" ? (
