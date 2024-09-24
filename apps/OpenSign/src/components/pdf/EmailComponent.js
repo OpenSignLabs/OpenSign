@@ -30,6 +30,28 @@ function EmailComponent({
     const pdfName = pdfDetails[0]?.Name;
     setIsLoading(true);
     let sendMail;
+   
+    const docId = !pdfDetails?.[0]?.IsEnableOTP
+      ? pdfDetails?.[0]?.objectId
+      : "";
+    let presignedUrl = pdfUrl;
+    try {
+      // const url = await Parse.Cloud.run("getsignedurl", { url: pdfUrl });
+      const axiosRes = await axios.post(
+        `${localStorage.getItem("baseUrl")}/functions/getsignedurl`,
+        { url: pdfUrl, docId: docId },
+        {
+          headers: {
+            "content-type": "Application/json",
+            "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
+            "X-Parse-Session-Token": localStorage.getItem("accesstoken")
+          }
+        }
+      );
+      presignedUrl = axiosRes.data.result;
+    } catch (err) {
+      console.log("err in getsignedurl", err);
+    }
     for (let i = 0; i < emailList.length; i++) {
       try {
         const imgPng =
@@ -47,7 +69,7 @@ function EmailComponent({
           mailProvider: activeMailAdapter,
           extUserId: extUserId,
           pdfName: pdfName,
-          url: pdfUrl,
+          url: presignedUrl,
           recipient: emailList[i],
           subject: `${sender.name} has signed the doc - ${pdfName}`,
           from: sender.email,
