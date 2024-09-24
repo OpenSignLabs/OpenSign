@@ -50,14 +50,14 @@ export function App() {
       id: 0,
       title: "Installation",
       codeString: `
-npm install opensign-angular`
+npm install opensign-angular-lib`
     },
     {
       id: 1,
       title: "Usage",
       codeString: `
 import { Component } from '@angular/core';
-import {OpensignComponent} from "opensign-angular"
+import {OpensignComponent} from "opensign-angular-lib"
  
 @Component({
   selector:'app-root',
@@ -246,7 +246,7 @@ export class AppComponent{
                 {" "}
                 {t("public-template-mssg-4")}
                 <a
-                  href="https://www.npmjs.com/package/opensign-angular"
+                  href="https://www.npmjs.com/package/opensign-angular-lib"
                   target="_blank"
                   rel="noreferrer"
                   className="cursor-pointer text-blue-700  "
