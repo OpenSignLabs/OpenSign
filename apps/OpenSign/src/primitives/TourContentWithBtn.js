@@ -24,7 +24,7 @@ export default function TourContentWithBtn({ message, isChecked, video }) {
           ></iframe>
         </div>
       )}
-      <label className="flex items-center justify-center mb-0">
+      <label className="flex items-center justify-center mt-3 mb-0">
         <input
           type="checkbox"
           className="op-checkbox op-checkbox-xs mr-1"

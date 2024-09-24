@@ -9,7 +9,12 @@ import SignersInput from "../components/shared/fields/SignersInput";
 import Title from "../components/Title";
 import PageNotFound from "./PageNotFound";
 import { SaveFileSize } from "../constant/saveFileSize";
-import { checkIsSubscribed, getFileName, toDataUrl } from "../constant/Utils";
+import {
+  checkIsSubscribed,
+  generateTitleFromFilename,
+  getFileName,
+  toDataUrl
+} from "../constant/Utils";
 import { PDFDocument } from "pdf-lib";
 import axios from "axios";
 import { isEnableSubscription } from "../constant/const";
@@ -143,7 +148,7 @@ const Forms = (props) => {
                   setIsDecrypting(true);
                   const size = files?.[0].size;
                   const name = generatePdfName(16);
-                  const url = "https://ai.nxglabs.in/decryptpdf"; //"https://ai.nxglabs.in/decryptpdf"; //
+                  const url = "https://ai.nxglabs.in/decryptpdf"; //
                   let formData = new FormData();
                   formData.append("file", files[0]);
                   formData.append("password", "");
@@ -186,6 +191,9 @@ const Forms = (props) => {
                   if (parseFile.url()) {
                     setFileUpload(parseFile.url());
                     setfileload(false);
+                    const title = generateTitleFromFilename(files?.[0]?.name);
+                    setFormData((obj) => ({ ...obj, Name: title }));
+                    SaveFileSize(size, response.url(), tenantId);
                     const tenantId = localStorage.getItem("TenantId");
                     SaveFileSize(size, parseFile.url(), tenantId);
                     return parseFile.url();
@@ -259,6 +267,8 @@ const Forms = (props) => {
                 setfileload(false);
                 if (response.url()) {
                   const tenantId = localStorage.getItem("TenantId");
+                  const title = generateTitleFromFilename(files?.[0]?.name);
+                  setFormData((obj) => ({ ...obj, Name: title }));
                   SaveFileSize(size, response.url(), tenantId);
                   return response.url();
                 }
@@ -286,12 +296,17 @@ const Forms = (props) => {
                   if (res.data) {
                     setFileUpload(res.data.url);
                     setfileload(false);
+                    const title = generateTitleFromFilename(files?.[0]?.name);
+                    setFormData((obj) => ({ ...obj, Name: title }));
                   }
                 } catch (err) {
                   e.target.value = "";
                   setfileload(false);
                   setpercentage(0);
                   console.log("err in libreconverter ", err);
+                  alert(
+                    "We are currently experiencing some issues with processing DOCX files. Please upload the PDF version or contact us on support@opensignlabs.com"
+                  );
                 }
               }
             }
@@ -330,6 +345,8 @@ const Forms = (props) => {
       setfileload(false);
       if (response.url()) {
         const tenantId = localStorage.getItem("TenantId");
+        const title = generateTitleFromFilename(file.name);
+        setFormData((obj) => ({ ...obj, Name: title }));
         SaveFileSize(size, response.url(), tenantId);
         return response.url();
       }
@@ -367,9 +384,10 @@ const Forms = (props) => {
         });
         setFileUpload(response.url());
         setfileload(false);
-
         if (response.url()) {
           const tenantId = localStorage.getItem("TenantId");
+          const title = generateTitleFromFilename(file.name);
+          setFormData((obj) => ({ ...obj, Name: title }));
           SaveFileSize(size, response.url(), tenantId);
           return response.url();
         }
@@ -548,6 +566,8 @@ const Forms = (props) => {
         setFormData((prev) => ({ ...prev, password: "" }));
         setFileUpload(parseFile.url());
         setfileload(false);
+        const title = generateTitleFromFilename(formData?.file?.name);
+        setFormData((obj) => ({ ...obj, Name: title }));
         const tenantId = localStorage.getItem("TenantId");
         SaveFileSize(size, parseFile.url(), tenantId);
         return parseFile.url();
@@ -827,7 +847,7 @@ const Forms = (props) => {
               </div>
             )}
             {isAdvanceOpt && (
-              <div className={` overflow-y-auto z-[500] transition-all`}>
+              <div className="overflow-y-auto z-[500] transition-all">
                 {props.title === "Request Signatures" && (
                   <div className="text-xs mt-2">
                     <label className="block">

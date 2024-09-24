@@ -20,6 +20,9 @@ const Header = ({ showSidebar }) => {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const { width } = useWindowSize();
+  const current_notification_version = "1"; // Update this with each new feature release
+  // Get the dismissed version from local storage
+  const dismissedVersion = localStorage.getItem("notificationDismissedVersion");
   const username = localStorage.getItem("username") || "";
   const image = localStorage.getItem("profileImg") || dp;
   const [isOpen, setIsOpen] = useState(false);
@@ -30,9 +33,15 @@ const Header = ({ showSidebar }) => {
   );
   const [emailUsed, setEmailUsed] = useState(0);
   const [isModal, setIsModal] = useState(false);
-
+  const [showNotification, setShowNotification] = useState(
+    (!dismissedVersion || dismissedVersion !== current_notification_version) &&
+      true
+  );
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
+    if (width <= 768) {
+      showSidebar();
+    }
   };
   useEffect(() => {
     checkSubscription();
@@ -57,6 +66,13 @@ const Header = ({ showSidebar }) => {
         setEmailUsed(MonthlyFreeEmails);
       } catch (err) {
         console.log("err in while fetching monthlyfreeEmails", err);
+      }
+    } else {
+      const applogo = await getAppLogo();
+      if (applogo?.logo) {
+        setAppLogo(applogo?.logo);
+      } else {
+        setAppLogo(localStorage.getItem("appLogo") || "");
       }
     }
   }
@@ -115,17 +131,34 @@ const Header = ({ showSidebar }) => {
   const handleMailUsed = () => {
     setIsModal(!isModal);
   };
+  // Handle dismissing the notification
+  const dismissNotification = () => {
+    // Store the current version as dismissed in local storage
+    localStorage.setItem(
+      "notificationDismissedVersion",
+      current_notification_version
+    );
+    setShowNotification(false);
+  };
   return (
     <div>
-      {isEnableSubscription && (
-        <div className="shadow py-1 text-center bg-[#CAE4FA] text-[14px] p-1">
-          {t("header-news")} —
-          <span
-            className="cursor-pointer font-medium underline text-blue-800"
-            onClick={() => navigate("/profile")}
+      {isEnableSubscription && showNotification && (
+        <div className="flex justify-between items-center shadow py-1 bg-[#CAE4FA]  p-1">
+          <div className="text-center text-[14px] ml-auto">
+            {t("header-news")} —
+            <span
+              className="cursor-pointer font-medium underline text-blue-800"
+              onClick={() => navigate("/profile")}
+            >
+              {" " + t("header-news-btn") + "."}
+            </span>
+          </div>
+          <div
+            className="ml-auto mr-1 cursor-pointer"
+            onClick={() => dismissNotification()}
           >
-            {" " + t("header-news-btn") + "."}
-          </span>
+            <i className="fa-light fa-xmark"></i>
+          </div>
         </div>
       )}
       <div className="op-navbar bg-base-100 shadow">
