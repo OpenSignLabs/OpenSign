@@ -2058,12 +2058,12 @@ export const getSignedUrl = async (pdfUrl, docId) => {
 export const handleDownloadPdf = async (pdfDetails, setIsDownloading) => {
   const pdfName = pdfDetails[0] && pdfDetails[0]?.Name;
   const pdfUrl = pdfDetails?.[0]?.SignedUrl || pdfDetails?.[0]?.URL;
-  setIsDownloading("pdf");
+  setIsDownloading && setIsDownloading("pdf");
   const docId = !pdfDetails?.[0]?.IsEnableOTP ? pdfDetails?.[0]?.objectId : "";
   try {
     const url = await getSignedUrl(pdfUrl, docId);
     await fetchUrl(url, pdfName);
-    setIsDownloading("");
+    setIsDownloading && setIsDownloading("");
   } catch (err) {
     console.log("err in getsignedurl", err);
     setIsDownloading("");
