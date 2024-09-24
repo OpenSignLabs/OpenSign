@@ -61,6 +61,13 @@ const Header = ({ showSidebar }) => {
       } catch (err) {
         console.log("err in while fetching monthlyfreeEmails", err);
       }
+    } else {
+      const applogo = await getAppLogo();
+      if (applogo?.logo) {
+        setAppLogo(applogo?.logo);
+      } else {
+        setAppLogo(localStorage.getItem("appLogo") || "");
+      }
     }
   }
 
