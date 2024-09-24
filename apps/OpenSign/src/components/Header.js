@@ -39,6 +39,9 @@ const Header = ({ showSidebar }) => {
   );
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
+    if (width <= 768) {
+      showSidebar();
+    }
   };
   useEffect(() => {
     checkSubscription();
@@ -63,6 +66,13 @@ const Header = ({ showSidebar }) => {
         setEmailUsed(MonthlyFreeEmails);
       } catch (err) {
         console.log("err in while fetching monthlyfreeEmails", err);
+      }
+    } else {
+      const applogo = await getAppLogo();
+      if (applogo?.logo) {
+        setAppLogo(applogo?.logo);
+      } else {
+        setAppLogo(localStorage.getItem("appLogo") || "");
       }
     }
   }
