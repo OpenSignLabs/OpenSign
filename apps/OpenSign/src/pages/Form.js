@@ -148,7 +148,7 @@ const Forms = (props) => {
                   setIsDecrypting(true);
                   const size = files?.[0].size;
                   const name = generatePdfName(16);
-                  const url = "https://ai.nxglabs.in/decryptpdf"; //"https://ai.nxglabs.in/decryptpdf"; //
+                  const url = "https://ai.nxglabs.in/decryptpdf"; //
                   let formData = new FormData();
                   formData.append("file", files[0]);
                   formData.append("password", "");
@@ -191,6 +191,9 @@ const Forms = (props) => {
                   if (parseFile.url()) {
                     setFileUpload(parseFile.url());
                     setfileload(false);
+                    const title = generateTitleFromFilename(files?.[0]?.name);
+                    setFormData((obj) => ({ ...obj, Name: title }));
+                    SaveFileSize(size, response.url(), tenantId);
                     const tenantId = localStorage.getItem("TenantId");
                     SaveFileSize(size, parseFile.url(), tenantId);
                     return parseFile.url();
@@ -264,6 +267,8 @@ const Forms = (props) => {
                 setfileload(false);
                 if (response.url()) {
                   const tenantId = localStorage.getItem("TenantId");
+                  const title = generateTitleFromFilename(files?.[0]?.name);
+                  setFormData((obj) => ({ ...obj, Name: title }));
                   SaveFileSize(size, response.url(), tenantId);
                   return response.url();
                 }
@@ -556,6 +561,8 @@ const Forms = (props) => {
         setFormData((prev) => ({ ...prev, password: "" }));
         setFileUpload(parseFile.url());
         setfileload(false);
+        const title = generateTitleFromFilename(formData?.file?.name);
+        setFormData((obj) => ({ ...obj, Name: title }));
         const tenantId = localStorage.getItem("TenantId");
         SaveFileSize(size, parseFile.url(), tenantId);
         return parseFile.url();
