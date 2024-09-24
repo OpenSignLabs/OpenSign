@@ -33,6 +33,9 @@ const Header = ({ showSidebar }) => {
 
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
+    if (width <= 768) {
+      showSidebar();
+    }
   };
   useEffect(() => {
     checkSubscription();
