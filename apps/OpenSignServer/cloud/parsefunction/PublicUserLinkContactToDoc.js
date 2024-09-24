@@ -222,6 +222,25 @@ const sendMailToAllSigners = async docId => {
   }
 };
 
+const deductcount = async _resSub => {
+  try {
+    const subscriptionCls = new Parse.Object('contracts_Subscriptions');
+    subscriptionCls.id = _resSub.objectId;
+    const allowedCredits = _resSub?.AllowedCredits || 0;
+    const addonCredits = _resSub?.AddonCredits || 0;
+    if (allowedCredits > 0) {
+      const updateAllowedcredits = allowedCredits - 1 || 0;
+      subscriptionCls.set('AllowedCredits', updateAllowedcredits);
+    } else {
+      const updateAddonCredits = addonCredits > 0 ? addonCredits - 1 : 0;
+      subscriptionCls.set('AddonCredits', updateAddonCredits);
+    }
+    await subscriptionCls.save(null, { useMasterKey: true });
+  } catch (err) {
+    console.log('Err in deductcount in PublicUserLinkContacttoDoc cloud function', err);
+  }
+};
+
 // `PublicUserLinkContactToDoc` cloud function is used to create contact, add this contact in contracts_Guest role and
 // create new document from template and save contact pointer in placeholder, signers and ACL of Document
 export default async function PublicUserLinkContactToDoc(req) {
@@ -241,126 +260,163 @@ export default async function PublicUserLinkContactToDoc(req) {
         throw new Parse.Error(Parse.Error.OBJECT_NOT_FOUND, 'Template not found.');
       }
       const _tempRes = JSON.parse(JSON.stringify(tempRes));
-      const Placeholders = _tempRes?.Placeholders || [];
-      let index;
-      if (role) {
-        index = Placeholders?.findIndex(x => x.Role && x.Role === role);
-      } else {
-        throw new Parse.Error(Parse.Error.OBJECT_NOT_FOUND, '');
-      }
-      if (index !== -1) {
-        // Execute the query to check if a contact already exists in the 'contracts_Contactbook' class
-        const contactCls = new Parse.Query('contracts_Contactbook');
-        contactCls.equalTo('Email', email);
-        contactCls.equalTo('CreatedBy', _tempRes.CreatedBy);
-        contactCls.notEqualTo('IsDeleted', true);
-        const existContact = await contactCls.first({ useMasterKey: true });
-        if (existContact) {
-          const template_json = JSON.parse(JSON.stringify(tempRes));
-          //update contact in placeholder, signers and update ACl in provide document
-          const docRes = await createDocumentFromTemplate(template_json, existContact, index);
-          if (docRes) {
-            //condition will execute only if sendInOrder will be false for send email to all signers at a time.
-            if (!template_json?.SendinOrder) {
-              await sendMailToAllSigners(docRes.id);
-            }
-            return { contactId: existContact.id, docId: docRes.id };
+      const subscription = new Parse.Query('contracts_Subscriptions');
+      subscription.equalTo('TenantId', {
+        __type: 'Pointer',
+        className: 'partners_Tenant',
+        objectId: _tempRes?.ExtUserPtr?.TenantId?.objectId,
+      });
+      subscription.include('ExtUserPtr');
+      const date = new Date();
+      subscription.greaterThanOrEqualTo('Next_billing_date', date);
+      const resSub = await subscription.first({ useMasterKey: true });
+      if (resSub) {
+        const _resSub = JSON.parse(JSON.stringify(resSub));
+        const allowedCredits = _resSub?.AllowedCredits || 0;
+        const addonCredits = _resSub?.AddonCredits || 0;
+        const totalcredits = allowedCredits + addonCredits;
+        if (totalcredits > 0) {
+          const Placeholders = _tempRes?.Placeholders || [];
+          let index;
+          if (role) {
+            index = Placeholders?.findIndex(x => x.Role && x.Role === role);
+          } else {
+            throw new Parse.Error(Parse.Error.OBJECT_NOT_FOUND, '');
           }
-        } else {
-          // Execute the query to check if a user already exists in the 'contracts_Users' class
-          const extUserQuery = new Parse.Query('contracts_Users');
-          extUserQuery.equalTo('Email', email);
-          const extUser = await extUserQuery.first({ useMasterKey: true });
-          if (extUser) {
-            const _extUser = JSON.parse(JSON.stringify(extUser));
-            const contact = {
-              UserId: _extUser.UserId,
-              Name: _extUser.Name,
-              Email: email,
-              Phone: _extUser?.Phone ? _extUser.Phone : '',
-              CreatedBy: _tempRes.CreatedBy,
-              TenantId: _tempRes.ExtUserPtr.TenantId,
-            };
-            const template_json = JSON.parse(JSON.stringify(tempRes));
-            // if user present on platform create contact on the basis of extended user details
-            const contactRes = await saveRoleContact(contact);
-            const docRes = await createDocumentFromTemplate(template_json, contactRes, index);
-            if (docRes) {
-              //condition will execute only if sendInOrder will be false for send email to all signers at a time.
-              if (!template_json?.SendinOrder) {
-                await sendMailToAllSigners(docRes.id);
+          if (index !== -1) {
+            // Execute the query to check if a contact already exists in the 'contracts_Contactbook' class
+            const contactCls = new Parse.Query('contracts_Contactbook');
+            contactCls.equalTo('Email', email);
+            contactCls.equalTo('CreatedBy', _tempRes.CreatedBy);
+            contactCls.notEqualTo('IsDeleted', true);
+            const existContact = await contactCls.first({ useMasterKey: true });
+            if (existContact) {
+              const template_json = JSON.parse(JSON.stringify(tempRes));
+              //update contact in placeholder, signers and update ACl in provide document
+              const docRes = await createDocumentFromTemplate(template_json, existContact, index);
+              if (docRes) {
+                await deductcount(_resSub);
+                //condition will execute only if sendInOrder will be false for send email to all signers at a time.
+                if (!template_json?.SendinOrder) {
+                  await sendMailToAllSigners(docRes.id);
+                }
+                return { contactId: existContact.id, docId: docRes.id };
               }
-              return { contactId: contactRes.id, docId: docRes.id };
-            }
-          } else if (name) {
-            try {
-              // Execute the query to check if a user already exists in the '_User' class
-              const userQuery = new Parse.Query(Parse.User);
-              userQuery.equalTo('email', email);
-              const userRes = await userQuery.first({ useMasterKey: true });
-              if (userRes) {
+            } else {
+              // Execute the query to check if a user already exists in the 'contracts_Users' class
+              const extUserQuery = new Parse.Query('contracts_Users');
+              extUserQuery.equalTo('Email', email);
+              const extUser = await extUserQuery.first({ useMasterKey: true });
+              if (extUser) {
+                const _extUser = JSON.parse(JSON.stringify(extUser));
                 const contact = {
-                  UserId: { __type: 'Pointer', className: '_User', objectId: userRes.id },
-                  Name: name,
+                  UserId: _extUser.UserId,
+                  Name: _extUser.Name,
                   Email: email,
-                  Phone: phone,
+                  Phone: _extUser?.Phone ? _extUser.Phone : '',
                   CreatedBy: _tempRes.CreatedBy,
                   TenantId: _tempRes.ExtUserPtr.TenantId,
                 };
                 const template_json = JSON.parse(JSON.stringify(tempRes));
-                // Create new contract on the basis provided contact details by user and userId from _User class
+                // if user present on platform create contact on the basis of extended user details
                 const contactRes = await saveRoleContact(contact);
-                //update contact in placeholder, signers and update ACl in provide document
                 const docRes = await createDocumentFromTemplate(template_json, contactRes, index);
                 if (docRes) {
+                  await deductcount(_resSub);
                   //condition will execute only if sendInOrder will be false for send email to all signers at a time.
                   if (!template_json?.SendinOrder) {
                     await sendMailToAllSigners(docRes.id);
                   }
                   return { contactId: contactRes.id, docId: docRes.id };
+                }
+              } else if (name) {
+                try {
+                  // Execute the query to check if a user already exists in the '_User' class
+                  const userQuery = new Parse.Query(Parse.User);
+                  userQuery.equalTo('email', email);
+                  const userRes = await userQuery.first({ useMasterKey: true });
+                  if (userRes) {
+                    const contact = {
+                      UserId: { __type: 'Pointer', className: '_User', objectId: userRes.id },
+                      Name: name,
+                      Email: email,
+                      Phone: phone,
+                      CreatedBy: _tempRes.CreatedBy,
+                      TenantId: _tempRes.ExtUserPtr.TenantId,
+                    };
+                    const template_json = JSON.parse(JSON.stringify(tempRes));
+                    // Create new contract on the basis provided contact details by user and userId from _User class
+                    const contactRes = await saveRoleContact(contact);
+                    //update contact in placeholder, signers and update ACl in provide document
+                    const docRes = await createDocumentFromTemplate(
+                      template_json,
+                      contactRes,
+                      index
+                    );
+                    if (docRes) {
+                      await deductcount(_resSub);
+                      //condition will execute only if sendInOrder will be false for send email to all signers at a time.
+                      if (!template_json?.SendinOrder) {
+                        await sendMailToAllSigners(docRes.id);
+                      }
+                      return { contactId: contactRes.id, docId: docRes.id };
+                    }
+                  } else {
+                    // create new user in _User class on the basis of details provide by user
+                    const _users = Parse.Object.extend('User');
+                    const _user = new _users();
+                    _user.set('name', name);
+                    _user.set('username', email);
+                    _user.set('email', email);
+                    _user.set('password', email);
+                    if (phone) {
+                      _user.set('phone', phone);
+                    }
+                    const newUserRes = await _user.save();
+                    const contact = {
+                      UserId: { __type: 'Pointer', className: '_User', objectId: newUserRes.id },
+                      Name: name,
+                      Email: email,
+                      Phone: phone,
+                      CreatedBy: _tempRes.CreatedBy,
+                      TenantId: _tempRes.ExtUserPtr.TenantId,
+                    };
+                    const template_json = JSON.parse(JSON.stringify(tempRes));
+                    // Create new contract on the basis provided contact details by user and userId from _User class
+                    const contactRes = await saveRoleContact(contact);
+                    //update contact in placeholder, signers and update ACl in provide document
+                    const docRes = await createDocumentFromTemplate(
+                      template_json,
+                      contactRes,
+                      index
+                    );
+                    if (docRes) {
+                      await deductcount(_resSub);
+                      //condition will execute only if sendInOrder will be false for send email to all signers at a time.
+                      if (!template_json?.SendinOrder) {
+                        await sendMailToAllSigners(docRes.id);
+                      }
+                      return { contactId: contactRes.id, docId: docRes.id };
+                    }
+                  }
+                } catch (err) {
+                  console.log('Err', err);
                 }
               } else {
-                // create new user in _User class on the basis of details provide by user
-                const _users = Parse.Object.extend('User');
-                const _user = new _users();
-                _user.set('name', name);
-                _user.set('username', email);
-                _user.set('email', email);
-                _user.set('password', email);
-                if (phone) {
-                  _user.set('phone', phone);
-                }
-                const newUserRes = await _user.save();
-                const contact = {
-                  UserId: { __type: 'Pointer', className: '_User', objectId: newUserRes.id },
-                  Name: name,
-                  Email: email,
-                  Phone: phone,
-                  CreatedBy: _tempRes.CreatedBy,
-                  TenantId: _tempRes.ExtUserPtr.TenantId,
-                };
-                const template_json = JSON.parse(JSON.stringify(tempRes));
-                // Create new contract on the basis provided contact details by user and userId from _User class
-                const contactRes = await saveRoleContact(contact);
-                //update contact in placeholder, signers and update ACl in provide document
-                const docRes = await createDocumentFromTemplate(template_json, contactRes, index);
-                if (docRes) {
-                  //condition will execute only if sendInOrder will be false for send email to all signers at a time.
-                  if (!template_json?.SendinOrder) {
-                    await sendMailToAllSigners(docRes.id);
-                  }
-                  return { contactId: contactRes.id, docId: docRes.id };
-                }
+                throw new Parse.Error(Parse.Error.OBJECT_NOT_FOUND, 'User not found.');
               }
-            } catch (err) {
-              console.log('Err', err);
             }
           } else {
-            throw new Parse.Error(Parse.Error.OBJECT_NOT_FOUND, 'User not found.');
+            throw new Parse.Error(
+              Parse.Error.OBJECT_NOT_FOUND,
+              'Please provide required parameters!'
+            );
           }
+        } else {
+          throw new Parse.Error(Parse.Error.REQUEST_LIMIT_EXCEEDED, 'Insufficient Credit');
         }
       } else {
-        throw new Parse.Error(Parse.Error.OBJECT_NOT_FOUND, 'Please provide required parameters!');
+        throw new Parse.Error(Parse.Error.OBJECT_NOT_FOUND, 'Plan expired');
       }
     } else {
       throw new Parse.Error(Parse.Error.OBJECT_NOT_FOUND, 'Template not found.');
