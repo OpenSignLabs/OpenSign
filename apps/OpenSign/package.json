@@ -110,7 +110,7 @@
     "dotenv-webpack": "^8.1.0",
     "eslint": "^8.57.0",
     "eslint-plugin-prettier": "^5.2.1",
-    "eslint-plugin-react": "^7.34.3",
+    "eslint-plugin-react": "^7.36.1",
     "lint-staged": "^15.2.10",
     "mini-css-extract-plugin": "^2.9.1",
     "postcss": "^8.4.47",
