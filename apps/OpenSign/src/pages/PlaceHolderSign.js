@@ -1047,7 +1047,7 @@ function PlaceHolderSign() {
               type="button"
               className="flex flex-row items-center op-link op-link-primary"
             >
-              <i className="fa-light fa-link" aria-hidden="true"></i>
+              <i className="fa-light fa-copy" />
               <span className=" hidden md:block ml-1 ">{t("copy-link")}</span>
             </button>
             <RWebShare data={{ url: data.url, title: t("sign-url") }}>
