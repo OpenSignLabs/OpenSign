@@ -25,8 +25,8 @@ const Alert = ({ children, type, className }) => {
             : "z-[1000] fixed top-20 left-1/2 transform -translate-x-1/2 text-sm"
         }  `}
       >
-        <div className={`op-alert ${textcolor}`}>
-          <span className="ml-3">{children}</span>
+        <div className={`op-alert ${textcolor} flex justify-center`}>
+          <span className="px-1">{children}</span>
         </div>
       </div>
     )
