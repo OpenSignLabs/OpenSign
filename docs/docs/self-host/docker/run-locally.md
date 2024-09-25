@@ -3,10 +3,13 @@ title: Self-host OpenSign™ with Docker on Linux/MacOS/Windows
 ---
 import ReactPlayer from 'react-player';
 
-## Steps to run OpenSign™ with docker on Linux/MacOS/Windows:
-  1. Firstly, install [Docker](https://www.docker.com/products/docker-desktop/) and ensure it is running before proceeding to the next steps. Make sure that you have [NodeJS](https://nodejs.org/en) & [GIT](https://git-scm.com/downloads) installed on your machine.
-  2. Now, start Docker and ensure it runs in the background. Open the terminal and type the following command:
+OpenSign™ is available of x86/x64 and Apple M-series CPU architectures. ARM64 is not currently supported.
 
+## Steps to run OpenSign™ with docker on Linux/MacOS/Windows:
+  1. Firstly, install [Docker](https://www.docker.com/products/docker-desktop/) and ensure it is running before proceeding to the next steps.
+  2. Now, start Docker and ensure it runs in the background.
+
+### Running on a custom domain
 Command for linux/MacOS 
 ```
 export HOST_URL=https://opensign.yourdomain.com && curl --remote-name-all https://raw.githubusercontent.com/OpenSignLabs/OpenSign/main/docker-compose.yml https://raw.githubusercontent.com/OpenSignLabs/OpenSign/main/Caddyfile https://raw.githubusercontent.com/OpenSignLabs/OpenSign/main/.env.local_dev && mv .env.local_dev .env.prod && docker compose up --force-recreate
@@ -21,7 +24,8 @@ set HOST_URL=https://opensign.yourdomain.com && curl -O https://raw.githubuserco
 ```
   and Hit Enter to start the containers automatically. Make sure to replace the host URL with your subdomain where OpenSign will be accessible. You need to point the subdomain to the server where you are running these commands by adding the necessary A record to your DNS.
   
-  3. If want to run locally try out below commands and once the deployment is successful, the application will be accessible at [https://localhost:3001](https://localhost:3001). You will need to accept Chrome's insecure certificate warning. Follow the steps in the screenshots to proceed.
+### Running locally
+If instead want to run locally try out below commands and once the deployment is successful, the application will be accessible at [https://localhost:3001](https://localhost:3001). You will need to accept Chrome's insecure certificate warning. Follow the steps in the screenshots to proceed.
   
 Command for linux/MacOS (localhost)
 ```
