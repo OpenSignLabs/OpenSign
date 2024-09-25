@@ -19,14 +19,14 @@ function EmbedTab(props) {
       id: 0,
       title: "Installation",
       codeString: `
-npm install opensign-react`
+npm install @opensign/react`
     },
     {
       id: 1,
       title: "Usage",
       codeString: `
 import React from "react";
-import Opensign from "opensign-react";
+import Opensign from "@opensign/react";
 
 export function App() {
   return (
@@ -50,14 +50,14 @@ export function App() {
       id: 0,
       title: "Installation",
       codeString: `
-npm install opensign-angular-lib`
+npm install @opensign/angular`
     },
     {
       id: 1,
       title: "Usage",
       codeString: `
 import { Component } from '@angular/core';
-import {OpensignComponent} from "opensign-angular-lib"
+import {OpensignComponent} from "@opensign/angular"
  
 @Component({
   selector:'app-root',
@@ -163,7 +163,7 @@ export class AppComponent{
               {" "}
               {t("public-template-mssg-4")}
               <a
-                href="https://www.npmjs.com/package/opensign-react"
+                href="https://www.npmjs.com/package/@opensign/react"
                 target="_blank"
                 rel="noreferrer"
                 className="cursor-pointer text-blue-700  "
@@ -246,7 +246,7 @@ export class AppComponent{
                 {" "}
                 {t("public-template-mssg-4")}
                 <a
-                  href="https://www.npmjs.com/package/opensign-angular-lib"
+                  href="https://www.npmjs.com/package/@opensign/angular"
                   target="_blank"
                   rel="noreferrer"
                   className="cursor-pointer text-blue-700  "
