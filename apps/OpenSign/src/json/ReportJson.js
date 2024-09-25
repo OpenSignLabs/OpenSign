@@ -1,3 +1,5 @@
+import { isEnableSubscription } from "../constant/const";
+
 export default function reportJson(id) {
   // console.log("json ", json);
   const head = ["Sr.No", "Title", "Note", "Folder", "File", "Owner", "Signers"];
@@ -22,6 +24,24 @@ export default function reportJson(id) {
   const contactbook = ["Sr.No", "Name", "Email", "Phone"];
   const dashboardReportHead = ["Title", "File", "Owner", "Signers"];
   const templateReport = ["Sr.No", "Title", "File", "Owner", "Signers"];
+  const templateSubAction = isEnableSubscription
+    ? [
+        {
+          btnId: "2434",
+          btnLabel: "Embed",
+          hoverLabel: "Embed",
+          btnIcon: "fa-light fa-code",
+          action: "Embed"
+        },
+        {
+          btnId: "2434",
+          btnLabel: "Copy TemplateId",
+          hoverLabel: "Copy TemplateId",
+          btnIcon: "fa-light fa-copy",
+          action: "CopyTemplateId"
+        }
+      ]
+    : [];
   switch (id) {
     // draft documents report
     case "ByHuevtCFY":
@@ -363,20 +383,7 @@ export default function reportJson(id) {
               redirectUrl: "template",
               action: "redirect"
             },
-            {
-              btnId: "2434",
-              btnLabel: "Embed",
-              hoverLabel: "Embed",
-              btnIcon: "fa-light fa-code",
-              action: "Embed"
-            },
-            {
-              btnId: "2434",
-              btnLabel: "Copy TemplateId",
-              hoverLabel: "Copy TemplateId",
-              btnIcon: "fa-light fa-copy",
-              action: "CopyTemplateId"
-            },
+            ...templateSubAction,
             {
               btnId: "1834",
               btnLabel: "Delete",

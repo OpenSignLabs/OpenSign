@@ -634,7 +634,7 @@
   "decline-by" :"Refusé/révoqué par",
   "document-declined":"document refusé",
   "public-template-mssg-1" :"Pour intégrer OpenSign dans votre projet React ou Next.js, exécutez simplement la commande suivante :",
-  "public-template-mssg-2" :"Assurez-vous que npm ou Yarn est configuré dans votre projet. Si vous utilisez Yarn, vous pouvez remplacer npm install par Yarn Add opensign-react.",
+  "public-template-mssg-2" :"Assurez-vous que npm ou Yarn est configuré dans votre projet. Si vous utilisez Yarn, vous pouvez remplacer npm install par Yarn Add @opensign/react.",
   "public-template-mssg-3" :"Besoin de plus de détails ou d'exemples ?",
   "public-template-mssg-4": "Visitez le",
   "public-template-mssg-5":  "npm pour les dernières mises à jour, une documentation détaillée et l'historique des versions.",
