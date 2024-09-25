@@ -52,7 +52,7 @@ const UpdateExistUserAdmin = () => {
       } else if (err.code === 101) {
         setIsAlert((prev) => ({ ...prev, msg: t("user-not-found") }));
       } else if (err.code === 137) {
-        setIsAlert((prev) => ({ ...prev, msg: t("admin-already-exist") }));
+        setIsAlert((prev) => ({ ...prev, msg: t("admin-exists") }));
       } else {
         setErrMsg(t("something-went-wrong-mssg"));
       }
