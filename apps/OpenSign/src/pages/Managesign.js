@@ -2,12 +2,13 @@ import React, { useState, useRef, useEffect } from "react";
 import SignatureCanvas from "react-signature-canvas";
 import "../styles/managesign.css";
 import "../styles/signature.css";
-import { toDataUrl } from "../constant/Utils";
+import { generateTitleFromFilename, toDataUrl } from "../constant/Utils";
 import Parse from "parse";
 import { SaveFileSize } from "../constant/saveFileSize";
 import Alert from "../primitives/Alert";
 import Loader from "../primitives/Loader";
 import { useTranslation } from "react-i18next";
+import sanitizeFileName from "../primitives/sanitizeFileName";
 const ManageSign = () => {
   const { t } = useTranslation();
   const [penColor, setPenColor] = useState("blue");
@@ -46,14 +47,22 @@ const ManageSign = () => {
         if (signRes) {
           const res = signRes.toJSON();
           setId(res.objectId);
-          setSignName(res?.SignatureName);
-          setImage(res.ImageURL);
+          if (res?.SignatureName) {
+            const sanitizename = generateTitleFromFilename(res?.SignatureName);
+            const replaceSpace = sanitizeFileName(sanitizename);
+            setSignName(replaceSpace);
+          }
+          setImage(res?.ImageURL);
           if (res && res.Initials) {
             setInitials(res.Initials);
             setIsInitials(true);
           }
         } else {
-          setSignName(User?.get("name") || "");
+          if (User?.get("name")) {
+            const sanitizename = generateTitleFromFilename(User?.get("name"));
+            const replaceSpace = sanitizeFileName(sanitizename);
+            setSignName(replaceSpace);
+          }
         }
         setIsLoader(false);
       } catch (err) {
@@ -87,7 +96,9 @@ const ManageSign = () => {
       initailsRef.current.clear();
     }
     setInitials("");
-    setIsValue(true);
+    if (image) {
+      setIsValue(true);
+    }
     setIsInitials(false);
   };
 
@@ -101,34 +112,39 @@ const ManageSign = () => {
       const base64Img = await toDataUrl(file);
       setImage(base64Img);
       setIsValue(true);
+    } else {
+      setImage("");
+      setIsValue(false);
     }
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const isUrl = image.includes("https");
+    const isUrl = image.includes("https") || image.includes("http");
 
     if (!isvalue) {
       setWarning(true);
       setTimeout(() => setWarning(false), 1000);
     } else {
       setIsLoader(true);
-      const replaceSpace = signName.replace(/ /g, "_");
+      const sanitizename = generateTitleFromFilename(signName);
+      const replaceSpace = sanitizeFileName(sanitizename);
       let file;
       if (signature) {
         file = base64StringtoFile(signature, `${replaceSpace}_sign.png`);
       } else {
-        if (!isUrl) {
+        if (image && !isUrl) {
           file = base64StringtoFile(image, `${replaceSpace}__sign.png`);
         }
       }
       let imgUrl;
-      if (!isUrl) {
+      if (file && !isUrl) {
         imgUrl = await uploadFile(file);
       } else {
         imgUrl = image;
       }
       let initialsUrl = "";
-      const isInitialsUrl = Initials.includes("https");
+      const isInitialsUrl =
+        Initials.includes("https") || Initials.includes("http");
       if (!isInitialsUrl && Initials) {
         const initialsImg = base64StringtoFile(
           Initials,
@@ -146,7 +162,7 @@ const ManageSign = () => {
     }
   };
   function base64StringtoFile(base64String, filename) {
-    var arr = base64String.split(","),
+    let arr = base64String.split(","),
       mime = arr[0].match(/:(.*?);/)[1],
       bstr = atob(arr[1]),
       n = bstr.length,
@@ -182,7 +198,7 @@ const ManageSign = () => {
         const updateSign = new Parse.Object(signCls);
         updateSign.id = id;
         updateSign.set("Initials", obj.initialsUrl ? obj.initialsUrl : "");
-        updateSign.set("ImageURL", obj.url);
+        updateSign.set("ImageURL", obj.url ? obj.url : "");
         updateSign.set("SignatureName", obj.name);
         updateSign.set("UserId", userId);
         const res = await updateSign.save();
@@ -281,7 +297,7 @@ const ManageSign = () => {
                         height: "180px",
                         className: "signatureCanvas rounded-box"
                       }}
-                      backgroundColor="rgb(255, 255, 255)"
+                      // backgroundColor="rgb(255, 255, 255)"
                       onEnd={() =>
                         handleSignatureChange(canvasRef.current.toDataURL())
                       }
@@ -376,7 +392,7 @@ const ManageSign = () => {
                     canvasProps={{
                       className: "intialSignature rounded-box"
                     }}
-                    backgroundColor="rgb(255, 255, 255)"
+                    // backgroundColor="rgb(255, 255, 255)"
                     onEnd={() =>
                       handleInitialsChange(initailsRef.current.toDataURL())
                     }

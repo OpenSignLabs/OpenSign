@@ -725,7 +725,9 @@ function Placeholder(props) {
               : props?.pos?.zIndex
                 ? props.pos.zIndex
                 : "5",
-          background: props.data ? props.data.blockColor : "rgb(203 233 237)"
+          background: props.data
+            ? props.data?.blockColor + "b0"
+            : "rgba(203, 233, 237, 0.69)"
         }}
         onDrag={() => {
           setDraggingEnabled(true);
