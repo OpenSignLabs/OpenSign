@@ -51,6 +51,7 @@ import LoaderWithMsg from "../primitives/LoaderWithMsg";
 import DownloadPdfZip from "../primitives/DownloadPdfZip";
 import Loader from "../primitives/Loader";
 import PdfDeclineModal from "../primitives/PdfDeclineModal";
+import Agreement from "../primitives/Agreement";
 
 function PdfRequestFiles(props) {
   const { t } = useTranslation();
@@ -137,6 +138,8 @@ function PdfRequestFiles(props) {
   const isHeader = useSelector((state) => state.showHeader);
   const divRef = useRef(null);
   const [isDownloadModal, setIsDownloadModal] = useState(false);
+  const [isAgree, setIsAgree] = useState(false);
+  const [isAgreeTour, setIsAgreeTour] = useState(false);
 
   const isMobile = window.innerWidth < 767;
 
@@ -1672,6 +1675,17 @@ function PdfRequestFiles(props) {
       </div>
     );
   };
+  const AgreementTour = [
+    {
+      selector: '[data-tut="IsAgree"]',
+      content: "Please agree & continue to start signing",
+      position: "top",
+      style: { fontSize: "13px" }
+    }
+  ];
+  const handleCloseAgreeTour = () => {
+    setIsAgreeTour(false);
+  };
   return (
     <DndProvider backend={HTML5Backend}>
       <Title title={props.templateId ? "Public Sign" : "Request Sign"} />
@@ -1694,7 +1708,23 @@ function PdfRequestFiles(props) {
           ) : handleError ? (
             <HandleError handleError={handleError} />
           ) : (
-            <div>
+            <div onClick={() => !isAgree && setIsAgreeTour(true)}>
+              {!isAgree && (
+                <Agreement
+                  setIsAgree={setIsAgree}
+                  setIsAgreeTour={setIsAgreeTour}
+                />
+              )}
+              <Tour
+                showNumber={false}
+                showNavigation={false}
+                showNavigationNumber={false}
+                onRequestClose={handleCloseAgreeTour}
+                steps={AgreementTour}
+                isOpen={isAgreeTour}
+                rounded={5}
+                closeWithMask={false}
+              />
               {isUiLoading && (
                 <div className="absolute h-[100vh] w-full flex flex-col justify-center items-center z-[999] bg-[#e6f2f2] bg-opacity-80">
                   <Loader />
@@ -1713,6 +1743,7 @@ function PdfRequestFiles(props) {
                   />
                 </div>
               )}
+
               <div
                 style={{
                   pointerEvents:
