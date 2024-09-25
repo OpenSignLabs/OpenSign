@@ -61,7 +61,7 @@
     "build-webpack": "webpack --config webpack.config.js",
     "build": "npm run version && npm run build-webpack && react-scripts build",
     "build-watch": "webpack --config webpack.config.js --watch",
-    "start-dev": "concurrently \"npm run build-watch\" \"react-scripts start\"",
+    "start-dev": "react-scripts start",
     "start": "serve -s build",
     "version": "curl -s https://api.github.com/repos/opensignlabs/opensign/releases/latest | grep '\"tag_name\":' | awk -F '\"' '{print $4}' > ./public/version.txt",
     "version-win": "powershell -Command \"Invoke-RestMethod -Uri 'https://api.github.com/repos/opensignlabs/opensign/releases/latest' | Select-Object -ExpandProperty tag_name | Out-File -FilePath ./public/version.txt\"",
