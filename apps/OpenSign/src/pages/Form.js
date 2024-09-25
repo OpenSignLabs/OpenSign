@@ -296,12 +296,17 @@ const Forms = (props) => {
                   if (res.data) {
                     setFileUpload(res.data.url);
                     setfileload(false);
+                    const title = generateTitleFromFilename(files?.[0]?.name);
+                    setFormData((obj) => ({ ...obj, Name: title }));
                   }
                 } catch (err) {
                   e.target.value = "";
                   setfileload(false);
                   setpercentage(0);
                   console.log("err in libreconverter ", err);
+                  alert(
+                    "We are currently experiencing some issues with processing DOCX files. Please upload the PDF version or contact us on support@opensignlabs.com"
+                  );
                 }
               }
             }
@@ -675,7 +680,9 @@ const Forms = (props) => {
             )}
             <div className="text-xs">
               <label className="block">
-                {`${t("report-heading.File")} (${t("file-type")})`}
+                {`${t("report-heading.File")} (${t("file-type")}${
+                  isEnableSubscription ? ", docx)" : ")"
+                }`}
                 <span className="text-red-500 text-[13px]">*</span>
               </label>
               {fileupload.length > 0 ? (
@@ -840,7 +847,7 @@ const Forms = (props) => {
               </div>
             )}
             {isAdvanceOpt && (
-              <div className={` overflow-y-auto z-[500] transition-all`}>
+              <div className="overflow-y-auto z-[500] transition-all">
                 {props.title === "Request Signatures" && (
                   <div className="text-xs mt-2">
                     <label className="block">
