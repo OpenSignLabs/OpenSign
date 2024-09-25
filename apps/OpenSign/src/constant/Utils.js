@@ -1926,7 +1926,7 @@ export const getAppLogo = async () => {
       }
     } catch (err) {
       console.log("err in getlogo ", err);
-      if (err?.includes("is not valid JSON")) {
+      if (err?.message?.includes("valid JSON")) {
         return { logo: appInfo.applogo, user: "exist", error: "invalid_json" };
       } else {
         return { logo: appInfo.applogo, user: "exist" };
