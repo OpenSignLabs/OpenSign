@@ -9,6 +9,7 @@ import * as HoverCard from "@radix-ui/react-hover-card";
 import ModalUi from "../../primitives/ModalUi";
 import FolderModal from "../shared/fields/FolderModal";
 import { useTranslation } from "react-i18next";
+import { handleDownloadPdf } from "../../constant/Utils";
 
 function DriveBody(props) {
   const { t } = useTranslation();
@@ -100,16 +101,17 @@ function DriveBody(props) {
 
   //function for navigate user to microapp-signature component
   const checkPdfStatus = async (data) => {
-    const signerExist = data.Signers && data.Signers;
-    const isDecline = data.IsDeclined && data.IsDeclined;
-    const isPlaceholder = data.Placeholders && data.Placeholders;
-    const signedUrl = data.SignedUrl;
+    const signerExist = data?.Signers;
+    const isDecline = data?.IsDeclined;
+    const isPlaceholder = data?.Placeholders;
+    const signedUrl = data?.SignedUrl;
+    const isSignYourself = data?.IsSignyourself;
     //checking if document has completed and request signature flow
     if (data?.IsCompleted && signerExist?.length > 0) {
       navigate(`/recipientSignPdf/${data.objectId}`);
     }
     //checking if document has completed and signyour-self flow
-    else if (!signerExist && !isPlaceholder) {
+    else if ((!signerExist && !isPlaceholder) || isSignYourself) {
       navigate(`/signaturePdf/${data.objectId}`);
     }
     //checking if document has declined by someone
@@ -136,12 +138,10 @@ function DriveBody(props) {
     }
   };
 
-  const handleMenuItemClick = (selectType, data) => {
+  const handleMenuItemClick = async (selectType, data) => {
     switch (selectType) {
       case "Download": {
-        const pdfName = data && data.Name;
-        const pdfUrl = data && data.SignedUrl ? data.SignedUrl : data.URL;
-        saveAs(pdfUrl, `${sanitizeFileName(pdfName)}_signed_by_OpenSign™.pdf`);
+        await handleDownloadPdf([data]);
         break;
       }
       case "Rename": {
