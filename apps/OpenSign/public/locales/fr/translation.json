@@ -152,7 +152,8 @@
     "View": "Voir",
     "option": "Option",
     "Embed": "Intégrer",
-    "Copy TemplateId": "Copier l'ID du modèle"
+    "Copy TemplateId": "Copier l'ID du modèle",
+    "Copy Public URL":"Copier l'URL publique"
   },
   "report-help": {
     "Draft Documents": "Il s'agit de documents que vous avez commencés mais que vous n'avez pas finalisés pour envoi.",
