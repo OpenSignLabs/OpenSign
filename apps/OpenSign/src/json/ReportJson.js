@@ -39,6 +39,13 @@ export default function reportJson(id) {
           hoverLabel: "Copy TemplateId",
           btnIcon: "fa-light fa-copy",
           action: "CopyTemplateId"
+        },
+        {
+          btnId: "2434",
+          btnLabel: "Copy Public URL",
+          hoverLabel: "Copy Public URL",
+          btnIcon: "fa-light fa-copy",
+          action: "CopyPublicURL"
         }
       ]
     : [];
@@ -405,18 +412,15 @@ export default function reportJson(id) {
             if (item.action === "option") {
               // Make a shallow copy of the item
               const newItem = { ...item };
-              newItem.subaction = [
-                {
-                  btnId: "1873",
-                  btnLabel: "Share with team",
-                  hoverLabel: "Share with team",
-                  btnIcon: "fa-light fa-share-nodes",
-                  redirectUrl: "",
-                  action: "sharewith"
-                },
-                ...newItem.subaction
-              ];
-
+              //splice method used to add `Share with team` option on second index of list
+              newItem.subaction.splice(1, 0, {
+                btnId: "1873",
+                btnLabel: "Share with team",
+                hoverLabel: "Share with team",
+                btnIcon: "fa-light fa-share-nodes",
+                redirectUrl: "",
+                action: "sharewith"
+              });
               return newItem;
             }
             return item;

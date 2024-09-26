@@ -132,7 +132,8 @@
     "View": "View",
     "option": "Option",
     "Embed": "Embed",
-    "Copy TemplateId":"Copy TemplateId"
+    "Copy TemplateId":"Copy TemplateId",
+    "Copy Public URL":"Copy Public URL"
   },
   "report-heading": {
     "Sr.No": "Sr.No",
