@@ -76,6 +76,7 @@ const ReportTable = (props) => {
   const [reason, setReason] = useState("");
   const [isDownloadModal, setIsDownloadModal] = useState(false);
   const [isEmbed, setIsEmbed] = useState(false);
+  const [isPublicTour, setIsPublicTour] = useState();
   const Extand_Class = localStorage.getItem("Extand_Class");
   const extClass = Extand_Class && JSON.parse(Extand_Class);
   const startIndex = (currentPage - 1) * props.docPerPage;
@@ -373,6 +374,19 @@ const ReportTable = (props) => {
       handleEmbedFunction(item);
     } else if (act.action === "CopyTemplateId") {
       copyTemplateId(item.objectId);
+    } else if (act.action === "CopyPublicURL") {
+      const isPublic = item?.IsPublic;
+      if (isPublic) {
+        let publicUrl = "";
+        if (isStaging) {
+          publicUrl = `https://staging.opensign.me/publicsign?templateid=${item.objectId}`;
+        } else {
+          publicUrl = `https://opensign.me/publicsign?templateid=${item.objectId}`;
+        }
+        copyTemplateId(publicUrl);
+      } else {
+        setIsPublicTour({ [item.objectId]: true });
+      }
     }
   };
   // Get current list
@@ -1133,6 +1147,17 @@ const ReportTable = (props) => {
     setIsPublicUserName(extendUser[0]?.UserName || "");
   };
 
+  const publicTourConfig = [
+    {
+      selector: '[data-tut="IsPublic"]',
+      content: t("public-tour-message"),
+      position: "top",
+      style: { fontSize: "13px" }
+    }
+  ];
+  const closePublicTour = () => {
+    setIsPublicTour();
+  };
   return (
     <div className="relative">
       {Object.keys(actLoader)?.length > 0 && (
@@ -1153,13 +1178,27 @@ const ReportTable = (props) => {
         )}
         {isAlert && <Alert type={alertMsg.type}>{alertMsg.message}</Alert>}
         {props.tourData && props.ReportName === "Templates" && (
-          <Tour
-            onRequestClose={closeTour}
-            steps={props.tourData}
-            isOpen={isTour}
-            // rounded={5}
-            closeWithMask={false}
-          />
+          <>
+            <Tour
+              onRequestClose={closeTour}
+              steps={props.tourData}
+              isOpen={isTour}
+              // rounded={5}
+              closeWithMask={false}
+            />
+            {isPublicTour && (
+              <Tour
+                showNumber={false}
+                showNavigation={false}
+                showNavigationNumber={false}
+                onRequestClose={closePublicTour}
+                steps={publicTourConfig}
+                isOpen={true}
+                rounded={5}
+                closeWithMask={false}
+              />
+            )}
+          </>
         )}
         <div className="flex flex-row items-center justify-between my-2 mx-3 text-[20px] md:text-[23px]">
           <div className="font-light">
@@ -1375,13 +1414,17 @@ const ReportTable = (props) => {
                           isEnableSubscription && (
                             <td className=" pl-[20px] py-2">
                               {props.ReportName === "Templates" && (
-                                <div className="flex flex-row">
+                                <div
+                                  className="flex flex-row "
+                                  data-tut="IsPublic"
+                                >
                                   <label className="cursor-pointer relative inline-flex items-center mb-0">
                                     <input
                                       checked={props.isPublic?.[item.objectId]}
-                                      onChange={(e) =>
-                                        handlePublicChange(e, item)
-                                      }
+                                      onChange={(e) => {
+                                        setIsPublicTour();
+                                        handlePublicChange(e, item);
+                                      }}
                                       type="checkbox"
                                       value=""
                                       className="sr-only peer"

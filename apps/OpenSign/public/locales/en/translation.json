@@ -132,7 +132,8 @@
     "View": "View",
     "option": "Option",
     "Embed": "Embed",
-    "Copy TemplateId":"Copy TemplateId"
+    "Copy TemplateId":"Copy TemplateId",
+    "Copy Public URL":"Copy Public URL"
   },
   "report-heading": {
     "Sr.No": "Sr.No",
@@ -670,6 +671,7 @@
   "pdf-certificate":"Download Pdf + Certificate",
   "document-logs":"Document logs",
   "server-down": "Unable to connect to the OpenSign server. If you are self-hosting OpenSign, please ensure that all the steps in the documentation have been followed correctly. If you're running OpenSign locally, you might be accessing it through an incorrect port number.",
-  "admin-exists": "Admin already exists. Please login to the application using admin credentials in order to manage users."
+  "admin-exists": "Admin already exists. Please login to the application using admin credentials in order to manage users.",
+   "public-tour-message":"Please make template public to copy public URL"
 
 }
