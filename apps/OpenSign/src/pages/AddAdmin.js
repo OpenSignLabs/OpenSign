@@ -46,7 +46,7 @@ const AddAdmin = () => {
     try {
       const app = await getAppLogo();
       if (app?.user === "exist") {
-        setErrMsg(t("admin-already-exist"));
+        setErrMsg(t("admin-exists"));
       }
     } catch (err) {
       setErrMsg(t("something-went-wrong-mssg"));

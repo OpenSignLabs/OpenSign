@@ -652,6 +652,8 @@
    "download-files" :"Télécharger des fichiers",
    "download-pdf" :"Télécharger le PDF",
   "pdf-certificate"  :"Télécharger Pdf + Certificat",
-  "document-logs":"Journaux de documents"
+  "document-logs":"Journaux de documents",
+  "server-down": "Impossible de se connecter au serveur OpenSign. Si vous hébergez vous-même OpenSign, veuillez vous assurer que toutes les étapes de la documentation ont été correctement suivies. Si vous exécutez OpenSign localement, vous y accédez peut-être via un numéro de port incorrect.",
+  "admin-exists": "L'administrateur existe déjà. Veuillez vous connecter à l'application en utilisant les informations d'identification de l'administrateur afin de gérer les utilisateurs."
 
 }

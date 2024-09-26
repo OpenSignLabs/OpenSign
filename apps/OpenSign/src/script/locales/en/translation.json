@@ -653,5 +653,7 @@
   "download-files": "Download files",
   "download-pdf": "Download Pdf",
   "pdf-certificate": "Download Pdf + Certificate",
-  "document-logs": "Document logs"
+  "document-logs": "Document logs",
+  "server-down": "Unable to connect to the OpenSign server. If you are self-hosting OpenSign, please ensure that all the steps in the documentation have been followed correctly. If you're running OpenSign locally, you might be accessing it through an incorrect port number.",
+  "admin-exists": "Admin already exists. Please login to the application using admin credentials in order to manage users."
 }

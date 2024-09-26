@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from "react";
 import "../../styles/opensigndrive.css";
 import axios from "axios";
 import * as ContextMenu from "@radix-ui/react-context-menu";
-import { saveAs } from "file-saver";
 import { useNavigate } from "react-router-dom";
 import Table from "react-bootstrap/Table";
 import * as HoverCard from "@radix-ui/react-hover-card";
@@ -38,15 +37,9 @@ function DriveBody(props) {
 
   //function to handle folder component
   const handleOnclikFolder = (data) => {
-    const folderData = {
-      name: data.Name,
-      objectId: data.objectId
-    };
+    const folderData = { name: data.Name, objectId: data.objectId };
     props.setFolderName((prev) => [...prev, folderData]);
-    props.setIsLoading({
-      isLoad: true,
-      message: t("loading-mssg")
-    });
+    props.setIsLoading({ isLoad: true, message: t("loading-mssg") });
     props.setDocId(data.objectId);
     props.setPdfData([]);
     props.setSkip(0);
@@ -264,11 +257,6 @@ function DriveBody(props) {
       alert(t("folder-already-exist!"));
       setIsOpenMoveModal(false);
     }
-  };
-
-  const sanitizeFileName = (pdfName) => {
-    // Replace spaces with underscore
-    return pdfName.replace(/ /g, "_");
   };
 
   const handleEnterPress = (e, data) => {
