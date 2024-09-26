@@ -152,7 +152,8 @@
     "View": "Voir",
     "option": "Option",
     "Embed": "Intégrer",
-    "Copy TemplateId": "Copier l'ID du modèle"
+    "Copy TemplateId": "Copier l'ID du modèle",
+    "Copy Public URL": "Copier l'URL publique"
   },
   "report-help": {
     "Draft Documents": "Il s'agit de documents que vous avez commencés mais que vous n'avez pas finalisés pour envoi.",
@@ -669,5 +670,6 @@
   "pdf-certificate": "Télécharger Pdf + Certificat",
   "document-logs": "Journaux de documents",
   "server-down": "Impossible de se connecter au serveur OpenSign. Si vous hébergez vous-même OpenSign, veuillez vous assurer que toutes les étapes de la documentation ont été correctement suivies. Si vous exécutez OpenSign localement, vous y accédez peut-être via un numéro de port incorrect.",
-  "admin-exists": "L'administrateur existe déjà. Veuillez vous connecter à l'application en utilisant les informations d'identification de l'administrateur afin de gérer les utilisateurs."
+  "admin-exists": "L'administrateur existe déjà. Veuillez vous connecter à l'application en utilisant les informations d'identification de l'administrateur afin de gérer les utilisateurs.",
+  "public-tour-message": "Veuillez rendre le modèle public pour copier l'URL publique"
 }

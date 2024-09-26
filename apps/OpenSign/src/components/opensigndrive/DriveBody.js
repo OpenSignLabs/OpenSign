@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from "react";
 import "../../styles/opensigndrive.css";
 import axios from "axios";
 import * as ContextMenu from "@radix-ui/react-context-menu";
-import { saveAs } from "file-saver";
 import { useNavigate } from "react-router-dom";
 import Table from "react-bootstrap/Table";
 import * as HoverCard from "@radix-ui/react-hover-card";
@@ -264,12 +263,6 @@ function DriveBody(props) {
       setIsOpenMoveModal(false);
     }
   };
-
-  const sanitizeFileName = (pdfName) => {
-    // Replace spaces with underscore
-    return pdfName.replace(/ /g, "_");
-  };
-
   const handleEnterPress = (e, data) => {
     if (e.key === "Enter") {
       handledRenameDoc(data);
