@@ -1150,7 +1150,7 @@ const ReportTable = (props) => {
   const publicTourConfig = [
     {
       selector: '[data-tut="IsPublic"]',
-      content: "Please make template public to copy public URL",
+      content: t("public-tour-message"),
       position: "top",
       style: { fontSize: "13px" }
     }
