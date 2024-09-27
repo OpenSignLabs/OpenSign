@@ -639,7 +639,7 @@
   "public-template-mssg-3" :"Besoin de plus de détails ou d'exemples ?",
   "public-template-mssg-4": "Visitez le",
   "public-template-mssg-5":  "npm pour les dernières mises à jour, une documentation détaillée et l'historique des versions.",
-  "public-template-mssg-6":"Vous devez définir ce modèle comme public avant de pouvoir utiliser cet extrait de code.",
+  "public-template-mssg-6":"Avant de pouvoir utiliser cet extrait de code, vous devez rendre ce modèle public.",
   "copy-code":"COPIE",
   "copied-code":"COPIÉ",
   "Installation":"Installation",
