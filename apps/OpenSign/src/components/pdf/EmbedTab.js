@@ -34,7 +34,7 @@ export function App() {
       <Opensign
         onLoad={() => console.log("success")}
         onLoadError={(error) => console.log(error)}
-        templateId= {"${props.templateId}"}
+        templateId= "${props.templateId}"
       />
     </div>
   );
@@ -63,10 +63,10 @@ import {OpensignComponent} from "@opensign/angular"
   selector:'app-root',
   standalone: true,
   imports: [OpensignComponent], 
-  template: '<opensign templateId={"${props.templateId}"}
+  template:\`<opensign templateId="${props.templateId}"
             (onLoad)="handleLoad()"
             (onLoadError)="handleError($event)"
-             ></opensign>',
+             ></opensign>\`,
 })
 export class AppComponent{
   handleLoad() {
