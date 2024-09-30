@@ -596,7 +596,7 @@ function SignPad({
                           borderRadius: "2px"
                         }
                       }}
-                      backgroundColor="rgb(255, 255, 255)"
+                      // backgroundColor="rgb(255, 255, 255)"
                       onEnd={() =>
                         handleSignatureChange(canvasRef.current?.toDataURL())
                       }

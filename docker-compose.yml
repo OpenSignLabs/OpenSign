@@ -2,6 +2,8 @@ services:
   server:
     image: opensign/opensignserver:main
     container_name: OpenSignServer-container
+    volumes:
+      - opensign-files:/usr/src/app/files
     ports:
       - "8080:8080"
     depends_on:
@@ -56,3 +58,4 @@ volumes:
   web-root:
   caddy_data:
   caddy_config:
+  opensign-files:

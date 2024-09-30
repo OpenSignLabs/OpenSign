@@ -1351,11 +1351,6 @@ export const multiSignEmbed = async (
       widgetsPositionArr.map(async (url) => {
         let signUrl = url.SignUrl && url.SignUrl;
         if (signUrl) {
-          if (url.ImageType === "image/png") {
-            //function for convert signature png base64 url to jpeg base64
-            const newUrl = await convertPNGtoJPEG(signUrl);
-            signUrl = newUrl;
-          }
           const res = await fetch(signUrl);
           return res.arrayBuffer();
         }
@@ -1365,19 +1360,14 @@ export const multiSignEmbed = async (
     widgetsPositionArr.forEach(async (position, id) => {
       let img;
       if (["signature", "stamp", "initials", "image"].includes(position.type)) {
-        if (
-          (position.ImageType && position.ImageType === "image/png") ||
-          position.ImageType === "image/jpeg"
-        ) {
+        if (position.ImageType && position.ImageType === "image/jpeg") {
           img = await pdfDoc.embedJpg(images[id]);
         } else {
           img = await pdfDoc.embedPng(images[id]);
         }
       } else if (!position.type) {
-        if (
-          (position.ImageType && position.ImageType === "image/png") ||
-          position.ImageType === "image/jpeg"
-        ) {
+        //  to handle old widget when only stamp and signature are exists
+        if (position.ImageType && position.ImageType === "image/jpeg") {
           img = await pdfDoc.embedJpg(images[id]);
         } else {
           img = await pdfDoc.embedPng(images[id]);
@@ -1937,7 +1927,11 @@ export const getAppLogo = async () => {
       }
     } catch (err) {
       console.log("err in getlogo ", err);
-      return { logo: appInfo.applogo, user: "exist" };
+      if (err?.message?.includes("valid JSON")) {
+        return { logo: appInfo.applogo, user: "exist", error: "invalid_json" };
+      } else {
+        return { logo: appInfo.applogo, user: "exist" };
+      }
     }
   }
 };

@@ -284,6 +284,7 @@ function PdfRequestFiles(props) {
     }
   }
   //function for get document details for perticular signer with signer'object id
+  //whenever change anything in this function check react/angular packages also in plan js
   const getTemplateDetails = async () => {
     try {
       const params = { templateId: props.templateId, ispublic: true };
@@ -309,6 +310,7 @@ function PdfRequestFiles(props) {
         throw new Error("error: Invalid TemplateId");
       } else if (documentData && documentData.length > 0) {
         if (documentData[0]?.IsPublic) {
+          //handle condition when someone use plan js then setTemplateStatus is not supporting
           props?.setTemplateStatus &&
             props?.setTemplateStatus({
               status: "Success"

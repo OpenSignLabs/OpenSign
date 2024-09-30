@@ -34,7 +34,7 @@ export function App() {
       <Opensign
         onLoad={() => console.log("success")}
         onLoadError={(error) => console.log(error)}
-        templateId= {"${props.templateId}"}
+        templateId= "${props.templateId}"
       />
     </div>
   );
@@ -63,10 +63,10 @@ import {OpensignComponent} from "@opensign/angular"
   selector:'app-root',
   standalone: true,
   imports: [OpensignComponent], 
-  template: '<opensign templateId={"${props.templateId}"}
+  template:\`<opensign templateId="${props.templateId}"
             (onLoad)="handleLoad()"
             (onLoadError)="handleError($event)"
-             ></opensign>',
+             ></opensign>\`,
 })
 export class AppComponent{
   handleLoad() {
@@ -129,9 +129,11 @@ export class AppComponent{
                   <p className="font-medium text-[18px]">
                     {t(`${data.title}`)}
                   </p>
-                  <p className="text-[13px] mt-2">
-                    {t("public-template-mssg-1")}
-                  </p>
+                  {ind === 0 && (
+                    <p className="text-[13px] mt-2">
+                      {t("public-template-mssg-1")}
+                    </p>
+                  )}
                   <div className="relative p-1">
                     <div
                       onClick={() => handleCopy(data.codeString, ind)}
@@ -210,11 +212,11 @@ export class AppComponent{
                     <p className="font-medium text-[18px]">
                       {t(`${data.title}`)}
                     </p>
-
-                    <p className="text-[13px] mt-2">
-                      {t("angular-npm-mssg-1")}
-                    </p>
-
+                    {ind === 0 && (
+                      <p className="text-[13px] mt-2">
+                        {t("angular-npm-mssg-1")}
+                      </p>
+                    )}
                     <div className="relative p-1">
                       <div
                         onClick={() => handleCopy(data.codeString, ind)}
