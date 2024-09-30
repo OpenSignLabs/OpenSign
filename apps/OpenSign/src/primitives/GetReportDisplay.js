@@ -273,7 +273,8 @@ const ReportTable = (props) => {
                 SendinOrder: Doc?.SendinOrder || false,
                 AutomaticReminders: Doc?.AutomaticReminders || false,
                 RemindOnceInEvery: Doc?.RemindOnceInEvery || 5,
-                IsEnableOTP: Doc?.IsEnableOTP || false
+                IsEnableOTP: Doc?.IsEnableOTP || false,
+                IsTourEnabled: Doc?.IsTourEnabled || false
               };
               try {
                 const res = await axios.post(

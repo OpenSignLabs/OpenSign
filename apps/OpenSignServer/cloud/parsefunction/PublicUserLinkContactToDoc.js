@@ -55,7 +55,7 @@ const createDocumentFromTemplate = async (template, existContact, index) => {
       object.set('Description', template?.Description);
       object.set('Note', template?.Note);
       object.set('TimeToCompleteDays', template?.TimeToCompleteDays || 15);
-      object.set('SendinOrder', template?.SendinOrder);
+      object.set('SendinOrder', template?.SendinOrder || false);
       object.set('AutomaticReminders', template?.AutomaticReminders || false);
       object.set('RemindOnceInEvery', template?.RemindOnceInEvery || 5);
       object.set('URL', template?.URL);
@@ -63,6 +63,7 @@ const createDocumentFromTemplate = async (template, existContact, index) => {
       object.set('ExtUserPtr', template?.ExtUserPtr);
       object.set('OriginIp', template?.OriginIp || '');
       object.set('IsEnableOTP', template?.IsEnableOTP || false);
+      object.set('IsTourEnabled', template?.IsTourEnabled || false);
       let signers = template?.Signers || [];
       const signerobj = {
         __type: 'Pointer',
