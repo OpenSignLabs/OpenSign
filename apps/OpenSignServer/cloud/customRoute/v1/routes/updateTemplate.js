@@ -48,7 +48,7 @@ export default async function updateTemplate(request, response) {
                 objectId: request?.body?.folderId,
               });
             }
-            if (request.body?.enableOTP) {
+            if (request.body?.enableOTP !== undefined) {
               updateQuery.set('IsEnableOTP', request.body?.enableOTP);
             }
             if (request.body?.enableTour !== undefined) {

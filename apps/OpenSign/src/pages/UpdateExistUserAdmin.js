@@ -15,6 +15,7 @@ const UpdateExistUserAdmin = () => {
   const [isAlert, setIsAlert] = useState({ type: "danger", msg: "" });
   useEffect(() => {
     checkIsAdminExist();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const checkIsAdminExist = async () => {
@@ -22,7 +23,7 @@ const UpdateExistUserAdmin = () => {
       const isAdminExist = await Parse.Cloud.run("checkadminexist");
       if (isAdminExist !== "not_exist") {
         // console.log("isAdminExist ", isAdminExist);
-        setErrMsg("Admin already exists.");
+        setErrMsg(t("admin-exists"));
       }
     } catch (err) {
       console.log("Err in checkadminexist", err);
@@ -52,7 +53,7 @@ const UpdateExistUserAdmin = () => {
       } else if (err.code === 101) {
         setIsAlert((prev) => ({ ...prev, msg: t("user-not-found") }));
       } else if (err.code === 137) {
-        setIsAlert((prev) => ({ ...prev, msg: t("admin-already-exist") }));
+        setIsAlert((prev) => ({ ...prev, msg: t("admin-exists") }));
       } else {
         setErrMsg(t("something-went-wrong-mssg"));
       }

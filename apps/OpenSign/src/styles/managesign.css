@@ -4,7 +4,6 @@
   border: 1px solid black;
   background: white;
   border-radius: 5px;
-  animation: inAnimation 2s ease-in-out;
   z-index: 1;
 }
 

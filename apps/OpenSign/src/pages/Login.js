@@ -51,6 +51,7 @@ function Login() {
   const [isModal, setIsModal] = useState(false);
   const [image, setImage] = useState();
   const [isLoginSSO, setIsLoginSSO] = useState(false);
+  const [errMsg, setErrMsg] = useState();
 
   useEffect(() => {
     checkUserExt();
@@ -59,7 +60,9 @@ function Login() {
 
   const checkUserExt = async () => {
     const app = await getAppLogo();
-    if (!isEnableSubscription && app?.user === "not_exist") {
+    if (app?.error === "invalid_json") {
+      setErrMsg(t("server-down"));
+    } else if (!isEnableSubscription && app?.user === "not_exist") {
       navigate("/addadmin");
     }
     if (app?.logo) {
@@ -620,7 +623,11 @@ function Login() {
     }
   };
 
-  return (
+  return errMsg ? (
+    <div className="h-screen flex justify-center text-center items-center p-4 text-gray-500 text-base">
+      {errMsg}
+    </div>
+  ) : (
     <div>
       <Title title={"Login Page"} />
       {state.loading && (

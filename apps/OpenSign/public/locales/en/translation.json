@@ -132,7 +132,8 @@
     "View": "View",
     "option": "Option",
     "Embed": "Embed",
-    "Copy TemplateId":"Copy TemplateId"
+    "Copy TemplateId":"Copy TemplateId",
+    "Copy Public URL":"Copy Public URL"
   },
   "report-heading": {
     "Sr.No": "Sr.No",
@@ -639,7 +640,7 @@
   "public-template-mssg-3"  :"Need more details or examples?",
   "public-template-mssg-4": "Visit the",
   "public-template-mssg-5": " npm for the latest updates, detailed documentation, and version history.",
-  "public-template-mssg-6" :"You need to set this template as public before you can utilize this code snippet.",
+  "public-template-mssg-6" :"Before you can use this code snippet, you must make this template public.",
   "copy-code":"COPY",
   "copied-code":"COPIED",
   "Installation":"Installation",
@@ -669,11 +670,14 @@
   "download-pdf":"Download Pdf",
   "pdf-certificate":"Download Pdf + Certificate",
   "document-logs":"Document logs",
-  "enable-tour":"Enable Tour",
-  "istourenabled-help":{
-    "p1":"This will enable a guided tour for signers, providing instructions during the signing process.",
-    "p2":"This will disable the guided tour, ensuring a faster, uninterrupted signing experience.",
-    "p3":"Tip: If your signers are familiar with OpenSign and frequently use it, you may want to disable the guided tour for a more seamless experience. Choose the option that best fits your document signing needs."
-  }
+  "server-down": "Unable to connect to the OpenSign server. If you are self-hosting OpenSign, please ensure that all the steps in the documentation have been followed correctly. If you're running OpenSign locally, you might be accessing it through an incorrect port number.",
+  "admin-exists": "Admin already exists. Please login to the application using admin credentials in order to manage users.",
+   "public-tour-message":"Please make template public to copy public URL",
+   "enable-tour":"Enable Tour",
+   "istourenabled-help":{
+     "p1":"This will enable a guided tour for signers, providing instructions during the signing process.",
+     "p2":"This will disable the guided tour, ensuring a faster, uninterrupted signing experience.",
+     "p3":"Tip: If your signers are familiar with OpenSign and frequently use it, you may want to disable the guided tour for a more seamless experience. Choose the option that best fits your document signing needs."
+   }
 
 }
