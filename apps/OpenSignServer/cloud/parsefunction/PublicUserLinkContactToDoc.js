@@ -168,7 +168,7 @@ const sendMailToAllSigners = async docId => {
                   receiver_phone: signerMail[i]?.Phone || '',
                   expiry_date: localExpireDate,
                   company_name: orgName,
-                  signing_url: `<a href=${signPdf}>Sign here</a>`,
+                  signing_url: `<a href=${signPdf} target=_blank>Sign here</a>`,
                 };
                 replaceVar = replaceMailVaribles(requestSubject, htmlReqBody, variables);
               }

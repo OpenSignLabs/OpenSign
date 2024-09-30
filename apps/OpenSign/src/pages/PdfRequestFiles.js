@@ -429,7 +429,7 @@ function PdfRequestFiles(props) {
 
         currUserId = getCurrentSigner?.objectId
           ? getCurrentSigner.objectId
-          : contactBookId || "";
+          : signerObjectId || "";
         if (isEnableSubscription) {
           await checkIsSubscribed(
             documentData[0]?.ExtUserPtr?.objectId,
@@ -1013,7 +1013,7 @@ function PdfRequestFiles(props) {
                           receiver_phone: user.Phone,
                           expiry_date: localExpireDate,
                           company_name: orgName,
-                          signing_url: `<a href=${signPdf}>Sign here</a>`
+                          signing_url: `<a href=${signPdf} target=_blank>Sign here</a>`
                         };
                         replaceVar = replaceMailVaribles(
                           requestSubject,
@@ -1047,7 +1047,7 @@ function PdfRequestFiles(props) {
                             orgName +
                             "</td></tr> <tr> <td style='font-weight:bold;font-family:sans-serif;font-size:15px'>Expires on</td><td> </td> <td style='color:#626363;font-weight:bold'>" +
                             localExpireDate +
-                            "</td></tr><tr> <td></td> <td> </td></tr></table> </div> <div style='margin-left:70px'><a href=" +
+                            "</td></tr><tr> <td></td> <td> </td></tr></table> </div> <div style='margin-left:70px'><a target=_blank href=" +
                             signPdf +
                             "> <button style='padding: 12px 12px 12px 12px;background-color: #d46b0f;color: white;  border: 0px;box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px,rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;font-weight:bold;margin-top:30px'>Sign here</button></a> </div> <div style='display: flex; justify-content: center;margin-top: 10px;'> </div></div></div><div><p> This is an automated email from OpenSign™. For any queries regarding this email, please contact the sender " +
                             senderEmail +
@@ -1517,10 +1517,11 @@ function PdfRequestFiles(props) {
         } else {
           setIsPublicContact(false);
           setIsPublicTemplate(false);
-          setIsLoading({ isLoad: false });
+          setLoading(false);
           setDocumentId(userRes.data?.result?.docId);
           getDocumentDetails(userRes?.data?.result?.docId);
-          contactBookId = userRes?.data?.result?.contactId || "";
+          const contactId = userRes.data.result?.contactId;
+          setSignerObjectId(contactId);
         }
       } else {
         console.log("error in public-sign to create user details");
