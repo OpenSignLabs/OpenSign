@@ -64,6 +64,7 @@ export default async function getTemplate(request, response) {
           enableOTP: template?.IsEnableOTP || false,
           createdAt: template.createdAt,
           updatedAt: template.updatedAt,
+          enableTour: template?.IsTourEnabled || false,
         });
       } else {
         if (request.posthog) {

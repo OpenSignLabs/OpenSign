@@ -710,7 +710,8 @@ export const createDocument = async (
       SendinOrder: Doc?.SendinOrder || false,
       AutomaticReminders: Doc?.AutomaticReminders || false,
       RemindOnceInEvery: parseInt(Doc?.RemindOnceInEvery || 5),
-      IsEnableOTP: Doc?.IsEnableOTP || false
+      IsEnableOTP: Doc?.IsEnableOTP || false,
+      IsTourEnabled: Doc?.IsTourEnabled || false
     };
 
     try {

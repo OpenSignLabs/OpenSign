@@ -65,6 +65,7 @@ export default async function getDocument(request, response) {
           enableOTP: document?.IsEnableOTP || false,
           createdAt: document.createdAt,
           updatedAt: document.updatedAt,
+          enableTour: document?.IsTourEnabled || false,
         });
       } else {
         if (request.posthog) {
