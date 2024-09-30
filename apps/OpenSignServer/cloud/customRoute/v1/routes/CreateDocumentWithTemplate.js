@@ -196,8 +196,9 @@ export default async function createDocumentWithTemplate(request, response) {
                 if (TimeToCompleteDays) {
                   object.set('TimeToCompleteDays', TimeToCompleteDays);
                 }
-                const enableOTP = request.body?.enableOTP === true ? true : false;
-                const IsEnableOTP = enableOTP || template?.IsEnableOTP || false;
+                const enableOTP = request.body?.enableOTP;
+                const IsEnableOTP =
+                  enableOTP !== undefined ? enableOTP : template?.IsEnableOTP || false;
                 object.set('IsEnableOTP', IsEnableOTP);
                 object.set('CreatedBy', template.CreatedBy);
                 object.set('ExtUserPtr', {
