@@ -1511,7 +1511,17 @@ function PdfRequestFiles(props) {
 
       if (userRes?.data?.result) {
         setRes(userRes.data.result);
-        await SendOtp();
+        const isEnableOTP = pdfDetails?.[0]?.IsEnableOTP || false;
+        if (isEnableOTP) {
+          await SendOtp();
+        } else {
+          setIsPublicContact(false);
+          setIsPublicTemplate(false);
+          setIsLoading({ isLoad: false });
+          setDocumentId(userRes.data?.result?.docId);
+          getDocumentDetails(userRes?.data?.result?.docId);
+          contactBookId = userRes?.data?.result?.contactId || "";
+        }
       } else {
         console.log("error in public-sign to create user details");
         setIsAlert({
