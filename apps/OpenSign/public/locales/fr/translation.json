@@ -677,7 +677,9 @@
     "p1": "Cela permettra une visite guidée pour les signataires, fournissant des instructions pendant le processus de signature.",
     "p2": "Cela désactivera la visite guidée, garantissant ainsi une expérience de signature plus rapide et ininterrompue.",
     "p3":  "Conseil : si vos signataires connaissent OpenSign et l'utilisent fréquemment, vous souhaiterez peut-être désactiver la visite guidée pour une expérience plus fluide. Choisissez l'option qui correspond le mieux à vos besoins en matière de signature de documents."
-  }
+  },
+   "form-title-1": "Paramètre du flux de documents",
+   "form-title-2": "Paramètre de sécurité"
 
 
 }

@@ -81,7 +81,6 @@ const Forms = (props) => {
   const [isDecrypting, setIsDecrypting] = useState(false);
   const [isCorrectPass, setIsCorrectPass] = useState(true);
   const [isSubscribe, setIsSubscribe] = useState(false);
-  const [isAdvanceOpt, setIsAdvanceOpt] = useState(false);
   const handleStrInput = (e) => {
     setIsCorrectPass(true);
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -792,92 +791,24 @@ const Forms = (props) => {
                 required
               />
             </div>
-            {props.title !== "New Template" && (
+            {props.title === "Sign Yourself" ? (
               <SelectFolder
                 onSuccess={handleFolder}
                 folderCls={props.Cls}
                 isReset={isReset}
               />
-            )}
-            {props.title !== "Sign Yourself" && (
-              <div className="text-xs mt-2">
-                <label className="block">
-                  {t("send-in-order")}
-                  <a data-tooltip-id="sendInOrder-tooltip" className="ml-1">
-                    <sup>
-                      <i className="fa-light fa-question rounded-full border-[#33bbff] text-[#33bbff] text-[13px] border-[1px] py-[1.5px] px-[4px]"></i>
-                    </sup>
-                  </a>
-                  <Tooltip id="sendInOrder-tooltip" className="z-50">
-                    <div className="max-w-[200px] md:max-w-[450px]">
-                      <p className="font-bold">{t("send-in-order")}</p>
-                      <p>{t("send-in-order-help.p1")}</p>
-                      <p className="p-[5px]">
-                        <ol className="list-disc">
-                          <li>
-                            <span className="font-bold">{t("yes")}: </span>
-                            <span>{t("send-in-order-help.p2")}</span>
-                          </li>
-                          <li>
-                            <span className="font-bold">{t("no")}: </span>
-                            <span>{t("send-in-order-help.p3")}</span>
-                          </li>
-                        </ol>
-                      </p>
-                      <p>{t("send-in-order-help.p4")}</p>
-                    </div>
-                  </Tooltip>
-                </label>
-                <div className="flex items-center gap-2 ml-2 mb-1">
-                  <input
-                    type="radio"
-                    value={"true"}
-                    className="op-radio op-radio-xs"
-                    name="SendinOrder"
-                    checked={formData.SendinOrder === "true"}
-                    onChange={handleStrInput}
-                  />
-                  <div className="text-center">{t("yes")}</div>
-                </div>
-                <div className="flex items-center gap-2 ml-2 mb-1">
-                  <input
-                    type="radio"
-                    value={"false"}
-                    name="SendinOrder"
-                    className="op-radio op-radio-xs"
-                    checked={formData.SendinOrder === "false"}
-                    onChange={handleStrInput}
-                  />
-                  <div className="text-center">{t("no")}</div>
-                </div>
-              </div>
-            )}
-            {isAdvanceOpt && (
-              <div className="overflow-y-auto z-[500] transition-all">
-                {props.title === "Request Signatures" && (
-                  <div className="text-xs mt-2">
-                    <label className="block">
-                      {t("time-to-complete")}
-                      <span className="text-red-500 text-[13px]">*</span>
-                    </label>
-                    <input
-                      type="number"
-                      name="TimeToCompleteDays"
-                      className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
-                      value={formData.TimeToCompleteDays}
-                      onChange={(e) => handleStrInput(e)}
-                      onInvalid={(e) =>
-                        e.target.setCustomValidity(t("input-required"))
-                      }
-                      onInput={(e) => e.target.setCustomValidity("")}
-                      required
+            ) : (
+              <div className="flex flex-col md:flex-row w-full mt-4 md:mt-10 gap-4">
+                <div className="card bg-base-100 rounded-box grid flex-grow p-3 ">
+                  {props.title !== "New Template" ? (
+                    <SelectFolder
+                      onSuccess={handleFolder}
+                      folderCls={props.Cls}
+                      isReset={isReset}
                     />
-                  </div>
-                )}
-                {props.title !== "Sign Yourself" && (
-                  <>
-                    {isEnableSubscription && (
-                      <div className="text-xs mt-2">
+                  ) : (
+                    <>
+                      <div className="text-xs mt-[10px]">
                         <span className={isSubscribe ? "" : " text-gray-300"}>
                           {t("auto-reminder")}{" "}
                           {!isSubscribe && isEnableSubscription && <Upgrade />}
@@ -897,8 +828,134 @@ const Forms = (props) => {
                           />
                         </label>
                       </div>
+
+                      {formData?.autoreminder === true && (
+                        <div className="text-xs mt-2">
+                          <label className="block">
+                            {t("remind-once")}
+                            <span className="text-red-500 text-[13px]">*</span>
+                          </label>
+                          <input
+                            type="number"
+                            value={formData.remindOnceInEvery}
+                            name="remindOnceInEvery"
+                            className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
+                            onChange={handleStrInput}
+                            onInvalid={(e) =>
+                              e.target.setCustomValidity(t("input-required"))
+                            }
+                            onInput={(e) => e.target.setCustomValidity("")}
+                            required
+                          />
+                        </div>
+                      )}
+                    </>
+                  )}
+                  <span className="mt-3 mb-2 font-[400]">
+                    {t("form-title-1")}
+                  </span>
+                  <div className="text-xs mt-2">
+                    <label className="block">
+                      {t("send-in-order")}
+                      <a data-tooltip-id="sendInOrder-tooltip" className="ml-1">
+                        <sup>
+                          <i className="fa-light fa-question rounded-full border-[#33bbff] text-[#33bbff] text-[13px] border-[1px] py-[1.5px] px-[4px]"></i>
+                        </sup>
+                      </a>
+                      <Tooltip id="sendInOrder-tooltip" className="z-50">
+                        <div className="max-w-[200px] md:max-w-[450px]">
+                          <p className="font-bold">{t("send-in-order")}</p>
+                          <p>{t("send-in-order-help.p1")}</p>
+                          <p className="p-[5px]">
+                            <ol className="list-disc">
+                              <li>
+                                <span className="font-bold">{t("yes")}: </span>
+                                <span>{t("send-in-order-help.p2")}</span>
+                              </li>
+                              <li>
+                                <span className="font-bold">{t("no")}: </span>
+                                <span>{t("send-in-order-help.p3")}</span>
+                              </li>
+                            </ol>
+                          </p>
+                          <p>{t("send-in-order-help.p4")}</p>
+                        </div>
+                      </Tooltip>
+                    </label>
+                    <div className="flex flex-col md:flex-row md:gap-4">
+                      <div className="flex items-center gap-2 ml-2 mb-1">
+                        <input
+                          type="radio"
+                          value={"true"}
+                          className="op-radio op-radio-xs"
+                          name="SendinOrder"
+                          checked={formData.SendinOrder === "true"}
+                          onChange={handleStrInput}
+                        />
+                        <div className="text-center">{t("yes")}</div>
+                      </div>
+                      <div className="flex items-center gap-2 ml-2 mb-1">
+                        <input
+                          type="radio"
+                          value={"false"}
+                          name="SendinOrder"
+                          className="op-radio op-radio-xs"
+                          checked={formData.SendinOrder === "false"}
+                          onChange={handleStrInput}
+                        />
+                        <div className="text-center">{t("no")}</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="overflow-y-auto z-[500] transition-all">
+                    {props.title === "Request Signatures" && (
+                      <div className="text-xs mt-2">
+                        <label className="block">
+                          {t("time-to-complete")}
+                          <span className="text-red-500 text-[13px]">*</span>
+                        </label>
+                        <input
+                          type="number"
+                          name="TimeToCompleteDays"
+                          className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
+                          value={formData.TimeToCompleteDays}
+                          onChange={(e) => handleStrInput(e)}
+                          onInvalid={(e) =>
+                            e.target.setCustomValidity(t("input-required"))
+                          }
+                          onInput={(e) => e.target.setCustomValidity("")}
+                          required
+                        />
+                      </div>
                     )}
-                    {formData?.autoreminder === true && (
+                  </div>
+                </div>
+                <div className="card bg-base-100 rounded-box grid p-3 flex-grow ">
+                  {isEnableSubscription && props.title !== "New Template" && (
+                    <div className="text-xs mt-[10px]">
+                      <span className={isSubscribe ? "" : " text-gray-300"}>
+                        {t("auto-reminder")}{" "}
+                        {!isSubscribe && isEnableSubscription && <Upgrade />}
+                      </span>
+                      <label
+                        className={`${
+                          isSubscribe
+                            ? "cursor-pointer "
+                            : "pointer-events-none opacity-50"
+                        } relative block items-center mb-0 mt-1.5`}
+                      >
+                        <input
+                          type="checkbox"
+                          className="op-toggle transition-all checked:[--tglbg:#3368ff] checked:bg-white"
+                          checked={formData.autoreminder}
+                          onChange={handleAutoReminder}
+                        />
+                      </label>
+                    </div>
+                  )}
+                  {formData?.autoreminder === true &&
+                    props.title !== "New Template" && (
                       <div className="text-xs mt-2">
                         <label className="block">
                           {t("remind-once")}
@@ -918,47 +975,45 @@ const Forms = (props) => {
                         />
                       </div>
                     )}
-                    {isEnableSubscription && (
-                      <div className="text-xs mt-2">
-                        <label className="block">
-                          <span className={isSubscribe ? "" : " text-gray-300"}>
-                            {t("isenable-otp")}{" "}
-                            <a
-                              data-tooltip-id="isenableotp-tooltip"
-                              className="ml-1"
-                            >
-                              <sup>
-                                <i className="fa-light fa-question rounded-full border-[#33bbff] text-[#33bbff] text-[13px] border-[1px] py-[1.5px] px-[4px]"></i>
-                              </sup>
-                            </a>{" "}
-                            {!isSubscribe && isEnableSubscription && (
-                              <Upgrade />
-                            )}
-                          </span>
-                          <Tooltip id="isenableotp-tooltip" className="z-50">
-                            <div className="max-w-[200px] md:max-w-[450px]">
-                              <p className="font-bold">{t("isenable-otp")}</p>
-                              <p>{t("isenable-otp-help.p1")}</p>
-                              <p className="p-[5px]">
-                                <ol className="list-disc">
-                                  <li>
-                                    <span className="font-bold">
-                                      {t("yes")}:{" "}
-                                    </span>
-                                    <span>{t("isenable-otp-help.p2")}</span>
-                                  </li>
-                                  <li>
-                                    <span className="font-bold">
-                                      {t("no")}:{" "}
-                                    </span>
-                                    <span>{t("isenable-otp-help.p3")}</span>
-                                  </li>
-                                </ol>
-                              </p>
-                              <p>{t("isenable-otp-help.p4")}</p>
-                            </div>
-                          </Tooltip>
-                        </label>
+                  <span className="font-[400]">{t("form-title-2")}</span>
+                  {isEnableSubscription && (
+                    <div className="text-xs mt-2">
+                      <label className="block">
+                        <span className={isSubscribe ? "" : " text-gray-300"}>
+                          {t("isenable-otp")}{" "}
+                          <a
+                            data-tooltip-id="isenableotp-tooltip"
+                            className="ml-1"
+                          >
+                            <sup>
+                              <i className="fa-light fa-question rounded-full border-[#33bbff] text-[#33bbff] text-[13px] border-[1px] py-[1.5px] px-[4px]"></i>
+                            </sup>
+                          </a>{" "}
+                          {!isSubscribe && isEnableSubscription && <Upgrade />}
+                        </span>
+                        <Tooltip id="isenableotp-tooltip" className="z-50">
+                          <div className="max-w-[200px] md:max-w-[450px]">
+                            <p className="font-bold">{t("isenable-otp")}</p>
+                            <p>{t("isenable-otp-help.p1")}</p>
+                            <p className="p-[5px]">
+                              <ol className="list-disc">
+                                <li>
+                                  <span className="font-bold">
+                                    {t("yes")}:{" "}
+                                  </span>
+                                  <span>{t("isenable-otp-help.p2")}</span>
+                                </li>
+                                <li>
+                                  <span className="font-bold">{t("no")}: </span>
+                                  <span>{t("isenable-otp-help.p3")}</span>
+                                </li>
+                              </ol>
+                            </p>
+                            <p>{t("isenable-otp-help.p4")}</p>
+                          </div>
+                        </Tooltip>
+                      </label>
+                      <div className="flex flex-col md:flex-row md:gap-4">
                         <div
                           className={`${
                             isSubscribe ? "" : "pointer-events-none opacity-50"
@@ -990,41 +1045,41 @@ const Forms = (props) => {
                           <div className="text-center">{t("no")}</div>
                         </div>
                       </div>
-                    )}
-                    <div className="text-xs mt-2">
-                      <label className="block">
-                        <span>
-                          {t("enable-tour")}
-                          <a
-                            data-tooltip-id="istourenabled-tooltip"
-                            className="ml-1"
-                          >
-                            <sup>
-                              <i className="fa-light fa-question rounded-full border-[#33bbff] text-[#33bbff] text-[13px] border-[1px] py-[1.5px] px-[4px]"></i>
-                            </sup>
-                          </a>{" "}
-                        </span>
-                        <Tooltip id="istourenabled-tooltip" className="z-50">
-                          <div className="max-w-[200px] md:max-w-[450px]">
-                            <p className="font-bold">{t("enable-tour")}</p>
-                            <p className="p-[5px]">
-                              <ol className="list-disc">
-                                <li>
-                                  <span className="font-bold">
-                                    {t("yes")}:{" "}
-                                  </span>
-                                  <span>{t("istourenabled-help.p1")}</span>
-                                </li>
-                                <li>
-                                  <span className="font-bold">{t("no")}: </span>
-                                  <span>{t("istourenabled-help.p2")}</span>
-                                </li>
-                              </ol>
-                            </p>
-                            <p>{t("istourenabled-help.p3")}</p>
-                          </div>
-                        </Tooltip>
-                      </label>
+                    </div>
+                  )}
+                  <div className="text-xs mt-2">
+                    <label className="block">
+                      <span>
+                        {t("enable-tour")}
+                        <a
+                          data-tooltip-id="istourenabled-tooltip"
+                          className="ml-1"
+                        >
+                          <sup>
+                            <i className="fa-light fa-question rounded-full border-[#33bbff] text-[#33bbff] text-[13px] border-[1px] py-[1.5px] px-[4px]"></i>
+                          </sup>
+                        </a>{" "}
+                      </span>
+                      <Tooltip id="istourenabled-tooltip" className="z-50">
+                        <div className="max-w-[200px] md:max-w-[450px]">
+                          <p className="font-bold">{t("enable-tour")}</p>
+                          <p className="p-[5px]">
+                            <ol className="list-disc">
+                              <li>
+                                <span className="font-bold">{t("yes")}: </span>
+                                <span>{t("istourenabled-help.p1")}</span>
+                              </li>
+                              <li>
+                                <span className="font-bold">{t("no")}: </span>
+                                <span>{t("istourenabled-help.p2")}</span>
+                              </li>
+                            </ol>
+                          </p>
+                          <p>{t("istourenabled-help.p3")}</p>
+                        </div>
+                      </Tooltip>
+                    </label>
+                    <div className="flex flex-col md:flex-row md:gap-4">
                       <div className={`  flex items-center gap-2 ml-2 mb-1 `}>
                         <input
                           type="radio"
@@ -1048,20 +1103,11 @@ const Forms = (props) => {
                         <div className="text-center">{t("no")}</div>
                       </div>
                     </div>
-                  </>
-                )}
+                  </div>
+                </div>
               </div>
             )}
-            {props.title !== "Sign Yourself" && (
-              <div
-                onClick={() => setIsAdvanceOpt(!isAdvanceOpt)}
-                className={`mt-2.5 op-link op-link-primary text-sm`}
-              >
-                {isAdvanceOpt
-                  ? t("hide-advanced-options")
-                  : t("advanced-options")}
-              </div>
-            )}
+
             <div className="flex items-center mt-3 gap-2">
               <button
                 className={`${
