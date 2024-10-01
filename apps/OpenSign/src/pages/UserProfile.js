@@ -564,7 +564,7 @@ function UserProfile() {
                       {editmode || !extendUser?.[0]?.UserName ? (
                         <>
                           <input
-                            maxLength={100}
+                            maxLength={40}
                             onChange={handleOnchangeUserName}
                             value={publicUserName}
                             disabled={!editmode}
@@ -611,7 +611,7 @@ function UserProfile() {
                     <div className="flex flex-row md:items-center gap-1">
                       {editmode || !extendUser?.[0]?.Tagline ? (
                         <input
-                          maxLength={40}
+                          maxLength={100}
                           onChange={handleOnchangeTagLine}
                           value={tagLine}
                           disabled={!editmode}
