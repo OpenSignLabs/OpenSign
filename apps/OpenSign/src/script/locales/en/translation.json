@@ -265,10 +265,10 @@
   "make-template-public-alert": "Are you sure you want to make this template public?",
   "make-template-private-alert": "Are you sure you want to make this template private? This will remove it from your public profile.",
   "public-role": "Public role",
-  "public-url": "Public URL",
+  "public-url": "Public profile needed",
   "public-url-copy": "Here’s your public URL: ",
   "public-url-copy-mssg": "Copy it or share it with the signer, and you will be able to see all your publicly set templates.",
-  "add-public-url-alert": "Please add your public URL, and you will be able to make a public template.",
+  "add-public-url-alert": "Please complete your OpenSign public profile setup. Once done, you’ll be able to make templates public. This process only needs to be completed once.",
   "share-with-alert": "You cannot share a template if any roles already have contacts assigned. Please remove all contact assignments from the roles before sharing the template.",
   "share-with": "Share with",
   "team-not-found": "Team not found",
@@ -672,5 +672,6 @@
   "document-logs": "Document logs",
   "server-down": "Unable to connect to the OpenSign server. If you are self-hosting OpenSign, please ensure that all the steps in the documentation have been followed correctly. If you're running OpenSign locally, you might be accessing it through an incorrect port number.",
   "admin-exists": "Admin already exists. Please login to the application using admin credentials in order to manage users.",
-  "public-tour-message": "Please make template public to copy public URL"
+  "public-tour-message":"The template needs to be public before you can generate a shareable link.",
+  "add-user-template": "You need to add a role before you can add fields for it."
 }

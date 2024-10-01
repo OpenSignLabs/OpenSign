@@ -73,7 +73,7 @@ function PdfRequestFiles(props) {
   const [selectWidgetId, setSelectWidgetId] = useState("");
   const [otpLoader, setOtpLoader] = useState(false);
   const [isCelebration, setIsCelebration] = useState(false);
-  const [requestSignTour, setRequestSignTour] = useState(false);
+  const [requestSignTour, setRequestSignTour] = useState(true);
   const [tourStatus, setTourStatus] = useState([]);
   const [isLoading, setIsLoading] = useState({
     isLoad: true,
@@ -129,7 +129,7 @@ function PdfRequestFiles(props) {
   const [contact, setContact] = useState({ name: "", phone: "", email: "" });
   const [isOtp, setIsOtp] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [res, setRes] = useState({});
+  const [publicRes, setPublicRes] = useState({});
   const [documentId, setDocumentId] = useState("");
   const [isPublicContact, setIsPublicContact] = useState(false);
   const [pdfArrayBuffer, setPdfArrayBuffer] = useState("");
@@ -429,7 +429,7 @@ function PdfRequestFiles(props) {
 
         currUserId = getCurrentSigner?.objectId
           ? getCurrentSigner.objectId
-          : signerObjectId || "";
+          : contactBookId || signerObjectId || "";
         if (isEnableSubscription) {
           await checkIsSubscribed(
             documentData[0]?.ExtUserPtr?.objectId,
@@ -1510,16 +1510,14 @@ function PdfRequestFiles(props) {
       );
 
       if (userRes?.data?.result) {
-        setRes(userRes.data.result);
+        setPublicRes(userRes.data.result);
         const isEnableOTP = pdfDetails?.[0]?.IsEnableOTP || false;
         if (isEnableOTP) {
           await SendOtp();
         } else {
           setIsPublicContact(false);
           setIsPublicTemplate(false);
-          setLoading(false);
           setDocumentId(userRes.data?.result?.docId);
-          getDocumentDetails(userRes?.data?.result?.docId);
           const contactId = userRes.data.result?.contactId;
           setSignerObjectId(contactId);
         }
@@ -1564,7 +1562,7 @@ function PdfRequestFiles(props) {
 
   const SendOtp = async () => {
     try {
-      const params = { email: contact.email, docId: res.docId };
+      const params = { email: contact.email, docId: publicRes?.docId };
       const Otp = await axios.post(
         `${localStorage.getItem("baseUrl")}/functions/SendOTPMailV1`,
         params,
@@ -1630,17 +1628,13 @@ function PdfRequestFiles(props) {
               JSON.stringify(contractUserDetails)
             );
           }
-
           localStorage.setItem("username", _user.name);
           localStorage.setItem("accesstoken", _user.sessionToken);
           setLoading(false);
-          // navigate(`/load/recipientSignPdf/${res?.docId}/${res?.contactId}`);
-          // document.getElementById("my_modal").close();
           setIsPublicContact(false);
           setIsPublicTemplate(false);
           setIsLoading({ isLoad: false });
-          setDocumentId(res?.docId);
-          getDocumentDetails(res?.docId);
+          setDocumentId(publicRes?.docId);
         }
       } catch (error) {
         console.log("err ", error);
