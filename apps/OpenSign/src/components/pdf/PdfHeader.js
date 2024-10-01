@@ -418,11 +418,7 @@ function Header({
                     {templateId && (
                       <button
                         onClick={() =>
-                          handleDownloadPdf(
-                            pdfDetails,
-                            pdfUrl,
-                            setIsDownloading
-                          )
+                          handleDownloadPdf(pdfDetails, setIsDownloading)
                         }
                         type="button"
                         className="op-btn op-btn-ghost op-btn-sm mr-[3px]"
