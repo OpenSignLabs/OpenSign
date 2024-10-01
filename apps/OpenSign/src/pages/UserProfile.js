@@ -564,7 +564,7 @@ function UserProfile() {
                       {editmode || !extendUser?.[0]?.UserName ? (
                         <>
                           <input
-                            maxLength={40}
+                            maxLength={100}
                             onChange={handleOnchangeUserName}
                             value={publicUserName}
                             disabled={!editmode}
