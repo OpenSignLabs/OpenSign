@@ -4,23 +4,38 @@ title: Self-host OpenSign™ with Docker on Linux/MacOS/Windows
 import ReactPlayer from 'react-player';
 
 ## Steps to run OpenSign™ with docker on Linux/MacOS/Windows:
-  1. Firstly, install [Docker](https://www.docker.com/products/docker-desktop/) and ensure it is running before proceeding to the next steps.
-  2. Now, start Docker and ensure it runs in the background.
+
+### Step 1. Download and Install [Docker](https://www.docker.com/products/docker-desktop/):
+
+Follow the official Docker installation guide based on your operating system.
+
+Create a Docker Hub account if you don't have one: Docker Hub Signup.
+
+Important: Don't forget to verify your Docker Hub account via the email verification link. If you skip this step, the deployment might fail due to unauthorized access errors when pushing or pulling Docker images.
+
+### Step 2. Open the terminal and execute the below commands as per your operating system. 
+
+**Note:** Make sure Docker is running in the background before proceeding.
 
 ### Running on a custom domain
 Command for linux/MacOS 
 ```
 export HOST_URL=https://opensign.yourdomain.com && curl --remote-name-all https://raw.githubusercontent.com/OpenSignLabs/OpenSign/main/docker-compose.yml https://raw.githubusercontent.com/OpenSignLabs/OpenSign/main/Caddyfile https://raw.githubusercontent.com/OpenSignLabs/OpenSign/main/.env.local_dev && mv .env.local_dev .env.prod && docker compose up --force-recreate
 ```
-Command for Windows (Powershell)
+Command for Windows (**Powershell**)
 ```
 $env:HOST_URL="https://opensign.yourdomain.com"; Invoke-WebRequest -Uri https://raw.githubusercontent.com/OpenSignLabs/OpenSign/main/docker-compose.yml -OutFile docker-compose.yml; Invoke-WebRequest -Uri https://raw.githubusercontent.com/OpenSignLabs/OpenSign/main/Caddyfile -OutFile Caddyfile; Invoke-WebRequest -Uri https://raw.githubusercontent.com/OpenSignLabs/OpenSign/main/.env.local_dev -OutFile .env.local_dev; Rename-Item -Path .env.local_dev -NewName .env.prod; docker compose up --force-recreate
 ```
-Command for Windows (CMD/Terminal)
+Command for Windows (**CMD/Terminal**)
 ```
 set HOST_URL=https://opensign.yourdomain.com && curl -O https://raw.githubusercontent.com/OpenSignLabs/OpenSign/main/docker-compose.yml && curl -O https://raw.githubusercontent.com/OpenSignLabs/OpenSign/main/Caddyfile && curl -O https://raw.githubusercontent.com/OpenSignLabs/OpenSign/main/.env.local_dev && rename .env.local_dev .env.prod && docker compose up --force-recreate
 ```
-  and Hit Enter to start the containers automatically. Make sure to replace the host URL with your subdomain where OpenSign will be accessible. You need to point the subdomain to the server where you are running these commands by adding the necessary A record to your DNS.
+ 
+Copy the command above, paste it into the terminal, and press Enter to pull and start the containers automatically. 
+
+Make sure to replace the host URL with your subdomain where OpenSign will be accessible. 
+
+You will also need to point the subdomain to the server executing these commands by adding the correct A record to your DNS settings.
   
 ### Running locally
 If instead want to run locally try out below commands and once the deployment is successful, the application will be accessible at [https://localhost:3001](https://localhost:3001). You will need to accept Chrome's insecure certificate warning. Follow the steps in the screenshots to proceed.
@@ -29,25 +44,24 @@ Command for linux/MacOS (localhost)
 ```
 curl --remote-name-all https://raw.githubusercontent.com/OpenSignLabs/OpenSign/docker_beta/docker-compose.yml https://raw.githubusercontent.com/OpenSignLabs/OpenSign/docker_beta/Caddyfile https://raw.githubusercontent.com/OpenSignLabs/OpenSign/docker_beta/.env.local_dev && mv .env.local_dev .env.prod && docker compose up --force-recreate
 ```
-Command for Windows (Powershell) (localhost)
+Command for Windows (**Powershell**) (localhost)
 ```
 Invoke-WebRequest -Uri https://raw.githubusercontent.com/OpenSignLabs/OpenSign/docker_beta/docker-compose.yml -OutFile docker-compose.yml; Invoke-WebRequest -Uri https://raw.githubusercontent.com/OpenSignLabs/OpenSign/docker_beta/Caddyfile -OutFile Caddyfile; Invoke-WebRequest -Uri https://raw.githubusercontent.com/OpenSignLabs/OpenSign/docker_beta/.env.local_dev -OutFile .env.local_dev; Rename-Item -Path .env.local_dev -NewName .env.prod; docker compose up --force-recreate
 ```
-Command for Windows (CMD/Terminal) (localhost)
+Command for Windows (**CMD/Terminal**) (localhost)
 ```
 curl -O https://raw.githubusercontent.com/OpenSignLabs/OpenSign/docker_beta/docker-compose.yml && curl -O https://raw.githubusercontent.com/OpenSignLabs/OpenSign/docker_beta/Caddyfile && curl -O https://raw.githubusercontent.com/OpenSignLabs/OpenSign/docker_beta/.env.local_dev && rename .env.local_dev .env.prod && docker compose up --force-recreate
 ```
 
   <div>
-    <img width="937" alt="localhost" src="https://github.com/user-attachments/assets/f5de1882-64d0-44ea-86e3-3a7c8405272c"/>
+    <img width="700" alt="localhost" src="https://github.com/user-attachments/assets/f5de1882-64d0-44ea-86e3-3a7c8405272c"/>
   </div>
 
   <div>
-    <img width="935" alt="proceedtolocalhost" src="https://github.com/user-attachments/assets/33f975b9-4a9a-431e-a869-72e38f3b6754"/>
+    <img width="700" alt="proceedtolocalhost" src="https://github.com/user-attachments/assets/33f975b9-4a9a-431e-a869-72e38f3b6754"/>
   </div>
 
-
-*Note: If you wish to incorporate our latest features into your Docker container, follow the steps again after stopping existing containers.* 
+**Note:** If you wish to incorporate our latest features into your Docker container, follow the [Upgrade Deployment](https://docs.opensignlabs.com/docs/self-host/docker/upgrade-deployment) steps. 
 
 ## Information About ENV variables which are used to setup OpenSign™ with Docker on Localhost
 To set up OpenSign™ locally using Docker, the following prerequisites are required: 
