@@ -24,8 +24,9 @@ if (useLocal !== 'true') {
   try {
     const spacesEndpoint = new AWS.Endpoint(process.env.DO_ENDPOINT);
     const s3Options = {
-      bucket: process.env.DO_SPACE, // globalConfig.S3FilesAdapter.bucket,
+      bucket: process.env.DO_SPACE,
       baseUrl: process.env.DO_BASEURL,
+      fileAcl: 'none',
       region: process.env.DO_REGION,
       directAccess: true,
       preserveFileName: true,
