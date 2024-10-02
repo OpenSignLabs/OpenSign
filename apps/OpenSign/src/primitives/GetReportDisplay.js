@@ -711,7 +711,7 @@ const ReportTable = (props) => {
       receiver_phone: userDetails?.Phone || "",
       expiry_date: localExpireDate,
       company_name: doc.ExtUserPtr.Company,
-      signing_url: `<a href=${signPdf}>Sign here</a>`
+      signing_url: `<a href=${signPdf} target=_blank>Sign here</a>`
     };
     const res = replaceMailVaribles(subject, "", variables);
 
@@ -740,7 +740,7 @@ const ReportTable = (props) => {
       receiver_phone: userDetails?.Phone || "",
       expiry_date: localExpireDate,
       company_name: doc.ExtUserPtr.Company,
-      signing_url: `<a href=${signPdf}>Sign here</a>`
+      signing_url: `<a href=${signPdf} target=_blank>Sign here</a>`
     };
     const res = replaceMailVaribles("", body, variables);
 
@@ -781,7 +781,7 @@ const ReportTable = (props) => {
       receiver_phone: user?.signerPtr?.Phone || "",
       expiry_date: localExpireDate,
       company_name: doc?.ExtUserPtr?.Company || "",
-      signing_url: `<a href=${signPdf}>Sign here</a>`
+      signing_url: `<a href=${signPdf} target=_blank>Sign here</a>`
     };
 
     const subject =
@@ -1511,14 +1511,14 @@ const ReportTable = (props) => {
                                         <span>{t("public-url-copy")}</span>
                                         <div className=" flex items-center justify-between gap-3 p-[2px] ">
                                           <div className="w-[280px] whitespace-nowrap overflow-hidden text-ellipsis">
-                                            <span
-                                              onClick={() =>
-                                                copytoProfileLink()
-                                              }
+                                            <a
+                                              rel="noreferrer"
+                                              target="_blank"
+                                              href={publicUrl()}
                                               className="ml-[2px] underline underline-offset-2 cursor-pointer text-blue-800"
                                             >
                                               {publicUrl()}
-                                            </span>
+                                            </a>
                                           </div>
                                           <div className="flex items-center gap-2">
                                             <RWebShare
@@ -1535,7 +1535,7 @@ const ReportTable = (props) => {
                                               </button>
                                             </RWebShare>
                                             <button
-                                              className="op-btn op-btn-primary op-btn-outline op-btn-xs md:op-btn-sm"
+                                              className="op-btn op-btn-primary op-btn-outline op-btn-xs md:op-btn-sm md:w-[100px]"
                                               onClick={() =>
                                                 copytoProfileLink()
                                               }
@@ -1561,7 +1561,7 @@ const ReportTable = (props) => {
                                           className="mt-3 op-btn op-btn-primary"
                                           onClick={() => navigate("/profile")}
                                         >
-                                          {t("add")}
+                                          {t("Proceed")}
                                         </button>
                                       </div>
                                     )}
