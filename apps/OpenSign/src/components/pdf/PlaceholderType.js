@@ -31,7 +31,7 @@ function PlaceholderType(props) {
   const years = range(1990, getYear(new Date()) + 16, 1);
   const height = props.posHeight(props.pos, props.isSignYourself);
   const fontSize =
-    (props.pos.options?.fontSize || (height > 14 ? 12 : height / 2)) + "px";
+    (props.pos.options?.fontSize || (height ? height - 4 : 12)) + "px";
   const fontColor = props.pos.options?.fontColor || "black";
   const months = [
     "January",

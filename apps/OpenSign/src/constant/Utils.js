@@ -1290,7 +1290,7 @@ const calculateFontSize = (
   widgetHeight
 ) => {
   const font =
-    position?.options?.fontSize || widgetHeight > 14 ? 12 : widgetHeight / 2;
+    position?.options?.fontSize || (widgetHeight ? widgetHeight / 2 : 12);
   if (!signyourself && position?.isMobile && position?.scale) {
     return font / position?.scale / containerScale;
   } else {
@@ -1487,7 +1487,7 @@ export const multiSignEmbed = async (
           position,
           containerScale,
           signyourself,
-          widgetHeight
+          position.Height
         );
         parseInt(fontSize);
         let textContent;
@@ -1662,7 +1662,7 @@ export const multiSignEmbed = async (
     });
   }
   const pdfBytes = await pdfDoc.saveAsBase64({ useObjectStreams: false });
-  // console.log("pdf", pdfBytes);
+  //console.log("pdf", pdfBytes);
   return pdfBytes;
 };
 
