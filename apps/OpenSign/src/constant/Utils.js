@@ -1283,8 +1283,14 @@ export const changeImageWH = async (base64Image) => {
 };
 
 //function to calculate font size of text area widgets
-const calculateFontSize = (position, containerScale, signyourself) => {
-  const font = position?.options?.fontSize || 12;
+const calculateFontSize = (
+  position,
+  containerScale,
+  signyourself,
+  widgetHeight
+) => {
+  const font =
+    position?.options?.fontSize || (widgetHeight ? widgetHeight / 2 : 12);
   if (!signyourself && position?.isMobile && position?.scale) {
     return font / position?.scale / containerScale;
   } else {
@@ -1488,7 +1494,8 @@ export const multiSignEmbed = async (
         const fontSize = calculateFontSize(
           position,
           containerScale,
-          signyourself
+          signyourself,
+          position.Height
         );
         parseInt(fontSize);
         let textContent;
