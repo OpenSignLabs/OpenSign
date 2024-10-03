@@ -123,5 +123,8 @@
   "overrides": {
     "nth-check": "$nth-check",
     "ws": "$ws"
+  },
+  "engines": {
+    "node": "18 || 20 || 22"
   }
 }
