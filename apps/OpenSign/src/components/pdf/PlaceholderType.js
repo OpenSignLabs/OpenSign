@@ -29,7 +29,9 @@ function PlaceholderType(props) {
   const [textValue, setTextValue] = useState();
   const [selectedCheckbox, setSelectedCheckbox] = useState([]);
   const years = range(1990, getYear(new Date()) + 16, 1);
-  const fontSize = (props.pos.options?.fontSize || "12") + "px";
+  const height = props.posHeight(props.pos, props.isSignYourself);
+  const fontSize =
+    (props.pos.options?.fontSize || (height ? height - 4 : 12)) + "px";
   const fontColor = props.pos.options?.fontColor || "black";
   const months = [
     "January",
