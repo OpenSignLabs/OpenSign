@@ -53,7 +53,7 @@ async function sendMail(doc, signer) {
     receiver_phone: signer?.Phone || '',
     expiry_date: localExpireDate,
     company_name: doc?.ExtUserPtr?.Company || '',
-    signing_url: `<a href=${signPdf}>Sign here</a>`,
+    signing_url: `<a href=${signPdf} target=_blank>Sign here</a>`,
   };
   const mail = replaceMailVaribles(subject, body, variables);
 

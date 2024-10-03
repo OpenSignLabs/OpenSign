@@ -1334,8 +1334,17 @@ export const multiSignEmbed = async (
       if (signyourself) {
         updateItem = item.pos;
       } else {
+        // Checking required and optional widget types
+        // For both required and optional widgets, handle signurl, defaultValue, and response as the widget's data
+        // If the widget type is checkbox or radio (whether required or optional), we don't need to validate its value.
+        // Instead, add an empty checkbox/radio, or if a value exists, mark the checkbox/radio as checked.
         updateItem = item.pos.filter(
-          (data) => data?.options?.status === "required"
+          (data) =>
+            data?.options?.SignUrl ||
+            data?.options?.defaultValue ||
+            data?.options?.response ||
+            data?.type === "checkbox" ||
+            data?.type === radioButtonWidget
         );
       }
     } else {
@@ -1355,7 +1364,6 @@ export const multiSignEmbed = async (
         }
       })
     );
-
     widgetsPositionArr.forEach(async (position, id) => {
       let img;
       if (["signature", "stamp", "initials", "image"].includes(position.type)) {
@@ -1406,7 +1414,7 @@ export const multiSignEmbed = async (
       };
       const color = position?.options?.fontColor;
       const updateColorInRgb = getWidgetsFontColor(color);
-      const fontSize = parseInt(position?.options?.fontSize || 13);
+      const fontSize = parseInt(position?.options?.fontSize || 12);
       const widgetTypeExist = [
         textWidget,
         textInputWidget,

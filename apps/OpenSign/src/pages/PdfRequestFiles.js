@@ -73,7 +73,7 @@ function PdfRequestFiles(props) {
   const [selectWidgetId, setSelectWidgetId] = useState("");
   const [otpLoader, setOtpLoader] = useState(false);
   const [isCelebration, setIsCelebration] = useState(false);
-  const [requestSignTour, setRequestSignTour] = useState(false);
+  const [requestSignTour, setRequestSignTour] = useState(true);
   const [tourStatus, setTourStatus] = useState([]);
   const [isLoading, setIsLoading] = useState({
     isLoad: true,
@@ -129,7 +129,7 @@ function PdfRequestFiles(props) {
   const [contact, setContact] = useState({ name: "", phone: "", email: "" });
   const [isOtp, setIsOtp] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [res, setRes] = useState({});
+  const [publicRes, setPublicRes] = useState({});
   const [documentId, setDocumentId] = useState("");
   const [isPublicContact, setIsPublicContact] = useState(false);
   const [pdfArrayBuffer, setPdfArrayBuffer] = useState("");
@@ -429,7 +429,7 @@ function PdfRequestFiles(props) {
 
         currUserId = getCurrentSigner?.objectId
           ? getCurrentSigner.objectId
-          : contactBookId || "";
+          : contactBookId || signerObjectId || "";
         if (isEnableSubscription) {
           await checkIsSubscribed(
             documentData[0]?.ExtUserPtr?.objectId,
@@ -1013,7 +1013,7 @@ function PdfRequestFiles(props) {
                           receiver_phone: user.Phone,
                           expiry_date: localExpireDate,
                           company_name: orgName,
-                          signing_url: `<a href=${signPdf}>Sign here</a>`
+                          signing_url: `<a href=${signPdf} target=_blank>Sign here</a>`
                         };
                         replaceVar = replaceMailVaribles(
                           requestSubject,
@@ -1047,7 +1047,7 @@ function PdfRequestFiles(props) {
                             orgName +
                             "</td></tr> <tr> <td style='font-weight:bold;font-family:sans-serif;font-size:15px'>Expires on</td><td> </td> <td style='color:#626363;font-weight:bold'>" +
                             localExpireDate +
-                            "</td></tr><tr> <td></td> <td> </td></tr></table> </div> <div style='margin-left:70px'><a href=" +
+                            "</td></tr><tr> <td></td> <td> </td></tr></table> </div> <div style='margin-left:70px'><a target=_blank href=" +
                             signPdf +
                             "> <button style='padding: 12px 12px 12px 12px;background-color: #d46b0f;color: white;  border: 0px;box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px,rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;font-weight:bold;margin-top:30px'>Sign here</button></a> </div> <div style='display: flex; justify-content: center;margin-top: 10px;'> </div></div></div><div><p> This is an automated email from OpenSign™. For any queries regarding this email, please contact the sender " +
                             senderEmail +
@@ -1510,8 +1510,17 @@ function PdfRequestFiles(props) {
       );
 
       if (userRes?.data?.result) {
-        setRes(userRes.data.result);
-        await SendOtp();
+        setPublicRes(userRes.data.result);
+        const isEnableOTP = pdfDetails?.[0]?.IsEnableOTP || false;
+        if (isEnableOTP) {
+          await SendOtp();
+        } else {
+          setIsPublicContact(false);
+          setIsPublicTemplate(false);
+          setDocumentId(userRes.data?.result?.docId);
+          const contactId = userRes.data.result?.contactId;
+          setSignerObjectId(contactId);
+        }
       } else {
         console.log("error in public-sign to create user details");
         setIsAlert({
@@ -1553,7 +1562,7 @@ function PdfRequestFiles(props) {
 
   const SendOtp = async () => {
     try {
-      const params = { email: contact.email, docId: res.docId };
+      const params = { email: contact.email, docId: publicRes?.docId };
       const Otp = await axios.post(
         `${localStorage.getItem("baseUrl")}/functions/SendOTPMailV1`,
         params,
@@ -1619,17 +1628,13 @@ function PdfRequestFiles(props) {
               JSON.stringify(contractUserDetails)
             );
           }
-
           localStorage.setItem("username", _user.name);
           localStorage.setItem("accesstoken", _user.sessionToken);
           setLoading(false);
-          // navigate(`/load/recipientSignPdf/${res?.docId}/${res?.contactId}`);
-          // document.getElementById("my_modal").close();
           setIsPublicContact(false);
           setIsPublicTemplate(false);
           setIsLoading({ isLoad: false });
-          setDocumentId(res?.docId);
-          getDocumentDetails(res?.docId);
+          setDocumentId(publicRes?.docId);
         }
       } catch (error) {
         console.log("err ", error);
