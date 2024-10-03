@@ -71,7 +71,7 @@
   "register": "Registrarse",
   "sidebar": {
     "Dashboard": "Panel",
-    "Sign yourself": "Firmar",
+    "Sign yourself": "Firma tu mismo",
     "Request signatures": "Solicitar firmas",
     "Templates": "Plantillas",
     "Templates-Children": {
@@ -672,5 +672,6 @@
   "document-logs": "Registros de documentos",
   "server-down": "No se pudo conectar al servidor de OpenSign. Si estás alojando OpenSign por tu cuenta, por favor, asegúrate de que todos los pasos de la documentación han sido seguidos correctamente. Si estás ejecutando OpenSign localmente, puedes estar accediendo a OpenSign por un número de puerto incorrecto.",
   "admin-exists": "El administrador ya existe. Por favor, inicia sesión en la aplicación usando las credenciales de administrador para poder administrar los usuarios.",
-  "public-tour-message": "Por favor, convierte la plantilla en pública para copiar la URL pública"
+  "public-tour-message": "Por favor, convierte la plantilla en pública para copiar la URL pública",
+  "add-user-template": "Es necesario agregar un rol antes de poder agregarle campos."
 }

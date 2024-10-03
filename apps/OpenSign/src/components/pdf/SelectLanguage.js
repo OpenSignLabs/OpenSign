@@ -6,7 +6,7 @@ function SelectLanguage(props) {
   const { i18n } = useTranslation();
   const languages = [
     { value: "en", text: "English" },
-    { value: "es", text: "Spanish" },
+    { value: "es", text: "Española" },
     { value: "fr", text: "Français" }
   ];
   const [lang, setLang] = useState(i18next.language || "en");
