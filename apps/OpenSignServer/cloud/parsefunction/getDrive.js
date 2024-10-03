@@ -18,9 +18,9 @@ export default async function getDrive(request) {
     if (userId) {
       let url;
       if (docId) {
-        url = `${classUrl}?where={"Folder":{"__type":"Pointer","className":"contracts_Document","objectId":"${docId}"},"CreatedBy":{"__type":"Pointer","className":"_User","objectId":"${userId}"},"IsArchive":{"$ne":true}}&include=ExtUserPtr,Signers,Folder&skip=${skip}&limit=${limit}`;
+        url = `${classUrl}?where={"Folder":{"__type":"Pointer","className":"contracts_Document","objectId":"${docId}"},"CreatedBy":{"__type":"Pointer","className":"_User","objectId":"${userId}"},"IsArchive":{"$ne":true}}&include=ExtUserPtr,Signers,Folder&order=-updatedAt&skip=${skip}&limit=${limit}`;
       } else {
-        url = `${classUrl}?where={"Folder":{"$exists":false},"CreatedBy":{"__type":"Pointer","className":"_User","objectId":"${userId}"},"IsArchive":{"$ne":true}}&include=ExtUserPtr,Signers&skip=${skip}&limit=${limit}`;
+        url = `${classUrl}?where={"Folder":{"$exists":false},"CreatedBy":{"__type":"Pointer","className":"_User","objectId":"${userId}"},"IsArchive":{"$ne":true}}&include=ExtUserPtr,Signers&order=-updatedAt&skip=${skip}&limit=${limit}`;
       }
       try {
         const res = await axios.get(url, {
