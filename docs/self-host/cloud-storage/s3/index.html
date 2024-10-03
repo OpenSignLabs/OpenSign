@@ -5,7 +5,7 @@
 <meta name="generator" content="Docusaurus v3.0.1">
 <title data-rh="true">AWS S3 | OpenSign™</title><meta data-rh="true" name="viewport" content="width=device-width,initial-scale=1"><meta data-rh="true" name="twitter:card" content="summary_large_image"><meta data-rh="true" property="og:image" content="https://docs.opensignlabs.com/img/docusaurus-social-card.png"><meta data-rh="true" name="twitter:image" content="https://docs.opensignlabs.com/img/docusaurus-social-card.png"><meta data-rh="true" property="og:url" content="https://docs.opensignlabs.com/docs/self-host/cloud-storage/s3"><meta data-rh="true" property="og:locale" content="en"><meta data-rh="true" name="docusaurus_locale" content="en"><meta data-rh="true" name="docsearch:language" content="en"><meta data-rh="true" name="docusaurus_version" content="current"><meta data-rh="true" name="docusaurus_tag" content="docs-default-current"><meta data-rh="true" name="docsearch:version" content="current"><meta data-rh="true" name="docsearch:docusaurus_tag" content="docs-default-current"><meta data-rh="true" property="og:title" content="AWS S3 | OpenSign™"><meta data-rh="true" name="description" content="You can create an AWS S3 bucket to store your uploaded documents using OpenSign™"><meta data-rh="true" property="og:description" content="You can create an AWS S3 bucket to store your uploaded documents using OpenSign™"><link data-rh="true" rel="icon" href="/img/favicon.ico"><link data-rh="true" rel="canonical" href="https://docs.opensignlabs.com/docs/self-host/cloud-storage/s3"><link data-rh="true" rel="alternate" href="https://docs.opensignlabs.com/docs/self-host/cloud-storage/s3" hreflang="en"><link data-rh="true" rel="alternate" href="https://docs.opensignlabs.com/docs/self-host/cloud-storage/s3" hreflang="x-default"><link rel="alternate" type="application/rss+xml" href="/blog/rss.xml" title="OpenSign™ RSS Feed">
 <link rel="alternate" type="application/atom+xml" href="/blog/atom.xml" title="OpenSign™ Atom Feed"><link rel="stylesheet" href="/assets/css/styles.f10211b2.css">
-<script src="/assets/js/runtime~main.18323917.js" defer="defer"></script>
+<script src="/assets/js/runtime~main.c96d422f.js" defer="defer"></script>
 <script src="/assets/js/main.86afe3b9.js" defer="defer"></script>
 </head>
 <body class="navigation-with-keyboard">
@@ -15,46 +15,68 @@
 <li>Step 1 : Create a S3 bucket<!-- -->
 <ul>
 <li>Login to <a href="https://aws.amazon.com/console/" target="_blank" rel="noopener noreferrer">AWS console</a></li>
-<li>Navigate to S3 under services</li>
-<li>Hit &quot;Create Bucket&quot; button on upper right corner</li>
-<li>Remove the check from &quot;block all public access&quot; checkbox(we need this in order to provide access to not-logged in users after OTP verification)</li>
-<li>Set bucket versioning and tags as per your requirements</li>
-<li>Hit &quot;Create bucket&quot; button</li>
+<li>Navigate to S3 under services.
+<img loading="lazy" src="https://github.com/user-attachments/assets/1a734349-1c1a-4f53-8582-7318c22911f5" alt="Screenshot 2024-09-30 203247" class="img_ev3q"></li>
+<li>Hit &quot;Create Bucket&quot; button on upper right corner.
+<img loading="lazy" src="https://github.com/user-attachments/assets/b036fa3b-20c4-4348-8697-68bcf2fd9de3" alt="Screenshot 2024-09-30 195246" class="img_ev3q"></li>
+<li>Now provide bucket name and don&#x27;t change any other options scroll down and click on &quot;Create Bucket&quot; button.
+<img loading="lazy" src="https://github.com/user-attachments/assets/3fb1a591-fffd-4703-9b1f-9cb1edbdf7fe" alt="Screenshot 2024-09-30 195603" class="img_ev3q">
+<img loading="lazy" src="https://github.com/user-attachments/assets/a0b2be8a-a273-474d-88d5-614cb42de8dd" alt="Screenshot 2024-09-30 195835" class="img_ev3q"></li>
+<li>Click on name of bucket from list which we have just created.</li>
+<li>Now go to permission Tab and scroll down to botton.
+<img loading="lazy" src="https://github.com/user-attachments/assets/dbf44b05-370b-40f8-bfc1-fd2f8441da46" alt="Screenshot 2024-09-30 202035" class="img_ev3q"></li>
+<li>At the bottom you will see cross-origin resource sharign (cors) section click on &quot;Edit&quot; button.
+<img loading="lazy" src="https://github.com/user-attachments/assets/a9fb13b3-7a30-4c49-b3ea-6a30a2b7c357" alt="Screenshot 2024-09-30 202057" class="img_ev3q"></li>
+<li>Now paste below line of code and add origin url in AllowedOrigins array and click on &quot;Save changes&quot;.<!-- -->
+<div class="codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_biex"><pre tabindex="0" class="prism-code language-text codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token plain">[</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">    {</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">        &quot;AllowedHeaders&quot;: [</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">            &quot;*&quot;</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">        ],</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">        &quot;AllowedMethods&quot;: [</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">            &quot;GET&quot;,</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">            &quot;PUT&quot;,</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">            &quot;POST&quot;</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">        ],</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">        &quot;AllowedOrigins&quot;: [</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">            &quot;httpS://localhost:3001&quot;,</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">            </span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">        ],</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">        &quot;ExposeHeaders&quot;: [</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">            &quot;x-amz-server-side-encryption&quot;,</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">            &quot;x-amz-request-id&quot;,</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">            &quot;x-amz-id-2&quot;</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">        ],</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">        &quot;MaxAgeSeconds&quot;: 3000</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">    }</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">]</span><br></span></code></pre><div class="buttonGroup__atx"><button type="button" aria-label="Copy code to clipboard" title="Copy" class="clean-btn"><span class="copyButtonIcons_eSgA" aria-hidden="true"><svg viewBox="0 0 24 24" class="copyButtonIcon_y97N"><path fill="currentColor" d="M19,21H8V7H19M19,5H8A2,2 0 0,0 6,7V21A2,2 0 0,0 8,23H19A2,2 0 0,0 21,21V7A2,2 0 0,0 19,5M16,1H4A2,2 0 0,0 2,3V17H4V3H16V1Z"></path></svg><svg viewBox="0 0 24 24" class="copyButtonSuccessIcon_LjdS"><path fill="currentColor" d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z"></path></svg></span></button></div></div></div>
+</li>
+<li>Once done go to &quot;Properties&quot; there you will see region of bucket e.g us-east-1</li>
+<li>set bucktname as &quot;DO_SPACE&quot; in ENV.</li>
+<li>set region as &quot;DO_REGION&quot; in ENV.</li>
+<li>Replace region in this url <code>s3.region.amazonaws.com</code> and set it as &quot;DO_ENDPOINT&quot; in ENV.</li>
+<li>Replace bucketName and region in this url <code>https://bucketName.s3.region.amazonaws.com</code> and set us as &quot;DO_BASEURL&quot; in ENV.</li>
 </ul>
 </li>
-<li>Step 2 : Create IAM user and provide access to AWS bucket<!-- -->
+<li>Step 2 : Create a aws policy<!-- -->
 <ul>
-<li>Search for &quot;IAM&quot; on the search bar in AWS console</li>
-<li>On IAM dashboard, click the number of users(count) under IAM resources table</li>
-<li>Hit &quot;create user&quot; button on the upper right corner of the page</li>
-<li>Enter the user name &amp; click next</li>
-<li>Click create policy, search for S3 and provide the Read, Write &amp; list permissions</li>
-<li>Click next and click &quot;Create user&quot;</li>
+<li>Navigate to IAM under services
+<img loading="lazy" src="https://github.com/user-attachments/assets/8109d2bb-1afb-4407-b5cd-4886a070d5cc" alt="Screenshot 2024-09-30 200247" class="img_ev3q"></li>
+<li>Now click on &quot;Polices&quot; from left side &quot;access management&quot; menu.</li>
+<li>Hit &quot;Create Policy&quot; button on upper right corner.
+<img loading="lazy" src="https://github.com/user-attachments/assets/1b3b5608-9a84-477d-b46e-aaf884a73343" alt="Screenshot 2024-09-30 200939" class="img_ev3q"></li>
+<li>Search for S3 and Tick PutObject and GetObject from Action Allowed list.
+<img loading="lazy" src="https://github.com/user-attachments/assets/7168d261-abc4-4789-8e64-628c81c79e24" alt="Screenshot 2024-09-30 200537" class="img_ev3q">
+<img loading="lazy" src="https://github.com/user-attachments/assets/863f8e7c-74eb-4f1b-9ea5-41524ba249ca" alt="Screenshot 2024-09-30 200607" class="img_ev3q"></li>
+<li>provide policy name and hit on &#x27;Create Policy&quot;.
+<img loading="lazy" src="https://github.com/user-attachments/assets/4db2ab95-14bb-4ea1-a9a3-821e20e70038" alt="Screenshot 2024-09-30 200808" class="img_ev3q"></li>
 </ul>
 </li>
-<li>Step 3 : Generate Credentials</li>
-<li>Go to IAM/Users in AWS console</li>
-<li>Hit the hyperlink for the user created in the previous step</li>
-<li>Click the &quot;Security credentials&quot; tab</li>
-<li>Scroll down to &quot;Access keys&quot; and hit &quot;Create access key&quot;</li>
-<li>In the next step select &quot;Application running outside AWS&quot;</li>
-<li>Add a description tag if needed &amp; hit &quot;Create access key&quot;</li>
+<li>Step 3 : Create IAM user.<!-- -->
+<ul>
+<li>Now click on &quot;Users&quot; from left side &quot;access management&quot; menu and then click on &quot;Create User&quot; button.
+<img loading="lazy" src="https://github.com/user-attachments/assets/1aa1f071-6291-457f-a514-970f511866cb" alt="Screenshot 2024-09-30 201026" class="img_ev3q"></li>
+<li>Provide username and click on Next button.</li>
+<li>Now select &quot;Attach policies directly&quot; from Permissions options.
+<img loading="lazy" src="https://github.com/user-attachments/assets/13c6d571-d3da-4259-8f04-8ec130d9091a" alt="Screenshot 2024-09-30 201731" class="img_ev3q"></li>
+<li>Now search policy in &quot;Permission Policies&quot; section which we have created in previous step.
+<img loading="lazy" src="https://github.com/user-attachments/assets/c2b1643d-e3e3-49ee-920b-641e7ff819f5" alt="Screenshot 2024-09-30 201742" class="img_ev3q"></li>
+<li>Now scroll down and  Click on &quot;Create User&quot; Button.</li>
+</ul>
+</li>
+<li>Step 4 : Generate Credentials<!-- -->
+<ul>
+<li>Now Click on username form list which we have created in previous step.</li>
+<li>Click on &quot;Create Access Key&quot; from right corner.
+<img loading="lazy" src="https://github.com/user-attachments/assets/d25abe2f-0cfc-4cc0-a02c-6b9fc6559dd2" alt="Screenshot 2024-09-30 201850" class="img_ev3q"></li>
+<li>In the next step select &quot;Application running outside AWS&quot;.
+<img loading="lazy" src="https://github.com/user-attachments/assets/f9b0cdb2-3718-4ae6-a4ba-68e144d1f4a1" alt="Screenshot 2024-09-30 201917" class="img_ev3q"></li>
 <li>In the next step you will see &quot;Access key&quot; and &quot;Secret Access key&quot;. Copy both the values.</li>
-<li>Set the value of &quot;Access key&quot; to &quot;DO_ACCESS_KEY_ID&quot; environment variable</li>
-<li>Set the value of &quot;Secret Access key&quot; to &quot;DO_SECRET_ACCESS_KEY&quot; environment variable</li>
-<li>Step 3 : Copy bucket credentials<!-- -->
-<ul>
-<li>Visit &quot;Amazon S3 -&gt; Buckets&quot; in aws console</li>
-<li>Click the bucket created in previous steps &amp; visit the properties tab</li>
-<li>Under &quot;Bucket overview&quot; you will find the value of AWS region(for ex. ap-south-1). Set that value to env variable &quot;DO_REGION&quot;</li>
-<li>You can create the value for &quot;DO_ENDPOINT&quot; env variable by appending the region value to amazonaws.com (for ex. s3.ap-south-1.amazonaws.com)</li>
-<li>You can create the value for &quot;DO_BASEURL&quot; by adding the bucketname in front of the endpoint value(for ex. <a href="https://bucketname.s3.ap-south-1.amazonaws.com" target="_blank" rel="noopener noreferrer">https://bucketname.s3.ap-south-1.amazonaws.com</a>)</li>
+<li>Set the value of &quot;Access key&quot; to &quot;DO_ACCESS_KEY_ID&quot; environment variable.</li>
+<li>Set the value of &quot;Secret Access key&quot; to &quot;DO_SECRET_ACCESS_KEY&quot; environment variable.
+Visit below link if you face any issues while following the above instructions -</li>
+<li><a href="https://repost.aws/knowledge-center/create-access-key" target="_blank" rel="noopener noreferrer">https://repost.aws/knowledge-center/create-access-key</a></li>
 </ul>
 </li>
-</ul>
-<p>Visit below link if you face any issues while following the above instructions -</p>
-<ul>
-<li><a href="https://repost.aws/knowledge-center/create-access-key" target="_blank" rel="noopener noreferrer">https://repost.aws/knowledge-center/create-access-key</a></li>
 </ul></div></div></div><div class="col col--12"><footer class="theme-doc-footer docusaurus-mt-lg"><div class="theme-doc-footer-edit-meta-row row"><div class="col"><a href="https://github.com/opensignlabs/opensign/tree/feat-docs/docs/docs/self-host/cloud-storage/s3.md" target="_blank" rel="noopener noreferrer" class="theme-edit-this-page"><svg fill="currentColor" height="20" width="20" viewBox="0 0 40 40" class="iconEdit_Z9Sw" aria-hidden="true"><g><path d="m34.5 11.7l-3 3.1-6.3-6.3 3.1-3q0.5-0.5 1.2-0.5t1.1 0.5l3.9 3.9q0.5 0.4 0.5 1.1t-0.5 1.2z m-29.5 17.1l18.4-18.5 6.3 6.3-18.4 18.4h-6.3v-6.2z"></path></g></svg>Edit this page</a></div><div class="col lastUpdated_vwxv"></div></div></footer></div></article><div class="col col--12"><nav class="pagination-nav docusaurus-mt-lg" aria-label="Docs pages"><a class="pagination-nav__link pagination-nav__link--prev" href="/docs/category/cloud-storage"><div class="pagination-nav__sublabel">Previous</div><div class="pagination-nav__label">Cloud Storage</div></a><a class="pagination-nav__link pagination-nav__link--next" href="/docs/category/guides"><div class="pagination-nav__sublabel">Next</div><div class="pagination-nav__label">Guides</div></a></nav></div></div></div><div class="col col--3"><div class="tableOfContents_bqdL thin-scrollbar theme-doc-toc-desktop"><ul class="table-of-contents table-of-contents__left-border"><li><a href="#you-can-create-an-aws-s3-bucket-to-store-your-uploaded-documents-using-opensign" class="table-of-contents__link toc-highlight">You can create an AWS S3 bucket to store your uploaded documents using OpenSign™</a><ul><li><a href="#aws-s3--" class="table-of-contents__link toc-highlight">AWS S3 -</a></li></ul></li></ul></div></div></div></div></main></div></div></div><footer class="footer footer--dark"><div class="container container-fluid"><div class="row footer__links"><div class="col footer__col"><div class="footer__title">Docs</div><ul class="footer__items clean-list"><li class="footer__item"><a class="footer__link-item" href="/docs/help/intro">Help</a></li><li class="footer__item"><a class="footer__link-item" href="/docs/API-docs/opensign-api-v-1">APIs</a></li><li class="footer__item"><a class="footer__link-item" href="/docs/contribute/intro">Contribute</a></li><li class="footer__item"><a class="footer__link-item" href="/docs/self-host/intro">Self-host</a></li></ul></div><div class="col footer__col"><div class="footer__title">Community</div><ul class="footer__items clean-list"><li class="footer__item"><a href="https://discord.com/invite/xe9TDuyAyj" target="_blank" rel="noopener noreferrer" class="footer__link-item">Discord<svg width="13.5" height="13.5" aria-hidden="true" viewBox="0 0 24 24" class="iconExternalLink_nPIU"><path fill="currentColor" d="M21 13v10h-21v-19h12v2h-10v15h17v-8h2zm3-12h-10.988l4.035 4-6.977 7.07 2.828 2.828 6.977-7.07 4.125 4.172v-11z"></path></svg></a></li><li class="footer__item"><a href="https://www.linkedin.com/company/opensign%E2%84%A2/" target="_blank" rel="noopener noreferrer" class="footer__link-item">LinkedIn<svg width="13.5" height="13.5" aria-hidden="true" viewBox="0 0 24 24" class="iconExternalLink_nPIU"><path fill="currentColor" d="M21 13v10h-21v-19h12v2h-10v15h17v-8h2zm3-12h-10.988l4.035 4-6.977 7.07 2.828 2.828 6.977-7.07 4.125 4.172v-11z"></path></svg></a></li><li class="footer__item"><a href="https://www.twitter.com/opensignhq" target="_blank" rel="noopener noreferrer" class="footer__link-item">Twitter<svg width="13.5" height="13.5" aria-hidden="true" viewBox="0 0 24 24" class="iconExternalLink_nPIU"><path fill="currentColor" d="M21 13v10h-21v-19h12v2h-10v15h17v-8h2zm3-12h-10.988l4.035 4-6.977 7.07 2.828 2.828 6.977-7.07 4.125 4.172v-11z"></path></svg></a></li><li class="footer__item"><a href="https://www.facebook.com/profile.php?id=61551030403669" target="_blank" rel="noopener noreferrer" class="footer__link-item">Facebook<svg width="13.5" height="13.5" aria-hidden="true" viewBox="0 0 24 24" class="iconExternalLink_nPIU"><path fill="currentColor" d="M21 13v10h-21v-19h12v2h-10v15h17v-8h2zm3-12h-10.988l4.035 4-6.977 7.07 2.828 2.828 6.977-7.07 4.125 4.172v-11z"></path></svg></a></li></ul></div><div class="col footer__col"><div class="footer__title">More</div><ul class="footer__items clean-list"><li class="footer__item"><a href="https://www.opensignlabs.com" target="_blank" rel="noopener noreferrer" class="footer__link-item">Official Website<svg width="13.5" height="13.5" aria-hidden="true" viewBox="0 0 24 24" class="iconExternalLink_nPIU"><path fill="currentColor" d="M21 13v10h-21v-19h12v2h-10v15h17v-8h2zm3-12h-10.988l4.035 4-6.977 7.07 2.828 2.828 6.977-7.07 4.125 4.172v-11z"></path></svg></a></li><li class="footer__item"><a href="https://github.com/opensignlabs/opensign" target="_blank" rel="noopener noreferrer" class="footer__link-item">GitHub<svg width="13.5" height="13.5" aria-hidden="true" viewBox="0 0 24 24" class="iconExternalLink_nPIU"><path fill="currentColor" d="M21 13v10h-21v-19h12v2h-10v15h17v-8h2zm3-12h-10.988l4.035 4-6.977 7.07 2.828 2.828 6.977-7.07 4.125 4.172v-11z"></path></svg></a></li></ul></div></div><div class="footer__bottom text--center"><div class="footer__copyright">Copyright © 2024 OpenSign™. <br>The best Open Source DocuSign alternative.</div></div></div></footer></div>
 </body>
 </html>
