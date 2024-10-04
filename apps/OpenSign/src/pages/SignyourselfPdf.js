@@ -617,12 +617,8 @@ function SignYourSelf() {
                 const checkSignUrl = requiredWidgets[i]?.pos?.SignUrl;
                 let checkDefaultSigned =
                   requiredWidgets[i]?.options?.defaultValue;
-                if (!checkSignUrl) {
-                  if (!checkDefaultSigned) {
-                    if (!showAlert) {
-                      showAlert = true;
-                    }
-                  }
+                if (!checkSignUrl && !checkDefaultSigned && !showAlert) {
+                  showAlert = true;
                 }
               }
             }
@@ -649,10 +645,9 @@ function SignYourSelf() {
           return;
         } else {
           setIsUiLoading(true);
-          const existingPdfBytes = pdfArrayBuffer;
           // Load a PDFDocument from the existing PDF bytes
           try {
-            const pdfDoc = await PDFDocument.load(existingPdfBytes);
+            const pdfDoc = await PDFDocument.load(pdfArrayBuffer);
             const isSignYourSelfFlow = true;
             const extUserPtr = pdfDetails[0].ExtUserPtr;
             const HeaderDocId = extUserPtr?.HeaderDocId;
@@ -671,8 +666,15 @@ function SignYourSelf() {
             );
             // console.log("pdf", pdfBytes);
             //function for call to embed signature in pdf and get digital signature pdf
-            if (pdfBytes) {
+            if (!pdfBytes?.error) {
               await signPdfFun(pdfBytes, documentId);
+            } else {
+              setIsUiLoading(false);
+              setIsAlert({
+                header: t("error"),
+                isShow: true,
+                alertMessage: t("pdf-uncompatible")
+              });
             }
           } catch (err) {
             setIsUiLoading(false);
