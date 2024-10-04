@@ -799,8 +799,8 @@ const Forms = (props) => {
                 isReset={isReset}
               />
             ) : (
-              <div className="flex flex-col md:flex-row w-full mt-4 md:mt-10 gap-6 md:gap-0">
-                <div className="card bg-base-100 rounded-box grid flex-grow p-3 md:rounded-r-none">
+              <div className="flex flex-col md:flex-row w-full mt-4 md:mt-10 gap-3 ">
+                <div className="card bg-base-100 rounded-box grid flex-grow p-3  ">
                   {props.title !== "New Template" ? (
                     <SelectFolder
                       onSuccess={handleFolder}
@@ -954,7 +954,15 @@ const Forms = (props) => {
                   )}
                 </div>
                 {isAdvanceOpt && (
-                  <div className="card bg-base-100 rounded-box grid p-3 flex-grow md:rounded-l-none ">
+                  <div
+                    style={{
+                      height: props.title === "New Template" ? "220px" : "280px"
+                    }}
+                    className="w-[1px] bg-gray-300 m-auto hidden md:inline-block"
+                  ></div>
+                )}
+                {isAdvanceOpt && (
+                  <div className="card bg-base-100 rounded-box grid p-3 flex-grow ">
                     {isEnableSubscription && props.title !== "New Template" && (
                       <div className="text-xs mt-[10px]">
                         <span className={isSubscribe ? "" : " text-gray-300"}>
