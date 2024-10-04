@@ -671,12 +671,21 @@ const ReportTable = (props) => {
     const url = item?.SignedUrl || item?.URL || "";
     const pdfName = item?.Name || "exported_file";
     const isCompleted = item?.IsCompleted || false;
+    const templateId = props?.ReportName === "Templates" && item.objectId;
+    const docId = props?.ReportName !== "Templates" && item.objectId;
+    const isFileAdapter = item?.IsFileAdapter ? item?.IsFileAdapter : false;
+
     if (url) {
       try {
         if (isCompleted) {
           setIsDownloadModal({ [item.objectId]: true });
         } else {
-          const signedUrl = await getSignedUrl(url);
+          const signedUrl = await getSignedUrl(
+            url,
+            docId,
+            isFileAdapter,
+            templateId
+          );
           await fetchUrl(signedUrl, pdfName);
         }
         setActLoader({});
