@@ -558,7 +558,7 @@ function SignYourSelf() {
   };
   useEffect(() => {
     const timer = setTimeout(() => {
-      if (xyPostion?.length > 0) {
+      if (xyPostion?.length > 0 && !pdfDetails?.[0]?.IsCompleted) {
         autosavedetails();
       }
     }, 2000);

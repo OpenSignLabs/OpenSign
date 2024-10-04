@@ -6,18 +6,35 @@ import { pdflibAddPlaceholder } from '@signpdf/placeholder-pdf-lib';
 import { PDFDocument } from 'pdf-lib';
 import { cloudServerUrl, replaceMailVaribles, saveFileUsage } from '../../../Utils.js';
 import GenerateCertificate from './GenerateCertificate.js';
+import uploadFileToS3 from '../uploadFiletoS3.js';
 const serverUrl = cloudServerUrl; // process.env.SERVER_URL;
 const APPID = process.env.APP_ID;
 const masterKEY = process.env.MASTER_KEY;
 const eSignName = 'opensign';
 const eSigncontact = 'hello@opensignlabs.com';
 // `updateDoc` is used to create url in from pdfFile
-async function uploadFile(pdfName, filepath) {
+async function uploadFile(pdfName, filepath, adapter) {
   try {
     const filedata = fs.readFileSync(filepath);
-    const file = new Parse.File(pdfName, [...filedata], 'application/pdf');
-    await file.save({ useMasterKey: true });
-    const fileUrl = file.url();
+    let fileUrl;
+    if (adapter?.bucketName) {
+      const adapterConfig = {
+        fileAdapter: adapter?.ActiveFileAdapter,
+        bucketName: adapter?.bucketName,
+        region: adapter?.region,
+        endpoint: adapter?.endpoint,
+        accessKeyId: adapter?.accessKeyId,
+        secretAccessKey: adapter?.secretAccessKey,
+        baseUrl: adapter?.baseUrl,
+      };
+      // `uploadFileToS3` is used to save document in user's file storage
+      fileUrl = await uploadFileToS3(filedata, pdfName, 'application/pdf', adapterConfig);
+    } else {
+      const file = new Parse.File(pdfName, [...filedata], 'application/pdf');
+      await file.save({ useMasterKey: true });
+      fileUrl = file.url();
+    }
+
     return { imageUrl: fileUrl };
   } catch (err) {
     console.log('Err ', err);
@@ -79,7 +96,7 @@ async function updateDoc(docId, url, userId, ipAddress, data, className, sign) {
 
 // `sendCompletedMail` is used to send copy of completed document mail
 async function sendCompletedMail(obj) {
-  const url = obj.url;
+  const url = obj.doc?.SignedUrl;
   const doc = obj.doc;
   const sender = obj.doc.ExtUserPtr;
   const pdfName = doc.Name;
@@ -223,7 +240,7 @@ async function sendDoctoWebhook(doc, Url, event, signUser, certificateUrl) {
 }
 
 // `sendMailsaveCertifcate` is used send completion mail and update complete status of document
-const sendMailsaveCertifcate = async (doc, P12Buffer, url, isCustomMail, mailProvider, userId) => {
+async function sendMailsaveCertifcate(doc, P12Buffer, isCustomMail, mailProvider, adapterConfig) {
   const certificate = await GenerateCertificate(doc);
   const certificatePdf = await PDFDocument.load(certificate);
   const p12 = new P12Signer(P12Buffer, { passphrase: process.env.PASS_PHRASE || null });
@@ -245,7 +262,7 @@ const sendMailsaveCertifcate = async (doc, P12Buffer, url, isCustomMail, mailPro
 
   //below is used to save signed certificate in exports folder
   fs.writeFileSync('./exports/certificate.pdf', signedCertificate);
-  const file = await uploadFile('certificate.pdf', './exports/certificate.pdf');
+  const file = await uploadFile('certificate.pdf', './exports/certificate.pdf', adapterConfig);
   const body = { CertificateUrl: file.imageUrl };
   await axios.put(serverUrl + '/classes/contracts_Document/' + doc.objectId, body, {
     headers: {
@@ -258,12 +275,11 @@ const sendMailsaveCertifcate = async (doc, P12Buffer, url, isCustomMail, mailPro
   if (doc.IsSendMail === false) {
     console.log("don't send mail");
   } else {
-    const mailObj = { url: url, isCustomMail: isCustomMail, doc: doc, mailProvider: mailProvider };
-    sendCompletedMail(mailObj);
+    sendCompletedMail({ isCustomMail, doc, mailProvider });
   }
-  saveFileUsage(CertificateBuffer.length, file.imageUrl, userId);
-  sendDoctoWebhook(doc, url, 'completed', '', file.imageUrl);
-};
+  saveFileUsage(CertificateBuffer.length, file.imageUrl, doc?.CreatedBy?.objectId);
+  sendDoctoWebhook(doc, doc?.SignedUrl, 'completed', '', file.imageUrl);
+}
 /**
  *
  * @param docId Id of Document in which user is signing
@@ -280,7 +296,7 @@ async function PDF(req) {
     const sign = req.params.signature || '';
     // below bode is used to get info of docId
     const docQuery = new Parse.Query('contracts_Document');
-    docQuery.include('ExtUserPtr,Signers');
+    docQuery.include('ExtUserPtr,Signers,ExtUserPtr.TenantId');
     docQuery.equalTo('objectId', docId);
     const resDoc = await docQuery.first({ useMasterKey: true });
     if (!resDoc) {
@@ -294,6 +310,13 @@ async function PDF(req) {
       }
     }
     const _resDoc = resDoc?.toJSON();
+    // `FileAdapter` && `ActiveFileAdapter` is used to save file in user's fileAdapter
+    const FileAdapter = _resDoc?.ExtUserPtr?.TenantId?.FileAdapter;
+    const ActiveFileAdapter = _resDoc?.ExtUserPtr?.TenantId?.ActiveFileAdapter;
+    let adapterConfig = {};
+    if (FileAdapter && ActiveFileAdapter) {
+      adapterConfig = { ActiveFileAdapter: ActiveFileAdapter, ...FileAdapter };
+    }
     let signUser;
     let className;
     // `reqUserId` is send throught pdfrequest signing flow
@@ -339,7 +362,7 @@ async function PDF(req) {
       }
       const randomNumber = Math.floor(Math.random() * 5000);
       const name = `exported_file_${randomNumber}.pdf`;
-      const pdfName = `./exports/${name}`;
+      const filePath = `./exports/${name}`;
       let pdfSize = PdfBuffer.length;
       if (isCompleted) {
         const signersName = _resDoc.Signers?.map(x => x.Name + ' <' + x.Email + '>');
@@ -376,22 +399,22 @@ async function PDF(req) {
         const signedDocs = await OBJ.sign(PdfBuffer, p12Cert);
 
         //`saveUrl` is used to save signed pdf in exports folder
-        const saveUrl = fs.writeFileSync(pdfName, signedDocs);
+        fs.writeFileSync(filePath, signedDocs);
         pdfSize = signedDocs.length;
       } else {
         //`saveUrl` is used to save signed pdf in exports folder
-        const saveUrl = fs.writeFileSync(pdfName, PdfBuffer);
+        fs.writeFileSync(filePath, PdfBuffer);
         pdfSize = PdfBuffer.length;
       }
 
       // `uploadFile` is used to upload pdf to aws s3 and get it's url
-      const data = await uploadFile(name, pdfName);
+      const data = await uploadFile(name, filePath, adapterConfig);
 
       if (data && data.imageUrl) {
         // `axios` is used to update signed pdf url in contracts_Document classes for given DocId
         const updatedDoc = await updateDoc(
           req.params.docId, //docId
-          data.imageUrl, // url
+          data.imageUrl, // SignedUrl
           signUser.objectId, // userID
           userIP, // client ipAddress,
           _resDoc, // auditTrail, signers, etc data
@@ -401,19 +424,12 @@ async function PDF(req) {
         sendDoctoWebhook(_resDoc, data.imageUrl, 'signed', signUser);
         saveFileUsage(pdfSize, data.imageUrl, _resDoc?.CreatedBy?.objectId);
         if (updatedDoc && updatedDoc.isCompleted) {
-          const doc = { ..._resDoc, AuditTrail: updatedDoc.AuditTrail };
-          sendMailsaveCertifcate(
-            doc,
-            P12Buffer,
-            data.imageUrl,
-            isCustomMail,
-            mailProvider,
-            _resDoc?.CreatedBy?.objectId
-          );
+          const doc = { ..._resDoc, AuditTrail: updatedDoc.AuditTrail, SignedUrl: data.imageUrl };
+          sendMailsaveCertifcate(doc, P12Buffer, isCustomMail, mailProvider, adapterConfig);
         }
         // `fs.unlinkSync` is used to remove exported signed pdf file from exports folder
-        fs.unlinkSync(pdfName);
-        console.log(`New Signed PDF created called: ${pdfName}`);
+        fs.unlinkSync(filePath);
+        console.log(`New Signed PDF created called: ${filePath}`);
         if (updatedDoc.message === 'success') {
           return { status: 'success', data: data.imageUrl };
         } else {

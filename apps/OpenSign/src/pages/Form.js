@@ -85,6 +85,9 @@ const Forms = (props) => {
     setIsCorrectPass(true);
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
+  const extUserData =
+    localStorage.getItem("Extand_Class") &&
+    JSON.parse(localStorage.getItem("Extand_Class"))?.[0];
   useEffect(() => {
     handleReset();
     return () => abortController.abort();
@@ -153,10 +156,7 @@ const Forms = (props) => {
                   formData.append("file", files[0]);
                   formData.append("password", "");
                   const config = {
-                    headers: {
-                      "content-type": "multipart/form-data"
-                      // sessiontoken: Parse.User.current().getSessionToken()
-                    },
+                    headers: { "content-type": "multipart/form-data" },
                     responseType: "blob"
                   };
                   const response = await axios.post(url, formData, config);
@@ -168,35 +168,58 @@ const Forms = (props) => {
                   });
                   setIsDecrypting(false);
                   setfileload(true);
-
-                  // Upload the file to Parse Server
-                  const parseFile = new Parse.File(
-                    name,
-                    pdfFile,
-                    "application/pdf"
-                  );
-
-                  await parseFile.save({
-                    progress: (progressValue, loaded, total, { type }) => {
-                      if (type === "upload" && progressValue !== null) {
-                        const percentCompleted = Math.round(
-                          (loaded * 100) / total
-                        );
-                        setpercentage(percentCompleted);
-                      }
+                  if (extUserData?.TenantId?.ActiveFileAdapter) {
+                    const base64 = await toDataUrl(pdfFile);
+                    const fileBase64 = base64.split(",").pop();
+                    const ext = files?.[0]?.name?.split(".").pop();
+                    const fileRes = await saveToCustomFile(
+                      fileBase64,
+                      `${name}.${ext}`
+                    );
+                    if (fileRes.url) {
+                      setFileUpload(fileRes.url);
+                      setfileload(false);
+                      setpercentage(0);
+                      const title = generateTitleFromFilename(files?.[0]?.name);
+                      setFormData((obj) => ({ ...obj, Name: title }));
+                      const tenantId = localStorage.getItem("TenantId");
+                      SaveFileSize(size, fileRes.url, tenantId);
+                      return fileRes.url;
+                    } else {
+                      setfileload(false);
+                      setpercentage(0);
+                      setFileUpload("");
+                      e.target.value = "";
                     }
-                  });
+                  } else {
+                    // Upload the file to Parse Server
+                    const parseFile = new Parse.File(
+                      name,
+                      pdfFile,
+                      "application/pdf"
+                    );
 
-                  // Retrieve the URL of the uploaded file
-                  if (parseFile.url()) {
-                    setFileUpload(parseFile.url());
-                    setfileload(false);
-                    const title = generateTitleFromFilename(files?.[0]?.name);
-                    setFormData((obj) => ({ ...obj, Name: title }));
-                    SaveFileSize(size, response.url(), tenantId);
-                    const tenantId = localStorage.getItem("TenantId");
-                    SaveFileSize(size, parseFile.url(), tenantId);
-                    return parseFile.url();
+                    await parseFile.save({
+                      progress: (progressValue, loaded, total, { type }) => {
+                        if (type === "upload" && progressValue !== null) {
+                          const percentCompleted = Math.round(
+                            (loaded * 100) / total
+                          );
+                          setpercentage(percentCompleted);
+                        }
+                      }
+                    });
+
+                    // Retrieve the URL of the uploaded file
+                    if (parseFile.url()) {
+                      setFileUpload(parseFile.url());
+                      setfileload(false);
+                      const title = generateTitleFromFilename(files?.[0]?.name);
+                      setFormData((obj) => ({ ...obj, Name: title }));
+                      const tenantId = localStorage.getItem("TenantId");
+                      SaveFileSize(size, parseFile.url(), tenantId);
+                      return parseFile.url();
+                    }
                   }
                 } catch (err) {
                   setfileload(false);
@@ -237,46 +260,73 @@ const Forms = (props) => {
                 width: imageWidth,
                 height: imageHeight
               });
-              const getFile = await pdfDoc.save({
-                useObjectStreams: false
-              });
-              setfileload(true);
-              const size = files[0].size;
+              const size = files?.[0]?.size;
               const name = generatePdfName(16);
-              const pdfName = `${name?.split(".")[0]}.pdf`;
-              const parseFile = new Parse.File(
-                pdfName,
-                [...getFile],
-                "application/pdf"
-              );
-
-              try {
-                const response = await parseFile.save({
-                  progress: (progressValue, loaded, total, { type }) => {
-                    if (type === "upload" && progressValue !== null) {
-                      const percentCompleted = Math.round(
-                        (loaded * 100) / total
-                      );
-                      setpercentage(percentCompleted);
-                    }
-                  }
+              if (extUserData?.TenantId?.ActiveFileAdapter) {
+                const base64 = await pdfDoc.saveAsBase64({
+                  useObjectStreams: false
                 });
-                // The response object will contain information about the uploaded file
-                // You can access the URL of the uploaded file using response.url()
-                setFileUpload(response.url());
-                setfileload(false);
-                if (response.url()) {
-                  const tenantId = localStorage.getItem("TenantId");
+                setfileload(true);
+                const fileBase64 = base64.split(",").pop();
+                const ext = files?.[0]?.name?.split(".").pop();
+                const fileRes = await saveToCustomFile(
+                  fileBase64,
+                  `${name}.${ext}`
+                );
+                if (fileRes.url) {
+                  setFileUpload(fileRes.url);
+                  setfileload(false);
+                  setpercentage(0);
                   const title = generateTitleFromFilename(files?.[0]?.name);
                   setFormData((obj) => ({ ...obj, Name: title }));
-                  SaveFileSize(size, response.url(), tenantId);
-                  return response.url();
+                  const tenantId = localStorage.getItem("TenantId");
+                  SaveFileSize(size, fileRes.url, tenantId);
+                  return fileRes.url;
+                } else {
+                  setfileload(false);
+                  setpercentage(0);
+                  e.target.value = "";
                 }
-              } catch (error) {
-                e.target.value = "";
-                setfileload(false);
-                setpercentage(0);
-                console.error("Error uploading file:", error);
+              } else {
+                const getFile = await pdfDoc.save({
+                  useObjectStreams: false
+                });
+                setfileload(true);
+                const pdfName = `${name?.split(".")[0]}.pdf`;
+                const parseFile = new Parse.File(
+                  pdfName,
+                  [...getFile],
+                  "application/pdf"
+                );
+
+                try {
+                  const response = await parseFile.save({
+                    progress: (progressValue, loaded, total, { type }) => {
+                      if (type === "upload" && progressValue !== null) {
+                        const percentCompleted = Math.round(
+                          (loaded * 100) / total
+                        );
+                        setpercentage(percentCompleted);
+                      }
+                    }
+                  });
+                  // The response object will contain information about the uploaded file
+                  // You can access the URL of the uploaded file using response.url()
+                  setFileUpload(response.url());
+                  setfileload(false);
+                  if (response.url()) {
+                    const tenantId = localStorage.getItem("TenantId");
+                    const title = generateTitleFromFilename(files?.[0]?.name);
+                    setFormData((obj) => ({ ...obj, Name: title }));
+                    SaveFileSize(size, response.url(), tenantId);
+                    return response.url();
+                  }
+                } catch (error) {
+                  e.target.value = "";
+                  setfileload(false);
+                  setpercentage(0);
+                  console.error("Error uploading file:", error);
+                }
               }
             } else {
               if (isEnableSubscription) {
@@ -322,41 +372,78 @@ const Forms = (props) => {
     }
   };
 
+  const saveToCustomFile = async (base64, filname) => {
+    try {
+      const savetos3 = await Parse.Cloud.run("savetofileadapter", {
+        fileBase64: base64,
+        fileName: filname
+      });
+      return { url: savetos3.url };
+    } catch (err) {
+      console.log("err in save to customfile", err);
+      return { url: "" };
+    }
+  };
+
   const handleFileUpload = async (file) => {
     setfileload(true);
     const size = file.size;
     const name = generatePdfName(16);
     const pdfFile = file;
-    const parseFile = new Parse.File(name, pdfFile);
-
-    try {
-      const response = await parseFile.save({
-        progress: (progressValue, loaded, total, { type }) => {
-          if (type === "upload" && progressValue !== null) {
-            const percentCompleted = Math.round((loaded * 100) / total);
-            setpercentage(percentCompleted);
-          }
-        }
-      });
-
-      // The response object will contain information about the uploaded file
-      // You can access the URL of the uploaded file using response.url()
-      setFileUpload(response.url());
-      setfileload(false);
-      if (response.url()) {
+    if (extUserData?.TenantId?.ActiveFileAdapter) {
+      const base64 = await toDataUrl(file);
+      const fileBase64 = base64.split(",").pop();
+      const ext = file?.name?.split(".").pop();
+      const fileRes = await saveToCustomFile(fileBase64, `${name}.${ext}`);
+      if (fileRes.url) {
+        setFileUpload(fileRes?.url);
         const tenantId = localStorage.getItem("TenantId");
         const title = generateTitleFromFilename(file.name);
         setFormData((obj) => ({ ...obj, Name: title }));
-        SaveFileSize(size, response.url(), tenantId);
-        return response.url();
+        SaveFileSize(size, fileRes.url, tenantId);
       }
-    } catch (error) {
       setfileload(false);
       setpercentage(0);
-      console.error("Error uploading file:", error);
+    } else {
+      const parseFile = new Parse.File(name, pdfFile);
+      try {
+        const response = await parseFile.save({
+          progress: (progressValue, loaded, total, { type }) => {
+            if (type === "upload" && progressValue !== null) {
+              const percentCompleted = Math.round((loaded * 100) / total);
+              setpercentage(percentCompleted);
+            }
+          }
+        });
+
+        // The response object will contain information about the uploaded file
+        // You can access the URL of the uploaded file using response.url()
+        setFileUpload(response.url());
+        setfileload(false);
+        if (response.url()) {
+          const tenantId = localStorage.getItem("TenantId");
+          const title = generateTitleFromFilename(file.name);
+          setFormData((obj) => ({ ...obj, Name: title }));
+          SaveFileSize(size, response.url(), tenantId);
+          return response.url();
+        }
+      } catch (error) {
+        setfileload(false);
+        setpercentage(0);
+        console.error("Error uploading file:", error);
+      }
     }
   };
-
+  async function uriToBase64(uri) {
+    const response = await fetch(uri);
+    const blob = await response.blob();
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result);
+      reader.onerror = reject;
+      reader.readAsDataURL(blob); // Convert to Base64
+    });
+  }
   const dropboxSuccess = async (files) => {
     setfileload(true);
     const file = files[0];
@@ -371,30 +458,49 @@ const Forms = (props) => {
       return;
     } else {
       const name = generatePdfName(16);
-      const parseFile = new Parse.File(name, { uri: url });
-
-      try {
-        const response = await parseFile.save({
-          progress: (progressValue, loaded, total, { type }) => {
-            if (type === "upload" && progressValue !== null) {
-              const percentCompleted = Math.round((loaded * 100) / total);
-              setpercentage(percentCompleted);
-            }
-          }
-        });
-        setFileUpload(response.url());
-        setfileload(false);
-        if (response.url()) {
-          const tenantId = localStorage.getItem("TenantId");
-          const title = generateTitleFromFilename(file.name);
+      if (extUserData?.TenantId?.ActiveFileAdapter) {
+        const base64 = await uriToBase64(url);
+        const fileBase64 = base64.split(",").pop();
+        const ext = file?.name?.split(".").pop();
+        const fileRes = await saveToCustomFile(fileBase64, `${name}.${ext}`);
+        if (fileRes.url) {
+          setFileUpload(fileRes.url);
+          setfileload(false);
+          setpercentage(0);
+          const title = generateTitleFromFilename(files?.[0]?.name);
           setFormData((obj) => ({ ...obj, Name: title }));
-          SaveFileSize(size, response.url(), tenantId);
-          return response.url();
+          const tenantId = localStorage.getItem("TenantId");
+          SaveFileSize(size, fileRes.url, tenantId);
+          return fileRes.url;
+        } else {
+          setfileload(false);
+          setpercentage(0);
         }
-      } catch (error) {
-        setfileload(false);
-        setpercentage(0);
-        console.error("Error uploading file:", error);
+      } else {
+        const parseFile = new Parse.File(name, { uri: url });
+        try {
+          const response = await parseFile.save({
+            progress: (progressValue, loaded, total, { type }) => {
+              if (type === "upload" && progressValue !== null) {
+                const percentCompleted = Math.round((loaded * 100) / total);
+                setpercentage(percentCompleted);
+              }
+            }
+          });
+          setFileUpload(response.url());
+          setfileload(false);
+          if (response.url()) {
+            const tenantId = localStorage.getItem("TenantId");
+            const title = generateTitleFromFilename(file.name);
+            setFormData((obj) => ({ ...obj, Name: title }));
+            SaveFileSize(size, response.url(), tenantId);
+            return response.url();
+          }
+        } catch (error) {
+          setfileload(false);
+          setpercentage(0);
+          console.error("Error uploading file:", error);
+        }
       }
     }
   };
@@ -447,6 +553,9 @@ const Forms = (props) => {
           className: "contracts_Users",
           objectId: ExtCls[0].objectId
         });
+        if (extUserData?.TenantId?.ActiveFileAdapter) {
+          object.set("IsFileAdapter", true);
+        }
         const res = await object.save();
         if (res) {
           setSigners([]);
@@ -550,27 +659,55 @@ const Forms = (props) => {
       });
       setIsDecrypting(false);
       // Upload the file to Parse Server
-      const parseFile = new Parse.File(name, pdfFile, "application/pdf");
-
-      await parseFile.save({
-        progress: (progressValue, loaded, total, { type }) => {
-          if (type === "upload" && progressValue !== null) {
-            const percentCompleted = Math.round((loaded * 100) / total);
-            setpercentage(percentCompleted);
+      if (extUserData?.TenantId?.ActiveFileAdapter) {
+        const base64 = await toDataUrl(pdfFile);
+        const fileBase64 = base64.split(",").pop();
+        const ext = formData?.file?.name?.split(".").pop();
+        const fileRes = await saveToCustomFile(fileBase64, `${name}.${ext}`);
+        if (fileRes.url) {
+          setFormData((prev) => ({ ...prev, password: "" }));
+          setFileUpload(fileRes?.url);
+          setfileload(false);
+          setpercentage(0);
+          const title = generateTitleFromFilename(formData?.file?.name);
+          setFormData((obj) => ({ ...obj, Name: title }));
+          const tenantId = localStorage.getItem("TenantId");
+          SaveFileSize(size, fileRes.url, tenantId);
+          return fileRes.url;
+        } else {
+          setfileload(false);
+          setpercentage(0);
+        }
+      } else {
+        const parseFile = new Parse.File(name, pdfFile, "application/pdf");
+        await parseFile.save({
+          progress: (progressValue, loaded, total, { type }) => {
+            if (type === "upload" && progressValue !== null) {
+              const percentCompleted = Math.round((loaded * 100) / total);
+              setpercentage(percentCompleted);
+            }
+          }
+        });
+        // Retrieve the URL of the uploaded file
+        if (parseFile.url()) {
+          setFormData((prev) => ({ ...prev, password: "" }));
+          setFileUpload(parseFile.url());
+          setfileload(false);
+          setpercentage(0);
+          const title = generateTitleFromFilename(formData?.file?.name);
+          setFormData((obj) => ({ ...obj, Name: title }));
+          const tenantId = localStorage.getItem("TenantId");
+          SaveFileSize(size, parseFile.url(), tenantId);
+          return parseFile.url();
+        } else {
+          setfileload(false);
+          setpercentage(0);
+          setFormData((prev) => ({ ...prev, password: "" }));
+          setIsDecrypting(false);
+          if (inputFileRef.current) {
+            inputFileRef.current.value = ""; // Set file input value to empty string
           }
         }
-      });
-
-      // Retrieve the URL of the uploaded file
-      if (parseFile.url()) {
-        setFormData((prev) => ({ ...prev, password: "" }));
-        setFileUpload(parseFile.url());
-        setfileload(false);
-        const title = generateTitleFromFilename(formData?.file?.name);
-        setFormData((obj) => ({ ...obj, Name: title }));
-        const tenantId = localStorage.getItem("TenantId");
-        SaveFileSize(size, parseFile.url(), tenantId);
-        return parseFile.url();
       }
     } catch (err) {
       setfileload(false);
