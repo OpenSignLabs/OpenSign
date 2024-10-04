@@ -901,7 +901,7 @@ function PlaceHolderSign() {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      if (signerPos?.length > 0) {
+      if (signerPos?.length > 0 && !pdfDetails?.[0]?.IsCompleted) {
         autosavedetails();
       }
     }, 2000);
