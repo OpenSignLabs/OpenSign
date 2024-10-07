@@ -1489,6 +1489,7 @@ components:
           type: boolean
           example: false  
           description: "true - this option will enable a guided tour for signers, providing instructions during the signing process. false - disable the guided tour, ensuring a faster, uninterrupted signing experience."
+      inline_response_200_d:
       type: object
       properties:
         objectId:
