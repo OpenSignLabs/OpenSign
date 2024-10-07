@@ -202,6 +202,7 @@ export default async function createBatchDocs(request) {
                 DocSentAt: { __type: 'Date', iso: isoDate },
                 IsEnableOTP: x?.IsEnableOTP || false,
                 IsTourEnabled: x?.IsTourEnabled || false,
+                IsFileAdapter: x?.IsFileAdapter || false,
               },
             };
           });
