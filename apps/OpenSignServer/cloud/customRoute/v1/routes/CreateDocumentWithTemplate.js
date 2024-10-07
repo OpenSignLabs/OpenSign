@@ -209,6 +209,7 @@ export default async function createDocumentWithTemplate(request, response) {
                 if (folderId) {
                   object.set('Folder', folderPtr);
                 }
+                object.set('IsFileAdapter', template?.IsFileAdapter || false);
                 const newACL = new Parse.ACL();
                 newACL.setPublicReadAccess(false);
                 newACL.setPublicWriteAccess(false);

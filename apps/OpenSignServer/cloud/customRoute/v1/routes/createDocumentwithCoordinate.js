@@ -8,6 +8,7 @@ import {
   sanitizeFileName,
   cloudServerUrl,
 } from '../../../../Utils.js';
+import uploadFileToS3 from '../../../parsefunction/uploadFiletoS3.js';
 
 // `sendDoctoWebhook` is used to send res data of document on webhook
 async function sendDoctoWebhook(doc, WebhookUrl, userId) {
@@ -87,6 +88,7 @@ export default async function createDocumentwithCoordinate(request, response) {
       };
       const extUsers = new Parse.Query('contracts_Users');
       extUsers.equalTo('UserId', userPtr);
+      extUsers.include('TenantId');
       const extUser = await extUsers.first({ useMasterKey: true });
 
       const subscription = new Parse.Query('contracts_Subscriptions');
@@ -114,6 +116,7 @@ export default async function createDocumentwithCoordinate(request, response) {
                 .status(400)
                 .json({ error: 'Please add at least one signature widget for all signers' });
             }
+            const parseExtUser = JSON.parse(JSON.stringify(extUser));
             let fileUrl;
             if (request.files?.[0]) {
               const base64 = fileData?.toString('base64');
@@ -126,23 +129,32 @@ export default async function createDocumentwithCoordinate(request, response) {
               saveFileUsage(buffer.length, fileUrl, parseUser.userId.objectId);
             } else {
               const filename = sanitizeFileName(`${name}.pdf`);
-              const file = new Parse.File(filename, { base64: base64File }, 'application/pdf');
-              await file.save({ useMasterKey: true });
-              fileUrl = file.url();
+              if (parseExtUser?.TenantId?.ActiveFileAdapter) {
+                const adapter = {
+                  fileAdapter: parseExtUser?.TenantId?.ActiveFileAdapter,
+                  bucketName: parseExtUser?.TenantId?.FileAdapter?.bucketName,
+                  region: parseExtUser?.TenantId?.FileAdapter?.region,
+                  endpoint: parseExtUser?.TenantId?.FileAdapter?.endpoint,
+                  accessKeyId: parseExtUser?.TenantId?.FileAdapter?.accessKeyId,
+                  secretAccessKey: parseExtUser?.TenantId?.FileAdapter?.secretAccessKey,
+                  baseUrl: parseExtUser?.TenantId?.FileAdapter?.baseUrl,
+                };
+                const filedata = Buffer.from(base64File, 'base64');
+                // `uploadFileToS3` is used to save document in user's file storage
+                fileUrl = await uploadFileToS3(filedata, filename, 'application/pdf', adapter);
+              } else {
+                const file = new Parse.File(filename, { base64: base64File }, 'application/pdf');
+                await file.save({ useMasterKey: true });
+                fileUrl = file.url();
+              }
               const buffer = Buffer.from(base64File, 'base64');
               saveFileUsage(buffer.length, fileUrl, parseUser.userId.objectId);
             }
-            const contractsUser = new Parse.Query('contracts_Users');
-            contractsUser.equalTo('UserId', userPtr);
-            const extUser = await contractsUser.first({ useMasterKey: true });
-            const parseExtUser = JSON.parse(JSON.stringify(extUser));
-
             const extUserPtr = {
               __type: 'Pointer',
               className: 'contracts_Users',
               objectId: extUser.id,
             };
-
             const object = new Parse.Object('contracts_Document');
             object.set('Name', name);
 
@@ -165,6 +177,11 @@ export default async function createDocumentwithCoordinate(request, response) {
             }
             object.set('IsEnableOTP', IsEnableOTP);
             object.set('IsSendMail', send_email);
+            if (parseExtUser?.TenantId?.ActiveFileAdapter) {
+              object.set('IsFileAdapter', true);
+            } else {
+              object.set('IsFileAdapter', false);
+            }
             let contact = [];
             if (signers && signers.length > 0) {
               let parseSigners;
