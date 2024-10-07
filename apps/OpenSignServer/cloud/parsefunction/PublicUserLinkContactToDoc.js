@@ -63,6 +63,7 @@ const createDocumentFromTemplate = async (template, existContact, index) => {
       object.set('ExtUserPtr', template?.ExtUserPtr);
       object.set('OriginIp', template?.OriginIp || '');
       object.set('IsEnableOTP', template?.IsEnableOTP || false);
+      object.set('IsFileAdapter', template?.IsFileAdapter || false);
       let signers = template?.Signers || [];
       const signerobj = {
         __type: 'Pointer',
