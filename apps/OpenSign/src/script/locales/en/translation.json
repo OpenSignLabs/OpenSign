@@ -679,7 +679,7 @@
     "p3": "Tip: If your signers are familiar with OpenSign and frequently use it, you may want to disable the guided tour for a more seamless experience. Choose the option that best fits your document signing needs."
   },
   "form-title-1": "Document Flow Setting",
-  "form-title-2": "Security Setting"
+  "form-title-2": "Security Setting",
   "public-tour-message": "The template needs to be public before you can generate a shareable link.",
   "add-user-template": "You need to add a role before you can add fields for it.",
   "pdf-uncompatible": "This pdf is not compatible with opensign, please contact <support@opensignlabs.com>"
