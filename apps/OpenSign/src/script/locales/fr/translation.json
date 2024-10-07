@@ -678,7 +678,7 @@
     "p3":  "Conseil : si vos signataires connaissent OpenSign et l'utilisent fréquemment, vous souhaiterez peut-être désactiver la visite guidée pour une expérience plus fluide. Choisissez l'option qui correspond le mieux à vos besoins en matière de signature de documents."
   },
   "form-title-1": "Paramètre du flux de documents",
-  "form-title-2": "Paramètre de sécurité"
+  "form-title-2": "Paramètre de sécurité",
   "public-tour-message": "Le modèle doit être public avant que vous puissiez générer un lien partageable.",
   "add-user-template": "Vous devez ajouter un rôle avant de pouvoir lui ajouter des champs. ",
   "pdf-uncompatible": "Ce pdf n'est pas compatible avec opensign, veuillez contacter <support@opensignlabs.com>"
