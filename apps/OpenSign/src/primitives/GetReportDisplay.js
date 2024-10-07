@@ -275,7 +275,9 @@ const ReportTable = (props) => {
                 AutomaticReminders: Doc?.AutomaticReminders || false,
                 RemindOnceInEvery: Doc?.RemindOnceInEvery || 5,
                 IsEnableOTP: Doc?.IsEnableOTP || false,
-                IsTourEnabled: Doc?.IsTourEnabled || false
+                IsTourEnabled: Doc?.IsTourEnabled || false,
+                IsFileAdapter: Doc?.IsFileAdapter || false
+
               };
               try {
                 const res = await axios.post(
