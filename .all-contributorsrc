@@ -232,6 +232,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "1024mb",
+      "name": "1024mb",
+      "avatar_url": "https://avatars.githubusercontent.com/u/9301204?v=4",
+      "profile": "https://github.com/1024mb",
+      "contributions": [
+        "translation"
+      ]
     }
   ]
 }

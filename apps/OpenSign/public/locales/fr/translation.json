@@ -264,10 +264,10 @@
   "make-template-public-alert": "Êtes-vous sûr de vouloir rendre ce modèle public ?",
   "make-template-private-alert": "Êtes-vous sûr de vouloir rendre ce modèle privé ? Cela le supprimera de votre profil public.",
   "public-role": "Rôle public",
-  "public-url": "URL publique",
+  "public-url": "Profil public requis",
   "public-url-copy": "Voici votre URL publique : ",
   "public-url-copy-mssg": "copiez-la ou partagez-le avec le signataire et vous pouvoir voir tous vos paramètres publics modèles.",
-  "add-public-url-alert": "Veuillez ajouter votre URL publique et vous pourra rendre public modèle.",
+  "add-public-url-alert": "Veuillez terminer la configuration de votre profil public OpenSign. Une fois cela fait, vous pourrez rendre les modèles publics. Ce processus ne doit être effectué qu’une seule fois.",
   "share-with-alert": "Vous ne pouvez pas partager un modèle si des contacts sont déjà attribués à des rôles. Veuillez supprimer toutes les attributions de contacts des rôles avant de partager le modèle.",
   "share-with": "Partager avec",
   "team-not-found": "Équipe introuvable",
@@ -671,7 +671,6 @@
   "document-logs":"Journaux de documents",
   "server-down": "Impossible de se connecter au serveur OpenSign. Si vous hébergez vous-même OpenSign, veuillez vous assurer que toutes les étapes de la documentation ont été correctement suivies. Si vous exécutez OpenSign localement, vous y accédez peut-être via un numéro de port incorrect.",
   "admin-exists": "L'administrateur existe déjà. Veuillez vous connecter à l'application en utilisant les informations d'identification de l'administrateur afin de gérer les utilisateurs.",
-  "public-tour-message":"Veuillez rendre le modèle public pour copier l'URL publique",
   "enable-tour": "Activer la visite",
   "istourenabled-otp-help":{
     "p1": "Cela permettra une visite guidée pour les signataires, fournissant des instructions pendant le processus de signature.",
@@ -680,6 +679,9 @@
   },
    "form-title-1": "Paramètre du flux de documents",
    "form-title-2": "Paramètre de sécurité"
+  "public-tour-message": "Le modèle doit être public avant que vous puissiez générer un lien partageable.",
+  "add-user-template":"Vous devez ajouter un rôle avant de pouvoir lui ajouter des champs. ",
+  "pdf-uncompatible":"Ce pdf n'est pas compatible avec opensign, veuillez contacter <support@opensignlabs.com>"
 
 
 }

@@ -147,7 +147,8 @@ We would like to thank all our contributors and users for their support and feed
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/VikramNagwal"><img src="https://avatars.githubusercontent.com/u/123088024?v=4?s=100" width="100px;" alt="Vikram"/><br /><sub><b>Vikram</b></sub></a><br /><a href="#code-VikramNagwal" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/ugoconsonni"><img src="https://avatars.githubusercontent.com/u/13661702?v=4?s=100" width="100px;" alt="ugoconsonni"/><br /><sub><b>ugoconsonni</b></sub></a><br /><a href="#code-ugoconsonni" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/daniel-mutwiri"><img src="https://avatars.githubusercontent.com/u/8936960?v=4?s=100" width="100px;" alt="Daniel Mutwiri"/><br /><sub><b>Daniel Mutwiri</b></sub></a><br /><a href="#code-daniel-mutwiri" title="Code">💻</a></td>
-      <td align="center" valign="top" width="14.28%"><a href="https://github.com/Zathiel"><img src="https://avatars.githubusercontent.com/u/26553418?v=4?s=100" width="100px;" alt="Zathiel"/><br /><sub><b>Zathiel</b></sub></a><br /><a href="#code-Zathiel" title="Code">💻</a><a href="#security-Zathiel" title="Security">🛡️</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/Zathiel"><img src="https://avatars.githubusercontent.com/u/26553418?v=4?s=100" width="100px;" alt="Zathiel"/><br /><sub><b>Zathiel</b></sub></a><br /><a href="#code-Zathiel" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/1024mb"><img src="https://avatars.githubusercontent.com/u/9301204?v=4?s=100" width="100px;" alt="1024mb"/><br /><sub><b>1024mb</b></sub></a><br /><a href="#translation-1024mb" title="Translation">🌍</a></td>
     </tr>
   </tbody>
 </table>
