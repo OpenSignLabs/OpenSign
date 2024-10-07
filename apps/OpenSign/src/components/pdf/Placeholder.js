@@ -791,12 +791,22 @@ function Placeholder(props) {
         props.pos.type !== radioButtonWidget &&
         props.pos.type !== "checkbox" &&
         props.pos.key === props.selectWidgetId ? (
-          <BorderResize right={-12} top={-11} />
+          <BorderResize
+            right={-12}
+            top={-11}
+            pos={props.pos}
+            posHeight={props.posHeight}
+            isSignYourself={props.isSignYourself}
+          />
         ) : props.data && props.isNeedSign && props.pos.type !== "checkbox" ? (
           props.data?.signerObjId === props.signerObjId &&
           props.pos.type !== radioButtonWidget &&
           props.pos.type !== "checkbox" ? (
-            <BorderResize />
+            <BorderResize
+              posHeight={props.posHeight}
+              isSignYourself={props.isSignYourself}
+              pos={props.pos}
+            />
           ) : (
             <></>
           )
@@ -862,6 +872,7 @@ function Placeholder(props) {
               startDate={startDate}
               handleSaveDate={handleSaveDate}
               xPos={props.xPos}
+              posHeight={props.posHeight}
             />
           </div>
         ) : (
@@ -889,6 +900,7 @@ function Placeholder(props) {
               startDate={startDate}
               handleSaveDate={handleSaveDate}
               xPos={props.xPos}
+              posHeight={props.posHeight}
             />
           </>
         )}

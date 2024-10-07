@@ -508,7 +508,7 @@ const TemplatePlaceholder = () => {
   const tourAddRole = [
     {
       selector: '[data-tut="reactourAddbtn"]',
-      content: "You need to add a role before you can add fields for it. ",
+      content: t("add-user-template"),
       position: "top",
       style: { fontSize: "13px" }
     }

@@ -41,9 +41,9 @@ const SuggestionInput = (props) => {
 
   const handleInputChange = async (e) => {
     const value = e.target.value;
-    setInputValue(value?.toLowerCase());
+    setInputValue(value?.toLowerCase()?.replace(/\s/g, ""));
     if (props.onChange) {
-      props.onChange(value);
+      props.onChange(value?.toLowerCase()?.replace(/\s/g, ""));
     }
 
     if (value.trim() === "") {

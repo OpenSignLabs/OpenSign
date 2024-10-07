@@ -24,9 +24,11 @@ const ManageSign = () => {
   const [Initials, setInitials] = useState("");
   const [isInitials, setIsInitials] = useState(false);
   const [id, setId] = useState("");
+  const [imgInitials, setImgInitials] = useState("");
   const canvasRef = useRef(null);
   const imageRef = useRef(null);
   const initailsRef = useRef(null);
+  const imgInitialsRef = useRef(null);
   useEffect(() => {
     fetchUserSign();
     // eslint-disable-next-line
@@ -54,8 +56,9 @@ const ManageSign = () => {
           }
           setImage(res?.ImageURL);
           if (res && res.Initials) {
-            setInitials(res.Initials);
+            // setInitials(res.Initials);
             setIsInitials(true);
+            setImgInitials(res?.Initials);
           }
         } else {
           if (User?.get("name")) {
@@ -95,6 +98,10 @@ const ManageSign = () => {
     if (initailsRef.current) {
       initailsRef.current.clear();
     }
+    if (imgInitialsRef.current) {
+      imgInitialsRef.current.value = "";
+    }
+    setImgInitials("");
     setInitials("");
     if (image) {
       setIsValue(true);
@@ -119,8 +126,7 @@ const ManageSign = () => {
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const isUrl = image.includes("https") || image.includes("http");
-
+    const isUrl = image?.includes("https") || image?.includes("http");
     if (!isvalue) {
       setWarning(true);
       setTimeout(() => setWarning(false), 1000);
@@ -142,15 +148,25 @@ const ManageSign = () => {
       } else {
         imgUrl = image;
       }
-      let initialsUrl = "";
       const isInitialsUrl =
-        Initials.includes("https") || Initials.includes("http");
-      if (!isInitialsUrl && Initials) {
-        const initialsImg = base64StringtoFile(
-          Initials,
-          `${replaceSpace}_initials.png`
-        );
-        initialsUrl = await uploadFile(initialsImg);
+        imgInitials?.includes("https") || imgInitials?.includes("http");
+
+      let initialFile;
+      if (Initials) {
+        initialFile = base64StringtoFile(Initials, `${replaceSpace}_sign.png`);
+      } else {
+        if (imgInitials && !isInitialsUrl) {
+          initialFile = base64StringtoFile(
+            imgInitials,
+            `${replaceSpace}__sign.png`
+          );
+        }
+      }
+      let initialsUrl;
+      if (initialFile && !isInitialsUrl) {
+        initialsUrl = await uploadFile(initialFile);
+      } else {
+        initialsUrl = imgInitials;
       }
       if (imgUrl) {
         await saveEntry({
@@ -191,7 +207,7 @@ const ManageSign = () => {
 
   const saveEntry = async (obj) => {
     const signCls = "contracts_Signature";
-    const User = Parse.User.current().id;
+    const User = Parse?.User?.current()?.id;
     const userId = { __type: "Pointer", className: "_User", objectId: User };
     if (id) {
       try {
@@ -202,20 +218,13 @@ const ManageSign = () => {
         updateSign.set("SignatureName", obj.name);
         updateSign.set("UserId", userId);
         const res = await updateSign.save();
-        setIsLoader(false);
-        setIsAlert({
-          type: "success",
-          message: t("signature-saved-alert")
-        });
-        setTimeout(() => setIsAlert({}), 2000);
+        setIsAlert({ type: "success", message: t("signature-saved-alert") });
         return res;
       } catch (err) {
         console.log(err);
+        setIsAlert({ type: "danger", message: `${err.message}` });
+      } finally {
         setIsLoader(false);
-        setIsAlert({
-          type: "danger",
-          message: `${err.message}`
-        });
         setTimeout(() => setIsAlert({}), 2000);
       }
     } else {
@@ -226,20 +235,13 @@ const ManageSign = () => {
         updateSign.set("SignatureName", obj.name);
         updateSign.set("UserId", userId);
         const res = await updateSign.save();
-        setIsLoader(false);
-        setIsAlert({
-          type: "success",
-          message: t("signature-saved-alert")
-        });
-        setTimeout(() => setIsAlert({}), 2000);
+        setIsAlert({ type: "success", message: t("signature-saved-alert") });
         return res;
       } catch (err) {
         console.log(err);
+        setIsAlert({ type: "success", message: `${err.message}` });
+      } finally {
         setIsLoader(false);
-        setIsAlert({
-          type: "success",
-          message: `${err.message}`
-        });
         setTimeout(() => setIsAlert({}), 2000);
       }
     }
@@ -250,7 +252,29 @@ const ManageSign = () => {
   };
   const handleInitialsChange = () => {
     setInitials(initailsRef.current.toDataURL());
-    setIsValue(true);
+    if (image || signature) {
+      setIsValue(true);
+    }
+  };
+  const handleUploadInitials = () => {
+    imgInitialsRef.current.click();
+  };
+  const onImgInitialsChange = async (event) => {
+    if (initailsRef.current) {
+      initailsRef.current.clear();
+    }
+    setInitials("");
+    if (event.target.files && event.target.files[0]) {
+      const file = event.target.files[0];
+      const base64Img = await toDataUrl(file);
+      setImgInitials(base64Img);
+      if (image || signature) {
+        setIsValue(true);
+      }
+    } else {
+      setImgInitials("");
+      setIsValue(false);
+    }
   };
   return (
     <div className="relative h-full bg-base-100 text-base-content flex shadow-md rounded-box overflow-auto">
@@ -348,7 +372,7 @@ const ManageSign = () => {
                         className="op-link"
                         onClick={() => handleUploadBtn()}
                       >
-                        {t("upload-image")}
+                        {t("upload")}
                       </div>
                       <div
                         type="button"
@@ -372,17 +396,21 @@ const ManageSign = () => {
               <span className="font-medium select-none flex mb-[10px] pl-[10px]">
                 {t("initials")}
               </span>
+              <input
+                type="file"
+                onChange={onImgInitialsChange}
+                className="filetype"
+                accept="image/*"
+                ref={imgInitialsRef}
+                hidden
+              />
               <div>
-                {isInitials ? (
+                {imgInitials ? (
                   <div className="intialSignature relative border-[1px] border-[#888] rounded-box overflow-hidden">
                     <img
                       alt="inititals"
-                      src={Initials}
-                      style={{
-                        width: "100%",
-                        height: "100%",
-                        objectFit: "contain"
-                      }}
+                      src={imgInitials}
+                      className="w-[100%] h-[100%] object-contain"
                     />
                   </div>
                 ) : (
@@ -393,9 +421,7 @@ const ManageSign = () => {
                       className: "intialSignature rounded-box"
                     }}
                     // backgroundColor="rgb(255, 255, 255)"
-                    onEnd={() =>
-                      handleInitialsChange(initailsRef.current.toDataURL())
-                    }
+                    onEnd={() => handleInitialsChange()}
                     dotSize={1}
                   />
                 )}
@@ -418,6 +444,7 @@ const ManageSign = () => {
                                         ? "2px solid black"
                                         : "2px solid white"
                               }}
+                              className="fa-light fa-pen-nib"
                               onClick={() => {
                                 if (key === 0) {
                                   setInitialPen("blue");
@@ -428,7 +455,6 @@ const ManageSign = () => {
                                 }
                               }}
                               key={key}
-                              className="fa-light fa-pen-nib"
                               width={20}
                               height={20}
                             ></i>
@@ -437,13 +463,22 @@ const ManageSign = () => {
                       </div>
                     )}
                   </div>
-                  <div>
+                  <div className="flex flex-row gap-1">
                     <div
                       type="button"
                       className="op-link text-sm md:text-base mr-1"
-                      onClick={() => handleClearInitials()}
+                      onClick={() => handleUploadInitials()}
                     >
-                      {t("clear")}
+                      {t("upload")}
+                    </div>
+                    <div>
+                      <div
+                        type="button"
+                        className="op-link text-sm md:text-base mr-1"
+                        onClick={() => handleClearInitials()}
+                      >
+                        {t("clear")}
+                      </div>
                     </div>
                   </div>
                 </div>
