@@ -6,6 +6,7 @@ import {
   formatWidgetOptions,
   sanitizeFileName,
 } from '../../../../Utils.js';
+import uploadFileToS3 from '../../../parsefunction/uploadFiletoS3.js';
 
 const randomId = () => Math.floor(1000 + Math.random() * 9000);
 export default async function createTemplatewithCoordinate(request, response) {
@@ -40,6 +41,11 @@ export default async function createTemplatewithCoordinate(request, response) {
         objectId: parseUser.userId.objectId,
       };
       if (signers && signers.length > 0) {
+        const contractsUser = new Parse.Query('contracts_Users');
+        contractsUser.equalTo('UserId', userPtr);
+        contractsUser.include('TenantId');
+        const extUser = await contractsUser.first({ useMasterKey: true });
+        const parseExtUser = JSON.parse(JSON.stringify(extUser));
         let fileUrl;
         if (request.files?.[0]) {
           const base64 = fileData?.toString('base64');
@@ -52,24 +58,34 @@ export default async function createTemplatewithCoordinate(request, response) {
           saveFileUsage(buffer.length, fileUrl, parseUser.userId.objectId);
         } else {
           const filename = sanitizeFileName(`${name}.pdf`);
-          const file = new Parse.File(filename, { base64: base64File }, 'application/pdf');
-          await file.save({ useMasterKey: true });
-          fileUrl = file.url();
+          if (parseExtUser?.TenantId?.ActiveFileAdapter) {
+            const adapter = {
+              fileAdapter: parseExtUser?.TenantId?.ActiveFileAdapter,
+              bucketName: parseExtUser?.TenantId?.FileAdapter?.bucketName,
+              region: parseExtUser?.TenantId?.FileAdapter?.region,
+              endpoint: parseExtUser?.TenantId?.FileAdapter?.endpoint,
+              accessKeyId: parseExtUser?.TenantId?.FileAdapter?.accessKeyId,
+              secretAccessKey: parseExtUser?.TenantId?.FileAdapter?.secretAccessKey,
+              baseUrl: parseExtUser?.TenantId?.FileAdapter?.baseUrl,
+            };
+            const filedata = Buffer.from(base64File, 'base64');
+            // `uploadFileToS3` is used to save document in user's file storage
+            fileUrl = await uploadFileToS3(filedata, filename, 'application/pdf', adapter);
+          } else {
+            const file = new Parse.File(filename, { base64: base64File }, 'application/pdf');
+            await file.save({ useMasterKey: true });
+            fileUrl = file.url();
+          }
           const buffer = Buffer.from(base64File, 'base64');
           saveFileUsage(buffer.length, fileUrl, parseUser.userId.objectId);
         }
-        const contractsUser = new Parse.Query('contracts_Users');
-        contractsUser.equalTo('UserId', userPtr);
-        const extUser = await contractsUser.first({ useMasterKey: true });
         const extUserPtr = {
           __type: 'Pointer',
           className: 'contracts_Users',
           objectId: extUser.id,
         };
-
         const object = new Parse.Object('contracts_Template');
         object.set('Name', name);
-
         if (note) {
           object.set('Note', note);
         }
@@ -185,6 +201,11 @@ export default async function createTemplatewithCoordinate(request, response) {
             className: 'contracts_Template',
             objectId: folderId,
           });
+        }
+        if (parseExtUser?.TenantId?.ActiveFileAdapter) {
+          object.set('IsFileAdapter', true);
+        } else {
+          object.set('IsFileAdapter', false);
         }
         const newACL = new Parse.ACL();
         newACL.setPublicReadAccess(false);
