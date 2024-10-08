@@ -1282,16 +1282,16 @@ const Forms = (props) => {
                         </div>
                       </div>
                     </div>
-                    {isAdvanceOpt && (
-                      <div
-                        onClick={() => setIsAdvanceOpt(!isAdvanceOpt)}
-                        className={`mt-2.5 op-link op-link-primary text-sm`}
-                      >
-                        {t("hide-advanced-options")}
-                      </div>
-                    )}
                   </div>
                 )}
+              </div>
+            )}
+            {isAdvanceOpt && (
+              <div
+                onClick={() => setIsAdvanceOpt(!isAdvanceOpt)}
+                className={`mt-2.5 op-link op-link-primary text-sm`}
+              >
+                {t("hide-advanced-options")}
               </div>
             )}
 
