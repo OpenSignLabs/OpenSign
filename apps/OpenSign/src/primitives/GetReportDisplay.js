@@ -275,9 +275,7 @@ const ReportTable = (props) => {
                 AutomaticReminders: Doc?.AutomaticReminders || false,
                 RemindOnceInEvery: Doc?.RemindOnceInEvery || 5,
                 IsEnableOTP: Doc?.IsEnableOTP || false,
-                IsTourEnabled: Doc?.IsTourEnabled || false,
-                IsFileAdapter: Doc?.IsFileAdapter || false
-
+                FileAdapterId: Doc?.FileAdapterId || ""
               };
               try {
                 const res = await axios.post(
@@ -605,25 +603,15 @@ const ReportTable = (props) => {
 
   async function checkTourStatus() {
     const cloudRes = await Parse.Cloud.run("getUserDetails");
-    const res = { data: cloudRes.toJSON() };
-    if (res.data && res.data.TourStatus && res.data.TourStatus.length > 0) {
-      const tourStatus = res.data.TourStatus;
-      // console.log("res ", res.data.TourStatus);
+    if (cloudRes) {
+      const extUser = JSON.parse(JSON.stringify(cloudRes));
+      localStorage.setItem("Extand_Class", JSON.stringify([extUser]));
+      const tourStatus = extUser?.TourStatus || [];
       setTourStatusArr(tourStatus);
-      const filteredtourStatus = tourStatus.filter(
-        (obj) => obj["templateTour"]
-      );
-      if (filteredtourStatus.length > 0) {
-        const templateTour = filteredtourStatus[0]["templateTour"];
-
-        if (templateTour) {
-          setIsTour(false);
-        } else {
-          setIsTour(true);
-        }
-      } else {
-        setIsTour(true);
-      }
+      const templateTour = tourStatus.find(
+        (obj) => obj.templateTour
+      )?.templateTour;
+      setIsTour(!templateTour);
     } else {
       setIsTour(true);
     }
@@ -676,7 +664,7 @@ const ReportTable = (props) => {
     const isCompleted = item?.IsCompleted || false;
     const templateId = props?.ReportName === "Templates" && item.objectId;
     const docId = props?.ReportName !== "Templates" && item.objectId;
-    const isFileAdapter = item?.IsFileAdapter ? item?.IsFileAdapter : false;
+    const fileAdapterId = item?.FileAdapterId ? item?.FileAdapterId : "";
 
     if (url) {
       try {
@@ -686,7 +674,7 @@ const ReportTable = (props) => {
           const signedUrl = await getSignedUrl(
             url,
             docId,
-            isFileAdapter,
+            fileAdapterId,
             templateId
           );
           await fetchUrl(signedUrl, pdfName);

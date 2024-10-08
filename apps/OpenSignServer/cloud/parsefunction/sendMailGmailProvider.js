@@ -37,7 +37,8 @@ const makeEmail = async (to, from, subject, html, url, pdfName) => {
     let Pdf = fs.createWriteStream('test.pdf');
     const writeToLocalDisk = () => {
       return new Promise((resolve, reject) => {
-        if (useLocal !== 'true') {
+        const isSecure = new URL(url)?.protocol === 'https:';
+        if (useLocal !== 'true' || isSecure) {
           https.get(url, async function (response) {
             response.pipe(Pdf);
             response.on('end', () => resolve('success'));

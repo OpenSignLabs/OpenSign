@@ -5,7 +5,7 @@
 exports.up = async Parse => {
   const className = 'contracts_Document';
   const schema = new Parse.Schema(className);
-  schema.addBoolean('IsFileAdapter');
+  schema.addBoolean('FileAdapterId');
   return schema.update();
 };
 
@@ -16,6 +16,6 @@ exports.up = async Parse => {
 exports.down = async Parse => {
   const className = 'contracts_Document';
   const schema = new Parse.Schema(className);
-  schema.deleteField('IsFileAdapter');
+  schema.deleteField('FileAdapterId');
   return schema.update();
 };
