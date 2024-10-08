@@ -169,13 +169,16 @@ const Forms = (props) => {
                   });
                   setIsDecrypting(false);
                   setfileload(true);
-                  if (extUserData?.TenantId?.ActiveFileAdapter) {
+                  const fileAdapterId =
+                    extUserData?.TenantId?.ActiveFileAdapter || "";
+                  if (fileAdapterId) {
                     const base64 = await toDataUrl(pdfFile);
                     const fileBase64 = base64.split(",").pop();
                     const ext = files?.[0]?.name?.split(".").pop();
                     const fileRes = await saveToCustomFile(
                       fileBase64,
-                      `${name}.${ext}`
+                      `${name}.${ext}`,
+                      fileAdapterId
                     );
                     if (fileRes.url) {
                       setFileUpload(fileRes.url);
@@ -263,7 +266,9 @@ const Forms = (props) => {
               });
               const size = files?.[0]?.size;
               const name = generatePdfName(16);
-              if (extUserData?.TenantId?.ActiveFileAdapter) {
+              const fileAdapterId =
+                extUserData?.TenantId?.ActiveFileAdapter || "";
+              if (fileAdapterId) {
                 const base64 = await pdfDoc.saveAsBase64({
                   useObjectStreams: false
                 });
@@ -272,7 +277,8 @@ const Forms = (props) => {
                 const ext = files?.[0]?.name?.split(".").pop();
                 const fileRes = await saveToCustomFile(
                   fileBase64,
-                  `${name}.${ext}`
+                  `${name}.${ext}`,
+                  fileAdapterId
                 );
                 if (fileRes.url) {
                   setFileUpload(fileRes.url);
@@ -373,11 +379,12 @@ const Forms = (props) => {
     }
   };
 
-  const saveToCustomFile = async (base64, filname) => {
+  const saveToCustomFile = async (base64, filename, fileAdapterId) => {
     try {
       const savetos3 = await Parse.Cloud.run("savetofileadapter", {
         fileBase64: base64,
-        fileName: filname
+        fileName: filename,
+        id: fileAdapterId
       });
       return { url: savetos3.url };
     } catch (err) {
@@ -391,11 +398,16 @@ const Forms = (props) => {
     const size = file.size;
     const name = generatePdfName(16);
     const pdfFile = file;
-    if (extUserData?.TenantId?.ActiveFileAdapter) {
+    const fileAdapterId = extUserData?.TenantId?.ActiveFileAdapter || "";
+    if (fileAdapterId) {
       const base64 = await toDataUrl(file);
       const fileBase64 = base64.split(",").pop();
       const ext = file?.name?.split(".").pop();
-      const fileRes = await saveToCustomFile(fileBase64, `${name}.${ext}`);
+      const fileRes = await saveToCustomFile(
+        fileBase64,
+        `${name}.${ext}`,
+        fileAdapterId
+      );
       if (fileRes.url) {
         setFileUpload(fileRes?.url);
         const tenantId = localStorage.getItem("TenantId");
@@ -459,11 +471,16 @@ const Forms = (props) => {
       return;
     } else {
       const name = generatePdfName(16);
-      if (extUserData?.TenantId?.ActiveFileAdapter) {
+      const fileAdapterId = extUserData?.TenantId?.ActiveFileAdapter || "";
+      if (fileAdapterId) {
         const base64 = await uriToBase64(url);
         const fileBase64 = base64.split(",").pop();
         const ext = file?.name?.split(".").pop();
-        const fileRes = await saveToCustomFile(fileBase64, `${name}.${ext}`);
+        const fileRes = await saveToCustomFile(
+          fileBase64,
+          `${name}.${ext}`,
+          fileAdapterId
+        );
         if (fileRes.url) {
           setFileUpload(fileRes.url);
           setfileload(false);
@@ -558,7 +575,7 @@ const Forms = (props) => {
           objectId: ExtCls[0].objectId
         });
         if (extUserData?.TenantId?.ActiveFileAdapter) {
-          object.set("IsFileAdapter", true);
+          object.set("FileAdapterId", extUserData?.TenantId?.ActiveFileAdapter);
         }
         const res = await object.save();
         if (res) {
@@ -664,12 +681,17 @@ const Forms = (props) => {
         type: "application/pdf"
       });
       setIsDecrypting(false);
+      const fileAdapterId = extUserData?.TenantId?.ActiveFileAdapter || "";
       // Upload the file to Parse Server
-      if (extUserData?.TenantId?.ActiveFileAdapter) {
+      if (fileAdapterId) {
         const base64 = await toDataUrl(pdfFile);
         const fileBase64 = base64.split(",").pop();
         const ext = formData?.file?.name?.split(".").pop();
-        const fileRes = await saveToCustomFile(fileBase64, `${name}.${ext}`);
+        const fileRes = await saveToCustomFile(
+          fileBase64,
+          `${name}.${ext}`,
+          fileAdapterId
+        );
         if (fileRes.url) {
           setFormData((prev) => ({ ...prev, password: "" }));
           setFileUpload(fileRes?.url);

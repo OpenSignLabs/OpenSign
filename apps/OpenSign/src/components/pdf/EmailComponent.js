@@ -31,14 +31,14 @@ function EmailComponent({
     setIsLoading(true);
     let sendMail;
     const docId = pdfDetails?.[0]?.objectId || "";
-    const isFileAdapter = pdfDetails?.[0]?.IsFileAdapter
-      ? pdfDetails?.[0]?.IsFileAdapter
-      : false;
+    const FileAdapterId = pdfDetails?.[0]?.FileAdapterId
+      ? pdfDetails?.[0]?.FileAdapterId
+      : "";
     let presignedUrl = pdfUrl;
     try {
       const axiosRes = await axios.post(
         `${localStorage.getItem("baseUrl")}/functions/getsignedurl`,
-        { url: pdfUrl, docId: docId, isFileAdapter: isFileAdapter },
+        { url: pdfUrl, docId: docId, fileAdapterId: FileAdapterId },
         {
           headers: {
             "content-type": "Application/json",

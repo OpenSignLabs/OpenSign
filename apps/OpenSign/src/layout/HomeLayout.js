@@ -224,23 +224,13 @@ const HomeLayout = () => {
 
   async function checkTourStatus() {
     const cloudRes = await Parse.Cloud.run("getUserDetails");
-    const res = { data: cloudRes.toJSON() };
-    if (res.data && res.data.TourStatus && res.data.TourStatus.length > 0) {
-      const tourStatus = res.data.TourStatus;
-      // console.log("res ", res.data.TourStatus);
+    if (cloudRes) {
+      const extUser = JSON.parse(JSON.stringify(cloudRes));
+      localStorage.setItem("Extand_Class", JSON.stringify([extUser]));
+      const tourStatus = extUser?.TourStatus || [];
       setTourStatusArr(tourStatus);
-      const filteredtourStatus = tourStatus.filter((obj) => obj["loginTour"]);
-      if (filteredtourStatus.length > 0) {
-        const loginTour = filteredtourStatus[0]["loginTour"];
-        // console.log("loginTour", loginTour);
-        if (loginTour) {
-          setIsTour(false);
-        } else {
-          setIsTour(true);
-        }
-      } else {
-        setIsTour(true);
-      }
+      const loginTour = tourStatus.find((obj) => obj.loginTour)?.loginTour;
+      setIsTour(!loginTour);
     } else {
       setIsTour(true);
     }

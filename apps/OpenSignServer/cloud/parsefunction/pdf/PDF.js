@@ -19,7 +19,8 @@ async function uploadFile(pdfName, filepath, adapter) {
     let fileUrl;
     if (adapter?.bucketName) {
       const adapterConfig = {
-        fileAdapter: adapter?.ActiveFileAdapter,
+        id: adapter?.id,
+        fileAdapter: adapter?.fileAdapter,
         bucketName: adapter?.bucketName,
         region: adapter?.region,
         endpoint: adapter?.endpoint,
@@ -311,8 +312,9 @@ async function PDF(req) {
     }
     const _resDoc = resDoc?.toJSON();
     // `FileAdapter` && `ActiveFileAdapter` is used to save file in user's fileAdapter
-    const FileAdapter = _resDoc?.ExtUserPtr?.TenantId?.FileAdapter;
     const ActiveFileAdapter = _resDoc?.ExtUserPtr?.TenantId?.ActiveFileAdapter;
+    const FileAdapter =
+      _resDoc?.ExtUserPtr?.TenantId?.FileAdapters?.find(x => x.id === ActiveFileAdapter) || {};
     let adapterConfig = {};
     if (FileAdapter && ActiveFileAdapter) {
       adapterConfig = { ActiveFileAdapter: ActiveFileAdapter, ...FileAdapter };
