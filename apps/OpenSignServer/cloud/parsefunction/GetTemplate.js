@@ -54,7 +54,7 @@ export default async function GetTemplate(request) {
           const res = await template.first({ useMasterKey: true });
           if (res) {
             const templateRes = JSON.parse(JSON.stringify(res));
-            delete templateRes?.ExtUserPtr?.TenantId?.FileAdapter;
+            delete templateRes?.ExtUserPtr?.TenantId?.FileAdapters;
             return templateRes;
           } else {
             return { error: "You don't have access of this document!" };
@@ -76,7 +76,7 @@ export default async function GetTemplate(request) {
         // console.log("res ", res)
         if (res) {
           const templateRes = JSON.parse(JSON.stringify(res));
-          delete templateRes?.ExtUserPtr?.TenantId?.FileAdapter;
+          delete templateRes?.ExtUserPtr?.TenantId?.FileAdapters;
           return templateRes;
         } else {
           return { error: "You don't have access of this document!" };

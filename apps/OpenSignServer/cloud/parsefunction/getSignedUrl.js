@@ -31,10 +31,10 @@ export async function getSignedUrl(request) {
     const docId = request.params.docId || '';
     const templateId = request.params.templateId || '';
     const url = request.params.url;
-    const IsFileAdapter = request.params.isFileAdapter || '';
+    const fileAdapterId = request.params.fileAdapterId || '';
     if (docId || templateId) {
       try {
-        if (useLocal !== 'true') {
+        if (fileAdapterId || useLocal !== 'true') {
           const query = new Parse.Query(docId ? 'contracts_Document' : 'contracts_Template');
           query.equalTo('objectId', docId ? docId : templateId);
           query.include('ExtUserPtr.TenantId');
@@ -50,23 +50,23 @@ export async function getSignedUrl(request) {
                 );
               } else {
                 let adapterConfig = {};
-                if (IsFileAdapter) {
-                  // `FileAdapter` && `ActiveFileAdapter` is used to save file in user's fileAdapter
-                  const FileAdapter = _resDoc?.ExtUserPtr?.TenantId?.FileAdapter;
-                  const ActiveFileAdapter = _resDoc?.ExtUserPtr?.TenantId?.ActiveFileAdapter;
-                  if (FileAdapter && ActiveFileAdapter) {
-                    adapterConfig = { ActiveFileAdapter: ActiveFileAdapter, ...FileAdapter };
-                  }
+                if (fileAdapterId) {
+                  // `adapterConfig` is used to get file in user's fileAdapter
+                  adapterConfig =
+                    _resDoc?.ExtUserPtr?.TenantId?.FileAdapters?.find(
+                      x => x.id === fileAdapterId
+                    ) || {};
                 }
                 const presignedUrl = getPresignedUrl(url, adapterConfig);
                 return presignedUrl;
               }
             } else {
-              const FileAdapter = _resDoc?.ExtUserPtr?.TenantId?.FileAdapter;
-              const ActiveFileAdapter = _resDoc?.ExtUserPtr?.TenantId?.ActiveFileAdapter;
               let adapterConfig = {};
-              if (FileAdapter && ActiveFileAdapter) {
-                adapterConfig = { ActiveFileAdapter: ActiveFileAdapter, ...FileAdapter };
+              if (fileAdapterId) {
+                // `adapterConfig` is used to get file in user's fileAdapter
+                adapterConfig =
+                  _resDoc?.ExtUserPtr?.TenantId?.FileAdapters?.find(x => x.id === fileAdapterId) ||
+                  {};
               }
               const presignedUrl = getPresignedUrl(url, adapterConfig);
               return presignedUrl;
