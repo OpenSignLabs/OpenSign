@@ -10,7 +10,6 @@ import getContact from './routes/getContact.js';
 import deleteContact from './routes/deleteContact.js';
 import getContactList from './routes/getContactList.js';
 import draftDocument from './routes/draftDocument.js';
-import createTemplate from './routes/createTemplate.js';
 import getTemplate from './routes/getTemplate.js';
 import deletedTemplate from './routes/deleteTemplate.js';
 import getTemplatetList from './routes/getTemplateList.js';
@@ -80,9 +79,6 @@ app.get('/documentlist/:doctype', getDocumentList);
 
 // create Template with co-ordinate
 app.post('/createtemplate', createTemplatewithCoordinate);
-
-// create Template
-app.post('/drafttemplate', createTemplate);
 
 // create Template with binary
 app.post('/createtemplatewithbinary', upload.array('file', 1), createTemplatewithCoordinate);
