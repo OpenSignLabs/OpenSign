@@ -629,6 +629,8 @@ function PdfRequestFiles(props) {
                   tourData?.some((data) => data?.requestSign) || false;
                 setTourStatus(tourData);
                 setRequestSignTour(checkTourRequest);
+              } else {
+                setRequestSignTour(false);
               }
             } catch (err) {
               console.log("err while getting tourstatus", err);
@@ -650,6 +652,8 @@ function PdfRequestFiles(props) {
                 );
                 setTourStatus(tourData);
                 setRequestSignTour(checkTourRequest[0]?.requestSign || false);
+              } else {
+                setRequestSignTour(false);
               }
             } else if (res?.length === 0) {
               const res = await contactBook(currUserId);
