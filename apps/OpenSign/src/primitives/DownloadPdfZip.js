@@ -35,11 +35,11 @@ function DownloadPdfZip(props) {
       try {
         // Fetch the first PDF (Signed Document)
         const docId = pdfDetails?.[0]?.objectId || "";
-        const isFileAdapter = pdfDetails?.[0]?.IsFileAdapter
-          ? pdfDetails?.[0]?.IsFileAdapter
-          : false;
+        const fileAdapterId = pdfDetails?.[0]?.FileAdapterId
+          ? pdfDetails?.[0]?.FileAdapterId
+          : "";
         console.log("pdfDetails?.[0] ", pdfDetails?.[0]);
-        const signedUrl = await getSignedUrl(pdfUrl, docId, isFileAdapter);
+        const signedUrl = await getSignedUrl(pdfUrl, docId, fileAdapterId);
         console.log("signedUrl ", signedUrl);
         const pdf1Response = await fetch(signedUrl);
         if (!pdf1Response.ok) {

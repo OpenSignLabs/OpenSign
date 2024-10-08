@@ -130,16 +130,13 @@ export default async function createDocumentwithCoordinate(request, response) {
               saveFileUsage(buffer.length, fileUrl, parseUser.userId.objectId);
             } else {
               const filename = sanitizeFileName(`${name}.pdf`);
-              if (parseExtUser?.TenantId?.ActiveFileAdapter) {
-                const adapter = {
-                  fileAdapter: parseExtUser?.TenantId?.ActiveFileAdapter,
-                  bucketName: parseExtUser?.TenantId?.FileAdapter?.bucketName,
-                  region: parseExtUser?.TenantId?.FileAdapter?.region,
-                  endpoint: parseExtUser?.TenantId?.FileAdapter?.endpoint,
-                  accessKeyId: parseExtUser?.TenantId?.FileAdapter?.accessKeyId,
-                  secretAccessKey: parseExtUser?.TenantId?.FileAdapter?.secretAccessKey,
-                  baseUrl: parseExtUser?.TenantId?.FileAdapter?.baseUrl,
-                };
+              let adapter = {};
+              const ActiveFileAdapter = parseExtUser?.TenantId?.ActiveFileAdapter || '';
+              if (ActiveFileAdapter) {
+                adapter =
+                  parseExtUser?.TenantId?.FileAdapters?.find(x => (x.id = ActiveFileAdapter)) || {};
+              }
+              if (adapter?.id) {
                 const filedata = Buffer.from(base64File, 'base64');
                 // `uploadFileToS3` is used to save document in user's file storage
                 fileUrl = await uploadFileToS3(filedata, filename, 'application/pdf', adapter);
@@ -180,9 +177,7 @@ export default async function createDocumentwithCoordinate(request, response) {
             object.set('IsTourEnabled', isTourEnabled);
             object.set('IsSendMail', send_email);
             if (parseExtUser?.TenantId?.ActiveFileAdapter) {
-              object.set('IsFileAdapter', true);
-            } else {
-              object.set('IsFileAdapter', false);
+              object.set('FileAdapterId', parseExtUser?.TenantId?.ActiveFileAdapter);
             }
             let contact = [];
             if (signers && signers.length > 0) {

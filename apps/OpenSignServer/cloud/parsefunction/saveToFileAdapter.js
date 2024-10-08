@@ -9,6 +9,7 @@ export default async function saveToFileAdapter(request) {
     throw new Parse.Error(Parse.Error.INVALID_QUERY, 'Please provide file.');
   }
   const fileBase64 = request.params.fileBase64;
+  const id = request.params.id;
   try {
     const extCls = new Parse.Query('contracts_Users');
     extCls.equalTo('UserId', request.user);
@@ -16,16 +17,18 @@ export default async function saveToFileAdapter(request) {
     const resExt = await extCls.first({ useMasterKey: true });
     if (resExt) {
       const _resExt = JSON.parse(JSON.stringify(resExt));
-
-      if (_resExt?.TenantId.FileAdapter?.accessKeyId) {
+      const fileAdapters = _resExt?.TenantId.FileAdapters || [];
+      const fileAdapter = fileAdapters?.find(x => x.id === id) || {};
+      if (fileAdapter?.accessKeyId) {
         const adapterConfig = {
-          fileAdapter: _resExt?.TenantId?.ActiveFileAdapter,
-          bucketName: _resExt?.TenantId?.FileAdapter?.bucketName,
-          region: _resExt?.TenantId?.FileAdapter?.region,
-          endpoint: _resExt?.TenantId?.FileAdapter?.endpoint,
-          accessKeyId: _resExt?.TenantId?.FileAdapter?.accessKeyId,
-          secretAccessKey: _resExt?.TenantId?.FileAdapter?.secretAccessKey,
-          baseUrl: _resExt?.TenantId?.FileAdapter?.baseUrl,
+          id: id,
+          fileAdapter: fileAdapter?.fileAdapter,
+          bucketName: fileAdapter?.bucketName,
+          region: fileAdapter?.region,
+          endpoint: fileAdapter?.endpoint,
+          accessKeyId: fileAdapter?.accessKeyId,
+          secretAccessKey: fileAdapter?.secretAccessKey,
+          baseUrl: fileAdapter?.baseUrl,
         };
         const buffer = Buffer.from(fileBase64, 'base64');
         const fileName = request.params.fileName;

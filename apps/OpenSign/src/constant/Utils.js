@@ -712,7 +712,7 @@ export const createDocument = async (
       RemindOnceInEvery: parseInt(Doc?.RemindOnceInEvery || 5),
       IsEnableOTP: Doc?.IsEnableOTP || false,
       IsTourEnabled: Doc?.IsTourEnabled || false,
-      IsFileAdapter: Doc?.IsFileAdapter || false
+      FileAdapterId: Doc?.FileAdapterId || ""
     };
 
     try {
@@ -2074,7 +2074,7 @@ export const fetchUrl = async (url, pdfName) => {
 export const getSignedUrl = async (
   pdfUrl,
   docId,
-  isFileAdapter,
+  fileAdapterId,
   templateId
 ) => {
   //use only axios here due to public template sign
@@ -2083,7 +2083,7 @@ export const getSignedUrl = async (
     {
       url: pdfUrl,
       docId: docId || "",
-      isFileAdapter: isFileAdapter,
+      fileAdapterId: fileAdapterId,
       templateId: templateId || ""
     },
     {
@@ -2103,11 +2103,11 @@ export const handleDownloadPdf = async (pdfDetails, setIsDownloading) => {
   const pdfUrl = pdfDetails?.[0]?.SignedUrl || pdfDetails?.[0]?.URL;
   setIsDownloading && setIsDownloading("pdf");
   const docId = pdfDetails?.[0]?.objectId || "";
-  const isFileAdapter = pdfDetails?.[0]?.IsFileAdapter
-    ? pdfDetails?.[0]?.IsFileAdapter
-    : false;
+  const fileAdapterId = pdfDetails?.[0]?.FileAdapterId
+    ? pdfDetails?.[0]?.FileAdapterId
+    : "";
   try {
-    const url = await getSignedUrl(pdfUrl, docId, isFileAdapter);
+    const url = await getSignedUrl(pdfUrl, docId, fileAdapterId);
     await fetchUrl(url, pdfName);
     setIsDownloading && setIsDownloading("");
   } catch (err) {
@@ -2131,16 +2131,16 @@ export const handleToPrint = async (
   event.preventDefault();
   setIsDownloading("pdf");
   const docId = pdfDetails?.[0]?.objectId || "";
-  const isFileAdapter = pdfDetails?.[0]?.IsFileAdapter
-    ? pdfDetails?.[0]?.IsFileAdapter
-    : false;
+  const FileAdapterId = pdfDetails?.[0]?.FileAdapterId
+    ? pdfDetails?.[0]?.FileAdapterId
+    : "";
   try {
     // const url = await Parse.Cloud.run("getsignedurl", { url: pdfUrl });
     //`localStorage.getItem("baseUrl")` is also use in public-profile flow for public-sign
     //if we give this `appInfo.baseUrl` as a base url then in public-profile it will create base url of it's window.location.origin ex- opensign.me which is not base url
     const axiosRes = await axios.post(
       `${localStorage.getItem("baseUrl")}/functions/getsignedurl`,
-      { url: pdfUrl, docId: docId, isFileAdapter: isFileAdapter },
+      { url: pdfUrl, docId: docId, fileAdapterId: FileAdapterId },
       {
         headers: {
           "content-type": "Application/json",

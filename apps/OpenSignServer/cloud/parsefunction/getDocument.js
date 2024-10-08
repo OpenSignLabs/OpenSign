@@ -22,7 +22,7 @@ export default async function getDocument(request) {
         if (res) {
           const IsEnableOTP = res?.get('IsEnableOTP') || false;
           const document = JSON.parse(JSON.stringify(res));
-          delete document.ExtUserPtr.TenantId.FileAdapter;
+          delete document.ExtUserPtr.TenantId.FileAdapters;
           if (!IsEnableOTP) {
             return document;
           } else {
