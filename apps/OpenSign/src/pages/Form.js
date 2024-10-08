@@ -1062,26 +1062,29 @@ const Forms = (props) => {
                             </label>
                           </div>
                         )}
-                      {formData?.autoreminder === true && (
-                        <div className="text-xs mt-2">
-                          <label className="block">
-                            {t("remind-once")}
-                            <span className="text-red-500 text-[13px]">*</span>
-                          </label>
-                          <input
-                            type="number"
-                            value={formData.remindOnceInEvery}
-                            name="remindOnceInEvery"
-                            className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
-                            onChange={handleStrInput}
-                            onInvalid={(e) =>
-                              e.target.setCustomValidity(t("input-required"))
-                            }
-                            onInput={(e) => e.target.setCustomValidity("")}
-                            required
-                          />
-                        </div>
-                      )}
+                      {props.title === "New Template" &&
+                        formData?.autoreminder === true && (
+                          <div className="text-xs mt-2">
+                            <label className="block">
+                              {t("remind-once")}
+                              <span className="text-red-500 text-[13px]">
+                                *
+                              </span>
+                            </label>
+                            <input
+                              type="number"
+                              value={formData.remindOnceInEvery}
+                              name="remindOnceInEvery"
+                              className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
+                              onChange={handleStrInput}
+                              onInvalid={(e) =>
+                                e.target.setCustomValidity(t("input-required"))
+                              }
+                              onInput={(e) => e.target.setCustomValidity("")}
+                              required
+                            />
+                          </div>
+                        )}
                       {props.title !== "New Template" && (
                         <>
                           <span className=" mt-2 font-[400]">
