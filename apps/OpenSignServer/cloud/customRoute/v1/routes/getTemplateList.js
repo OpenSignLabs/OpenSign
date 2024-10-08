@@ -91,6 +91,7 @@ export default async function getTemplatetList(request, response) {
           enableOTP: template?.IsEnableOTP || false,
           createdAt: template.createdAt,
           updatedAt: template.updatedAt,
+          enableTour: template?.IsTourEnabled || false,
         }));
 
         return response.json({ result: updateRes });

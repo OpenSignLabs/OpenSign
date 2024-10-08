@@ -423,6 +423,8 @@ function PdfRequestFiles(props) {
         const expireUpdateDate = new Date(expireDate).getTime();
         const currDate = new Date().getTime();
         const getSigners = documentData[0].Signers;
+        const isTourEnabled =
+          documentData[0]?.IsTourEnabled === true ? true : false;
         const getCurrentSigner = getSigners?.find(
           (data) => data.UserId.objectId === jsonSender?.objectId
         );
@@ -598,7 +600,8 @@ function PdfRequestFiles(props) {
           checkAlreadySign ||
           !currUserId ||
           declined ||
-          currDate > expireUpdateDate
+          currDate > expireUpdateDate ||
+          !isTourEnabled
         ) {
           setRequestSignTour(true);
         } else {

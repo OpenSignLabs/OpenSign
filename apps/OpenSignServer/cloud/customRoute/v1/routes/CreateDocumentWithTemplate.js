@@ -199,6 +199,10 @@ export default async function createDocumentWithTemplate(request, response) {
                 const enableOTP = request.body?.enableOTP;
                 const IsEnableOTP =
                   enableOTP !== undefined ? enableOTP : template?.IsEnableOTP || false;
+                const enableTour = request.body?.enableOTP;
+                const isTourEnabled =
+                  enableTour !== undefined ? enableTour : template?.IsTourEnabled || false;
+                object.set('IsTourEnabled', isTourEnabled);
                 object.set('IsEnableOTP', IsEnableOTP);
                 object.set('CreatedBy', template.CreatedBy);
                 object.set('ExtUserPtr', {
