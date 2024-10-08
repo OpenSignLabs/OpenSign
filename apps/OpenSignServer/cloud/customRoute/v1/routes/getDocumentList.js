@@ -103,6 +103,7 @@ export default async function getDocumentList(request, response) {
               enableOTP: x?.IsEnableOTP || false,
               createdAt: x.createdAt,
               updatedAt: x.updatedAt,
+              enableTour: x?.IsTourEnabled || false,
             }));
             return response.json({ result: updateRes });
           } else {

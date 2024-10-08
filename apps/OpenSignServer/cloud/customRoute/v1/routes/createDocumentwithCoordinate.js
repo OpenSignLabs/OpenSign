@@ -65,6 +65,7 @@ export default async function createDocumentwithCoordinate(request, response) {
   const sendInOrder = request.body.sendInOrder || false;
   const TimeToCompleteDays = request.body.timeToCompleteDays || 15;
   const IsEnableOTP = request.body?.enableOTP === true ? true : false;
+  const isTourEnabled = request.body?.enableTour || false;
   // console.log('fileData ', fileData);
   const protocol = customAPIurl();
   const baseUrl = new URL(process.env.PUBLIC_URL);
@@ -176,6 +177,7 @@ export default async function createDocumentwithCoordinate(request, response) {
               object.set('TimeToCompleteDays', TimeToCompleteDays);
             }
             object.set('IsEnableOTP', IsEnableOTP);
+            object.set('IsTourEnabled', isTourEnabled);
             object.set('IsSendMail', send_email);
             if (parseExtUser?.TenantId?.ActiveFileAdapter) {
               object.set('IsFileAdapter', true);

@@ -17,7 +17,10 @@ const EditTemplate = ({ template, onSuccess }) => {
     SendinOrder: template?.SendinOrder ? `${template?.SendinOrder}` : "false",
     AutomaticReminders: template?.AutomaticReminders || false,
     RemindOnceInEvery: template?.RemindOnceInEvery || 5,
-    IsEnableOTP: template?.IsEnableOTP ? `${template?.IsEnableOTP}` : "false"
+    IsEnableOTP: template?.IsEnableOTP ? `${template?.IsEnableOTP}` : "false",
+    IsTourEnabled: template?.IsTourEnabled
+      ? `${template?.IsTourEnabled}`
+      : "false"
   });
   const [isSubscribe, setIsSubscribe] = useState(false);
   useEffect(() => {
@@ -43,6 +46,7 @@ const EditTemplate = ({ template, onSuccess }) => {
     e.preventDefault();
     e.stopPropagation();
     const isChecked = formData.SendinOrder === "true" ? true : false;
+    const isTourEnabled = formData?.IsTourEnabled === "false" ? false : true;
     const AutoReminder = formData?.AutomaticReminders || false;
     const IsEnableOTP = formData.IsEnableOTP === "true" ? true : false;
     let reminderDate = {};
@@ -56,6 +60,7 @@ const EditTemplate = ({ template, onSuccess }) => {
       ...formData,
       SendinOrder: isChecked,
       IsEnableOTP: IsEnableOTP,
+      IsTourEnabled: isTourEnabled,
       ...reminderDate
     };
     onSuccess(data);
@@ -256,6 +261,59 @@ const EditTemplate = ({ template, onSuccess }) => {
               </div>
             </div>
           )}
+
+          <div className="text-xs mt-2">
+            <label className="block">
+              <span>
+                {t("enable-tour")}
+                <a data-tooltip-id="istourenabled-tooltip" className="ml-1">
+                  <sup>
+                    <i className="fa-light fa-question rounded-full border-[#33bbff] text-[#33bbff] text-[13px] border-[1px] py-[1.5px] px-[4px]"></i>
+                  </sup>
+                </a>{" "}
+              </span>
+              <Tooltip id="istourenabled-tooltip" className="z-50">
+                <div className="max-w-[200px] md:max-w-[450px]">
+                  <p className="font-bold">{t("enable-tour")}</p>
+                  <p className="p-[5px]">
+                    <ol className="list-disc">
+                      <li>
+                        <span className="font-bold">{t("yes")}: </span>
+                        <span>{t("istourenabled-help.p1")}</span>
+                      </li>
+                      <li>
+                        <span className="font-bold">{t("no")}: </span>
+                        <span>{t("istourenabled-help.p2")}</span>
+                      </li>
+                    </ol>
+                  </p>
+                  <p>{t("istourenabled-help.p3")}</p>
+                </div>
+              </Tooltip>
+            </label>
+            <div className={`  flex items-center gap-2 ml-2 mb-1 `}>
+              <input
+                type="radio"
+                value={"true"}
+                className="op-radio op-radio-xs"
+                name="IsTourEnabled"
+                checked={formData.IsTourEnabled === "true"}
+                onChange={handleStrInput}
+              />
+              <div className="text-center">{t("yes")}</div>
+            </div>
+            <div className={` flex items-center gap-2 ml-2 mb-1 `}>
+              <input
+                type="radio"
+                value={"false"}
+                name="IsTourEnabled"
+                className="op-radio op-radio-xs"
+                checked={formData.IsTourEnabled === "false"}
+                onChange={handleStrInput}
+              />
+              <div className="text-center">{t("no")}</div>
+            </div>
+          </div>
           <div className="mt-[1rem] flex justify-start">
             <button type="submit" className="op-btn op-btn-primary">
               {t("submit")}

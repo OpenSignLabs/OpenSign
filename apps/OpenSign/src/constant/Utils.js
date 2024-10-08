@@ -711,6 +711,7 @@ export const createDocument = async (
       AutomaticReminders: Doc?.AutomaticReminders || false,
       RemindOnceInEvery: parseInt(Doc?.RemindOnceInEvery || 5),
       IsEnableOTP: Doc?.IsEnableOTP || false,
+      IsTourEnabled: Doc?.IsTourEnabled || false,
       IsFileAdapter: Doc?.IsFileAdapter || false
     };
 
