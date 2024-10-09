@@ -39,7 +39,7 @@ export default async function addFileAdapter(request) {
         // assign existing file adapters or empty array
         let updatedFileAdapters = existsFileAdaptes;
         const uniqueId = generateId(10);
-        const id = extUser?.get('TenantId')?.id + '_' + uniqueId;
+        let id = extUser?.get('TenantId')?.id + '_' + uniqueId;
         const index = updatedFileAdapters?.findIndex(x => x.fileAdapterName === fileAdapterName);
 
         if (index !== -1) {
@@ -52,6 +52,7 @@ export default async function addFileAdapter(request) {
           } else {
             const adapterConfig = { accessKeyId: accessKeyId, secretAccessKey: secretAccessKey };
             updatedFileAdapters[index] = { ...updatedFileAdapters[index], ...adapterConfig };
+            id = updatedFileAdapters[index].id;
           }
         } else {
           if (bucketName && region && endpoint && baseUrl) {
@@ -90,7 +91,8 @@ export default async function addFileAdapter(request) {
           protectedFields: { '*': ['FileAdapters'] },
         });
         await tenantSchema.update();
-        return updateTenant.updatedAt;
+        const ActiveFileAdapter = adapter === 'opensign' ? 'opensign' : id;
+        return { ActiveFileAdapter: ActiveFileAdapter, updateAt: updateTenant.updatedAt };
       } else {
         throw new Parse.Error(Parse.Error.OBJECT_NOT_FOUND, 'User not found.');
       }
@@ -123,7 +125,7 @@ export default async function addFileAdapter(request) {
           protectedFields: { '*': ['FileAdapters'] },
         });
         await tenantSchema.update();
-        return updateTenant.updatedAt;
+        return { ActiveFileAdapter: 'opensign', updateAt: updateTenant.updatedAt };
       } else {
         throw new Parse.Error(Parse.Error.OBJECT_NOT_FOUND, 'User not found.');
       }
