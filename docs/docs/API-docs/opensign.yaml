@@ -1425,7 +1425,12 @@ components:
           example: true
         enableOTP:
           type: boolean
-          example: false   
+          example: false 
+           description: "true - this option will enable OTP verification. Users will receive a verification code via email, which they must enter to sign the document. false -  this option will disable OTP verification, allowing users to sign the document directly without additional steps."
+        enableTour:
+          type: boolean
+          example: false  
+          description: "true - this option will enable a guided tour for signers, providing instructions during the signing process. false - disable the guided tour, ensuring a faster, uninterrupted signing experience."  
     createdocument_body:
       required:
       - file
@@ -1478,8 +1483,13 @@ components:
           example: true
         enableOTP:
           type: boolean
+          example: false
+          description: "true - this option will enable OTP verification. Users will receive a verification code via email, which they must enter to sign the document. false -  this option will disable OTP verification, allowing users to sign the document directly without additional steps."
+        enableTour:
+          type: boolean
           example: false  
-    inline_response_200_d:
+          description: "true - this option will enable a guided tour for signers, providing instructions during the signing process. false - disable the guided tour, ensuring a faster, uninterrupted signing experience."
+      inline_response_200_d:
       type: object
       properties:
         objectId:
@@ -1552,7 +1562,12 @@ components:
           example: 15
         enableOTP:
           type: boolean
-          example: false   
+          example: false 
+           description: "true - this option will enable OTP verification. Users will receive a verification code via email, which they must enter to sign the document. false -  this option will disable OTP verification, allowing users to sign the document directly without additional steps."
+        enableTour:
+          type: boolean
+          example: false  
+          description: "true - this option will enable a guided tour for signers, providing instructions during the signing process. false - disable the guided tour, ensuring a faster, uninterrupted signing experience."  
     resendmail_body:
       required:
       - document_id
@@ -1616,7 +1631,12 @@ components:
           example: ""
         enableOTP:
           type: boolean
-          example: false    
+          example: false   
+           description: "true - this option will enable OTP verification. Users will receive a verification code via email, which they must enter to sign the document. false -  this option will disable OTP verification, allowing users to sign the document directly without additional steps."
+        enableTour:
+          type: boolean
+          example: false  
+          description: "true - this option will enable a guided tour for signers, providing instructions during the signing process. false - disable the guided tour, ensuring a faster, uninterrupted signing experience." 
     inline_response_200_3:
       type: object
       properties:
@@ -1685,7 +1705,12 @@ components:
           example: true
         enableOTP:
           type: boolean
-          example: false    
+          example: false   
+          description: "true - this option will enable OTP verification. Users will receive a verification code via email, which they must enter to sign the document. false -  this option will disable OTP verification, allowing users to sign the document directly without additional steps."
+        enableTour:
+          type: boolean
+          example: false  
+          description: "true - this option will enable a guided tour for signers, providing instructions during the signing process. false - disable the guided tour, ensuring a faster, uninterrupted signing experience."  
     inline_response_200_5:
       type: object
       properties:
@@ -1721,7 +1746,12 @@ components:
           example: ""
         enableOTP:
           type: boolean
-          example: false    
+          example: false
+           description: "true - this option will enable OTP verification. Users will receive a verification code via email, which they must enter to sign the document. false -  this option will disable OTP verification, allowing users to sign the document directly without additional steps."
+        enableTour:
+          type: boolean
+          example: false  
+          description: "true - this option will enable a guided tour for signers, providing instructions during the signing process. false - disable the guided tour, ensuring a faster, uninterrupted signing experience."    
     inline_response_404_7:
       type: object
       properties:
