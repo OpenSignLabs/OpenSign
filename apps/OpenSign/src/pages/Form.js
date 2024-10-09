@@ -74,9 +74,8 @@ const Forms = (props) => {
   const [fileload, setfileload] = useState(false);
   const [percentage, setpercentage] = useState(0);
   const [isReset, setIsReset] = useState(false);
-  const [isAlert, setIsAlert] = useState(false);
+  const [isAlert, setIsAlert] = useState({ type: "success", message: "" });
   const [isSubmit, setIsSubmit] = useState(false);
-  const [isErr, setIsErr] = useState("");
   const [isPassword, setIsPassword] = useState(false);
   const [isDecrypting, setIsDecrypting] = useState(false);
   const [isCorrectPass, setIsCorrectPass] = useState(true);
@@ -389,6 +388,10 @@ const Forms = (props) => {
       return { url: savetos3.url };
     } catch (err) {
       console.log("err in save to customfile", err);
+      alert(err?.message);
+      if (inputFileRef.current) {
+        inputFileRef.current.value = ""; // Set file input value to empty string
+      }
       return { url: "" };
     }
   };
@@ -600,13 +603,17 @@ const Forms = (props) => {
           setFileUpload("");
           setpercentage(0);
           navigate(`/${props?.redirectRoute}/${res.id}`);
+          setIsAlert((obj) => ({
+            ...obj,
+            type: "success",
+            message: `${props.msgVar} created successfully!`
+          }));
         }
       } catch (err) {
         console.log("err ", err);
-        setIsErr(true);
+        setIsAlert({ type: "danger", message: t("something-went-wrong-mssg") });
       } finally {
-        setIsAlert(true);
-        setTimeout(() => setIsAlert(false), 1000);
+        setTimeout(() => setIsAlert({ type: "success", message: "" }), 1000);
         setIsSubmit(false);
       }
     } else {
@@ -768,13 +775,7 @@ const Forms = (props) => {
   return (
     <div className="shadow-md rounded-box my-[2px] p-3 bg-base-100 text-base-content">
       <Title title={props?.title} />
-      {isAlert && (
-        <Alert type={isErr ? "danger" : "success"}>
-          {isErr
-            ? t("something-went-wrong-mssg")
-            : `${props.msgVar} created successfully!`}
-        </Alert>
-      )}
+      {isAlert?.message && <Alert type={isAlert.type}>{isAlert.message}</Alert>}
       {isSubmit ? (
         <div className="h-[300px] flex justify-center items-center">
           <Loader />

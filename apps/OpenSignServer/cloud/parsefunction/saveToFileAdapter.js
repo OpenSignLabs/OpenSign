@@ -44,7 +44,8 @@ export default async function saveToFileAdapter(request) {
           return { url: presignedUrl };
         } catch (err) {
           console.error('Error generate presigned url:', err);
-          throw new Parse.Error(400, 'Something went wrong.');
+          const msg = 'Fileadapter credentials are invalid.';
+          throw new Parse.Error(400, msg);
         }
       } else {
         throw new Parse.Error(Parse.Error.OBJECT_NOT_FOUND, 'S3 credentials not found.');
