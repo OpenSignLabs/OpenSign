@@ -132,6 +132,7 @@ function SignYourSelf() {
   const [isRotate, setIsRotate] = useState({ status: false, degree: 0 });
   const [isSubscribe, setIsSubscribe] = useState({ plan: "", isValid: true });
   const [isDownloadModal, setIsDownloadModal] = useState(false);
+  const [isResize, setIsResize] = useState(false);
   const divRef = useRef(null);
   const nodeRef = useRef(null);
   const [, drop] = useDrop({
@@ -785,7 +786,7 @@ function SignYourSelf() {
   const handleStop = (event, dragElement) => {
     setFontSize();
     setFontColor();
-    if (isDragging && dragElement) {
+    if (!isResize && isDragging && dragElement) {
       event.preventDefault();
       const containerScale = getContainerScale(
         pdfOriginalWH,
@@ -1402,6 +1403,8 @@ function SignYourSelf() {
                       setFontSize={setFontSize}
                       fontColor={fontColor}
                       setFontColor={setFontColor}
+                      isResize={isResize}
+                      setIsResize={setIsResize}
                     />
                   )}
                 </div>
