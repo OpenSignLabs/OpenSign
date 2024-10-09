@@ -9,29 +9,10 @@ export default async function getFileAdapter(request) {
     const extUser = await extUserCls.first({ useMasterKey: true });
     if (extUser) {
       const _extUser = JSON.parse(JSON.stringify(extUser));
-      const isFileAdapter = _extUser?.TenantId?.FileAdapters?.length > 0 ? true : false;
-      if (_extUser?.TenantId?.ActiveFileAdapter && isFileAdapter) {
-        const lastIndex = _extUser?.TenantId?.FileAdapters?.length - 1;
-        const lastObj = _extUser?.TenantId?.FileAdapters[lastIndex];
-        if (lastIndex >= 0) {
-          const adapterConfig = {
-            id: lastObj?.id,
-            fileAdapterName: lastObj?.fileAdapterName,
-            bucketName: lastObj?.bucketName,
-            region: lastObj?.region,
-            endpoint: lastObj?.endpoint,
-            baseUrl: lastObj?.baseUrl,
-            accessKeyId: lastObj?.accessKeyId,
-            secretAccessKey: lastObj?.secretAccessKey,
-            fileAdapter: lastObj?.fileAdapter,
-          };
-          return adapterConfig;
-        } else {
-          return {};
-        }
-      } else {
-        return {};
-      }
+      const FileAdapters =
+        _extUser?.TenantId?.FileAdapters?.length > 0 ? _extUser?.TenantId?.FileAdapters : [];
+      const ActiveFileAdapter = _extUser?.TenantId?.ActiveFileAdapter || 'opensign';
+      return { ActiveFileAdapter: ActiveFileAdapter, FileAdapters: FileAdapters };
     } else {
       throw new Parse.Error(Parse.Error.OBJECT_NOT_FOUND, 'User not found.');
     }
