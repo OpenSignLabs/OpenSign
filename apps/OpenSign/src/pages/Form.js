@@ -983,7 +983,7 @@ const Forms = (props) => {
                               <i className="fa-light fa-question rounded-full border-[#33bbff] text-[#33bbff] text-[13px] border-[1px] py-[1.5px] px-[4px]"></i>
                             </sup>
                           </a>
-                          <Tooltip id="sendInOrder-tooltip" className="z-50">
+                          <Tooltip id="sendInOrder-tooltip" className="z-[999]">
                             <div className="max-w-[200px] md:max-w-[450px]">
                               <p className="font-bold">{t("send-in-order")}</p>
                               <p>{t("send-in-order-help.p1")}</p>
@@ -1104,7 +1104,7 @@ const Forms = (props) => {
                               </a>
                               <Tooltip
                                 id="sendInOrder-tooltip"
-                                className="z-50"
+                                className="z-[999]"
                               >
                                 <div className="max-w-[200px] md:max-w-[450px]">
                                   <p className="font-bold">
@@ -1267,7 +1267,7 @@ const Forms = (props) => {
                               <Upgrade />
                             )}
                           </span>
-                          <Tooltip id="isenableotp-tooltip" className="z-50">
+                          <Tooltip id="isenableotp-tooltip" className="z-[999]">
                             <div className="max-w-[200px] md:max-w-[450px]">
                               <p className="font-bold">{t("isenable-otp")}</p>
                               <p>{t("isenable-otp-help.p1")}</p>
@@ -1342,7 +1342,7 @@ const Forms = (props) => {
                             </sup>
                           </a>{" "}
                         </span>
-                        <Tooltip id="istourenabled-tooltip" className="z-50">
+                        <Tooltip id="istourenabled-tooltip" className="z-[999]">
                           <div className="max-w-[200px] md:max-w-[450px]">
                             <p className="font-bold">{t("enable-tour")}</p>
                             <p className="p-[5px]">
