@@ -1600,6 +1600,7 @@ const TemplatePlaceholder = () => {
                         setFontSize={setFontSize}
                         fontColor={fontColor}
                         setFontColor={setFontColor}
+                        isResize={isResize}
                       />
                     )}
                   </div>

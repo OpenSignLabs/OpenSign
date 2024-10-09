@@ -65,7 +65,8 @@ function RenderPdf({
   fontSize,
   setFontSize,
   fontColor,
-  setFontColor
+  setFontColor,
+  isResize
 }) {
   const { t } = useTranslation();
   const isMobile = window.innerWidth < 767;
@@ -104,6 +105,7 @@ function RenderPdf({
       }
     }
   };
+
   const posHeight = (pos, signYourself) => {
     const containerScale = getContainerScale(
       pdfOriginalWH,
@@ -207,6 +209,7 @@ function RenderPdf({
                         pageNumber={pageNumber}
                         ispublicTemplate={ispublicTemplate}
                         handleUserDetails={handleUserDetails}
+                        isResize={isResize}
                       />
                     </React.Fragment>
                   )
@@ -357,6 +360,7 @@ function RenderPdf({
                                             setFontSize={setFontSize}
                                             fontColor={fontColor}
                                             setFontColor={setFontColor}
+                                            isResize={isResize}
                                           />
                                         </React.Fragment>
                                       );
@@ -417,6 +421,8 @@ function RenderPdf({
                                     setFontSize={setFontSize}
                                     fontColor={fontColor}
                                     setFontColor={setFontColor}
+                                    isResize={isResize}
+                                    setIsResize={setIsResize}
                                   />
                                 )
                               );
@@ -548,6 +554,7 @@ function RenderPdf({
                                             setFontSize={setFontSize}
                                             fontColor={fontColor}
                                             setFontColor={setFontColor}
+                                            isResize={isResize}
                                           />
                                         </React.Fragment>
                                       );
@@ -611,6 +618,8 @@ function RenderPdf({
                                     setFontSize={setFontSize}
                                     fontColor={fontColor}
                                     setFontColor={setFontColor}
+                                    isResize={isResize}
+                                    setIsResize={setIsResize}
                                   />
                                 </React.Fragment>
                               );

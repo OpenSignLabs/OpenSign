@@ -2058,6 +2058,7 @@ function PlaceHolderSign() {
                         setSignerPos={setSignerPos}
                         containerWH={containerWH}
                         setIsResize={setIsResize}
+                        isResize={isResize}
                         setZIndex={setZIndex}
                         setIsPageCopy={setIsPageCopy}
                         signersdata={signersdata}
