@@ -44,6 +44,7 @@ export default async function TemplateAfterSave(request) {
     const Query = new Parse.Query('contracts_Template');
     Query.include('Signers');
     Query.include('CreatedBy');
+    Query.include('ExtUserPtr.TenantId');
     const updateACL = await Query.get(objId, { useMasterKey: true });
     const res = JSON.parse(JSON.stringify(updateACL));
     // console.log("res");
@@ -85,6 +86,7 @@ export default async function TemplateAfterSave(request) {
 
     const Query = new Parse.Query('contracts_Template');
     Query.include('CreatedBy');
+    Query.include('ExtUserPtr.TenantId');
     const updateACL = await Query.get(objId, { useMasterKey: true });
     const res = JSON.parse(JSON.stringify(updateACL));
     // console.log("res");

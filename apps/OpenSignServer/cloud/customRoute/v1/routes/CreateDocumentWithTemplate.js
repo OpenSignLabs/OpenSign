@@ -91,6 +91,7 @@ export default async function createDocumentWithTemplate(request, response) {
         if (totalcredits > 0) {
           const templateQuery = new Parse.Query('contracts_Template');
           templateQuery.include('ExtUserPtr');
+          templateQuery.include('ExtUserPtr.TenantId');
           const templateRes = await templateQuery.get(templateId, { useMasterKey: true });
           if (templateRes) {
             const template = JSON.parse(JSON.stringify(templateRes));
