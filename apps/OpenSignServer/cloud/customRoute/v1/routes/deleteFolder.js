@@ -35,6 +35,7 @@ export default async function deleteFolder(request, response) {
         folder.notEqualTo('IsArchive', true);
         folder.equalTo('CreatedBy', userPtr);
         folder.equalTo('Type', 'Folder');
+        folder.include('ExtUserPtr.TenantId');
         const isSubItems = await folder.first({ useMasterKey: true });
         // console.log('isSubItems ', isSubItems);
         if (isSubItems) {
