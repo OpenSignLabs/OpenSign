@@ -12,6 +12,7 @@ async function DocumentAftersave(request) {
         const ExpiryDate = new Date(createdAt);
         ExpiryDate.setDate(ExpiryDate.getDate() + TimeToCompleteDays);
         const documentQuery = new Parse.Query('contracts_Document');
+        documentQuery.include('ExtUserPtr.TenantId');
         const updateQuery = await documentQuery.get(request.object.id, { useMasterKey: true });
         updateQuery.set('ExpiryDate', ExpiryDate);
         if (!originIp) {
@@ -30,6 +31,7 @@ async function DocumentAftersave(request) {
         const ExpiryDate = new Date(createdAt);
         ExpiryDate.setDate(ExpiryDate.getDate() + TimeToCompleteDays);
         const documentQuery = new Parse.Query('contracts_Document');
+        documentQuery.include('ExtUserPtr.TenantId');
         const updateQuery = await documentQuery.get(request.object.id, { useMasterKey: true });
         updateQuery.set('ExpiryDate', ExpiryDate);
         if (!originIp) {
@@ -76,6 +78,7 @@ async function DocumentAftersave(request) {
     // console.log(objId)
     const Query = new Parse.Query('contracts_Document');
     Query.include('Signers');
+    Query.include('ExtUserPtr.TenantId');
     Query.include('CreatedBy');
     const updateACL = await Query.get(objId, { useMasterKey: true });
     const res = JSON.parse(JSON.stringify(updateACL));
@@ -116,6 +119,7 @@ async function DocumentAftersave(request) {
     // console.log(objId)
     const Query = new Parse.Query('contracts_Document');
     Query.include('CreatedBy');
+    Query.include('ExtUserPtr.TenantId');
     const updateACL = await Query.get(objId, { useMasterKey: true });
     const res = JSON.parse(JSON.stringify(updateACL));
     // console.log("res");

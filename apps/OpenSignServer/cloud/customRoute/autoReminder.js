@@ -88,7 +88,7 @@ export default async function autoReminder(request, response) {
     docQuery.exists('Signers');
     docQuery.exists('SignedUrl');
     docQuery.descending('createdAt');
-    docQuery.include('Signers,AuditTrail.UserPtr,ExtUserPtr');
+    docQuery.include('Signers,AuditTrail.UserPtr,ExtUserPtr,ExtUserPtr.TenantId');
     docQuery.notEqualTo('IsCompleted', true);
     docQuery.notEqualTo('IsDeclined', true);
     docQuery.notEqualTo('IsArchive', true);

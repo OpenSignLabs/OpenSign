@@ -54,7 +54,7 @@ export default async function linkContactToDoc(req) {
     if (docId) {
       // Execute the query to get the document with the specified 'docId'
       const docQuery = new Parse.Query('contracts_Document');
-      docQuery.include('ExtUserPtr');
+      docQuery.include('ExtUserPtr,ExtUserPtr.TenantId');
       const docRes = await docQuery.get(docId, { useMasterKey: true });
       // Check if the document was found; if not, throw an error indicating the document was not found
       if (!docRes) {

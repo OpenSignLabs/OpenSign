@@ -23,6 +23,7 @@ export default async function updateDocument(request, response) {
         const document = new Parse.Query('contracts_Document');
         document.equalTo('objectId', request.params.document_id);
         document.equalTo('CreatedBy', userPtr);
+        document.include('ExtUserPtr.TenantId');
         const res = await document.first({ useMasterKey: true });
         if (res) {
           const isArchive = res.get('IsArchive');
