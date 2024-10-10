@@ -670,6 +670,8 @@ function PdfRequestFiles(props) {
                   );
                   setTourStatus(tourData);
                   setRequestSignTour(checkTourRequest[0]?.requestSign || false);
+                } else {
+                  setRequestSignTour(false);
                 }
               } else if (res.length === 0) {
                 setHandleError(t("user-not-exist"));
