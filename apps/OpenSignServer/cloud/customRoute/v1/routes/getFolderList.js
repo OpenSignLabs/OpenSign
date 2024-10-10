@@ -35,6 +35,7 @@ export default async function getFolderList(request, response) {
         folderCls.doesNotExist('Folder');
       }
       folderCls.descending('createdAt');
+      folderCls.include('ExtUserPtr.TenantId');
       folderCls.limit(limit);
       folderCls.skip(skip);
       const res = await folderCls.find({ useMasterKey: true });

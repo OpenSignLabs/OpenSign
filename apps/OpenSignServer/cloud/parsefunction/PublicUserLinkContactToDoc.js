@@ -99,7 +99,7 @@ const sendMailToAllSigners = async docId => {
   try {
     //get document details that recenlty created from public template
     const docQuery = new Parse.Query('contracts_Document');
-    docQuery.include('ExtUserPtr');
+    docQuery.include('ExtUserPtr,ExtUserPtr.TenantId');
     docQuery.include('Signers');
     const docRes = await docQuery.get(docId, { useMasterKey: true });
     const Doc = JSON.parse(JSON.stringify(docRes));

@@ -20,6 +20,7 @@ export default async function deleteDocument(request, response) {
       const Document = new Parse.Query('contracts_Document');
       Document.equalTo('objectId', request.params.document_id);
       Document.equalTo('CreatedBy', userPtr);
+      Document.include('ExtUserPtr.TenantId');
       const res = await Document.first({ useMasterKey: true });
       if (res) {
         const isArchive = res.get('IsArchive');

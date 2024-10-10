@@ -35,7 +35,7 @@ export default async function resendMail(request, response) {
       docQuery.notEqualTo('IsArchive', true);
       docQuery.greaterThanOrEqualTo('ExpiryDate', new Date());
       docQuery.exists('SignedUrl');
-
+      docQuery.include('ExtUserPtr.TenantId');
       const resDoc = await docQuery.first({ useMasterKey: true });
       // console.log("resDoc ",resDoc)
       if (resDoc) {
