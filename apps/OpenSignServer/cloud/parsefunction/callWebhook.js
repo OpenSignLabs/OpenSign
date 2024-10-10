@@ -9,6 +9,7 @@ export default async function callWebhook(request) {
   const appId = process.env.APP_ID;
   try {
     const docQuery = new Parse.Query('contracts_Document');
+    docQuery.include('ExtUserPtr.TenantId');
     const docRes = await docQuery.get(docId, { useMasterKey: true });
     const isEnableOTP = docRes?.get('IsEnableOTP') || false;
     let userId;

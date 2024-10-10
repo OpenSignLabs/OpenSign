@@ -25,7 +25,7 @@ export default async function updateFolder(request, response) {
       folderCls.equalTo('objectId', folderId);
       folderCls.equalTo('Type', 'Folder');
       folderCls.notEqualTo('IsArchive', true);
-
+      folderCls.include('ExtUserPtr.TenantId');
       const res = await folderCls.first({ useMasterKey: true });
       if (res) {
         const updateFolder = new Parse.Object('contracts_Document');

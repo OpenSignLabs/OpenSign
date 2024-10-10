@@ -25,7 +25,7 @@ export default async function getFolder(request, response) {
       folderCls.notEqualTo('IsArchive', true);
       folderCls.descending('createdAt');
       folderCls.include('Folder');
-
+      folderCls.include('ExtUserPtr.TenantId');
       const res = await folderCls.first({ useMasterKey: true });
       if (res) {
         const parseRes = JSON.parse(JSON.stringify(res));

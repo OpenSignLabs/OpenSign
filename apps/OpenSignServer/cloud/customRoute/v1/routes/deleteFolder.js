@@ -22,6 +22,7 @@ export default async function deleteFolder(request, response) {
       obj.equalTo('objectId', folderId);
       obj.equalTo('IsArchive', true);
       obj.equalTo('CreatedBy', userPtr);
+      obj.include('ExtUserPtr.TenantId');
       const isFolderDeleted = await obj.first({ useMasterKey: true });
       if (!isFolderDeleted) {
         const folder = new Parse.Query('contracts_Document');
