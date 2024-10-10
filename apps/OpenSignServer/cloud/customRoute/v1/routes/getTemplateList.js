@@ -53,7 +53,7 @@ export default async function getTemplatetList(request, response) {
         'X-Parse-Application-Id': appId,
         'X-Parse-Master-Key': process.env.MASTER_KEY,
       };
-      const url = `${serverUrl}/classes/${clsName}?where=${strParams}&keys=${strKeys}&order=${orderBy}&skip=${skip}&limit=${limit}&include=AuditTrail.UserPtr,Placeholders.signerPtr`;
+      const url = `${serverUrl}/classes/${clsName}?where=${strParams}&keys=${strKeys}&order=${orderBy}&skip=${skip}&limit=${limit}&include=AuditTrail.UserPtr,Placeholders.signerPtr,ExtUserPtr.TenantId`;
       const res = await axios.get(url, { headers: headers });
       if (res.data && res.data.results.length > 0) {
         if (request.posthog) {

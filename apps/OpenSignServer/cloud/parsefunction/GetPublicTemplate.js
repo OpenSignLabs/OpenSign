@@ -20,6 +20,7 @@ async function GetPublicTemplate(request) {
         templatQuery.descending('updatedAt');
         templatQuery.equalTo('IsPublic', true);
         templatQuery.notEqualTo('IsArchive', true);
+        templatQuery.include('ExtUserPtr.TenantId');
         const getTemplate = await templatQuery.find({ useMasterKey: true });
         const extcls = new Parse.Query('contracts_Users');
         extcls.equalTo('Email', user.get('email'));
