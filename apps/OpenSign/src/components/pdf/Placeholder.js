@@ -769,7 +769,7 @@ function Placeholder(props) {
         onResizeStop={(e, direction, ref) => {
           setTimeout(() => {
             props.setIsResize && props.setIsResize(false);
-          }, 500);
+          }, 50);
           props.handleSignYourselfImageResize &&
             props.handleSignYourselfImageResize(
               ref,
