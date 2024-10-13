@@ -157,14 +157,14 @@
     "Logs": "Logs"
   },
   "report-help": {
-    "Draft Documents": "<TODO>These are documents you have started but have not finalized for sending.",
-    "Need your sign": "<TODO>This is a list of documents that are waiting for your signature",
-    "In-progress documents": "<TODO>This is a list of documents you've sent to other parties for signature.",
-    "Completed Documents": "<TODO>This is a list of documents that have been signed by all parties.",
-    "Declined Documents": "<TODO>This is a list of documents that have been declined by one of the signers.",
-    "Expired Documents": "<TODO>This is a list of documents that have reached their expiration date.",
-    "Contactbook": "<TODO>This is a list of contacts/signers added by you. These will appear as suggestions when you try to add signers to a new document.",
-    "Templates": "<TODO>This is a list of templates that are available to you for creating documents. You can click the 'use' button to create a new document using a template, modify the document & add signers in the next step."
+    "Draft Documents": "Das sind Dokumente, die du begonnen, aber noch nicht abgeschlossen hast.",
+    "Need your sign": "Das ist eine Liste von Dokumenten, die auf deine Unterschrift warten.",
+    "In-progress documents": "Das ist eine Liste von Dokumenten, die du an andere zur Unterschrift gesendet hast.",
+    "Completed Documents": "Das ist eine Liste von Dokumenten, die von allen Teilnehmen unterschrieben wurde..",
+    "Declined Documents": "Das ist eine Liste von Dokumenten, die von mindestens einem Teilnehmer abgelehnt wurde",
+    "Expired Documents": "Das ist eine Liste von Dokumenten, die das Ablaufdatum erreicht haben.",
+    "Contactbook": "Das ist eine Liste von Kontakten / Unterschreibener, die du hinzugefügt hast. Diese werden als Vorschläge angezeigt, wenn du versuchst, Unterzeichner zu einem neuen Dokument hinzuzufügen.",
+    "Templates": "Das ist eine Liste von Vorlagen, die dir zur Erstellung neuer Dokumente zur Verfügung stehen. Du kannst mit dem Klick auf 'verwenden' ein neues Dokument auf Basis der Vorlage erstellen, verändern und im nächsten Schritt Unterzeichner hinzufügen."
   },
   "form-name": {
     "Sign Yourself": "<TODO>Sign Yourself",
