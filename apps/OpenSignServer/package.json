@@ -18,7 +18,7 @@
     "watch": "nodemon index.js"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.665.0",
+    "@aws-sdk/client-s3": "^3.670.0",
     "@aws-sdk/s3-request-presigner": "^3.665.0",
     "@parse/fs-files-adapter": "^3.0.0",
     "@parse/s3-files-adapter": "^2.2.0",
