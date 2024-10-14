@@ -22,7 +22,7 @@ export default async function GetTemplate(request) {
           template.include('ExtUserPtr');
           template.include('Signers');
           template.include('CreatedBy');
-
+          template.include('ExtUserPtr.TenantId');
           const extUserQuery = new Parse.Query('contracts_Users');
           extUserQuery.equalTo('Email', userRes.data.email);
           extUserQuery.include('TeamIds');
@@ -48,12 +48,14 @@ export default async function GetTemplate(request) {
               template.include('ExtUserPtr');
               template.include('Signers');
               template.include('CreatedBy');
+              template.include('ExtUserPtr.TenantId');
             }
           }
           const res = await template.first({ useMasterKey: true });
           if (res) {
-            // console.log("res ",res)
-            return res;
+            const templateRes = JSON.parse(JSON.stringify(res));
+            delete templateRes?.ExtUserPtr?.TenantId?.FileAdapters;
+            return templateRes;
           } else {
             return { error: "You don't have access of this document!" };
           }
@@ -69,10 +71,13 @@ export default async function GetTemplate(request) {
         template.include('ExtUserPtr');
         template.include('Signers');
         template.include('CreatedBy');
+        template.include('ExtUserPtr.TenantId');
         const res = await template.first({ useMasterKey: true });
         // console.log("res ", res)
         if (res) {
-          return res;
+          const templateRes = JSON.parse(JSON.stringify(res));
+          delete templateRes?.ExtUserPtr?.TenantId?.FileAdapters;
+          return templateRes;
         } else {
           return { error: "You don't have access of this document!" };
         }

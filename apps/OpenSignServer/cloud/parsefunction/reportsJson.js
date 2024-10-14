@@ -29,6 +29,7 @@ export default function reportJson(id, userId) {
           'Signers.Phone',
           'Placeholders',
           'IsSignyourself',
+          'FileAdapterId',
         ],
       };
 
@@ -74,6 +75,7 @@ export default function reportJson(id, userId) {
           'AuditTrail',
           'Placeholders',
           'SignedUrl',
+          'FileAdapterId',
         ],
       };
     // In progess report
@@ -113,6 +115,7 @@ export default function reportJson(id, userId) {
           'SendMail',
           'Placeholders',
           'SignedUrl',
+          'FileAdapterId',
         ],
       };
     // completed documents report
@@ -144,6 +147,7 @@ export default function reportJson(id, userId) {
           'Placeholders',
           'IsSignyourself',
           'IsCompleted',
+          'FileAdapterId',
         ],
       };
     //  declined documents report
@@ -173,6 +177,7 @@ export default function reportJson(id, userId) {
           'Placeholders',
           'DeclineReason',
           'SignedUrl',
+          'FileAdapterId',
         ],
       };
     //  Expired Documents report
@@ -205,6 +210,7 @@ export default function reportJson(id, userId) {
           'Signers.Phone',
           'Placeholders',
           'SignedUrl',
+          'FileAdapterId',
         ],
       };
     //  Recently sent for signatures report show on dashboard
@@ -242,6 +248,7 @@ export default function reportJson(id, userId) {
           'ExpiryDate',
           'Placeholders',
           'SignedUrl',
+          'FileAdapterId',
         ],
       };
     //  Recent signature requests report show on dashboard
@@ -284,6 +291,7 @@ export default function reportJson(id, userId) {
           'Signers.Phone',
           'Placeholders',
           'SignedUrl',
+          'FileAdapterId',
         ],
       };
     // Drafts report show on dashboard
@@ -312,6 +320,7 @@ export default function reportJson(id, userId) {
           'Signers.Email',
           'Signers.Phone',
           'Placeholders',
+          'FileAdapterId',
         ],
       };
     // contact book report
@@ -352,6 +361,7 @@ export default function reportJson(id, userId) {
           'IsPublic',
           'SharedWith.Name',
           'SendinOrder',
+          'FileAdapterId',
         ],
       };
     default:

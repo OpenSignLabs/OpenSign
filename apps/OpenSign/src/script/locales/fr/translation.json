@@ -639,7 +639,7 @@
   "public-template-mssg-3": "Besoin de plus de détails ou d'exemples ?",
   "public-template-mssg-4": "Visitez le",
   "public-template-mssg-5": "npm pour les dernières mises à jour, une documentation détaillée et l'historique des versions.",
-  "public-template-mssg-6":  "Avant de pouvoir utiliser cet extrait de code, vous devez rendre ce modèle public.",
+  "public-template-mssg-6": "Avant de pouvoir utiliser cet extrait de code, vous devez rendre ce modèle public.",
   "copy-code": "COPIE",
   "copied-code": "COPIÉ",
   "Installation": "Installation",
@@ -671,6 +671,15 @@
   "document-logs": "Journaux de documents",
   "server-down": "Impossible de se connecter au serveur OpenSign. Si vous hébergez vous-même OpenSign, veuillez vous assurer que toutes les étapes de la documentation ont été correctement suivies. Si vous exécutez OpenSign localement, vous y accédez peut-être via un numéro de port incorrect.",
   "admin-exists": "L'administrateur existe déjà. Veuillez vous connecter à l'application en utilisant les informations d'identification de l'administrateur afin de gérer les utilisateurs.",
+  "enable-tour": "Activer la visite",
+  "istourenabled-otp-help":{
+    "p1": "Cela permettra une visite guidée pour les signataires, fournissant des instructions pendant le processus de signature.",
+    "p2": "Cela désactivera la visite guidée, garantissant ainsi une expérience de signature plus rapide et ininterrompue.",
+    "p3":  "Conseil : si vos signataires connaissent OpenSign et l'utilisent fréquemment, vous souhaiterez peut-être désactiver la visite guidée pour une expérience plus fluide. Choisissez l'option qui correspond le mieux à vos besoins en matière de signature de documents."
+  },
+  "form-title-1": "Paramètre du flux de documents",
+  "form-title-2": "Paramètre de sécurité",
   "public-tour-message": "Le modèle doit être public avant que vous puissiez générer un lien partageable.",
-  "add-user-template":"Vous devez ajouter un rôle avant de pouvoir lui ajouter des champs. "
+  "add-user-template": "Vous devez ajouter un rôle avant de pouvoir lui ajouter des champs. ",
+  "pdf-uncompatible": "Ce pdf n'est pas compatible avec opensign, veuillez contacter <support@opensignlabs.com>"
 }

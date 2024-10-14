@@ -91,6 +91,7 @@ export default async function createDocumentWithTemplate(request, response) {
         if (totalcredits > 0) {
           const templateQuery = new Parse.Query('contracts_Template');
           templateQuery.include('ExtUserPtr');
+          templateQuery.include('ExtUserPtr.TenantId');
           const templateRes = await templateQuery.get(templateId, { useMasterKey: true });
           if (templateRes) {
             const template = JSON.parse(JSON.stringify(templateRes));
@@ -199,6 +200,10 @@ export default async function createDocumentWithTemplate(request, response) {
                 const enableOTP = request.body?.enableOTP;
                 const IsEnableOTP =
                   enableOTP !== undefined ? enableOTP : template?.IsEnableOTP || false;
+                const enableTour = request.body?.enableTour;
+                const isTourEnabled =
+                  enableTour !== undefined ? enableTour : template?.IsTourEnabled || false;
+                object.set('IsTourEnabled', isTourEnabled);
                 object.set('IsEnableOTP', IsEnableOTP);
                 object.set('CreatedBy', template.CreatedBy);
                 object.set('ExtUserPtr', {
@@ -208,6 +213,9 @@ export default async function createDocumentWithTemplate(request, response) {
                 });
                 if (folderId) {
                   object.set('Folder', folderPtr);
+                }
+                if (template?.FileAdapterId) {
+                  object.set('FileAdapterId', template?.FileAdapterId);
                 }
                 const newACL = new Parse.ACL();
                 newACL.setPublicReadAccess(false);

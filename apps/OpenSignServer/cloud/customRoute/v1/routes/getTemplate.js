@@ -25,6 +25,7 @@ export default async function getTemplate(request, response) {
       Template.include('Folder');
       Template.include('ExtUserPtr');
       Template.include('Placeholders.signerPtr');
+      Template.include('ExtUserPtr.TenantId');
       const res = await Template.first({ useMasterKey: true });
       if (res) {
         const template = JSON.parse(JSON.stringify(res));
@@ -64,6 +65,7 @@ export default async function getTemplate(request, response) {
           enableOTP: template?.IsEnableOTP || false,
           createdAt: template.createdAt,
           updatedAt: template.updatedAt,
+          enableTour: template?.IsTourEnabled || false,
         });
       } else {
         if (request.posthog) {

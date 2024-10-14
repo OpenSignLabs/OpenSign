@@ -673,5 +673,15 @@
   "server-down": "No se pudo conectar al servidor de OpenSign. Si estás alojando OpenSign por tu cuenta, por favor, asegúrate de que todos los pasos de la documentación han sido seguidos correctamente. Si estás ejecutando OpenSign localmente, puedes estar accediendo a OpenSign por un número de puerto incorrecto.",
   "admin-exists": "El administrador ya existe. Por favor, inicia sesión en la aplicación usando las credenciales de administrador para poder administrar los usuarios.",
   "public-tour-message": "Por favor, convierte la plantilla en pública para copiar la URL pública",
-  "add-user-template": "Es necesario agregar un rol antes de poder agregarle campos."
+  "add-user-template": "Es necesario agregar un rol antes de poder agregarle campos.",
+  "pdf-uncompatible": "Este pdf no es compatible con opensign, comuníquese con <support@opensignlabs.com>",
+  "enable-tour": "Habilitar recorrido",
+   "istourenabled-help":{
+     "p1": "Esto permitirá realizar una visita guiada para los firmantes, brindando instrucciones durante el proceso de firma.",
+     "p2": "Esto desactivará la visita guiada, lo que garantizará una experiencia de firma más rápida e ininterrumpida.",
+     "p3": "Consejo: si sus firmantes están familiarizados con OpenSign y lo utilizan con frecuencia, es posible que desee desactivar la visita guiada para disfrutar de una experiencia más fluida. Elija la opción que mejor se adapte a sus necesidades de firma de documentos"
+   },
+   "form-title-1": "Configuración del flujo de documentos",
+   "form-title-2": "Configuración de seguridad"
+
 }

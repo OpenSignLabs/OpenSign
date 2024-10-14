@@ -7,6 +7,7 @@ async function getDocument(docId) {
     query.include('CreatedBy');
     query.include('Signers');
     query.include('AuditTrail.UserPtr');
+    query.include('ExtUserPtr.TenantId');
     query.include('Placeholders');
     query.notEqualTo('IsArchive', true);
     const res = await query.first({ useMasterKey: true });

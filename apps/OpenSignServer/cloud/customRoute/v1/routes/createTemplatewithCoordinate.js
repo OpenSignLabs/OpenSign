@@ -6,6 +6,7 @@ import {
   formatWidgetOptions,
   sanitizeFileName,
 } from '../../../../Utils.js';
+import uploadFileToS3 from '../../../parsefunction/uploadFiletoS3.js';
 
 const randomId = () => Math.floor(1000 + Math.random() * 9000);
 export default async function createTemplatewithCoordinate(request, response) {
@@ -18,6 +19,7 @@ export default async function createTemplatewithCoordinate(request, response) {
   const fileData = request.files?.[0] ? request.files[0].buffer : null;
   const SendinOrder = request.body.sendInOrder || false;
   const isEnableOTP = request.body?.enableOTP === true ? true : false;
+  const isTourEnabled = request.body?.enableTour || false;
 
   // console.log('fileData ', fileData);
   const protocol = customAPIurl();
@@ -40,6 +42,11 @@ export default async function createTemplatewithCoordinate(request, response) {
         objectId: parseUser.userId.objectId,
       };
       if (signers && signers.length > 0) {
+        const contractsUser = new Parse.Query('contracts_Users');
+        contractsUser.equalTo('UserId', userPtr);
+        contractsUser.include('TenantId');
+        const extUser = await contractsUser.first({ useMasterKey: true });
+        const parseExtUser = JSON.parse(JSON.stringify(extUser));
         let fileUrl;
         if (request.files?.[0]) {
           const base64 = fileData?.toString('base64');
@@ -52,24 +59,31 @@ export default async function createTemplatewithCoordinate(request, response) {
           saveFileUsage(buffer.length, fileUrl, parseUser.userId.objectId);
         } else {
           const filename = sanitizeFileName(`${name}.pdf`);
-          const file = new Parse.File(filename, { base64: base64File }, 'application/pdf');
-          await file.save({ useMasterKey: true });
-          fileUrl = file.url();
+          let adapter = {};
+          const ActiveFileAdapter = parseExtUser?.TenantId?.ActiveFileAdapter || '';
+          if (ActiveFileAdapter) {
+            adapter =
+              parseExtUser?.TenantId?.FileAdapters?.find(x => (x.id = ActiveFileAdapter)) || {};
+          }
+          if (adapter?.id) {
+            const filedata = Buffer.from(base64File, 'base64');
+            // `uploadFileToS3` is used to save document in user's file storage
+            fileUrl = await uploadFileToS3(filedata, filename, 'application/pdf', adapter);
+          } else {
+            const file = new Parse.File(filename, { base64: base64File }, 'application/pdf');
+            await file.save({ useMasterKey: true });
+            fileUrl = file.url();
+          }
           const buffer = Buffer.from(base64File, 'base64');
           saveFileUsage(buffer.length, fileUrl, parseUser.userId.objectId);
         }
-        const contractsUser = new Parse.Query('contracts_Users');
-        contractsUser.equalTo('UserId', userPtr);
-        const extUser = await contractsUser.first({ useMasterKey: true });
         const extUserPtr = {
           __type: 'Pointer',
           className: 'contracts_Users',
           objectId: extUser.id,
         };
-
         const object = new Parse.Object('contracts_Template');
         object.set('Name', name);
-
         if (note) {
           object.set('Note', note);
         }
@@ -83,6 +97,7 @@ export default async function createTemplatewithCoordinate(request, response) {
         object.set('CreatedBy', userPtr);
         object.set('ExtUserPtr', extUserPtr);
         object.set('IsEnableOTP', isEnableOTP);
+        object.set('IsTourEnabled', isTourEnabled);
         let contact = [];
         if (signers && signers.length > 0) {
           let parseSigners;
@@ -185,6 +200,9 @@ export default async function createTemplatewithCoordinate(request, response) {
             className: 'contracts_Template',
             objectId: folderId,
           });
+        }
+        if (parseExtUser?.TenantId?.ActiveFileAdapter) {
+          object.set('FileAdapterId', parseExtUser?.TenantId?.ActiveFileAdapter);
         }
         const newACL = new Parse.ACL();
         newACL.setPublicReadAccess(false);

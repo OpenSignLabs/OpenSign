@@ -33,7 +33,8 @@ async function sendMailProvider(req, plan, monthchange) {
       let Pdf = fs.createWriteStream('test.pdf');
       const writeToLocalDisk = () => {
         return new Promise((resolve, reject) => {
-          if (useLocal !== 'true') {
+          const isSecure = new URL(req.params.url)?.protocol === 'https:';
+          if (useLocal !== 'true' || isSecure) {
             https.get(req.params.url, async function (response) {
               response.pipe(Pdf);
               response.on('end', () => resolve('success'));
@@ -199,7 +200,8 @@ async function sendcustomsmtp(extRes, req) {
     let Pdf = fs.createWriteStream('test.pdf');
     const writeToLocalDisk = () => {
       return new Promise((resolve, reject) => {
-        if (useLocal !== 'true') {
+        const isSecure = new URL(req.params.url)?.protocol === 'https:';
+        if (useLocal !== 'true' || isSecure) {
           https.get(req.params.url, async function (response) {
             response.pipe(Pdf);
             response.on('end', () => resolve('success'));

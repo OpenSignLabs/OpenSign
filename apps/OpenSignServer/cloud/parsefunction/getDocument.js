@@ -11,6 +11,7 @@ export default async function getDocument(request) {
         const query = new Parse.Query('contracts_Document');
         query.equalTo('objectId', docId);
         query.include('ExtUserPtr');
+        query.include('ExtUserPtr.TenantId');
         query.include('CreatedBy');
         query.include('Signers');
         query.include('AuditTrail.UserPtr');
@@ -20,8 +21,10 @@ export default async function getDocument(request) {
         const res = await query.first({ useMasterKey: true });
         if (res) {
           const IsEnableOTP = res?.get('IsEnableOTP') || false;
+          const document = JSON.parse(JSON.stringify(res));
+          delete document.ExtUserPtr.TenantId.FileAdapters;
           if (!IsEnableOTP) {
-            return res;
+            return document;
           } else {
             if (request?.headers?.['sessiontoken']) {
               try {
@@ -34,7 +37,7 @@ export default async function getDocument(request) {
                 const userId = userRes.data && userRes.data?.objectId;
                 const acl = res.getACL();
                 if (userId && acl && acl.getReadAccess(userId)) {
-                  return res;
+                  return document;
                 } else {
                   return { error: "You don't have access of this document!" };
                 }

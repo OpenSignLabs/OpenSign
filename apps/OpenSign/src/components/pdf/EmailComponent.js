@@ -30,16 +30,15 @@ function EmailComponent({
     const pdfName = pdfDetails[0]?.Name;
     setIsLoading(true);
     let sendMail;
-
-    const docId = !pdfDetails?.[0]?.IsEnableOTP
-      ? pdfDetails?.[0]?.objectId
+    const docId = pdfDetails?.[0]?.objectId || "";
+    const FileAdapterId = pdfDetails?.[0]?.FileAdapterId
+      ? pdfDetails?.[0]?.FileAdapterId
       : "";
     let presignedUrl = pdfUrl;
     try {
-      // const url = await Parse.Cloud.run("getsignedurl", { url: pdfUrl });
       const axiosRes = await axios.post(
         `${localStorage.getItem("baseUrl")}/functions/getsignedurl`,
-        { url: pdfUrl, docId: docId },
+        { url: pdfUrl, docId: docId, fileAdapterId: FileAdapterId },
         {
           headers: {
             "content-type": "Application/json",

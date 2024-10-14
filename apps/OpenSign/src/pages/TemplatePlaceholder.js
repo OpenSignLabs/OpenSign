@@ -781,6 +781,7 @@ const TemplatePlaceholder = () => {
           RemindOnceInEvery: parseInt(pdfDetails[0]?.RemindOnceInEvery),
           NextReminderDate: pdfDetails[0]?.NextReminderDate,
           IsEnableOTP: pdfDetails[0]?.IsEnableOTP === true ? true : false,
+          IsTourEnabled: pdfDetails[0]?.IsTourEnabled === true ? true : false,
           URL: pdfUrl
         };
         const updateTemplate = new Parse.Object("contracts_Template");
@@ -1599,6 +1600,7 @@ const TemplatePlaceholder = () => {
                         setFontSize={setFontSize}
                         fontColor={fontColor}
                         setFontColor={setFontColor}
+                        isResize={isResize}
                       />
                     )}
                   </div>

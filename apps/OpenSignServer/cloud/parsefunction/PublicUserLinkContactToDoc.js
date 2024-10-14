@@ -31,7 +31,13 @@ const saveRoleContact = async contact => {
   contactQuery.set('CreatedBy', contact.CreatedBy);
   contactQuery.set('UserId', contact.UserId);
   contactQuery.set('UserRole', 'contracts_Guest');
-  contactQuery.set('TenantId', contact.TenantId);
+  if (contact?.TenantId) {
+    contactQuery.set('TenantId', {
+      __type: 'Pointer',
+      className: 'partners_Tenant',
+      objectId: contact.TenantId,
+    });
+  }
   contactQuery.set('IsDeleted', false);
   const acl = new Parse.ACL();
   acl.setReadAccess(contact.CreatedBy.objectId, true);
@@ -55,7 +61,7 @@ const createDocumentFromTemplate = async (template, existContact, index) => {
       object.set('Description', template?.Description);
       object.set('Note', template?.Note);
       object.set('TimeToCompleteDays', template?.TimeToCompleteDays || 15);
-      object.set('SendinOrder', template?.SendinOrder);
+      object.set('SendinOrder', template?.SendinOrder || false);
       object.set('AutomaticReminders', template?.AutomaticReminders || false);
       object.set('RemindOnceInEvery', template?.RemindOnceInEvery || 5);
       object.set('URL', template?.URL);
@@ -63,6 +69,8 @@ const createDocumentFromTemplate = async (template, existContact, index) => {
       object.set('ExtUserPtr', template?.ExtUserPtr);
       object.set('OriginIp', template?.OriginIp || '');
       object.set('IsEnableOTP', template?.IsEnableOTP || false);
+      object.set('IsTourEnabled', template?.IsTourEnabled || false);
+      object.set('FileAdapterId', template?.FileAdapterId || '');
       let signers = template?.Signers || [];
       const signerobj = {
         __type: 'Pointer',
@@ -97,7 +105,7 @@ const sendMailToAllSigners = async docId => {
   try {
     //get document details that recenlty created from public template
     const docQuery = new Parse.Query('contracts_Document');
-    docQuery.include('ExtUserPtr');
+    docQuery.include('ExtUserPtr,ExtUserPtr.TenantId');
     docQuery.include('Signers');
     const docRes = await docQuery.get(docId, { useMasterKey: true });
     const Doc = JSON.parse(JSON.stringify(docRes));
@@ -254,6 +262,7 @@ export default async function PublicUserLinkContactToDoc(req) {
       // Execute the query to get the template with the specified 'templateid'
       const docQuery = new Parse.Query('contracts_Template');
       docQuery.include('ExtUserPtr');
+      docQuery.include('ExtUserPtr.TenantId');
       const tempRes = await docQuery.get(templateid, { useMasterKey: true });
       // Check if the template was found; if not, throw an error indicating the template was not found
       if (!tempRes) {
@@ -315,7 +324,7 @@ export default async function PublicUserLinkContactToDoc(req) {
                   Email: email,
                   Phone: _extUser?.Phone ? _extUser.Phone : '',
                   CreatedBy: _tempRes.CreatedBy,
-                  TenantId: _tempRes.ExtUserPtr.TenantId,
+                  TenantId: _tempRes.ExtUserPtr?.TenantId?.objectId,
                 };
                 const template_json = JSON.parse(JSON.stringify(tempRes));
                 // if user present on platform create contact on the basis of extended user details
@@ -342,7 +351,7 @@ export default async function PublicUserLinkContactToDoc(req) {
                       Email: email,
                       Phone: phone,
                       CreatedBy: _tempRes.CreatedBy,
-                      TenantId: _tempRes.ExtUserPtr.TenantId,
+                      TenantId: _tempRes.ExtUserPtr?.TenantId?.objectId,
                     };
                     const template_json = JSON.parse(JSON.stringify(tempRes));
                     // Create new contract on the basis provided contact details by user and userId from _User class
@@ -379,7 +388,7 @@ export default async function PublicUserLinkContactToDoc(req) {
                       Email: email,
                       Phone: phone,
                       CreatedBy: _tempRes.CreatedBy,
-                      TenantId: _tempRes.ExtUserPtr.TenantId,
+                      TenantId: _tempRes.ExtUserPtr?.TenantId?.objectId,
                     };
                     const template_json = JSON.parse(JSON.stringify(tempRes));
                     // Create new contract on the basis provided contact details by user and userId from _User class

@@ -710,7 +710,9 @@ export const createDocument = async (
       SendinOrder: Doc?.SendinOrder || false,
       AutomaticReminders: Doc?.AutomaticReminders || false,
       RemindOnceInEvery: parseInt(Doc?.RemindOnceInEvery || 5),
-      IsEnableOTP: Doc?.IsEnableOTP || false
+      IsEnableOTP: Doc?.IsEnableOTP || false,
+      IsTourEnabled: Doc?.IsTourEnabled || false,
+      FileAdapterId: Doc?.FileAdapterId || ""
     };
 
     try {
@@ -1086,18 +1088,22 @@ export const embedDocId = async (pdfDoc, documentId, allPages) => {
     const textContent = documentId && `OpenSign™ DocumentId: ${documentId} `;
     const pages = pdfDoc.getPages();
     const page = pages[i];
-    const getObj = compensateRotation(
-      page.getRotation().angle,
-      10,
-      5,
-      1,
-      page.getSize(),
-      fontSize,
-      rgb(0.5, 0.5, 0.5),
-      font,
-      page
-    );
-    page.drawText(textContent, getObj);
+    try {
+      const getObj = compensateRotation(
+        page.getRotation().angle,
+        10,
+        5,
+        1,
+        page.getSize(),
+        fontSize,
+        rgb(0.5, 0.5, 0.5),
+        font,
+        page
+      );
+      page.drawText(textContent, getObj);
+    } catch (err) {
+      console.log("Err in embed docId on page", i + 1, err?.message);
+    }
   }
 };
 
@@ -1283,14 +1289,8 @@ export const changeImageWH = async (base64Image) => {
 };
 
 //function to calculate font size of text area widgets
-const calculateFontSize = (
-  position,
-  containerScale,
-  signyourself,
-  widgetHeight
-) => {
-  const font =
-    position?.options?.fontSize || (widgetHeight ? widgetHeight / 2 : 12);
+const calculateFontSize = (position, containerScale, signyourself) => {
+  const font = position?.options?.fontSize || 12;
   if (!signyourself && position?.isMobile && position?.scale) {
     return font / position?.scale / containerScale;
   } else {
@@ -1327,7 +1327,9 @@ export const multiSignEmbed = async (
   );
   pdfDoc.registerFontkit(fontkit);
   const font = await pdfDoc.embedFont(fontBytes, { subset: true });
+  let hasError = false;
   for (let item of widgets) {
+    if (hasError) break; // Stop the outer loop if an error occurred
     const containerScale = getContainerScale(
       pdfOriginalWH,
       item?.pageNumber,
@@ -1370,308 +1372,323 @@ export const multiSignEmbed = async (
         }
       })
     );
-    widgetsPositionArr.forEach(async (position, id) => {
-      let img;
-      if (["signature", "stamp", "initials", "image"].includes(position.type)) {
-        if (position.ImageType && position.ImageType === "image/jpeg") {
-          img = await pdfDoc.embedJpg(images[id]);
-        } else {
-          img = await pdfDoc.embedPng(images[id]);
-        }
-      } else if (!position.type) {
-        //  to handle old widget when only stamp and signature are exists
-        if (position.ImageType && position.ImageType === "image/jpeg") {
-          img = await pdfDoc.embedJpg(images[id]);
-        } else {
-          img = await pdfDoc.embedPng(images[id]);
-        }
-      }
-      let widgetWidth, widgetHeight;
-      widgetWidth = placeholderWidth(position);
-      widgetHeight = placeholderHeight(position);
-      const xPos = (position) => {
-        const resizePos = position.xPosition;
-        //first two condition handle to old data already saved from mobile view which scale point diffrent
-        if (isMobile && position.isMobile) {
-          //if pos.isMobile false -- placeholder saved from desktop view then handle position in mobile view divided by scale
-          const x = resizePos * (position.scale / scale);
-          return x * scale;
-        } else if (position.isMobile && position.scale) {
-          const x = resizePos * position.scale;
-          return x;
-        } else {
-          return resizePos;
-        }
-      };
-      const yPos = (position) => {
-        const resizePos = position.yPosition;
-
-        if (position.isMobile && position.scale) {
-          if (position.IsResize) {
-            const y = resizePos * position.scale;
-            return y;
+    for (let [id, position] of widgetsPositionArr.entries()) {
+      if (hasError) break; // Stop the inner loop if an error occurred
+      try {
+        let img;
+        if (
+          ["signature", "stamp", "initials", "image"].includes(position.type)
+        ) {
+          if (position.ImageType && position.ImageType === "image/jpeg") {
+            img = await pdfDoc.embedJpg(images[id]);
           } else {
-            const y = resizePos * position.scale;
-            return y;
+            img = await pdfDoc.embedPng(images[id]);
           }
-        } else {
-          return resizePos;
-        }
-      };
-      const color = position?.options?.fontColor;
-      const updateColorInRgb = getWidgetsFontColor(color);
-      const fontSize = parseInt(position?.options?.fontSize || 12);
-      const widgetTypeExist = [
-        textWidget,
-        textInputWidget,
-        "name",
-        "company",
-        "job title",
-        "date",
-        "email"
-      ].includes(position.type);
-      if (position.type === "checkbox") {
-        let checkboxGapFromTop, isCheck;
-        let y = yPos(position);
-        const optionsFontSize = fontSize || 13;
-        const checkboxSize = fontSize;
-        const checkboxTextGapFromLeft = fontSize + 5 || 22;
-        if (position?.options?.values.length > 0) {
-          position?.options?.values.forEach((item, ind) => {
-            const checkboxRandomId = "checkbox" + randomId();
-
-            if (
-              position?.options?.response &&
-              position?.options?.response?.length > 0
-            ) {
-              isCheck = position?.options?.response?.includes(ind);
-            } else if (position?.options?.defaultValue) {
-              isCheck = position?.options?.defaultValue?.includes(ind);
-            }
-
-            const checkbox = form.createCheckBox(checkboxRandomId);
-
-            if (ind > 0) {
-              y = y + checkboxGapFromTop;
-            } else {
-              checkboxGapFromTop = fontSize + 5 || 26;
-            }
-
-            if (!position?.options?.isHideLabel) {
-              // below line of code is used to embed label with radio button in pdf
-              const optionsPosition = compensateRotation(
-                page.getRotation().angle,
-                xPos(position) + checkboxTextGapFromLeft,
-                y,
-                1,
-                page.getSize(),
-                optionsFontSize,
-                updateColorInRgb,
-                font,
-                page
-              );
-              page.drawText(item, optionsPosition);
-            }
-            let checkboxObj = {
-              x: xPos(position),
-              y: y,
-              width: checkboxSize,
-              height: checkboxSize
-            };
-            checkboxObj = getWidgetPosition(page, checkboxObj, 1);
-            checkbox.addToPage(page, checkboxObj);
-
-            //applied which checkbox should be checked
-            if (isCheck) {
-              checkbox.check();
-            } else {
-              checkbox.uncheck();
-            }
-            checkbox.enableReadOnly();
-          });
-        }
-      } else if (widgetTypeExist) {
-        const fontSize = calculateFontSize(
-          position,
-          containerScale,
-          signyourself,
-          position.Height
-        );
-        parseInt(fontSize);
-        let textContent;
-        if (position?.options?.response) {
-          textContent = position.options?.response;
-        } else if (position?.options?.defaultValue) {
-          textContent = position?.options?.defaultValue;
-        }
-        const fixedWidth = widgetWidth; // Set your fixed width
-        const isNewOnEnterLineExist = textContent.includes("\n");
-
-        // Function to break text into lines based on the fixed width
-        const NewbreakTextIntoLines = (textContent, width) => {
-          const lines = [];
-          let currentLine = "";
-
-          for (const word of textContent.split(" ")) {
-            //get text line width
-            const lineWidth = font.widthOfTextAtSize(
-              `${currentLine} ${word}`,
-              fontSize
-            );
-            //check text content line width is less or equal to container width
-            if (lineWidth <= width) {
-              currentLine += ` ${word}`;
-            } else {
-              lines.push(currentLine.trim());
-              currentLine = `${word}`;
-            }
+        } else if (!position.type) {
+          //  to handle old widget when only stamp and signature are exists
+          if (position.ImageType && position.ImageType === "image/jpeg") {
+            img = await pdfDoc.embedJpg(images[id]);
+          } else {
+            img = await pdfDoc.embedPng(images[id]);
           }
-          lines.push(currentLine.trim());
-          return lines;
+        }
+        let widgetWidth, widgetHeight;
+        widgetWidth = placeholderWidth(position);
+        widgetHeight = placeholderHeight(position);
+        const xPos = (position) => {
+          const resizePos = position.xPosition;
+          //first two condition handle to old data already saved from mobile view which scale point diffrent
+          if (isMobile && position.isMobile) {
+            //if pos.isMobile false -- placeholder saved from desktop view then handle position in mobile view divided by scale
+            const x = resizePos * (position.scale / scale);
+            return x * scale;
+          } else if (position.isMobile && position.scale) {
+            const x = resizePos * position.scale;
+            return x;
+          } else {
+            return resizePos;
+          }
         };
+        const yPos = (position) => {
+          const resizePos = position.yPosition;
 
-        // Function to break text into lines based on when user go next line on press enter button
-        const breakTextIntoLines = (textContent, width) => {
-          const lines = [];
-
-          for (const word of textContent.split("\n")) {
-            const lineWidth = font.widthOfTextAtSize(`${word}`, fontSize);
-            //checking string length to container width
-            //if string length is less then container width it means user press enter button
-            if (lineWidth <= width) {
-              lines.push(word);
+          if (position.isMobile && position.scale) {
+            if (position.IsResize) {
+              const y = resizePos * position.scale;
+              return y;
+            } else {
+              const y = resizePos * position.scale;
+              return y;
             }
-            //else adjust text content according to width and send it in new line
-            else {
-              const newLine = NewbreakTextIntoLines(word, width);
-              lines.push(...newLine);
-            }
+          } else {
+            return resizePos;
           }
-
-          return lines;
         };
+        const color = position?.options?.fontColor;
+        const updateColorInRgb = getWidgetsFontColor(color);
+        const fontSize = parseInt(position?.options?.fontSize || 12);
+        const widgetTypeExist = [
+          textWidget,
+          textInputWidget,
+          "name",
+          "company",
+          "job title",
+          "date",
+          "email"
+        ].includes(position.type);
+        if (position.type === "checkbox") {
+          let checkboxGapFromTop, isCheck;
+          let y = yPos(position);
+          const optionsFontSize = fontSize || 13;
+          const checkboxSize = fontSize;
+          const checkboxTextGapFromLeft = fontSize + 5 || 22;
+          if (position?.options?.values.length > 0) {
+            position?.options?.values.forEach((item, ind) => {
+              const checkboxRandomId = "checkbox" + randomId();
 
-        //check if text content have `\n` string it means user press enter to go next line and handle condition
-        //else auto adjust text content according to container width
-        const lines = isNewOnEnterLineExist
-          ? breakTextIntoLines(textContent, fixedWidth)
-          : NewbreakTextIntoLines(textContent, fixedWidth);
-        // Set initial y-coordinate for the first line
-        let x = xPos(position);
-        let y = yPos(position);
-        // Embed each line on the page
-        for (const line of lines) {
-          const textPosition = compensateRotation(
-            page.getRotation().angle,
-            x,
-            y,
-            1,
-            page.getSize(),
-            fontSize,
-            updateColorInRgb,
-            font,
-            page
+              if (
+                position?.options?.response &&
+                position?.options?.response?.length > 0
+              ) {
+                isCheck = position?.options?.response?.includes(ind);
+              } else if (position?.options?.defaultValue) {
+                isCheck = position?.options?.defaultValue?.includes(ind);
+              }
+
+              const checkbox = form.createCheckBox(checkboxRandomId);
+
+              if (ind > 0) {
+                y = y + checkboxGapFromTop;
+              } else {
+                checkboxGapFromTop = fontSize + 5 || 26;
+              }
+
+              if (!position?.options?.isHideLabel) {
+                // below line of code is used to embed label with radio button in pdf
+                const optionsPosition = compensateRotation(
+                  page.getRotation().angle,
+                  xPos(position) + checkboxTextGapFromLeft,
+                  y,
+                  1,
+                  page.getSize(),
+                  optionsFontSize,
+                  updateColorInRgb,
+                  font,
+                  page
+                );
+                page.drawText(item, optionsPosition);
+              }
+              let checkboxObj = {
+                x: xPos(position),
+                y: y,
+                width: checkboxSize,
+                height: checkboxSize
+              };
+              checkboxObj = getWidgetPosition(page, checkboxObj, 1);
+              checkbox.addToPage(page, checkboxObj);
+
+              //applied which checkbox should be checked
+              if (isCheck) {
+                checkbox.check();
+              } else {
+                checkbox.uncheck();
+              }
+              checkbox.enableReadOnly();
+            });
+          }
+        } else if (widgetTypeExist) {
+          const fontSize = calculateFontSize(
+            position,
+            containerScale,
+            signyourself
           );
-          page.drawText(line, textPosition);
-          y += 18; // Adjust the line height as needed
-        }
-      } else if (position.type === "dropdown") {
-        const fontsize = parseInt(position?.options?.fontSize) || 12;
+          parseInt(fontSize);
+          let textContent;
+          if (position?.options?.response) {
+            textContent = position.options?.response;
+          } else if (position?.options?.defaultValue) {
+            textContent = position?.options?.defaultValue;
+          }
+          const fixedWidth = widgetWidth; // Set your fixed width
+          const isNewOnEnterLineExist = textContent.includes("\n");
 
-        const dropdownRandomId = "dropdown" + randomId();
-        const dropdown = form.createDropdown(dropdownRandomId);
-        dropdown.addOptions(position?.options?.values);
-        if (position?.options?.response) {
-          dropdown.select(position.options?.response);
-        } else if (position?.options?.defaultValue) {
-          dropdown.select(position?.options?.defaultValue);
-        }
-        // Define the default appearance string
-        // Example format: `/FontName FontSize Tf 0 g` where:
-        // - `/FontName` is the name of the font (e.g., `/Helv` for Helvetica)
-        // - `FontSize` is the size you want to set (e.g., 12)
-        // - `Tf` specifies the font and size
-        // - `0 g` sets the text color to black
-        const defaultAppearance = `/Helv ${fontsize} Tf 0 g`;
-        // Set the default appearance for the dropdown field
-        dropdown.acroField.setDefaultAppearance(defaultAppearance);
-        dropdown.setFontSize(fontsize);
-        const dropdownObj = {
-          x: xPos(position),
-          y: yPos(position),
-          width: widgetWidth,
-          height: widgetHeight
-        };
-        const dropdownOption = getWidgetPosition(page, dropdownObj, 1);
-        const dropdownSelected = { ...dropdownOption, font: font };
-        dropdown.defaultUpdateAppearances(font);
-        dropdown.addToPage(page, dropdownSelected);
-        dropdown.enableReadOnly();
-      } else if (position.type === radioButtonWidget) {
-        const radioRandomId = "radio" + randomId();
-        const radioGroup = form.createRadioGroup(radioRandomId);
-        let radioOptionGapFromTop;
-        const optionsFontSize = fontSize || 13;
-        const radioTextGapFromLeft = fontSize + 5 || 20;
-        const radioSize = fontSize;
-        let y = yPos(position);
-        if (position?.options?.values.length > 0) {
-          position?.options?.values.forEach((item, ind) => {
-            if (ind > 0) {
-              y = y + radioOptionGapFromTop;
-            } else {
-              radioOptionGapFromTop = fontSize + 10 || 25;
-            }
-            if (!position?.options?.isHideLabel) {
-              // below line of code is used to embed label with radio button in pdf
+          // Function to break text into lines based on the fixed width
+          const NewbreakTextIntoLines = (textContent, width) => {
+            const lines = [];
+            let currentLine = "";
 
-              const optionsPosition = compensateRotation(
-                page.getRotation().angle,
-                xPos(position) + radioTextGapFromLeft,
-                y,
-                1,
-                page.getSize(),
-                optionsFontSize,
-                updateColorInRgb,
-                font,
-                page
+            for (const word of textContent.split(" ")) {
+              //get text line width
+              const lineWidth = font.widthOfTextAtSize(
+                `${currentLine} ${word}`,
+                fontSize
               );
-
-              page.drawText(item, optionsPosition);
+              //check text content line width is less or equal to container width
+              if (lineWidth <= width) {
+                currentLine += ` ${word}`;
+              } else {
+                lines.push(currentLine.trim());
+                currentLine = `${word}`;
+              }
             }
-            let radioObj = {
-              x: xPos(position),
-              y: y,
-              width: radioSize,
-              height: radioSize
-            };
+            lines.push(currentLine.trim());
+            return lines;
+          };
 
-            radioObj = getWidgetPosition(page, radioObj, 1);
-            radioGroup.addOptionToPage(item, page, radioObj);
-          });
-        }
-        if (position?.options?.response) {
-          radioGroup.select(position.options?.response);
-        } else if (position?.options?.defaultValue) {
-          radioGroup.select(position?.options?.defaultValue);
-        }
-        radioGroup.enableReadOnly();
-      } else {
-        const signature = {
-          x: xPos(position),
-          y: yPos(position),
-          width: widgetWidth,
-          height: widgetHeight
-        };
+          // Function to break text into lines based on when user go next line on press enter button
+          const breakTextIntoLines = (textContent, width) => {
+            const lines = [];
 
-        const imageOptions = getWidgetPosition(page, signature, 1);
-        page.drawImage(img, imageOptions);
+            for (const word of textContent.split("\n")) {
+              const lineWidth = font.widthOfTextAtSize(`${word}`, fontSize);
+              //checking string length to container width
+              //if string length is less then container width it means user press enter button
+              if (lineWidth <= width) {
+                lines.push(word);
+              }
+              //else adjust text content according to width and send it in new line
+              else {
+                const newLine = NewbreakTextIntoLines(word, width);
+                lines.push(...newLine);
+              }
+            }
+
+            return lines;
+          };
+
+          //check if text content have `\n` string it means user press enter to go next line and handle condition
+          //else auto adjust text content according to container width
+          const lines = isNewOnEnterLineExist
+            ? breakTextIntoLines(textContent, fixedWidth)
+            : NewbreakTextIntoLines(textContent, fixedWidth);
+          // Set initial y-coordinate for the first line
+          let x = xPos(position);
+          let y = yPos(position);
+          // Embed each line on the page
+          for (const line of lines) {
+            const textPosition = compensateRotation(
+              page.getRotation().angle,
+              x,
+              y,
+              1,
+              page.getSize(),
+              fontSize,
+              updateColorInRgb,
+              font,
+              page
+            );
+            page.drawText(line, textPosition);
+            y += 18; // Adjust the line height as needed
+          }
+        } else if (position.type === "dropdown") {
+          const fontsize = parseInt(position?.options?.fontSize) || 12;
+
+          const dropdownRandomId = "dropdown" + randomId();
+          const dropdown = form.createDropdown(dropdownRandomId);
+          dropdown.addOptions(position?.options?.values);
+          if (position?.options?.response) {
+            dropdown.select(position.options?.response);
+          } else if (position?.options?.defaultValue) {
+            dropdown.select(position?.options?.defaultValue);
+          }
+          // Define the default appearance string
+          // Example format: `/FontName FontSize Tf 0 g` where:
+          // - `/FontName` is the name of the font (e.g., `/Helv` for Helvetica)
+          // - `FontSize` is the size you want to set (e.g., 12)
+          // - `Tf` specifies the font and size
+          // - `0 g` sets the text color to black
+          const defaultAppearance = `/Helv ${fontsize} Tf 0 g`;
+          // Set the default appearance for the dropdown field
+          dropdown.acroField.setDefaultAppearance(defaultAppearance);
+          dropdown.setFontSize(fontsize);
+          const dropdownObj = {
+            x: xPos(position),
+            y: yPos(position),
+            width: widgetWidth,
+            height: widgetHeight
+          };
+          const dropdownOption = getWidgetPosition(page, dropdownObj, 1);
+          const dropdownSelected = { ...dropdownOption, font: font };
+          dropdown.defaultUpdateAppearances(font);
+          dropdown.addToPage(page, dropdownSelected);
+          dropdown.enableReadOnly();
+        } else if (position.type === radioButtonWidget) {
+          const radioRandomId = "radio" + randomId();
+          const radioGroup = form.createRadioGroup(radioRandomId);
+          let radioOptionGapFromTop;
+          const optionsFontSize = fontSize || 13;
+          const radioTextGapFromLeft = fontSize + 5 || 20;
+          const radioSize = fontSize;
+          let y = yPos(position);
+          if (position?.options?.values.length > 0) {
+            position?.options?.values.forEach((item, ind) => {
+              if (ind > 0) {
+                y = y + radioOptionGapFromTop;
+              } else {
+                radioOptionGapFromTop = fontSize + 10 || 25;
+              }
+              if (!position?.options?.isHideLabel) {
+                // below line of code is used to embed label with radio button in pdf
+
+                const optionsPosition = compensateRotation(
+                  page.getRotation().angle,
+                  xPos(position) + radioTextGapFromLeft,
+                  y,
+                  1,
+                  page.getSize(),
+                  optionsFontSize,
+                  updateColorInRgb,
+                  font,
+                  page
+                );
+
+                page.drawText(item, optionsPosition);
+              }
+              let radioObj = {
+                x: xPos(position),
+                y: y,
+                width: radioSize,
+                height: radioSize
+              };
+
+              radioObj = getWidgetPosition(page, radioObj, 1);
+              radioGroup.addOptionToPage(item, page, radioObj);
+            });
+          }
+          if (position?.options?.response) {
+            radioGroup.select(position.options?.response);
+          } else if (position?.options?.defaultValue) {
+            radioGroup.select(position?.options?.defaultValue);
+          }
+          radioGroup.enableReadOnly();
+        } else {
+          const signature = {
+            x: xPos(position),
+            y: yPos(position),
+            width: widgetWidth,
+            height: widgetHeight
+          };
+
+          const imageOptions = getWidgetPosition(page, signature, 1);
+          page.drawImage(img, imageOptions);
+        }
+      } catch (err) {
+        console.log("Err in embed widget on page ", pageNo, err?.message);
+        hasError = true; // Set the flag to stop both loops
+        break; // Exit inner loop
       }
-    });
+    }
   }
-  const pdfBytes = await pdfDoc.saveAsBase64({ useObjectStreams: false });
-  //console.log("pdf", pdfBytes);
-  return pdfBytes;
+  if (!hasError) {
+    const pdfBytes = await pdfDoc.saveAsBase64({ useObjectStreams: false });
+    // console.log("pdf", pdfBytes);
+    return pdfBytes;
+  } else {
+    return {
+      error:
+        "This pdf is not compatible with opensign please contact <support@opensignlabs.com>"
+    };
+  }
 };
 
 // function for validating URLs
@@ -2048,11 +2065,21 @@ export const fetchUrl = async (url, pdfName) => {
     console.error("Error downloading the file:", error);
   }
 };
-export const getSignedUrl = async (pdfUrl, docId) => {
+export const getSignedUrl = async (
+  pdfUrl,
+  docId,
+  fileAdapterId,
+  templateId
+) => {
   //use only axios here due to public template sign
   const axiosRes = await axios.post(
     `${localStorage.getItem("baseUrl")}/functions/getsignedurl`,
-    { url: pdfUrl, docId: docId || "" },
+    {
+      url: pdfUrl,
+      docId: docId || "",
+      fileAdapterId: fileAdapterId,
+      templateId: templateId || ""
+    },
     {
       headers: {
         "content-type": "Application/json",
@@ -2069,9 +2096,12 @@ export const handleDownloadPdf = async (pdfDetails, setIsDownloading) => {
   const pdfName = pdfDetails[0] && pdfDetails[0]?.Name;
   const pdfUrl = pdfDetails?.[0]?.SignedUrl || pdfDetails?.[0]?.URL;
   setIsDownloading && setIsDownloading("pdf");
-  const docId = !pdfDetails?.[0]?.IsEnableOTP ? pdfDetails?.[0]?.objectId : "";
+  const docId = pdfDetails?.[0]?.objectId || "";
+  const fileAdapterId = pdfDetails?.[0]?.FileAdapterId
+    ? pdfDetails?.[0]?.FileAdapterId
+    : "";
   try {
-    const url = await getSignedUrl(pdfUrl, docId);
+    const url = await getSignedUrl(pdfUrl, docId, fileAdapterId);
     await fetchUrl(url, pdfName);
     setIsDownloading && setIsDownloading("");
   } catch (err) {
@@ -2094,14 +2124,17 @@ export const handleToPrint = async (
 ) => {
   event.preventDefault();
   setIsDownloading("pdf");
-  const docId = !pdfDetails?.[0]?.IsEnableOTP ? pdfDetails?.[0]?.objectId : "";
+  const docId = pdfDetails?.[0]?.objectId || "";
+  const FileAdapterId = pdfDetails?.[0]?.FileAdapterId
+    ? pdfDetails?.[0]?.FileAdapterId
+    : "";
   try {
     // const url = await Parse.Cloud.run("getsignedurl", { url: pdfUrl });
     //`localStorage.getItem("baseUrl")` is also use in public-profile flow for public-sign
     //if we give this `appInfo.baseUrl` as a base url then in public-profile it will create base url of it's window.location.origin ex- opensign.me which is not base url
     const axiosRes = await axios.post(
       `${localStorage.getItem("baseUrl")}/functions/getsignedurl`,
-      { url: pdfUrl, docId: docId },
+      { url: pdfUrl, docId: docId, fileAdapterId: FileAdapterId },
       {
         headers: {
           "content-type": "Application/json",

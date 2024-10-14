@@ -34,11 +34,13 @@ function DownloadPdfZip(props) {
 
       try {
         // Fetch the first PDF (Signed Document)
-        const docId =
-          props.isDocId && !pdfDetails?.[0]?.IsEnableOTP
-            ? pdfDetails?.[0]?.objectId
-            : "";
-        const signedUrl = await getSignedUrl(pdfUrl, docId);
+        const docId = pdfDetails?.[0]?.objectId || "";
+        const fileAdapterId = pdfDetails?.[0]?.FileAdapterId
+          ? pdfDetails?.[0]?.FileAdapterId
+          : "";
+        console.log("pdfDetails?.[0] ", pdfDetails?.[0]);
+        const signedUrl = await getSignedUrl(pdfUrl, docId, fileAdapterId);
+        console.log("signedUrl ", signedUrl);
         const pdf1Response = await fetch(signedUrl);
         if (!pdf1Response.ok) {
           throw new Error(`Failed to fetch PDF: ${signedUrl}`);

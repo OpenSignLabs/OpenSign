@@ -24,6 +24,7 @@ export default async function getDocument(request, response) {
       Document.include('Folder');
       Document.include('ExtUserPtr');
       Document.include('Placeholders.signerPtr');
+      Document.include('ExtUserPtr.TenantId');
       const res = await Document.first({ useMasterKey: true });
       if (res) {
         const document = JSON.parse(JSON.stringify(res));
@@ -65,6 +66,7 @@ export default async function getDocument(request, response) {
           enableOTP: document?.IsEnableOTP || false,
           createdAt: document.createdAt,
           updatedAt: document.updatedAt,
+          enableTour: document?.IsTourEnabled || false,
         });
       } else {
         if (request.posthog) {

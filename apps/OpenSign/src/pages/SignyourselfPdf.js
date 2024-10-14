@@ -132,6 +132,7 @@ function SignYourSelf() {
   const [isRotate, setIsRotate] = useState({ status: false, degree: 0 });
   const [isSubscribe, setIsSubscribe] = useState({ plan: "", isValid: true });
   const [isDownloadModal, setIsDownloadModal] = useState(false);
+  const [isResize, setIsResize] = useState(false);
   const divRef = useRef(null);
   const nodeRef = useRef(null);
   const [, drop] = useDrop({
@@ -558,7 +559,7 @@ function SignYourSelf() {
   };
   useEffect(() => {
     const timer = setTimeout(() => {
-      if (xyPostion?.length > 0) {
+      if (xyPostion?.length > 0 && !pdfDetails?.[0]?.IsCompleted) {
         autosavedetails();
       }
     }, 2000);
@@ -617,12 +618,8 @@ function SignYourSelf() {
                 const checkSignUrl = requiredWidgets[i]?.pos?.SignUrl;
                 let checkDefaultSigned =
                   requiredWidgets[i]?.options?.defaultValue;
-                if (!checkSignUrl) {
-                  if (!checkDefaultSigned) {
-                    if (!showAlert) {
-                      showAlert = true;
-                    }
-                  }
+                if (!checkSignUrl && !checkDefaultSigned && !showAlert) {
+                  showAlert = true;
                 }
               }
             }
@@ -649,10 +646,9 @@ function SignYourSelf() {
           return;
         } else {
           setIsUiLoading(true);
-          const existingPdfBytes = pdfArrayBuffer;
           // Load a PDFDocument from the existing PDF bytes
           try {
-            const pdfDoc = await PDFDocument.load(existingPdfBytes);
+            const pdfDoc = await PDFDocument.load(pdfArrayBuffer);
             const isSignYourSelfFlow = true;
             const extUserPtr = pdfDetails[0].ExtUserPtr;
             const HeaderDocId = extUserPtr?.HeaderDocId;
@@ -671,8 +667,15 @@ function SignYourSelf() {
             );
             // console.log("pdf", pdfBytes);
             //function for call to embed signature in pdf and get digital signature pdf
-            if (pdfBytes) {
+            if (!pdfBytes?.error) {
               await signPdfFun(pdfBytes, documentId);
+            } else {
+              setIsUiLoading(false);
+              setIsAlert({
+                header: t("error"),
+                isShow: true,
+                alertMessage: t("pdf-uncompatible")
+              });
             }
           } catch (err) {
             setIsUiLoading(false);
@@ -783,7 +786,7 @@ function SignYourSelf() {
   const handleStop = (event, dragElement) => {
     setFontSize();
     setFontColor();
-    if (isDragging && dragElement) {
+    if (!isResize && isDragging && dragElement) {
       event.preventDefault();
       const containerScale = getContainerScale(
         pdfOriginalWH,
@@ -1400,6 +1403,8 @@ function SignYourSelf() {
                       setFontSize={setFontSize}
                       fontColor={fontColor}
                       setFontColor={setFontColor}
+                      isResize={isResize}
+                      setIsResize={setIsResize}
                     />
                   )}
                 </div>

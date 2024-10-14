@@ -9,6 +9,7 @@ export default async function declinedocument(request) {
 
   try {
     const docCls = new Parse.Query('contracts_Document');
+    docCls.include('ExtUserPtr.TenantId');
     const updateDoc = await docCls.get(docId, { useMasterKey: true });
     if (updateDoc) {
       const isEnableOTP = updateDoc?.get('IsEnableOTP') || false;

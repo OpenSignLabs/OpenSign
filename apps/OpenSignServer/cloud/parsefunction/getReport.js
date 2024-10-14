@@ -52,11 +52,7 @@ export default async function getReport(request) {
             } else {
               strParams = JSON.stringify({
                 ...params,
-                CreatedBy: {
-                  __type: 'Pointer',
-                  className: '_User',
-                  objectId: userId,
-                },
+                CreatedBy: { __type: 'Pointer', className: '_User', objectId: userId },
               });
             }
           }
@@ -66,7 +62,7 @@ export default async function getReport(request) {
           'X-Parse-Application-Id': appId,
           'X-Parse-Master-Key': masterKey,
         };
-        const url = `${serverUrl}/classes/${clsName}?where=${strParams}&keys=${strKeys}&order=${orderBy}&skip=${skip}&limit=${limit}&include=AuditTrail.UserPtr,Placeholders.signerPtr`;
+        const url = `${serverUrl}/classes/${clsName}?where=${strParams}&keys=${strKeys}&order=${orderBy}&skip=${skip}&limit=${limit}&include=AuditTrail.UserPtr,Placeholders.signerPtr,ExtUserPtr.TenantId`;
         const res = await axios.get(url, { headers: headers });
         if (res.data && res.data.results) {
           return res.data.results;
