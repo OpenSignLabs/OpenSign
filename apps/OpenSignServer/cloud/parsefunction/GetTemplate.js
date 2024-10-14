@@ -55,6 +55,7 @@ export default async function GetTemplate(request) {
           if (res) {
             const templateRes = JSON.parse(JSON.stringify(res));
             delete templateRes?.ExtUserPtr?.TenantId?.FileAdapters;
+            delete templateRes?.ExtUserPtr?.TenantId?.PfxFile;
             return templateRes;
           } else {
             return { error: "You don't have access of this document!" };
@@ -77,6 +78,7 @@ export default async function GetTemplate(request) {
         if (res) {
           const templateRes = JSON.parse(JSON.stringify(res));
           delete templateRes?.ExtUserPtr?.TenantId?.FileAdapters;
+          delete templateRes?.ExtUserPtr?.TenantId?.PfxFile;
           return templateRes;
         } else {
           return { error: "You don't have access of this document!" };

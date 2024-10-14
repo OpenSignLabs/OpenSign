@@ -9,6 +9,49 @@ function generateId(length) {
   return result;
 }
 
+// `getExtUser` get ext user details
+async function getExtUser(request) {
+  const extUserCls = new Parse.Query('contracts_Users');
+  extUserCls.equalTo('UserId', request.user);
+  extUserCls.include('TenantId');
+  return await extUserCls.first({ useMasterKey: true });
+}
+
+// `saveTenant` save file adapter details in tenant class
+async function saveTenant(tenantId, fileAdapters, activeAdapter) {
+  const tenantCls = new Parse.Object('partners_Tenant');
+  tenantCls.id = tenantId;
+  if (fileAdapters?.length > 0) {
+    tenantCls.set('FileAdapters', fileAdapters);
+  }
+  if (activeAdapter) {
+    tenantCls.set('ActiveFileAdapter', activeAdapter);
+  } else {
+    tenantCls.unset('ActiveFileAdapter');
+  }
+  return await tenantCls.save(null, { useMasterKey: true });
+}
+
+// `updateTenantSchema` is used add FileAdapter in protected fields
+async function updateTenantSchema() {
+  const tenantSchema = new Parse.Schema('partners_Tenant');
+  const currentSchema = await tenantSchema.get();
+  let clp = currentSchema.classLevelPermissions;
+  // Public permission ("*")
+  const role = '*';
+  if (!clp.protectedFields || Object.keys(clp.protectedFields).length === 0) {
+    // Initialize protectedFields if it doesn't exist
+    clp.protectedFields = { [role]: [] };
+  }
+  // save FileAdapters field is in protectedFields if not exists
+  if (!clp.protectedFields[role]?.includes('FileAdapters')) {
+    clp.protectedFields[role].push('FileAdapters');
+    // Update the class schema with the modified CLP
+    tenantSchema.setCLP(clp);
+    await tenantSchema.update();
+  }
+}
+
 export default async function addFileAdapter(request) {
   if (!request?.user) {
     throw new Parse.Error(Parse.Error.INVALID_SESSION_TOKEN, 'User is not authenticated.');
@@ -24,24 +67,15 @@ export default async function addFileAdapter(request) {
 
   if (fileAdapterName && accessKeyId && secretAccessKey && adapter) {
     try {
-      const extUserCls = new Parse.Query('contracts_Users');
-      extUserCls.equalTo('UserId', request.user);
-      extUserCls.include('TenantId');
-      const extUser = await extUserCls.first({ useMasterKey: true });
+      const extUser = await getExtUser(request);
       if (extUser) {
         const _extUser = JSON.parse(JSON.stringify(extUser));
-        const tenantCls = new Parse.Object('partners_Tenant');
-        tenantCls.id = extUser?.get('TenantId')?.id;
-        const existsFileAdaptes = _extUser?.TenantId?.FileAdapters
-          ? _extUser?.TenantId?.FileAdapters
-          : [];
-
+        const tenantId = extUser?.get('TenantId')?.id;
         // assign existing file adapters or empty array
-        let updatedFileAdapters = existsFileAdaptes;
+        let fileAdapters = _extUser?.TenantId?.FileAdapters || [];
         const uniqueId = generateId(10);
         let id = extUser?.get('TenantId')?.id + '_' + uniqueId;
-        const index = updatedFileAdapters?.findIndex(x => x.fileAdapterName === fileAdapterName);
-
+        const index = fileAdapters?.findIndex(x => x.fileAdapterName === fileAdapterName);
         if (index !== -1) {
           // If an object with the same fileAdapterName exists, update it
           if (bucketName || region || endpoint || baseUrl) {
@@ -51,13 +85,13 @@ export default async function addFileAdapter(request) {
             );
           } else {
             const adapterConfig = { accessKeyId: accessKeyId, secretAccessKey: secretAccessKey };
-            updatedFileAdapters[index] = { ...updatedFileAdapters[index], ...adapterConfig };
-            id = updatedFileAdapters[index].id;
+            fileAdapters[index] = { ...fileAdapters[index], ...adapterConfig };
+            id = fileAdapters[index].id;
           }
         } else {
           if (bucketName && region && endpoint && baseUrl) {
             // If the object with the given fileAdapterName doesn't exist, add a new one
-            updatedFileAdapters.push({
+            fileAdapters.push({
               id: id,
               fileAdapterName: fileAdapterName,
               fileAdapter: adapter,
@@ -72,25 +106,8 @@ export default async function addFileAdapter(request) {
             throw new Parse.Error(Parse.Error.INVALID_QUERY, 'Please provide all parameters.');
           }
         }
-        tenantCls.set('FileAdapters', updatedFileAdapters);
-        if (adapter) {
-          tenantCls.set('ActiveFileAdapter', id);
-        } else {
-          tenantCls.unset('ActiveFileAdapter');
-        }
-        const updateTenant = await tenantCls.save(null, { useMasterKey: true });
-        const tenantSchema = new Parse.Schema('partners_Tenant');
-        tenantSchema.setCLP({
-          get: { '*': true },
-          find: { '*': true },
-          count: { '*': true },
-          create: { '*': true },
-          update: { '*': true },
-          delete: { '*': true },
-          addField: { '*': true },
-          protectedFields: { '*': ['FileAdapters'] },
-        });
-        await tenantSchema.update();
+        const updateTenant = await saveTenant(tenantId, fileAdapters, id);
+        await updateTenantSchema();
         const ActiveFileAdapter = adapter === 'opensign' ? 'opensign' : id;
         return { ActiveFileAdapter: ActiveFileAdapter, updateAt: updateTenant.updatedAt };
       } else {
@@ -104,27 +121,11 @@ export default async function addFileAdapter(request) {
     }
   } else if (adapter === 'opensign') {
     try {
-      const extUserCls = new Parse.Query('contracts_Users');
-      extUserCls.equalTo('UserId', request.user);
-      extUserCls.include('TenantId');
-      const extUser = await extUserCls.first({ useMasterKey: true });
+      const extUser = await getExtUser(request);
       if (extUser) {
-        const tenantCls = new Parse.Object('partners_Tenant');
-        tenantCls.id = extUser?.get('TenantId')?.id;
-        tenantCls.unset('ActiveFileAdapter');
-        const updateTenant = await tenantCls.save(null, { useMasterKey: true });
-        const tenantSchema = new Parse.Schema('partners_Tenant');
-        tenantSchema.setCLP({
-          get: { '*': true },
-          find: { '*': true },
-          count: { '*': true },
-          create: { '*': true },
-          update: { '*': true },
-          delete: { '*': true },
-          addField: { '*': true },
-          protectedFields: { '*': ['FileAdapters'] },
-        });
-        await tenantSchema.update();
+        const tenantId = extUser?.get('TenantId')?.id;
+        const updateTenant = await saveTenant(tenantId);
+        await updateTenantSchema();
         return { ActiveFileAdapter: 'opensign', updateAt: updateTenant.updatedAt };
       } else {
         throw new Parse.Error(Parse.Error.OBJECT_NOT_FOUND, 'User not found.');
