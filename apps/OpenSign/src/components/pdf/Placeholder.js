@@ -331,10 +331,9 @@ function Placeholder(props) {
     //condition for only placeholder and template flow
     if (props.data && props?.pos?.type !== textWidget) {
       props.setUniqueId(props?.data?.Id);
-      const checkIndex = props.xyPostion.findIndex(
-        (data) => data.Id === props.data.Id
-      );
-
+      const checkIndex = props.xyPostion
+        .filter((data) => data.Role !== "prefill")
+        .findIndex((data) => data.Id === props.data.Id);
       props.setIsSelectId(checkIndex || 0);
     }
     //condition to handle in placeholder and template flow for text widget signerId for text widgets i have to set uniqueId in tempSignerId because
@@ -342,10 +341,6 @@ function Placeholder(props) {
     else if (props.data && props.pos.type === textWidget) {
       props.setTempSignerId(props.uniqueId);
       props.setUniqueId(props?.data?.Id);
-      const checkIndex = props.xyPostion.findIndex(
-        (data) => data.Id === props.data.Id
-      );
-      props.setIsSelectId(checkIndex || 0);
     }
     props.setSignKey(props.pos.key);
     props.setWidgetType(props.pos.type);
