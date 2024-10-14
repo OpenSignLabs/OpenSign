@@ -245,7 +245,11 @@ async function sendDoctoWebhook(doc, Url, event, signUser, certificateUrl) {
 async function sendMailsaveCertifcate(doc, P12Buffer, isCustomMail, mailProvider, adapterConfig) {
   const certificate = await GenerateCertificate(doc);
   const certificatePdf = await PDFDocument.load(certificate);
-  const p12 = new P12Signer(P12Buffer, { passphrase: process.env.PASS_PHRASE || null });
+  let passphrase = process.env.PASS_PHRASE;
+  if (doc?.ExtUserPtr?.TenantId?.PfxFile?.password) {
+    passphrase = doc?.ExtUserPtr?.TenantId?.PfxFile?.password;
+  }
+  const p12 = new P12Signer(P12Buffer, { passphrase: passphrase || null });
   //  `pdflibAddPlaceholder` is used to add code of only digitial sign in certificate
   pdflibAddPlaceholder({
     pdfDoc: certificatePdf,
@@ -341,10 +345,15 @@ async function PDF(req) {
       //  `PdfBuffer` used to create buffer from pdf file
       let PdfBuffer = Buffer.from(req.params.pdfFile, 'base64');
       //  `P12Buffer` used to create buffer from p12 certificate
-      const pfxFile = process.env.PFX_BASE64;
+      let pfxFile = process.env.PFX_BASE64;
+      let passphrase = process.env.PASS_PHRASE;
+      if (_resDoc?.ExtUserPtr?.TenantId?.PfxFile?.base64) {
+        pfxFile = _resDoc?.ExtUserPtr?.TenantId?.PfxFile?.base64;
+        passphrase = _resDoc?.ExtUserPtr?.TenantId?.PfxFile?.password;
+      }
       // const P12Buffer = fs.readFileSync();
       const P12Buffer = Buffer.from(pfxFile, 'base64');
-      const p12Cert = new P12Signer(P12Buffer, { passphrase: process.env.PASS_PHRASE || null });
+      const p12Cert = new P12Signer(P12Buffer, { passphrase: passphrase || null });
       const UserPtr = { __type: 'Pointer', className: className, objectId: signUser.objectId };
       const obj = { UserPtr: UserPtr, SignedUrl: '', Activity: 'Signed', ipAddress: userIP };
       let updateAuditTrail;
@@ -364,7 +373,8 @@ async function PDF(req) {
         isCompleted = true;
       }
       const randomNumber = Math.floor(Math.random() * 5000);
-      const name = `exported_file_${randomNumber}.pdf`;
+      const docName = _resDoc?.Name?.replace(/\s+/g, '_')?.toLowerCase();
+      const name = `signed_${docName}_${randomNumber}.pdf`;
       const filePath = `./exports/${name}`;
       let pdfSize = PdfBuffer.length;
       if (isCompleted) {
