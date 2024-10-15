@@ -316,13 +316,16 @@ async function PDF(req) {
       }
     }
     const _resDoc = resDoc?.toJSON();
-    // `FileAdapter` && `ActiveFileAdapter` is used to save file in user's fileAdapter
-    const ActiveFileAdapter = _resDoc?.ExtUserPtr?.TenantId?.ActiveFileAdapter;
-    const FileAdapter =
-      _resDoc?.ExtUserPtr?.TenantId?.FileAdapters?.find(x => x.id === ActiveFileAdapter) || {};
+    // `fileAdapterId` is used check document uploaded in custom file adapter and get customFileAdapter id
+    const fileAdapterId = _resDoc?.FileAdapterId || '';
     let adapterConfig = {};
-    if (FileAdapter && ActiveFileAdapter) {
-      adapterConfig = { ActiveFileAdapter: ActiveFileAdapter, ...FileAdapter };
+    if (fileAdapterId) {
+      // `FileAdapter` is used to credintials of file adapter
+      const FileAdapter =
+        _resDoc?.ExtUserPtr?.TenantId?.FileAdapters?.find(x => x.id === fileAdapterId) || {};
+      if (FileAdapter) {
+        adapterConfig = FileAdapter;
+      }
     }
     let signUser;
     let className;
