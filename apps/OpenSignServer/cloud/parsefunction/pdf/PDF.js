@@ -312,12 +312,14 @@ async function PDF(req) {
       }
     }
     const _resDoc = resDoc?.toJSON();
+    // `fileAdapterId` is get to save file in user's fileAdapter
+    const fileAdapterId = _resDoc?.FileAdapterId || '';
     // `FileAdapter` && `ActiveFileAdapter` is used to save file in user's fileAdapter
     const ActiveFileAdapter = _resDoc?.ExtUserPtr?.TenantId?.ActiveFileAdapter;
     const FileAdapter =
       _resDoc?.ExtUserPtr?.TenantId?.FileAdapters?.find(x => x.id === ActiveFileAdapter) || {};
     let adapterConfig = {};
-    if (FileAdapter && ActiveFileAdapter) {
+    if (fileAdapterId && FileAdapter && ActiveFileAdapter) {
       adapterConfig = { ActiveFileAdapter: ActiveFileAdapter, ...FileAdapter };
     }
     let signUser;
