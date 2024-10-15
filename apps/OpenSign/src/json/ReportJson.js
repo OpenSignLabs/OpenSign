@@ -27,21 +27,21 @@ export default function reportJson(id) {
   const templateSubAction = isEnableSubscription
     ? [
         {
-          btnId: "2434",
+          btnId: "2435",
           btnLabel: "Embed",
           hoverLabel: "Embed",
           btnIcon: "fa-light fa-code",
           action: "Embed"
         },
         {
-          btnId: "2434",
+          btnId: "2436",
           btnLabel: "Copy TemplateId",
           hoverLabel: "Copy TemplateId",
           btnIcon: "fa-light fa-copy",
           action: "CopyTemplateId"
         },
         {
-          btnId: "2434",
+          btnId: "2437",
           btnLabel: "Copy Public URL",
           hoverLabel: "Copy Public URL",
           btnIcon: "fa-light fa-copy",
