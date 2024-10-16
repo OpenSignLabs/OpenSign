@@ -29,7 +29,8 @@ import {
   onClickZoomOut,
   onClickZoomIn,
   handleRemoveWidgets,
-  handleRotateWarning
+  handleRotateWarning,
+  color
 } from "../constant/Utils";
 import RenderPdf from "../components/pdf/RenderPdf";
 import "../styles/AddUser.css";
@@ -102,20 +103,6 @@ const TemplatePlaceholder = () => {
   const [isTextSetting, setIsTextSetting] = useState(false);
   const [pdfLoad, setPdfLoad] = useState(false);
   const [pdfRotateBase64, setPdfRotatese64] = useState("");
-  const color = [
-    "#93a3db",
-    "#e6c3db",
-    "#c0e3bc",
-    "#bce3db",
-    "#b8ccdb",
-    "#ceb8db",
-    "#ffccff",
-    "#99ffcc",
-    "#cc99ff",
-    "#ffcc99",
-    "#66ccff",
-    "#ffffcc"
-  ];
   const isMobile = window.innerWidth < 767;
   const [, drop] = useDrop({
     accept: "BOX",
