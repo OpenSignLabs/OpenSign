@@ -1227,7 +1227,13 @@ const ReportTable = (props) => {
         </div>
         <div
           className={`${
-            isDashboard && props.List?.length > 0 ? "min-h-[317px]" : "h-screen"
+            isDashboard && props.List?.length > 0
+              ? "min-h-[317px]"
+              : `${
+                  currentList?.length === props.docPerPage
+                    ? "h-fit"
+                    : "h-screen"
+                }`
           } overflow-auto w-full border-b`}
         >
           <table className="op-table border-collapse w-full">
