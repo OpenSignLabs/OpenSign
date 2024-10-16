@@ -1229,14 +1229,12 @@ const ReportTable = (props) => {
           className={`${
             isDashboard && props.List?.length > 0
               ? "min-h-[317px]"
-              : `${
-                  currentList?.length === props.docPerPage
-                    ? "h-fit"
-                    : "h-screen"
-                }`
+              : currentList?.length === props.docPerPage
+                ? "h-fit"
+                : "h-screen"
           } overflow-auto w-full border-b`}
         >
-          <table className="op-table border-collapse w-full">
+          <table className="op-table border-collapse w-full mb-2">
             <thead className="text-[14px]">
               <tr className="border-y-[1px]">
                 {props.heading?.map((item, index) => (
@@ -1317,7 +1315,14 @@ const ReportTable = (props) => {
                         </td>
                       </tr>
                     ) : (
-                      <tr className="border-y-[1px]" key={index}>
+                      <tr
+                        className={`${
+                          currentList?.length === props.docPerPage
+                            ? "last:border-none"
+                            : ""
+                        } border-y-[1px] `}
+                        key={index}
+                      >
                         {props.heading.includes("Sr.No") && (
                           <th className="px-4 py-2">
                             {startIndex + index + 1}
@@ -1596,9 +1601,7 @@ const ReportTable = (props) => {
                                         className={
                                           act.action !== "option"
                                             ? `${
-                                                act?.btnColor
-                                                  ? act.btnColor
-                                                  : ""
+                                                act?.btnColor || ""
                                               } op-btn op-btn-sm mr-1`
                                             : "text-base-content focus:outline-none text-lg mr-2 relative"
                                         }
@@ -1618,7 +1621,7 @@ const ReportTable = (props) => {
                                         {/* template report */}
                                         {isOption[item.objectId] &&
                                           act.action === "option" && (
-                                            <ul className="absolute -right-1 top-auto z-[70] w-max op-dropdown-content op-menu shadow bg-base-100 text-base-content rounded-box">
+                                            <ul className="absolute -right-1 top-auto z-[70] w-max op-dropdown-content op-menu shadow-black/20 shadow bg-base-100 text-base-content rounded-box">
                                               {act.subaction?.map((subact) => (
                                                 <li
                                                   key={subact.btnId}
@@ -1675,7 +1678,7 @@ const ReportTable = (props) => {
                                     {/* doc report */}
                                     {isOption[item.objectId] &&
                                       act.action === "option" && (
-                                        <ul className="absolute -right-1 top-auto z-[70] w-max op-dropdown-content op-menu shadow bg-base-100 text-base-content rounded-box">
+                                        <ul className="absolute -right-1 top-auto z-[70] w-max op-dropdown-content op-menu shadow-black/20 shadow bg-base-100 text-base-content rounded-box">
                                           {act.subaction?.map((subact) => (
                                             <li
                                               key={subact.btnId}
