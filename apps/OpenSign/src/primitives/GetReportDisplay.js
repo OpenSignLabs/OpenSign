@@ -1234,7 +1234,7 @@ const ReportTable = (props) => {
                 : "h-screen"
           } overflow-auto w-full border-b`}
         >
-          <table className="op-table border-collapse w-full mb-2">
+          <table className="op-table border-collapse w-full mb-4">
             <thead className="text-[14px]">
               <tr className="border-y-[1px]">
                 {props.heading?.map((item, index) => (
