@@ -4,6 +4,7 @@ import RecipientList from "./RecipientList";
 import { useDrag } from "react-dnd";
 import WidgetList from "./WidgetList";
 import {
+  color,
   radioButtonWidget,
   textInputWidget,
   textWidget,
@@ -43,163 +44,69 @@ function WidgetComponent({
   const [isSignersModal, setIsSignersModal] = useState(false);
   const [, dropdown] = useDrag({
     type: "BOX",
-    item: {
-      type: "BOX",
-      id: 5,
-      text: "dropdown"
-    },
-
+    item: { type: "BOX", id: 5, text: "dropdown" },
     collect: (monitor) => ({
       isDragDropdown: !!monitor.isDragging()
     })
   });
   const [, checkbox] = useDrag({
     type: "BOX",
-    item: {
-      type: "BOX",
-      id: 6,
-      text: "checkbox"
-    },
-
-    collect: (monitor) => ({
-      isDragCheck: !!monitor.isDragging()
-    })
+    item: { type: "BOX", id: 6, text: "checkbox" },
+    collect: (monitor) => ({ isDragCheck: !!monitor.isDragging() })
   });
   const [, textInput] = useDrag({
     type: "BOX",
-    item: {
-      type: "BOX",
-      id: 7,
-      text: textInputWidget
-    },
-    collect: (monitor) => ({
-      isDragTextInput: !!monitor.isDragging()
-    })
+    item: { type: "BOX", id: 7, text: textInputWidget },
+    collect: (monitor) => ({ isDragTextInput: !!monitor.isDragging() })
   });
   const [, initials] = useDrag({
     type: "BOX",
-    item: {
-      type: "BOX",
-      id: 8,
-      text: "initials"
-    },
-
-    collect: (monitor) => ({
-      isDragInitial: !!monitor.isDragging()
-    })
+    item: { type: "BOX", id: 8, text: "initials" },
+    collect: (monitor) => ({ isDragInitial: !!monitor.isDragging() })
   });
   const [, name] = useDrag({
     type: "BOX",
-    item: {
-      type: "BOX",
-      id: 9,
-      text: "name"
-    },
-
-    collect: (monitor) => ({
-      isDragName: !!monitor.isDragging()
-    })
+    item: { type: "BOX", id: 9, text: "name" },
+    collect: (monitor) => ({ isDragName: !!monitor.isDragging() })
   });
   const [, company] = useDrag({
     type: "BOX",
-    item: {
-      type: "BOX",
-      id: 10,
-      text: "company"
-    },
-
-    collect: (monitor) => ({
-      isDragCompany: !!monitor.isDragging()
-    })
+    item: { type: "BOX", id: 10, text: "company" },
+    collect: (monitor) => ({ isDragCompany: !!monitor.isDragging() })
   });
   const [, jobTitle] = useDrag({
     type: "BOX",
-    item: {
-      type: "BOX",
-      id: 11,
-      text: "job title"
-    },
-
-    collect: (monitor) => ({
-      isDragJobtitle: !!monitor.isDragging()
-    })
+    item: { type: "BOX", id: 11, text: "job title" },
+    collect: (monitor) => ({ isDragJobtitle: !!monitor.isDragging() })
   });
   const [, date] = useDrag({
     type: "BOX",
-    item: {
-      type: "BOX",
-      id: 12,
-      text: "date"
-    },
-
-    collect: (monitor) => ({
-      isDragDate: !!monitor.isDragging()
-    })
+    item: { type: "BOX", id: 12, text: "date" },
+    collect: (monitor) => ({ isDragDate: !!monitor.isDragging() })
   });
   const [, image] = useDrag({
     type: "BOX",
-    item: {
-      type: "BOX",
-      id: 13,
-      text: "image"
-    },
-
-    collect: (monitor) => ({
-      isDragImage: !!monitor.isDragging()
-    })
+    item: { type: "BOX", id: 13, text: "image" },
+    collect: (monitor) => ({ isDragImage: !!monitor.isDragging() })
   });
   const [, email] = useDrag({
     type: "BOX",
-    item: {
-      type: "BOX",
-      id: 14,
-      text: "email"
-    },
-    collect: (monitor) => ({
-      isDragEmail: !!monitor.isDragging()
-    })
+    item: { type: "BOX", id: 14, text: "email" },
+    collect: (monitor) => ({ isDragEmail: !!monitor.isDragging() })
   });
   const [, radioButton] = useDrag({
     type: "BOX",
-
-    item: {
-      type: "BOX",
-      id: 15,
-      text: radioButtonWidget
-    },
-    collect: (monitor) => ({
-      isDragRadiotton: !!monitor.isDragging()
-    })
+    item: { type: "BOX", id: 15, text: radioButtonWidget },
+    collect: (monitor) => ({ isDragRadiotton: !!monitor.isDragging() })
   });
   const [, text] = useDrag({
     type: "BOX",
-
-    item: {
-      type: "BOX",
-      id: 16,
-      text: textWidget
-    },
-    collect: (monitor) => ({
-      isDragText: !!monitor.isDragging()
-    })
+    item: { type: "BOX", id: 16, text: textWidget },
+    collect: (monitor) => ({ isDragText: !!monitor.isDragging() })
   });
   const isMobile = window.innerWidth < 767;
   const scrollContainerRef = useRef(null);
   const [widget, setWidget] = useState([]);
-  const color = [
-    "#93a3db",
-    "#e6c3db",
-    "#c0e3bc",
-    "#bce3db",
-    "#b8ccdb",
-    "#ceb8db",
-    "#ffccff",
-    "#99ffcc",
-    "#cc99ff",
-    "#ffcc99",
-    "#66ccff",
-    "#ffffcc"
-  ];
   const handleModal = () => {
     setIsSignersModal(!isSignersModal);
   };
