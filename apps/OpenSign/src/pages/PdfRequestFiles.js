@@ -1072,12 +1072,16 @@ function PdfRequestFiles(props) {
                   }
                 } else {
                   setIsUiLoading(false);
-                  setIsAlert({ isShow: true, alertMessage: resSign.message });
+                  setIsAlert({
+                    title: "Error",
+                    isShow: true,
+                    alertMessage: resSign.message
+                  });
                 }
               } else {
                 setIsUiLoading(false);
                 setIsAlert({
-                  header: t("error"),
+                  title: "Error",
                   isShow: true,
                   alertMessage: t("pdf-uncompatible")
                 });
