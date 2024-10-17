@@ -645,9 +645,7 @@ export const signPdfFun = async (
         status: "error",
         message: "Currently encrypted pdf files are not supported."
       };
-    } else if (
-      e.message === "PKCS#12 MAC could not be verified. Invalid password?"
-    ) {
+    } else if (e?.message?.includes("password")) {
       return { status: "error", message: "PFX file password is invalid." };
     } else {
       return { status: "error", message: "something went wrong." };
