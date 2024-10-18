@@ -687,10 +687,7 @@ function SignYourSelf() {
               });
             } else {
               console.log("err in signing", err.message);
-              if (
-                err.message ===
-                "PKCS#12 MAC could not be verified. Invalid password?"
-              ) {
+              if (err?.message?.includes("password")) {
                 setIsAlert({
                   header: t("error"),
                   isShow: true,
