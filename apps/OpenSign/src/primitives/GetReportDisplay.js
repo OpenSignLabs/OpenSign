@@ -2191,24 +2191,6 @@ const ReportTable = (props) => {
             </button>
           )}
         </div>
-        {props.List?.length <= 0 && (
-          <div
-            className={`${
-              isDashboard ? "h-[317px]" : ""
-            } flex flex-col items-center justify-center w-ful bg-base-100 text-base-content rounded-xl py-4`}
-          >
-            <div className="w-[60px] h-[60px] overflow-hidden">
-              <img
-                className="w-full h-full object-contain"
-                src={pad}
-                alt="img"
-              />
-            </div>
-            <div className="text-sm font-semibold">
-              {t("no-data-avaliable")}
-            </div>
-          </div>
-        )}
         <ModalUi
           title={t("add-contact")}
           isOpen={isContactform}
