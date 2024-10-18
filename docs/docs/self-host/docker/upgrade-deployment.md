@@ -16,13 +16,24 @@ This guide provides step-by-step instructions to upgrade the deployment of OpenS
 
 Run the following command to pull the latest OpenSign Docker images:
 
+**Note:**  If you've made any custom changes to your docker-compose.yml file, they will be lost when running the command below. This command is intended only for those who haven't made any custom modifications to their docker-compose.yml file.
+
+**linux/MacOS**
 ```
-docker compose pull
+curl --remote-name-all https://raw.githubusercontent.com/OpenSignLabs/OpenSign/main/docker-compose.yml && docker compose pull
+```
+**Windows** (Powershell)
+```
+Invoke-WebRequest -Uri https://raw.githubusercontent.com/OpenSignLabs/OpenSign/main/docker-compose.yml -OutFile docker-compose.yml; docker compose pull
+```
+**Windows** (Command Prompt)
+```
+curl -O https://raw.githubusercontent.com/OpenSignLabs/OpenSign/main/docker-compose.yml && docker compose pull
 ```
   - This command will fetch the most recent versions of the Docker images required by OpenSign.
   - Wait for the pulling process to complete. You should see messages indicating the progress and completion of the download.
 
-<img width="550" alt="Pulling completed" src="https://github.com/user-attachments/assets/14525d84-d588-4d0d-bffd-f0608f3646f3" />
+<img width="550" alt="Pulling completed" src="https://github.com/user-attachments/assets/1b708b04-e6e6-45a0-9625-94e420a68343" />
 
 ### Step 3: Start the Updated OpenSign Deployment
 After the images have been successfully pulled, run the following command to start the updated OpenSign deployment:
@@ -43,9 +54,9 @@ docker-compose up -d
   - docker-compose up: This command starts the services defined in your docker-compose.yml file.
   - -d: The detached mode flag, which runs the containers in the background and frees up your terminal.
     
-<img width="550" alt="Docker compose up" src="https://github.com/user-attachments/assets/791b2ac0-206a-4ed8-a1aa-164b3cf5015b" />
+<img width="550" alt="Docker compose up" src="https://github.com/user-attachments/assets/c573baaf-f70d-468e-a531-75b85a275647" />
 
-## Notes:
+## Note:
    - The docker compose pull command ensures that you have the latest version of the Docker images, while the docker compose up command applies any updates and starts the containers.
 
 ## Troubleshooting:
