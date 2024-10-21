@@ -11,7 +11,7 @@ The In-Progress documents report in OpenSign helps you monitor and manage docume
 2. Click on **"Reports"** to expand the available options.
 3. Select **"In progress"** This will display all documents that are currently awaiting signatures or are otherwise in the signing process.
 
-### Understanding the In-Progress documents interface
+### Understanding the In-Progress documents report
 
 The "In progress documents" report is displayed in a tabular format, presenting key information about each finalized document. Below is a breakdown of each column and its purpose:
 
