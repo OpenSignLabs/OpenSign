@@ -26,7 +26,7 @@
     "react-bootstrap": "^2.10.5",
     "react-confetti": "^6.1.0",
     "react-cookie": "^7.2.1",
-    "react-datepicker": "^7.4.0",
+    "react-datepicker": "^7.5.0",
     "react-dnd": "^16.0.1",
     "react-dnd-html5-backend": "^16.0.1",
     "react-dnd-multi-backend": "^8.0.3",
