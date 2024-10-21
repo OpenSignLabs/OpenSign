@@ -682,5 +682,7 @@
     "p3": "Consejo: si sus firmantes están familiarizados con OpenSign y lo utilizan con frecuencia, es posible que desee desactivar la visita guiada para disfrutar de una experiencia más fluida. Elija la opción que mejor se adapte a sus necesidades de firma de documentos"
   },
   "form-title-1": "Configuración del flujo de documentos",
-  "form-title-2": "Configuración de seguridad"
+  "form-title-2": "Configuración de seguridad",
+  "text-field-tour":"Los campos de tipo 'Texto' deben completarse con anticipación antes de enviar el documento. Si necesita que los firmantes proporcionen información, utilice el campo 'Entrada de texto'",
+  "attach-signer-tour" :"Debe adjuntar un firmante a cada función. Puede hacerlo haciendo clic en este icono. Una vez que seleccione un Firmante, se adjuntará a todos los campos asociados con ese rol que aparecen en el mismo color."
 }

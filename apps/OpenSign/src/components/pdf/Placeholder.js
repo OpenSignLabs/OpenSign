@@ -356,18 +356,13 @@ function Placeholder(props) {
 
     if (props.data && props?.pos?.type !== textWidget) {
       props.setUniqueId(props?.data?.Id);
-      const checkIndex = props.xyPostion.findIndex(
-        (data) => data.Id === props.data.Id
-      );
-
+      const checkIndex = props.xyPostion
+        .filter((data) => data.Role !== "prefill")
+        .findIndex((data) => data.Id === props.data.Id);
       props.setIsSelectId(checkIndex || 0);
     } else if (props.data && props.pos.type === textWidget) {
       props.setTempSignerId(props.uniqueId);
       props.setUniqueId(props?.data?.Id);
-      const checkIndex = props.xyPostion.findIndex(
-        (data) => data.Id === props.data.Id
-      );
-      props.setIsSelectId(checkIndex || 0);
     }
 
     //checking widget's type and open widget copy modal for required widgets

@@ -151,6 +151,7 @@ function PlaceHolderSign() {
   const [scale, setScale] = useState(1);
   const [pdfRotateBase64, setPdfRotatese64] = useState("");
   const [planCode, setPlanCode] = useState("");
+  const [unSignedWidgetId, setUnSignedWidgetId] = useState("");
   const isMobile = window.innerWidth < 767;
   const [, drop] = useDrop({
     accept: "BOX",
@@ -844,17 +845,25 @@ function PlaceHolderSign() {
   };
   const alertSendEmail = async () => {
     const filterPrefill = signerPos?.filter((data) => data.Role !== "prefill");
-    const getPrefill = signerPos?.filter((data) => data.Role === "prefill");
+    const getPrefill = signerPos?.find((data) => data.Role === "prefill");
     let isLabel = false;
+    let unfilledTextWidgetId = "";
     //checking all signers placeholder exist or not
     const isPlaceholderExist = filterPrefill.every((data) => data.placeHolder);
-    const prefillPlaceholder = getPrefill[0]?.placeHolder;
+    const prefillPlaceholder = getPrefill?.placeHolder;
     //condition is used to check text widget data is empty or have response
-    if (getPrefill && getPrefill.length > 0) {
+    if (getPrefill) {
       if (prefillPlaceholder) {
         prefillPlaceholder.map((data) => {
           if (!isLabel) {
-            isLabel = data.pos.some((position) => !position.options.response);
+            // isLabel = data.pos.some((position) => !position.options.response);
+            const unfilledTextWidgets = data.pos.find(
+              (position) => !position.options.response
+            );
+            if (unfilledTextWidgets) {
+              isLabel = true;
+              unfilledTextWidgetId = unfilledTextWidgets.key;
+            }
           }
         });
       }
@@ -882,6 +891,7 @@ function PlaceHolderSign() {
     }
     if (getPrefill && isLabel) {
       setIsSendAlert({ mssg: textWidget, alert: true });
+      setUnSignedWidgetId(unfilledTextWidgetId);
     } else if (isSignatureExist) {
       if (isPlaceholderExist) {
         const IsSignerNotExist = filterPrefill?.filter((x) => !x.signerObjId);
@@ -1648,8 +1658,15 @@ function PlaceHolderSign() {
   const signerAssignTour = [
     {
       selector: '[data-tut="assignSigner"]',
-      content:
-        "You need to attach a Signer to every role. You can do that by clicking this icon. Once you select a Signer it will be attached to all the fields associated with that role which appear in the same colour. ",
+      content: t("attach-signer-tour"),
+      position: "top",
+      style: { fontSize: "13px" }
+    }
+  ];
+  const textFieldTour = [
+    {
+      selector: '[data-tut="IsSigned"]',
+      content: t("text-field-tour"),
       position: "top",
       style: { fontSize: "13px" }
     }
@@ -1759,6 +1776,13 @@ function PlaceHolderSign() {
                 rounded={5}
                 closeWithMask={false}
               />
+              <Tour
+                onRequestClose={() => setIsSendAlert({})}
+                steps={textFieldTour}
+                isOpen={isSendAlert.mssg === textWidget}
+                rounded={5}
+                closeWithMask={false}
+              />
               {/* this component used to render all pdf pages in left side */}
               <RenderAllPdfPage
                 signPdfUrl={pdfDetails[0].URL}
@@ -1779,20 +1803,18 @@ function PlaceHolderSign() {
                 <div className=" w-full md:w-[95%] ">
                   {/* this modal is used show alert set placeholder for all signers before send mail */}
                   <ModalUi
-                    isOpen={isSendAlert.alert}
+                    isOpen={
+                      isSendAlert.alert && isSendAlert.mssg !== textWidget
+                    }
                     title={
                       isSendAlert.mssg === "sure" ||
-                      isSendAlert.mssg === textWidget
-                        ? t("fields-required")
-                        : isSendAlert.mssg === "confirm" && t("send-mail")
+                      (isSendAlert.mssg === "confirm" && t("send-mail"))
                     }
                     handleClose={() => handleCloseSendmailModal()}
                   >
                     <div className="max-h-96 overflow-y-scroll scroll-hide p-[20px] text-base-content">
                       {isSendAlert.mssg === "sure" ? (
                         <span>{t("placeholder-alert-1")}</span>
-                      ) : isSendAlert.mssg === textWidget ? (
-                        <p>{t("placeholder-alert-2")}</p>
                       ) : (
                         isSendAlert.mssg === "confirm" && (
                           <>
@@ -2085,6 +2107,7 @@ function PlaceHolderSign() {
                         setFontSize={setFontSize}
                         fontColor={fontColor}
                         setFontColor={setFontColor}
+                        unSignedWidgetId={unSignedWidgetId}
                       />
                     )}
                   </div>
