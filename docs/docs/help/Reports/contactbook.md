@@ -32,7 +32,7 @@ The Contactbook page displays a list of contacts with the following columns:
  
   <img width="828" alt="contactbook" src="https://github.com/user-attachments/assets/524a7aa7-594e-412a-ad50-caebc125c1db" />
 
-### Actions button
+### Action buttons
 
 - **Delete**: To delete a contact, click on the trash icon located next to the contact’s details. This will remove the contact from your Contactbook. A confirmation prompt may appear to prevent accidental deletions.
 
