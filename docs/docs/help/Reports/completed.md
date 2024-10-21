@@ -2,22 +2,22 @@
 sidebar_position: 3
 title: Completed
 ---
-# Completed Documents Report
+# Completed documents report
 ---
 
-The "Completed Documents" report within OpenSign serves as a vital tool for managing and reviewing all finalized documents that have been processed through the platform. This guide will walk you through the key features and functionalities of the "Completed Documents" report, enabling you to efficiently navigate and manage your signed documents.
+The "Completed documents" report within OpenSign serves as a vital tool for managing and reviewing all finalized documents that have been processed through the platform. This guide will walk you through the key features and functionalities of the "Completed documents" report, enabling you to efficiently navigate and manage your signed documents.
 
-```note: You can only see  documents owned by you in this report.```
+```note: In this report, you can only see documents that you own.```
 
-### Navigating to the Completed Documents Report
+### Navigating to the Completed documents report
 
 1. Once logged into OpenSign, you'll see a navigation panel on the left side of your screen.
 2. Click on **"Reports"** to expand the available options.
 3. Select **"Completed"** to view the list of documents that have been fully signed and processed.
 
-### Understanding the Completed Documents Report
+### Understanding the Completed documents report
 
-The "Completed Documents" report is displayed in a tabular format, presenting key information about each finalized document. Below is a breakdown of each column and its purpose:
+The "Completed documents" report is displayed in a tabular format, presenting key information about each finalized document. Below is a breakdown of each column and its purpose:
 
 <img width="816" alt="OpenSign_Signyourself" src="https://github.com/user-attachments/assets/4694c9b3-ca2c-4f27-a9d9-8dca220a4124" />
 
@@ -37,7 +37,7 @@ The "Completed Documents" report is displayed in a tabular format, presenting ke
 
 ### Action buttons
 
-The "Completed Documents" report also includes several actions icons for each document:
+The "Completed documents" report also includes several actions icons for each document:
 
 - **View Document:** The eye icon allows you to preview the document directly within OpenSign without needing to download it.
 
