@@ -9,37 +9,45 @@ Creating a template in OpenSign is straightforward and can significantly enhance
 
 # How to Create a Template in OpenSign™
 
-### Step 1: Begin New Template Creation
+## Step 1: 
+### Begin New Template Creation
 
 - **Navigate to New template form**: On the left sidebar, click on "Templates" to expand the menu. and Click on the "Create template" option.
 
-<img width="828" alt="Create Template" src="https://github.com/user-attachments/assets/fe7b0bd0-bb45-4f64-8450-83ffb5c3d7fc" />
+<img width="828" alt="Create Template" src="https://github.com/user-attachments/assets/1cb7610f-c144-4774-85c2-ed7d70e0a73c" />
 
-### Step 2: Uploading Your Document
+### Uploading Your Document
 
 - **[1] Choose File**: Once the "New template" page opens, click here to select and upload the document file from your computer that needs to be signed. Supported formats include PDF, PNG, JPG, JPEG, and DOCX.
 - **[2] Choose File from Dropbox**: Click the dropbox icon to select the document file from your dropbox account.
 
-### Step 3: Entering Template Details
+### Entering Template Details
 
 - **[3] Title** *(Required)*: Provide a title for your template. For example, "Demo Custom Template."
 - **[4] Description**: Optionally add a description to give context or instructions regarding the template. 
 - **[5] Note**: Optionally add a note to give context or instructions regarding the document.
 
-### Step 4: Set the sending order
+### Set the sending order
 - **[6] Send in Order**
   - **If you choose:**
   - **Yes**: Selecting this option will send the signing request to the first signer initially. Once the first signer completes their part, the next signer in the sequence will receive the request. This process continues until all signers have signed the document. This method ensures that the document is signed in a specific order.
   - **No**: Selecting this option will send the signing links to all signers simultaneously. Every signer can sign the document at their convenience, regardless of whether other signers have completed their signatures. This method is faster but does not enforce any signing order among the participants.
 Select the option that best suits the needs of your document processing.
-### Step 5: Auto reminder (feature only avilable for the subscribed user)
+### Auto reminder (feature only avilable for the subscribed user)
 - **[7]** Once you enable the auto reminder, a text field will appear allowing you to set the reminder for a specific number of days.
 - **Remind once in every (Days)**: Here, you can set the number of days for the reminder.
-  
-### Step 6: Proceed to Template Creation Panel
+### Security Setting
+- **[8] Enable OTP Verfication** : 
+If set to "Yes," the signer will be required to complete email OTP verification before viewing and signing the document. If "Enable OTP Verification" is set to "No," the signer will not be prompted for OTP verification during the signing process.
+
+- **[9] Enable tour**: 
+If set to "Yes," the signer will see the tour guide while signing the document. If your signer is familiar with OpenSign and you prefer not to display the tour guide, you can select "No," and the tour guide will not be shown to your signers.
+
+### Proceed to Template Creation Panel
 - **Next**: Click the "Next" button to proceed to the next stage of template creation, where you can add widgets and finalize the template.
 - **Cancel**: If you need to start over or make changes, click Cancel button to clear the form.
-### Step 7: Template creation 
+## Step 2: 
+### Template creation 
 
 <img width="828" alt="Create Template" src="https://github.com/user-attachments/assets/986a0068-e711-4367-91b6-349dc1db8c43" />
 
@@ -113,16 +121,19 @@ Select the option that best suits the needs of your document processing.
     - Add Signer/Change Signer: Clicking the first icon on the Email widget allows you to change the signer. You can choose from existing signers in the dropdown or add a new signer.
     - Copy : Clicking on this you can duplicate the email widget.
       
-### Step 8: Save Template 
+### Save Template 
 **Next button**: Once you’ve organized your widgets and set their properties, simply click the “Next” button to save your template.
 
 After doing so, a “Create Document” popup will appear, prompting you with the question: “Do you want to create a document using the template you just created?” You’ll have the option to choose either “Yes” or “No.”
+
 **If you select "Yes"**: It will create a document using the template you just created.
+
 **If you select "No"**: You will be redirected to the Manage templates form.
 
-### Step 9: Viewing and Managing Templates 
+## Step 3: 
+### Viewing and Managing Templates 
 
-<img width="828" alt="Manage Template" src="https://github.com/user-attachments/assets/86bf3628-987d-4ae2-89c3-b24ec1f6bdc2" />
+<img width="828" alt="Manage Template" src="https://github.com/user-attachments/assets/06b80221-5c42-451c-af03-44cc12e6aa2d" />
 
 On the Manage templates page you will see a list of templates you have created or have access to. The list includes details such as the template title, file, owner, signers, and whether the template is public.
 
@@ -136,13 +147,23 @@ On the Manage templates page you will see a list of templates you have created o
 
 **Quick Send**: For faster processing, the Quick Send feature allows you to swiftly create and send a document to a signer using the selected template.
 
+**Edit**: The "Edit" feature is crucial for keeping your document templates up-to-date and relevant. Whether you need to make minor tweaks or major changes, OpenSign's editing capabilities are user-friendly and efficient.
+Click on the three dots next to the template you want to edit.
+Select "Edit." Make the necessary changes and save them.
+
 **Share With Team**: Collaboration is essential for any successful team, and OpenSign simplifies sharing document templates with your team. Here's how you can utilize the "Share With Team" feature:
 Click on the three dots next to the template you want to share.
 Select "Share With Team."
 
-**Edit**: The "Edit" feature is crucial for keeping your document templates up-to-date and relevant. Whether you need to make minor tweaks or major changes, OpenSign's editing capabilities are user-friendly and efficient.
-Click on the three dots next to the template you want to edit.
-Select "Edit." Make the necessary changes and save them.
+**Embed**: The "Embed" option provides you with a code to embed the template into a website or other platforms, allowing users to interact with it directly from the external site.
+Click "Embed" to generate the code that can be copied and pasted into your desired web location. We currently support React, HTML/JavaScript and Angular-based websites.
+
+<img width="828" alt="Embed" src="https://github.com/user-attachments/assets/05dcaf5d-07b0-4069-bcd5-83e2daf71e29" />
+
+**Copy template id**: This action copies the unique ID associated with the template, which is useful for embedding or sharing with public users when your template is set to public.
+
+**Copy public URL**: This generates a public link for the template, allowing external users to access it without logging into OpenSign.
+Click "Copy Public URL" to generate the link, then share it as needed.
 
 **Delete**: Sometimes, it's necessary to clean up your templates to keep your workspace organized. The "Delete" feature allows you to remove outdated or unnecessary templates with ease.
 Click on the three dots next to the template you want to delete.
