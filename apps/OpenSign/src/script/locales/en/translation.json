@@ -682,6 +682,8 @@
   "form-title-2": "Security Setting",
   "public-tour-message": "The template needs to be public before you can generate a shareable link.",
   "add-user-template": "You need to add a role before you can add fields for it.",
-  "pdf-uncompatible": "This pdf is not compatible with opensign, please contact <support@opensignlabs.com>"
+  "pdf-uncompatible": "This pdf is not compatible with opensign, please contact <support@opensignlabs.com>",
+  "text-field-tour":"Fields of type 'Text' must be filled in advance before the document is sent. If you need the signers to provide input, use the 'Text Input' field instead.",
+  "attach-signer-tour":"You need to attach a Signer to every role. You can do that by clicking this icon. Once you select a Signer it will be attached to all the fields associated with that role which appear in the same colour."
  
 }

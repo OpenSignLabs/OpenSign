@@ -681,7 +681,9 @@
    "form-title-2": "Paramètre de sécurité",
   "public-tour-message": "Le modèle doit être public avant que vous puissiez générer un lien partageable.",
   "add-user-template":"Vous devez ajouter un rôle avant de pouvoir lui ajouter des champs. ",
-  "pdf-uncompatible":"Ce pdf n'est pas compatible avec opensign, veuillez contacter <support@opensignlabs.com>"
+  "pdf-uncompatible":"Ce pdf n'est pas compatible avec opensign, veuillez contacter <support@opensignlabs.com>",
+  "text-field-tour" :"Les champs de type 'Texte' doivent être remplis à l'avance avant l'envoi du document. Si vous avez besoin que les signataires fournissent des informations, utilisez plutôt le champ 'Saisie de texte'.",
+  "attach-signer-tour" :"Vous devez associer un signataire à chaque rôle. Vous pouvez le faire en cliquant sur cette icône. Une fois que vous avez sélectionné un signataire, il sera attaché à tous les champs associés à ce rôle qui apparaissent dans la même couleur."
 
 
 }

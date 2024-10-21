@@ -1885,12 +1885,16 @@ export const handleCopyNextToWidget = (
   //get position of previous widget and create new widget next to that widget on same data except
   // xPosition and key
   let newposition = position;
-  const calculateXPosition =
-    parseInt(position.xPosition) +
-    defaultWidthHeight(widgetType).width +
-    resizeBorderExtraWidth();
+  const calculateXPosition = parseInt(position.xPosition) + 10;
+  const calculateYPosition = parseInt(position.yPosition) + 10;
+
   const newId = randomId();
-  newposition = { ...newposition, xPosition: calculateXPosition, key: newId };
+  newposition = {
+    ...newposition,
+    xPosition: calculateXPosition,
+    yPosition: calculateYPosition,
+    key: newId
+  };
   //if condition to create widget in request-sign flow
   if (userId) {
     filterSignerPos = xyPostion.filter((data) => data.Id === userId);
