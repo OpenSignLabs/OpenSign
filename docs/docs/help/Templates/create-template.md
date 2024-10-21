@@ -124,7 +124,7 @@ If set to "Yes," the signer will see the tour guide while signing the document. 
 ### Save Template 
 **Next button**: Once you’ve organized your widgets and set their properties, simply click the “Next” button to save your template.
 
-After doing so, a “Create Document” popup will appear, prompting you with the question: “Do you want to create a document using the template you just created?” You’ll have the option to choose either “Yes” or “No.”
+After doing so, a “Create document” popup will appear, prompting you with the question: “Do you want to create a document using the template you just created?” You’ll have the option to choose either “Yes” or “No.”
 
 **If you select "Yes"**: It will create a document using the template you just created.
 
