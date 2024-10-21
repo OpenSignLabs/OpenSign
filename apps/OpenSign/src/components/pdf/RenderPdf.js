@@ -361,6 +361,7 @@ function RenderPdf({
                                             fontColor={fontColor}
                                             setFontColor={setFontColor}
                                             isResize={isResize}
+                                            unSignedWidgetId={unSignedWidgetId}
                                           />
                                         </React.Fragment>
                                       );
@@ -555,6 +556,7 @@ function RenderPdf({
                                             fontColor={fontColor}
                                             setFontColor={setFontColor}
                                             isResize={isResize}
+                                            unSignedWidgetId={unSignedWidgetId}
                                           />
                                         </React.Fragment>
                                       );
