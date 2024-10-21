@@ -2,7 +2,7 @@
 sidebar_position: 1
 title: Need your sign
 ---
-# Need your sign report in OpenSign
+# Need your sign report
 
 The "Need your sign" feature in OpenSign is designed to simplify the process of managing documents that require your signature. This guide will walk you through the various elements of the "Need your sign" report, helping you to efficiently navigate and complete your pending signing tasks.
 
