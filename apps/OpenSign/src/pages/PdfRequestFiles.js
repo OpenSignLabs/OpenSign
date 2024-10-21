@@ -1950,7 +1950,7 @@ function PdfRequestFiles(props) {
                             })
                           }
                           type="button"
-                          className="op-btn op-btn-secondary"
+                          className="op-btn op-btn-secondary ml-1"
                         >
                           {t("close")}
                         </button>
