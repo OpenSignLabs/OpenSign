@@ -28,7 +28,7 @@ The Expired documents report displays a list of documents that have not been sig
 - **Owner**: The user who uploaded or owns the document.
 - **Signers**: Lists the parties required to sign the document.
 
-## Actions Available
+### Action buttons
 
 For each expired document, you can perform several actions:
 
