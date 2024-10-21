@@ -856,7 +856,6 @@ function PlaceHolderSign() {
       if (prefillPlaceholder) {
         prefillPlaceholder.map((data) => {
           if (!isLabel) {
-            // isLabel = data.pos.some((position) => !position.options.response);
             const unfilledTextWidgets = data.pos.find(
               (position) => !position.options.response
             );
