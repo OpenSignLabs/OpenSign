@@ -3,11 +3,11 @@ sidebar_position: 6
 title: Expired
 ---
 
-# Expired Documents Report
+# Expired documents report
 
-The **Expired Documents** report in OpenSign allows you to manage and review documents that have reached their expiration date without being signed. This feature is essential for maintaining an organized record of inactive documents that may require follow-up or archival.
+The **Expired documents** report in OpenSign allows you to manage and review documents that have reached their expiration date without being signed. This feature is essential for maintaining an organized record of inactive documents that may require follow-up or archival.
 
-## Accessing Expired Documents
+## Accessing Expired documents
 
 To view your expired documents:
 
@@ -17,9 +17,9 @@ To view your expired documents:
    
 <img width="828" alt="Expired document" src="https://github.com/user-attachments/assets/01f3626f-d694-4d3b-82da-2f2b77693b76" />
 
-## Understanding the Report
+## Understanding the Expired documents report
 
-The Expired Documents report displays a list of documents that have not been signed by all parties before the designated expiration date. Each entry in the report includes the following information:
+The Expired documents report displays a list of documents that have not been signed by all parties before the designated expiration date. Each entry in the report includes the following information:
 
 - **Title**: The name of the document.
 - **Note**: A brief note associated with the document at the time of creation.
@@ -35,11 +35,11 @@ For each expired document, you can perform several actions:
 - **Delete**: Deletes the document from your OpenSign account.
 - **View**: Opens the document in a viewer within OpenSign, allowing you to review the details and contents of the document.
 
-## Managing Expired Documents
+## Managing Expired documents
 
 Managing your expired documents effectively can help ensure that no important document is overlooked. Consider the following tips:
 
-- **Review Regularly**: Check the Expired Documents report periodically to manage documents that require attention.
+- **Review Regularly**: Check the Expired documents report periodically to manage documents that require attention.
 - **Follow Up**: Contact the signers who have not completed their signatures informing them about the expired documents and resend the documents if necessary.
 - **Archive**: Move documents that are no longer active or needed to an archive folder to keep your workspace organized.
 
