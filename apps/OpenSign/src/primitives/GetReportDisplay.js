@@ -1226,13 +1226,15 @@ const ReportTable = (props) => {
           )}
         </div>
         <div
-          className={`${
-            isDashboard && props.List?.length > 0
-              ? "min-h-[317px]"
-              : currentList?.length === props.docPerPage
-                ? "h-fit"
-                : "h-screen"
-          } overflow-auto w-full border-b`}
+          className={`overflow-auto w-full border-b ${
+            props.List?.length > 0
+              ? isDashboard
+                ? "min-h-[317px]"
+                : currentList?.length === props.docPerPage
+                  ? "h-fit"
+                  : "h-screen"
+              : ""
+          }`}
         >
           <table className="op-table border-collapse w-full mb-4">
             <thead className="text-[14px]">
@@ -2140,6 +2142,24 @@ const ReportTable = (props) => {
               )}
             </tbody>
           </table>
+          {props.List?.length <= 0 && (
+            <div
+              className={`${
+                isDashboard ? "h-[317px]" : ""
+              } flex flex-col items-center justify-center w-ful bg-base-100 text-base-content rounded-xl py-4`}
+            >
+              <div className="w-[60px] h-[60px] overflow-hidden">
+                <img
+                  className="w-full h-full object-contain"
+                  src={pad}
+                  alt="img"
+                />
+              </div>
+              <div className="text-sm font-semibold">
+                {t("no-data-avaliable")}
+              </div>
+            </div>
+          )}
         </div>
         <div className="op-join flex flex-wrap items-center p-2">
           {props.List.length > props.docPerPage && (
@@ -2171,24 +2191,6 @@ const ReportTable = (props) => {
             </button>
           )}
         </div>
-        {props.List?.length <= 0 && (
-          <div
-            className={`${
-              isDashboard ? "h-[317px]" : ""
-            } flex flex-col items-center justify-center w-ful bg-base-100 text-base-content rounded-xl py-4`}
-          >
-            <div className="w-[60px] h-[60px] overflow-hidden">
-              <img
-                className="w-full h-full object-contain"
-                src={pad}
-                alt="img"
-              />
-            </div>
-            <div className="text-sm font-semibold">
-              {t("no-data-avaliable")}
-            </div>
-          </div>
-        )}
         <ModalUi
           title={t("add-contact")}
           isOpen={isContactform}
