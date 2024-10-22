@@ -2,18 +2,18 @@
 sidebar_position: 1
 title: Need your sign
 ---
-# Need Your Sign Report in OpenSign
+# Need your sign report
 
-The "Need Your Sign" feature in OpenSign is designed to simplify the process of managing documents that require your signature. This guide will walk you through the various elements of the "Need Your Sign" report, helping you to efficiently navigate and complete your pending signing tasks.
+The "Need your sign" feature in OpenSign is designed to simplify the process of managing documents that require your signature. This guide will walk you through the various elements of the "Need your sign" report, helping you to efficiently navigate and complete your pending signing tasks.
 
-## Accessing the "Need Your Sign" report
+## Accessing the "Need your sign" report
 
 - **Login to OpenSign**: Start by logging into your OpenSign account.
-- **Navigate to "Need Your Sign"**: Once logged in, you will find a navigation panel on the left side of your screen. Under the "Reports" section, click on "Need Your Sign" to view all documents that require your signature.
+- **Navigate to "Need your sign"**: Once logged in, you will find a navigation panel on the left side of your screen. Under the "Reports" section, click on "Need your sign" to view all documents that require your signature.
 
-## Understanding the "Need Your Sign" Interface
+## Understanding the "Need your sign" report
 
-Upon clicking "Need Your Sign," you will be presented with a list of documents awaiting your signature. Here's a breakdown of the key elements within this interface:
+Upon clicking "Need your sign," you will be presented with a list of documents awaiting your signature. Here's a breakdown of the key elements within this interface:
 
 - **Sr.No**: This column provides a serial number for each document in the list, allowing for easy identification and reference.
  
@@ -31,7 +31,7 @@ Upon clicking "Need Your Sign," you will be presented with a list of documents a
   
 - **Sign**: The "SIGN" button is prominently displayed next to each document. Clicking this button will open the document in the signing interface, allowing you to review and apply your signature.
 
-## Action buttons
+### Action buttons
 
 - **View Document**: By clicking "View" under the "Signers" column, you can get more details about the document, including the list of individuals who have already signed or are expected to sign it.
   
@@ -44,7 +44,7 @@ To sign a document:
 1. Click the **SIGN** button next to the document you wish to sign.
 2. Review the document carefully within the OpenSign interface.
 3. Apply your signature following the prompts.
-4. Once signed, the document will move from the "Need Your Sign" section to the "Completed" section, indicating that the signing process is finished.
+4. Once signed, the document will move from the "Need your sign" section to the "Completed" section, indicating that the signing process is finished.
 
 If you require more help, feel free to reach out to our customer support on support@opensignlabs.com.
 

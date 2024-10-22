@@ -9,7 +9,7 @@ import ReactPlayer from 'react-player';
 
 Follow the official Docker installation guide based on your operating system.
 
-Create a Docker Hub account if you don't already have one
+Create a Docker Hub account if you don't already have one.
 
 **Important:** Don't forget to verify your Docker Hub account via the email verification link. If you skip this step, the deployment might fail due to unauthorized access errors when pulling Docker images.
 
