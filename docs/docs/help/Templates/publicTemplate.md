@@ -2,7 +2,9 @@
 sidebar_position: 4
 title: Setting up an OpenSign template for public signing
 ---
-With OpenSign public profiles, you can now create documents for signatures on-demand through self-service. Streamline document preparation and seamlessly integrate collected data into your existing applications. The Public Profile feature delivers the security, user-friendliness, and versatility you and your clients expect from OpenSign.
+# What is the OpenSign Public Profile feature?
+
+The OpenSign Public Profile feature offers the ultimate public document signing solution without any need for integrations. With this feature, users can share document templates publicly, allowing anyone to access and sign the documents directly through the shared templates. This streamlines the signing process by providing a seamless, accessible way for public signers to complete documents without additional steps or integrations.
 
 ## How to setup Public profile, Design templates, and Enable public signing?
 
