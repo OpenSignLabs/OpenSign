@@ -4,9 +4,9 @@ title: Setting up an OpenSign template for public signing
 ---
 With OpenSign public profiles, you can now create documents for signatures on-demand through self-service. Streamline document preparation and seamlessly integrate collected data into your existing applications. The Public Profile feature delivers the security, user-friendliness, and versatility you and your clients expect from OpenSign.
 
-# How to setup Public profile, Design templates, and Enable public signing?
+## How to setup Public profile, Design templates, and Enable public signing?
 
-## Step 1: 
+### Step 1: 
 ### Set up your Public profile (Username & Tagline)
 
 - **Navigate to your profile**: On the top right, click your profile icon, select "Edit Profile," and enter a public username (e.g., "OpenSignPublicProfile").
@@ -14,7 +14,7 @@ With OpenSign public profiles, you can now create documents for signatures on-de
   
 <img width="828" alt="Set up Public Profile" src="https://github.com/user-attachments/assets/6c9cbd4b-eb1a-4a5b-bb0a-21777621555c" />
 
-## Step 2: 
+### Step 2: 
 ### Create a New Template
 
 - **Navigate to Templates**: On the left sidebar, click "Templates" and select "Create template."
@@ -38,7 +38,7 @@ With OpenSign public profiles, you can now create documents for signatures on-de
 - **Next**: Click the "Next" button to proceed to the next stage of template creation, where you can add widgets and finalize the template.
 - **Cancel**: If you need to start over or make changes, click Cancel button to clear the form.
 
-# Step 3: 
+### Step 3: 
 ### Template creation 
 
 <img width="828" alt="Create Template" src="https://github.com/user-attachments/assets/36a269fb-179b-462e-abc0-f436ec195a4a" />
@@ -61,7 +61,7 @@ After doing so, a “Create Document” popup will appear, prompting you with th
 
 Choose "No" you will be redirected to the Manage templates screen.
 
-## Step 4: 
+### Step 4: 
 ### Managing and making template public
 
 <img width="828" alt="Manage Template" src="https://github.com/user-attachments/assets/4fd68285-d489-4998-bcf1-1cf40eada723" />
@@ -78,7 +78,7 @@ On the Manage Templates page, you'll see a list of templates you've created or h
 
 <img width="828" alt="Manage Template" src="https://github.com/user-attachments/assets/99977728-86de-4913-8d2e-f54ab0b18033" />
 
-## Step 5: 
+### Step 5: 
 ### Sign the document through the public template.
 
   - Click the Sign Now button next to the template you want to sign. Once the document loads, click Sign Now in the top right corner. A popup will appear asking for signer details such as Name, Email, and Phone Number.
@@ -91,7 +91,7 @@ On the Manage Templates page, you'll see a list of templates you've created or h
     
 <img width="828" alt="Signed the template" src="https://github.com/user-attachments/assets/0c667098-1c79-4c6a-b59f-03d20ac85552" />
 
-## Step 6: 
+### Step 6: 
 ### Print document, Download completion certificate, and Download Document
 
 You’ll see options to Print or Download the signed document for your records.
