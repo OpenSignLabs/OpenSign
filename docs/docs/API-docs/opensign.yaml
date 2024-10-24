@@ -1423,6 +1423,7 @@ components:
         sendInOrder:
           type: boolean
           example: true
+          description: "If set to 'true', only the first signer will receive the signature request email initially. Emails to subsequent signers will be triggered sequentially, with each sent only after the previous signer has completed their signing. By default, sendInOrder is set to 'true'."
         enableOTP:
           type: boolean
           example: false 
@@ -1481,6 +1482,7 @@ components:
         sendInOrder:
           type: boolean
           example: true
+          description: "If set to 'true', only the first signer will receive the signature request email initially. Emails to subsequent signers will be triggered sequentially, with each sent only after the previous signer has completed their signing. By default, sendInOrder is set to 'true'."
         enableOTP:
           type: boolean
           example: false
@@ -1555,6 +1557,7 @@ components:
         sendInOrder:
           type: boolean
           example: true
+          description: "If set to 'true', only the first signer will receive the signature request email initially. Emails to subsequent signers will be triggered sequentially, with each sent only after the previous signer has completed their signing. By default, sendInOrder is set to 'true'."
         timeToCompleteDays:
           type: number
           description: time to complete days is used to calculate expiry date of your document
@@ -1703,6 +1706,7 @@ components:
         sendInOrder:
           type: boolean
           example: true
+          description: "If set to 'true', only the first signer will receive the signature request email initially. Emails to subsequent signers will be triggered sequentially, with each sent only after the previous signer has completed their signing. By default, sendInOrder is set to 'true'."
         enableOTP:
           type: boolean
           example: false 
