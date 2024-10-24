@@ -1,9 +1,10 @@
 ---
 sidebar_position: 4
-title: Setting up an OpenSign Template for public signing
+title: Setting up an OpenSign template for public signing
 ---
+With OpenSign public profiles, you can now create documents for signatures on-demand through self-service. Streamline document preparation and seamlessly integrate collected data into your existing applications. The Public Profile feature delivers the security, user-friendliness, and versatility you and your clients expect from OpenSign.
 
-# How to setup Public profile, Design templates, and enable public signing?
+# How to setup Public profile, Design templates, and Enable public signing?
 
 ## Step 1: 
 ### Set up your Public profile (Username & Tagline)
@@ -45,9 +46,9 @@ title: Setting up an OpenSign Template for public signing
 - **[1] Define Roles**:
   - **Add Roles**: In the roles section on the right, click "+ Add role" to specify the roles involved in the document, such as Candidate, HR, and Manager.
 
-    **Note**: Make sure the public role is positioned at the top if 'Send in Order' is set to Yes; otherwise, you will be prompted to make the template public.
+    **Note**: Make sure the public role is positioned at the top if 'Send in Order' is set to Yes; Otherwise, you will not be able to make the template public.
     
-- **[2] Assign Widgets to Roles**: Click on each role to highlight it, then drag and drop the widget to assign it to that role.
+- **[2] Assign Widgets to Roles**: Click on each role to highlight it, then drag and drop the widget to assign it to that role. The widgets will appear in the same colour as the role name once you drop it on the document.
   - **[1] Assign signature widget**: Select the Role from the right side panel, click on the signature widget, and position it where the signature is required. You can place multiple signature widgets for each Role, as required.
   - **[2] Add other widgets**: Depending on your needs, you can include additional widgets such as:
 Stamps, Initials, Name, Date, Text, Checkbox, and more.
@@ -58,7 +59,7 @@ Stamps, Initials, Name, Date, Text, Checkbox, and more.
 
 After doing so, a “Create Document” popup will appear, prompting you with the question: “Do you want to create a document using the template you just created?” You’ll have the option to choose either “Yes” or “No.”
 
-Choose "No" you will be redirected to the Manage templates.
+Choose "No" you will be redirected to the Manage templates screen.
 
 ## Step 4: 
 ### Managing and making template public
@@ -67,11 +68,13 @@ Choose "No" you will be redirected to the Manage templates.
 
 On the Manage Templates page, you'll see a list of templates you've created or have access to. This list provides details such as the template title, file, owner, signers, and whether the template is public.
 
-To make a template public, click the toggle button in the public column on the template.
+  - To make a template public, click the toggle button in the public column on the template.
 
-A public profile popup will appear, where you can copy the public URL.
+  - A confirmation popup will appear with the message, 'Are you sure you want to make this template public?' You can choose either Yes or No. Select Yes to make the template public.
 
-Copy and share this link, and anyone with it can view your publicly available templates by pasting the URL into their browser.
+  - A public profile popup will appear, where you can copy the public URL.
+
+  - Copy and share this link, and anyone with it can view your publicly available templates by pasting the URL into their browser.
 
 <img width="828" alt="Manage Template" src="https://github.com/user-attachments/assets/99977728-86de-4913-8d2e-f54ab0b18033" />
 
