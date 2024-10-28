@@ -41,6 +41,8 @@ In the "Draw Signature" popup, you have three options available:
      -   Upload a digitally scanned signature.
 
      -   Type the signature using text input.
+        
+     -   Select your signature from "My Signature." (This option is available only if you have uploaded a signature under "My Signature" in Settings.)
 
 - **[2] Add other widgets**: Depending on your needs, you can include additional widgets such as:
      - **Stamp**: After dragging and dropping the stamp widget, the "Upload Stamp Image" popup will appear, allowing you to upload an image from your file explorer. Once the stamp is uploaded, you will see the stamp image on the document. Additionally, alongside your stamp image, there is an option to copy the image. Clicking on the copy option presents three choices:
