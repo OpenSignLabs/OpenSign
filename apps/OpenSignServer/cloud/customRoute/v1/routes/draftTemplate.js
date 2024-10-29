@@ -98,8 +98,8 @@ export default async function draftTemplate(request, response) {
       object.set('ExtUserPtr', extUserPtr);
       object.set('IsEnableOTP', isEnableOTP);
       object.set('IsTourEnabled', isTourEnabled);
-      const Public = isPublic !== undefined ? template?.IsPublic : false;
-      if (template?.IsPublic !== undefined) {
+      const Public = isPublic !== undefined ? isPublic : false;
+      if (isPublic !== undefined) {
         object.set('IsPublic', Public);
       }
       let contact = [];
