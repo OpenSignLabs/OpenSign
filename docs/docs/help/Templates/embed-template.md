@@ -2,6 +2,8 @@
 sidebar_position: 5
 title: Embedding OpenSign templates
 ---
+import ReactPlayer from 'react-player';
+
 # What is OpenSign Template Embedding?
 OpenSign Template Embedding allows users to seamlessly integrate public document templates into their websites or applications. By embedding templates, you can provide a direct and interactive signing experience for your users without requiring them to leave your platform. This feature supports various technologies like React, Next.js, HTML, JavaScript, and Angular, making it easy to add signing capabilities to different web projects.
 With OpenSign Template Embedding, businesses can offer a streamlined and professional document signing process, enhancing user experience and workflow efficiency.
