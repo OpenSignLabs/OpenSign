@@ -74,6 +74,13 @@ On the Manage templates page, you'll see a list of templates you've created or h
 
   - We support embedding the template in React/Next.js, HTML/JavaScript, and Angular application.
 
+After making the template public, you’ll have an additional option to view the template embedding code.
+To access it:
+
+  - Click on the three dots (options menu) next to the template.
+    
+  - Select the Embed option from the dropdown menu.
+
 **Embed the template in a React or Next.js application**
   - Copy the code and paste it into your React or Next.js application.
   - Install the required OpenSign dependencies and run your project.
