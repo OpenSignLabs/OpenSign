@@ -18,7 +18,7 @@ async function sendMailProvider(req, plan, monthchange) {
         port: process.env.SMTP_PORT || 465,
         secure: smtpsecure,
         auth: {
-          user: process.env.SMTP_USER_EMAIL,
+          user: process.env.SMTP_USERNAME ? process.env.SMTP_USERNAME : process.env.SMTP_USER_EMAIL,
           pass: process.env.SMTP_PASS,
         },
       });
