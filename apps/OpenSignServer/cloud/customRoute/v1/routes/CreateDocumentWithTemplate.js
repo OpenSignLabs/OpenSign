@@ -49,7 +49,7 @@ export default async function createDocumentWithTemplate(request, response) {
   const send_email = request.body.send_email;
   const email_subject = request.body.email_subject;
   const email_body = request.body.email_body;
-  const sendInOrder = request.body.sendInOrder || false;
+  const sendInOrder = request.body.sendInOrder || true;
   const TimeToCompleteDays = request.body.timeToCompleteDays || 15;
 
   try {

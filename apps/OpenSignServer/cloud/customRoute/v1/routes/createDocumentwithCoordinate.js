@@ -62,7 +62,7 @@ export default async function createDocumentwithCoordinate(request, response) {
   const fileData = request.files?.[0] ? request.files[0].buffer : null;
   const email_subject = request.body.email_subject;
   const email_body = request.body.email_body;
-  const sendInOrder = request.body.sendInOrder || false;
+  const sendInOrder = request.body.sendInOrder || true;
   const TimeToCompleteDays = request.body.timeToCompleteDays || 15;
   const IsEnableOTP = request.body?.enableOTP === true ? true : false;
   const isTourEnabled = request.body?.enableTour || false;

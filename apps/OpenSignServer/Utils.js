@@ -234,3 +234,7 @@ export const planCredits = {
   'teams-monthly': 100,
   'teams-yearly': 500,
 };
+
+export function parseJwt(token) {
+  return JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+}
