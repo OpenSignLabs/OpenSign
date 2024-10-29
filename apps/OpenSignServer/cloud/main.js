@@ -75,6 +75,14 @@ import saveToFileAdapter from './parsefunction/saveToFileAdapter.js';
 import getFileAdapter from './parsefunction/getFileAdapter.js';
 import addPfxFile from './parsefunction/addPfxFile.js';
 import getPfxFile from './parsefunction/getPfxFile.js';
+import getTenant from './parsefunction/getTenant.js';
+import getSigners from './parsefunction/getSigners.js';
+import saveFile from './parsefunction/saveFile.js';
+import savecontact from './parsefunction/savecontact.js';
+import isUserInContactBook from './parsefunction/isUserInContactBook.js';
+import updateTourStatus from './parsefunction/updateTourStatus.js';
+import saveTemplate from './parsefunction/saveTemplate.js';
+import updateToPublicTemplate from './parsefunction/updateToPublicTemplate.js';
 
 // This afterSave function triggers after an object is added or updated in the specified class, allowing for post-processing logic.
 Parse.Cloud.afterSave('contracts_Document', DocumentAftersave);
@@ -162,3 +170,11 @@ Parse.Cloud.define('addfileadapter', addFileAdapter);
 Parse.Cloud.define('getfileadapter', getFileAdapter);
 Parse.Cloud.define('addpfx', addPfxFile);
 Parse.Cloud.define('getpfx', getPfxFile);
+Parse.Cloud.define('gettenant', getTenant);
+Parse.Cloud.define('getsigners', getSigners);
+Parse.Cloud.define('savetemplate', saveTemplate);
+Parse.Cloud.define('savefile', saveFile);
+Parse.Cloud.define('savecontact', savecontact);
+Parse.Cloud.define('isuserincontactbook', isUserInContactBook);
+Parse.Cloud.define('updatetourstatus', updateTourStatus);
+Parse.Cloud.define('updatetopublictemplate', updateToPublicTemplate);

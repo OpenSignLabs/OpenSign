@@ -34,7 +34,8 @@ export async function fetchSubscription(
   extUserId,
   contactObjId,
   isGuestSign = false,
-  isPublic = false
+  isPublic = false,
+  jwtToken
 ) {
   try {
     const Extand_Class = localStorage.getItem("Extand_Class");
@@ -48,10 +49,13 @@ export async function fetchSubscription(
     }
     const baseURL = localStorage.getItem("baseUrl");
     const url = `${baseURL}functions/getsubscriptions`;
+    const token = jwtToken
+      ? { jwttoken: jwtToken }
+      : { sessionToken: localStorage.getItem("accesstoken") };
     const headers = {
       "Content-Type": "application/json",
       "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
-      sessionToken: localStorage.getItem("accesstoken")
+      ...token
     };
     const params = isGuestSign
       ? { contactId: contactObjId }
@@ -226,12 +230,25 @@ export const pdfNewWidthFun = (divRef) => {
 };
 
 //`contractUsers` function is used to get contract_User details
-export const contractUsers = async () => {
+export const contractUsers = async (jwttoken) => {
   try {
-    const userDetails = await Parse.Cloud.run("getUserDetails");
+    const url = `${localStorage.getItem("baseUrl")}functions/getUserDetails`;
+    const parseAppId = localStorage.getItem("parseAppId");
+    const accesstoken = localStorage.getItem("accesstoken");
+    const token = jwttoken
+      ? { jwttoken: jwttoken }
+      : { "X-Parse-Session-Token": accesstoken };
+    const headers = {
+      headers: {
+        "Content-Type": "application/json",
+        "X-Parse-Application-Id": parseAppId,
+        ...token
+      }
+    };
+    const userDetails = await axios.post(url, {}, headers);
     let data = [];
-    if (userDetails) {
-      const json = JSON.parse(JSON.stringify(userDetails));
+    if (userDetails?.data?.result) {
+      const json = JSON.parse(JSON.stringify(userDetails.data.result));
       data.push(json);
     }
     return data;
@@ -1762,14 +1779,17 @@ export const contactBook = async (objectId) => {
 };
 
 //function for getting document details from contract_Documents class
-export const contractDocument = async (documentId) => {
+export const contractDocument = async (documentId, JwtToken) => {
   const data = { docId: documentId };
+  const token = JwtToken
+    ? { jwtToken: JwtToken }
+    : { sessionToken: localStorage.getItem("accesstoken") };
   const documentDeatils = await axios
     .post(`${localStorage.getItem("baseUrl")}functions/getDocument`, data, {
       headers: {
         "Content-Type": "application/json",
         "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
-        sessionToken: localStorage.getItem("accesstoken")
+        ...token
       }
     })
     .then((Listdata) => {
@@ -1969,20 +1989,28 @@ export const getAppLogo = async () => {
   }
 };
 
-export const getTenantDetails = async (objectId) => {
+export const getTenantDetails = async (objectId, jwttoken) => {
   try {
-    const tenantCreditsQuery = new Parse.Query("partners_Tenant");
-    tenantCreditsQuery.equalTo("UserId", {
-      __type: "Pointer",
-      className: "_User",
-      objectId: objectId
+    const url = `${localStorage.getItem("baseUrl")}functions/gettenant`;
+    const parseAppId = localStorage.getItem("parseAppId");
+    const accesstoken = localStorage.getItem("accesstoken");
+    const token = jwttoken
+      ? { jwttoken: jwttoken }
+      : { "X-Parse-Session-Token": accesstoken };
+    const data = jwttoken ? {} : { userId: objectId };
+    const res = await axios.post(url, data, {
+      headers: {
+        "Content-Type": "application/json",
+        "X-Parse-Application-Id": parseAppId,
+        ...token
+      }
     });
-    const res = await tenantCreditsQuery.first();
     if (res) {
-      const updateRes = JSON.parse(JSON.stringify(res));
+      const updateRes = JSON.parse(JSON.stringify(res.data.result));
       return updateRes;
     }
-  } catch (e) {
+  } catch (err) {
+    console.log("err in gettenant", err);
     return "user does not exist!";
   }
 };
@@ -2231,18 +2259,21 @@ export const handleDownloadCertificate = async (
     }
   }
 };
-export async function findContact(value) {
+export async function findContact(value, jwttoken) {
   try {
-    const currentUser = Parse.User.current();
-    const contactbook = new Parse.Query("contracts_Contactbook");
-    contactbook.equalTo(
-      "CreatedBy",
-      Parse.User.createWithoutData(currentUser.id)
-    );
-    contactbook.notEqualTo("IsDeleted", true);
-    contactbook.matches("Email", new RegExp(value, "i"));
-
-    const contactRes = await contactbook.find();
+    const baseURL = localStorage.getItem("baseUrl");
+    const url = `${baseURL}functions/getsigners`;
+    const token = jwttoken
+      ? { jwttoken: jwttoken }
+      : { "X-Parse-Session-Token": localStorage.getItem("accesstoken") };
+    const headers = {
+      "Content-Type": "application/json",
+      "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
+      ...token
+    };
+    const searchEmail = value;
+    const axiosRes = await axios.post(url, { searchEmail }, { headers });
+    const contactRes = axiosRes?.data?.result || [];
     if (contactRes) {
       const res = JSON.parse(JSON.stringify(contactRes));
       return res;
