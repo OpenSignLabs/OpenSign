@@ -69,7 +69,21 @@ const BulkSendUi = (props) => {
         if (subscription?.plan === "freeplan") {
           setIsFreePlan(true);
         }
-        const resCredits = await Parse.Cloud.run("allowedcredits");
+        const token = props.jwttoken
+          ? { jwttoken: props.jwttoken }
+          : { "X-Parse-Session-Token": localStorage.getItem("accesstoken") };
+        const axiosres = await axios.post(
+          `${localStorage.getItem("baseUrl")}functions/allowedcredits`,
+          {},
+          {
+            headers: {
+              "Content-Type": "application/json",
+              "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
+              ...token
+            }
+          }
+        );
+        const resCredits = axiosres.data && axiosres.data.result;
         if (resCredits) {
           const allowedcredits = resCredits?.allowedcredits || 0;
           const addoncredits = resCredits?.addoncredits || 0;
@@ -81,7 +95,7 @@ const BulkSendUi = (props) => {
           }
           setAmount((obj) => ({ ...obj, totalcredits: totalcredits }));
         }
-        const getPlaceholder = props.item?.Placeholders;
+        const getPlaceholder = props?.Placeholders;
         const checkIsSignatureExistt = getPlaceholder?.every((placeholderObj) =>
           placeholderObj?.placeHolder?.some((holder) =>
             holder?.pos?.some((posItem) => posItem?.type === "signature")
@@ -97,7 +111,7 @@ const BulkSendUi = (props) => {
     } else {
       setIsBulkAvailable(true);
       setAdmin((obj) => ({ ...obj, isAdmin: true }));
-      const getPlaceholder = props.item?.Placeholders;
+      const getPlaceholder = props?.Placeholders;
       const checkIsSignatureExistt = getPlaceholder?.every((placeholderObj) =>
         placeholderObj?.placeHolder?.some((holder) =>
           holder?.pos?.some((posItem) => posItem?.type === "signature")
@@ -194,7 +208,7 @@ const BulkSendUi = (props) => {
     setIsSubmit(true);
 
     // Create a copy of Placeholders array from props.item
-    let Placeholders = [...props.item.Placeholders];
+    let Placeholders = [...props.Placeholders];
     // Initialize an empty array to store updated documents
     let Documents = [];
     // Loop through each form
@@ -251,12 +265,16 @@ const BulkSendUi = (props) => {
   };
 
   const batchQuery = async (Documents) => {
-    const serverUrl = localStorage.getItem("baseUrl");
-    const functionsUrl = `${serverUrl}functions/batchdocuments`;
+    const token = props.jwttoken
+      ? { jwttoken: props.jwttoken }
+      : { "X-Parse-Session-Token": localStorage.getItem("accesstoken") };
+    const functionsUrl = `${localStorage.getItem(
+      "baseUrl"
+    )}functions/batchdocuments`;
     const headers = {
       "Content-Type": "application/json",
       "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
-      sessionToken: localStorage.getItem("accesstoken")
+      ...token
     };
     const params = { Documents: JSON.stringify(Documents) };
     try {
@@ -362,6 +380,7 @@ const BulkSendUi = (props) => {
                                           fieldIndex
                                         )
                                       }
+                                      jwttoken={props?.jwttoken}
                                     />
                                   </div>
                                 ))}

@@ -19,11 +19,16 @@ const LinkUserModal = (props) => {
         details={props.handleAddUser}
         closePopup={props.closePopup}
         signersData={props?.signersData}
+        jwttoken={props?.jwttoken}
       />
       <div className="op-divider text-base-content mx-[25%] my-1">
         {t("or")}
       </div>
-      <AddContact details={props.handleAddUser} closePopup={props.closePopup} />
+      <AddContact
+        details={props.handleAddUser}
+        closePopup={props.closePopup}
+        jwttoken={props?.jwttoken}
+      />
     </ModalUi>
   );
 };

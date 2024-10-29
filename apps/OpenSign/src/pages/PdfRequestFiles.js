@@ -132,12 +132,10 @@ function PdfRequestFiles(props) {
   const [publicRes, setPublicRes] = useState({});
   const [documentId, setDocumentId] = useState("");
   const [isPublicContact, setIsPublicContact] = useState(false);
-  const [pdfArrayBuffer, setPdfArrayBuffer] = useState("");
   const [plancode, setPlanCode] = useState("");
   const isHeader = useSelector((state) => state.showHeader);
   const divRef = useRef(null);
   const [isDownloadModal, setIsDownloadModal] = useState(false);
-
   const isMobile = window.innerWidth < 767;
 
   let isGuestSignFlow = false;
@@ -323,8 +321,6 @@ function PdfRequestFiles(props) {
             const arrayBuffer = await convertPdfArrayBuffer(url);
             if (arrayBuffer === "Error") {
               setHandleError(t("something-went-wrong-mssg"));
-            } else {
-              setPdfArrayBuffer(arrayBuffer);
             }
           } else {
             setHandleError(t("something-went-wrong-mssg"));
@@ -408,8 +404,6 @@ function PdfRequestFiles(props) {
           const arrayBuffer = await convertPdfArrayBuffer(url);
           if (arrayBuffer === "Error") {
             setHandleError(t("something-went-wrong-mssg"));
-          } else {
-            setPdfArrayBuffer(arrayBuffer);
           }
         } else {
           setHandleError(t("something-went-wrong-mssg"));

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import Parse from "parse";
 import AsyncSelect from "react-select/async";
 import { useTranslation } from "react-i18next";
+import axios from "axios";
 
 const SelectSigners = (props) => {
   const { t } = useTranslation();
@@ -31,17 +31,19 @@ const SelectSigners = (props) => {
 
   const loadOptions = async (inputValue) => {
     try {
-      const currentUser = Parse.User.current();
-      const contactbook = new Parse.Query("contracts_Contactbook");
-      contactbook.equalTo(
-        "CreatedBy",
-        Parse.User.createWithoutData(currentUser.id)
-      );
-      if (inputValue.length > 1) {
-        contactbook.matches("Name", new RegExp(inputValue, "i"));
-      }
-      contactbook.notEqualTo("IsDeleted", true);
-      const contactRes = await contactbook.find();
+      const baseURL = localStorage.getItem("baseUrl");
+      const url = `${baseURL}functions/getsigners`;
+      const token = props?.jwttoken
+        ? { jwttoken: props?.jwttoken }
+        : { "X-Parse-Session-Token": localStorage.getItem("accesstoken") };
+      const headers = {
+        "Content-Type": "application/json",
+        "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
+        ...token
+      };
+      const search = inputValue;
+      const axiosRes = await axios.post(url, { search }, { headers });
+      const contactRes = axiosRes?.data?.result || [];
       if (contactRes) {
         const res = JSON.parse(JSON.stringify(contactRes));
         //compareArrays is a function where compare between two array (total signersList and dcument signers list)
