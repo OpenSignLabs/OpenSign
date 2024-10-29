@@ -99,7 +99,7 @@ Watch the video below to see how to embed the template in a React or Next.js app
 Watch the video below to see how to embed the template in HTML or JavaScript application.
 
 <div>
-    <ReactPlayer playing controls url='https://youtu.be/0CXZGRiGIjw?si=MqGkTZ1uz-2F-5Qn' />
+    <ReactPlayer playing ={false} controls url='https://youtu.be/0CXZGRiGIjw?si=MqGkTZ1uz-2F-5Qn' />
 </div>
       
 **Embed the template in an Angular project**
@@ -109,7 +109,7 @@ Watch the video below to see how to embed the template in HTML or JavaScript app
 Watch the video below to see how to embed the template in an Angular application.
 
 <div>
-    <ReactPlayer playing controls url='https://youtu.be/3zz5flzql8M?si=2TgnLgjd0laCX3fu' />
+    <ReactPlayer playing = {false} controls url='https://youtu.be/3zz5flzql8M?si=2TgnLgjd0laCX3fu' />
 </div>
       
 ### Step 5: Sign the document through the Embed public template.
