@@ -65,7 +65,7 @@ async function sendMailProvider(req, plan, monthchange) {
         const pdfName = req.params.pdfName && `${req.params.pdfName}.pdf`;
         const file = {
           filename: pdfName || 'exported.pdf',
-          content: smtpenable ? PdfBuffer : undefined, //fs.readFileSync('./exports/exported_file_1223.pdf'),
+          content: smtpenable ? PdfBuffer : undefined,
           data: smtpenable ? undefined : PdfBuffer,
         };
 

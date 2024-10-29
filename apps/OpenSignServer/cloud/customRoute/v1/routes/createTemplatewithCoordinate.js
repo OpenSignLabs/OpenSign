@@ -17,7 +17,7 @@ export default async function createTemplatewithCoordinate(request, response) {
   const folderId = request.body.folderId;
   const base64File = request.body.file;
   const fileData = request.files?.[0] ? request.files[0].buffer : null;
-  const SendinOrder = request.body.sendInOrder || false;
+  const SendinOrder = request.body.sendInOrder || true;
   const isEnableOTP = request.body?.enableOTP === true ? true : false;
   const isTourEnabled = request.body?.enableTour || false;
 
