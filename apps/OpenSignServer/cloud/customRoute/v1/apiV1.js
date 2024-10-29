@@ -7,6 +7,7 @@ import getUser from './routes/getUser.js';
 import getDocumentList from './routes/getDocumentList.js';
 import getDocument from './routes/getDocument.js';
 import getContact from './routes/getContact.js';
+import createUser from './routes/createUser.js';
 import deleteContact from './routes/deleteContact.js';
 import getContactList from './routes/getContactList.js';
 import draftDocument from './routes/draftDocument.js';
@@ -29,11 +30,11 @@ import getFolder from './routes/getFolder.js';
 import createFolder from './routes/createFolder.js';
 import updateFolder from './routes/updateFolder.js';
 import getFolderList from './routes/getFolderList.js';
+import login from './routes/login.js';
 import deleteFolder from './routes/deleteFolder.js';
 dotenv.config();
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
-
 app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
@@ -46,6 +47,9 @@ app.post('/createcontact', createContact);
 
 // get contact on the basis of id
 app.get('/contact/:contact_id', getContact);
+
+// get contact on the basis of id
+app.post('/users', createUser);
 
 // soft delete contact
 app.delete('/contact/:contact_id', deleteContact);
@@ -121,3 +125,4 @@ app.get('/folder/:folder_id', getFolder);
 
 // get folder list
 app.get('/folderlist', getFolderList);
+app.get('/login', login);

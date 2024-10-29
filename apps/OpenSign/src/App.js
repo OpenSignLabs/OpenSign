@@ -24,6 +24,7 @@ import { serverUrl_fn } from "./constant/appinfo";
 const DebugPdf = lazy(() => import("./pages/DebugPdf"));
 const ForgetPassword = lazy(() => import("./pages/ForgetPassword"));
 const GuestLogin = lazy(() => import("./pages/GuestLogin"));
+const SenderLogin = lazy(() => import("./pages/SenderLogin"));
 const Pgsignup = lazy(() => import("./pages/Pgsignup"));
 const Subscriptions = lazy(() => import("./pages/PlanSubscriptions"));
 const ChangePassword = lazy(() => import("./pages/ChangePassword"));
@@ -116,6 +117,10 @@ function App() {
             <Route
               path="/login/:base64url"
               element={<LazyPage Page={GuestLogin} />}
+            />
+             <Route
+              path="/login/sender/:session"
+              element={<LazyPage Page={SenderLogin} />}
             />
             <Route path="/debugpdf" element={<LazyPage Page={DebugPdf} />} />
             <Route

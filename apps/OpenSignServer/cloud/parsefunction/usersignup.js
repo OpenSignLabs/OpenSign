@@ -59,7 +59,6 @@ export default async function usersignup(request) {
     if (extUser) {
       return { message: 'User already exist' };
     } else {
-      // console.log("role ", role);
       const partnerCls = Parse.Object.extend('partners_Tenant');
       const partnerQuery = new partnerCls();
       partnerQuery.set('UserId', {

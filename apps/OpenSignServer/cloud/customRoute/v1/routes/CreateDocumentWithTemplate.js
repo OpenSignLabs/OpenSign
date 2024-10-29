@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { cloudServerUrl, customAPIurl, replaceMailVaribles } from '../../../../Utils.js';
+import { generateSessionTokenByUsername } from './login.js';
 
 // `sendDoctoWebhook` is used to send res data of document on webhook
 async function sendDoctoWebhook(doc, WebhookUrl, userId) {
@@ -42,6 +43,7 @@ async function sendDoctoWebhook(doc, WebhookUrl, userId) {
 }
 export default async function createDocumentWithTemplate(request, response) {
   const signers = request.body.signers;
+  const returnUrl = request.body.returnUrl;
   const folderId = request.body.folderId;
   const templateId = request.params.template_id;
   const protocol = customAPIurl();
@@ -192,7 +194,7 @@ export default async function createDocumentWithTemplate(request, response) {
                   object.set('Signers', templateSigner);
                 }
                 object.set('URL', template.URL);
-                object.set('SignedUrl', template.URL);
+                //object.set('SignedUrl', template.URL);
                 object.set('SentToOthers', true);
                 if (TimeToCompleteDays) {
                   object.set('TimeToCompleteDays', TimeToCompleteDays);
@@ -372,8 +374,14 @@ export default async function createDocumentWithTemplate(request, response) {
                 }
                 const resSubcription = await subscriptionCls.save(null, { useMasterKey: true });
                 // console.log("resSubcription ", resSubcription)
+                let { sessionToken } = await generateSessionTokenByUsername(
+                  parseUser.userId.username
+                );
+                const url = `${process.env.PUBLIC_URL}/login/sender/${sessionToken}?goto=/placeHolderSign/${res.id}&returnUrl=${returnUrl}`;
                 return response.json({
                   objectId: res.id,
+                  success: true,
+                  url,
                   signurl: contact.map(x => ({
                     email: x.email,
                     url: `${baseUrl.origin}/login/${btoa(
