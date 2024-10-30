@@ -1028,7 +1028,6 @@ function SignYourSelf() {
     const getPageNumer = xyPostion.filter(
       (data) => data.pageNumber === pageNumber
     );
-
     if (getPageNumer.length > 0) {
       const getXYdata = getPageNumer[0].pos;
       const getPosData = getXYdata;
@@ -1058,7 +1057,7 @@ function SignYourSelf() {
                 isReadOnly: isReadOnly,
                 isHideLabel: isHideLabel || false,
                 fontSize:
-                  fontSize || currWidgetsDetails?.options?.fontSize || "12",
+                  fontSize || currWidgetsDetails?.options?.fontSize || 12,
                 fontColor:
                   fontColor || currWidgetsDetails?.options?.fontColor || "black"
               }
@@ -1092,7 +1091,6 @@ function SignYourSelf() {
     const getPageNumer = xyPostion.filter(
       (data) => data.pageNumber === pageNumber
     );
-
     if (getPageNumer.length > 0) {
       const getXYdata = getPageNumer[0].pos;
       const getPosData = getXYdata;
@@ -1102,8 +1100,7 @@ function SignYourSelf() {
             ...position,
             options: {
               ...position.options,
-              fontSize:
-                fontSize || currWidgetsDetails?.options?.fontSize || "12",
+              fontSize: fontSize || currWidgetsDetails?.options?.fontSize || 12,
               fontColor:
                 fontColor || currWidgetsDetails?.options?.fontColor || "black"
             }

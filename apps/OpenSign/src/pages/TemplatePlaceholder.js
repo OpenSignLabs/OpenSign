@@ -1123,7 +1123,7 @@ const TemplatePlaceholder = () => {
                     isReadOnly: isReadOnly || false,
                     isHideLabel: isHideLabel || false,
                     fontSize:
-                      fontSize || currWidgetsDetails?.options?.fontSize || "12",
+                      fontSize || currWidgetsDetails?.options?.fontSize || 12,
                     fontColor:
                       fontColor ||
                       currWidgetsDetails?.options?.fontColor ||
@@ -1161,7 +1161,7 @@ const TemplatePlaceholder = () => {
                     defaultValue: defaultValue,
                     isHideLabel: isHideLabel || false,
                     fontSize:
-                      fontSize || currWidgetsDetails?.options?.fontSize || "12",
+                      fontSize || currWidgetsDetails?.options?.fontSize || 12,
                     fontColor:
                       fontColor ||
                       currWidgetsDetails?.options?.fontColor ||
@@ -1179,7 +1179,7 @@ const TemplatePlaceholder = () => {
                   values: dropdownOptions,
                   defaultValue: defaultValue,
                   fontSize:
-                    fontSize || currWidgetsDetails?.options?.fontSize || "12",
+                    fontSize || currWidgetsDetails?.options?.fontSize || 12,
                   fontColor:
                     fontColor ||
                     currWidgetsDetails?.options?.fontColor ||
@@ -1254,7 +1254,7 @@ const TemplatePlaceholder = () => {
                         }
                       : {},
                   fontSize:
-                    fontSize || currWidgetsDetails?.options?.fontSize || "12",
+                    fontSize || currWidgetsDetails?.options?.fontSize || 12,
                   fontColor:
                     fontColor ||
                     currWidgetsDetails?.options?.fontColor ||
@@ -1270,7 +1270,7 @@ const TemplatePlaceholder = () => {
                   status: defaultdata.status,
                   defaultValue: defaultdata.defaultValue,
                   fontSize:
-                    fontSize || currWidgetsDetails?.options?.fontSize || "12",
+                    fontSize || currWidgetsDetails?.options?.fontSize || 12,
                   fontColor:
                     fontColor ||
                     currWidgetsDetails?.options?.fontColor ||
