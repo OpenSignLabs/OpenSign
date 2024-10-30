@@ -1035,7 +1035,7 @@ const DraftTemplate = () => {
                     isReadOnly: isReadOnly || false,
                     isHideLabel: isHideLabel || false,
                     fontSize:
-                      fontSize || currWidgetsDetails?.options?.fontSize || "12",
+                      fontSize || currWidgetsDetails?.options?.fontSize || 12,
                     fontColor:
                       fontColor ||
                       currWidgetsDetails?.options?.fontColor ||
@@ -1073,7 +1073,7 @@ const DraftTemplate = () => {
                     defaultValue: defaultValue,
                     isHideLabel: isHideLabel || false,
                     fontSize:
-                      fontSize || currWidgetsDetails?.options?.fontSize || "12",
+                      fontSize || currWidgetsDetails?.options?.fontSize || 12,
                     fontColor:
                       fontColor ||
                       currWidgetsDetails?.options?.fontColor ||
@@ -1091,7 +1091,7 @@ const DraftTemplate = () => {
                   values: dropdownOptions,
                   defaultValue: defaultValue,
                   fontSize:
-                    fontSize || currWidgetsDetails?.options?.fontSize || "12",
+                    fontSize || currWidgetsDetails?.options?.fontSize || 12,
                   fontColor:
                     fontColor ||
                     currWidgetsDetails?.options?.fontColor ||
@@ -1166,7 +1166,7 @@ const DraftTemplate = () => {
                         }
                       : {},
                   fontSize:
-                    fontSize || currWidgetsDetails?.options?.fontSize || "12",
+                    fontSize || currWidgetsDetails?.options?.fontSize || 12,
                   fontColor:
                     fontColor ||
                     currWidgetsDetails?.options?.fontColor ||
@@ -1182,7 +1182,7 @@ const DraftTemplate = () => {
                   status: defaultdata.status,
                   defaultValue: defaultdata.defaultValue,
                   fontSize:
-                    fontSize || currWidgetsDetails?.options?.fontSize || "12",
+                    fontSize || currWidgetsDetails?.options?.fontSize || 12,
                   fontColor:
                     fontColor ||
                     currWidgetsDetails?.options?.fontColor ||

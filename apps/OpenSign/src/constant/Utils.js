@@ -1304,13 +1304,9 @@ export const changeImageWH = async (base64Image) => {
 };
 
 //function to calculate font size of text area widgets
-const calculateFontSize = (position, containerScale, signyourself) => {
-  const font = position?.options?.fontSize || 12;
-  if (!signyourself && position?.isMobile && position?.scale) {
-    return font / position?.scale / containerScale;
-  } else {
-    return font / containerScale;
-  }
+const calculateFontSize = (position) => {
+  const fontSize = position?.options?.fontSize || 12;
+  return fontSize;
 };
 
 const getWidgetsFontColor = (type) => {
@@ -1512,11 +1508,7 @@ export const multiSignEmbed = async (
             });
           }
         } else if (widgetTypeExist) {
-          const fontSize = calculateFontSize(
-            position,
-            containerScale,
-            signyourself
-          );
+          const fontSize = calculateFontSize(position);
           parseInt(fontSize);
           let textContent;
           if (position?.options?.response) {
