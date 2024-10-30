@@ -19,7 +19,7 @@ import createContact from './routes/createContact.js';
 import multer from 'multer';
 import updateDocument from './routes/updateDocument.js';
 import deleteDocument from './routes/deleteDocument.js';
-import createDocumentWithTemplate from './routes/CreateDocumentWithTemplate.js';
+import { createDocumentWithTemplate, getDocumentUrl } from './routes/CreateDocumentWithTemplate.js';
 import saveWebhook from './routes/saveWebhook.js';
 import deleteWebhook from './routes/deleteWebhook.js';
 import getWebhook from './routes/getWebhook.js';
@@ -68,6 +68,8 @@ app.post('/draftdocument', draftDocument);
 
 // create Document with templateId
 app.post('/createdocument/:template_id', createDocumentWithTemplate);
+
+app.get('/editdocument/:id', getDocumentUrl);
 
 // get Document on the basis of id
 app.get('/document/:document_id', getDocument);

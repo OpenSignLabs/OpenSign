@@ -9,13 +9,10 @@ function SenderLogin() {
   const queryParams = new URLSearchParams(location.search);
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
-  useEffect(() => {
-    handleServerUrl();
-  }, []);
-
-  //function generate serverUrl and parseAppId from url and save it in local storage
-  const handleServerUrl = async () => {
+  const handleServerUrl = () => {
     localStorage.setItem("accesstoken", session);
+    const returnUrl = queryParams.get("returnUrl");
+    localStorage.setItem("returnUrl", returnUrl);
 
     setTimeout(() => {
       const goto = queryParams.get("goto");
@@ -24,6 +21,10 @@ function SenderLogin() {
 
     setIsLoading(false);
   };
+
+  useEffect(() => {
+    handleServerUrl();
+  }, [handleServerUrl]);
 
   return (
     <div className="p-14">
