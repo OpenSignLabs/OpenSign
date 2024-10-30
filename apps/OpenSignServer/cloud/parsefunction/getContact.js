@@ -1,5 +1,8 @@
 export default async function getContact(request) {
   const contactId = request.params.contactId;
+  if(!contactId) {
+    return {};
+  }
   try {
     const contactCls = new Parse.Query('contracts_Contactbook');
     const contactRes = await contactCls.get(contactId, { useMasterKey: true });

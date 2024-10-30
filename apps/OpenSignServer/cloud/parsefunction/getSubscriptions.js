@@ -53,30 +53,30 @@ export default async function getSubscription(request) {
       const contactCls = new Parse.Query('contracts_Contactbook');
       const contactUser = await contactCls.get(contactId, { useMasterKey: true });
       if (contactUser) {
-        const subscriptionCls = new Parse.Query('contracts_Subscriptions');
-        subscriptionCls.equalTo('TenantId', {
-          __type: 'Pointer',
-          className: 'partners_Tenant',
-          objectId: contactUser.get('TenantId').id,
-        });
-        subscriptionCls.descending('createdAt');
-        const subcripitions = await subscriptionCls.first({ useMasterKey: true });
-        if (subcripitions) {
-          const _subcripitions = JSON.parse(JSON.stringify(subcripitions));
-          if (_subcripitions.PlanCode === 'freeplan') {
-            return { status: 'success', result: { isSubscribed: false, plan: 'freeplan' } };
-          } else if (_subcripitions?.Next_billing_date?.iso) {
-            if (new Date(_subcripitions.Next_billing_date.iso) > new Date()) {
+        // const subscriptionCls = new Parse.Query('contracts_Subscriptions');
+        // subscriptionCls.equalTo('TenantId', {
+        //   __type: 'Pointer',
+        //   className: 'partners_Tenant',
+        //   objectId: contactUser.get('TenantId').id,
+        // });
+        // subscriptionCls.descending('createdAt');
+        // const subcripitions = await subscriptionCls.first({ useMasterKey: true });
+       // if (subcripitions) {
+          // const _subcripitions = JSON.parse(JSON.stringify(subcripitions));
+          // if (_subcripitions.PlanCode === 'freeplan') {
+          //   return { status: 'success', result: { isSubscribed: false, plan: 'freeplan' } };
+          // } else if (_subcripitions?.Next_billing_date?.iso) {
+          //   if (new Date(_subcripitions.Next_billing_date.iso) > new Date()) {
               return { status: 'success', result: { isSubscribed: true } };
-            } else {
-              return { status: 'success', result: { isSubscribed: false } };
-            }
-          } else {
-            return { status: 'success', result: { isSubscribed: false } };
-          }
-        } else {
-          return { status: 'success', result: { isSubscribed: false } };
-        }
+          //   } else {
+          //     return { status: 'success', result: { isSubscribed: false } };
+          //   }
+          // } else {
+          //   return { status: 'success', result: { isSubscribed: false } };
+          // }
+        // } else {
+        //   return { status: 'success', result: { isSubscribed: false } };
+        // }
       } else {
         return { status: 'error', result: 'User not found!' };
       }

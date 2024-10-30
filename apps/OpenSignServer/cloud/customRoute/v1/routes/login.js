@@ -43,7 +43,7 @@ export async function generateSessionTokenByUsername(username) {
   }
 }
 
-export default async function login(request, response) {
+export async function login(request, response) {
   try {
     const reqToken = request.headers['x-api-token'];
     if (!reqToken) {
@@ -67,3 +67,30 @@ export default async function login(request, response) {
     return response.status(400).json({ error: 'Something went wrong, please try again later!' });
   }
 }
+
+export async function getSignedUrlToDashboard(request, response) {
+  try {
+    const reqToken = request.headers['x-api-token'];
+    if (!reqToken) {
+      return response.status(400).json({ error: 'Please Provide API Token' });
+    }
+    const tokenQuery = new Parse.Query('appToken');
+    tokenQuery.equalTo('token', reqToken);
+    tokenQuery.include('userId');
+    const token = await tokenQuery.first({ useMasterKey: true });
+    if (token !== undefined) {
+      const parseUser = JSON.parse(JSON.stringify(token));
+      let result = await generateSessionTokenByUsername(parseUser.userId.username);
+      result.url = `${process.env.PUBLIC_URL}/login/sender/${result.sessionToken}`;
+      return response.status(200).json(result);
+      
+    } else {
+      return response.status(405).json({ error: 'Invalid API Token!' });
+    }
+  } catch (err) {
+    console.log('err ', err);
+    return response.status(400).json({ error: 'Something went wrong, please try again later!' });
+  }
+}
+
+export default login;

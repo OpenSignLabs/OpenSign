@@ -30,7 +30,7 @@ import getFolder from './routes/getFolder.js';
 import createFolder from './routes/createFolder.js';
 import updateFolder from './routes/updateFolder.js';
 import getFolderList from './routes/getFolderList.js';
-import login from './routes/login.js';
+import { login, getSignedUrlToDashboard } from './routes/login.js';
 import deleteFolder from './routes/deleteFolder.js';
 dotenv.config();
 const storage = multer.memoryStorage();
@@ -128,3 +128,4 @@ app.get('/folder/:folder_id', getFolder);
 // get folder list
 app.get('/folderlist', getFolderList);
 app.get('/login', login);
+app.get('/me/signed-url', getSignedUrlToDashboard);

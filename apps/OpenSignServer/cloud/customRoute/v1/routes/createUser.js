@@ -78,6 +78,7 @@ export default async function createUser(request, response) {
       newObj.set('TenantId', contractsUser.get('TenantId'));
       newObj.set('OrganizationId', organizationId);
       newObj.set('TeamIds', teamIds); 
+      newObj.set('Webhook', userDetails.webhookUrl);
 
       await newObj.save(null, { useMasterKey: true });
       const api = await generateApiTokenForUser(userDetails.email);
@@ -103,15 +104,7 @@ async function generateApiTokenForUser(username) {
         const token = await tokenQuery.first({ useMasterKey: true });
   
         if (token) {
-          // Regenerate the existing API token
-          console.log('Regenerating API Token');
-          const AppToken = Parse.Object.extend('appToken');
-          const updateToken = new AppToken();
-          updateToken.id = token.id;
-          const newToken = generateApiKey({ method: 'base62', prefix: 'opensign' });
-          updateToken.set('token', newToken);
-          const updatedRes = await updateToken.save(null, { useMasterKey: true });
-          return updatedRes;
+          return token;
         } else {
           // Generate a new API token
           console.log('Generating New API Token');
