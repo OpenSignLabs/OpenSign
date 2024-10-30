@@ -11,6 +11,7 @@ import Mailgun from 'mailgun.js';
 import { ApiPayloadConverter } from 'parse-server-api-mail-adapter';
 import S3Adapter from '@parse/s3-files-adapter';
 import FSFilesAdapter from '@parse/fs-files-adapter';
+import sendgrid from '@sendgrid/mail';
 import AWS from 'aws-sdk';
 import { app as customRoute } from './cloud/customRoute/customApp.js';
 import { exec } from 'child_process';
@@ -85,6 +86,10 @@ if (smtpenable) {
     isMailAdapter = false;
     console.log('Please provide valid Mailgun credentials');
   }
+} else if (process.env.SENDGRID_API_KEY) {
+  
+  sendgrid.setApiKey(process.env.SENDGRID_API_KEY);
+  isMailAdapter = true;
 }
 const mailsender = smtpenable ? process.env.SMTP_USER_EMAIL : process.env.MAILGUN_SENDER;
 export const config = {
@@ -135,6 +140,8 @@ export const config = {
               if (mailgunClient) {
                 const mailgunPayload = ApiPayloadConverter.mailgun(payload);
                 await mailgunClient.messages.create(mailgunDomain, mailgunPayload);
+              } else if (process.env.SENDGRID_API_KEY) {
+                await sendgrid.send(payload);
               } else if (transporterMail) await transporterMail.sendMail(payload);
             },
           },

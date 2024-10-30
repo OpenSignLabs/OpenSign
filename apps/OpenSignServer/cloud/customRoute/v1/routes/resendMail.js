@@ -40,9 +40,10 @@ export default async function resendMail(request, response) {
       // console.log("resDoc ",resDoc)
       if (resDoc) {
         const _resDoc = resDoc.toJSON();
-        const contact = _resDoc.Signers.find(x => x.Email === userMail);
+        const contacts = !userMail? _resDoc.Signers : _resDoc.Signers.filter(x => x.Email === userMail);
+        //const contact = _resDoc.Signers.find(x => x.Email === userMail);
         const activeMailAdapter = _resDoc?.ExtUserPtr?.active_mail_adapter || '';
-        if (contact) {
+        contacts.forEach(async contact => {
           try {
             const imgPng = 'https://qikinnovation.ams3.digitaloceanspaces.com/logo.png';
             let url = `${cloudServerUrl}/functions/sendmailv3/`;
@@ -143,9 +144,7 @@ export default async function resendMail(request, response) {
             console.log('error', error);
             return response.status(400).json({ error: error.message });
           }
-        } else {
-          return response.status(404).json({ error: 'user not found.' });
-        }
+       });
       } else {
         return response.status(404).json({ error: 'document not found.' });
       }

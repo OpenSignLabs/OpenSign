@@ -23,6 +23,7 @@ const Header = ({ showSidebar }) => {
   const current_notification_version = "1"; // Update this with each new feature release
   // Get the dismissed version from local storage
   const dismissedVersion = localStorage.getItem("notificationDismissedVersion");
+  const returnUrl = localStorage.getItem("returnUrl");
   const username = localStorage.getItem("username") || "";
   const image = localStorage.getItem("profileImg") || dp;
   const [isOpen, setIsOpen] = useState(false);
@@ -142,7 +143,7 @@ const Header = ({ showSidebar }) => {
   };
   return (
     <div>
-      {isEnableSubscription && showNotification && (
+      {/* {isEnableSubscription && showNotification && (
         <div className="flex justify-between items-center shadow py-1 bg-[#CAE4FA]  p-1">
           <div className="text-center text-[14px] ml-auto">
             {t("header-news")} —
@@ -152,6 +153,30 @@ const Header = ({ showSidebar }) => {
             >
               {" " + t("header-news-btn") + "."}
             </span>
+          </div>
+          <div
+            className="ml-auto mr-1 cursor-pointer"
+            onClick={() => dismissNotification()}
+          >
+            <i className="fa-light fa-xmark"></i>
+          </div>
+        </div>
+      )} */}
+
+      {returnUrl && (
+        <div className="flex justify-between items-center shadow py-1 bg-[#CAE4FA]  p-1">
+          <div className="text-center text-[14px] ml-auto">
+            To return to the portal, please click &nbsp;
+            <span
+              className="cursor-pointer font-medium underline text-blue-800"
+              onClick={() => {
+                localStorage.removeItem("returnUrl");
+                window.location.href = returnUrl;
+              }}
+            >
+              here
+            </span>
+            .
           </div>
           <div
             className="ml-auto mr-1 cursor-pointer"

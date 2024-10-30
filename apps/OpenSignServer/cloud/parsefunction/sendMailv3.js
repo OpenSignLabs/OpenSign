@@ -3,6 +3,7 @@ import https from 'https';
 import http from 'http';
 import formData from 'form-data';
 import Mailgun from 'mailgun.js';
+import sendgrid from '@sendgrid/mail';
 import { smtpenable, smtpsecure, updateMailCount, useLocal } from '../../Utils.js';
 import sendMailGmailProvider from './sendMailGmailProvider.js';
 import { createTransport } from 'nodemailer';
@@ -27,6 +28,8 @@ async function sendMailProvider(req, plan, monthchange) {
         const mailgun = new Mailgun(formData);
         mailgunClient = mailgun.client({ username: 'api', key: mailgunApiKey });
         mailgunDomain = process.env.MAILGUN_DOMAIN;
+      } else if (process.env.SENDGRID_API_KEY) {
+        sendgrid.setApiKey(process.env.SENDGRID_API_KEY);
       }
     }
     if (req.params.url) {
@@ -150,7 +153,7 @@ async function sendMailProvider(req, plan, monthchange) {
       const mailsender = smtpenable ? process.env.SMTP_USER_EMAIL : process.env.MAILGUN_SENDER;
 
       const messageParams = {
-        from: from + ' <' + mailsender + '>',
+        from: mailsender ? from + ' <' + mailsender + '>' : from,
         to: req.params.recipient,
         subject: req.params.subject,
         text: req.params.text || 'mail',
@@ -176,6 +179,10 @@ async function sendMailProvider(req, plan, monthchange) {
             }
             return { status: 'success' };
           }
+        } else if (process.env.SENDGRID_API_KEY) {
+          const res = await sendgrid.send(messageParams);
+          if (res.status == 202 || res[0]?.statusCode === 202) return { status: 'success' };
+          else return { status: 'error' };
         } else {
           return { status: 'error' };
         }
