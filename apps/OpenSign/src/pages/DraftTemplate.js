@@ -123,8 +123,7 @@ const DraftTemplate = () => {
   const [isSubscriptionExpired, setIsSubscriptionExpired] = useState(false);
   const [isAlert, setIsAlert] = useState({ type: "success", msg: "" });
   const [isPublic, setIsPublic] = useState("");
-  const [copied, setCopied] = useState(false);
-  // const [isPublicErr, setIsPublicError] = useState(false);
+  const [isPublicErr, setIsPublicError] = useState("");
   const [isAllRoleLinked, setIsAllRolelinked] = useState(false);
   const [, drop] = useDrop({
     accept: "BOX",
@@ -730,10 +729,7 @@ const DraftTemplate = () => {
       if (unlinkSignerIndex === 0 && unlinkSigners === 1) {
         await saveTemplate();
       } else {
-        // setIsPublicError(true);
-        alert(
-          "To make your template public, it must either contain a single role, or, if it includes multiple roles, all additional roles must already be assigned to signers. The unassigned public role should remain empty and must be placed in the first position. \nVisit below link to know more - \nhttps://docs.opensignlabs.com/docs/help/Templates/make-template-public"
-        );
+        setIsPublicError(true);
       }
     } else {
       await saveTemplate();
@@ -1300,16 +1296,13 @@ const DraftTemplate = () => {
         console.log("error", e);
       }
     } else {
-      // setIsPublicError(true);
-      alert(
-        "To make your template public, it must either contain a single role, or, if it includes multiple roles, all additional roles must already be assigned to signers. The unassigned public role should remain empty and must be placed in the first position. \nVisit below link to know more - \nhttps://docs.opensignlabs.com/docs/help/Templates/make-template-public"
-      );
+      setIsPublicError(true);
     }
   };
   const copytoclipboard = (publicUrl) => {
     copytoData(publicUrl);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 1500); // Reset copied state after 1.5 seconds
+    setIsAlert({ type: "success", msg: t("copied") });
+    setTimeout(() => setIsAlert({ type: "success", msg: "" }), 1500); // Reset copied state after 1.5 seconds
   };
 
   // `handleSendDocument` is trigger when users are linked to all role
@@ -1368,7 +1361,6 @@ const DraftTemplate = () => {
     }
     return (
       <div className="flex flex-row justify-between items-center mb-1 mx-1">
-        {copied && <Alert type="success">{t("copied")}</Alert>}
         <span className="w-[220px] md:w-[300px] whitespace-nowrap overflow-hidden text-ellipsis">
           {publicUrl}
         </span>
@@ -1539,6 +1531,31 @@ const DraftTemplate = () => {
                       )}
                     </ModalUi>
                   )}
+                  <ModalUi
+                    isOpen={isPublicErr}
+                    handleClose={() => setIsPublicError(false)}
+                  >
+                    <div className="m-4">
+                      <p>
+                        To make your template public, it must either contain a
+                        single role, or, if it includes multiple roles, all
+                        additional roles must already be assigned to signers.
+                        The unassigned public role should remain empty and must
+                        be placed in the first position.{" "}
+                      </p>
+                      <p>Visit below link to know more - </p>
+                      <p
+                        className="op-link op-link-primary"
+                        onClick={() =>
+                          copytoclipboard(
+                            "https://docs.opensignlabs.com/docs/help/Templates/publicTemplate"
+                          )
+                        }
+                      >
+                        https://docs.opensignlabs.com/docs/help/Templates/publicTemplate
+                      </p>
+                    </div>
+                  </ModalUi>
                   <ModalUi
                     isOpen={isShowEmail}
                     title={t("signers-alert")}
