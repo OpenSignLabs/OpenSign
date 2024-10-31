@@ -13,14 +13,13 @@ export default async function getSigners(request) {
         className: '_User',
         objectId: request?.user?.id,
       });
-
       if (search) {
         contactbook.matches('Name', new RegExp(search, 'i'));
       } else if (searchEmail) {
         contactbook.matches('Email', new RegExp(searchEmail, 'i'));
       }
       contactbook.notEqualTo('IsDeleted', true);
-      const contactRes = await contactbook.find();
+      const contactRes = await contactbook.find({ sessionToken: request.user.getSessionToken() });
       const _contactRes = JSON.parse(JSON.stringify(contactRes));
       return _contactRes;
     } else if (jwttoken) {
