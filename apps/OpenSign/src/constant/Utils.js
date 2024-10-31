@@ -126,9 +126,9 @@ export async function fetchSubscriptionInfo() {
   }
 }
 //function to get subcripition details from subscription class
-export async function checkIsSubscribed() {
+export async function checkIsSubscribed(jwttoken) {
   try {
-    const res = await fetchSubscription();
+    const res = await fetchSubscription("", "", false, false, jwttoken);
     if (res.plan === "freeplan") {
       return { plan: res.plan, isValid: false, adminId: res?.adminId };
     } else if (res.billingDate) {

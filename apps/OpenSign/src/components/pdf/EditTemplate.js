@@ -5,11 +5,8 @@ import { isEnableSubscription } from "../../constant/const";
 import { useTranslation } from "react-i18next";
 import { Tooltip } from "react-tooltip";
 
-// import SelectFolder from "../../premitives/SelectFolder";
-
-const EditTemplate = ({ template, onSuccess }) => {
+const EditTemplate = ({ template, onSuccess, jwttoken }) => {
   const { t } = useTranslation();
-  // const [folder, setFolder] = useState({ ObjectId: "", Name: "" });
   const [formData, setFormData] = useState({
     Name: template?.Name || "",
     Note: template?.Note || "",
@@ -29,17 +26,13 @@ const EditTemplate = ({ template, onSuccess }) => {
   }, []);
   const fetchSubscription = async () => {
     if (isEnableSubscription) {
-      const subscribe = await checkIsSubscribed();
+      const subscribe = await checkIsSubscribed(jwttoken);
       setIsSubscribe(subscribe.isValid);
     }
   };
   const handleStrInput = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
-  // const handleFolder = (data) => {
-  //   console.log("handleFolder ", data)
-  //   setFolder(data);
-  // };
 
   // Define a function to handle form submission
   const handleSubmit = async (e) => {
@@ -85,7 +78,7 @@ const EditTemplate = ({ template, onSuccess }) => {
           </div>
           <div className="mb-[0.35rem]">
             <label htmlFor="name" className="text-[13px]">
-              {t("name")}
+              {t("Title")}
               <span className="text-[13px] text-[red]"> *</span>
             </label>
             <input
@@ -158,7 +151,6 @@ const EditTemplate = ({ template, onSuccess }) => {
                 }
               >
                 {t("auto-reminder")}
-                {"  "}
                 {!isSubscribe && isEnableSubscription && <Upgrade />}
               </span>
               <label
