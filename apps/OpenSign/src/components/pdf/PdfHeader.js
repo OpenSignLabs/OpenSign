@@ -40,7 +40,8 @@ function Header({
   handleRotationFun,
   isDisableRotate,
   templateId,
-  setIsDownloadModal
+  setIsDownloadModal,
+  disabledBackBtn
 }) {
   const { t } = useTranslation();
   const filterPrefill =
@@ -48,6 +49,7 @@ function Header({
   const isMobile = window.innerWidth < 767;
   const [isDownloading, setIsDownloading] = useState("");
   const isGuestSigner = localStorage.getItem("isGuestSigner");
+  const enabledBackBtn = disabledBackBtn === true ? false : true;
 
   //function for show decline alert
   const handleDeclinePdfAlert = async () => {
@@ -332,13 +334,15 @@ function Header({
                     <i className="fa-light fa-gear fa-lg"></i>
                   </button>
                 )}
-                <button
-                  onClick={() => window.history.go(-2)}
-                  type="button"
-                  className="op-btn op-btn-ghost op-btn-sm mr-[3px]"
-                >
-                  {t("back")}
-                </button>
+                {enabledBackBtn && (
+                  <button
+                    onClick={() => window.history.go(-2)}
+                    type="button"
+                    className="op-btn op-btn-ghost op-btn-sm mr-[3px]"
+                  >
+                    {t("back")}
+                  </button>
+                )}
                 <button
                   disabled={isMailSend && true}
                   data-tut="headerArea"

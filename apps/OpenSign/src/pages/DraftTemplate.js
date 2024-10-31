@@ -732,7 +732,7 @@ const DraftTemplate = () => {
       } else {
         // setIsPublicError(true);
         alert(
-          "Only one signer without a role is allowed, and it should be at the first index."
+          "To make your template public, it must either contain a single role, or, if it includes multiple roles, all additional roles must already be assigned to signers. The unassigned public role should remain empty and must be placed in the first position. \nVisit below link to know more - \nhttps://docs.opensignlabs.com/docs/help/Templates/make-template-public"
         );
       }
     } else {
@@ -1302,7 +1302,7 @@ const DraftTemplate = () => {
     } else {
       // setIsPublicError(true);
       alert(
-        "Only one signer without a role is allowed, and it should be at the first index."
+        "To make your template public, it must either contain a single role, or, if it includes multiple roles, all additional roles must already be assigned to signers. The unassigned public role should remain empty and must be placed in the first position. \nVisit below link to know more - \nhttps://docs.opensignlabs.com/docs/help/Templates/make-template-public"
       );
     }
   };
@@ -1614,6 +1614,7 @@ const DraftTemplate = () => {
                   {/* pdf header which contain funish back button */}
                   <Header
                     completeBtnTitle={t("send")}
+                    disabledBackBtn={true}
                     isPlaceholder={true}
                     pageNumber={pageNumber}
                     allPages={allPages}
@@ -1800,6 +1801,7 @@ const DraftTemplate = () => {
           <EditTemplate
             template={pdfDetails?.[0]}
             onSuccess={handleEditTemplateForm}
+            jwttoken={jwttoken}
           />
         </ModalUi>
         <WidgetNameModal
