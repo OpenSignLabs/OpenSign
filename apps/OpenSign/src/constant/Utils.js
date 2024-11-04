@@ -463,29 +463,29 @@ export const defaultWidthHeight = (type) => {
     case "stamp":
       return { width: 150, height: 60 };
     case "checkbox":
-      return { width: 15, height: 15 };
+      return { width: 15, height: 17 };
     case textInputWidget:
-      return { width: 150, height: 25 };
+      return { width: 150, height: 17 };
     case "dropdown":
       return { width: 120, height: 22 };
     case "initials":
       return { width: 50, height: 50 };
     case "name":
-      return { width: 150, height: 25 };
+      return { width: 150, height: 17 };
     case "company":
-      return { width: 150, height: 25 };
+      return { width: 150, height: 17 };
     case "job title":
-      return { width: 150, height: 25 };
+      return { width: 150, height: 17 };
     case "date":
       return { width: 100, height: 20 };
     case "image":
       return { width: 70, height: 70 };
     case "email":
-      return { width: 150, height: 20 };
+      return { width: 150, height: 17 };
     case radioButtonWidget:
       return { width: 5, height: 10 };
     case textWidget:
-      return { width: 150, height: 25 };
+      return { width: 150, height: 17 };
     default:
       return { width: 150, height: 60 };
   }
@@ -1013,7 +1013,7 @@ export const calculateInitialWidthHeight = (widgetData) => {
   const intialText = widgetData;
   const span = document.createElement("span");
   span.textContent = intialText;
-  span.style.font = `14px`; // here put your text size and font family
+  span.style.font = `12px`; // here put your text size and font family
   span.style.display = "hidden";
   document.body.appendChild(span);
   const width = span.offsetWidth;
@@ -1303,16 +1303,6 @@ export const changeImageWH = async (base64Image) => {
   });
 };
 
-//function to calculate font size of text area widgets
-const calculateFontSize = (position, containerScale, signyourself) => {
-  const font = position?.options?.fontSize || 12;
-  if (!signyourself && position?.isMobile && position?.scale) {
-    return font / position?.scale / containerScale;
-  } else {
-    return font / containerScale;
-  }
-};
-
 const getWidgetsFontColor = (type) => {
   switch (type) {
     case "red":
@@ -1328,14 +1318,7 @@ const getWidgetsFontColor = (type) => {
   }
 };
 //function for embed multiple signature using pdf-lib
-export const multiSignEmbed = async (
-  widgets,
-  pdfDoc,
-  signyourself,
-  scale,
-  pdfOriginalWH,
-  containerWH
-) => {
+export const multiSignEmbed = async (widgets, pdfDoc, signyourself, scale) => {
   // `fontBytes` is used to embed custom font in pdf
   const fontBytes = await fileasbytes(
     "https://cdn.opensignlabs.com/webfonts/times.ttf"
@@ -1345,11 +1328,6 @@ export const multiSignEmbed = async (
   let hasError = false;
   for (let item of widgets) {
     if (hasError) break; // Stop the outer loop if an error occurred
-    const containerScale = getContainerScale(
-      pdfOriginalWH,
-      item?.pageNumber,
-      containerWH
-    );
     const typeExist = item.pos.some((data) => data?.type);
     let updateItem;
 
@@ -1436,7 +1414,17 @@ export const multiSignEmbed = async (
               return y;
             }
           } else {
-            return resizePos;
+            const WidgetsTypeTextExist = [
+              textWidget,
+              textInputWidget,
+              "name",
+              "company",
+              "job title",
+              "date",
+              "email"
+            ].includes(position.type);
+            const yPosition = WidgetsTypeTextExist ? resizePos + 6 : resizePos;
+            return yPosition;
           }
         };
         const color = position?.options?.fontColor;
@@ -1512,11 +1500,7 @@ export const multiSignEmbed = async (
             });
           }
         } else if (widgetTypeExist) {
-          const fontSize = calculateFontSize(
-            position,
-            containerScale,
-            signyourself
-          );
+          const fontSize = position?.options?.fontSize || 12;
           parseInt(fontSize);
           let textContent;
           if (position?.options?.response) {
@@ -1549,7 +1533,6 @@ export const multiSignEmbed = async (
             lines.push(currentLine.trim());
             return lines;
           };
-
           // Function to break text into lines based on when user go next line on press enter button
           const breakTextIntoLines = (textContent, width) => {
             const lines = [];
@@ -1570,7 +1553,6 @@ export const multiSignEmbed = async (
 
             return lines;
           };
-
           //check if text content have `\n` string it means user press enter to go next line and handle condition
           //else auto adjust text content according to container width
           const lines = isNewOnEnterLineExist
@@ -1597,7 +1579,6 @@ export const multiSignEmbed = async (
           }
         } else if (position.type === "dropdown") {
           const fontsize = parseInt(position?.options?.fontSize) || 12;
-
           const dropdownRandomId = "dropdown" + randomId();
           const dropdown = form.createDropdown(dropdownRandomId);
           dropdown.addOptions(position?.options?.values);
@@ -1696,7 +1677,6 @@ export const multiSignEmbed = async (
   }
   if (!hasError) {
     const pdfBytes = await pdfDoc.saveAsBase64({ useObjectStreams: false });
-    // console.log("pdf", pdfBytes);
     return pdfBytes;
   } else {
     return {

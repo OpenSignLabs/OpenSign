@@ -412,7 +412,7 @@ function Placeholder(props) {
       data?.format,
       null,
       null,
-      props.fontSize || props.pos?.options?.fontSize || "12",
+      props.fontSize || props.pos?.options?.fontSize || 12,
       props.fontColor || props.pos?.options?.fontColor || "black"
     );
     setSelectDate({ date: date, format: data?.format });
@@ -651,7 +651,7 @@ function Placeholder(props) {
     const fontSize = (size || 12) * containerScale * props.scale;
     //isMinHeight to set text box minimum height
     if (isMinHeight) {
-      return fontSize * 1.5 + "px";
+      return fontSize * 1.2 + "px";
     } else {
       return fontSize + "px";
     }
@@ -948,8 +948,8 @@ function Placeholder(props) {
             <span>{t("font-size")} :</span>
             <select
               className="ml-[3px] md:ml:[7px] op-select op-select-bordered op-select-sm focus:outline-none hover:border-base-content text-xs"
-              value={props.fontSize || clickonWidget.options?.fontSize || "12"}
-              onChange={(e) => props.setFontSize(e.target.value)}
+              value={props.fontSize || clickonWidget.options?.fontSize || 12}
+              onChange={(e) => props.setFontSize(parseInt(e.target.value))}
             >
               {fontsizeArr.map((size, ind) => {
                 return (
