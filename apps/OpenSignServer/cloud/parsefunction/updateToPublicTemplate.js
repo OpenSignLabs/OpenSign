@@ -10,6 +10,7 @@ async function updateTemplate(template, isJwt = false) {
       const isPublic = template?.IsPublic !== undefined ? template?.IsPublic : false;
       if (template?.IsPublic !== undefined) {
         updateTemplate.set('IsPublic', isPublic);
+        updateTemplate.set('PublicRole', template.PublicRole);
       }
 
       let updateTemplateRes;
@@ -29,7 +30,16 @@ async function updateTemplate(template, isJwt = false) {
 }
 export default async function updateToPublicTemplate(request) {
   const jwttoken = request.headers.jwttoken || '';
-  const template = { Id: request.params.templateId, IsPublic: request.params?.IsPublic };
+  const Role = request.params.Role;
+  if (!Role) {
+    throw new Parse.Error(Parse.Error.INVALID_QUERY, 'Please provide public role.');
+  }
+  const PublicRole = [Role];
+  const template = {
+    Id: request.params.templateId,
+    IsPublic: request.params?.IsPublic,
+    PublicRole: PublicRole,
+  };
 
   try {
     if (request.user) {
