@@ -457,9 +457,7 @@ function SignYourSelf() {
       const getWidth = widgetTypeExist
         ? calculateInitialWidthHeight(widgetValue).getWidth
         : defaultWidthHeight(dragTypeValue).width;
-      const getHeight = widgetTypeExist
-        ? calculateInitialWidthHeight(widgetValue).getHeight
-        : defaultWidthHeight(dragTypeValue).height;
+      const getHeight = defaultWidthHeight(dragTypeValue).height;
       dropObj = {
         xPosition: getXPosition / (containerScale * scale),
         yPosition: getYPosition / (containerScale * scale),
@@ -661,9 +659,7 @@ function SignYourSelf() {
               xyPostion,
               pdfDoc,
               isSignYourSelfFlow,
-              scale,
-              pdfOriginalWH,
-              containerWH
+              scale
             );
             // console.log("pdf", pdfBytes);
             //function for call to embed signature in pdf and get digital signature pdf
