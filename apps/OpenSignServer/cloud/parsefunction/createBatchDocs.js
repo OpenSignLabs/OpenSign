@@ -113,6 +113,74 @@ async function sendMail(document) {
     }
   }
 }
+async function callwebhookevent(document) {
+  const Signers = document.Signers;
+  const allSigner = document?.Placeholders?.map(item => {
+    if (item.signerObjId) {
+      const signer = Signers?.find(e => item?.signerPtr?.objectId === e?.objectId);
+      if (signer) {
+        return {
+          role: item?.Role || '',
+          name: signer?.Name || '',
+          email: signer?.Email || '',
+          phone: signer?.Phone || '',
+        };
+      }
+    } else {
+      return { role: item?.Role || '', name: '', email: item?.email || '', phone: '' };
+    }
+  });
+  const params = {
+    event: 'created',
+    body: {
+      objectId: document?.objectId,
+      file: document?.SignedUrl || document?.URL,
+      name: document?.Name,
+      note: document?.Note || '',
+      description: document?.Description || '',
+      signers: allSigner,
+      createdBy: document?.ExtUserPtr.Email,
+      createdAt: document?.createdAt,
+    },
+  };
+  try {
+    await axios
+      .post(document?.ExtUserPtr?.Webhook, params, {
+        headers: { 'Content-Type': 'application/json' },
+      })
+      .then(res => {
+        try {
+          const webhook = new Parse.Object('contracts_Webhook');
+          webhook.set('Log', res?.status);
+          webhook.set('UserId', {
+            __type: 'Pointer',
+            className: '_User',
+            objectId: document.CreatedBy.objectId,
+          });
+          webhook.save(null, { useMasterKey: true });
+        } catch (err) {
+          console.log('err save in contracts_Webhook', err);
+        }
+      })
+      .catch(err => {
+        console.log('Err send data to webhook', err?.message);
+        try {
+          const webhook = new Parse.Object('contracts_Webhook');
+          webhook.set('Log', err?.status);
+          webhook.set('UserId', {
+            __type: 'Pointer',
+            className: '_User',
+            objectId: document.CreatedBy.objectId,
+          });
+          webhook.save(null, { useMasterKey: true });
+        } catch (err) {
+          console.log('err save in contracts_Webhook', err?.message);
+        }
+      });
+  } catch (err) {
+    console.log('Err ', err?.message);
+  }
+}
 async function batchQuery(userId, Documents, Ip, parseConfig) {
   const extCls = new Parse.Query('contracts_Users');
   extCls.equalTo('UserId', {
@@ -216,6 +284,7 @@ async function batchQuery(userId, Documents, Ip, parseConfig) {
               for (let i = 0; i < updateDocuments.length; i++) {
                 sendMail(updateDocuments[i], ''); //sessionToken
               }
+              callwebhookevent(Documents[0]);
               return 'success';
             }
           } else {
@@ -242,6 +311,7 @@ async function batchQuery(userId, Documents, Ip, parseConfig) {
             };
             deductcount(response.data.length, resExt.id);
             sendMail(updateDocuments); //sessionToken
+            callwebhookevent(Documents[0]);
             return 'success';
           }
         }
