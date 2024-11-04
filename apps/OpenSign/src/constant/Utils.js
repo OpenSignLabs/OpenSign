@@ -1677,7 +1677,6 @@ export const multiSignEmbed = async (widgets, pdfDoc, signyourself, scale) => {
   }
   if (!hasError) {
     const pdfBytes = await pdfDoc.saveAsBase64({ useObjectStreams: false });
-    //console.log("pdf", pdfBytes);
     return pdfBytes;
   } else {
     return {
