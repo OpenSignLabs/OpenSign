@@ -911,15 +911,16 @@ function PlaceHolderSign() {
 
   // `autosavedetails` is used to save doc details after every 2 sec when changes are happern in placeholder like drag-drop widgets, remove signers
   const autosavedetails = async () => {
-    const signers = signersdata?.filter(
-      (x) =>
-        x?.Role !== "prefill" &&
-        x.objectId && {
+     const signers = signersdata?.reduce((acc, x) => {
+      if (x.objectId) {
+        acc.push({
           __type: "Pointer",
           className: "contracts_Contactbook",
           objectId: x.objectId
-        }
-    );
+        });
+      }
+      return acc;
+    }, []);
     try {
       const docCls = new Parse.Object("contracts_Document");
       docCls.id = documentId;
