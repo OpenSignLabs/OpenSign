@@ -654,21 +654,20 @@ const DraftTemplate = () => {
   // `saveTemplate` is used to update template on server using savetemplate endpoint
   const saveTemplate = async () => {
     if (signersdata?.length) {
-      const loadObj = { isLoad: true, message: t("loading-mssg") };
-      setIsLoading(loadObj);
+      setIsLoading({ isLoad: true, message: t("loading-mssg") });
       setIsSendAlert(false);
       let signers = [];
       if (signersdata?.length > 0) {
-        signersdata.forEach((x) => {
+        signers = signersdata?.reduce((acc, x) => {
           if (x.objectId) {
-            const obj = {
+            acc.push({
               __type: "Pointer",
               className: "contracts_Contactbook",
               objectId: x.objectId
-            };
-            signers.push(obj);
+            });
           }
-        });
+          return acc;
+        }, []);
       }
       let pdfUrl = pdfDetails[0]?.URL;
       if (pdfRotateBase64) {
@@ -1277,10 +1276,11 @@ const DraftTemplate = () => {
   };
   const handleGeneratePublic = async () => {
     const unlinkSignerIndex = signerPos?.findIndex((x) => !x?.signerObjId);
-    const unlinkSigners = signerPos?.filter((x) => !x?.signerObjId)?.length; // unLink with role
+    const unlinkSigners = signerPos?.filter((x) => !x?.signerObjId)?.length; // count of total unlink roles
     if (unlinkSignerIndex === 0 && unlinkSigners === 1) {
       try {
-        const data = { templateId: templateId, IsPublic: true };
+        const role = signerPos[unlinkSignerIndex]?.Role;
+        const data = { templateId: templateId, IsPublic: true, Role: role };
         const baseURL = localStorage.getItem("baseUrl");
         const url = `${baseURL}functions/updatetopublictemplate`;
         const headers = {
