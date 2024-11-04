@@ -814,9 +814,7 @@ function PlaceHolderSign() {
           placeholder,
           pdfDoc,
           isSignYourSelfFlow,
-          scale,
-          pdfOriginalWH,
-          containerWH
+          scale
         );
         const pdfUrl = await convertBase64ToFile(pdfDetails[0].Name, pdfBase64);
         const tenantId = localStorage.getItem("TenantId");

@@ -651,7 +651,7 @@ function Placeholder(props) {
     const fontSize = (size || 12) * containerScale * props.scale;
     //isMinHeight to set text box minimum height
     if (isMinHeight) {
-      return fontSize * 1.5 + "px";
+      return fontSize * 1.2 + "px";
     } else {
       return fontSize + "px";
     }
