@@ -924,9 +924,7 @@ function PdfRequestFiles(props) {
                 widgets,
                 pdfDoc,
                 isSignYourSelfFlow,
-                scale,
-                pdfOriginalWH,
-                containerWH
+                scale
               );
               // console.log("pdfte", pdfBytes);
               //get ExistUserPtr object id of user class to get tenantDetails
