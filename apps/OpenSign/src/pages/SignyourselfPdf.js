@@ -424,9 +424,7 @@ function SignYourSelf() {
       const getWidth = widgetTypeExist
         ? calculateInitialWidthHeight(dragTypeValue, widgetValue).getWidth
         : defaultWidthHeight(dragTypeValue).width;
-      const getHeight = widgetTypeExist
-        ? calculateInitialWidthHeight(dragTypeValue, widgetValue).getHeight
-        : defaultWidthHeight(dragTypeValue).height;
+      const getHeight = defaultWidthHeight(dragTypeValue).height;
 
       dropObj = {
         xPosition: getWidth / 2 + containerWH.width / 2,
