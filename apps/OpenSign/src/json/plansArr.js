@@ -80,7 +80,7 @@ const plans = [
       "Auto reminders",
       "Bulk send (upto 100 docs)",
       "Premium Public profile usernames",
-      "Embedding (coming soon)"
+      "Embedded signing"
     ],
     yearlyBenefits: [
       "Everything in OpenSign™ free",
@@ -95,7 +95,7 @@ const plans = [
       "Auto reminders",
       "Bulk send (upto 240 docs)",
       "Premium Public profile usernames",
-      "Embedding (coming soon)"
+      "Embedded signing"
     ]
   },
   {
