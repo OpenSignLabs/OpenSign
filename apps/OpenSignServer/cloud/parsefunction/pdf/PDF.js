@@ -384,7 +384,7 @@ async function PDF(req) {
         isCompleted = true;
       }
       const randomNumber = Math.floor(Math.random() * 5000);
-      const docName = _resDoc?.Name?.replace(/\s+/g, '_')?.toLowerCase();
+      const docName = _resDoc?.Name?.replace(/[^a-zA-Z0-9._-]/g, '_')?.toLowerCase();
       const name = `signed_${docName}_${randomNumber}.pdf`;
       const filePath = `./exports/${name}`;
       let pdfSize = PdfBuffer.length;
