@@ -445,17 +445,13 @@ function Placeholder(props) {
                     handleOnClickSettingIcon();
                   }}
                   className="fa-light fa-gear icon"
-                  style={{
-                    color: "#188ae2",
-                    right: "29px",
-                    top: "-19px"
-                  }}
+                  style={{ color: "#188ae2", right: "29px", top: "-19px" }}
                 ></i>
               ) : (
                 /* condition to add setting icon for placeholder & template flow for all widgets except signature and date */
                 ((!props?.pos?.type && props.pos.isStamp) ||
                   (props?.pos?.type &&
-                    !["date", "signature"].includes(props.pos.type) &&
+                    !["date"].includes(props.pos.type) &&
                     !props.isSignYourself)) && (
                   <i
                     onClick={(e) => {
@@ -469,7 +465,7 @@ function Placeholder(props) {
                     className="fa-light fa-gear icon"
                     style={{
                       color: "#188ae2",
-                      right: props?.pos?.type === textWidget ? "32px" : "47px",
+                      right: props?.pos?.type === textWidget ? "32px" : "51px",
                       top: "-19px"
                     }}
                   ></i>

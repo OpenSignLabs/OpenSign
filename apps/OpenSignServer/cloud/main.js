@@ -83,6 +83,7 @@ import isUserInContactBook from './parsefunction/isUserInContactBook.js';
 import updateTourStatus from './parsefunction/updateTourStatus.js';
 import saveTemplate from './parsefunction/saveTemplate.js';
 import updateToPublicTemplate from './parsefunction/updateToPublicTemplate.js';
+import updateSignatureType from './parsefunction/updatesignaturetype.js';
 
 // This afterSave function triggers after an object is added or updated in the specified class, allowing for post-processing logic.
 Parse.Cloud.afterSave('contracts_Document', DocumentAftersave);
@@ -178,3 +179,4 @@ Parse.Cloud.define('savecontact', savecontact);
 Parse.Cloud.define('isuserincontactbook', isUserInContactBook);
 Parse.Cloud.define('updatetourstatus', updateTourStatus);
 Parse.Cloud.define('updatetopublictemplate', updateToPublicTemplate);
+Parse.Cloud.define('updatesignaturetype', updateSignatureType);

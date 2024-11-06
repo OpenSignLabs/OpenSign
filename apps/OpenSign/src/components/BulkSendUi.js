@@ -258,7 +258,11 @@ const BulkSendUi = (props) => {
             : [...existSigner]
         });
       } else {
-        Documents.push({ ...props.item, Placeholders: updatedPlaceholders });
+        Documents.push({
+          ...props.item,
+          Placeholders: updatedPlaceholders,
+          SignatureType: props.signatureType
+        });
       }
     });
     await batchQuery(Documents);

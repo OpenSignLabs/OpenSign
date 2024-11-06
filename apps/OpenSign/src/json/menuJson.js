@@ -154,6 +154,14 @@ const sidebarList = [
         pageType: "",
         description: "",
         objectId: "webhook"
+      },
+      {
+        icon: "fa-light fa-pen-fancy",
+        title: "Preferences",
+        target: "_self",
+        pageType: "",
+        description: "",
+        objectId: "preferences"
       }
     ]
   }

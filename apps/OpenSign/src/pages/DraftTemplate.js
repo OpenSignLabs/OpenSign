@@ -30,7 +30,10 @@ import {
   handleRemoveWidgets,
   handleRotateWarning,
   color,
-  copytoData
+  copytoData,
+  getTenantDetails,
+  signatureTypes,
+  handleSignatureType
 } from "../constant/Utils";
 import RenderPdf from "../components/pdf/RenderPdf";
 import "../styles/AddUser.css";
@@ -125,6 +128,7 @@ const DraftTemplate = () => {
   const [isPublic, setIsPublic] = useState("");
   const [isPublicErr, setIsPublicError] = useState("");
   const [isAllRoleLinked, setIsAllRolelinked] = useState(false);
+  const [signatureType, setSignatureType] = useState([]);
   const [, drop] = useDrop({
     accept: "BOX",
     drop: (item, monitor) => addPositionOfSignature(item, monitor),
@@ -189,9 +193,36 @@ const DraftTemplate = () => {
       handleNavigation(plan);
     }
   }
+  //function to fetch tenant Details
+  const fetchTenantDetails = async () => {
+    const user = JSON.parse(
+      localStorage.getItem(
+        `Parse/${localStorage.getItem("parseAppId")}/currentUser`
+      )
+    );
+    if (user) {
+      try {
+        const tenantDetails = await getTenantDetails(user?.objectId);
+        if (tenantDetails && tenantDetails === "user does not exist!") {
+          alert(t("user-not-exist"));
+        } else if (tenantDetails) {
+          const signatureType = tenantDetails?.SignatureType || [];
+          const filterSignTypes = signatureType?.filter(
+            (x) => x.enabled === true
+          );
+          return filterSignTypes;
+        }
+      } catch (e) {
+        alert(t("user-not-exist"));
+      }
+    } else {
+      alert(t("user-not-exist"));
+    }
+  };
   // `fetchTemplate` function in used to get Template from server and setPlaceholder ,setSigner if present
   const fetchTemplate = async () => {
     try {
+      const tenantSignTypes = await fetchTenantDetails();
       const params = { templateId: templateId };
       const token = jwttoken
         ? { jwttoken: jwttoken }
@@ -222,6 +253,12 @@ const DraftTemplate = () => {
       }
 
       if (documentData && documentData.length > 0) {
+        const docSignTypes = documentData?.[0]?.SignatureType || signatureTypes;
+        const updatedSignatureType = await handleSignatureType(
+          tenantSignTypes,
+          docSignTypes
+        );
+        setSignatureType(updatedSignatureType);
         if (isEnableSubscription) {
           checkIsSubscribed(documentData[0]?.ExtUserPtr?.Email);
         }
@@ -290,6 +327,36 @@ const DraftTemplate = () => {
         setHandleError(t("no-data-avaliable"));
         setIsLoading({ isLoad: false });
       }
+
+      const res = await contractUsers(jwttoken);
+      if (res[0] && res.length) {
+        const userSignatureType = res[0]?.SignatureType || signatureTypes;
+        const docSignTypes =
+          documentData?.[0]?.SignatureType || userSignatureType;
+        const updatedSignatureType = await handleSignatureType(
+          tenantSignTypes,
+          docSignTypes
+        );
+        setSignatureType(updatedSignatureType);
+        setSignerUserId(res[0].objectId);
+        const tourstatus = res[0].TourStatus && res[0].TourStatus;
+        if (tourstatus && tourstatus.length > 0) {
+          setTourStatus(tourstatus);
+          const checkTourRecipients = tourstatus.filter(
+            (data) => data.templateTour
+          );
+          if (checkTourRecipients && checkTourRecipients.length > 0) {
+            setCheckTourStatus(checkTourRecipients[0].templateTour);
+          }
+        }
+        setIsLoading({ isLoad: false });
+      } else if (res === "Error: Something went wrong!") {
+        setHandleError(t("something-went-wrong-mssg"));
+        setIsLoading({ isLoad: false });
+      } else if (res.length === 0) {
+        setHandleError(t("no-data-avaliable"));
+        setIsLoading({ isLoad: false });
+      }
     } catch (err) {
       console.log("err ", err);
       if (err?.response?.data?.code === 101) {
@@ -297,27 +364,6 @@ const DraftTemplate = () => {
       } else {
         setHandleError(t("something-went-wrong-mssg"));
       }
-    }
-    const res = await contractUsers(jwttoken);
-    if (res[0] && res.length) {
-      setSignerUserId(res[0].objectId);
-      const tourstatus = res[0].TourStatus && res[0].TourStatus;
-      if (tourstatus && tourstatus.length > 0) {
-        setTourStatus(tourstatus);
-        const checkTourRecipients = tourstatus.filter(
-          (data) => data.templateTour
-        );
-        if (checkTourRecipients && checkTourRecipients.length > 0) {
-          setCheckTourStatus(checkTourRecipients[0].templateTour);
-        }
-      }
-      setIsLoading({ isLoad: false });
-    } else if (res === "Error: Something went wrong!") {
-      setHandleError(t("something-went-wrong-mssg"));
-      setIsLoading({ isLoad: false });
-    } else if (res.length === 0) {
-      setHandleError(t("no-data-avaliable"));
-      setIsLoading({ isLoad: false });
     }
   };
   //function for setting position after drop signature button over pdf
@@ -694,7 +740,8 @@ const DraftTemplate = () => {
           RemindOnceInEvery: parseInt(pdfDetails[0]?.RemindOnceInEvery),
           NextReminderDate: pdfDetails[0]?.NextReminderDate,
           IsEnableOTP: pdfDetails[0]?.IsEnableOTP === true ? true : false,
-          IsTourEnabled: pdfDetails[0]?.IsTourEnabled === true ? true : false
+          IsTourEnabled: pdfDetails[0]?.IsTourEnabled === true ? true : false,
+          SignatureType: signatureType
         };
         const baseURL = localStorage.getItem("baseUrl");
         const url = `${baseURL}functions/savetemplate`;
@@ -1121,7 +1168,15 @@ const DraftTemplate = () => {
     setFontColor();
   };
 
-  const handleWidgetdefaultdata = (defaultdata) => {
+  const handleWidgetdefaultdata = (defaultdata, isSignWidget) => {
+    if (isSignWidget) {
+      const updatedPdfDetails = [...pdfDetails];
+      const signtypes = defaultdata.signatureType || signatureType;
+      updatedPdfDetails[0].SignatureType = signtypes;
+      // Update the SignatureType with the modified array
+      setPdfDetails(updatedPdfDetails);
+      setSignatureType(signtypes);
+    }
     const options = ["email", "number", "text"];
     let inputype;
     if (defaultdata.textvalidate) {
@@ -1321,6 +1376,7 @@ const DraftTemplate = () => {
     template.URL = pdfUrl;
     template.Signers = signers;
     template.Placeholders = signerPos;
+    template.SignatureType = signatureType;
     const Documents = [template];
     const token = jwttoken
       ? { jwttoken: jwttoken }
@@ -1495,6 +1551,7 @@ const DraftTemplate = () => {
                       ) : (
                         <>
                           <BulkSendUi
+                            signatureType={signatureType}
                             Placeholders={signerPos}
                             item={pdfDetails?.[0]}
                             handleClose={handleQuickSendClose}
@@ -1822,6 +1879,7 @@ const DraftTemplate = () => {
           />
         </ModalUi>
         <WidgetNameModal
+          signatureType={signatureType}
           widgetName={widgetName}
           defaultdata={currWidgetsDetails}
           isOpen={isNameModal}

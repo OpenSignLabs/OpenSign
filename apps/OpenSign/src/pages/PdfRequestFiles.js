@@ -33,7 +33,10 @@ import {
   getDefaultSignature,
   onClickZoomIn,
   onClickZoomOut,
-  fetchUrl
+  fetchUrl,
+  signatureTypes,
+  handleSignatureType,
+  getTenantDetails
 } from "../constant/Utils";
 import Header from "../components/pdf/PdfHeader";
 import RenderPdf from "../components/pdf/RenderPdf";
@@ -136,6 +139,7 @@ function PdfRequestFiles(props) {
   const isHeader = useSelector((state) => state.showHeader);
   const divRef = useRef(null);
   const [isDownloadModal, setIsDownloadModal] = useState(false);
+  const [signatureType, setSignatureType] = useState([]);
   const isMobile = window.innerWidth < 767;
 
   let isGuestSignFlow = false;
@@ -302,17 +306,13 @@ function PdfRequestFiles(props) {
         : [];
       if (documentData && documentData[0]?.error) {
         props?.setTemplateStatus &&
-          props?.setTemplateStatus({
-            status: "Invalid"
-          });
+          props?.setTemplateStatus({ status: "Invalid" });
         throw new Error("error: Invalid TemplateId");
       } else if (documentData && documentData.length > 0) {
         if (documentData[0]?.IsPublic) {
           //handle condition when someone use plan js then setTemplateStatus is not supporting
           props?.setTemplateStatus &&
-            props?.setTemplateStatus({
-              status: "Success"
-            });
+            props?.setTemplateStatus({ status: "Success" });
           const url =
             documentData[0] &&
             (documentData[0]?.SignedUrl || documentData[0]?.URL);
@@ -350,24 +350,18 @@ function PdfRequestFiles(props) {
           }
           setUnSignedSigners(placeholdersOrSigners);
           setPdfDetails(documentData);
-          setIsLoading({
-            isLoad: false
-          });
+          setIsLoading({ isLoad: false });
         } else {
           props?.setTemplateStatus &&
-            props?.setTemplateStatus({
-              status: "Private"
-            });
-          setIsLoading(false);
+            props?.setTemplateStatus({ status: "Private" });
+          setIsLoading({ isLoad: false });
           setHandleError(t("something-went-wrong-mssg"));
           console.error("error:  TemplateId is not public");
           return;
         }
       } else {
         props?.setTemplateStatus &&
-          props?.setTemplateStatus({
-            status: "Invalid"
-          });
+          props?.setTemplateStatus({ status: "Invalid" });
         setIsLoading(false);
         setHandleError(t("something-went-wrong-mssg"));
         console.error("error: Invalid TemplateId");
@@ -384,6 +378,33 @@ function PdfRequestFiles(props) {
       return;
     }
   };
+  const fetchTenantDetails = async () => {
+    const user = JSON.parse(
+      localStorage.getItem(
+        `Parse/${localStorage.getItem("parseAppId")}/currentUser`
+      )
+    );
+    if (user) {
+      try {
+        const tenantDetails = await getTenantDetails(user?.objectId);
+        if (tenantDetails && tenantDetails === "user does not exist!") {
+          alert(t("user-not-exist"));
+        } else if (tenantDetails) {
+          const signatureType = tenantDetails?.SignatureType || [];
+          const filterSignTypes = signatureType?.filter(
+            (x) => x.enabled === true
+          );
+
+          return filterSignTypes;
+        }
+      } catch (e) {
+        alert(t("user-not-exist"));
+      }
+    } else {
+      alert(t("user-not-exist"));
+    }
+  };
+
   //function for get document details for perticular signer with signer'object id
   const getDocumentDetails = async (docId, isNextUser) => {
     try {
@@ -391,11 +412,18 @@ function PdfRequestFiles(props) {
         `Parse/${localStorage.getItem("parseAppId")}/currentUser`
       );
       const jsonSender = JSON.parse(senderUser);
+      const tenantSignTypes = await fetchTenantDetails();
       // `currUserId` will be contactId or extUserId
       let currUserId;
       //getting document details
       const documentData = await contractDocument(docId);
       if (documentData && documentData.length > 0) {
+        const docSignTypes = documentData?.[0]?.SignatureType || signatureTypes;
+        const updatedSignatureType = await handleSignatureType(
+          tenantSignTypes,
+          docSignTypes
+        );
+        setSignatureType(updatedSignatureType);
         const url =
           documentData[0] &&
           (documentData[0]?.SignedUrl || documentData[0]?.URL);
@@ -968,11 +996,7 @@ function PdfRequestFiles(props) {
                       const newDate = new Date(expireDate);
                       const localExpireDate = newDate.toLocaleDateString(
                         "en-US",
-                        {
-                          day: "numeric",
-                          month: "long",
-                          year: "numeric"
-                        }
+                        { day: "numeric", month: "long", year: "numeric" }
                       );
                       let senderEmail = pdfDetails?.[0].ExtUserPtr.Email;
                       let senderPhone = pdfDetails?.[0]?.ExtUserPtr?.Phone;
@@ -1381,9 +1405,7 @@ function PdfRequestFiles(props) {
         try {
           await axios.post(
             `${localStorage.getItem("baseUrl")}functions/updatecontacttour`,
-            {
-              contactId: signerObjectId
-            },
+            { contactId: signerObjectId },
             {
               headers: {
                 "Content-Type": "application/json",
@@ -2108,6 +2130,7 @@ function PdfRequestFiles(props) {
                     </ModalUi>
                     {/* this component is used for signature pad modal */}
                     <SignPad
+                      signatureTypes={signatureType}
                       isSignPad={isSignPad}
                       isStamp={isStamp}
                       setIsImageSelect={setIsImageSelect}
@@ -2256,6 +2279,10 @@ function PdfRequestFiles(props) {
                         setIsLoading={setIsLoading}
                         xyPostion={signerPos}
                         setDefaultSignAlert={setDefaultSignAlert}
+                        isDefault={
+                          signatureType?.find((x) => x.name === "default")
+                            ?.enabled || false
+                        }
                       />
                     )}
                   </div>

@@ -15,7 +15,10 @@ import {
   copytoData,
   fetchUrl,
   getSignedUrl,
-  replaceMailVaribles
+  getTenantDetails,
+  handleSignatureType,
+  replaceMailVaribles,
+  signatureTypes
 } from "../constant/Utils";
 import Confetti from "react-confetti";
 import EditorToolbar, {
@@ -77,6 +80,7 @@ const ReportTable = (props) => {
   const [isDownloadModal, setIsDownloadModal] = useState(false);
   const [isEmbed, setIsEmbed] = useState(false);
   const [isPublicTour, setIsPublicTour] = useState();
+  const [signatureType, setSignatureType] = useState([]);
   const Extand_Class = localStorage.getItem("Extand_Class");
   const extClass = Extand_Class && JSON.parse(Extand_Class);
   const startIndex = (currentPage - 1) * props.docPerPage;
@@ -195,6 +199,33 @@ const ReportTable = (props) => {
     }
   }, [isMoreDocs, pageNumbers, currentPage, setIsNextRecord]);
 
+  //function to fetch tenant Details
+  const fetchTenantDetails = async () => {
+    const user = JSON.parse(
+      localStorage.getItem(
+        `Parse/${localStorage.getItem("parseAppId")}/currentUser`
+      )
+    );
+    if (user) {
+      try {
+        const tenantDetails = await getTenantDetails(user?.objectId);
+        if (tenantDetails && tenantDetails === "user does not exist!") {
+          alert(t("user-not-exist"));
+        } else if (tenantDetails) {
+          const signatureType = tenantDetails?.SignatureType || [];
+          const filterSignTypes = signatureType?.filter(
+            (x) => x.enabled === true
+          );
+          return filterSignTypes;
+        }
+      } catch (e) {
+        alert(t("user-not-exist"));
+      }
+    } else {
+      alert(t("user-not-exist"));
+    }
+  };
+
   // `handleURL` is used to open microapp
   const handleURL = async (item, act) => {
     if (props.ReportName === "Templates") {
@@ -203,9 +234,7 @@ const ReportTable = (props) => {
       } else {
         setActLoader({ [`${item.objectId}_${act.btnId}`]: true });
         try {
-          const params = {
-            templateId: item.objectId
-          };
+          const params = { templateId: item.objectId };
           const templateDeatils = await axios.post(
             `${localStorage.getItem("baseUrl")}functions/getTemplate`,
             params,
@@ -249,6 +278,16 @@ const ReportTable = (props) => {
                 }
               }
             }
+            const tenantSignTypes = await fetchTenantDetails();
+            const docSignTypes = Doc?.SignatureType || signatureTypes;
+            const updatedSignatureType = await handleSignatureType(
+              tenantSignTypes,
+              docSignTypes
+            );
+            const SignatureType =
+              updatedSignatureType.length > 0
+                ? { SignatureType: updatedSignatureType }
+                : {};
             let placeholdersArr = [];
             if (Doc.Placeholders?.length > 0) {
               placeholdersArr = Doc.Placeholders;
@@ -275,7 +314,8 @@ const ReportTable = (props) => {
                 AutomaticReminders: Doc?.AutomaticReminders || false,
                 RemindOnceInEvery: Doc?.RemindOnceInEvery || 5,
                 IsEnableOTP: Doc?.IsEnableOTP || false,
-                FileAdapterId: Doc?.FileAdapterId || ""
+                FileAdapterId: Doc?.FileAdapterId || "",
+                ...SignatureType
               };
               try {
                 const res = await axios.post(
@@ -910,6 +950,13 @@ const ReportTable = (props) => {
         }
       );
       const templateRes = axiosRes.data && axiosRes.data.result;
+      const tenantSignTypes = await fetchTenantDetails();
+      const docSignTypes = templateRes?.SignatureType || signatureTypes;
+      const updatedSignatureType = await handleSignatureType(
+        tenantSignTypes,
+        docSignTypes
+      );
+      setSignatureType(updatedSignatureType);
       setPlaceholders(templateRes?.Placeholders);
       setTemplateDetails(templateRes);
       setIsLoader({});
@@ -1933,6 +1980,7 @@ const ReportTable = (props) => {
                                   Placeholders={placeholders}
                                   item={templateDeatils}
                                   handleClose={handleQuickSendClose}
+                                  signatureType={signatureType}
                                 />
                               )}
                             </ModalUi>

@@ -94,6 +94,7 @@
       "My Signature": "My Signature",
       "API Token": "API Token",
       "Webhook": "Webhook",
+      "Preferences": "Preferences",
       "Teams": "Teams",
       "Team-update-successfully": "Team Updated successfully.",
       "Users": "Users"
@@ -683,7 +684,8 @@
   "public-tour-message": "The template needs to be public before you can generate a shareable link.",
   "add-user-template": "You need to add a role before you can add fields for it.",
   "pdf-uncompatible": "This pdf is not compatible with opensign, please contact <support@opensignlabs.com>",
-  "text-field-tour":"Fields of type 'Text' must be filled in advance before the document is sent. If you need the signers to provide input, use the 'Text Input' field instead.",
-  "attach-signer-tour":"You need to attach a Signer to every role. You can do that by clicking this icon. Once you select a Signer it will be attached to all the fields associated with that role which appear in the same colour."
- 
+  "text-field-tour": "Fields of type 'Text' must be filled in advance before the document is sent. If you need the signers to provide input, use the 'Text Input' field instead.",
+  "attach-signer-tour": "You need to attach a Signer to every role. You can do that by clicking this icon. Once you select a Signer it will be attached to all the fields associated with that role which appear in the same colour.",
+  "allowed-signature-types": "Allowed signature types",
+  "at-least-one-signature-type": "At least one signature type should be enabled."
 }
