@@ -36,7 +36,8 @@ import {
   getDefaultSignature,
   onClickZoomIn,
   onClickZoomOut,
-  rotatePdfPage
+  rotatePdfPage,
+  signatureTypes
 } from "../constant/Utils";
 import { useParams } from "react-router-dom";
 import Tour from "reactour";
@@ -1302,6 +1303,7 @@ function SignYourSelf() {
                 />
                 {/* this is modal of signature pad */}
                 <SignPad
+                  signatureTypes={signatureTypes}
                   isSignPad={isSignPad}
                   isStamp={isStamp}
                   setIsImageSelect={setIsImageSelect}

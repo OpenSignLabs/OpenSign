@@ -685,7 +685,6 @@ export const createDocument = async (
 ) => {
   if (template && template.length > 0) {
     const Doc = template[0];
-
     let placeholdersArr = [];
     if (placeholders?.length > 0) {
       placeholdersArr = placeholders;
@@ -703,6 +702,9 @@ export const createDocument = async (
         }
       });
     }
+    const SignatureType = Doc?.SignatureType
+      ? { SignatureType: Doc?.SignatureType }
+      : {};
     const data = {
       Name: Doc.Name,
       URL: pdfUrl,
@@ -727,7 +729,8 @@ export const createDocument = async (
       RemindOnceInEvery: parseInt(Doc?.RemindOnceInEvery || 5),
       IsEnableOTP: Doc?.IsEnableOTP || false,
       IsTourEnabled: Doc?.IsTourEnabled || false,
-      FileAdapterId: Doc?.FileAdapterId || ""
+      FileAdapterId: Doc?.FileAdapterId || "",
+      ...SignatureType
     };
 
     try {
@@ -2591,4 +2594,24 @@ export function generateTitleFromFilename(filename) {
     console.error("Error generating title from filename:", error);
     return "Untitled Document";
   }
+}
+
+export const signatureTypes = [
+  { name: "draw", enabled: true },
+  { name: "typed", enabled: true },
+  { name: "upload", enabled: true },
+  { name: "default", enabled: true }
+];
+
+// `handleSignatureType` is used to return update signature types as per tenant or user
+export async function handleSignatureType(tenantSignTypes, signatureType) {
+  const docSignTypes = signatureType || signatureTypes;
+  let updatedSignatureType = signatureType || signatureTypes;
+  if (tenantSignTypes?.length > 0) {
+    updatedSignatureType = tenantSignTypes?.map((item) => {
+      const match = docSignTypes.find((data) => data.name === item.name);
+      return match ? { ...item, enabled: match.enabled } : item;
+    });
+  }
+  return updatedSignatureType;
 }
