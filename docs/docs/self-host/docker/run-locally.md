@@ -40,7 +40,7 @@ Make sure to replace the host URL with your subdomain where OpenSign will be acc
 You will also need to point the subdomain to the server executing these commands by adding the correct A record to your DNS settings.
   
 ### Running locally
-If instead want to run locally try out below commands and once the deployment is successful, the application will be accessible at [https://localhost:3001](https://localhost:3001). You will need to accept Chrome's insecure certificate warning. Follow the steps in the screenshots to proceed.
+If instead want to run locally try out below commands.
   
 Command for linux/MacOS (localhost)
 ```
@@ -55,6 +55,7 @@ Command for Windows (**CMD/Terminal**) (localhost)
 curl -O https://raw.githubusercontent.com/OpenSignLabs/OpenSign/main/docker-compose.yml && curl -O https://raw.githubusercontent.com/OpenSignLabs/OpenSign/main/Caddyfile && curl -O https://raw.githubusercontent.com/OpenSignLabs/OpenSign/main/.env.local_dev && rename .env.local_dev .env.prod && docker compose up --force-recreate
 ```
 
+Once the deployment is successful, the application will be accessible at [https://localhost:3001](https://localhost:3001). You will need to accept Chrome's insecure certificate warning. Follow the steps in the screenshots to proceed.
   <div>
     <img width="700" alt="localhost" src="https://github.com/user-attachments/assets/f5de1882-64d0-44ea-86e3-3a7c8405272c"/>
   </div>
