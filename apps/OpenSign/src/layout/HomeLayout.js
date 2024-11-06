@@ -255,7 +255,9 @@ const HomeLayout = () => {
   return (
     <div>
       <div className="sticky top-0 z-[501]">
-        {!isLoader && <Header showSidebar={showSidebar} />}
+        {!isLoader && (
+          <Header showSidebar={showSidebar} setIsMenu={setIsOpen} />
+        )}
       </div>
       {isUserValid ? (
         <>
