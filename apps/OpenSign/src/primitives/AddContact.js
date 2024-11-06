@@ -60,7 +60,6 @@ const AddContact = (props) => {
     );
     const userId = user?.objectId || "";
     const tenantDetails = await getTenantDetails(userId, props.jwttoken);
-    console.log("tenantDetails", tenantDetails);
     const tenantId = tenantDetails?.objectId || "";
     if (tenantId) {
       try {
@@ -78,7 +77,6 @@ const AddContact = (props) => {
         const axiosRes = await axios.post(url, data, { headers });
         const contactRes = axiosRes?.data?.result || {};
         if (contactRes?.objectId) {
-          console.log("contactRes ", contactRes);
           props.details(contactRes);
           if (props.closePopup) {
             props.closePopup();
