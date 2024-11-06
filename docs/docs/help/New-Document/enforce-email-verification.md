@@ -21,7 +21,7 @@ The "Enable OTP Verification" feature in OpenSign is designed to add an extra la
 
 3. **Configure Security Settings**:
    - Click the "Advanced Options"
-   - <img width="499" alt="image" src="https://github.com/user-attachments/assets/2f099abb-9421-49fb-b53a-7d9a610a8cfe">
+   - <img width="499" alt="image" src="https://github.com/user-attachments/assets/2f099abb-9421-49fb-b53a-7d9a610a8cfe"/>
 
    - Under **Security Settings**, find the option labeled "Enable OTP Verification."
    - Select **Yes** to activate OTP verification for this document.
