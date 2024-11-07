@@ -21,9 +21,11 @@ function TextFontSetting(props) {
             value={
               props.fontSize ||
               props.currWidgetsDetails?.options?.fontSize ||
-              "12"
+              12
             }
-            onChange={(e) => props.setFontSize(e.target.value)}
+            onChange={(e) => {
+              props.setFontSize(parseInt(e.target.value));
+            }}
           >
             {fontsizeArr.map((size, ind) => {
               return (

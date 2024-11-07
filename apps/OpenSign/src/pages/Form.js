@@ -1394,20 +1394,20 @@ const Forms = (props) => {
             )}
 
             {isAdvanceOpt && props.title !== "Sign Yourself" ? (
-              <div
+              <span
                 onClick={() => setIsAdvanceOpt(!isAdvanceOpt)}
                 className={`mt-2.5 op-link op-link-primary text-sm`}
               >
                 {t("hide-advanced-options")}
-              </div>
+              </span>
             ) : (
               props.title !== "Sign Yourself" && (
-                <div
+                <span
                   onClick={() => setIsAdvanceOpt(!isAdvanceOpt)}
                   className={`mt-2.5 op-link op-link-primary text-sm`}
                 >
                   {t("advanced-options")}
-                </div>
+                </span>
               )
             )}
 

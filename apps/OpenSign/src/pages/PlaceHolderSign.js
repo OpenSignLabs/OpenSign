@@ -498,8 +498,10 @@ function PlaceHolderSign() {
       let dropData = [];
       let placeHolder;
       const dragTypeValue = item?.text ? item.text : monitor.type;
-      const widgetWidth = defaultWidthHeight(dragTypeValue).width;
-      const widgetHeight = defaultWidthHeight(dragTypeValue).height;
+      const widgetWidth =
+        defaultWidthHeight(dragTypeValue).width * containerScale;
+      const widgetHeight =
+        defaultWidthHeight(dragTypeValue).height * containerScale;
       //adding and updating drop position in array when user drop signature button in div
       if (item === "onclick") {
         const divHeight = divRef.current.getBoundingClientRect().height;
@@ -836,9 +838,7 @@ function PlaceHolderSign() {
           placeholder,
           pdfDoc,
           isSignYourSelfFlow,
-          scale,
-          pdfOriginalWH,
-          containerWH
+          scale
         );
         const pdfUrl = await convertBase64ToFile(pdfDetails[0].Name, pdfBase64);
         const tenantId = localStorage.getItem("TenantId");
@@ -1357,7 +1357,7 @@ function PlaceHolderSign() {
                     isHideLabel: isHideLabel || false,
                     defaultValue: defaultValue,
                     fontSize:
-                      fontSize || currWidgetsDetails?.options?.fontSize || "12",
+                      fontSize || currWidgetsDetails?.options?.fontSize || 12,
                     fontColor:
                       fontColor ||
                       currWidgetsDetails?.options?.fontColor ||
@@ -1395,7 +1395,7 @@ function PlaceHolderSign() {
                     isReadOnly: isReadOnly || false,
                     isHideLabel: isHideLabel || false,
                     fontSize:
-                      fontSize || currWidgetsDetails?.options?.fontSize || "12",
+                      fontSize || currWidgetsDetails?.options?.fontSize || 12,
                     fontColor:
                       fontColor ||
                       currWidgetsDetails?.options?.fontColor ||
@@ -1413,7 +1413,7 @@ function PlaceHolderSign() {
                   values: dropdownOptions,
                   defaultValue: defaultValue,
                   fontSize:
-                    fontSize || currWidgetsDetails?.options?.fontSize || "12",
+                    fontSize || currWidgetsDetails?.options?.fontSize || 12,
                   fontColor:
                     fontColor ||
                     currWidgetsDetails?.options?.fontColor ||
@@ -1494,7 +1494,7 @@ function PlaceHolderSign() {
                         }
                       : {},
                   fontSize:
-                    fontSize || currWidgetsDetails?.options?.fontSize || "12",
+                    fontSize || currWidgetsDetails?.options?.fontSize || 12,
                   fontColor:
                     fontColor ||
                     currWidgetsDetails?.options?.fontColor ||
@@ -1510,7 +1510,7 @@ function PlaceHolderSign() {
                   status: defaultdata.status,
                   defaultValue: defaultdata.defaultValue,
                   fontSize:
-                    fontSize || currWidgetsDetails?.options?.fontSize || "12",
+                    fontSize || currWidgetsDetails?.options?.fontSize || 12,
                   fontColor:
                     fontColor ||
                     currWidgetsDetails?.options?.fontColor ||

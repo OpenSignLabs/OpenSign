@@ -425,9 +425,7 @@ function SignYourSelf() {
       const getWidth = widgetTypeExist
         ? calculateInitialWidthHeight(dragTypeValue, widgetValue).getWidth
         : defaultWidthHeight(dragTypeValue).width;
-      const getHeight = widgetTypeExist
-        ? calculateInitialWidthHeight(dragTypeValue, widgetValue).getHeight
-        : defaultWidthHeight(dragTypeValue).height;
+      const getHeight = defaultWidthHeight(dragTypeValue).height;
 
       dropObj = {
         xPosition: getWidth / 2 + containerWH.width / 2,
@@ -458,9 +456,7 @@ function SignYourSelf() {
       const getWidth = widgetTypeExist
         ? calculateInitialWidthHeight(widgetValue).getWidth
         : defaultWidthHeight(dragTypeValue).width;
-      const getHeight = widgetTypeExist
-        ? calculateInitialWidthHeight(widgetValue).getHeight
-        : defaultWidthHeight(dragTypeValue).height;
+      const getHeight = defaultWidthHeight(dragTypeValue).height;
       dropObj = {
         xPosition: getXPosition / (containerScale * scale),
         yPosition: getYPosition / (containerScale * scale),
@@ -662,9 +658,7 @@ function SignYourSelf() {
               xyPostion,
               pdfDoc,
               isSignYourSelfFlow,
-              scale,
-              pdfOriginalWH,
-              containerWH
+              scale
             );
             // console.log("pdf", pdfBytes);
             //function for call to embed signature in pdf and get digital signature pdf
@@ -1029,7 +1023,6 @@ function SignYourSelf() {
     const getPageNumer = xyPostion.filter(
       (data) => data.pageNumber === pageNumber
     );
-
     if (getPageNumer.length > 0) {
       const getXYdata = getPageNumer[0].pos;
       const getPosData = getXYdata;
@@ -1059,7 +1052,7 @@ function SignYourSelf() {
                 isReadOnly: isReadOnly,
                 isHideLabel: isHideLabel || false,
                 fontSize:
-                  fontSize || currWidgetsDetails?.options?.fontSize || "12",
+                  fontSize || currWidgetsDetails?.options?.fontSize || 12,
                 fontColor:
                   fontColor || currWidgetsDetails?.options?.fontColor || "black"
               }
@@ -1093,7 +1086,6 @@ function SignYourSelf() {
     const getPageNumer = xyPostion.filter(
       (data) => data.pageNumber === pageNumber
     );
-
     if (getPageNumer.length > 0) {
       const getXYdata = getPageNumer[0].pos;
       const getPosData = getXYdata;
@@ -1103,8 +1095,7 @@ function SignYourSelf() {
             ...position,
             options: {
               ...position.options,
-              fontSize:
-                fontSize || currWidgetsDetails?.options?.fontSize || "12",
+              fontSize: fontSize || currWidgetsDetails?.options?.fontSize || 12,
               fontColor:
                 fontColor || currWidgetsDetails?.options?.fontColor || "black"
             }

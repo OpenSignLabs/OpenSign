@@ -292,7 +292,7 @@
   "subject": "Subject",
   "body": "Body",
   "add-contact": "Add Contact",
-  "add-signer-alert": "Contact already exist!",
+  "add-signer-alert": "Contact already exist! Please select it from ‘Signers’ dropdown",
   "record-delete-alert": "Record deleted successfully!",
   "record-revoke-alert": "Record revoked successfully!",
   "mail-sent-alert": "Mail sent successfully.",
@@ -681,7 +681,7 @@
      "p3":"Tip: If your signers are familiar with OpenSign and frequently use it, you may want to disable the guided tour for a more seamless experience. Choose the option that best fits your document signing needs."
    },
    "form-title-1":"Document Flow Setting",
-   "form-title-2":"Security Setting",
+   "form-title-2":"Security Settings",
   "public-tour-message":"The template needs to be public before you can generate a shareable link.",
   "add-user-template": "You need to add a role before you can add fields for it.",
   "pdf-uncompatible": "This pdf is not compatible with opensign, please contact <support@opensignlabs.com>",
@@ -689,6 +689,7 @@
   "attach-signer-tour":"You need to attach a Signer to every role. You can do that by clicking this icon. Once you select a Signer it will be attached to all the fields associated with that role which appear in the same colour.",
   "allowed-signature-types": "Allowed signature types",
   "at-least-one-signature-type": "At least one signature type should be enabled.",
+  "add-signer-note": "Note - This contact will be added to your contact list",
   "allowed-signature-types-help": {
     "p1": "This signature preference controls which signing options are available to your signers. Only the signature types you select will appear in the signature widget when a document is signed. For example, if you choose only the 'Draw' option in preferences, your signer will see only the 'Draw' option in the signature widget, while the other three options will not be available.",
     "l1": "Create a handwritten signature directly on the screen using your finger or a stylus.",
