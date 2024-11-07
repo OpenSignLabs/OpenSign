@@ -2,7 +2,11 @@ import React, { useEffect, useState } from "react";
 import ModalUi from "../../primitives/ModalUi";
 import "../../styles/AddUser.css";
 import RegexParser from "regex-parser";
-import { textInputWidget, textWidget } from "../../constant/Utils";
+import {
+  signatureTypes,
+  textInputWidget,
+  textWidget
+} from "../../constant/Utils";
 import Upgrade from "../../primitives/Upgrade";
 import { isEnableSubscription } from "../../constant/const";
 import Tooltip from "../../primitives/Tooltip";
@@ -11,6 +15,7 @@ import { useTranslation } from "react-i18next";
 
 const WidgetNameModal = (props) => {
   const { t } = useTranslation();
+  const signTypes = props?.signatureType || signatureTypes;
   const [formdata, setFormdata] = useState({
     name: "",
     defaultValue: "",
@@ -21,6 +26,7 @@ const WidgetNameModal = (props) => {
   const [isValid, setIsValid] = useState(true);
   const statusArr = ["Required", "Optional"];
   const inputOpt = ["text", "email", "number"];
+  const [signatureType, setSignatureType] = useState([]);
 
   useEffect(() => {
     if (props.defaultdata) {
@@ -40,12 +46,22 @@ const WidgetNameModal = (props) => {
         name: props.defaultdata?.options?.name || ""
       });
     }
+
+    if (signTypes.length > 0) {
+      const defaultSignatureType = signTypes || [];
+      setSignatureType(defaultSignatureType);
+    }
     // eslint-disable-next-line
   }, [props.defaultdata]);
   const handleSubmit = (e) => {
     e.preventDefault();
     if (props.handleData) {
-      props.handleData(formdata);
+      if (["signature", "initials"].includes(props.defaultdata?.type)) {
+        const data = { ...formdata, signatureType };
+        props.handleData(data, props.defaultdata?.type);
+      } else {
+        props.handleData(formdata);
+      }
       setFormdata({
         name: "",
         defaultValue: "",
@@ -53,6 +69,7 @@ const WidgetNameModal = (props) => {
         hint: "",
         textvalidate: ""
       });
+      setSignatureType(signTypes);
     }
   };
   const handleChange = (e) => {
@@ -102,6 +119,15 @@ const WidgetNameModal = (props) => {
       }
     }
   }
+
+  const handleCheckboxChange = (index) => {
+    // Create a copy of the signatureType array
+    const updatedSignatureType = [...signatureType];
+    // Toggle the enabled value for the clicked item
+    updatedSignatureType[index].enabled = !updatedSignatureType[index].enabled;
+    // Update the state with the modified array
+    setSignatureType(updatedSignatureType);
+  };
   return (
     <ModalUi
       isOpen={props.isOpen}
@@ -111,24 +137,30 @@ const WidgetNameModal = (props) => {
       <form
         onSubmit={handleSubmit}
         className={`${
-          props.defaultdata?.type === textInputWidget ? "pt-0" : ""
+          props.defaultdata?.type === textInputWidget
+            ? "pt-0"
+            : ["signature", "initials"].includes(props.defaultdata?.type)
+              ? "pt-2"
+              : ""
         } p-[20px] text-base-content`}
       >
-        <div className="mb-[0.75rem] text-[13px]">
-          <label htmlFor="name">
-            {t("name")}
-            <span className="text-[red]"> *</span>
-          </label>
-          <input
-            className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
-            name="name"
-            value={formdata.name}
-            onChange={(e) => handleChange(e)}
-            onInvalid={(e) => e.target.setCustomValidity(t("input-required"))}
-            onInput={(e) => e.target.setCustomValidity("")}
-            required
-          />
-        </div>
+        {!["signature", "initials"].includes(props.defaultdata?.type) && (
+          <div className="mb-[0.75rem] text-[13px]">
+            <label htmlFor="name">
+              {t("name")}
+              <span className="text-[red]"> *</span>
+            </label>
+            <input
+              className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
+              name="name"
+              value={formdata.name}
+              onChange={(e) => handleChange(e)}
+              onInvalid={(e) => e.target.setCustomValidity(t("input-required"))}
+              onInput={(e) => e.target.setCustomValidity("")}
+              required
+            />
+          </div>
+        )}
         {props.defaultdata?.type === textInputWidget && (
           <>
             {isEnableSubscription && (
@@ -226,30 +258,63 @@ const WidgetNameModal = (props) => {
             </div>
           </>
         )}
-        <div className="mb-[0.75rem]">
-          <div className="flex flex-row gap-[10px] mb-[0.5rem]">
-            {statusArr.map((data, ind) => {
-              return (
-                <div key={ind} className="flex flex-row gap-[5px] items-center">
-                  <input
-                    className="mr-[2px] op-radio op-radio-xs"
-                    type="radio"
-                    name="status"
-                    onChange={() =>
-                      setFormdata({ ...formdata, status: data.toLowerCase() })
-                    }
-                    checked={
-                      formdata.status.toLowerCase() === data.toLowerCase()
-                    }
-                  />
-                  <div className="text-[13px] font-medium">
-                    {t(`widget-status.${data}`)}
+        {!["signature", "initials"].includes(props.defaultdata?.type) && (
+          <div className="mb-[0.75rem]">
+            <div className="flex flex-row gap-[10px] mb-[0.5rem]">
+              {statusArr.map((data, ind) => {
+                return (
+                  <div
+                    key={ind}
+                    className="flex flex-row gap-[5px] items-center"
+                  >
+                    <input
+                      className="mr-[2px] op-radio op-radio-xs"
+                      type="radio"
+                      name="status"
+                      onChange={() =>
+                        setFormdata({ ...formdata, status: data.toLowerCase() })
+                      }
+                      checked={
+                        formdata.status.toLowerCase() === data.toLowerCase()
+                      }
+                    />
+                    <div className="text-[13px] font-medium">
+                      {t(`widget-status.${data}`)}
+                    </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
-        </div>
+        )}
+        {props.defaultdata?.type === "signature" && (
+          <div className="mb-[0.75rem]">
+            <label htmlFor="signaturetype" className="text-[14px] mb-[0.7rem]">
+              {t("allowed-signature-types")}
+            </label>
+            <div className=" ml-[7px] flex flex-col md:flex-row gap-[10px] mb-[0.7rem]">
+              {signatureType.map((type, i) => {
+                return (
+                  <div key={i} className="flex flex-row gap-[5px] items-center">
+                    <input
+                      className="mr-[2px] op-checkbox op-checkbox-xs"
+                      type="checkbox"
+                      name="signaturetype"
+                      onChange={() => handleCheckboxChange(i)}
+                      checked={type.enabled}
+                    />
+                    <div
+                      className="text-[13px] font-medium hover:underline underline-offset-2 cursor-default"
+                      title={`Enabling this allow signers to ${type.name} signature`}
+                    >
+                      {type.name}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
         {props.defaultdata?.type === textInputWidget && (
           <div className="mb-[0.75rem]">
             <label htmlFor="hint" className="text-[13px]">

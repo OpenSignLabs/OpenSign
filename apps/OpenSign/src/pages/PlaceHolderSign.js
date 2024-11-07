@@ -38,7 +38,9 @@ import {
   onClickZoomOut,
   rotatePdfPage,
   handleRemoveWidgets,
-  handleRotateWarning
+  handleRotateWarning,
+  signatureTypes,
+  handleSignatureType
 } from "../constant/Utils";
 import RenderPdf from "../components/pdf/RenderPdf";
 import { useNavigate } from "react-router-dom";
@@ -152,28 +154,22 @@ function PlaceHolderSign() {
   const [pdfRotateBase64, setPdfRotatese64] = useState("");
   const [planCode, setPlanCode] = useState("");
   const [unSignedWidgetId, setUnSignedWidgetId] = useState("");
+  const [signatureType, setSignatureType] = useState(signatureTypes);
   const isMobile = window.innerWidth < 767;
   const [, drop] = useDrop({
     accept: "BOX",
     drop: (item, monitor) => addPositionOfSignature(item, monitor),
-    collect: (monitor) => ({
-      isOver: !!monitor.isOver()
-    })
+    collect: (monitor) => ({ isOver: !!monitor.isOver() })
   });
-
   const [{ isDragSign }, dragSignature] = useDrag({
     type: "BOX",
     item: { type: "BOX", id: 1, text: "signature" },
-    collect: (monitor) => ({
-      isDragSign: !!monitor.isDragging()
-    })
+    collect: (monitor) => ({ isDragSign: !!monitor.isDragging() })
   });
   const [{ isDragStamp }, dragStamp] = useDrag({
     type: "BOX",
     item: { type: "BOX", id: 2, text: "stamp" },
-    collect: (monitor) => ({
-      isDragStamp: !!monitor.isDragging()
-    })
+    collect: (monitor) => ({ isDragStamp: !!monitor.isDragging() })
   });
   const documentId = docId;
   useEffect(() => {
@@ -202,10 +198,15 @@ function PlaceHolderSign() {
         if (tenantDetails && tenantDetails === "user does not exist!") {
           alert(t("user-not-exist"));
         } else if (tenantDetails) {
+          const signatureType = tenantDetails?.SignatureType || [];
+          const filterSignTypes = signatureType?.filter(
+            (x) => x.enabled === true
+          );
           if (tenantDetails?.RequestBody) {
             setRequestBody(tenantDetails?.RequestBody);
             setRequestSubject(tenantDetails?.RequestSubject);
           }
+          return filterSignTypes;
         }
       } catch (e) {
         alert(t("user-not-exist"));
@@ -256,11 +257,17 @@ function PlaceHolderSign() {
   }
   //function for get document details
   const getDocumentDetails = async () => {
-    fetchTenantDetails();
+    const tenantSignTypes = await fetchTenantDetails();
     //getting document details
     const documentData = await contractDocument(documentId);
     if (documentData && documentData.length > 0) {
       const url = documentData[0] && documentData[0]?.URL;
+      const docSignTypes = documentData?.[0]?.SignatureType || signatureTypes;
+      const updatedSignatureType = await handleSignatureType(
+        tenantSignTypes,
+        docSignTypes
+      );
+      setSignatureType(updatedSignatureType);
       //convert document url in array buffer format to use embed widgets in pdf using pdf-lib
       const arrayBuffer = await convertPdfArrayBuffer(url);
       if (arrayBuffer === "Error") {
@@ -436,6 +443,14 @@ function PlaceHolderSign() {
       setHandleError(t("something-went-wrong-mssg"));
       setIsLoading({ isLoad: false });
     } else if (res.length && res[0]?.objectId) {
+      const userSignatureType = res[0]?.SignatureType || signatureTypes;
+      const docSignTypes =
+        documentData?.[0]?.SignatureType || userSignatureType;
+      const updatedSignatureType = await handleSignatureType(
+        tenantSignTypes,
+        docSignTypes
+      );
+      setSignatureType(updatedSignatureType);
       setActiveMailAdapter(res[0]?.active_mail_adapter);
       setSignerUserId(res[0].objectId);
       const tourstatus = res[0].TourStatus && res[0].TourStatus;
@@ -972,21 +987,15 @@ function PlaceHolderSign() {
     //filter label widgets after add label widgets data on pdf
     const filterPrefill = signerPos.filter((data) => data.Role !== "prefill");
     try {
+      data = {
+        Placeholders: filterPrefill,
+        SignedUrl: pdfUrl,
+        Signers: signers,
+        SentToOthers: true,
+        SignatureType: pdfDetails?.[0]?.SignatureType
+      };
       if (updateExpiryDate) {
-        data = {
-          Placeholders: filterPrefill,
-          SignedUrl: pdfUrl,
-          Signers: signers,
-          SentToOthers: true,
-          ExpiryDate: { iso: updateExpiryDate, __type: "Date" }
-        };
-      } else {
-        data = {
-          Placeholders: filterPrefill,
-          SignedUrl: pdfUrl,
-          Signers: signers,
-          SentToOthers: true
-        };
+        data["ExpiryDate"] = { iso: updateExpiryDate, __type: "Date" };
       }
       await axios
         .put(
@@ -1428,7 +1437,15 @@ function PlaceHolderSign() {
     setFontSize();
     setFontColor();
   };
-  const handleWidgetdefaultdata = (defaultdata) => {
+  const handleWidgetdefaultdata = (defaultdata, isSignWidget) => {
+    if (isSignWidget) {
+      const updatedPdfDetails = [...pdfDetails];
+      const signtypes = defaultdata.signatureType || signatureType;
+      updatedPdfDetails[0].SignatureType = signtypes;
+      // Update the SignatureType with the modified array
+      setPdfDetails(updatedPdfDetails);
+      setSignatureType(signtypes);
+    }
     const options = ["email", "number", "text"];
     let inputype;
     if (defaultdata.textvalidate) {
@@ -1549,14 +1566,12 @@ function PlaceHolderSign() {
       } else {
         updatedTourStatus = [{ placeholder: true }];
       }
-      await axios
-        .put(
+      try {
+        await axios.put(
           `${localStorage.getItem(
             "baseUrl"
           )}classes/contracts_Users/${signerUserId}`,
-          {
-            TourStatus: updatedTourStatus
-          },
+          { TourStatus: updatedTourStatus },
           {
             headers: {
               "Content-Type": "application/json",
@@ -1564,14 +1579,10 @@ function PlaceHolderSign() {
               sessionToken: localStorage.getItem("accesstoken")
             }
           }
-        )
-        .then(() => {
-          // const json = Listdata.data;
-          // const res = json.results;
-        })
-        .catch((err) => {
-          console.log("axois err ", err);
-        });
+        );
+      } catch (err) {
+        console.log("axois err ", err);
+      }
     }
   };
   const handleRecipientSign = () => {
@@ -2230,6 +2241,7 @@ function PlaceHolderSign() {
           signersData={signersdata}
         />
         <WidgetNameModal
+          signatureType={signatureType}
           widgetName={widgetName}
           defaultdata={currWidgetsDetails}
           isOpen={isNameModal}

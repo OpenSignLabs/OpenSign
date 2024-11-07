@@ -82,6 +82,7 @@ export default async function GetTemplate(request) {
               template.include('Signers');
               template.include('CreatedBy');
               template.include('ExtUserPtr.TenantId');
+              template.include('Placeholders.signerPtr');
             }
           }
           const res = await template.first({ useMasterKey: true });

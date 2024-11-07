@@ -94,6 +94,7 @@
       "My Signature": "Ma signature",
       "API Token": "Jeton API",
       "Webhook": "Webhook",
+      "Preferences": "Préférences",
       "Teams": "Équipe",
       "Team-update-successfully": "Équipe mise à jour avec succès.",
       "Users": "Utilisateurs"
@@ -672,16 +673,18 @@
   "server-down": "Impossible de se connecter au serveur OpenSign. Si vous hébergez vous-même OpenSign, veuillez vous assurer que toutes les étapes de la documentation ont été correctement suivies. Si vous exécutez OpenSign localement, vous y accédez peut-être via un numéro de port incorrect.",
   "admin-exists": "L'administrateur existe déjà. Veuillez vous connecter à l'application en utilisant les informations d'identification de l'administrateur afin de gérer les utilisateurs.",
   "enable-tour": "Activer la visite",
-  "istourenabled-otp-help":{
+  "istourenabled-otp-help": {
     "p1": "Cela permettra une visite guidée pour les signataires, fournissant des instructions pendant le processus de signature.",
     "p2": "Cela désactivera la visite guidée, garantissant ainsi une expérience de signature plus rapide et ininterrompue.",
-    "p3":  "Conseil : si vos signataires connaissent OpenSign et l'utilisent fréquemment, vous souhaiterez peut-être désactiver la visite guidée pour une expérience plus fluide. Choisissez l'option qui correspond le mieux à vos besoins en matière de signature de documents."
+    "p3": "Conseil : si vos signataires connaissent OpenSign et l'utilisent fréquemment, vous souhaiterez peut-être désactiver la visite guidée pour une expérience plus fluide. Choisissez l'option qui correspond le mieux à vos besoins en matière de signature de documents."
   },
   "form-title-1": "Paramètre du flux de documents",
   "form-title-2": "Paramètre de sécurité",
   "public-tour-message": "Le modèle doit être public avant que vous puissiez générer un lien partageable.",
   "add-user-template": "Vous devez ajouter un rôle avant de pouvoir lui ajouter des champs. ",
   "pdf-uncompatible": "Ce pdf n'est pas compatible avec opensign, veuillez contacter <support@opensignlabs.com>",
-  "text-field-tour" :"Les champs de type 'Texte' doivent être remplis à l'avance avant l'envoi du document. Si vous avez besoin que les signataires fournissent des informations, utilisez plutôt le champ 'Saisie de texte'.",
-  "attach-signer-tour" :"Vous devez associer un signataire à chaque rôle. Vous pouvez le faire en cliquant sur cette icône. Une fois que vous avez sélectionné un signataire, il sera attaché à tous les champs associés à ce rôle qui apparaissent dans la même couleur."
+  "text-field-tour": "Les champs de type 'Texte' doivent être remplis à l'avance avant l'envoi du document. Si vous avez besoin que les signataires fournissent des informations, utilisez plutôt le champ 'Saisie de texte'.",
+  "attach-signer-tour": "Vous devez associer un signataire à chaque rôle. Vous pouvez le faire en cliquant sur cette icône. Une fois que vous avez sélectionné un signataire, il sera attaché à tous les champs associés à ce rôle qui apparaissent dans la même couleur.",
+  "allowed-signature-types": "Types de signature autorisés",
+  "at-least-one-signature-type": "Au moins un type de signature doit être activé."
 }

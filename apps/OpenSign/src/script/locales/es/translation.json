@@ -94,6 +94,7 @@
       "My Signature": "Mi firma",
       "API Token": "Token API",
       "Webhook": "Webhook",
+      "Preferences": "Preferencias",
       "Teams": "Equipos",
       "Team-update-successfully": "Equipo actualizado correctamente.",
       "Users": "Usuarios"
@@ -676,13 +677,15 @@
   "add-user-template": "Es necesario agregar un rol antes de poder agregarle campos.",
   "pdf-uncompatible": "Este pdf no es compatible con opensign, comuníquese con <support@opensignlabs.com>",
   "enable-tour": "Habilitar recorrido",
-  "istourenabled-help":{
+  "istourenabled-help": {
     "p1": "Esto permitirá realizar una visita guiada para los firmantes, brindando instrucciones durante el proceso de firma.",
     "p2": "Esto desactivará la visita guiada, lo que garantizará una experiencia de firma más rápida e ininterrumpida.",
     "p3": "Consejo: si sus firmantes están familiarizados con OpenSign y lo utilizan con frecuencia, es posible que desee desactivar la visita guiada para disfrutar de una experiencia más fluida. Elija la opción que mejor se adapte a sus necesidades de firma de documentos"
   },
   "form-title-1": "Configuración del flujo de documentos",
   "form-title-2": "Configuración de seguridad",
-  "text-field-tour":"Los campos de tipo 'Texto' deben completarse con anticipación antes de enviar el documento. Si necesita que los firmantes proporcionen información, utilice el campo 'Entrada de texto'",
-  "attach-signer-tour" :"Debe adjuntar un firmante a cada función. Puede hacerlo haciendo clic en este icono. Una vez que seleccione un Firmante, se adjuntará a todos los campos asociados con ese rol que aparecen en el mismo color."
+  "text-field-tour": "Los campos de tipo 'Texto' deben completarse con anticipación antes de enviar el documento. Si necesita que los firmantes proporcionen información, utilice el campo 'Entrada de texto'",
+  "attach-signer-tour": "Debe adjuntar un firmante a cada función. Puede hacerlo haciendo clic en este icono. Una vez que seleccione un Firmante, se adjuntará a todos los campos asociados con ese rol que aparecen en el mismo color.",
+  "allowed-signature-types": "Tipos de firma permitidos",
+  "at-least-one-signature-type": "Se debe habilitar al menos un tipo de firma."
 }
