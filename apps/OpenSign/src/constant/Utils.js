@@ -637,10 +637,10 @@ export const signPdfFun = async (
         return { status: "error", message: "something went wrong." };
       }
     }
-    //change image width and height to 100/40 in png base64
-    const getNewse64 = await changeImageWH(base64Sign);
-    //remove suffiix of base64
-    const suffixbase64 = getNewse64 && getNewse64.split(",").pop();
+    //change image width and height to 300/120 in png base64
+    const imagebase64 = await changeImageWH(base64Sign);
+    //remove suffiix of base64 (without type)
+    const suffixbase64 = imagebase64 && imagebase64.split(",").pop();
 
     const params = {
       mailProvider: activeMailAdapter,
@@ -1169,10 +1169,7 @@ export function onSaveSign(
         Height: posHeight,
         SignUrl: signatureImg,
         signatureType: type && type,
-        options: {
-          ...position.options,
-          response: signatureImg
-        }
+        options: { ...position.options, response: signatureImg }
       };
     }
     return position;
@@ -1382,11 +1379,16 @@ export const multiSignEmbed = async (
     const form = pdfDoc.getForm();
     const page = pages[pageNo - 1];
     const images = await Promise.all(
-      widgetsPositionArr.map(async (url) => {
-        let signUrl = url.SignUrl && url.SignUrl;
-        if (signUrl) {
-          const res = await fetch(signUrl);
-          return res.arrayBuffer();
+      widgetsPositionArr.map(async (widget) => {
+        // `SignUrl` this is wrong nomenclature and maintain for older code in this options we save base64 of signature image from sign pad
+        let signbase64 = widget.SignUrl && widget.SignUrl;
+        if (signbase64) {
+          let arr = signbase64.split(","),
+            mime = arr[0].match(/:(.*?);/)[1];
+          const res = await fetch(signbase64);
+          const arrayBuffer = await res.arrayBuffer();
+          const obj = { mimetype: mime, arrayBuffer: arrayBuffer };
+          return obj;
         }
       })
     );
@@ -1397,17 +1399,17 @@ export const multiSignEmbed = async (
         if (
           ["signature", "stamp", "initials", "image"].includes(position.type)
         ) {
-          if (position.ImageType && position.ImageType === "image/jpeg") {
-            img = await pdfDoc.embedJpg(images[id]);
+          if (images[id].mimetype === "image/png") {
+            img = await pdfDoc.embedPng(images[id].arrayBuffer);
           } else {
-            img = await pdfDoc.embedPng(images[id]);
+            img = await pdfDoc.embedJpg(images[id].arrayBuffer);
           }
         } else if (!position.type) {
           //  to handle old widget when only stamp and signature are exists
-          if (position.ImageType && position.ImageType === "image/jpeg") {
-            img = await pdfDoc.embedJpg(images[id]);
+          if (images[id].mimetype === "image/png") {
+            img = await pdfDoc.embedPng(images[id].arrayBuffer);
           } else {
-            img = await pdfDoc.embedPng(images[id]);
+            img = await pdfDoc.embedJpg(images[id].arrayBuffer);
           }
         }
         let widgetWidth, widgetHeight;
@@ -1992,7 +1994,7 @@ export const getAppLogo = async () => {
   }
 };
 
-export const getTenantDetails = async (objectId, jwttoken) => {
+export const getTenantDetails = async (objectId, jwttoken, contactId) => {
   try {
     const url = `${localStorage.getItem("baseUrl")}functions/gettenant`;
     const parseAppId = localStorage.getItem("parseAppId");
@@ -2000,7 +2002,7 @@ export const getTenantDetails = async (objectId, jwttoken) => {
     const token = jwttoken
       ? { jwttoken: jwttoken }
       : { "X-Parse-Session-Token": accesstoken };
-    const data = jwttoken ? {} : { userId: objectId };
+    const data = jwttoken ? {} : { userId: objectId, contactId: contactId };
     const res = await axios.post(url, data, {
       headers: {
         "Content-Type": "application/json",

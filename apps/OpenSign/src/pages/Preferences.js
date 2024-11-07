@@ -73,7 +73,7 @@ const Preferences = () => {
         const params = { SignatureType: signatureType };
         const updateRes = await Parse.Cloud.run("updatesignaturetype", params);
         if (updateRes) {
-          setIsAlert({ type: "danger", msg: "Saved successfully." });
+          setIsAlert({ type: "success", msg: "Saved successfully." });
           setTimeout(() => setIsAlert({ type: "success", msg: "" }), 1500);
         }
       } catch (err) {
