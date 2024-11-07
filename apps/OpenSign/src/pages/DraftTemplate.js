@@ -195,14 +195,9 @@ const DraftTemplate = () => {
   }
   //function to fetch tenant Details
   const fetchTenantDetails = async () => {
-    const user = JSON.parse(
-      localStorage.getItem(
-        `Parse/${localStorage.getItem("parseAppId")}/currentUser`
-      )
-    );
-    if (user) {
+    if (jwttoken) {
       try {
-        const tenantDetails = await getTenantDetails(user?.objectId);
+        const tenantDetails = await getTenantDetails("", jwttoken);
         if (tenantDetails && tenantDetails === "user does not exist!") {
           alert(t("user-not-exist"));
         } else if (tenantDetails) {
@@ -262,7 +257,9 @@ const DraftTemplate = () => {
         if (isEnableSubscription) {
           checkIsSubscribed(documentData[0]?.ExtUserPtr?.Email);
         }
-        setPdfDetails(documentData);
+        const updatedPdfDetails = [...documentData];
+        updatedPdfDetails[0].SignatureType = updatedSignatureType;
+        setPdfDetails(updatedPdfDetails);
         setIsSigners(true);
         if (documentData[0].Signers && documentData[0].Signers.length > 0) {
           setIsSelectId(0);
@@ -338,6 +335,11 @@ const DraftTemplate = () => {
           docSignTypes
         );
         setSignatureType(updatedSignatureType);
+        if (documentData?.length && documentData?.[0]?.objectId) {
+          const updatedPdfDetails = [...documentData];
+          updatedPdfDetails[0].SignatureType = updatedSignatureType;
+          setPdfDetails(updatedPdfDetails);
+        }
         setSignerUserId(res[0].objectId);
         const tourstatus = res[0].TourStatus && res[0].TourStatus;
         if (tourstatus && tourstatus.length > 0) {
