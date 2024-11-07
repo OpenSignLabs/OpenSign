@@ -463,29 +463,29 @@ export const defaultWidthHeight = (type) => {
     case "stamp":
       return { width: 150, height: 60 };
     case "checkbox":
-      return { width: 15, height: 17 };
+      return { width: 15, height: 19 };
     case textInputWidget:
-      return { width: 150, height: 17 };
+      return { width: 150, height: 19 };
     case "dropdown":
       return { width: 120, height: 22 };
     case "initials":
       return { width: 50, height: 50 };
     case "name":
-      return { width: 150, height: 17 };
+      return { width: 150, height: 19 };
     case "company":
-      return { width: 150, height: 17 };
+      return { width: 150, height: 19 };
     case "job title":
-      return { width: 150, height: 17 };
+      return { width: 150, height: 19 };
     case "date":
       return { width: 100, height: 20 };
     case "image":
       return { width: 70, height: 70 };
     case "email":
-      return { width: 150, height: 17 };
+      return { width: 150, height: 19 };
     case radioButtonWidget:
       return { width: 5, height: 10 };
     case textWidget:
-      return { width: 150, height: 17 };
+      return { width: 150, height: 19 };
     default:
       return { width: 150, height: 60 };
   }
