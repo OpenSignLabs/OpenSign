@@ -291,7 +291,7 @@
   "subject": "Sujet",
   "body": "Corps",
   "add-contact": "Ajouter le contact",
-  "add-signer-alert": "Le contact existe déjà !",
+  "add-signer-alert": "Le contact existe déjà ! Veuillez le sélectionner dans la liste déroulante 'Signataires'",
   "record-delete-alert": "Enregistrement supprimé avec succès !",
   "record-revoke-alert": " Enregistrement révoqué avec succès ! ",
   "mail-sent-alert": "Courriel envoyé avec succès.",
@@ -688,6 +688,7 @@
   "attach-signer-tour" :"Vous devez associer un signataire à chaque rôle. Vous pouvez le faire en cliquant sur cette icône. Une fois que vous avez sélectionné un signataire, il sera attaché à tous les champs associés à ce rôle qui apparaissent dans la même couleur.",
   "allowed-signature-types": "Types de signature autorisés",
   "at-least-one-signature-type": "Au moins un type de signature doit être activé.",
+  "add-signer-note": "Remarque - Ce contact sera ajouté à votre liste de contacts",
   "allowed-signature-types-help": {
     "p1": "Cette préférence de signature contrôle les options de signature disponibles pour vos signataires. Seuls les types de signature que vous sélectionnez apparaîtront dans le widget de signature lorsqu'un document est signé. Par exemple, si vous choisissez uniquement l'option 'Draw' dans les préférences, votre signataire ne verra que l'option 'Draw' dans le widget de signature, tandis que les trois autres options ne seront pas disponibles.",
     "l1": "Créez une signature manuscrite directement sur l'écran à l'aide de votre doigt ou d'un stylet.",

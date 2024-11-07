@@ -341,9 +341,9 @@ const WidgetNameModal = (props) => {
             <select
               className="ml-[7px] op-select op-select-bordered op-select-sm focus:outline-none hover:border-base-content text-xs"
               value={
-                props.fontSize || props.defaultdata?.options?.fontSize || "12"
+                props.fontSize || props.defaultdata?.options?.fontSize || 12
               }
-              onChange={(e) => props.setFontSize(e.target.value)}
+              onChange={(e) => props.setFontSize(parseInt(e.target.value))}
             >
               {fontsizeArr.map((size, ind) => {
                 return (

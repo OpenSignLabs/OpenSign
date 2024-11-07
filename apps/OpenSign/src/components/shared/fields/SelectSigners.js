@@ -41,7 +41,7 @@ const SelectSigners = (props) => {
         "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
         ...token
       };
-      const searchEmail = inputValue;
+      const searchEmail = inputValue ? inputValue : "";
       const axiosRes = await axios.post(url, { searchEmail }, { headers });
       const contactRes = axiosRes?.data?.result || [];
       if (contactRes) {
@@ -54,11 +54,9 @@ const SelectSigners = (props) => {
               !signerObj.find((item2) => item2.objectId === item1.objectId)
           );
         };
-
         //get update signer's List if signersdata is present
         const updateSignersList =
           props?.signersData && compareArrays(res, props?.signersData);
-
         const result = updateSignersList ? updateSignersList : res;
         setUserList(result);
         return await result.map((item) => ({
@@ -70,7 +68,6 @@ const SelectSigners = (props) => {
       console.log("err", error);
     }
   };
-
   return (
     <div className="h-full px-[20px] py-[10px] text-base-content">
       <div className="w-full mx-auto p-[8px]">
@@ -87,6 +84,7 @@ const SelectSigners = (props) => {
             loadOptions={loadOptions}
             onChange={handleOptions}
             unstyled
+            onFocus={() => loadOptions()}
             classNames={{
               control: () =>
                 "op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full h-full text-[11px]",

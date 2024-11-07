@@ -206,6 +206,7 @@ const AddSigner = (props) => {
         </div>
       )}
       <div className="w-full mx-auto p-2 text-base-content">
+        <p className="mb-3">{t("add-signer-note")}</p>
         {isUserExist && (
           <div className="mb-3 flex items-center">
             <input
