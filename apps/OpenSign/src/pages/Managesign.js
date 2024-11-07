@@ -136,10 +136,10 @@ const ManageSign = () => {
       const replaceSpace = sanitizeFileName(sanitizename);
       let file;
       if (signature) {
-        file = base64StringtoFile(signature, `${replaceSpace}_sign.png`);
+        file = base64StringtoFile(signature, `${replaceSpace}_sign`);
       } else {
         if (image && !isUrl) {
-          file = base64StringtoFile(image, `${replaceSpace}__sign.png`);
+          file = base64StringtoFile(image, `${replaceSpace}__sign`);
         }
       }
       let imgUrl;
@@ -153,12 +153,12 @@ const ManageSign = () => {
 
       let initialFile;
       if (Initials) {
-        initialFile = base64StringtoFile(Initials, `${replaceSpace}_sign.png`);
+        initialFile = base64StringtoFile(Initials, `${replaceSpace}_sign`);
       } else {
         if (imgInitials && !isInitialsUrl) {
           initialFile = base64StringtoFile(
             imgInitials,
-            `${replaceSpace}__sign.png`
+            `${replaceSpace}__sign`
           );
         }
       }
@@ -179,14 +179,18 @@ const ManageSign = () => {
   };
   function base64StringtoFile(base64String, filename) {
     let arr = base64String.split(","),
+      // type of uploaded image
       mime = arr[0].match(/:(.*?);/)[1],
+      // decode base64
       bstr = atob(arr[1]),
       n = bstr.length,
       u8arr = new Uint8Array(n);
     while (n--) {
       u8arr[n] = bstr.charCodeAt(n);
     }
-    return new File([u8arr], filename, { type: mime });
+    const ext = mime.split("/").pop();
+    const name = `${filename}.${ext}`;
+    return new File([u8arr], name, { type: mime });
   }
 
   const uploadFile = async (file) => {

@@ -251,6 +251,7 @@ async function batchQuery(userId, Documents, Ip, parseConfig) {
             IsEnableOTP: x?.IsEnableOTP || false,
             IsTourEnabled: x?.IsTourEnabled || false,
             FileAdapterId: x?.FileAdapterId || '',
+            ...(x?.SignatureType ? { SignatureType: x?.SignatureType } : {}),
           },
         };
       });
