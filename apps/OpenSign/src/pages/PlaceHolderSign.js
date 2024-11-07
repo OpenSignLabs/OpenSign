@@ -491,8 +491,10 @@ function PlaceHolderSign() {
       let dropData = [];
       let placeHolder;
       const dragTypeValue = item?.text ? item.text : monitor.type;
-      const widgetWidth = defaultWidthHeight(dragTypeValue).width;
-      const widgetHeight = defaultWidthHeight(dragTypeValue).height;
+      const widgetWidth =
+        defaultWidthHeight(dragTypeValue).width * containerScale;
+      const widgetHeight =
+        defaultWidthHeight(dragTypeValue).height * containerScale;
       //adding and updating drop position in array when user drop signature button in div
       if (item === "onclick") {
         const divHeight = divRef.current.getBoundingClientRect().height;
