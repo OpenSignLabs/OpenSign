@@ -446,7 +446,8 @@
   "cutomize-email": "Cutomize Email",
   "upgrade-to-customize-email": "Upgrade to customize Email",
   "sign-url": "Sign url",
-  "Mails Sent": "Mails Sent",
+  "mails-sent": "Mails sent",
+  "mail-not-delivered": "Mail not delivered",
   "document-alert": "Document Alert",
   "owner-subscription-expired": "Owner's subscription has expired.",
   "subscription-expired": "Subscription Expired",
@@ -687,5 +688,12 @@
   "text-field-tour":"Fields of type 'Text' must be filled in advance before the document is sent. If you need the signers to provide input, use the 'Text Input' field instead.",
   "attach-signer-tour":"You need to attach a Signer to every role. You can do that by clicking this icon. Once you select a Signer it will be attached to all the fields associated with that role which appear in the same colour.",
   "allowed-signature-types": "Allowed signature types",
-  "at-least-one-signature-type": "At least one signature type should be enabled."
+  "at-least-one-signature-type": "At least one signature type should be enabled.",
+  "allowed-signature-types-help": {
+    "p1": "This signature preference controls which signing options are available to your signers. Only the signature types you select will appear in the signature widget when a document is signed. For example, if you choose only the 'Draw' option in preferences, your signer will see only the 'Draw' option in the signature widget, while the other three options will not be available.",
+    "l1": "Create a handwritten signature directly on the screen using your finger or a stylus.",
+    "l2": "Enter your name and choose from various font styles to create a signature.",
+    "l3": "Upload an existing digital version of your signature.",
+    "l4": "Use a pre-set signature style saved under 'My Signature' in your settings."
+  }
 }
