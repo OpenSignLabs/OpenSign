@@ -320,7 +320,9 @@ function PlaceHolderSign() {
           });
         }
       }
-      setPdfDetails(documentData);
+      const updatedPdfDetails = [...documentData];
+      updatedPdfDetails[0].SignatureType = updatedSignatureType;
+      setPdfDetails(updatedPdfDetails);
       //condition when placeholder have empty array with role details and signers array have signers data
       //and both array length are same
       //this case happen using placeholder form in auto save funtionality to save draft type document without adding any placehlder
@@ -451,6 +453,11 @@ function PlaceHolderSign() {
         docSignTypes
       );
       setSignatureType(updatedSignatureType);
+      if (documentData?.length && documentData?.[0]?.objectId) {
+        const updatedPdfDetails = [...documentData];
+        updatedPdfDetails[0].SignatureType = updatedSignatureType;
+        setPdfDetails(updatedPdfDetails);
+      }
       setActiveMailAdapter(res[0]?.active_mail_adapter);
       setSignerUserId(res[0].objectId);
       const tourstatus = res[0].TourStatus && res[0].TourStatus;
@@ -931,7 +938,7 @@ function PlaceHolderSign() {
     }, 2000);
     return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [signerPos, signersdata]);
+  }, [signerPos, signersdata, signatureType]);
 
   // `autosavedetails` is used to save doc details after every 2 sec when changes are happern in placeholder like drag-drop widgets, remove signers
   const autosavedetails = async () => {
@@ -950,6 +957,7 @@ function PlaceHolderSign() {
       docCls.id = documentId;
       docCls.set("Placeholders", signerPos);
       docCls.set("Signers", signers);
+      docCls.set("SignatureType", signatureType);
       await docCls.save();
     } catch (e) {
       console.log("error", e);
@@ -1906,9 +1914,11 @@ function PlaceHolderSign() {
                   <ModalUi
                     isOpen={isSend}
                     title={
-                      mailStatus === "quotareached"
-                        ? t("quota-mail-head")
-                        : t("Mails Sent")
+                      mailStatus === "success"
+                        ? t("mails-sent")
+                        : mailStatus === "quotareached"
+                          ? t("quota-mail-head")
+                          : t("mail-not-delivered")
                     }
                     handleClose={() => {
                       setIsSend(false);
@@ -1935,7 +1945,12 @@ function PlaceHolderSign() {
                           <div className="my-3">{handleShareList()}</div>
                         </div>
                       ) : (
-                        <p>{t("placeholder-alert-6")}</p>
+                        <div className="mb-[10px]">
+                          <p>{t("placeholder-alert-6")}</p>
+                          {isCurrUser && (
+                            <p className="mt-1">{t("placeholder-alert-5")}</p>
+                          )}
+                        </div>
                       )}
                       {!mailStatus && (
                         <div className="w-full h-[1px] bg-[#9f9f9f] my-[15px]"></div>

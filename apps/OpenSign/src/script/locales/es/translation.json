@@ -446,7 +446,8 @@
   "cutomize-email": "Personalizar correo",
   "upgrade-to-customize-email": "Mejora para personalizar el correo",
   "sign-url": "URL de firma",
-  "Mails Sent": "Correos enviados",
+  "mails-sent": "Correos enviados",
+  "mail-not-delivered": "correo no entregado",
   "document-alert": "Alerta de documento",
   "owner-subscription-expired": "La suscripción del propietario ha expirado.",
   "subscription-expired": "Suscripción expirada",
@@ -688,5 +689,12 @@
   "attach-signer-tour": "Debe adjuntar un firmante a cada función. Puede hacerlo haciendo clic en este icono. Una vez que seleccione un Firmante, se adjuntará a todos los campos asociados con ese rol que aparecen en el mismo color.",
   "allowed-signature-types": "Tipos de firma permitidos",
   "at-least-one-signature-type": "Se debe habilitar al menos un tipo de firma.",
-  "add-signer-note" :"Nota - Este contacto se agregará a su lista de contactos"
+  "add-signer-note": "Nota - Este contacto se agregará a su lista de contactos",
+  "allowed-signature-types-help": {
+    "p1": "Esta preferencia de firma controla qué opciones de firma están disponibles para sus firmantes. Solo los tipos de firma que seleccione aparecerán en el widget de firma cuando se firme un documento. Por ejemplo, si elige sólo la opción 'Draw' en las preferencias, su firmante verá sólo la opción 'Draw' en el widget de firma, mientras que las otras tres opciones no estarán disponibles.",
+    "l1": "Cree una firma manuscrita directamente en la pantalla usando su dedo o un lápiz.",
+    "l2": "Ingrese su nombre y elija entre varios estilos de fuente para crear una firma.",
+    "l3": "Cargue una versión digital existente de su firma.",
+    "l4": "Utilice un estilo de firma preestablecido guardado en 'Mi firma' en su configuración."
+  }
 }

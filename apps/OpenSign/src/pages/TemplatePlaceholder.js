@@ -245,7 +245,9 @@ const TemplatePlaceholder = () => {
         if (isEnableSubscription) {
           checkIsSubscribed(documentData[0]?.ExtUserPtr?.Email);
         }
-        setPdfDetails(documentData);
+        const updatedPdfDetails = [...documentData];
+        updatedPdfDetails[0].SignatureType = updatedSignatureType;
+        setPdfDetails(updatedPdfDetails);
         setIsSigners(true);
         if (documentData[0].Signers && documentData[0].Signers.length > 0) {
           setIsSelectId(0);
@@ -320,6 +322,11 @@ const TemplatePlaceholder = () => {
           docSignTypes
         );
         setSignatureType(updatedSignatureType);
+        if (documentData?.length && documentData?.[0]?.objectId) {
+          const updatedPdfDetails = [...documentData];
+          updatedPdfDetails[0].SignatureType = updatedSignatureType;
+          setPdfDetails(updatedPdfDetails);
+        }
         setSignerUserId(res[0].objectId);
         setCurrentEmail(res[0].Email);
         const tourstatus = res[0].TourStatus && res[0].TourStatus;
@@ -693,7 +700,7 @@ const TemplatePlaceholder = () => {
     }, 2000);
     return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [signerPos]);
+  }, [signerPos, signatureType]);
 
   // `autosavedetails` is used to save template details after every 2 sec when changes are happern in placeholder like drag-drop widgets, remove signers
   const autosavedetails = async () => {
@@ -715,6 +722,7 @@ const TemplatePlaceholder = () => {
       templateCls.id = templateId;
       templateCls.set("Placeholders", signerPos);
       templateCls.set("Signers", signers);
+      templateCls.set("SignatureType", signatureType);
       await templateCls.save();
     } catch (err) {
       console.log("error in autosave template", err);

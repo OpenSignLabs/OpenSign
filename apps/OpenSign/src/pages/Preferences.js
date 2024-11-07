@@ -10,7 +10,7 @@ import {
   signatureTypes
 } from "../constant/Utils";
 import Parse from "parse";
-
+import { Tooltip as ReactTooltip } from "react-tooltip";
 const Preferences = () => {
   const { t } = useTranslation();
   const [isalert, setIsAlert] = useState({ type: "success", msg: "" });
@@ -84,7 +84,7 @@ const Preferences = () => {
     } else {
       setIsAlert({
         type: "danger",
-        msg: "please enable at least one signature type"
+        msg: "Please enable at least one signature type"
       });
       setTimeout(() => setIsAlert({ type: "success", msg: "" }), 1500);
       setIsLoader(false);
@@ -112,7 +112,6 @@ const Preferences = () => {
                   <Loader />
                 </div>
               )}
-
               <h1 className="ml-4 mt-3 mb-2 font-semibold">
                 OpenSign™ {t("Preferences")}{" "}
                 <span>
@@ -128,7 +127,48 @@ const Preferences = () => {
                     htmlFor="signaturetype"
                     className="text-[14px] mb-[0.7rem] font-medium"
                   >
-                    Allowed signature types
+                    {t("allowed-signature-types")}
+                    <a data-tooltip-id="signtypes-tooltip" className="ml-1">
+                      <sup>
+                        <i className="fa-light fa-question rounded-full border-[#33bbff] text-[#33bbff] text-[13px] border-[1px] py-[1.5px] px-[4px]"></i>
+                      </sup>
+                    </a>
+                    <ReactTooltip id="signtypes-tooltip" className="z-[999]">
+                      <div className="max-w-[200px] md:max-w-[450px] text-[11px]">
+                        <p className="font-bold">
+                          {t("allowed-signature-types")}
+                        </p>
+                        <p>{t("allowed-signature-types-help.p1")}</p>
+                        <p className="p-[5px] ml-2">
+                          <ol className="list-disc">
+                            <li>
+                              <span className="font-bold">Draw: </span>
+                              <span>
+                                {t("allowed-signature-types-help.l1")}
+                              </span>
+                            </li>
+                            <li>
+                              <span className="font-bold">Typed: </span>
+                              <span>
+                                {t("allowed-signature-types-help.l2")}
+                              </span>
+                            </li>
+                            <li>
+                              <span className="font-bold">Upload: </span>
+                              <span>
+                                {t("allowed-signature-types-help.l3")}
+                              </span>
+                            </li>
+                            <li>
+                              <span className="font-bold">Default: </span>
+                              <span>
+                                {t("allowed-signature-types-help.l4")}
+                              </span>
+                            </li>
+                          </ol>
+                        </p>
+                      </div>
+                    </ReactTooltip>
                   </label>
                   <div className=" ml-[7px] flex flex-col md:flex-row gap-[10px] mb-[0.7rem]">
                     {signatureType.map((type, i) => (
@@ -144,10 +184,9 @@ const Preferences = () => {
                           checked={type.enabled}
                         />
                         <div
-                          className="text-[13px] font-medium hover:underline underline-offset-2 cursor-default"
+                          className="text-[13px] font-medium hover:underline underline-offset-2 cursor-default capitalize"
                           title={`Enabling this allow signers to ${type.name} signature`}
                         >
-                          {/* {t(`widget-status.${data}`)} */}
                           {type.name}
                         </div>
                       </div>

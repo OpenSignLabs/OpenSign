@@ -304,7 +304,7 @@ const WidgetNameModal = (props) => {
                       checked={type.enabled}
                     />
                     <div
-                      className="text-[13px] font-medium hover:underline underline-offset-2 cursor-default"
+                      className="text-[13px] font-medium hover:underline underline-offset-2 cursor-default capitalize"
                       title={`Enabling this allow signers to ${type.name} signature`}
                     >
                       {type.name}
