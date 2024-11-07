@@ -1539,13 +1539,13 @@ const ReportTable = (props) => {
                                         }
                                         className="op-btn op-btn-primary"
                                       >
-                                        {t("submit")}
+                                        {t("yes")}
                                       </button>
                                       <button
                                         onClick={() => handleClose(item)}
                                         className="op-btn op-btn-secondary"
                                       >
-                                        {t("cancel")}
+                                        {t("no")}
                                       </button>
                                     </div>
                                   </div>
