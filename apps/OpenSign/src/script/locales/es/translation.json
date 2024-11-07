@@ -292,7 +292,7 @@
   "subject": "Asunto",
   "body": "Cuerpo",
   "add-contact": "Agregar contacto",
-  "add-signer-alert": "¡El contacto ya existe!",
+  "add-signer-alert": "¡El contacto ya existe! Selecciónelo en el menú desplegable 'Firmantes'",
   "record-delete-alert": "¡Entrada eliminada exitosamente!",
   "record-revoke-alert": "¡Entrada revocada exitosamente!",
   "mail-sent-alert": "Correo enviado exitosamente.",
@@ -687,5 +687,6 @@
   "text-field-tour": "Los campos de tipo 'Texto' deben completarse con anticipación antes de enviar el documento. Si necesita que los firmantes proporcionen información, utilice el campo 'Entrada de texto'",
   "attach-signer-tour": "Debe adjuntar un firmante a cada función. Puede hacerlo haciendo clic en este icono. Una vez que seleccione un Firmante, se adjuntará a todos los campos asociados con ese rol que aparecen en el mismo color.",
   "allowed-signature-types": "Tipos de firma permitidos",
-  "at-least-one-signature-type": "Se debe habilitar al menos un tipo de firma."
+  "at-least-one-signature-type": "Se debe habilitar al menos un tipo de firma.",
+  "add-signer-note" :"Nota - Este contacto se agregará a su lista de contactos"
 }

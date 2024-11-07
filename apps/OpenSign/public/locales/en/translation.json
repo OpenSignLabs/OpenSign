@@ -292,7 +292,7 @@
   "subject": "Subject",
   "body": "Body",
   "add-contact": "Add Contact",
-  "add-signer-alert": "Contact already exist!",
+  "add-signer-alert": "Contact already exist! Please select it from ‘Signers’ dropdown",
   "record-delete-alert": "Record deleted successfully!",
   "record-revoke-alert": "Record revoked successfully!",
   "mail-sent-alert": "Mail sent successfully.",
@@ -680,12 +680,13 @@
      "p3":"Tip: If your signers are familiar with OpenSign and frequently use it, you may want to disable the guided tour for a more seamless experience. Choose the option that best fits your document signing needs."
    },
    "form-title-1":"Document Flow Setting",
-   "form-title-2":"Security Setting",
+   "form-title-2":"Security Settings",
   "public-tour-message":"The template needs to be public before you can generate a shareable link.",
   "add-user-template": "You need to add a role before you can add fields for it.",
   "pdf-uncompatible": "This pdf is not compatible with opensign, please contact <support@opensignlabs.com>",
   "text-field-tour":"Fields of type 'Text' must be filled in advance before the document is sent. If you need the signers to provide input, use the 'Text Input' field instead.",
   "attach-signer-tour":"You need to attach a Signer to every role. You can do that by clicking this icon. Once you select a Signer it will be attached to all the fields associated with that role which appear in the same colour.",
   "allowed-signature-types": "Allowed signature types",
-  "at-least-one-signature-type": "At least one signature type should be enabled."
+  "at-least-one-signature-type": "At least one signature type should be enabled.",
+  "add-signer-note" :"Note - This contact will be added to your contact list"
 }
