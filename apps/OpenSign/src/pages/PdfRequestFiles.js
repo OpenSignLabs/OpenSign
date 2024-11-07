@@ -378,29 +378,29 @@ function PdfRequestFiles(props) {
       return;
     }
   };
-  const fetchTenantDetails = async () => {
+  const fetchTenantDetails = async (contactId) => {
     const user = JSON.parse(
       localStorage.getItem(
         `Parse/${localStorage.getItem("parseAppId")}/currentUser`
       )
     );
-    if (user) {
-      try {
-        const tenantDetails = await getTenantDetails(user?.objectId);
-        if (tenantDetails && tenantDetails === "user does not exist!") {
-          alert(t("user-not-exist"));
-        } else if (tenantDetails) {
-          const signatureType = tenantDetails?.SignatureType || [];
-          const filterSignTypes = signatureType?.filter(
-            (x) => x.enabled === true
-          );
-
-          return filterSignTypes;
-        }
-      } catch (e) {
+    try {
+      const tenantDetails = await getTenantDetails(
+        user?.objectId, // userId
+        "", // jwttoken
+        contactId // contactId
+      );
+      if (tenantDetails && tenantDetails === "user does not exist!") {
         alert(t("user-not-exist"));
+      } else if (tenantDetails) {
+        const signatureType = tenantDetails?.SignatureType || [];
+        const filterSignTypes = signatureType?.filter(
+          (x) => x.enabled === true
+        );
+
+        return filterSignTypes;
       }
-    } else {
+    } catch (e) {
       alert(t("user-not-exist"));
     }
   };
@@ -412,7 +412,10 @@ function PdfRequestFiles(props) {
         `Parse/${localStorage.getItem("parseAppId")}/currentUser`
       );
       const jsonSender = JSON.parse(senderUser);
-      const tenantSignTypes = await fetchTenantDetails();
+      const contactId = jsonSender?.objectId
+        ? ""
+        : contactBookId || signerObjectId || "";
+      const tenantSignTypes = await fetchTenantDetails(contactId);
       // `currUserId` will be contactId or extUserId
       let currUserId;
       //getting document details
@@ -453,7 +456,7 @@ function PdfRequestFiles(props) {
 
         currUserId = getCurrentSigner?.objectId
           ? getCurrentSigner.objectId
-          : contactBookId || signerObjectId || "";
+          : contactBookId || signerObjectId || ""; //signerObjectId is contactBookId refer from public template flow
         if (isEnableSubscription) {
           await checkIsSubscribed(
             documentData[0]?.ExtUserPtr?.objectId,

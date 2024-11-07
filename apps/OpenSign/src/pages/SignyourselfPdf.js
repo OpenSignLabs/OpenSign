@@ -755,10 +755,10 @@ function SignYourSelf() {
         alert(t("something-went-wrong-mssg"));
       }
     }
-    //change image width and height to 100/40 in png base64
-    const getNewse64 = await changeImageWH(base64Sign);
-    //remove suffiix of base64
-    const suffixbase64 = getNewse64 && getNewse64.split(",").pop();
+    //change image width and height to 300/120 in png base64
+    const imagebase64 = await changeImageWH(base64Sign);
+    //remove suffiix of base64 (without type)
+    const suffixbase64 = imagebase64 && imagebase64.split(",").pop();
     const params = {
       pdfFile: base64Url,
       docId: documentId,

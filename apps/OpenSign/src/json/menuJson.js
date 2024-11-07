@@ -156,7 +156,7 @@ const sidebarList = [
         objectId: "webhook"
       },
       {
-        icon: "fa-light fa-pen-fancy",
+        icon: "fa-light fa-sliders",
         title: "Preferences",
         target: "_self",
         pageType: "",

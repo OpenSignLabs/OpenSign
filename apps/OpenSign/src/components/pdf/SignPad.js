@@ -125,7 +125,6 @@ function SignPad(props) {
                   props?.onSaveSign(signatureType);
                 }
               }
-
               setPenColor("blue");
             } else {
               setIsSignImg("");
@@ -136,7 +135,7 @@ function SignPad(props) {
             props?.setIsImageSelect(false);
             setIsDefaultSign(false);
             props?.setImage();
-            setIsTab("draw");
+            handleTab();
             setSignValue("");
             props?.setIsStamp(false);
           }}
@@ -310,6 +309,19 @@ function SignPad(props) {
       </div>
     );
   };
+
+  // `handleCancelBtn` function trigger when user click on cross button
+  const handleCancelBtn = () => {
+    setPenColor("blue");
+    props?.setIsSignPad(false);
+    props?.setIsInitial(false);
+    props?.setIsImageSelect(false);
+    setIsDefaultSign(false);
+    props?.setImage();
+    handleTab();
+    setSignValue("");
+    props?.setIsStamp(false);
+  };
   return (
     <div>
       {props?.isSignPad && (
@@ -443,18 +455,7 @@ function SignPad(props) {
                   </div>
                   <div
                     className="text-[1.5rem] cursor-pointer"
-                    onClick={() => {
-                      setPenColor("blue");
-                      props?.setIsSignPad(false);
-                      props?.setIsInitial(false);
-                      props?.setIsImageSelect(false);
-                      setIsDefaultSign(false);
-                      props?.setImage();
-                      setIsTab("draw");
-                      setSignatureType("draw");
-                      setSignValue("");
-                      props?.setIsStamp(false);
-                    }}
+                    onClick={handleCancelBtn}
                   >
                     &times;
                   </div>
@@ -657,18 +658,7 @@ function SignPad(props) {
                   </div>
                   <div
                     className="text-[1.5rem] cursor-pointer"
-                    onClick={() => {
-                      setPenColor("blue");
-                      props?.setIsSignPad(false);
-                      props?.setIsInitial(false);
-                      props?.setIsImageSelect(false);
-                      setIsDefaultSign(false);
-                      props?.setImage();
-                      setIsTab("draw");
-                      setSignatureType("draw");
-                      setSignValue("");
-                      props?.setIsStamp(false);
-                    }}
+                    onClick={handleCancelBtn}
                   >
                     &times;
                   </div>
