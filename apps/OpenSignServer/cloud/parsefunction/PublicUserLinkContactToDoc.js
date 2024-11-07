@@ -71,6 +71,9 @@ const createDocumentFromTemplate = async (template, existContact, index) => {
       object.set('IsEnableOTP', template?.IsEnableOTP || false);
       object.set('IsTourEnabled', template?.IsTourEnabled || false);
       object.set('FileAdapterId', template?.FileAdapterId || '');
+      if (template?.SignatureType?.length > 0) {
+        object.set('SignatureType', template?.SignatureType);
+      }
       let signers = template?.Signers || [];
       const signerobj = {
         __type: 'Pointer',
@@ -254,6 +257,7 @@ const deductcount = async _resSub => {
 export default async function PublicUserLinkContactToDoc(req) {
   const email = req.params.email;
   const templateid = req.params.templateid;
+  const signatureType = req.params.signatureType;
   const name = req.params.name;
   const phone = req.params.phone;
   const role = req.params.role;
@@ -301,8 +305,11 @@ export default async function PublicUserLinkContactToDoc(req) {
             const existContact = await contactCls.first({ useMasterKey: true });
             if (existContact) {
               const template_json = JSON.parse(JSON.stringify(tempRes));
+              const _template_json = template_json;
+              _template_json.SignatureType =
+                signatureType?.length > 0 ? signatureType : _template_json?.SignatureType;
               //update contact in placeholder, signers and update ACl in provide document
-              const docRes = await createDocumentFromTemplate(template_json, existContact, index);
+              const docRes = await createDocumentFromTemplate(_template_json, existContact, index);
               if (docRes) {
                 await deductcount(_resSub);
                 //condition will execute only if sendInOrder will be false for send email to all signers at a time.
@@ -327,9 +334,12 @@ export default async function PublicUserLinkContactToDoc(req) {
                   TenantId: _tempRes.ExtUserPtr?.TenantId?.objectId,
                 };
                 const template_json = JSON.parse(JSON.stringify(tempRes));
+                const _template_json = template_json;
+                _template_json.SignatureType =
+                  signatureType?.length > 0 ? signatureType : _template_json?.SignatureType;
                 // if user present on platform create contact on the basis of extended user details
                 const contactRes = await saveRoleContact(contact);
-                const docRes = await createDocumentFromTemplate(template_json, contactRes, index);
+                const docRes = await createDocumentFromTemplate(_template_json, contactRes, index);
                 if (docRes) {
                   await deductcount(_resSub);
                   //condition will execute only if sendInOrder will be false for send email to all signers at a time.
@@ -354,11 +364,14 @@ export default async function PublicUserLinkContactToDoc(req) {
                       TenantId: _tempRes.ExtUserPtr?.TenantId?.objectId,
                     };
                     const template_json = JSON.parse(JSON.stringify(tempRes));
+                    const _template_json = template_json;
+                    _template_json.SignatureType =
+                      signatureType?.length > 0 ? signatureType : _template_json?.SignatureType;
                     // Create new contract on the basis provided contact details by user and userId from _User class
                     const contactRes = await saveRoleContact(contact);
                     //update contact in placeholder, signers and update ACl in provide document
                     const docRes = await createDocumentFromTemplate(
-                      template_json,
+                      _template_json,
                       contactRes,
                       index
                     );
@@ -391,11 +404,14 @@ export default async function PublicUserLinkContactToDoc(req) {
                       TenantId: _tempRes.ExtUserPtr?.TenantId?.objectId,
                     };
                     const template_json = JSON.parse(JSON.stringify(tempRes));
+                    const _template_json = template_json;
+                    _template_json.SignatureType =
+                      signatureType?.length > 0 ? signatureType : _template_json?.SignatureType;
                     // Create new contract on the basis provided contact details by user and userId from _User class
                     const contactRes = await saveRoleContact(contact);
                     //update contact in placeholder, signers and update ACl in provide document
                     const docRes = await createDocumentFromTemplate(
-                      template_json,
+                      _template_json,
                       contactRes,
                       index
                     );
