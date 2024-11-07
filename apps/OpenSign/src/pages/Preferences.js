@@ -55,7 +55,8 @@ const Preferences = () => {
       setIsTopLoader(false);
     }
   };
-  console.log("sign", signatureType);
+
+  // `handleCheckboxChange` is trigger when user enable/disable checkbox of respective type
   const handleCheckboxChange = (index) => {
     // Create a copy of the signatureType array
     const updatedSignatureType = [...signatureType];
@@ -64,31 +65,38 @@ const Preferences = () => {
     // Update the state with the modified array
     setSignatureType(updatedSignatureType);
   };
+
+  // `handleSave` is used save updated value signature type
   const handleSave = async () => {
-    console.log("submit", signatureType);
     setIsLoader(true);
-    const isEnabled = signatureType.some((x) => x.enabled === true);
-    if (isEnabled) {
-      try {
-        const params = { SignatureType: signatureType };
-        const updateRes = await Parse.Cloud.run("updatesignaturetype", params);
-        if (updateRes) {
-          setIsAlert({ type: "success", msg: "Saved successfully." });
-          setTimeout(() => setIsAlert({ type: "success", msg: "" }), 1500);
-        }
-      } catch (err) {
-        console.log("err while updating signtype", err);
-      } finally {
-        setIsLoader(false);
-      }
-    } else {
+    const enabledSignTypes = signatureType?.filter((x) => x.enabled);
+    const isDefaultSignTypeOnly =
+      enabledSignTypes?.length === 1 && enabledSignTypes[0]?.name === "default";
+    if (enabledSignTypes.length === 0) {
       setIsAlert({
         type: "danger",
         msg: "Please enable at least one signature type"
       });
-      setTimeout(() => setIsAlert({ type: "success", msg: "" }), 1500);
-      setIsLoader(false);
+    } else if (isDefaultSignTypeOnly) {
+      setIsAlert({
+        type: "danger",
+        msg: "Please enable one more signature type other than default"
+      });
+    } else {
+      try {
+        const updateRes = await Parse.Cloud.run("updatesignaturetype", {
+          SignatureType: signatureType
+        });
+        if (updateRes) {
+          setIsAlert({ type: "success", msg: "Saved successfully." });
+        }
+      } catch (err) {
+        console.log("Error updating signature type", err);
+        setIsAlert({ type: "danger", msg: err.message });
+      }
     }
+    setTimeout(() => setIsAlert({ type: "success", msg: "" }), 1500);
+    setIsLoader(false);
   };
 
   return (

@@ -57,8 +57,18 @@ const WidgetNameModal = (props) => {
     e.preventDefault();
     if (props.handleData) {
       if (["signature", "initials"].includes(props.defaultdata?.type)) {
-        const data = { ...formdata, signatureType };
-        props.handleData(data, props.defaultdata?.type);
+        const enabledSignTypes = signatureType?.filter((x) => x.enabled);
+        const isDefaultSignTypeOnly =
+          enabledSignTypes?.length === 1 &&
+          enabledSignTypes[0]?.name === "default";
+        if (enabledSignTypes.length === 0) {
+          alert("Please enable at least one signature type");
+        } else if (isDefaultSignTypeOnly) {
+          alert("Please enable one more signature type other than default");
+        } else {
+          const data = { ...formdata, signatureType };
+          props.handleData(data, props.defaultdata?.type);
+        }
       } else {
         props.handleData(formdata);
       }
@@ -287,7 +297,7 @@ const WidgetNameModal = (props) => {
             </div>
           </div>
         )}
-        {props.defaultdata?.type === "signature" && (
+        {["signature", "initials"].includes(props.defaultdata?.type) && (
           <div className="mb-[0.75rem]">
             <label htmlFor="signaturetype" className="text-[14px] mb-[0.7rem]">
               {t("allowed-signature-types")}

@@ -4,8 +4,21 @@ export default async function updateSignatureType(request) {
   }
   const SignatureType = request.params.SignatureType || [];
   if (SignatureType.length > 0) {
-    const isEnabled = SignatureType.some(x => x.enabled === true);
-    if (isEnabled) {
+    const enabledSignTypes = SignatureType?.filter(x => x.enabled);
+    const isDefaultSignTypeOnly =
+      enabledSignTypes?.length === 1 && enabledSignTypes[0]?.name === 'default';
+
+    if (enabledSignTypes.length === 0) {
+      throw new Parse.Error(
+        Parse.Error.INVALID_QUERY,
+        'At least one signature type should be enabled.'
+      );
+    } else if (isDefaultSignTypeOnly) {
+      throw new Parse.Error(
+        Parse.Error.INVALID_QUERY,
+        'Please enable one more signature type other than default.'
+      );
+    } else {
       try {
         const orgQuery = new Parse.Query('contracts_Users');
         orgQuery.equalTo('UserId', {
@@ -32,11 +45,6 @@ export default async function updateSignatureType(request) {
         const msg = err?.message || 'Something went wrong.';
         throw new Parse.Error(code, msg);
       }
-    } else {
-      throw new Parse.Error(
-        Parse.Error.INVALID_QUERY,
-        'At least one signature type should be enabled.'
-      );
     }
   } else {
     throw new Parse.Error(Parse.Error.INVALID_QUERY, 'Please provide signature types.');
