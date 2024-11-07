@@ -16,7 +16,7 @@ import { useTranslation } from "react-i18next";
 import ModalUi from "../primitives/ModalUi";
 import QuotaCard from "../primitives/QuotaCard";
 
-const Header = ({ showSidebar }) => {
+const Header = ({ showSidebar, setIsMenu }) => {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const { width } = useWindowSize();
@@ -40,7 +40,7 @@ const Header = ({ showSidebar }) => {
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
     if (width <= 768) {
-      showSidebar();
+      setIsMenu(false);
     }
   };
   useEffect(() => {
