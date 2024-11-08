@@ -37,7 +37,7 @@ export default async function isUserInContactBook(request) {
       query.equalTo('CreatedBy', userPtr);
       query.notEqualTo('IsDeleted', true);
       query.equalTo('Email', email);
-      const res = await query.first();
+      const res = await query.first({ sessionToken: request.user.getSessionToken() });
       return res;
     }
   } catch (err) {
