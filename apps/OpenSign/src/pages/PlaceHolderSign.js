@@ -262,12 +262,6 @@ function PlaceHolderSign() {
     const documentData = await contractDocument(documentId);
     if (documentData && documentData.length > 0) {
       const url = documentData[0] && documentData[0]?.URL;
-      const docSignTypes = documentData?.[0]?.SignatureType || signatureTypes;
-      const updatedSignatureType = await handleSignatureType(
-        tenantSignTypes,
-        docSignTypes
-      );
-      setSignatureType(updatedSignatureType);
       //convert document url in array buffer format to use embed widgets in pdf using pdf-lib
       const arrayBuffer = await convertPdfArrayBuffer(url);
       if (arrayBuffer === "Error") {
@@ -320,6 +314,15 @@ function PlaceHolderSign() {
           });
         }
       }
+      const userSignatureType =
+        documentData[0]?.ExtUserPtr?.SignatureType || signatureTypes;
+      const docSignTypes =
+        documentData?.[0]?.SignatureType || userSignatureType;
+      const updatedSignatureType = await handleSignatureType(
+        tenantSignTypes,
+        docSignTypes
+      );
+      setSignatureType(updatedSignatureType);
       const updatedPdfDetails = [...documentData];
       updatedPdfDetails[0].SignatureType = updatedSignatureType;
       setPdfDetails(updatedPdfDetails);
@@ -445,19 +448,6 @@ function PlaceHolderSign() {
       setHandleError(t("something-went-wrong-mssg"));
       setIsLoading({ isLoad: false });
     } else if (res.length && res[0]?.objectId) {
-      const userSignatureType = res[0]?.SignatureType || signatureTypes;
-      const docSignTypes =
-        documentData?.[0]?.SignatureType || userSignatureType;
-      const updatedSignatureType = await handleSignatureType(
-        tenantSignTypes,
-        docSignTypes
-      );
-      setSignatureType(updatedSignatureType);
-      if (documentData?.length && documentData?.[0]?.objectId) {
-        const updatedPdfDetails = [...documentData];
-        updatedPdfDetails[0].SignatureType = updatedSignatureType;
-        setPdfDetails(updatedPdfDetails);
-      }
       setActiveMailAdapter(res[0]?.active_mail_adapter);
       setSignerUserId(res[0].objectId);
       const tourstatus = res[0].TourStatus && res[0].TourStatus;

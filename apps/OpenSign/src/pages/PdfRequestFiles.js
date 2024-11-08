@@ -421,12 +421,18 @@ function PdfRequestFiles(props) {
       //getting document details
       const documentData = await contractDocument(docId);
       if (documentData && documentData.length > 0) {
-        const docSignTypes = documentData?.[0]?.SignatureType || signatureTypes;
+        const userSignatureType =
+          documentData[0]?.ExtUserPtr?.SignatureType || signatureTypes;
+        const docSignTypes =
+          documentData?.[0]?.SignatureType || userSignatureType;
         const updatedSignatureType = await handleSignatureType(
           tenantSignTypes,
           docSignTypes
         );
         setSignatureType(updatedSignatureType);
+        const updatedPdfDetails = [...documentData];
+        updatedPdfDetails[0].SignatureType = updatedSignatureType;
+        setPdfDetails(updatedPdfDetails);
         const url =
           documentData[0] &&
           (documentData[0]?.SignedUrl || documentData[0]?.URL);
@@ -2130,28 +2136,30 @@ function PdfRequestFiles(props) {
                       </div>
                     </ModalUi>
                     {/* this component is used for signature pad modal */}
-                    <SignPad
-                      signatureTypes={signatureType}
-                      isSignPad={isSignPad}
-                      isStamp={isStamp}
-                      setIsImageSelect={setIsImageSelect}
-                      setIsSignPad={setIsSignPad}
-                      setImage={setImage}
-                      isImageSelect={isImageSelect}
-                      imageRef={imageRef}
-                      onImageChange={onImageChange}
-                      setSignature={setSignature}
-                      image={image}
-                      onSaveImage={saveImage}
-                      onSaveSign={saveSign}
-                      defaultSign={defaultSignImg}
-                      myInitial={myInitial}
-                      isInitial={isInitial}
-                      setIsInitial={setIsInitial}
-                      setIsStamp={setIsStamp}
-                      currWidgetsDetails={currWidgetsDetails}
-                      setCurrWidgetsDetails={setCurrWidgetsDetails}
-                    />
+                    {documentId && (
+                      <SignPad
+                        signatureTypes={signatureType}
+                        isSignPad={isSignPad}
+                        isStamp={isStamp}
+                        setIsImageSelect={setIsImageSelect}
+                        setIsSignPad={setIsSignPad}
+                        setImage={setImage}
+                        isImageSelect={isImageSelect}
+                        imageRef={imageRef}
+                        onImageChange={onImageChange}
+                        setSignature={setSignature}
+                        image={image}
+                        onSaveImage={saveImage}
+                        onSaveSign={saveSign}
+                        defaultSign={defaultSignImg}
+                        myInitial={myInitial}
+                        isInitial={isInitial}
+                        setIsInitial={setIsInitial}
+                        setIsStamp={setIsStamp}
+                        currWidgetsDetails={currWidgetsDetails}
+                        setCurrWidgetsDetails={setCurrWidgetsDetails}
+                      />
+                    )}
                     {/* pdf header which contain funish back button */}
                     <Header
                       isPdfRequestFiles={isPublicTemplate ? false : true}
