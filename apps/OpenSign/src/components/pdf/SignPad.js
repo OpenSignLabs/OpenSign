@@ -37,11 +37,13 @@ function SignPad(props) {
   useEffect(() => {
     handleTab();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [props.signatureTypes]);
+
   function handleTab() {
     const signtypes = props?.signatureTypes || [];
     const index = signtypes?.findIndex((x) => x.enabled === true);
     if (index !== -1) {
+      setIsSignTypes(true);
       const tab = props?.signatureTypes[index].name;
       if (tab === "draw") {
         setIsTab("draw");
