@@ -689,6 +689,7 @@
   "attach-signer-tour": "Debe adjuntar un firmante a cada función. Puede hacerlo haciendo clic en este icono. Una vez que seleccione un Firmante, se adjuntará a todos los campos asociados con ese rol que aparecen en el mismo color.",
   "allowed-signature-types": "Tipos de firma permitidos",
   "at-least-one-signature-type": "Se debe habilitar al menos un tipo de firma.",
+  "expect-default-one-signature-type": "Habilite un tipo de firma adicional aparte del predeterminado.",
   "add-signer-note": "Nota - Este contacto se agregará a su lista de contactos",
   "allowed-signature-types-help": {
     "p1": "Esta preferencia de firma controla qué opciones de firma están disponibles para sus firmantes. Solo los tipos de firma que seleccione aparecerán en el widget de firma cuando se firme un documento. Por ejemplo, si elige sólo la opción 'Draw' en las preferencias, su firmante verá sólo la opción 'Draw' en el widget de firma, mientras que las otras tres opciones no estarán disponibles.",

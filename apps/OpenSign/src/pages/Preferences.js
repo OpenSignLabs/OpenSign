@@ -75,12 +75,12 @@ const Preferences = () => {
     if (enabledSignTypes.length === 0) {
       setIsAlert({
         type: "danger",
-        msg: "Please enable at least one signature type"
+        msg: t("at-least-one-signature-type")
       });
     } else if (isDefaultSignTypeOnly) {
       setIsAlert({
         type: "danger",
-        msg: "Please enable one more signature type other than default"
+        msg: t("expect-default-one-more-signature-type")
       });
     } else {
       try {

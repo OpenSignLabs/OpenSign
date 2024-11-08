@@ -16,7 +16,7 @@ export default async function updateSignatureType(request) {
     } else if (isDefaultSignTypeOnly) {
       throw new Parse.Error(
         Parse.Error.INVALID_QUERY,
-        'Please enable one more signature type other than default.'
+        'At least one signature type other than the default should be enabled.'
       );
     } else {
       try {
