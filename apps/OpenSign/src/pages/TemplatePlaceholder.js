@@ -236,15 +236,18 @@ const TemplatePlaceholder = () => {
           : [];
 
       if (documentData && documentData.length > 0) {
-        const docSignTypes = documentData?.[0]?.SignatureType || signatureTypes;
+        if (isEnableSubscription) {
+          checkIsSubscribed(documentData[0]?.ExtUserPtr?.Email);
+        }
+        const userSignatureType =
+          documentData[0]?.ExtUserPtr?.SignatureType || signatureTypes;
+        const docSignTypes =
+          documentData?.[0]?.SignatureType || userSignatureType;
         const updatedSignatureType = await handleSignatureType(
           tenantSignTypes,
           docSignTypes
         );
         setSignatureType(updatedSignatureType);
-        if (isEnableSubscription) {
-          checkIsSubscribed(documentData[0]?.ExtUserPtr?.Email);
-        }
         const updatedPdfDetails = [...documentData];
         updatedPdfDetails[0].SignatureType = updatedSignatureType;
         setPdfDetails(updatedPdfDetails);
@@ -314,19 +317,6 @@ const TemplatePlaceholder = () => {
       }
       const res = await contractUsers();
       if (res[0] && res.length) {
-        const userSignatureType = res[0]?.SignatureType || signatureTypes;
-        const docSignTypes =
-          documentData?.[0]?.SignatureType || userSignatureType;
-        const updatedSignatureType = await handleSignatureType(
-          tenantSignTypes,
-          docSignTypes
-        );
-        setSignatureType(updatedSignatureType);
-        if (documentData?.length && documentData?.[0]?.objectId) {
-          const updatedPdfDetails = [...documentData];
-          updatedPdfDetails[0].SignatureType = updatedSignatureType;
-          setPdfDetails(updatedPdfDetails);
-        }
         setSignerUserId(res[0].objectId);
         setCurrentEmail(res[0].Email);
         const tourstatus = res[0].TourStatus && res[0].TourStatus;
