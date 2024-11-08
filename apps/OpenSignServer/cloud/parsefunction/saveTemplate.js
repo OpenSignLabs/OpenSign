@@ -42,6 +42,9 @@ async function updateTemplate(template, isJwt = false) {
       }
       updateTemplate.set('Placeholders', template.Placeholders);
       updateTemplate.set('Signers', template.Signers);
+      if (template?.SignatureType?.length > 0) {
+        updateTemplate.set('SignatureType', template.SignatureType);
+      }
 
       let updateTemplateRes;
       if (isJwt) {
@@ -76,6 +79,7 @@ export default async function saveTemplate(request) {
     IsEnableOTP: request.params?.IsEnableOTP === true ? true : false,
     IsTourEnabled: request.params?.IsTourEnabled === true ? true : false,
     IsPublic: request.params?.IsPublic,
+    SignatureType: request.params?.SignatureType || [],
   };
 
   try {
