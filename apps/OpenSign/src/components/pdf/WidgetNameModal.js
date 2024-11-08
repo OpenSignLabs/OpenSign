@@ -62,9 +62,9 @@ const WidgetNameModal = (props) => {
           enabledSignTypes?.length === 1 &&
           enabledSignTypes[0]?.name === "default";
         if (enabledSignTypes.length === 0) {
-          alert("Please enable at least one signature type");
+          alert(t("at-least-one-signature-type"));
         } else if (isDefaultSignTypeOnly) {
-          alert("Please enable one more signature type other than default");
+          alert(t("expect-default-one-more-signature-type"));
         } else {
           const data = { ...formdata, signatureType };
           props.handleData(data, props.defaultdata?.type);
