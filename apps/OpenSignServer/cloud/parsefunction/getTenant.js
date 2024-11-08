@@ -8,16 +8,16 @@ async function getTenantByUserId(userId, contactId) {
       contactquery.equalTo('objectId', contactId);
       const contactuser = await contactquery.first({ useMasterKey: true });
       if (contactuser) {
-        const user = contactuser?.get('CreatedBy')?.id || userId;
-        const tenantCreditsQuery = new Parse.Query('partners_Tenant');
-        tenantCreditsQuery.equalTo('UserId', {
-          __type: 'Pointer',
-          className: '_User',
-          objectId: user,
-        });
-        tenantCreditsQuery.exclude('FileAdapters,PfxFile,ContactNumber');
-        const res = await tenantCreditsQuery.first({ useMasterKey: true });
-        return res;
+        const tenantId = contactuser?.get('TenantId')?.id;
+        if (tenantId) {
+          const tenantCreditsQuery = new Parse.Query('partners_Tenant');
+          tenantCreditsQuery.equalTo('objectId', tenantId);
+          tenantCreditsQuery.exclude('FileAdapters,PfxFile,ContactNumber');
+          const res = await tenantCreditsQuery.first({ useMasterKey: true });
+          return res;
+        } else {
+          return {};
+        }
       } else {
         return {};
       }

@@ -15,7 +15,7 @@ export default async function savecontact(request) {
     query.equalTo('CreatedBy', currentUserPtr);
     query.notEqualTo('IsDeleted', true);
     query.equalTo('Email', email);
-    const res = await query.first();
+    const res = await query.first({ sessionToken: request.user.getSessionToken() });
     if (!res) {
       const contactQuery = new Parse.Object('contracts_Contactbook');
       contactQuery.set('Name', name);
@@ -24,7 +24,7 @@ export default async function savecontact(request) {
       }
       contactQuery.set('Email', email);
       contactQuery.set('UserRole', 'contracts_Guest');
-
+      contactQuery.set('IsDeleted', false);
       if (tenantId) {
         contactQuery.set('TenantId', {
           __type: 'Pointer',
@@ -49,8 +49,8 @@ export default async function savecontact(request) {
           contactQuery.set('CreatedBy', currentUserPtr);
           contactQuery.set('UserId', user);
           const acl = new Parse.ACL();
-          acl.setPublicReadAccess(true);
-          acl.setPublicWriteAccess(true);
+          acl.setReadAccess(user.id, true);
+          acl.setWriteAccess(user.id, true);
           acl.setReadAccess(currentUser.id, true);
           acl.setWriteAccess(currentUser.id, true);
           contactQuery.setACL(acl);
@@ -71,8 +71,8 @@ export default async function savecontact(request) {
             objectId: userRes.id,
           });
           const acl = new Parse.ACL();
-          acl.setPublicReadAccess(true);
-          acl.setPublicWriteAccess(true);
+          acl.setReadAccess(userRes.id, true);
+          acl.setWriteAccess(userRes.id, true);
           acl.setReadAccess(currentUser.id, true);
           acl.setWriteAccess(currentUser.id, true);
           contactQuery.setACL(acl);
@@ -105,7 +105,7 @@ export default async function savecontact(request) {
       query.equalTo('CreatedBy', currentUserPtr);
       query.notEqualTo('IsDeleted', true);
       query.equalTo('Email', email);
-      const res = await query.first();
+      const res = await query.first({ useMasterKey: true });
       if (!res) {
         const contactQuery = new Parse.Object('contracts_Contactbook');
         contactQuery.set('Name', name);
@@ -114,7 +114,7 @@ export default async function savecontact(request) {
         }
         contactQuery.set('Email', email);
         contactQuery.set('UserRole', 'contracts_Guest');
-
+        contactQuery.set('IsDeleted', false);
         if (tenantId) {
           contactQuery.set('TenantId', {
             __type: 'Pointer',
@@ -138,8 +138,8 @@ export default async function savecontact(request) {
             contactQuery.set('CreatedBy', currentUserPtr);
             contactQuery.set('UserId', user);
             const acl = new Parse.ACL();
-            acl.setPublicReadAccess(true);
-            acl.setPublicWriteAccess(true);
+            acl.setReadAccess(user.id, true);
+            acl.setWriteAccess(user.id, true);
             acl.setReadAccess(currentUser.id, true);
             acl.setWriteAccess(currentUser.id, true);
             contactQuery.setACL(acl);
@@ -160,8 +160,8 @@ export default async function savecontact(request) {
               objectId: userRes.id,
             });
             const acl = new Parse.ACL();
-            acl.setPublicReadAccess(true);
-            acl.setPublicWriteAccess(true);
+            acl.setReadAccess(userRes.id, true);
+            acl.setWriteAccess(userRes.id, true);
             acl.setReadAccess(currentUser.id, true);
             acl.setWriteAccess(currentUser.id, true);
             contactQuery.setACL(acl);
