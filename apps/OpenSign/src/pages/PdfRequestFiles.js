@@ -1,5 +1,10 @@
 import React, { useState, useRef, useEffect } from "react";
-import { isEnableSubscription, isStaging, themeColor } from "../constant/const";
+import {
+  emailRegex,
+  isEnableSubscription,
+  isStaging,
+  themeColor
+} from "../constant/const";
 import { PDFDocument } from "pdf-lib";
 import "../styles/signature.css";
 import Parse from "parse";
@@ -1554,64 +1559,68 @@ function PdfRequestFiles(props) {
   const handlePublicUser = async (e) => {
     e.preventDefault();
     setLoading(true);
-    try {
-      const params = {
-        ...contact,
-        templateid: pdfDetails[0]?.objectId,
-        role: pdfDetails[0]?.PublicRole[0]
-      };
-      const userRes = await axios.post(
-        `${localStorage.getItem(
-          "baseUrl"
-        )}/functions/publicuserlinkcontacttodoc`,
-        params,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            "X-Parse-Application-Id": localStorage.getItem("parseAppId")
+    if (!emailRegex.test(contact.email)) {
+      alert("Please enter a valid email address.");
+    } else {
+      try {
+        const params = {
+          ...contact,
+          templateid: pdfDetails[0]?.objectId,
+          role: pdfDetails[0]?.PublicRole[0]
+        };
+        const userRes = await axios.post(
+          `${localStorage.getItem(
+            "baseUrl"
+          )}/functions/publicuserlinkcontacttodoc`,
+          params,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              "X-Parse-Application-Id": localStorage.getItem("parseAppId")
+            }
           }
-        }
-      );
+        );
 
-      if (userRes?.data?.result) {
-        setPublicRes(userRes.data.result);
-        const isEnableOTP = pdfDetails?.[0]?.IsEnableOTP || false;
-        if (isEnableOTP) {
-          await SendOtp();
+        if (userRes?.data?.result) {
+          setPublicRes(userRes.data.result);
+          const isEnableOTP = pdfDetails?.[0]?.IsEnableOTP || false;
+          if (isEnableOTP) {
+            await SendOtp();
+          } else {
+            setIsPublicContact(false);
+            setIsPublicTemplate(false);
+            setDocumentId(userRes.data?.result?.docId);
+            const contactId = userRes.data.result?.contactId;
+            setSignerObjectId(contactId);
+          }
         } else {
-          setIsPublicContact(false);
-          setIsPublicTemplate(false);
-          setDocumentId(userRes.data?.result?.docId);
-          const contactId = userRes.data.result?.contactId;
-          setSignerObjectId(contactId);
+          console.log("error in public-sign to create user details");
+          setIsAlert({
+            title: "Error",
+            isShow: true,
+            alertMessage: t("something-went-wrong-mssg")
+          });
         }
-      } else {
-        console.log("error in public-sign to create user details");
-        setIsAlert({
-          title: "Error",
-          isShow: true,
-          alertMessage: t("something-went-wrong-mssg")
-        });
-      }
-    } catch (e) {
-      console.log("e", e);
-      if (
-        e?.response?.data?.error === "Insufficient Credit" ||
-        e?.response?.data?.error === "Plan expired"
-      ) {
-        handleCloseOtp();
-        setIsAlert({
-          title: t("insufficient-credits"),
-          isShow: true,
-          alertMessage: t("insufficient-credits-mssg")
-        });
-      } else {
-        handleCloseOtp();
-        setIsAlert({
-          title: "Error",
-          isShow: true,
-          alertMessage: t("something-went-wrong-mssg")
-        });
+      } catch (e) {
+        console.log("e", e);
+        if (
+          e?.response?.data?.error === "Insufficient Credit" ||
+          e?.response?.data?.error === "Plan expired"
+        ) {
+          handleCloseOtp();
+          setIsAlert({
+            title: t("insufficient-credits"),
+            isShow: true,
+            alertMessage: t("insufficient-credits-mssg")
+          });
+        } else {
+          handleCloseOtp();
+          setIsAlert({
+            title: "Error",
+            isShow: true,
+            alertMessage: t("something-went-wrong-mssg")
+          });
+        }
       }
     }
   };

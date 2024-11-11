@@ -3,6 +3,7 @@ import Loader from "./Loader";
 import { useTranslation } from "react-i18next";
 import axios from "axios";
 import { getTenantDetails } from "../constant/Utils";
+import { emailRegex } from "../constant/const";
 const AddContact = (props) => {
   const { t } = useTranslation();
   const [name, setName] = useState("");
@@ -52,54 +53,58 @@ const AddContact = (props) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     e.stopPropagation();
-    setIsLoader(true);
-    const user = JSON.parse(
-      localStorage.getItem(
-        `Parse/${localStorage.getItem("parseAppId")}/currentUser`
-      )
-    );
-    const userId = user?.objectId || "";
-    const tenantDetails = await getTenantDetails(userId, props.jwttoken);
-    const tenantId = tenantDetails?.objectId || "";
-    if (tenantId) {
-      try {
-        const baseURL = localStorage.getItem("baseUrl");
-        const url = `${baseURL}functions/savecontact`;
-        const token = props?.jwttoken
-          ? { jwttoken: props?.jwttoken }
-          : { "X-Parse-Session-Token": localStorage.getItem("accesstoken") };
-        const data = { name, email, phone, tenantId };
-        const headers = {
-          "Content-Type": "application/json",
-          "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
-          ...token
-        };
-        const axiosRes = await axios.post(url, data, { headers });
-        const contactRes = axiosRes?.data?.result || {};
-        if (contactRes?.objectId) {
-          props.details(contactRes);
-          if (props.closePopup) {
-            props.closePopup();
-            setIsLoader(false);
-            // Reset the form fields
-            setAddYourself(false);
-            setName("");
-            setPhone("");
-            setEmail("");
+    if (!emailRegex.test(email)) {
+      alert("Please enter a valid email address.");
+    } else {
+      setIsLoader(true);
+      const user = JSON.parse(
+        localStorage.getItem(
+          `Parse/${localStorage.getItem("parseAppId")}/currentUser`
+        )
+      );
+      const userId = user?.objectId || "";
+      const tenantDetails = await getTenantDetails(userId, props.jwttoken);
+      const tenantId = tenantDetails?.objectId || "";
+      if (tenantId) {
+        try {
+          const baseURL = localStorage.getItem("baseUrl");
+          const url = `${baseURL}functions/savecontact`;
+          const token = props?.jwttoken
+            ? { jwttoken: props?.jwttoken }
+            : { "X-Parse-Session-Token": localStorage.getItem("accesstoken") };
+          const data = { name, email, phone, tenantId };
+          const headers = {
+            "Content-Type": "application/json",
+            "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
+            ...token
+          };
+          const axiosRes = await axios.post(url, data, { headers });
+          const contactRes = axiosRes?.data?.result || {};
+          if (contactRes?.objectId) {
+            props.details(contactRes);
+            if (props.closePopup) {
+              props.closePopup();
+              setIsLoader(false);
+              // Reset the form fields
+              setAddYourself(false);
+              setName("");
+              setPhone("");
+              setEmail("");
+            }
+          }
+        } catch (err) {
+          console.log("Err", err);
+          setIsLoader(false);
+          if (err?.response?.data?.error?.includes("already exists")) {
+            alert(t("add-signer-alert"));
+          } else {
+            alert(t("something-went-wrong-mssg"));
           }
         }
-      } catch (err) {
-        console.log("Err", err);
+      } else {
         setIsLoader(false);
-        if (err?.response?.data?.error?.includes("already exists")) {
-          alert(t("add-signer-alert"));
-        } else {
-          alert(t("something-went-wrong-mssg"));
-        }
+        alert(t("something-went-wrong-mssg"));
       }
-    } else {
-      setIsLoader(false);
-      alert(t("something-went-wrong-mssg"));
     }
   };
 

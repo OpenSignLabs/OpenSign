@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import Parse from "parse";
 import Loader from "../primitives/Loader";
 import { useTranslation } from "react-i18next";
+import { emailRegex } from "../constant/const";
 
 const AddSigner = (props) => {
   const { t } = useTranslation();
@@ -47,139 +48,143 @@ const AddSigner = (props) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     e.stopPropagation();
-    setIsLoader(true);
-    if (localStorage.getItem("TenantId")) {
-      try {
-        const user = Parse.User.current();
-        const query = new Parse.Query("contracts_Contactbook");
-        query.equalTo("CreatedBy", user);
-        query.notEqualTo("IsDeleted", true);
-        query.equalTo("Email", email);
-        const res = await query.first();
-        // console.log(res);
-        if (!res) {
-          const contactQuery = new Parse.Object("contracts_Contactbook");
-          contactQuery.set("Name", name);
-          if (phone) {
-            contactQuery.set("Phone", phone);
-          }
-          contactQuery.set("Email", email);
-          contactQuery.set("UserRole", "contracts_Guest");
-
-          contactQuery.set("TenantId", {
-            __type: "Pointer",
-            className: "partners_Tenant",
-            objectId: localStorage.getItem("TenantId")
-          });
-
-          try {
-            const _users = Parse.Object.extend("User");
-            const _user = new _users();
-            _user.set("name", name);
-            _user.set("username", email);
-            _user.set("email", email);
-            _user.set("password", email);
+    if (!emailRegex.test(email)) {
+      alert("Please enter a valid email address.");
+    } else {
+      setIsLoader(true);
+      if (localStorage.getItem("TenantId")) {
+        try {
+          const user = Parse.User.current();
+          const query = new Parse.Query("contracts_Contactbook");
+          query.equalTo("CreatedBy", user);
+          query.notEqualTo("IsDeleted", true);
+          query.equalTo("Email", email);
+          const res = await query.first();
+          // console.log(res);
+          if (!res) {
+            const contactQuery = new Parse.Object("contracts_Contactbook");
+            contactQuery.set("Name", name);
             if (phone) {
-              _user.set("phone", phone);
+              contactQuery.set("Phone", phone);
             }
-            const user = await _user.save();
-            if (user) {
-              const currentUser = Parse.User.current();
-              contactQuery.set(
-                "CreatedBy",
-                Parse.User.createWithoutData(currentUser.id)
-              );
+            contactQuery.set("Email", email);
+            contactQuery.set("UserRole", "contracts_Guest");
 
-              contactQuery.set("UserId", user);
-              const acl = new Parse.ACL();
-              acl.setPublicReadAccess(true);
-              acl.setPublicWriteAccess(true);
-              acl.setReadAccess(currentUser.id, true);
-              acl.setWriteAccess(currentUser.id, true);
+            contactQuery.set("TenantId", {
+              __type: "Pointer",
+              className: "partners_Tenant",
+              objectId: localStorage.getItem("TenantId")
+            });
 
-              contactQuery.setACL(acl);
+            try {
+              const _users = Parse.Object.extend("User");
+              const _user = new _users();
+              _user.set("name", name);
+              _user.set("username", email);
+              _user.set("email", email);
+              _user.set("password", email);
+              if (phone) {
+                _user.set("phone", phone);
+              }
+              const user = await _user.save();
+              if (user) {
+                const currentUser = Parse.User.current();
+                contactQuery.set(
+                  "CreatedBy",
+                  Parse.User.createWithoutData(currentUser.id)
+                );
 
-              const res = await contactQuery.save();
+                contactQuery.set("UserId", user);
+                const acl = new Parse.ACL();
+                acl.setPublicReadAccess(true);
+                acl.setPublicWriteAccess(true);
+                acl.setReadAccess(currentUser.id, true);
+                acl.setWriteAccess(currentUser.id, true);
 
-              const parseData = JSON.parse(JSON.stringify(res));
-              if (props.details) {
-                props.details({
-                  value: parseData[props.valueKey],
-                  label: parseData[props.displayKey]
+                contactQuery.setACL(acl);
+
+                const res = await contactQuery.save();
+
+                const parseData = JSON.parse(JSON.stringify(res));
+                if (props.details) {
+                  props.details({
+                    value: parseData[props.valueKey],
+                    label: parseData[props.displayKey]
+                  });
+                }
+                if (props.closePopup) {
+                  props.closePopup();
+                }
+                if (props.handleUserData) {
+                  props.handleUserData(parseData);
+                }
+
+                setIsLoader(false);
+                // Reset the form fields
+                setAddYourself(false);
+                setName("");
+                setPhone("");
+                setEmail("");
+              }
+            } catch (err) {
+              console.log("err ", err);
+              if (err.code === 202) {
+                const params = { email: email };
+                const userRes = await Parse.Cloud.run("getUserId", params);
+                const currentUser = Parse.User.current();
+                contactQuery.set(
+                  "CreatedBy",
+                  Parse.User.createWithoutData(currentUser.id)
+                );
+
+                contactQuery.set("UserId", {
+                  __type: "Pointer",
+                  className: "_User",
+                  objectId: userRes.id
                 });
-              }
-              if (props.closePopup) {
-                props.closePopup();
-              }
-              if (props.handleUserData) {
-                props.handleUserData(parseData);
-              }
+                const acl = new Parse.ACL();
+                acl.setPublicReadAccess(true);
+                acl.setPublicWriteAccess(true);
+                acl.setReadAccess(currentUser.id, true);
+                acl.setWriteAccess(currentUser.id, true);
 
-              setIsLoader(false);
-              // Reset the form fields
-              setAddYourself(false);
-              setName("");
-              setPhone("");
-              setEmail("");
+                contactQuery.setACL(acl);
+                const res = await contactQuery.save();
+
+                const parseData = JSON.parse(JSON.stringify(res));
+                if (props.details) {
+                  props.details({
+                    value: parseData[props.valueKey],
+                    label: parseData[props.displayKey]
+                  });
+                }
+                if (props.closePopup) {
+                  props.closePopup();
+                }
+                if (props.handleUserData) {
+                  props.handleUserData(parseData);
+                }
+                setIsLoader(false);
+                // Reset the form fields
+                setAddYourself(false);
+                setName("");
+                setPhone("");
+                setEmail("");
+              }
             }
-          } catch (err) {
-            console.log("err ", err);
-            if (err.code === 202) {
-              const params = { email: email };
-              const userRes = await Parse.Cloud.run("getUserId", params);
-              const currentUser = Parse.User.current();
-              contactQuery.set(
-                "CreatedBy",
-                Parse.User.createWithoutData(currentUser.id)
-              );
-
-              contactQuery.set("UserId", {
-                __type: "Pointer",
-                className: "_User",
-                objectId: userRes.id
-              });
-              const acl = new Parse.ACL();
-              acl.setPublicReadAccess(true);
-              acl.setPublicWriteAccess(true);
-              acl.setReadAccess(currentUser.id, true);
-              acl.setWriteAccess(currentUser.id, true);
-
-              contactQuery.setACL(acl);
-              const res = await contactQuery.save();
-
-              const parseData = JSON.parse(JSON.stringify(res));
-              if (props.details) {
-                props.details({
-                  value: parseData[props.valueKey],
-                  label: parseData[props.displayKey]
-                });
-              }
-              if (props.closePopup) {
-                props.closePopup();
-              }
-              if (props.handleUserData) {
-                props.handleUserData(parseData);
-              }
-              setIsLoader(false);
-              // Reset the form fields
-              setAddYourself(false);
-              setName("");
-              setPhone("");
-              setEmail("");
-            }
+          } else {
+            alert(t("add-signer-alert"));
+            setIsLoader(false);
           }
-        } else {
-          alert(t("add-signer-alert"));
+        } catch (err) {
+          console.log("err in fetch contact", err);
           setIsLoader(false);
+          alert(t("something-went-wrong-mssg"));
         }
-      } catch (err) {
-        console.log("err in fetch contact", err);
+      } else {
         setIsLoader(false);
         alert(t("something-went-wrong-mssg"));
       }
-    } else {
-      setIsLoader(false);
-      alert(t("something-went-wrong-mssg"));
     }
   };
 
