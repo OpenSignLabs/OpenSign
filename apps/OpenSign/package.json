@@ -43,7 +43,7 @@
     "react-router-dom": "^6.27.0",
     "react-scripts": "5.0.1",
     "react-scrollbars-custom": "^4.1.1",
-    "react-select": "^5.8.1",
+    "react-select": "^5.8.3",
     "react-signature-canvas": "^1.0.6",
     "react-syntax-highlighter": "^15.6.1",
     "react-tooltip": "^5.28.0",
