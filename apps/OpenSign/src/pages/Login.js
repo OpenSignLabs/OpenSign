@@ -9,7 +9,7 @@ import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import login_img from "../assets/images/login_img.svg";
 import { useWindowSize } from "../hook/useWindowSize";
 import ModalUi from "../primitives/ModalUi";
-import { isEnableSubscription } from "../constant/const";
+import { emailRegex, isEnableSubscription } from "../constant/const";
 import Alert from "../primitives/Alert";
 import { appInfo } from "../constant/appinfo";
 import { fetchAppInfo } from "../redux/reducers/infoReducer";
@@ -89,167 +89,174 @@ function Login() {
   const handleSubmit = async (event) => {
     localStorage.removeItem("accesstoken");
     event.preventDefault();
-    const { email, password } = state;
-    if (email && password) {
-      try {
-        setState({ ...state, loading: true });
-        localStorage.setItem("appLogo", appInfo.applogo);
-        // Pass the username and password to logIn function
-        const user = await Parse.User.logIn(email, password);
-        if (user) {
-          let _user = user.toJSON();
-          localStorage.setItem("UserInformation", JSON.stringify(_user));
-          localStorage.setItem("userEmail", email);
-          localStorage.setItem("accesstoken", _user.sessionToken);
-          localStorage.setItem("scriptId", true);
-          if (_user.ProfilePic) {
-            localStorage.setItem("profileImg", _user.ProfilePic);
-          } else {
-            localStorage.setItem("profileImg", "");
-          }
-          // Check extended class user role and tenentId
-          try {
-            const userSettings = appInfo.settings;
-            await Parse.Cloud.run("getUserDetails")
-              .then(async (extUser) => {
-                if (extUser) {
-                  // console.log("extUser", extUser, extUser?.get("IsDisabled"));
-                  const IsDisabled = extUser?.get("IsDisabled") || false;
-                  if (!IsDisabled) {
-                    const userRole = extUser?.get("UserRole");
-                    const menu =
-                      userRole &&
-                      userSettings.find((menu) => menu.role === userRole);
-                    if (menu) {
-                      const _currentRole = userRole;
-                      const redirectUrl =
-                        location?.state?.from ||
-                        `/${menu.pageType}/${menu.pageId}`;
-                      let _role = _currentRole.replace("contracts_", "");
-                      localStorage.setItem("_user_role", _role);
-                      const checkLanguage = extUser?.get("Language");
-                      if (checkLanguage) {
-                        checkLanguage && i18n.changeLanguage(checkLanguage);
-                      }
+    if (!emailRegex.test(state.email)) {
+      alert("Please enter a valid email address.");
+    } else {
+      const { email, password } = state;
+      if (email && password) {
+        try {
+          setState({ ...state, loading: true });
+          localStorage.setItem("appLogo", appInfo.applogo);
+          // Pass the username and password to logIn function
+          const user = await Parse.User.logIn(email, password);
+          if (user) {
+            let _user = user.toJSON();
+            localStorage.setItem("UserInformation", JSON.stringify(_user));
+            localStorage.setItem("userEmail", email);
+            localStorage.setItem("accesstoken", _user.sessionToken);
+            localStorage.setItem("scriptId", true);
+            if (_user.ProfilePic) {
+              localStorage.setItem("profileImg", _user.ProfilePic);
+            } else {
+              localStorage.setItem("profileImg", "");
+            }
+            // Check extended class user role and tenentId
+            try {
+              const userSettings = appInfo.settings;
+              await Parse.Cloud.run("getUserDetails")
+                .then(async (extUser) => {
+                  if (extUser) {
+                    // console.log("extUser", extUser, extUser?.get("IsDisabled"));
+                    const IsDisabled = extUser?.get("IsDisabled") || false;
+                    if (!IsDisabled) {
+                      const userRole = extUser?.get("UserRole");
+                      const menu =
+                        userRole &&
+                        userSettings.find((menu) => menu.role === userRole);
+                      if (menu) {
+                        const _currentRole = userRole;
+                        const redirectUrl =
+                          location?.state?.from ||
+                          `/${menu.pageType}/${menu.pageId}`;
+                        let _role = _currentRole.replace("contracts_", "");
+                        localStorage.setItem("_user_role", _role);
+                        const checkLanguage = extUser?.get("Language");
+                        if (checkLanguage) {
+                          checkLanguage && i18n.changeLanguage(checkLanguage);
+                        }
 
-                      const results = [extUser];
-                      const extUser_str = JSON.stringify(results);
+                        const results = [extUser];
+                        const extUser_str = JSON.stringify(results);
 
-                      localStorage.setItem("Extand_Class", extUser_str);
-                      const extInfo = JSON.parse(JSON.stringify(extUser));
-                      localStorage.setItem("userEmail", extInfo.Email);
-                      localStorage.setItem("username", extInfo.Name);
-                      if (extInfo?.TenantId) {
-                        const tenant = {
-                          Id: extInfo?.TenantId?.objectId || "",
-                          Name: extInfo?.TenantId?.TenantName || ""
-                        };
-                        localStorage.setItem("TenantId", tenant?.Id);
-                        dispatch(showTenant(tenant?.Name));
-                        localStorage.setItem("TenantName", tenant?.Name);
-                      }
-                      localStorage.setItem("PageLanding", menu.pageId);
-                      localStorage.setItem("defaultmenuid", menu.menuId);
-                      localStorage.setItem("pageType", menu.pageType);
-                      if (isEnableSubscription) {
-                        const LocalUserDetails = {
-                          name: results[0].get("Name"),
-                          email: results[0].get("Email"),
-                          phone: results[0]?.get("Phone") || "",
-                          company: results[0].get("Company")
-                        };
-                        localStorage.setItem(
-                          "userDetails",
-                          JSON.stringify(LocalUserDetails)
-                        );
-                        const res = await fetchSubscription();
-                        const plan = res.plan;
-                        const billingDate = res.billingDate;
-                        if (plan === "freeplan") {
-                          setState({ ...state, loading: false });
-                          navigate(redirectUrl);
-                        } else if (billingDate) {
-                          if (new Date(billingDate) > new Date()) {
-                            localStorage.removeItem("userDetails");
-                            // Redirect to the appropriate URL after successful login                              setState({ ...state, loading: false });
+                        localStorage.setItem("Extand_Class", extUser_str);
+                        const extInfo = JSON.parse(JSON.stringify(extUser));
+                        localStorage.setItem("userEmail", extInfo.Email);
+                        localStorage.setItem("username", extInfo.Name);
+                        if (extInfo?.TenantId) {
+                          const tenant = {
+                            Id: extInfo?.TenantId?.objectId || "",
+                            Name: extInfo?.TenantId?.TenantName || ""
+                          };
+                          localStorage.setItem("TenantId", tenant?.Id);
+                          dispatch(showTenant(tenant?.Name));
+                          localStorage.setItem("TenantName", tenant?.Name);
+                        }
+                        localStorage.setItem("PageLanding", menu.pageId);
+                        localStorage.setItem("defaultmenuid", menu.menuId);
+                        localStorage.setItem("pageType", menu.pageType);
+                        if (isEnableSubscription) {
+                          const LocalUserDetails = {
+                            name: results[0].get("Name"),
+                            email: results[0].get("Email"),
+                            phone: results[0]?.get("Phone") || "",
+                            company: results[0].get("Company")
+                          };
+                          localStorage.setItem(
+                            "userDetails",
+                            JSON.stringify(LocalUserDetails)
+                          );
+                          const res = await fetchSubscription();
+                          const plan = res.plan;
+                          const billingDate = res.billingDate;
+                          if (plan === "freeplan") {
                             setState({ ...state, loading: false });
                             navigate(redirectUrl);
+                          } else if (billingDate) {
+                            if (new Date(billingDate) > new Date()) {
+                              localStorage.removeItem("userDetails");
+                              // Redirect to the appropriate URL after successful login                              setState({ ...state, loading: false });
+                              setState({ ...state, loading: false });
+                              navigate(redirectUrl);
+                            } else {
+                              setState({ ...state, loading: false });
+                              handlePaidRoute(plan);
+                            }
                           } else {
                             setState({ ...state, loading: false });
                             handlePaidRoute(plan);
                           }
                         } else {
                           setState({ ...state, loading: false });
-                          handlePaidRoute(plan);
+                          // Redirect to the appropriate URL after successful login
+                          navigate(redirectUrl);
                         }
                       } else {
                         setState({ ...state, loading: false });
-                        // Redirect to the appropriate URL after successful login
-                        navigate(redirectUrl);
+                        setIsModal(true);
                       }
                     } else {
-                      setState({ ...state, loading: false });
-                      setIsModal(true);
+                      setState({
+                        ...state,
+                        loading: false,
+                        alertType: "danger",
+                        alertMsg:
+                          "You don't have access, please contact the admin."
+                      });
+                      logOutUser();
                     }
                   } else {
-                    setState({
-                      ...state,
-                      loading: false,
-                      alertType: "danger",
-                      alertMsg:
-                        "You don't have access, please contact the admin."
-                    });
-                    logOutUser();
+                    if (isEnableSubscription) {
+                      setState({ ...state, loading: false });
+                      setIsModal(true);
+                    } else {
+                      setState({ ...state, loading: false });
+                      setState({
+                        ...state,
+                        loading: false,
+                        alertType: "danger",
+                        alertMsg: "User not found."
+                      });
+                      logOutUser();
+                    }
                   }
-                } else {
-                  if (isEnableSubscription) {
-                    setState({ ...state, loading: false });
-                    setIsModal(true);
-                  } else {
-                    setState({ ...state, loading: false });
-                    setState({
-                      ...state,
-                      loading: false,
-                      alertType: "danger",
-                      alertMsg: "User not found."
-                    });
-                    logOutUser();
-                  }
-                }
-              })
-              .catch((error) => {
-                // const payload = { sessionToken: user.getSessionToken() };
-                // handleSubmitbtn(payload);
-                setState({
-                  ...state,
-                  loading: false,
-                  alertType: "danger",
-                  alertMsg: `Something went wrong.`
+                })
+                .catch((error) => {
+                  // const payload = { sessionToken: user.getSessionToken() };
+                  // handleSubmitbtn(payload);
+                  setState({
+                    ...state,
+                    loading: false,
+                    alertType: "danger",
+                    alertMsg: `Something went wrong.`
+                  });
+                  setTimeout(() => setState({ ...state, alertMsg: "" }), 2000);
+                  console.error("Error while fetching Follow", error);
                 });
-                setTimeout(() => setState({ ...state, alertMsg: "" }), 2000);
-                console.error("Error while fetching Follow", error);
+            } catch (error) {
+              setState({
+                ...state,
+                loading: false,
+                alertType: "danger",
+                alertMsg: `${error.message}`
               });
-          } catch (error) {
-            setState({
-              ...state,
-              loading: false,
-              alertType: "danger",
-              alertMsg: `${error.message}`
-            });
-            console.log(error);
-            setTimeout(() => setState({ ...state, alertMsg: "" }), 2000);
+              console.log(error);
+              setTimeout(() => setState({ ...state, alertMsg: "" }), 2000);
+            }
           }
+        } catch (error) {
+          setState({
+            ...state,
+            loading: false,
+            alertType: "danger",
+            alertMsg: "Invalid username or password!"
+          });
+          console.error("Error while logging in user", error);
+        } finally {
+          setTimeout(
+            () => setState((prev) => ({ ...prev, alertMsg: "" })),
+            2000
+          );
         }
-      } catch (error) {
-        setState({
-          ...state,
-          loading: false,
-          alertType: "danger",
-          alertMsg: "Invalid username or password!"
-        });
-        console.error("Error while logging in user", error);
-      } finally {
-        setTimeout(() => setState((prev) => ({ ...prev, alertMsg: "" })), 2000);
       }
     }
   };

@@ -128,11 +128,14 @@ export const updateMailCount = async (extUserId, plan, monthchange) => {
 
 export function formatWidgetOptions(type, options) {
   const colorsArr = ['red', 'black', 'blue', 'yellow'];
+  const fontSizes = [2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28];
   const status = options?.required === true ? 'required' : 'optional' || 'required';
   const defaultValue = options?.default || '';
   const values = options?.values || [];
   const color = options?.color ? options.color : 'black';
   const fontColor = colorsArr.includes(color) ? color : 'black';
+  const size = options?.size ? parseInt(options.size) : 12;
+  const fontSize = fontSizes.includes(size) ? size : 12;
   switch (type) {
     case 'signature':
       return { name: 'signature', status: 'required' };
@@ -148,13 +151,29 @@ export function formatWidgetOptions(type, options) {
         name: options.name || 'email',
         validation: { type: 'email' },
         fontColor: fontColor,
+        fontSize: fontSize,
       };
     case 'name':
-      return { status: status, name: options.name || 'name', fontColor: fontColor };
+      return {
+        status: status,
+        name: options.name || 'name',
+        fontColor: fontColor,
+        fontSize: fontSize,
+      };
     case 'job title':
-      return { status: status, name: options.name || 'job title', fontColor: fontColor };
+      return {
+        status: status,
+        name: options.name || 'job title',
+        fontColor: fontColor,
+        fontSize: fontSize,
+      };
     case 'company':
-      return { status: status, name: options.name || 'company', fontColor: fontColor };
+      return {
+        status: status,
+        name: options.name || 'company',
+        fontColor: fontColor,
+        fontSize: fontSize,
+      };
     case 'date': {
       let today = new Date();
       let dd = String(today.getDate()).padStart(2, '0');
@@ -169,6 +188,7 @@ export function formatWidgetOptions(type, options) {
         response: defaultValue || today,
         validation: { format: dateFormat || 'dd-MM-yyyy', type: 'date-format' },
         fontColor: fontColor,
+        fontSize: fontSize,
       };
     }
     case 'textbox':
@@ -179,6 +199,7 @@ export function formatWidgetOptions(type, options) {
         hint: options.hint,
         validation: { type: 'regex', pattern: options?.regularexpression || '/^[a-zA-Z0-9s]+$/' },
         fontColor: fontColor,
+        fontSize: fontSize,
       };
     case 'checkbox': {
       const arr = options?.values;
@@ -199,6 +220,7 @@ export function formatWidgetOptions(type, options) {
         },
         defaultValue: selectedvalues || [],
         fontColor: fontColor,
+        fontSize: fontSize,
       };
     }
     case 'radio button': {
@@ -210,6 +232,7 @@ export function formatWidgetOptions(type, options) {
         isHideLabel: options?.hidelabel || false,
         defaultValue: defaultValue,
         fontColor: fontColor,
+        fontSize: fontSize,
       };
     }
     case 'dropdown':
@@ -219,6 +242,7 @@ export function formatWidgetOptions(type, options) {
         values: values,
         defaultValue: defaultValue,
         fontColor: fontColor,
+        fontSize: fontSize,
       };
     default:
       break;

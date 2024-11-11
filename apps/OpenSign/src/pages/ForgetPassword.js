@@ -7,7 +7,7 @@ import Alert from "../primitives/Alert";
 import { appInfo } from "../constant/appinfo";
 import { useDispatch } from "react-redux";
 import { fetchAppInfo } from "../redux/reducers/infoReducer";
-import { isEnableSubscription } from "../constant/const";
+import { emailRegex, isEnableSubscription } from "../constant/const";
 import { getAppLogo } from "../constant/Utils";
 import { useTranslation } from "react-i18next";
 
@@ -36,18 +36,22 @@ function ForgotPassword() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    localStorage.setItem("appLogo", appInfo.applogo);
-    localStorage.setItem("userSettings", JSON.stringify(appInfo.settings));
-    if (state.email) {
-      const username = state.email;
-      try {
-        await Parse.User.requestPasswordReset(username);
-        setSentStatus("success");
-      } catch (err) {
-        console.log("err ", err.code);
-        setSentStatus("failed");
-      } finally {
-        setTimeout(() => setSentStatus(""), 1000);
+    if (!emailRegex.test(state.email)) {
+      alert("Please enter a valid email address.");
+    } else {
+      localStorage.setItem("appLogo", appInfo.applogo);
+      localStorage.setItem("userSettings", JSON.stringify(appInfo.settings));
+      if (state.email) {
+        const username = state.email;
+        try {
+          await Parse.User.requestPasswordReset(username);
+          setSentStatus("success");
+        } catch (err) {
+          console.log("err ", err.code);
+          setSentStatus("failed");
+        } finally {
+          setTimeout(() => setSentStatus(""), 1000);
+        }
       }
     }
   };

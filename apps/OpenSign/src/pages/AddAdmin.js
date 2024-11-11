@@ -12,6 +12,7 @@ import { showTenant } from "../redux/reducers/ShowTenant";
 import Loader from "../primitives/Loader";
 import Title from "../components/Title";
 import { useTranslation } from "react-i18next";
+import { emailRegex } from "../constant/const";
 
 const AddAdmin = () => {
   const { t, i18n } = useTranslation();
@@ -84,77 +85,81 @@ const AddAdmin = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    if (lengthValid && caseDigitValid && specialCharValid) {
-      clearStorage();
-      setState({ loading: true });
-      const userDetails = {
-        name: name,
-        email: email,
-        phone: phone,
-        company: company,
-        jobTitle: jobTitle
-      };
-      localStorage.setItem("userDetails", JSON.stringify(userDetails));
-      try {
-        event.preventDefault();
-        const user = new Parse.User();
-        user.set("name", name);
-        user.set("email", email);
-        user.set("password", password);
-        user.set("phone", phone);
-        user.set("username", email);
-        const userRes = await user.save();
-        if (userRes) {
-          const params = {
-            userDetails: {
-              jobTitle: jobTitle,
-              company: company,
-              name: name,
-              email: email,
-              phone: phone,
-              role: "contracts_Admin"
-            }
-          };
-          try {
-            const usersignup = await Parse.Cloud.run("addadmin", params);
-            if (usersignup) {
-              if (isSubscribeNews) {
-                subscribeNewsletter();
+    if (!emailRegex.test(email)) {
+      alert("Please enter a valid email address.");
+    } else {
+      if (lengthValid && caseDigitValid && specialCharValid) {
+        clearStorage();
+        setState({ loading: true });
+        const userDetails = {
+          name: name,
+          email: email,
+          phone: phone,
+          company: company,
+          jobTitle: jobTitle
+        };
+        localStorage.setItem("userDetails", JSON.stringify(userDetails));
+        try {
+          event.preventDefault();
+          const user = new Parse.User();
+          user.set("name", name);
+          user.set("email", email);
+          user.set("password", password);
+          user.set("phone", phone);
+          user.set("username", email);
+          const userRes = await user.save();
+          if (userRes) {
+            const params = {
+              userDetails: {
+                jobTitle: jobTitle,
+                company: company,
+                name: name,
+                email: email,
+                phone: phone,
+                role: "contracts_Admin"
               }
-              handleNavigation(userRes.getSessionToken());
-            }
-          } catch (err) {
-            alert(err.message);
-            setState({ loading: false });
-          }
-        }
-      } catch (error) {
-        console.log("err ", error);
-        if (error.code === 202) {
-          const params = { email: email };
-          const res = await Parse.Cloud.run("getUserDetails", params);
-          // console.log("Res ", res);
-          if (res) {
-            alert(t("already-exists-this-username"));
-            setState({ loading: false });
-          } else {
-            // console.log("state.email ", email);
+            };
             try {
-              await Parse.User.requestPasswordReset(email).then(
-                async function (res) {
-                  if (res.data === undefined) {
-                    alert(t("verification-code-sent"));
-                  }
+              const usersignup = await Parse.Cloud.run("addadmin", params);
+              if (usersignup) {
+                if (isSubscribeNews) {
+                  subscribeNewsletter();
                 }
-              );
+                handleNavigation(userRes.getSessionToken());
+              }
             } catch (err) {
-              console.log(err);
+              alert(err.message);
+              setState({ loading: false });
             }
+          }
+        } catch (error) {
+          console.log("err ", error);
+          if (error.code === 202) {
+            const params = { email: email };
+            const res = await Parse.Cloud.run("getUserDetails", params);
+            // console.log("Res ", res);
+            if (res) {
+              alert(t("already-exists-this-username"));
+              setState({ loading: false });
+            } else {
+              // console.log("state.email ", email);
+              try {
+                await Parse.User.requestPasswordReset(email).then(
+                  async function (res) {
+                    if (res.data === undefined) {
+                      alert(t("verification-code-sent"));
+                    }
+                  }
+                );
+              } catch (err) {
+                console.log(err);
+              }
+              setState({ loading: false });
+            }
+          } else {
+            alert(error.message);
             setState({ loading: false });
           }
-        } else {
-          alert(error.message);
-          setState({ loading: false });
         }
       }
     }
