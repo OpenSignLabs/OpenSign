@@ -10,7 +10,7 @@ import { appInfo } from "../constant/appinfo";
 import { useDispatch } from "react-redux";
 import { fetchAppInfo } from "../redux/reducers/infoReducer";
 import { showTenant } from "../redux/reducers/ShowTenant";
-import { isEnableSubscription } from "../constant/const";
+import { emailRegex, isEnableSubscription } from "../constant/const";
 import {
   getAppLogo,
   openInNewTab,
@@ -83,92 +83,96 @@ const Signup = () => {
   };
   const handleSubmit = (event) => {
     event.preventDefault();
-    if (lengthValid && caseDigitValid && specialCharValid) {
-      clearStorage();
-      setState({ loading: true });
-      const userDetails = {
-        name: name,
-        email: email,
-        phone: phone,
-        company: company,
-        jobTitle: jobTitle
-      };
-      localStorage.setItem("userDetails", JSON.stringify(userDetails));
-      try {
-        event.preventDefault();
-        var user = new Parse.User();
-        user.set("name", name);
-        user.set("email", email);
-        user.set("password", password);
-        user.set("phone", phone);
-        user.set("username", email);
-        let res = user.save();
-        res
-          .then(async (r) => {
-            if (r) {
-              let roleData = appInfo.settings;
-              if (roleData && roleData.length > 0) {
-                const params = {
-                  userDetails: {
-                    jobTitle: jobTitle,
-                    company: company,
-                    name: name,
-                    email: email,
-                    phone: phone,
-                    role: appInfo.defaultRole
-                  }
-                };
-                try {
-                  const usersignup = await Parse.Cloud.run(
-                    "usersignup",
-                    params
-                  );
-                  if (usersignup) {
-                    const param = new URLSearchParams(location.search);
-                    const isFreeplan =
-                      param?.get("subscription") === "freeplan";
-                    if (isFreeplan) {
-                      await handleFreePlan(r.id);
+    if (!emailRegex.test(email)) {
+      alert("Please enter a valid email address.");
+    } else {
+      if (lengthValid && caseDigitValid && specialCharValid) {
+        clearStorage();
+        setState({ loading: true });
+        const userDetails = {
+          name: name,
+          email: email,
+          phone: phone,
+          company: company,
+          jobTitle: jobTitle
+        };
+        localStorage.setItem("userDetails", JSON.stringify(userDetails));
+        try {
+          event.preventDefault();
+          var user = new Parse.User();
+          user.set("name", name);
+          user.set("email", email);
+          user.set("password", password);
+          user.set("phone", phone);
+          user.set("username", email);
+          let res = user.save();
+          res
+            .then(async (r) => {
+              if (r) {
+                let roleData = appInfo.settings;
+                if (roleData && roleData.length > 0) {
+                  const params = {
+                    userDetails: {
+                      jobTitle: jobTitle,
+                      company: company,
+                      name: name,
+                      email: email,
+                      phone: phone,
+                      role: appInfo.defaultRole
                     }
-                    handleNavigation(r.getSessionToken(), isFreeplan);
+                  };
+                  try {
+                    const usersignup = await Parse.Cloud.run(
+                      "usersignup",
+                      params
+                    );
+                    if (usersignup) {
+                      const param = new URLSearchParams(location.search);
+                      const isFreeplan =
+                        param?.get("subscription") === "freeplan";
+                      if (isFreeplan) {
+                        await handleFreePlan(r.id);
+                      }
+                      handleNavigation(r.getSessionToken(), isFreeplan);
+                    }
+                  } catch (err) {
+                    alert(err.message);
+                    setState({ loading: false });
                   }
-                } catch (err) {
-                  alert(err.message);
+                }
+              }
+            })
+            .catch(async (err) => {
+              if (err.code === 202) {
+                const params = { email: email };
+                const res = await Parse.Cloud.run("getUserDetails", params);
+                // console.log("Res ", res);
+                if (res) {
+                  alert(t("user-already-exist-name"));
+                  setState({ loading: false });
+                } else {
+                  // console.log("state.email ", email);
+                  try {
+                    await Parse.User.requestPasswordReset(email).then(
+                      async function (res1) {
+                        if (res1.data === undefined) {
+                          alert(t("verification-code-sent"));
+                        }
+                      }
+                    );
+                  } catch (err) {
+                    console.log(err);
+                  }
                   setState({ loading: false });
                 }
-              }
-            }
-          })
-          .catch(async (err) => {
-            if (err.code === 202) {
-              const params = { email: email };
-              const res = await Parse.Cloud.run("getUserDetails", params);
-              // console.log("Res ", res);
-              if (res) {
-                alert(t("user-already-exist-name"));
-                setState({ loading: false });
               } else {
-                // console.log("state.email ", email);
-                try {
-                  await Parse.User.requestPasswordReset(email).then(
-                    async function (res1) {
-                      if (res1.data === undefined) {
-                        alert(t("verification-code-sent"));
-                      }
-                    }
-                  );
-                } catch (err) {
-                  console.log(err);
-                }
+                alert(err.message);
                 setState({ loading: false });
               }
-            } else {
-              alert(err.message);
-              setState({ loading: false });
-            }
-          });
-      } catch (error) {
-        console.log("err ", error);
+            });
+        } catch (error) {
+          console.log("err ", error);
+        }
       }
     }
   };

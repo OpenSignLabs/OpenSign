@@ -3,7 +3,7 @@ import Parse from "parse";
 import Title from "./Title";
 import Loader from "../primitives/Loader";
 import { copytoData, fetchSubscriptionInfo } from "../constant/Utils";
-import { isEnableSubscription } from "../constant/const";
+import { emailRegex, isEnableSubscription } from "../constant/const";
 import { useTranslation } from "react-i18next";
 function generatePassword(length) {
   const characters =
@@ -115,149 +115,172 @@ const AddUser = (props) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     e.stopPropagation();
-    const localUser = JSON.parse(localStorage.getItem("Extand_Class"))?.[0];
-    setIsFormLoader(true);
-    const res = await checkUserExist();
-    if (res) {
-      props.setIsAlert({ type: "danger", msg: t("user-already-exist") });
-      setIsFormLoader(false);
-      setTimeout(() => props.setIsAlert({ type: "success", msg: "" }), 1000);
+    if (!emailRegex.test(formdata.email)) {
+      alert("Please enter a valid email address.");
     } else {
-      try {
-        const extUser = new Parse.Object("contracts_Users");
-        extUser.set("Name", formdata.name);
-        if (formdata.phone) {
-          extUser.set("Phone", formdata.phone);
-        }
-        extUser.set("Email", formdata.email);
-        extUser.set("UserRole", `contracts_${formdata.role}`);
-        if (formdata?.team) {
-          extUser.set("TeamIds", [
-            {
-              __type: "Pointer",
-              className: "contracts_Teams",
-              objectId: formdata.team
-            }
-          ]);
-        }
-        if (localUser && localUser.OrganizationId) {
-          extUser.set("OrganizationId", {
-            __type: "Pointer",
-            className: "contracts_Organizations",
-            objectId: localUser.OrganizationId.objectId
-          });
-        }
-        if (localUser && localUser.Company) {
-          extUser.set("Company", localUser.Company);
-        }
-
-        if (localStorage.getItem("TenantId")) {
-          extUser.set("TenantId", {
-            __type: "Pointer",
-            className: "partners_Tenant",
-            objectId: localStorage.getItem("TenantId")
-          });
-        }
-
+      const localUser = JSON.parse(localStorage.getItem("Extand_Class"))?.[0];
+      setIsFormLoader(true);
+      const res = await checkUserExist();
+      if (res) {
+        props.setIsAlert({ type: "danger", msg: t("user-already-exist") });
+        setIsFormLoader(false);
+        setTimeout(() => props.setIsAlert({ type: "success", msg: "" }), 1000);
+      } else {
         try {
-          const _users = Parse.Object.extend("User");
-          const _user = new _users();
-          _user.set("name", formdata.name);
-          _user.set("username", formdata.email);
-          _user.set("email", formdata.email);
-          _user.set("password", formdata.password);
+          const extUser = new Parse.Object("contracts_Users");
+          extUser.set("Name", formdata.name);
           if (formdata.phone) {
-            _user.set("phone", formdata.phone);
+            extUser.set("Phone", formdata.phone);
+          }
+          extUser.set("Email", formdata.email);
+          extUser.set("UserRole", `contracts_${formdata.role}`);
+          if (formdata?.team) {
+            extUser.set("TeamIds", [
+              {
+                __type: "Pointer",
+                className: "contracts_Teams",
+                objectId: formdata.team
+              }
+            ]);
+          }
+          if (localUser && localUser.OrganizationId) {
+            extUser.set("OrganizationId", {
+              __type: "Pointer",
+              className: "contracts_Organizations",
+              objectId: localUser.OrganizationId.objectId
+            });
+          }
+          if (localUser && localUser.Company) {
+            extUser.set("Company", localUser.Company);
           }
 
-          const user = await _user.save();
-          if (user) {
-            const currentUser = Parse.User.current();
-            extUser.set(
-              "CreatedBy",
-              Parse.User.createWithoutData(currentUser.id)
-            );
+          if (localStorage.getItem("TenantId")) {
+            extUser.set("TenantId", {
+              __type: "Pointer",
+              className: "partners_Tenant",
+              objectId: localStorage.getItem("TenantId")
+            });
+          }
 
-            extUser.set("UserId", user);
-            const acl = new Parse.ACL();
-            acl.setPublicReadAccess(true);
-            acl.setPublicWriteAccess(true);
-            acl.setReadAccess(currentUser.id, true);
-            acl.setWriteAccess(currentUser.id, true);
-
-            extUser.setACL(acl);
-
-            const res = await extUser.save();
-
-            const parseData = JSON.parse(JSON.stringify(res));
-
-            if (props.closePopup) {
-              props.closePopup();
+          try {
+            const _users = Parse.Object.extend("User");
+            const _user = new _users();
+            _user.set("name", formdata.name);
+            _user.set("username", formdata.email);
+            _user.set("email", formdata.email);
+            _user.set("password", formdata.password);
+            if (formdata.phone) {
+              _user.set("phone", formdata.phone);
             }
-            if (props.handleUserData) {
-              if (formdata?.team) {
-                const team = teamList.find((x) => x.objectId === formdata.team);
-                parseData.TeamIds = parseData.TeamIds.map((y) =>
-                  y.objectId === team.objectId ? team : y
-                );
+
+            const user = await _user.save();
+            if (user) {
+              const currentUser = Parse.User.current();
+              extUser.set(
+                "CreatedBy",
+                Parse.User.createWithoutData(currentUser.id)
+              );
+
+              extUser.set("UserId", user);
+              const acl = new Parse.ACL();
+              acl.setPublicReadAccess(true);
+              acl.setPublicWriteAccess(true);
+              acl.setReadAccess(currentUser.id, true);
+              acl.setWriteAccess(currentUser.id, true);
+
+              extUser.setACL(acl);
+
+              const res = await extUser.save();
+
+              const parseData = JSON.parse(JSON.stringify(res));
+
+              if (props.closePopup) {
+                props.closePopup();
               }
-              props.handleUserData(parseData);
-            }
+              if (props.handleUserData) {
+                if (formdata?.team) {
+                  const team = teamList.find(
+                    (x) => x.objectId === formdata.team
+                  );
+                  parseData.TeamIds = parseData.TeamIds.map((y) =>
+                    y.objectId === team.objectId ? team : y
+                  );
+                }
+                props.handleUserData(parseData);
+              }
 
-            setIsFormLoader(false);
-            setFormdata({ name: "", email: "", phone: "", team: "", role: "" });
+              setIsFormLoader(false);
+              setFormdata({
+                name: "",
+                email: "",
+                phone: "",
+                team: "",
+                role: ""
+              });
+            }
+          } catch (err) {
+            console.log("err ", err);
+            if (err.code === 202) {
+              const params = { email: formdata.email };
+              const userRes = await Parse.Cloud.run("getUserId", params);
+              const currentUser = Parse.User.current();
+              extUser.set(
+                "CreatedBy",
+                Parse.User.createWithoutData(currentUser.id)
+              );
+
+              extUser.set("UserId", {
+                __type: "Pointer",
+                className: "_User",
+                objectId: userRes.id
+              });
+              const acl = new Parse.ACL();
+              acl.setPublicReadAccess(true);
+              acl.setPublicWriteAccess(true);
+              acl.setReadAccess(currentUser.id, true);
+              acl.setWriteAccess(currentUser.id, true);
+
+              extUser.setACL(acl);
+              const res = await extUser.save();
+
+              const parseData = JSON.parse(JSON.stringify(res));
+              if (props.closePopup) {
+                props.closePopup();
+              }
+              if (props.handleUserData) {
+                if (formdata?.team) {
+                  const team = teamList.find(
+                    (x) => x.objectId === formdata.team
+                  );
+                  parseData.TeamIds = parseData.TeamIds.map((y) =>
+                    y.objectId === team.objectId ? team : y
+                  );
+                }
+                props.handleUserData(parseData);
+              }
+              setIsFormLoader(false);
+              setFormdata({
+                name: "",
+                email: "",
+                phone: "",
+                team: "",
+                role: ""
+              });
+            }
           }
         } catch (err) {
-          console.log("err ", err);
-          if (err.code === 202) {
-            const params = { email: formdata.email };
-            const userRes = await Parse.Cloud.run("getUserId", params);
-            const currentUser = Parse.User.current();
-            extUser.set(
-              "CreatedBy",
-              Parse.User.createWithoutData(currentUser.id)
-            );
-
-            extUser.set("UserId", {
-              __type: "Pointer",
-              className: "_User",
-              objectId: userRes.id
-            });
-            const acl = new Parse.ACL();
-            acl.setPublicReadAccess(true);
-            acl.setPublicWriteAccess(true);
-            acl.setReadAccess(currentUser.id, true);
-            acl.setWriteAccess(currentUser.id, true);
-
-            extUser.setACL(acl);
-            const res = await extUser.save();
-
-            const parseData = JSON.parse(JSON.stringify(res));
-            if (props.closePopup) {
-              props.closePopup();
-            }
-            if (props.handleUserData) {
-              if (formdata?.team) {
-                const team = teamList.find((x) => x.objectId === formdata.team);
-                parseData.TeamIds = parseData.TeamIds.map((y) =>
-                  y.objectId === team.objectId ? team : y
-                );
-              }
-              props.handleUserData(parseData);
-            }
-            setIsFormLoader(false);
-            setFormdata({ name: "", email: "", phone: "", team: "", role: "" });
-          }
+          console.log("err", err);
+          setIsFormLoader(false);
+          props.setIsAlert({
+            type: "danger",
+            msg: t("something-went-wrong-mssg")
+          });
+        } finally {
+          setTimeout(
+            () => props.setIsAlert({ type: "success", msg: "" }),
+            1500
+          );
         }
-      } catch (err) {
-        console.log("err", err);
-        setIsFormLoader(false);
-        props.setIsAlert({
-          type: "danger",
-          msg: t("something-went-wrong-mssg")
-        });
-      } finally {
-        setTimeout(() => props.setIsAlert({ type: "success", msg: "" }), 1500);
       }
     }
   };
