@@ -369,8 +369,10 @@ const TemplatePlaceholder = () => {
         );
         const key = randomId();
         const dragTypeValue = item?.text ? item.text : monitor.type;
-        const widgetWidth = defaultWidthHeight(dragTypeValue).width;
-        const widgetHeight = defaultWidthHeight(dragTypeValue).height;
+        const widgetWidth =
+          defaultWidthHeight(dragTypeValue).width * containerScale;
+        const widgetHeight =
+          defaultWidthHeight(dragTypeValue).height * containerScale;
         let dropData = [],
           currentPagePosition;
         let placeHolder;
