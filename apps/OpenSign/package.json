@@ -113,7 +113,7 @@
     "eslint-plugin-react": "^7.37.1",
     "lint-staged": "^15.2.10",
     "mini-css-extract-plugin": "^2.9.1",
-    "postcss": "^8.4.47",
+    "postcss": "^8.4.48",
     "prettier": "^3.3.3",
     "pretty-quick": "^4.0.0",
     "tailwindcss": "^3.4.13",
