@@ -5,6 +5,7 @@ import { NavLink, useNavigate } from "react-router-dom";
 import Alert from "../primitives/Alert";
 import Title from "../components/Title";
 import { useTranslation } from "react-i18next";
+import { emailRegex } from "../constant/const";
 const UpdateExistUserAdmin = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -35,33 +36,37 @@ const UpdateExistUserAdmin = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     e.stopPropagation();
-    setIsSubmitLoading(true);
-    try {
-      const updateUserAsAdmin = await Parse.Cloud.run(
-        "updateuserasadmin",
-        formdata
-      );
-      // console.log("updateUserAsAdmin ", updateUserAsAdmin);
-      if (updateUserAsAdmin === "admin_created") {
-        setIsAlert({ type: "success", msg: t("admin-created") });
-        navigate("/");
+    if (!emailRegex.test(formdata.email)) {
+      alert("Please enter a valid email address.");
+    } else {
+      setIsSubmitLoading(true);
+      try {
+        const updateUserAsAdmin = await Parse.Cloud.run(
+          "updateuserasadmin",
+          formdata
+        );
+        // console.log("updateUserAsAdmin ", updateUserAsAdmin);
+        if (updateUserAsAdmin === "admin_created") {
+          setIsAlert({ type: "success", msg: t("admin-created") });
+          navigate("/");
+        }
+      } catch (err) {
+        console.log("err in updateuserasadmin", err.code);
+        if (err.code === 404) {
+          setIsAlert((prev) => ({ ...prev, msg: t("invalid-masterkey") }));
+        } else if (err.code === 101) {
+          setIsAlert((prev) => ({ ...prev, msg: t("user-not-found") }));
+        } else if (err.code === 137) {
+          setIsAlert((prev) => ({ ...prev, msg: t("admin-exists") }));
+        } else {
+          setErrMsg(t("something-went-wrong-mssg"));
+        }
+      } finally {
+        setIsSubmitLoading(false);
+        setTimeout(() => {
+          setIsAlert(() => ({ type: "danger", msg: "" }));
+        }, 2000);
       }
-    } catch (err) {
-      console.log("err in updateuserasadmin", err.code);
-      if (err.code === 404) {
-        setIsAlert((prev) => ({ ...prev, msg: t("invalid-masterkey") }));
-      } else if (err.code === 101) {
-        setIsAlert((prev) => ({ ...prev, msg: t("user-not-found") }));
-      } else if (err.code === 137) {
-        setIsAlert((prev) => ({ ...prev, msg: t("admin-exists") }));
-      } else {
-        setErrMsg(t("something-went-wrong-mssg"));
-      }
-    } finally {
-      setIsSubmitLoading(false);
-      setTimeout(() => {
-        setIsAlert(() => ({ type: "danger", msg: "" }));
-      }, 2000);
     }
   };
   return (

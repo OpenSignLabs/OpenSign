@@ -9,15 +9,13 @@ function SelectLanguage(props) {
     { value: "es", text: "Española" },
     { value: "fr", text: "Français" }
   ];
-  const [lang, setLang] = useState(i18next.language || "en");
+  const defaultLanguage = i18next.language || "en";
+  const [lang, setLang] = useState(defaultLanguage);
   // This function put query that helps to change the language
   const handleChangeLang = (e) => {
     setLang(e.target.value);
     i18n.changeLanguage(e.target.value);
-    props?.updateExtUser &&
-      props.updateExtUser({
-        language: e.target.value
-      });
+    props?.updateExtUser && props.updateExtUser({ language: e.target.value });
   };
   return (
     <div
@@ -32,9 +30,7 @@ function SelectLanguage(props) {
           !props.isProfile ? " md:w-[15%] w-[50%]" : "w-[180px]"
         } op-select op-select-bordered  bg-white op-select-sm `}
       >
-        <option disabled selected>
-          select
-        </option>
+        <option disabled>select</option>
         {languages.map((item) => {
           return (
             <option key={item.value} value={item.value}>

@@ -2056,6 +2056,7 @@ function PlaceHolderSign() {
 
                   {/* pdf header which contain funish back button */}
                   <Header
+                    completeBtnTitle={t("next")}
                     isPlaceholder={true}
                     pageNumber={pageNumber}
                     allPages={allPages}
