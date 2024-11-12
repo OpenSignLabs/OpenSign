@@ -1558,10 +1558,10 @@ function PdfRequestFiles(props) {
   //`handlePublicUser` function to use create user from public role and create document from public template
   const handlePublicUser = async (e) => {
     e.preventDefault();
-    setLoading(true);
     if (!emailRegex.test(contact.email)) {
       alert("Please enter a valid email address.");
     } else {
+      setLoading(true);
       try {
         const params = {
           ...contact,
