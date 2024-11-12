@@ -1,5 +1,5 @@
 {
-  "header-news": "New feature: Public profiles are now live! Easily create and share public templates",
+  "header-news": "New feature: Teams plan users can now integrate their own AWS S3 buckets for file storage",
   "header-news-btn": "Setup Now",
   "create-account": "Create Account",
   "login": "Login",
