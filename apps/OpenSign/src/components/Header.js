@@ -140,15 +140,22 @@ const Header = ({ showSidebar, setIsMenu }) => {
     );
     setShowNotification(false);
   };
+  const handleSetupNowNavigation = () => {
+    const url = isStaging
+      ? "https://staging-console.opensignlabs.com/fileadapter"
+      : "https://console.opensignlabs.com/fileadapter";
+
+    openInNewTab(url);
+  };
   return (
     <div>
       {isEnableSubscription && showNotification && (
-        <div className="flex justify-between items-center shadow py-1 bg-[#CAE4FA]  p-1">
+        <div className="flex justify-between items-center shadow py-1 bg-[#CAE4FA] p-1">
           <div className="text-center text-[14px] ml-auto">
             {t("header-news")} —
             <span
               className="cursor-pointer font-medium underline text-blue-800"
-              onClick={() => navigate("/profile")}
+              onClick={() => handleSetupNowNavigation()}
             >
               {" " + t("header-news-btn") + "."}
             </span>
