@@ -134,7 +134,7 @@ export function formatWidgetOptions(type, options) {
   const values = options?.values || [];
   const color = options?.color ? options.color : 'black';
   const fontColor = colorsArr.includes(color) ? color : 'black';
-  const size = options?.size ? parseInt(options.size) : 12;
+  const size = options?.fontsize ? parseInt(options.fontsize) : 12;
   const fontSize = fontSizes.includes(size) ? size : 12;
   switch (type) {
     case 'signature':
