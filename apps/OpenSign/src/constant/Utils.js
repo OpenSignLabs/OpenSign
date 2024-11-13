@@ -1453,7 +1453,6 @@ export const multiSignEmbed = async (widgets, pdfDoc, signyourself, scale) => {
           if (position?.options?.values.length > 0) {
             position?.options?.values.forEach((item, ind) => {
               const checkboxRandomId = "checkbox" + randomId();
-
               if (
                 position?.options?.response &&
                 position?.options?.response?.length > 0
@@ -1505,8 +1504,6 @@ export const multiSignEmbed = async (widgets, pdfDoc, signyourself, scale) => {
             });
           }
         } else if (widgetTypeExist) {
-          const fontSize = position?.options?.fontSize || 12;
-          parseInt(fontSize);
           let textContent;
           if (position?.options?.response) {
             textContent = position.options?.response;
@@ -1541,7 +1538,6 @@ export const multiSignEmbed = async (widgets, pdfDoc, signyourself, scale) => {
           // Function to break text into lines based on when user go next line on press enter button
           const breakTextIntoLines = (textContent, width) => {
             const lines = [];
-
             for (const word of textContent.split("\n")) {
               const lineWidth = font.widthOfTextAtSize(`${word}`, fontSize);
               //checking string length to container width
@@ -1583,7 +1579,6 @@ export const multiSignEmbed = async (widgets, pdfDoc, signyourself, scale) => {
             y += 18; // Adjust the line height as needed
           }
         } else if (position.type === "dropdown") {
-          const fontsize = parseInt(position?.options?.fontSize) || 12;
           const dropdownRandomId = "dropdown" + randomId();
           const dropdown = form.createDropdown(dropdownRandomId);
           dropdown.addOptions(position?.options?.values);
@@ -1598,10 +1593,10 @@ export const multiSignEmbed = async (widgets, pdfDoc, signyourself, scale) => {
           // - `FontSize` is the size you want to set (e.g., 12)
           // - `Tf` specifies the font and size
           // - `0 g` sets the text color to black
-          const defaultAppearance = `/Helv ${fontsize} Tf 0 g`;
+          const defaultAppearance = `/Helv ${fontSize} Tf 0 g`;
           // Set the default appearance for the dropdown field
           dropdown.acroField.setDefaultAppearance(defaultAppearance);
-          dropdown.setFontSize(fontsize);
+          dropdown.setFontSize(fontSize);
           const dropdownObj = {
             x: xPos(position),
             y: yPos(position),
