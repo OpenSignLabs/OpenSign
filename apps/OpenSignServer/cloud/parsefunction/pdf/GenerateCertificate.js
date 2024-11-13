@@ -458,17 +458,17 @@ export default async function GenerateCertificate(docDetails) {
       });
 
       currentPage.drawText('Viewed on :', {
-        x: half,
+        x: half + 55,
         y: yPosition2,
-        size: text,
+        size: timeText,
         font: timesRomanFont,
         color: textKeyColor,
       });
 
       currentPage.drawText(`${new Date(x.ViewedOn).toUTCString()}`, {
-        x: half + 75,
+        x: half + 112,
         y: yPosition2,
-        size: text,
+        size: timeText,
         font: timesRomanFont,
         color: textValueColor,
       });
@@ -490,17 +490,17 @@ export default async function GenerateCertificate(docDetails) {
       });
 
       currentPage.drawText('Signed on :', {
-        x: half,
-        y: yPosition3,
-        size: text,
+        x: half + 55,
+        y: yPosition3 + 5,
+        size: timeText,
         font: timesRomanFont,
         color: textKeyColor,
       });
 
       currentPage.drawText(`${new Date(x.SignedOn).toUTCString()}`, {
-        x: half + 70,
-        y: yPosition3,
-        size: text,
+        x: half + 108,
+        y: yPosition3 + 5,
+        size: timeText,
         font: timesRomanFont,
         color: textValueColor,
       });
@@ -520,22 +520,23 @@ export default async function GenerateCertificate(docDetails) {
         font: timesRomanFont,
         color: textValueColor,
       });
-      currentPage.drawText('Security level :', {
-        x: half,
-        y: yPosition4,
-        size: text,
-        font: timesRomanFont,
-        color: textKeyColor,
-      });
 
-      currentPage.drawText(`Email, OTP Auth`, {
-        x: half + 90,
-        y: yPosition4,
-        size: text,
-        font: timesRomanFont,
-        color: textValueColor,
-      });
-
+      if (IsEnableOTP) {
+        currentPage.drawText('Security level :', {
+          x: half + 55,
+          y: yPosition4 + 10,
+          size: timeText,
+          font: timesRomanFont,
+          color: textKeyColor,
+        });
+        currentPage.drawText(`Email, OTP Auth`, {
+          x: half + 125,
+          y: yPosition4 + 10,
+          size: timeText,
+          font: timesRomanFont,
+          color: textValueColor,
+        });
+      }
       currentPage.drawText('Signature :', {
         x: 30,
         y: yPosition5,
