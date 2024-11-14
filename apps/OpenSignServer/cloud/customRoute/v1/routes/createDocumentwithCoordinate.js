@@ -9,6 +9,7 @@ import {
   cloudServerUrl,
 } from '../../../../Utils.js';
 import uploadFileToS3 from '../../../parsefunction/uploadFiletoS3.js';
+import { generateSessionTokenByUsername } from './login.js';
 
 // `sendDoctoWebhook` is used to send res data of document on webhook
 async function sendDoctoWebhook(doc, WebhookUrl, userId) {
@@ -66,6 +67,7 @@ export default async function createDocumentwithCoordinate(request, response) {
   const TimeToCompleteDays = request.body.timeToCompleteDays || 15;
   const IsEnableOTP = request.body?.enableOTP === true ? true : false;
   const isTourEnabled = request.body?.enableTour || false;
+  const returnUrl = request.body?.returnUrl;  
   // console.log('fileData ', fileData);
   const protocol = customAPIurl();
   const baseUrl = new URL(process.env.PUBLIC_URL);
@@ -166,7 +168,7 @@ export default async function createDocumentwithCoordinate(request, response) {
               object.set('SendinOrder', sendInOrder);
             }
             object.set('URL', fileUrl);
-            object.set('SignedUrl', fileUrl);
+            //object.set('SignedUrl', fileUrl);
             object.set('SentToOthers', true);
             object.set('CreatedBy', userPtr);
             object.set('ExtUserPtr', extUserPtr);
@@ -414,14 +416,20 @@ export default async function createDocumentwithCoordinate(request, response) {
             }
             const resSubcription = await subscriptionCls.save(null, { useMasterKey: true });
             // console.log('resSubcription ', resSubcription);
+            let { sessionToken } = await generateSessionTokenByUsername(
+              parseUser.userId.username
+            );
+            const url = `${process.env.PUBLIC_URL}/login/sender/${sessionToken}?goto=/placeHolderSign/${res.id}&returnUrl=${returnUrl}`;
             return response.json({
               objectId: res.id,
-              signurl: contact.map(x => ({
-                email: x.email,
-                url: `${baseUrl.origin}/login/${btoa(
-                  `${res.id}/${x.email}/${x.contactPtr.objectId}`
-                )}`,
-              })),
+              url,
+              success: true,
+              // signurl: contact.map(x => ({
+              //   email: x.email,
+              //   url: `${baseUrl.origin}/login/${btoa(
+              //     `${res.id}/${x.email}/${x.contactPtr.objectId}`
+              //   )}`,
+              // })),
               message: 'Document sent successfully!',
             });
           } else {
