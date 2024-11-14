@@ -55,14 +55,12 @@ export async function getDocumentUrl(request, response) {
   const token = await tokenQuery.first({ useMasterKey: true });
   if (token !== undefined) {
     const parseUser = JSON.parse(JSON.stringify(token));
-    let { sessionToken } = await generateSessionTokenByUsername(
-      parseUser.userId.username
-    );
+    let { sessionToken } = await generateSessionTokenByUsername(parseUser.userId.username);
     const url = `${process.env.PUBLIC_URL}/login/sender/${sessionToken}?goto=/placeHolderSign/${request.params.id}&returnUrl=${request.query.returnUrl}`;
     return response.json({
-      url
+      url,
     });
-  }else{
+  } else {
     return response.status(405).json({ error: 'Invalid API Token!' });
   }
 }
@@ -220,7 +218,9 @@ export async function createDocumentWithTemplate(request, response) {
                   object.set('Signers', templateSigner);
                 }
                 object.set('URL', template.URL);
-                //object.set('SignedUrl', template.URL);
+                if (send_email) {
+                  object.set('SignedUrl', template.URL);
+                }
                 object.set('SentToOthers', true);
                 if (TimeToCompleteDays) {
                   object.set('TimeToCompleteDays', TimeToCompleteDays);
