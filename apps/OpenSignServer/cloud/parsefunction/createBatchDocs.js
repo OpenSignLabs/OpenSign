@@ -252,6 +252,7 @@ async function batchQuery(userId, Documents, Ip, parseConfig) {
             IsTourEnabled: x?.IsTourEnabled || false,
             FileAdapterId: x?.FileAdapterId || '',
             ...(x?.SignatureType ? { SignatureType: x?.SignatureType } : {}),
+            ...(x?.NotifyOnSignatures ? { NotifyOnSignatures: x?.NotifyOnSignatures } : {}),
           },
         };
       });

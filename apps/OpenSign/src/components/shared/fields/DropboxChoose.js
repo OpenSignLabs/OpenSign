@@ -7,10 +7,7 @@ const DROPBOX_SCRIPT_ID = "dropboxjs";
 
 export default function DropboxChooser({ children, onSuccess, onCancel }) {
   useDropScript(DROPBOX_SDK_URL, {
-    attrs: {
-      id: DROPBOX_SCRIPT_ID,
-      "data-app-key": DROPBOX_APP_KEY
-    }
+    attrs: { id: DROPBOX_SCRIPT_ID, "data-app-key": DROPBOX_APP_KEY }
   });
 
   const options = useMemo(

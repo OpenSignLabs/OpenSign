@@ -697,5 +697,10 @@
     "l2": "Ingrese su nombre y elija entre varios estilos de fuente para crear una firma.",
     "l3": "Cargue una versión digital existente de su firma.",
     "l4": "Utilice un estilo de firma preestablecido guardado en 'Mi firma' en su configuración."
+  },
+  "notify-on-signatures": "Notificar sobre firmas",
+  "notify-on-signatures-help": {
+    "p1": "El creador del documento recibirá una notificación por correo electrónico cada vez que un firmante firme el documento.",
+    "note": "Nota: No se enviará un correo electrónico de notificación al último firmante, ya que el creador del documento recibirá un correo electrónico de finalización."
   }
 }

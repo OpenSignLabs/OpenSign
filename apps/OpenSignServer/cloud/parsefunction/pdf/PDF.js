@@ -95,6 +95,53 @@ async function updateDoc(docId, url, userId, ipAddress, data, className, sign) {
   }
 }
 
+// `sendNotifyMail` is used to send notification mail of signer signed the document
+async function sendNotifyMail(doc, signUser, mailProvider) {
+  try {
+    const auditTrailCount = doc?.AuditTrail?.filter(x => x.Activity === 'Signed')?.length || 0;
+    const signersCount = doc?.Signers?.length;
+    const remaingsign = signersCount - auditTrailCount;
+    if (remaingsign > 1 && doc?.NotifyOnSignatures) {
+      const sender = doc.ExtUserPtr;
+      const pdfName = doc.Name;
+      const creatorName = doc.ExtUserPtr.Name;
+      const creatorEmail = doc.ExtUserPtr.Email;
+      const signerName = signUser.Name;
+      const signerEmail = signUser.Email;
+      const mailLogo = 'https://qikinnovation.ams3.digitaloceanspaces.com/logo.png';
+      const viewDocUrl = `${process.env.PUBLIC_URL}/recipientSignPdf/${doc.objectId}`;
+      const subject = `Document "${pdfName}" has been signed by ${signerName}`;
+      const body =
+        "<html><head><meta http-equiv='Content-Type' content='text/html; charset=UTF-8' /></head><body><div style='background-color:#f5f5f5;padding:20px'><div style='box-shadow:rgba(0, 0, 0, 0.1) 0px 4px 12px;background-color:white;'>" +
+        `<div><img src=${mailLogo} height='50' style='padding:20px' /></div><div style='padding:2px;font-family:system-ui;background-color:#47a3ad;'>` +
+        `<p style='font-size:20px;font-weight:400;color:white;padding-left:20px'>Document signed by ${signerName}</p>` +
+        `</div><div style='padding:20px;font-family:system-ui;font-size:14px'><p>Dear ${creatorName},</p>` +
+        `<p>${pdfName} has been signed by ${signerName} "${signerEmail}" successfully</p>` +
+        `<p><a href=${viewDocUrl} target=_blank>View Document</a></p>` +
+        `</div></div><div><p>This is an automated email from OpenSign™. For any queries regarding this email, please contact the sender ${creatorEmail} directly. If you think this email is inappropriate or spam, you may file a complaint with OpenSign™ <a href=www.opensignlabs.com target=_blank>here</a>.</p></div></div></body></html>`;
+
+      const params = {
+        extUserId: sender.objectId,
+        from: 'OpenSign™',
+        recipient: creatorEmail,
+        subject: subject,
+        pdfName: pdfName,
+        html: body,
+        mailProvider: mailProvider,
+      };
+      await axios.post(serverUrl + '/functions/sendmailv3', params, {
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Parse-Application-Id': APPID,
+          'X-Parse-Master-Key': masterKEY,
+        },
+      });
+    }
+  } catch (err) {
+    console.log('err in sendnotifymail', err);
+  }
+}
+
 // `sendCompletedMail` is used to send copy of completed document mail
 async function sendCompletedMail(obj) {
   const url = obj.doc?.SignedUrl;
@@ -447,6 +494,7 @@ async function PDF(req) {
           sign // sign base64
         );
         sendDoctoWebhook(_resDoc, data.imageUrl, 'signed', signUser);
+        sendNotifyMail(_resDoc, signUser, mailProvider);
         saveFileUsage(pdfSize, data.imageUrl, _resDoc?.CreatedBy?.objectId);
         if (updatedDoc && updatedDoc.isCompleted) {
           const doc = { ..._resDoc, AuditTrail: updatedDoc.AuditTrail, SignedUrl: data.imageUrl };
