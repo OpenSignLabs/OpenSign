@@ -697,5 +697,10 @@
     "l2": "Enter your name and choose from various font styles to create a signature.",
     "l3": "Upload an existing digital version of your signature.",
     "l4": "Use a pre-set signature style saved under 'My Signature' in your settings."
+  },
+  "notify-on-signatures": "Notify on signatures",
+  "notify-on-signatures-help": {
+    "p1": "The document creator will receive an email notification whenever a signer signs the document.",
+    "note": "Note: Notification email will not be sent for the last signer, as the document creator will receive a completion email instead."
   }
 }
