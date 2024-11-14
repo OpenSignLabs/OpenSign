@@ -696,5 +696,10 @@
     "l2": "Entrez votre nom et choisissez parmi différents styles de police pour créer une signature.",
     "l3": "Téléchargez une version numérique existante de votre signature.",
     "l4": "Utilisez un style de signature prédéfini enregistré sous 'Ma signature' ​​dans vos paramètres."
+  },
+  "notify-on-signatures": "Notifier les signatures",
+  "notify-on-signatures-help": {
+    "p1": "Le créateur du document recevra une notification par e-mail chaque fois qu'un signataire signera le document.",
+    "note": "Remarque : L'e-mail de notification ne sera pas envoyé pour le dernier signataire, car le créateur du document recevra à la place un e-mail de fin."
   }
 }

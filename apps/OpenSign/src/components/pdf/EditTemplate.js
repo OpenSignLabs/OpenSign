@@ -17,7 +17,11 @@ const EditTemplate = ({ template, onSuccess, jwttoken }) => {
     IsEnableOTP: template?.IsEnableOTP ? `${template?.IsEnableOTP}` : "false",
     IsTourEnabled: template?.IsTourEnabled
       ? `${template?.IsTourEnabled}`
-      : "false"
+      : "false",
+    NotifyOnSignatures:
+      template?.NotifyOnSignatures !== undefined
+        ? template?.NotifyOnSignatures
+        : false
   });
   const [isSubscribe, setIsSubscribe] = useState(false);
   useEffect(() => {
@@ -63,6 +67,11 @@ const EditTemplate = ({ template, onSuccess, jwttoken }) => {
       ...prev,
       AutomaticReminders: !formData.AutomaticReminders
     }));
+  };
+
+  // `handleNotifySignChange` is trigger when user change radio of notify on signatures
+  const handleNotifySignChange = (value) => {
+    setFormData((obj) => ({ ...obj, NotifyOnSignatures: value }));
   };
   return (
     <div className="max-h-[300px] md:max-h-[400px] overflow-y-scroll p-[10px]">
@@ -120,27 +129,29 @@ const EditTemplate = ({ template, onSuccess, jwttoken }) => {
           </div>
           <div className="mb-[0.35rem]">
             <label className="text-[13px]">{t("send-in-order")}</label>
-            <div className="flex items-center gap-[8px] ml-[8px] mb-[5px]">
-              <input
-                type="radio"
-                value={"true"}
-                className="op-radio op-radio-xs"
-                name="SendinOrder"
-                checked={formData.SendinOrder === "true"}
-                onChange={handleStrInput}
-              />
-              <div className="text-[12px]">{t("yes")}</div>
-            </div>
-            <div className="flex items-center gap-[8px] ml-[8px] mb-[5px]">
-              <input
-                type="radio"
-                value={"false"}
-                name="SendinOrder"
-                className="op-radio op-radio-xs"
-                checked={formData.SendinOrder === "false"}
-                onChange={handleStrInput}
-              />
-              <div className="text-[12px]">{t("no")}</div>
+            <div className="flex flex-col md:flex-row md:gap-4">
+              <div className="flex items-center gap-[8px] ml-[8px] mb-[5px]">
+                <input
+                  type="radio"
+                  value={"true"}
+                  className="op-radio op-radio-xs"
+                  name="SendinOrder"
+                  checked={formData.SendinOrder === "true"}
+                  onChange={handleStrInput}
+                />
+                <div className="text-[12px]">{t("yes")}</div>
+              </div>
+              <div className="flex items-center gap-[8px] ml-[8px] mb-[5px]">
+                <input
+                  type="radio"
+                  value={"false"}
+                  name="SendinOrder"
+                  className="op-radio op-radio-xs"
+                  checked={formData.SendinOrder === "false"}
+                  onChange={handleStrInput}
+                />
+                <div className="text-[12px]">{t("no")}</div>
+              </div>
             </div>
           </div>
           {isEnableSubscription && (
@@ -156,7 +167,7 @@ const EditTemplate = ({ template, onSuccess, jwttoken }) => {
               <label
                 className={`${
                   isSubscribe
-                    ? "cursor-pointer "
+                    ? "cursor-pointer"
                     : "pointer-events-none opacity-50"
                 } relative block items-center mb-0`}
               >
@@ -221,39 +232,40 @@ const EditTemplate = ({ template, onSuccess, jwttoken }) => {
                   </div>
                 </Tooltip>
               </label>
-              <div
-                className={`${
-                  isSubscribe ? "" : "pointer-events-none opacity-50"
-                } flex items-center gap-2 ml-2 mb-1 `}
-              >
-                <input
-                  type="radio"
-                  value={"true"}
-                  className="op-radio op-radio-xs"
-                  name="IsEnableOTP"
-                  checked={formData.IsEnableOTP === "true"}
-                  onChange={handleStrInput}
-                />
-                <div className="text-center">{t("yes")}</div>
-              </div>
-              <div
-                className={`${
-                  isSubscribe ? "" : "pointer-events-none opacity-50"
-                } flex items-center gap-2 ml-2 mb-1 `}
-              >
-                <input
-                  type="radio"
-                  value={"false"}
-                  name="IsEnableOTP"
-                  className="op-radio op-radio-xs"
-                  checked={formData.IsEnableOTP === "false"}
-                  onChange={handleStrInput}
-                />
-                <div className="text-center">{t("no")}</div>
+              <div className="flex flex-col md:flex-row md:gap-4">
+                <div
+                  className={`${
+                    isSubscribe ? "" : "pointer-events-none opacity-50"
+                  } flex items-center gap-2 ml-2 mb-1`}
+                >
+                  <input
+                    type="radio"
+                    value={"true"}
+                    className="op-radio op-radio-xs"
+                    name="IsEnableOTP"
+                    checked={formData.IsEnableOTP === "true"}
+                    onChange={handleStrInput}
+                  />
+                  <div className="text-center">{t("yes")}</div>
+                </div>
+                <div
+                  className={`${
+                    isSubscribe ? "" : "pointer-events-none opacity-50"
+                  } flex items-center gap-2 ml-2 mb-1 `}
+                >
+                  <input
+                    type="radio"
+                    value={"false"}
+                    name="IsEnableOTP"
+                    className="op-radio op-radio-xs"
+                    checked={formData.IsEnableOTP === "false"}
+                    onChange={handleStrInput}
+                  />
+                  <div className="text-center">{t("no")}</div>
+                </div>
               </div>
             </div>
           )}
-
           <div className="text-xs mt-2">
             <label className="block">
               <span>
@@ -283,27 +295,83 @@ const EditTemplate = ({ template, onSuccess, jwttoken }) => {
                 </div>
               </Tooltip>
             </label>
-            <div className={`  flex items-center gap-2 ml-2 mb-1 `}>
-              <input
-                type="radio"
-                value={"true"}
-                className="op-radio op-radio-xs"
-                name="IsTourEnabled"
-                checked={formData.IsTourEnabled === "true"}
-                onChange={handleStrInput}
-              />
-              <div className="text-center">{t("yes")}</div>
+            <div className="flex flex-col md:flex-row md:gap-4">
+              <div className="flex items-center gap-2 ml-2 mb-1">
+                <input
+                  type="radio"
+                  value={"true"}
+                  className="op-radio op-radio-xs"
+                  name="IsTourEnabled"
+                  checked={formData.IsTourEnabled === "true"}
+                  onChange={handleStrInput}
+                />
+                <div className="text-center">{t("yes")}</div>
+              </div>
+              <div className="flex items-center gap-2 ml-2 mb-1">
+                <input
+                  type="radio"
+                  value={"false"}
+                  name="IsTourEnabled"
+                  className="op-radio op-radio-xs"
+                  checked={formData.IsTourEnabled === "false"}
+                  onChange={handleStrInput}
+                />
+                <div className="text-center">{t("no")}</div>
+              </div>
             </div>
-            <div className={` flex items-center gap-2 ml-2 mb-1 `}>
-              <input
-                type="radio"
-                value={"false"}
-                name="IsTourEnabled"
-                className="op-radio op-radio-xs"
-                checked={formData.IsTourEnabled === "false"}
-                onChange={handleStrInput}
-              />
-              <div className="text-center">{t("no")}</div>
+          </div>
+          <div className="text-xs mt-3">
+            <label
+              className={`${
+                isSubscribe || !isEnableSubscription ? "" : "text-gray-300"
+              } block`}
+            >
+              {t("notify-on-signatures")}
+              <a data-tooltip-id="nos-tooltip" className="ml-1">
+                <sup>
+                  <i className="fa-light fa-question rounded-full border-[#33bbff] text-[#33bbff] text-[13px] border-[1px] py-[1.5px] px-[4px]"></i>
+                </sup>
+              </a>
+              {!isSubscribe && isEnableSubscription && <Upgrade />}
+              <Tooltip id="nos-tooltip" className="z-[999]">
+                <div className="max-w-[200px] md:max-w-[450px] text-[11px]">
+                  <p className="font-bold">{t("notify-on-signatures")}</p>
+                  <p>{t("notify-on-signatures-help.p1")}</p>
+                  <p>{t("notify-on-signatures-help.note")}</p>
+                </div>
+              </Tooltip>
+            </label>
+            <div className="flex flex-col md:flex-row md:gap-4">
+              <div
+                className={`${
+                  isSubscribe || !isEnableSubscription
+                    ? ""
+                    : "pointer-events-none opacity-50"
+                } flex items-center gap-2 ml-2 mb-1`}
+              >
+                <input
+                  className="mr-[2px] op-radio op-radio-xs"
+                  type="radio"
+                  onChange={() => handleNotifySignChange(true)}
+                  checked={formData.NotifyOnSignatures === true}
+                />
+                <div className="text-center">{t("yes")}</div>
+              </div>
+              <div
+                className={`${
+                  isSubscribe || !isEnableSubscription
+                    ? ""
+                    : "pointer-events-none opacity-50"
+                } flex items-center gap-2 ml-2 mb-1`}
+              >
+                <input
+                  className="mr-[2px] op-radio op-radio-xs"
+                  type="radio"
+                  onChange={() => handleNotifySignChange(false)}
+                  checked={formData.NotifyOnSignatures === false}
+                />
+                <div className="text-center">{t("no")}</div>
+              </div>
             </div>
           </div>
           <div className="mt-[1rem] flex justify-start">

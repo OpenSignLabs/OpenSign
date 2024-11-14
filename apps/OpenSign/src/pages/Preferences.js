@@ -5,12 +5,15 @@ import { useTranslation } from "react-i18next";
 import Loader from "../primitives/Loader";
 import Tooltip from "../primitives/Tooltip";
 import {
+  checkIsSubscribed,
   getTenantDetails,
   handleSignatureType,
   signatureTypes
 } from "../constant/Utils";
 import Parse from "parse";
 import { Tooltip as ReactTooltip } from "react-tooltip";
+import { isEnableSubscription } from "../constant/const";
+import Upgrade from "../primitives/Upgrade";
 const Preferences = () => {
   const { t } = useTranslation();
   const [isalert, setIsAlert] = useState({ type: "success", msg: "" });
@@ -18,11 +21,19 @@ const Preferences = () => {
   const [isLoader, setIsLoader] = useState(false);
   const [signatureType, setSignatureType] = useState([]);
   const [errMsg, setErrMsg] = useState("");
+  const [isNotifyOnSignatures, setIsNotifyOnSignatures] = useState();
+  const [isSubscribe, setIsSubscribe] = useState(false);
   useEffect(() => {
     fetchSignType();
   }, []);
 
   const fetchSignType = async () => {
+    if (isEnableSubscription) {
+      const subscribe = await checkIsSubscribed();
+      setIsSubscribe(subscribe.isValid);
+    } else {
+      setIsSubscribe(true);
+    }
     setIsTopLoader(true);
     try {
       const user = JSON.parse(
@@ -36,6 +47,11 @@ const Preferences = () => {
       const getUser = await Parse.Cloud.run("getUserDetails");
       if (getUser) {
         const _getUser = JSON.parse(JSON.stringify(getUser));
+        const notifyOnSignatures =
+          _getUser?.NotifyOnSignatures !== undefined
+            ? _getUser?.NotifyOnSignatures
+            : "";
+        setIsNotifyOnSignatures(notifyOnSignatures);
         if (tenantSignTypes?.length > 0) {
           const signatureType = _getUser?.SignatureType || signatureTypes;
           const updatedSignatureType = await handleSignatureType(
@@ -69,39 +85,59 @@ const Preferences = () => {
   // `handleSave` is used save updated value signature type
   const handleSave = async () => {
     setIsLoader(true);
-    const enabledSignTypes = signatureType?.filter((x) => x.enabled);
-    const isDefaultSignTypeOnly =
-      enabledSignTypes?.length === 1 && enabledSignTypes[0]?.name === "default";
-    if (enabledSignTypes.length === 0) {
-      setIsAlert({
-        type: "danger",
-        msg: t("at-least-one-signature-type")
-      });
-    } else if (isDefaultSignTypeOnly) {
-      setIsAlert({
-        type: "danger",
-        msg: t("expect-default-one-more-signature-type")
-      });
-    } else {
+    if (signatureType.length > 0 || isNotifyOnSignatures) {
+      let params = {};
+      if (signatureType.length > 0) {
+        const enabledSignTypes = signatureType?.filter((x) => x.enabled);
+        const isDefaultSignTypeOnly =
+          enabledSignTypes?.length === 1 &&
+          enabledSignTypes[0]?.name === "default";
+        if (enabledSignTypes.length === 0) {
+          setIsAlert({
+            type: "danger",
+            msg: t("at-least-one-signature-type")
+          });
+        } else if (isDefaultSignTypeOnly) {
+          setIsAlert({
+            type: "danger",
+            msg: t("expect-default-one-more-signature-type")
+          });
+        } else {
+          params = { ...params, SignatureType: signatureType };
+        }
+      }
+      params = { ...params, NotifyOnSignatures: isNotifyOnSignatures };
       try {
-        const updateRes = await Parse.Cloud.run("updatesignaturetype", {
-          SignatureType: signatureType
-        });
+        const updateRes = await Parse.Cloud.run("updatepreferences", params);
         if (updateRes) {
           setIsAlert({ type: "success", msg: "Saved successfully." });
+          let extUser =
+            localStorage.getItem("Extand_Class") &&
+            JSON.parse(localStorage.getItem("Extand_Class"))?.[0];
+          if (extUser && extUser?.objectId) {
+            extUser.NotifyOnSignatures = isNotifyOnSignatures;
+            const _extUser = JSON.parse(JSON.stringify(extUser));
+            localStorage.setItem("Extand_Class", JSON.stringify([_extUser]));
+          }
         }
       } catch (err) {
         console.log("Error updating signature type", err);
         setIsAlert({ type: "danger", msg: err.message });
       }
+
+      setTimeout(() => setIsAlert({ type: "success", msg: "" }), 1500);
+      setIsLoader(false);
     }
-    setTimeout(() => setIsAlert({ type: "success", msg: "" }), 1500);
-    setIsLoader(false);
+  };
+
+  // `handleNotifySignChange` is trigger when user change radio of notify on signatures
+  const handleNotifySignChange = (value) => {
+    setIsNotifyOnSignatures(value);
   };
 
   return (
     <React.Fragment>
-      <Title title={"API Token"} />
+      <Title title={t("Preferences")} />
       {isalert.msg && <Alert type={isalert.type}>{isalert.msg}</Alert>}
       {isTopLoader ? (
         <div className="flex justify-center items-center h-screen">
@@ -200,6 +236,64 @@ const Preferences = () => {
                       </div>
                     ))}
                   </div>
+                </div>
+                <div className="mb-[0.75rem]">
+                  <label
+                    className={`${
+                      isSubscribe ? "" : "text-gray-300"
+                    } text-[14px] mb-[0.7rem] font-medium`}
+                  >
+                    {t("notify-on-signatures")}
+                    <a data-tooltip-id="nos-tooltip" className="ml-1">
+                      <sup>
+                        <i className="fa-light fa-question rounded-full border-[#33bbff] text-[#33bbff] text-[13px] border-[1px] py-[1.5px] px-[4px]"></i>
+                      </sup>
+                    </a>
+                    <ReactTooltip id="nos-tooltip" className="z-[999]">
+                      <div className="max-w-[200px] md:max-w-[450px] text-[11px]">
+                        <p className="font-bold">{t("notify-on-signatures")}</p>
+                        <p>{t("notify-on-signatures-help.p1")}</p>
+                        <p>{t("notify-on-signatures-help.note")}</p>
+                      </div>
+                    </ReactTooltip>
+                    {!isSubscribe && isEnableSubscription && <Upgrade />}
+                  </label>
+                  <div className="flex flex-col md:flex-row md:gap-4">
+                    <div
+                      className={`${
+                        isSubscribe ? "" : "pointer-events-none opacity-50"
+                      } flex items-center gap-2 ml-2 mb-1`}
+                    >
+                      <input
+                        className="mr-[2px] op-radio op-radio-xs"
+                        type="radio"
+                        onChange={() => handleNotifySignChange(true)}
+                        checked={isNotifyOnSignatures === true}
+                      />
+                      <div className="text-[13px] font-medium cursor-default capitalize">
+                        {t("yes")}
+                      </div>
+                    </div>
+                    <div className="flex flex-col md:flex-row md:gap-4">
+                      <div
+                        className={`${
+                          isSubscribe ? "" : "pointer-events-none opacity-50"
+                        } flex items-center gap-2 ml-2 mb-1`}
+                      >
+                        <input
+                          className="mr-[2px] op-radio op-radio-xs"
+                          type="radio"
+                          onChange={() => handleNotifySignChange(false)}
+                          checked={isNotifyOnSignatures === false}
+                        />
+                        <div className="text-[13px] font-medium cursor-default capitalize">
+                          {t("no")}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="mb-[0.75rem]">
                   <button
                     className="op-btn op-btn-primary"
                     onClick={handleSave}
