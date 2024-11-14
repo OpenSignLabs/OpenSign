@@ -705,6 +705,9 @@ export const createDocument = async (
     const SignatureType = Doc?.SignatureType
       ? { SignatureType: Doc?.SignatureType }
       : {};
+    const NotifyOnSignatures = Doc?.NotifyOnSignatures
+      ? { NotifyOnSignatures: Doc?.NotifyOnSignatures }
+      : {};
     const data = {
       Name: Doc.Name,
       URL: pdfUrl,
@@ -730,7 +733,8 @@ export const createDocument = async (
       IsEnableOTP: Doc?.IsEnableOTP || false,
       IsTourEnabled: Doc?.IsTourEnabled || false,
       FileAdapterId: Doc?.FileAdapterId || "",
-      ...SignatureType
+      ...SignatureType,
+      ...NotifyOnSignatures
     };
 
     try {

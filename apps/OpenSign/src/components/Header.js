@@ -64,6 +64,10 @@ const Header = ({ showSidebar, setIsMenu }) => {
         const extUser = await Parse.Cloud.run("getUserDetails");
         const MonthlyFreeEmails = extUser?.get("MonthlyFreeEmails") || 0;
         setEmailUsed(MonthlyFreeEmails);
+        if (extUser) {
+          const _extUser = JSON.parse(JSON.stringify(extUser));
+          localStorage.setItem("Extand_Class", JSON.stringify([_extUser]));
+        }
       } catch (err) {
         console.log("err in while fetching monthlyfreeEmails", err);
       }

@@ -288,6 +288,10 @@ const ReportTable = (props) => {
               updatedSignatureType.length > 0
                 ? { SignatureType: updatedSignatureType }
                 : {};
+            const NotifyOnSignatures =
+              Doc.NotifyOnSignatures !== undefined
+                ? { NotifyOnSignatures: Doc.NotifyOnSignatures }
+                : {};
             let placeholdersArr = [];
             if (Doc.Placeholders?.length > 0) {
               placeholdersArr = Doc.Placeholders;
@@ -315,7 +319,8 @@ const ReportTable = (props) => {
                 RemindOnceInEvery: Doc?.RemindOnceInEvery || 5,
                 IsEnableOTP: Doc?.IsEnableOTP || false,
                 FileAdapterId: Doc?.FileAdapterId || "",
-                ...SignatureType
+                ...SignatureType,
+                ...NotifyOnSignatures
               };
               try {
                 const res = await axios.post(

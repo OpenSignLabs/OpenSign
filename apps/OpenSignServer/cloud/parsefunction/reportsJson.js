@@ -362,6 +362,8 @@ export default function reportJson(id, userId) {
           'SharedWith.Name',
           'SendinOrder',
           'FileAdapterId',
+          'SignatureType',
+          'NotifyOnSignatures',
         ],
       };
     default:

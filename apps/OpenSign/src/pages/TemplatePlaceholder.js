@@ -763,7 +763,11 @@ const TemplatePlaceholder = () => {
           IsEnableOTP: pdfDetails[0]?.IsEnableOTP === true ? true : false,
           IsTourEnabled: pdfDetails[0]?.IsTourEnabled === true ? true : false,
           URL: pdfUrl,
-          SignatureType: signatureType
+          SignatureType: signatureType,
+          NotifyOnSignatures:
+            pdfDetails[0]?.NotifyOnSignatures !== undefined
+              ? pdfDetails[0]?.NotifyOnSignatures
+              : false
         };
         const updateTemplate = new Parse.Object("contracts_Template");
         updateTemplate.id = templateId;

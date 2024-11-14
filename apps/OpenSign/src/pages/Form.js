@@ -68,7 +68,8 @@ const Forms = (props) => {
     remindOnceInEvery: 5,
     autoreminder: false,
     IsEnableOTP: "false",
-    IsTourEnabled: "false"
+    IsTourEnabled: "false",
+    NotifyOnSignatures: ""
   });
   const [fileupload, setFileUpload] = useState("");
   const [fileload, setfileload] = useState(false);
@@ -102,21 +103,25 @@ const Forms = (props) => {
     if (isEnableSubscription) {
       const subscribe = await checkIsSubscribed();
       setIsSubscribe(subscribe.isValid);
+      if (subscribe.isValid && extUserData.NotifyOnSignatures !== undefined) {
+        setFormData((obj) => ({
+          ...obj,
+          NotifyOnSignatures: extUserData.NotifyOnSignatures
+        }));
+      } else if (subscribe.isValid) {
+        setFormData((obj) => ({ ...obj, NotifyOnSignatures: true }));
+      }
+    } else {
+      setIsSubscribe(true);
+      setFormData((obj) => ({ ...obj, NotifyOnSignatures: true }));
     }
   };
 
   function getFileAsArrayBuffer(file) {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
-
-      reader.onload = (e) => {
-        resolve(e.target.result);
-      };
-
-      reader.onerror = (e) => {
-        reject(e.target.error);
-      };
-
+      reader.onload = (e) => resolve(e.target.result);
+      reader.onerror = (e) => reject(e.target.error);
       reader.readAsArrayBuffer(file);
     });
   }
@@ -525,7 +530,6 @@ const Forms = (props) => {
       }
     }
   };
-  const dropboxCancel = async () => {};
   const handleSubmit = async (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -555,8 +559,14 @@ const Forms = (props) => {
             const IsEnableOTP =
               formData?.IsEnableOTP === "false" ? false : true;
             object.set("IsEnableOTP", IsEnableOTP);
+            if (isSubscribe && formData.NotifyOnSignatures !== undefined) {
+              object.set("NotifyOnSignatures", formData.NotifyOnSignatures);
+            }
           } else {
             object.set("IsEnableOTP", false);
+            if (formData.NotifyOnSignatures !== undefined) {
+              object.set("NotifyOnSignatures", formData.NotifyOnSignatures);
+            }
           }
         }
         object.set("URL", fileupload);
@@ -639,7 +649,7 @@ const Forms = (props) => {
     setIsReset(true);
     setSigners([]);
     setFolder({ ObjectId: "", Name: "" });
-    setFormData({
+    let obj = {
       Name: "",
       Description: "",
       Note:
@@ -654,7 +664,8 @@ const Forms = (props) => {
       autoreminder: false,
       IsEnableOTP: "false",
       IsTourEnabled: "true"
-    });
+    };
+    setFormData(obj);
     setFileUpload("");
     setpercentage(0);
     setTimeout(() => setIsReset(false), 50);
@@ -772,6 +783,12 @@ const Forms = (props) => {
   const handleAutoReminder = () => {
     setFormData((prev) => ({ ...prev, autoreminder: !formData.autoreminder }));
   };
+
+  // `handleNotifySignChange` is trigger when user change radio of notify on signatures
+  const handleNotifySignChange = (value) => {
+    setFormData((obj) => ({ ...obj, NotifyOnSignatures: value }));
+  };
+
   return (
     <div className="shadow-md rounded-box my-[2px] p-3 bg-base-100 text-base-content">
       <Title title={props?.title} />
@@ -865,10 +882,7 @@ const Forms = (props) => {
                     </div>
                   </div>
                   {process.env.REACT_APP_DROPBOX_API_KEY && (
-                    <DropboxChooser
-                      onSuccess={dropboxSuccess}
-                      onCancel={dropboxCancel}
-                    />
+                    <DropboxChooser onSuccess={dropboxSuccess} />
                   )}
                 </div>
               ) : (
@@ -890,10 +904,7 @@ const Forms = (props) => {
                     required
                   />
                   {process.env.REACT_APP_DROPBOX_API_KEY && (
-                    <DropboxChooser
-                      onSuccess={dropboxSuccess}
-                      onCancel={dropboxCancel}
-                    />
+                    <DropboxChooser onSuccess={dropboxSuccess} />
                   )}
                 </div>
               )}
@@ -1215,7 +1226,7 @@ const Forms = (props) => {
                         <label
                           className={`${
                             isSubscribe
-                              ? "cursor-pointer "
+                              ? "cursor-pointer"
                               : "pointer-events-none opacity-50"
                           } relative block items-center mb-0 mt-1.5`}
                         >
@@ -1251,7 +1262,7 @@ const Forms = (props) => {
                       )}
                     <span className="font-[400] mt-2">{t("form-title-2")}</span>
                     {isEnableSubscription && (
-                      <div className="text-xs mt-4">
+                      <div className="text-xs mt-3">
                         <label className="block">
                           <span className={isSubscribe ? "" : " text-gray-300"}>
                             {t("isenable-otp")}{" "}
@@ -1262,7 +1273,7 @@ const Forms = (props) => {
                               <sup>
                                 <i className="fa-light fa-question rounded-full border-[#33bbff] text-[#33bbff] text-[13px] border-[1px] py-[1.5px] px-[4px]"></i>
                               </sup>
-                            </a>{" "}
+                            </a>
                             {!isSubscribe && isEnableSubscription && (
                               <Upgrade />
                             )}
@@ -1340,7 +1351,7 @@ const Forms = (props) => {
                             <sup>
                               <i className="fa-light fa-question rounded-full border-[#33bbff] text-[#33bbff] text-[13px] border-[1px] py-[1.5px] px-[4px]"></i>
                             </sup>
-                          </a>{" "}
+                          </a>
                         </span>
                         <Tooltip id="istourenabled-tooltip" className="z-[999]">
                           <div className="max-w-[200px] md:max-w-[450px]">
@@ -1364,7 +1375,7 @@ const Forms = (props) => {
                         </Tooltip>
                       </label>
                       <div className="flex flex-col md:flex-row md:gap-4">
-                        <div className={`  flex items-center gap-2 ml-2 mb-1 `}>
+                        <div className="flex items-center gap-2 ml-2 mb-1">
                           <input
                             type="radio"
                             value={"true"}
@@ -1375,7 +1386,7 @@ const Forms = (props) => {
                           />
                           <div className="text-center">{t("yes")}</div>
                         </div>
-                        <div className={` flex items-center gap-2 ml-2 mb-1 `}>
+                        <div className="flex items-center gap-2 ml-2 mb-1">
                           <input
                             type="radio"
                             value={"false"}
@@ -1383,6 +1394,58 @@ const Forms = (props) => {
                             className="op-radio op-radio-xs"
                             checked={formData.IsTourEnabled === "false"}
                             onChange={handleStrInput}
+                          />
+                          <div className="text-center">{t("no")}</div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="text-xs mt-3">
+                      <label
+                        className={`${
+                          isSubscribe ? "" : "text-gray-300"
+                        } block`}
+                      >
+                        {t("notify-on-signatures")}
+                        <a data-tooltip-id="nos-tooltip" className="ml-1">
+                          <sup>
+                            <i className="fa-light fa-question rounded-full border-[#33bbff] text-[#33bbff] text-[13px] border-[1px] py-[1.5px] px-[4px]"></i>
+                          </sup>
+                        </a>
+                        {!isSubscribe && isEnableSubscription && <Upgrade />}
+                        <Tooltip id="nos-tooltip" className="z-[999]">
+                          <div className="max-w-[200px] md:max-w-[450px] text-[11px]">
+                            <p className="font-bold">
+                              {t("notify-on-signatures")}
+                            </p>
+                            <p>{t("notify-on-signatures-help.p1")}</p>
+                            <p>{t("notify-on-signatures-help.note")}</p>
+                          </div>
+                        </Tooltip>
+                      </label>
+                      <div className="flex flex-col md:flex-row md:gap-4">
+                        <div
+                          className={`${
+                            isSubscribe ? "" : "pointer-events-none opacity-50"
+                          } flex items-center gap-2 ml-2 mb-1`}
+                        >
+                          <input
+                            className="mr-[2px] op-radio op-radio-xs"
+                            type="radio"
+                            onChange={() => handleNotifySignChange(true)}
+                            checked={formData.NotifyOnSignatures === true}
+                          />
+                          <div className="text-center">{t("yes")}</div>
+                        </div>
+                        <div
+                          className={`${
+                            isSubscribe ? "" : "pointer-events-none opacity-50"
+                          } flex items-center gap-2 ml-2 mb-1`}
+                        >
+                          <input
+                            className="mr-[2px] op-radio op-radio-xs"
+                            type="radio"
+                            onChange={() => handleNotifySignChange(false)}
+                            checked={formData.NotifyOnSignatures === false}
                           />
                           <div className="text-center">{t("no")}</div>
                         </div>
