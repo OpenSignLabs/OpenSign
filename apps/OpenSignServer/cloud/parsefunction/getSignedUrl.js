@@ -8,7 +8,7 @@ export default function getPresignedUrl(url, adapter) {
   AWS.config.update({ credentials: credentials, region: adapter?.region || process.env.DO_REGION });
   const spacesEndpoint = adapter?.endpoint || new AWS.Endpoint(process.env.DO_ENDPOINT);
 
-  const s3 = new AWS.S3({ endpoint: spacesEndpoint });
+  const s3 = new AWS.S3({ endpoint: spacesEndpoint, signatureVersion: "v4" });
 
   // Create a new URL object
   const parsedUrl = new URL(url);
