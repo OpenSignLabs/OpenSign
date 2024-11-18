@@ -99,7 +99,7 @@ async function updateDoc(docId, url, userId, ipAddress, data, className, sign) {
 async function sendNotifyMail(doc, signUser, mailProvider) {
   try {
     const auditTrailCount = doc?.AuditTrail?.filter(x => x.Activity === 'Signed')?.length || 0;
-    const signersCount = doc?.Signers?.length;
+    const signersCount = doc?.Placeholders?.length;
     const remaingsign = signersCount - auditTrailCount;
     if (remaingsign > 1 && doc?.NotifyOnSignatures) {
       const sender = doc.ExtUserPtr;
