@@ -106,7 +106,9 @@ const Preferences = () => {
           params = { ...params, SignatureType: signatureType };
         }
       }
-      params = { ...params, NotifyOnSignatures: isNotifyOnSignatures };
+      if (isNotifyOnSignatures) {
+        params = { ...params, NotifyOnSignatures: isNotifyOnSignatures };
+      }
       try {
         const updateRes = await Parse.Cloud.run("updatepreferences", params);
         if (updateRes) {
