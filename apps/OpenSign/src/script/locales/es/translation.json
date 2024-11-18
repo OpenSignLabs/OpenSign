@@ -155,7 +155,8 @@
     "Status": "Estado",
     "created-date": "Fecha de creación",
     "Type": "Tipo",
-    "Logs": "Registros"
+    "Logs": "Registros",
+    "Expiry-date": "Date d'expiration"
   },
   "report-help": {
     "Draft Documents": "Estos son documentos que has iniciado pero no has finalizado para su envío.",
