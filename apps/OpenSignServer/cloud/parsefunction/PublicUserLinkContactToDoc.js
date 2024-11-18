@@ -74,6 +74,9 @@ const createDocumentFromTemplate = async (template, existContact, index) => {
       if (template?.SignatureType?.length > 0) {
         object.set('SignatureType', template?.SignatureType);
       }
+      if (template?.NotifyOnSignatures) {
+        object.set('NotifyOnSignatures', template?.NotifyOnSignatures);
+      }
       let signers = template?.Signers || [];
       const signerobj = {
         __type: 'Pointer',
