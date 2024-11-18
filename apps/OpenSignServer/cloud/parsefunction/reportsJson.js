@@ -211,6 +211,7 @@ export default function reportJson(id, userId) {
           'Placeholders',
           'SignedUrl',
           'FileAdapterId',
+          'ExpiryDate',
         ],
       };
     //  Recently sent for signatures report show on dashboard

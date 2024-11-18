@@ -155,7 +155,8 @@
     "Status": "Status",
     "created-date": "Created Date",
     "Type": "Type",
-    "Logs": "Logs"
+    "Logs": "Logs",
+    "Expiry-date": "Expiry Date"
   },
   "report-help": {
     "Draft Documents": "These are documents you have started but have not finalized for sending.",
