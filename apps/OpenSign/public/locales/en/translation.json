@@ -134,7 +134,8 @@
     "option": "Option",
     "Embed": "Embed",
     "Copy TemplateId":"Copy TemplateId",
-    "Copy Public URL":"Copy Public URL"
+    "Copy Public URL":"Copy Public URL",
+    "extend-expiry-date": "Extend expiry date"
   },
   "report-heading": {
     "Sr.No": "Sr.No",
@@ -267,7 +268,8 @@
   "make-template-public-alert": "Are you sure you want to make this template public?",
   "make-template-private-alert": "Are you sure you want to make this template private? This will remove it from your public profile.",
   "public-role": "Public role",
-  "public-url": "Public profile needed",
+  "public-url": "Public profile",
+  "embed-template": "Embed Template",
   "public-url-copy": "Here’s your public URL: ",
   "public-url-copy-mssg":"Copy it or share it with the signer, and you will be able to see all your publicly set templates.",
   "add-public-url-alert": "Please complete your OpenSign public profile setup. Once done, you’ll be able to make templates public. This process only needs to be completed once.",
@@ -703,5 +705,7 @@
   "notify-on-signatures-help": {
     "p1": "The document creator will receive an email notification whenever a signer signs the document.",
     "note": "Note: Notification email will not be sent for the last signer, as the document creator will receive a completion email instead."
-  }
+  },
+  "expiry-date-updated": "The expiry date has been successfully extended to {{newexpirydate}}",
+  "expiry-date-error": "Please provide a new expiry date that is later than the current one"
 }

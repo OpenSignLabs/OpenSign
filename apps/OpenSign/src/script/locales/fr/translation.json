@@ -155,7 +155,8 @@
     "option": "Option",
     "Embed": "Intégrer",
     "Copy TemplateId": "Copier l'ID du modèle",
-    "Copy Public URL": "Copier l'URL publique"
+    "Copy Public URL": "Copier l'URL publique",
+    "extend-expiry-date": "Prolonger la date d'expiration"
   },
   "report-help": {
     "Draft Documents": "Il s'agit de documents que vous avez commencés mais que vous n'avez pas finalisés pour envoi.",
@@ -266,7 +267,8 @@
   "make-template-public-alert": "Êtes-vous sûr de vouloir rendre ce modèle public ?",
   "make-template-private-alert": "Êtes-vous sûr de vouloir rendre ce modèle privé ? Cela le supprimera de votre profil public.",
   "public-role": "Rôle public",
-  "public-url": "Profil public requis",
+  "public-url": "Profil public",
+  "embed-template": "Intégrer le modèle",
   "public-url-copy": "Voici votre URL publique : ",
   "public-url-copy-mssg": "copiez-la ou partagez-le avec le signataire et vous pouvoir voir tous vos paramètres publics modèles.",
   "add-public-url-alert": "Veuillez terminer la configuration de votre profil public OpenSign. Une fois cela fait, vous pourrez rendre les modèles publics. Ce processus ne doit être effectué qu’une seule fois.",
@@ -702,5 +704,7 @@
   "notify-on-signatures-help": {
     "p1": "Le créateur du document recevra une notification par e-mail chaque fois qu'un signataire signera le document.",
     "note": "Remarque : L'e-mail de notification ne sera pas envoyé pour le dernier signataire, car le créateur du document recevra à la place un e-mail de fin."
-  }
+  },
+  "expiry-date-updated": "La date d'expiration a été prolongée avec succès jusqu'au {{newexpirydate}}",
+  "expiry-date-error": "Veuillez fournir une nouvelle date d'expiration postérieure à la date actuelle"
 }
