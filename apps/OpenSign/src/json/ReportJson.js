@@ -19,7 +19,8 @@ export default function reportJson(id) {
     "Folder",
     "File",
     "Status",
-    "Signers"
+    "Signers",
+    "Expiry-date"
   ];
   const contactbook = ["Sr.No", "Name", "Email", "Phone"];
   const dashboardReportHead = ["Title", "File", "Owner", "Signers"];
@@ -211,7 +212,7 @@ export default function reportJson(id) {
     case "zNqBHXHsYH":
       return {
         reportName: "Expired Documents",
-        heading: head,
+        heading: [...head, "Expiry-date"],
         actions: [
           {
             btnId: "1898",
@@ -237,7 +238,7 @@ export default function reportJson(id) {
     case "d9k3UfYHBc":
       return {
         reportName: "Recently sent for signatures",
-        heading: dashboardReportHead,
+        heading: [...dashboardReportHead, "Expiry-date"],
         actions: [
           {
             btnId: "1999",

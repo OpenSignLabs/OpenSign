@@ -1475,6 +1475,16 @@ const ReportTable = (props) => {
                             "-"
                           )}
                         </td>
+                        {props.heading.includes("Expiry-date") &&
+                          item?.ExpiryDate?.iso && (
+                            <td className="px-4 py-2">
+                              <span>
+                                {new Date(
+                                  item?.ExpiryDate?.iso
+                                )?.toLocaleDateString()}
+                              </span>
+                            </td>
+                          )}
                         {props.ReportName === "Templates" &&
                           isEnableSubscription && (
                             <td className=" pl-[20px] py-2">
