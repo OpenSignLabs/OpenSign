@@ -705,6 +705,7 @@
     "p1": "Le créateur du document recevra une notification par e-mail chaque fois qu'un signataire signera le document.",
     "note": "Remarque : L'e-mail de notification ne sera pas envoyé pour le dernier signataire, car le créateur du document recevra à la place un e-mail de fin."
   },
+  "expiry-date": "Fecha de caducidad",
   "expiry-date-updated": "La fecha de vencimiento se ha extendido con éxito hasta el {{newexpirydate}}",
   "expiry-date-error": "Veuillez fournir une nouvelle date d'expiration postérieure à la date actuelle"
 }

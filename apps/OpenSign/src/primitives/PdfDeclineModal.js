@@ -35,27 +35,31 @@ function CustomModal(props) {
           <h3 className="text-base-content font-bold text-lg pt-[15px] px-[20px]">
             {props?.headMsg && props?.headMsg}
           </h3>
-          <div className="p-[10px] px-[20px]">
-            <p className="text-[15px]">{props.bodyMssg && props.bodyMssg}</p>
-          </div>
-          <div className="flex flex-row items-center">
-            {isCreator && (
-              <button
-                className="op-btn op-btn-primary px-6 ml-[20px] mb-3 mt-1"
-                onClick={() => handleExtendBtn()}
-              >
-                Extend
-              </button>
-            )}
-            {props.isDownloadBtn && (
-              <button
-                className="op-btn op-btn-primary ml-[10px] mb-3 mt-1"
-                onClick={() => props.handleDownloadBtn()}
-              >
-                Download
-              </button>
-            )}
-          </div>
+          {!isExtendExpiry && (
+            <div className="p-[10px] px-[20px]">
+              <p className="text-[15px]">{props.bodyMssg && props.bodyMssg}</p>
+            </div>
+          )}
+          {!isExtendExpiry && (
+            <div className="flex flex-row items-center">
+              {isCreator && (
+                <button
+                  className="op-btn op-btn-primary px-6 ml-[20px] mb-3 mt-1"
+                  onClick={() => handleExtendBtn()}
+                >
+                  Extend
+                </button>
+              )}
+              {props.isDownloadBtn && (
+                <button
+                  className="op-btn op-btn-primary ml-[10px] mb-3 mt-1"
+                  onClick={() => props.handleDownloadBtn()}
+                >
+                  Download
+                </button>
+              )}
+            </div>
+          )}
           {props.footerMessage && (
             <>
               <div className="mx-3">
@@ -93,10 +97,13 @@ function CustomModal(props) {
           )}
           {isExtendExpiry && (
             <form className="mx-3 mb-3" onSubmit={handleUpdateExpiry}>
+              <label className="ml-2 mt-2">
+                {t("expiry-date")} {"(dd-mm-yyyy)"}
+              </label>
               <input
                 type="date"
                 className="rounded-full bg-base-300 w-full px-4 py-2 text-black border-2 hover:border-spacing-2"
-                defaultValue={props?.doc?.ExpiryDate?.iso?.split("T")[0]}
+                defaultValue={props?.doc?.ExpiryDate?.iso?.split("T")?.[0]}
                 onChange={(e) => setExpiryDate(e.target.value)}
               />
               <div className="flex flex-row items-center mt-2">
@@ -111,7 +118,7 @@ function CustomModal(props) {
                     setIsExtendExpiry(false);
                   }}
                 >
-                  {t("close")}
+                  {t("cancel")}
                 </button>
               </div>
             </form>

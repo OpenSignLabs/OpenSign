@@ -706,6 +706,7 @@
     "p1": "The document creator will receive an email notification whenever a signer signs the document.",
     "note": "Note: Notification email will not be sent for the last signer, as the document creator will receive a completion email instead."
   },
+  "expiry-date": "Expiry Date",
   "expiry-date-updated": "The expiry date has been successfully extended to {{newexpirydate}}",
   "expiry-date-error": "Please provide a new expiry date that is later than the current one"
 }

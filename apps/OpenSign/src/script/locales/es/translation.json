@@ -706,6 +706,7 @@
     "p1": "El creador del documento recibirá una notificación por correo electrónico cada vez que un firmante firme el documento.",
     "note": "Nota: No se enviará un correo electrónico de notificación al último firmante, ya que el creador del documento recibirá un correo electrónico de finalización."
   },
+  "expiry-date": "Date d'expiration",
   "expiry-date-updated": "La fecha de vencimiento se ha extendido con éxito hasta el {{newexpirydate}}",
   "expiry-date-error": "Proporcione una nueva fecha de vencimiento que sea posterior a la actual"
 }
