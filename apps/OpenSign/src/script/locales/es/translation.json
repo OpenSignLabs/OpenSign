@@ -134,7 +134,8 @@
     "option": "Opción",
     "Embed": "Incrustar",
     "Copy TemplateId": "Copiar ID de plantilla",
-    "Copy Public URL": "Copiar URL pública"
+    "Copy Public URL": "Copiar URL pública",
+    "Expiry-date": "Date d'expiration"
   },
   "report-heading": {
     "Sr.No": "Nº",
@@ -267,7 +268,8 @@
   "make-template-public-alert": "¿En definitiva quieres convertir esta plantilla en pública?",
   "make-template-private-alert": "¿En definitiva quieres convertir esta plantilla en privada? Esto lo removerá de tu perfil público.",
   "public-role": "Rol público",
-  "public-url": "Se requiere perfil público",
+  "public-url": "Perfil publico",
+  "embed-template": "Insertar plantilla",
   "public-url-copy": "Aquí está tu URL pública: ",
   "public-url-copy-mssg": "Cópiala o compártela con el firmante y podrás ver todas tus plantillas públicas.",
   "add-public-url-alert": "Por favor, completa la configuración de tu perfil público OpenSign. Una vez terminado, podrás crear plantillas públicas. Este proceso solo necesita ser completado una vez.",
@@ -703,5 +705,7 @@
   "notify-on-signatures-help": {
     "p1": "El creador del documento recibirá una notificación por correo electrónico cada vez que un firmante firme el documento.",
     "note": "Nota: No se enviará un correo electrónico de notificación al último firmante, ya que el creador del documento recibirá un correo electrónico de finalización."
-  }
+  },
+  "expiry-date-updated": "La fecha de vencimiento se ha extendido con éxito hasta el {{newexpirydate}}",
+  "expiry-date-error": "Proporcione una nueva fecha de vencimiento que sea posterior a la actual"
 }

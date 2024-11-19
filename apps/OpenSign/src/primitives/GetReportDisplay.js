@@ -81,6 +81,7 @@ const ReportTable = (props) => {
   const [isEmbed, setIsEmbed] = useState(false);
   const [isPublicTour, setIsPublicTour] = useState();
   const [signatureType, setSignatureType] = useState([]);
+  const [expiryDate, setExpiryDate] = useState("");
   const Extand_Class = localStorage.getItem("Extand_Class");
   const extClass = Extand_Class && JSON.parse(Extand_Class);
   const startIndex = (currentPage - 1) * props.docPerPage;
@@ -433,6 +434,8 @@ const ReportTable = (props) => {
       } else {
         setIsPublicTour({ [item.objectId]: true });
       }
+    } else if (act.action) {
+      setIsModal({ [`extendexpiry_${item.objectId}`]: true });
     }
   };
   // Get current list
@@ -1210,6 +1213,67 @@ const ReportTable = (props) => {
   const closePublicTour = () => {
     setIsPublicTour();
   };
+  const handleUpdateExpiry = async (e, item) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (expiryDate) {
+      const oldExpiryDate = new Date(item?.ExpiryDate?.iso);
+      const newExpiryDate = new Date(expiryDate);
+      if (newExpiryDate > oldExpiryDate) {
+        setActLoader({ [`${item.objectId}`]: true });
+        const updateExpiryDate = new Date(expiryDate).toISOString();
+        const expiryIsoFormat = { iso: updateExpiryDate, __type: "Date" };
+        try {
+          const serverUrl = serverUrl_fn();
+          const cls = "contracts_Document";
+          const url = serverUrl + `/classes/${cls}/`;
+          const body = { ExpiryDate: expiryIsoFormat };
+          const res = await axios.put(url + item.objectId, body, {
+            headers: {
+              "Content-Type": "application/json",
+              "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
+              "X-Parse-Session-Token": localStorage.getItem("accesstoken")
+            }
+          });
+          if (res.data && res.data.updatedAt) {
+            setIsAlert(true);
+            setAlertMsg({
+              type: "success",
+              message: t("expiry-date-updated", {
+                newexpirydate: new Date(expiryDate)?.toLocaleDateString()
+              })
+            });
+            if (props.ReportName === "Expired Documents") {
+              const upldatedList = props.List.filter(
+                (x) => x.objectId !== item.objectId
+              );
+              props.setList(upldatedList);
+            }
+          }
+        } catch (err) {
+          console.log("err", err);
+          setIsAlert(true);
+          setAlertMsg({
+            type: "danger",
+            message: t("something-went-wrong-mssg")
+          });
+        } finally {
+          setActLoader({});
+          setExpiryDate();
+          setTimeout(() => setIsAlert(false), 2000);
+          setIsModal({});
+        }
+      } else {
+        setIsAlert(true);
+        setAlertMsg({ type: "danger", message: t("expiry-date-error") });
+        setTimeout(() => setIsAlert(false), 2000);
+      }
+    } else {
+      setIsAlert(true);
+      setAlertMsg({ type: "danger", message: t("expiry-date-error") });
+      setTimeout(() => setIsAlert(false), 2000);
+    }
+  };
   return (
     <div className="relative">
       {Object.keys(actLoader)?.length > 0 && (
@@ -1490,7 +1554,7 @@ const ReportTable = (props) => {
                             <td className=" pl-[20px] py-2">
                               {props.ReportName === "Templates" && (
                                 <div
-                                  className="flex flex-row "
+                                  className="flex flex-row"
                                   data-tut="IsPublic"
                                 >
                                   <label className="cursor-pointer relative inline-flex items-center mb-0">
@@ -1773,6 +1837,39 @@ const ReportTable = (props) => {
                                 )
                               )}
                           </div>
+                          {isModal["extendexpiry_" + item.objectId] && (
+                            <ModalUi
+                              isOpen
+                              title={t("btnLabel.extend-expiry-date")}
+                              reduceWidth={"md:max-w-[450px]"}
+                              handleClose={() => setIsModal({})}
+                            >
+                              <form
+                                className="px-4 py-2 flex flex-col"
+                                onSubmit={(e) => handleUpdateExpiry(e, item)}
+                              >
+                                <label className="mr-2">Expiry date</label>
+                                <input
+                                  type="date"
+                                  className="rounded-full mb-2 bg-base-300 w-full px-4 py-2 text-black border-2 hover:border-spacing-2"
+                                  defaultValue={
+                                    item?.ExpiryDate?.iso?.split("T")?.[0]
+                                  }
+                                  onChange={(e) => {
+                                    setExpiryDate(e.target.value);
+                                  }}
+                                />
+                                <div className="flex justify-start mb-1">
+                                  <button
+                                    type="submit"
+                                    className="op-btn op-btn-primary"
+                                  >
+                                    {t("update")}
+                                  </button>
+                                </div>
+                              </form>
+                            </ModalUi>
+                          )}
                           {isShareWith[item.objectId] && (
                             <div className="op-modal op-modal-open">
                               <div className="max-h-90 bg-base-100 w-[95%] md:max-w-[500px] rounded-box relative">
