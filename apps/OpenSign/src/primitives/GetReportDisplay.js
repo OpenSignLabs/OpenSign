@@ -1848,7 +1848,9 @@ const ReportTable = (props) => {
                                 className="px-4 py-2 flex flex-col"
                                 onSubmit={(e) => handleUpdateExpiry(e, item)}
                               >
-                                <label className="mr-2">Expiry date</label>
+                                <label className="mr-2">
+                                  {t("expiry-date")} {"(dd-mm-yyyy)"}
+                                </label>
                                 <input
                                   type="date"
                                   className="rounded-full mb-2 bg-base-300 w-full px-4 py-2 text-black border-2 hover:border-spacing-2"
