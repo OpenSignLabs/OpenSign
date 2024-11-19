@@ -18,17 +18,16 @@ function EmbedTab(props) {
     {
       id: 0,
       title: "Installation",
-      codeString: `
-npm install @opensign/react`
+      codeString: `npm install @opensign/react`
     },
     {
       id: 1,
       title: "Usage",
       codeString: `
-import React from "react";
+import React from "react"; 
 import Opensign from "@opensign/react";
 
-export function App() {
+export default function App() {
   return (
     <div className="app">
       <Opensign
@@ -40,7 +39,6 @@ export function App() {
   );
 }
 
-
 `
     }
   ];
@@ -49,15 +47,14 @@ export function App() {
     {
       id: 0,
       title: "Installation",
-      codeString: `
-npm install @opensign/angular`
+      codeString: `npm install @opensign/angular`
     },
     {
       id: 1,
       title: "Usage",
       codeString: `
 import { Component } from '@angular/core';
-import {OpensignComponent} from "@opensign/angular"
+import { OpensignComponent } from "@opensign/angular"
  
 @Component({
   selector:'app-root',
@@ -68,16 +65,14 @@ import {OpensignComponent} from "@opensign/angular"
             (onLoadError)="handleError($event)"
              ></opensign>\`,
 })
-export class AppComponent{
+export class AppComponent {
   handleLoad() {
     console.log("success");
   }
   handleError(error: string) {
     console.log(error);
   }
-
 }
-
 
 `
     }
@@ -98,6 +93,9 @@ export class AppComponent{
 
   return (
     <div className="mt-4 border-t-[1px]">
+      <h3 className="text-base-content font-bold text-lg pt-[15px] pb-[5px]">
+        {t("embed-template")}
+      </h3>
       <div className="flex justify-center items-center mt-2">
         <div role="tablist" className="op-tabs op-tabs-bordered">
           {tabName.map((tabData, ind) => (
@@ -107,7 +105,7 @@ export class AppComponent{
               role="tab"
               className={`${
                 activeTab === ind ? "op-tab-active" : ""
-              } op-tab flex items-center`}
+              } op-tab flex items-center pb-10 md:pb-0`}
             >
               <i
                 className={`${tabData.icon}`}
