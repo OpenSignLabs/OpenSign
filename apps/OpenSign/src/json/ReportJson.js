@@ -229,6 +229,25 @@ export default function reportJson(id) {
             btnIcon: "fa-light fa-trash",
             redirectUrl: "",
             action: "delete"
+          },
+          {
+            btnId: "3234",
+            hoverLabel: "option",
+            btnColor: "",
+            textColor: "black",
+            btnIcon: "fa-light fa-ellipsis-vertical fa-lg",
+            action: "option",
+            subaction: [
+              {
+                btnId: "2199",
+                btnLabel: "extend-expiry-date",
+                hoverLabel: "Extend expiry date",
+                btnColor: "op-btn-primary",
+                btnIcon: "fa-light fa-hourglass-end",
+                redirectUrl: "",
+                action: "extendexpiry"
+              }
+            ]
           }
         ],
         helpMsg:

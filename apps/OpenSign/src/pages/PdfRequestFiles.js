@@ -59,6 +59,7 @@ import LoaderWithMsg from "../primitives/LoaderWithMsg";
 import DownloadPdfZip from "../primitives/DownloadPdfZip";
 import Loader from "../primitives/Loader";
 import PdfDeclineModal from "../primitives/PdfDeclineModal";
+import { serverUrl_fn } from "../constant/appinfo";
 
 function PdfRequestFiles(props) {
   const { t } = useTranslation();
@@ -1752,6 +1753,42 @@ function PdfRequestFiles(props) {
       </div>
     );
   };
+
+  const handleExpiry = async (expiryDate) => {
+    setIsUiLoading(true);
+    const doc = pdfDetails?.[0];
+    const oldExpiryDate = new Date(doc?.ExpiryDate?.iso);
+    const newExpiryDate = new Date(expiryDate);
+    if (newExpiryDate > oldExpiryDate) {
+      const updateExpiryDate = new Date(expiryDate).toISOString();
+      const expiryIsoFormat = { iso: updateExpiryDate, __type: "Date" };
+      try {
+        const serverUrl = serverUrl_fn();
+        const url = serverUrl + `/classes/contracts_Document/`;
+        const body = { ExpiryDate: expiryIsoFormat };
+        const res = await axios.put(url + doc.objectId, body, {
+          headers: {
+            "Content-Type": "application/json",
+            "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
+            "X-Parse-Session-Token": localStorage.getItem("accesstoken")
+          }
+        });
+        if (res.data && res.data.updatedAt) {
+          setIsExpired(false);
+          let doc = pdfDetails?.[0];
+          doc.ExpiryDate = expiryIsoFormat;
+          setPdfDetails([doc]);
+        }
+      } catch (err) {
+        console.log("err", err);
+      } finally {
+        setIsUiLoading(false);
+      }
+    } else {
+      setIsUiLoading(false);
+      alert(t("expiry-date-error"));
+    }
+  };
   return (
     <DndProvider backend={HTML5Backend}>
       <Title title={props.templateId ? "Public Sign" : "Request Sign"} />
@@ -1838,10 +1875,12 @@ function PdfRequestFiles(props) {
                 {/* this modal is used for show expired alert */}
                 <PdfDeclineModal
                   show={isExpired}
+                  doc={pdfDetails?.[0]}
                   headMsg={t("expired-doc-title")}
                   bodyMssg={t("expired-on-mssg", { expiredDate })}
                   isDownloadBtn={true}
                   handleDownloadBtn={handleDownloadBtn}
+                  handleExpiry={handleExpiry}
                 />
                 {!isEmailVerified && (
                   <VerifyEmail

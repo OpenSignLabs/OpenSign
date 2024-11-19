@@ -5,6 +5,29 @@ import { useTranslation } from "react-i18next";
 function CustomModal(props) {
   const { t } = useTranslation();
   const [reason, setReason] = useState("");
+  const [isExtendExpiry, setIsExtendExpiry] = useState(false);
+  const [expiryDate, setExpiryDate] = useState("");
+  const localuser = localStorage.getItem(
+    `Parse/${localStorage.getItem("parseAppId")}/currentUser`
+  );
+
+  const currentUser = JSON.parse(localuser);
+  const isCreator = props?.doc
+    ? props?.doc?.CreatedBy?.objectId === currentUser?.objectId &&
+      localStorage.getItem("_user_role") !== "Guest"
+    : false;
+  const handleExtendBtn = () => setIsExtendExpiry(!isExtendExpiry);
+
+  const handleUpdateExpiry = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (expiryDate) {
+      props.handleExpiry && props.handleExpiry(expiryDate);
+    } else {
+      alert(t("expiry-date-error"));
+    }
+  };
+
   return (
     props.show && (
       <dialog className="op-modal op-modal-open absolute z-[448]">
@@ -15,16 +38,24 @@ function CustomModal(props) {
           <div className="p-[10px] px-[20px]">
             <p className="text-[15px]">{props.bodyMssg && props.bodyMssg}</p>
           </div>
-          {props.isDownloadBtn && (
-            <div className="flex justify-start w-full ml-[20px] mb-3 mt-1">
+          <div className="flex flex-row items-center">
+            {isCreator && (
               <button
-                className="op-btn op-btn-primary "
+                className="op-btn op-btn-primary px-6 ml-[20px] mb-3 mt-1"
+                onClick={() => handleExtendBtn()}
+              >
+                Extend
+              </button>
+            )}
+            {props.isDownloadBtn && (
+              <button
+                className="op-btn op-btn-primary ml-[10px] mb-3 mt-1"
                 onClick={() => props.handleDownloadBtn()}
               >
                 Download
               </button>
-            </div>
-          )}
+            )}
+          </div>
           {props.footerMessage && (
             <>
               <div className="mx-3">
@@ -59,6 +90,31 @@ function CustomModal(props) {
                 </button>
               </div>
             </>
+          )}
+          {isExtendExpiry && (
+            <form className="mx-3 mb-3" onSubmit={handleUpdateExpiry}>
+              <input
+                type="date"
+                className="rounded-full bg-base-300 w-full px-4 py-2 text-black border-2 hover:border-spacing-2"
+                defaultValue={props?.doc?.ExpiryDate?.iso?.split("T")[0]}
+                onChange={(e) => setExpiryDate(e.target.value)}
+              />
+              <div className="flex flex-row items-center mt-2">
+                <button type="submit" className="op-btn op-btn-primary mr-2">
+                  {t("update")}
+                </button>
+                <button
+                  type="button"
+                  className="op-btn op-btn-secondary"
+                  onClick={() => {
+                    setExpiryDate("");
+                    setIsExtendExpiry(false);
+                  }}
+                >
+                  {t("close")}
+                </button>
+              </div>
+            </form>
           )}
         </div>
       </dialog>
