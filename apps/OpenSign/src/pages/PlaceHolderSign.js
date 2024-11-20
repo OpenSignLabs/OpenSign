@@ -40,7 +40,8 @@ import {
   handleRemoveWidgets,
   handleRotateWarning,
   signatureTypes,
-  handleSignatureType
+  handleSignatureType,
+  formatDate
 } from "../constant/Utils";
 import RenderPdf from "../components/pdf/RenderPdf";
 import { useNavigate } from "react-router-dom";
@@ -155,6 +156,7 @@ function PlaceHolderSign() {
   const [planCode, setPlanCode] = useState("");
   const [unSignedWidgetId, setUnSignedWidgetId] = useState("");
   const [signatureType, setSignatureType] = useState(signatureTypes);
+  const [emailResetDate, setEmailResetDate] = useState("");
   const isMobile = window.innerWidth < 767;
   const [, drop] = useDrop({
     accept: "BOX",
@@ -268,6 +270,12 @@ function PlaceHolderSign() {
         setHandleError(t("something-went-wrong-mssg"));
       } else {
         setPdfArrayBuffer(arrayBuffer);
+      }
+      if (documentData[0]?.ExtUserPtr?.LastEmailCountReset?.iso) {
+        const resetDate = formatDate(
+          documentData[0]?.ExtUserPtr?.LastEmailCountReset?.iso
+        );
+        setEmailResetDate(resetDate);
       }
       setExtUserId(documentData[0]?.ExtUserPtr?.objectId);
       if (isEnableSubscription) {
@@ -602,7 +610,7 @@ function PlaceHolderSign() {
                 Role: "prefill",
                 Id: key
               };
-              setSignerPos((prev)=>[...prev,prefillTextWidget]);
+              setSignerPos((prev) => [...prev, prefillTextWidget]);
             }
           } else {
             //else condition to add placeholder widgets on multiple page first time
@@ -1939,6 +1947,7 @@ function PlaceHolderSign() {
                       ) : mailStatus === "quotareached" ? (
                         <div className="flex flex-col gap-y-3">
                           <QuotaCard
+                            emailResetDate={emailResetDate}
                             handleClose={() => {
                               setIsSend(false);
                               setSignerPos([]);
