@@ -602,7 +602,7 @@ function PlaceHolderSign() {
                 Role: "prefill",
                 Id: key
               };
-              signerPos.push(prefillTextWidget);
+             setSignerPos((prev)=>[...prev,prefillTextWidget]);
             }
           } else {
             //else condition to add placeholder widgets on multiple page first time
