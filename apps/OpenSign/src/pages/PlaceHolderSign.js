@@ -580,22 +580,33 @@ function PlaceHolderSign() {
           }
           setSignerPos(updatesignerPos);
         } else {
-          let updatesignerPos;
           //if condition when widget type is prefill label text widget
           if (dragTypeValue === textWidget) {
-            const prefileTextWidget = {
-              signerPtr: {},
-              signerObjId: "",
-              blockColor: "#f58f8c",
-              placeHolder: [placeHolder],
-              Role: "prefill",
-              Id: key
-            };
-            signerPos.push(prefileTextWidget);
-            setSignerPos(signerPos);
+            //check text widgets data (prefill) already exist then and want to add text widget on new page
+            //create new page entry with old data and update placeholder
+            if (filterSignerPos) {
+              const addPrefillData =
+                filterSignerPos && filterSignerPos?.placeHolder;
+              addPrefillData.push(placeHolder);
+              const updatePrefillPos = signerPos.map((x) =>
+                x.Role === "prefill" ? { ...x, placeHolder: addPrefillData } : x
+              );
+              setSignerPos(updatePrefillPos);
+            } //else condition if user do not have any text widget data
+            else {
+              const prefillTextWidget = {
+                signerPtr: {},
+                signerObjId: "",
+                blockColor: "#f58f8c",
+                placeHolder: [placeHolder],
+                Role: "prefill",
+                Id: key
+              };
+             setSignerPos((prev)=>[...prev,prefillTextWidget]);
+            }
           } else {
             //else condition to add placeholder widgets on multiple page first time
-            updatesignerPos = signerPos.map((x) =>
+            const updatesignerPos = signerPos.map((x) =>
               x.Id === uniqueId && x?.placeHolder
                 ? { ...x, placeHolder: [...x.placeHolder, placeHolder] }
                 : x.Id === uniqueId
@@ -770,15 +781,17 @@ function PlaceHolderSign() {
             signerupdate.push(newUpdatePos[0]);
             setSignerPos(signerupdate);
           } else {
-            const updatedData = signerPos.map((item) => {
-              if (item.Id === Id) {
-                // Create a copy of the item object and delete the placeHolder field
-                const updatedItem = { ...item };
-                delete updatedItem.placeHolder;
-                return updatedItem;
-              }
-              return item;
-            });
+            const updatedData = signerPos
+              .filter((item) => !(item.Id === Id && item.Role === "prefill")) // Remove prefill object
+              .map((item) => {
+                if (item.Id === Id && item.Role !== "prefill") {
+                  // Create a copy of the item object and delete the placeHolder field
+                  const updatedItem = { ...item };
+                  delete updatedItem.placeHolder;
+                  return updatedItem;
+                }
+                return item;
+              });
             setSignerPos(updatedData);
           }
         }
