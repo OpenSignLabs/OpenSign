@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
-import { isEnableSubscription } from "../constant/const";
+import { emailRegex, isEnableSubscription } from "../constant/const";
 import {
   contractUsers,
   getAppLogo,
@@ -189,23 +189,30 @@ function GuestLogin() {
   };
   const handleUserData = async (e) => {
     e.preventDefault();
-    const params = { ...contact, docId: documentId };
-    try {
-      setLoading(true);
-      const linkContactRes = await Parse.Cloud.run("linkcontacttodoc", params);
-      setContactId(linkContactRes.contactId);
-      const IsEnableOTP = await navigateToDoc(
-        documentId,
-        linkContactRes.contactId
-      );
-      if (!IsEnableOTP) {
-        setEnterOtp(true);
-        await SendOtp();
+    if (!emailRegex.test(contact.email)) {
+      alert("Please enter a valid email address.");
+    } else {
+      const params = { ...contact, docId: documentId };
+      try {
+        setLoading(true);
+        const linkContactRes = await Parse.Cloud.run(
+          "linkcontacttodoc",
+          params
+        );
+        setContactId(linkContactRes.contactId);
+        const IsEnableOTP = await navigateToDoc(
+          documentId,
+          linkContactRes.contactId
+        );
+        if (!IsEnableOTP) {
+          setEnterOtp(true);
+          await SendOtp();
+        }
+      } catch (err) {
+        setLoading(false);
+        alert(t("something-went-wrong-mssg"));
+        console.log("Err in link ext contact", err);
       }
-    } catch (err) {
-      setLoading(false);
-      alert(t("something-went-wrong-mssg"));
-      console.log("Err in link ext contact", err);
     }
   };
   const handleInputChange = (e) => {
@@ -348,6 +355,7 @@ function GuestLogin() {
                       onChange={handleInputChange}
                       className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
                       disabled={loading}
+                      placeholder={t("phone-optional")}
                     />
                   </div>
                   <div className="mt-2 flex justify-start">

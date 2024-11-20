@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Parse from "parse";
 import { appInfo } from "../constant/appinfo";
-import { isEnableSubscription } from "../constant/const";
+import { emailRegex, isEnableSubscription } from "../constant/const";
 import { fetchSubscription } from "../constant/Utils";
 import { useDispatch } from "react-redux";
 import { showTenant } from "../redux/reducers/ShowTenant";
@@ -88,54 +88,58 @@ const SSOVerify = () => {
   // `handleSubmitbtn` is used to create a user in the extended class
   const handleSubmitbtn = async (e) => {
     e.preventDefault();
-    setIsLoader(true);
-    let phone;
-    if (userDetails?.phone) {
-      phone = validateInput(userDetails?.phone);
+    if (!emailRegex.test(userDetails.email)) {
+      alert("Please enter a valid email address.");
     } else {
-      phone = true;
-    }
-    if (userDetails.Destination && userDetails.Company && phone) {
-      const payload = { sessionToken: localStorage.getItem("accesstoken") };
-      if (payload && payload.sessionToken) {
-        const params = {
-          userDetails: {
-            name: userDetails.name,
-            email: userDetails.email,
-            phone: userDetails?.phone || "",
-            role: "contracts_User",
-            company: userDetails.Company,
-            jobTitle: userDetails.Destination
-          }
-        };
-        try {
-          const userSignUp = await Parse.Cloud.run("usersignup", params);
-          if (userSignUp && userSignUp.sessionToken) {
-            const LocalUserDetails = params.userDetails;
-            localStorage.setItem(
-              "userDetails",
-              JSON.stringify(LocalUserDetails)
-            );
-            await thirdpartyLoginfn(userSignUp.sessionToken);
+      setIsLoader(true);
+      let phone;
+      if (userDetails?.phone) {
+        phone = validateInput(userDetails?.phone);
+      } else {
+        phone = true;
+      }
+      if (userDetails.Destination && userDetails.Company && phone) {
+        const payload = { sessionToken: localStorage.getItem("accesstoken") };
+        if (payload && payload.sessionToken) {
+          const params = {
+            userDetails: {
+              name: userDetails.name,
+              email: userDetails.email,
+              phone: userDetails?.phone || "",
+              role: "contracts_User",
+              company: userDetails.Company,
+              jobTitle: userDetails.Destination
+            }
+          };
+          try {
+            const userSignUp = await Parse.Cloud.run("usersignup", params);
+            if (userSignUp && userSignUp.sessionToken) {
+              const LocalUserDetails = params.userDetails;
+              localStorage.setItem(
+                "userDetails",
+                JSON.stringify(LocalUserDetails)
+              );
+              await thirdpartyLoginfn(userSignUp.sessionToken);
+              setIsLoader(false);
+            } else {
+              alert(userSignUp.message);
+              setIsLoader(false);
+            }
+          } catch (err) {
+            console.log("error in usersignup", err);
+            localStorage.removeItem("accesstoken");
+            alert(t("something-went-wrong-mssg"));
             setIsLoader(false);
-          } else {
-            alert(userSignUp.message);
-            setIsLoader(false);
           }
-        } catch (err) {
-          console.log("error in usersignup", err);
+        } else {
           localStorage.removeItem("accesstoken");
-          alert(t("something-went-wrong-mssg"));
+          alert(t("server-error"));
           setIsLoader(false);
         }
       } else {
-        localStorage.removeItem("accesstoken");
-        alert(t("server-error"));
+        alert(t("filed-required-correctly"));
         setIsLoader(false);
       }
-    } else {
-      alert(t("filed-required-correctly"));
-      setIsLoader(false);
     }
   };
   // `thirdpartyLoginfn` is used to save necessary parameters locally for the logged-in user
