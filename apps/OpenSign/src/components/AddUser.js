@@ -434,10 +434,9 @@ const AddUser = (props) => {
                     <input
                       type="text"
                       name="phone"
-                      placeholder="optional"
+                      placeholder={t("phone-optional")}
                       value={formdata.phone}
                       onChange={(e) => handleChange(e)}
-                      // required
                       className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
                     />
                   </div>
