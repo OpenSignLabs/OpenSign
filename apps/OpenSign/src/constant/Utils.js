@@ -2596,3 +2596,17 @@ export async function handleSignatureType(tenantSignTypes, signatureType) {
   }
   return updatedSignatureType;
 }
+
+// `formatDate` is used to format date to dd-mmm-yyy
+export const formatDate = (date) => {
+  // Create a Date object
+  const newDate = new Date(date);
+  // Format the date
+  const formattedDate = newDate.toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric"
+  });
+  const format = formattedDate.replaceAll(/ /g, "-");
+  return format;
+};

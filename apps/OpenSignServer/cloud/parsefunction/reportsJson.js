@@ -76,6 +76,7 @@ export default function reportJson(id, userId) {
           'Placeholders',
           'SignedUrl',
           'FileAdapterId',
+          'ExpiryDate',
         ],
       };
     // In progess report
@@ -293,6 +294,7 @@ export default function reportJson(id, userId) {
           'Placeholders',
           'SignedUrl',
           'FileAdapterId',
+          'ExpiryDate',
         ],
       };
     // Drafts report show on dashboard

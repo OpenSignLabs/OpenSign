@@ -2,29 +2,12 @@ import { isEnableSubscription } from "../constant/const";
 
 export default function reportJson(id) {
   // console.log("json ", json);
-  const head = ["Sr.No", "Title", "Note", "Folder", "File", "Owner", "Signers"];
-  const declineHead = [
-    "Sr.No",
-    "Title",
-    "Reason",
-    "Folder",
-    "File",
-    "Owner",
-    "Signers"
-  ];
-  const iphead = [
-    "Sr.No",
-    "Title",
-    "Note",
-    "Folder",
-    "File",
-    "Status",
-    "Signers",
-    "Expiry-date"
-  ];
-  const contactbook = ["Sr.No", "Name", "Email", "Phone"];
+  const head = ["Title", "Note", "Folder", "File", "Owner", "Signers"];
+  const declineHead = ["Title", "Reason", "Folder", "File", "Owner", "Signers"];
+  const iphead = ["Title", "Note", "Folder", "File", "Signers"];
+  const contactbook = ["Name", "Email", "Phone"];
   const dashboardReportHead = ["Title", "File", "Owner", "Signers"];
-  const templateReport = ["Sr.No", "Title", "File", "Owner", "Signers"];
+  const templateReport = ["Title", "File", "Owner", "Signers"];
   const templateSubAction = isEnableSubscription
     ? [
         {
@@ -212,7 +195,7 @@ export default function reportJson(id) {
     case "zNqBHXHsYH":
       return {
         reportName: "Expired Documents",
-        heading: [...head, "Expiry-date"],
+        heading: head,
         actions: [
           {
             btnId: "1898",
@@ -257,7 +240,7 @@ export default function reportJson(id) {
     case "d9k3UfYHBc":
       return {
         reportName: "Recently sent for signatures",
-        heading: [...dashboardReportHead, "Expiry-date"],
+        heading: dashboardReportHead,
         actions: [
           {
             btnId: "1999",
