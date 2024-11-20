@@ -6,6 +6,7 @@ import Parse from "parse";
 import { useWindowSize } from "../hook/useWindowSize";
 import {
   checkIsSubscribed,
+  formatDate,
   getAppLogo,
   openInNewTab,
   saveLanguageInLocal
@@ -33,6 +34,7 @@ const Header = ({ showSidebar, setIsMenu }) => {
   );
   const [emailUsed, setEmailUsed] = useState(0);
   const [isModal, setIsModal] = useState(false);
+  const [emailResetDate, setEmailResetDate] = useState("");
   const [showNotification, setShowNotification] = useState(
     (!dismissedVersion || dismissedVersion !== current_notification_version) &&
       true
@@ -66,6 +68,10 @@ const Header = ({ showSidebar, setIsMenu }) => {
         setEmailUsed(MonthlyFreeEmails);
         if (extUser) {
           const _extUser = JSON.parse(JSON.stringify(extUser));
+          if (_extUser?.LastEmailCountReset?.iso) {
+            const resetDate = formatDate(_extUser?.LastEmailCountReset?.iso);
+            setEmailResetDate(resetDate);
+          }
           localStorage.setItem("Extand_Class", JSON.stringify([_extUser]));
         }
       } catch (err) {
@@ -302,7 +308,11 @@ const Header = ({ showSidebar, setIsMenu }) => {
         </div>
       </div>
       <ModalUi isOpen={isModal}>
-        <QuotaCard isPaidInfo={true} handlClose={handleMailUsed} />
+        <QuotaCard
+          isPaidInfo={true}
+          handlClose={handleMailUsed}
+          emailResetDate={emailResetDate}
+        />
       </ModalUi>
     </div>
   );
