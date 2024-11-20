@@ -274,6 +274,7 @@ const AddSigner = (props) => {
               onChange={(e) => setPhone(e.target.value)}
               disabled={addYourself}
               className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
+              placeholder={t("phone-optional")}
             />
           </div>
           <div className="mt-4 flex gap-x-2 justify-start">

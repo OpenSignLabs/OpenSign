@@ -197,6 +197,7 @@ const AddContact = (props) => {
               onChange={(e) => setPhone(e.target.value)}
               disabled={addYourself}
               className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
+              placeholder={t("phone-optional")}
             />
           </div>
 
