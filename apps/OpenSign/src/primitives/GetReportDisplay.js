@@ -14,6 +14,7 @@ import {
   checkIsSubscribed,
   copytoData,
   fetchUrl,
+  formatDate,
   getSignedUrl,
   getTenantDetails,
   handleSignatureType,
@@ -666,15 +667,12 @@ const ReportTable = (props) => {
   }
 
   const closeTour = async () => {
-    // console.log("closeTour");
     setIsTour(false);
     if (props.isDontShow) {
       const serverUrl = localStorage.getItem("baseUrl");
       const appId = localStorage.getItem("parseAppId");
       const json = JSON.parse(localStorage.getItem("Extand_Class"));
       const extUserId = json && json.length > 0 && json[0].objectId;
-      // console.log("extUserId ", extUserId)
-
       let updatedTourStatus = [];
       if (tourStatusArr.length > 0) {
         updatedTourStatus = [...tourStatusArr];
@@ -692,14 +690,8 @@ const ReportTable = (props) => {
 
       await axios.put(
         serverUrl + "classes/contracts_Users/" + extUserId,
-        {
-          TourStatus: updatedTourStatus
-        },
-        {
-          headers: {
-            "X-Parse-Application-Id": appId
-          }
-        }
+        { TourStatus: updatedTourStatus },
+        { headers: { "X-Parse-Application-Id": appId } }
       );
     }
   };
@@ -1274,6 +1266,68 @@ const ReportTable = (props) => {
       setTimeout(() => setIsAlert(false), 2000);
     }
   };
+  // `formatStatusRow` is used to format status row
+  const formatStatusRow = (item) => {
+    const signers = item?.Placeholders?.map((x, i) => {
+      const matchSigner = item?.AuditTrail?.find(
+        (audit) => audit.UserPtr.objectId === x.signerObjId
+      );
+      if (matchSigner) {
+        return {
+          id: i,
+          Email: matchSigner.UserPtr.Email,
+          Activity: matchSigner?.Activity?.toUpperCase() || "-",
+          SignedOn: matchSigner?.SignedOn
+            ? new Date(matchSigner?.SignedOn)?.toUTCString()
+            : "-",
+          ViewedOn: matchSigner?.ViewedOn
+            ? new Date(matchSigner?.ViewedOn)?.toUTCString()
+            : "-"
+        };
+      } else {
+        return {
+          id: i,
+          Email: x?.signerPtr?.Email || x?.email,
+          Activity: "SENT",
+          SignedOn: "-",
+          ViewedOn: "-"
+        };
+      }
+    });
+    return signers?.map((x, i) => (
+      <div
+        key={i}
+        className="text-sm font-medium flex flex-row gap-2 items-center"
+      >
+        <button
+          onClick={() => setIsModal({ [`${item.objectId}_${i}`]: true })}
+          className={`${
+            x.Activity === "SIGNED"
+              ? "op-border-primary op-text-primary"
+              : x.Activity === "VIEWED"
+                ? "border-green-400 text-green-400"
+                : "border-black text-black"
+          } focus:outline-none border-2 w-[60px] h-[30px] text-[11px] rounded-full`}
+        >
+          {x?.Activity?.toUpperCase() || "-"}
+        </button>
+        <div className="py-2 font-bold text-[12px]">{x?.Email || "-"}</div>
+        {isModal[`${item.objectId}_${i}`] && (
+          <ModalUi
+            isOpen
+            title={t("document-logs")}
+            handleClose={() => setIsModal({})}
+          >
+            <div className="pl-3 first:mt-2 border-t-[1px] border-gray-600 text-[12px] py-2">
+              <p className="font-bold"> {x?.Email}</p>
+              <p>Viewed on: {x?.ViewedOn}</p>
+              <p>Signed on: {x?.SignedOn}</p>
+            </div>
+          </ModalUi>
+        )}
+      </div>
+    ));
+  };
   return (
     <div className="relative">
       {Object.keys(actLoader)?.length > 0 && (
@@ -1353,18 +1407,18 @@ const ReportTable = (props) => {
           }`}
         >
           <table className="op-table border-collapse w-full mb-4">
-            <thead className="text-[14px]">
+            <thead className="text-[14px] text-center">
               <tr className="border-y-[1px]">
                 {props.heading?.map((item, index) => (
                   <React.Fragment key={index}>
-                    <th className="px-4 py-2">{t(`report-heading.${item}`)}</th>
+                    <th className="p-2">{t(`report-heading.${item}`)}</th>
                   </React.Fragment>
                 ))}
                 {props.ReportName === "Templates" && isEnableSubscription && (
-                  <th className="px-4 py-2">{t("public")}</th>
+                  <th className="p-2">{t("public")}</th>
                 )}
                 {props.actions?.length > 0 && (
-                  <th className="px-4 py-2 text-transparent pointer-events-none">
+                  <th className="p-2 text-transparent pointer-events-none">
                     {t("action")}
                   </th>
                 )}
@@ -1377,15 +1431,17 @@ const ReportTable = (props) => {
                     props.ReportName === "Contactbook" ? (
                       <tr className="border-y-[1px]" key={index}>
                         {props.heading.includes("Sr.No") && (
-                          <th className="px-4 py-2">
-                            {startIndex + index + 1}
-                          </th>
+                          <th className="p-2">{startIndex + index + 1}</th>
                         )}
                         <td className="px-4 py-2 font-semibold">
                           {item?.Name}{" "}
                         </td>
-                        <td className="px-4 py-2 ">{item?.Email || "-"}</td>
-                        <td className="px-4 py-2">{item?.Phone || "-"}</td>
+                        <td className="p-2 text-center">
+                          {item?.Email || "-"}
+                        </td>
+                        <td className="p-2 text-center">
+                          {item?.Phone || "-"}
+                        </td>
                         <td className="px-3 py-2">
                           <div className="text-base-content min-w-max flex flex-row gap-x-2 gap-y-1 justify-start items-center">
                             {props.actions?.length > 0 &&
@@ -1442,34 +1498,39 @@ const ReportTable = (props) => {
                         key={index}
                       >
                         {props.heading.includes("Sr.No") && (
-                          <th className="px-4 py-2">
+                          <th className="px-2 py-2">
                             {startIndex + index + 1}
                           </th>
                         )}
-                        <td className="px-4 py-2 font-semibold min-w-56 max-w-56">
-                          {item?.Name}{" "}
+                        <td className="p-2 min-w-56 max-w-56 flex flex-col">
+                          <div className="font-semibold">{item?.Name}</div>
+                          {item?.ExpiryDate?.iso && (
+                            <div className="text-gray-500">
+                              Expire: {formatDate(item?.ExpiryDate?.iso)}
+                            </div>
+                          )}
                         </td>
                         {props?.heading?.includes("Reason") && (
-                          <td className="px-4 py-2">
+                          <td className="p-2 text-center">
                             {item?.DeclineReason?.length > 25
                               ? item?.DeclineReason?.slice(0, 25) + "..."
                               : item?.DeclineReason || "-"}
                           </td>
                         )}
                         {props.heading.includes("Note") && (
-                          <td className="px-4 py-2">
-                            {item?.Note?.length > 25
-                              ? item?.Note?.slice(0, 25) + "..."
-                              : item?.Note || "-"}
+                          <td className="p-2 text-center">
+                            <p className="truncate w-[100px]">
+                              {item?.Note || "-"}
+                            </p>
                           </td>
                         )}
                         {props.heading.includes("Folder") && (
-                          <td className="px-4 py-2">
+                          <td className="p-2 text-center">
                             {item?.Folder?.Name ||
                               t("sidebar.OpenSign™ Drive")}
                           </td>
                         )}
-                        <td className="px-4 py-2">
+                        <td className="p-2 text-center">
                           <button
                             onClick={() => handleDownload(item)}
                             className="op-link op-link-primary"
@@ -1478,77 +1539,34 @@ const ReportTable = (props) => {
                             {item?.URL ? t("download") : "-"}
                           </button>
                         </td>
-                        {props.ReportName === "In-progress documents" ? (
-                          <td className="px-4 py-2">
-                            <button
-                              onClick={() =>
-                                item?.AuditTrail?.length > 0 &&
-                                setIsModal({ [item?.objectId]: true })
-                              }
-                              className={`${
-                                item?.AuditTrail?.length
-                                  ? "border-green-400"
-                                  : "cursor-default op-border-primary"
-                              } focus:outline-none w-[60px] border-[2px] text-[12px] rounded-full md:self-center`}
-                            >
-                              {item?.AuditTrail?.length ? "VIEWED" : "SENT"}
-                            </button>
-                            {isModal[item.objectId] && (
-                              <ModalUi
-                                isOpen
-                                title={t("document-logs")}
-                                handleClose={() => setIsModal({})}
-                              >
-                                {item?.AuditTrail?.map((x, i) => (
-                                  <div
-                                    key={i}
-                                    className="pl-3 first:mt-2 text-sm font-medium flex flex-col md:flex-row items-start md:gap-4 border-t-[1px] border-gray-600"
-                                  >
-                                    <div className="py-2 break-all font-bold md:text-[12px] md:col-span-2 w-full md:w-[210px]">
-                                      {x?.UserPtr?.Email || "-"}
-                                    </div>
-                                    <button className="px-2 cursor-default border-[2px] text-[12px] border-green-400 rounded-full md:self-center">
-                                      {x?.Activity?.toUpperCase() || "-"}
-                                    </button>
-                                    <div className=" text-[12px] py-2">
-                                      {x?.Activity === "Signed"
-                                        ? new Date(x?.SignedOn)?.toUTCString()
-                                        : new Date(
-                                            x?.ViewedOn
-                                          )?.toUTCString() || "-"}
-                                    </div>
-                                  </div>
-                                ))}
-                              </ModalUi>
-                            )}
-                          </td>
-                        ) : (
-                          <td className="px-4 py-2">
+                        {props.heading.includes("Owner") && (
+                          <td className="p-2 text-center">
                             {formatRow(item?.ExtUserPtr)}
                           </td>
                         )}
-                        <td className="px-4 py-2">
-                          {!item?.IsSignyourself && item?.Placeholders ? (
-                            <button
-                              onClick={() => handleViewSigners(item)}
-                              className="op-link op-link-primary"
-                            >
-                              {t("view")}
-                            </button>
-                          ) : (
-                            "-"
-                          )}
-                        </td>
-                        {props.heading.includes("Expiry-date") &&
-                          item?.ExpiryDate?.iso && (
-                            <td className="px-4 py-2">
-                              <span>
-                                {new Date(
-                                  item?.ExpiryDate?.iso
-                                )?.toLocaleDateString()}
-                              </span>
-                            </td>
-                          )}
+                        {props.heading.includes("Signers") &&
+                        ["In-progress documents", "Need your sign"].includes(
+                          props.ReportName
+                        ) ? (
+                          <td className="px-1 py-2">
+                            {!item?.IsSignyourself && item?.Placeholders && (
+                              <>{formatStatusRow(item)}</>
+                            )}
+                          </td>
+                        ) : (
+                          <td className="p-2 text-center">
+                            {!item?.IsSignyourself && item?.Placeholders ? (
+                              <button
+                                onClick={() => handleViewSigners(item)}
+                                className="op-link op-link-primary"
+                              >
+                                {t("view")}
+                              </button>
+                            ) : (
+                              "-"
+                            )}
+                          </td>
+                        )}
                         {props.ReportName === "Templates" &&
                           isEnableSubscription && (
                             <td className=" pl-[20px] py-2">
