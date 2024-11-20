@@ -152,159 +152,21 @@ const PlanSubscriptions = () => {
         </div>
       ) : (
         <div className="overflow-y-auto max-h-full">
-          <div className="block my-2">
-            <div className="flex flex-col justify-center items-center w-full relative">
-              <button
-                className="md:hidden op-btn op-btn-primary op-btn-sm h-[40px] w-[250px] shadow-lg"
-                onClick={() => handleLogout()}
-              >
-                Log out
-              </button>
-              <div
-                role="tablist"
-                className="op-tabs op-tabs-boxed bg-base-100 my-2 shadow-lg transition-all"
-              >
-                <a
-                  onClick={() => setYearlyVisible(false)}
-                  role="tab"
-                  className={`${!yearlyVisible ? "op-tab-active" : ""} op-tab`}
-                >
-                  {t("monthly")}
-                </a>
-                <a
-                  onClick={() => setYearlyVisible(true)}
-                  role="tab"
-                  className={`${yearlyVisible ? "op-tab-active" : ""} op-tab`}
-                >
-                  {t("yearly-upto")}
-                </a>
-              </div>
-              <ul className="op-card flex flex-col md:flex-row h-full bg-base-100 justify-center shadow-lg">
+          <div className="my-2">
+            <div className="flex flex-col justify-center items-center w-full">
+             
                 <button
-                  className="hidden md:block -top-12 right-1 absolute w-[150px] h-[40px] op-btn op-btn-primary op-btn-sm shadow-lg"
+                  className=" md:block -top-12 right-1 w-[150px] h-[40px] op-btn op-btn-primary op-btn-sm shadow-lg"
                   onClick={() => handleLogout()}
                 >
                   {t("log-out")}
                 </button>
-                {plansArr.map((item) => (
-                  <li
-                    className="flex flex-col text-center border-collapse border-[1px] border-gray-300 max-w-[250px]"
-                    key={item.planName}
-                  >
-                    <div className="p-2 flex flex-col justify-center items-center max-h-[310px]">
-                      <h3 className="text-[#002862] uppercase">
-                        {item.planName}
-                      </h3>
-                      <div className="w-[120px] h-[120px] overflow-hidden">
-                        <img
-                          className="w-full h-full object-contain"
-                          src={require(`../assets/images/${item?.img}`)}
-                          alt="img"
-                        />
-                      </div>
-                      <div>
-                        <span className="text-3xl">
-                          {item.currency && <small>{item.currency}</small>}
-                          {yearlyVisible ? (
-                            <>
-                              {item?.yearlyPrice.includes("<") ? (
-                                <div
-                                  className="inline-block"
-                                  dangerouslySetInnerHTML={{
-                                    __html: item?.yearlyPrice
-                                  }}
-                                />
-                              ) : (
-                                <span>{item?.yearlyPrice}</span>
-                              )}
-                            </>
-                          ) : (
-                            <>
-                              {item?.monthlyPrice.includes("<") ? (
-                                <div
-                                  className="inline-block"
-                                  dangerouslySetInnerHTML={{
-                                    __html: item?.monthlyPrice
-                                  }}
-                                />
-                              ) : (
-                                <span>{item?.monthlyPrice}</span>
-                              )}
-                            </>
-                          )}
-                        </span>
-                        <p className="font-semibold pt-2 text-sm">
-                          {yearlyVisible
-                            ? t("billed-yearly")
-                            : t("billed-monthly")}
-                        </p>
-                        <div className="max-w-[250px] h-[40px] text-center text-sm my-2">
-                          <div
-                            style={{
-                              textAlign: "center",
-                              backgroundColor: item.subtitlecolor
-                                ? item.subtitlecolor
-                                : "white"
-                            }}
-                          >
-                            {item.subtitle.includes("<") ? (
-                              <div
-                                dangerouslySetInnerHTML={{
-                                  __html: item.subtitle
-                                }}
-                              />
-                            ) : (
-                              <span>{item.subtitle}</span>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                      <button
-                        className={`${
-                          item?.btn?.color ? item?.btn?.color : "op-btn-primary"
-                        } w-full text-white py-2 op-btn uppercase hover:text-white cursor-pointer`}
-                        onClick={() => handleFreePlan(item)}
-                      >
-                        {item?.btn?.text}
-                      </button>
-                    </div>
-                    <hr className="w-full bg-gray-300 h-[0.5px]" />
-                    <ul className="mx-1 p-3 text-left break-words text-sm list-none">
-                      {!yearlyVisible &&
-                        item.benefits.map((subitem, index) => (
-                          <li style={listItemStyle} key={index} className="m-1">
-                            <span className="relative">{subitem}</span>
-                          </li>
-                        ))}
-                      {yearlyVisible &&
-                        item?.yearlyBenefits?.map((subitem, index) => (
-                          <li style={listItemStyle} key={index} className="m-1">
-                            <span className="relative">{subitem}</span>
-                          </li>
-                        ))}
-                    </ul>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div className="text-sm flex justify-center items-center mt-3 mb-2">
-              <hr className="border-[2px] border-gray-350 w-[20%]" />
-              <span className="px-2 text-base-content cursor-default">or</span>
-              <hr className="border-[2px] border-gray-350 w-[20%]" />
-            </div>
-            <div className="flex flex-col justify-center items-center">
-              <h3 className="text-[#002862] mt-1 mb-2">
-                {t("plansubscription-1")}
-              </h3>
-              <div
-                className="op-btn op-btn-primary w-[200px]"
-                onClick={() =>
-                  openInNewTab("https://github.com/OpenSignLabs/OpenSign")
-                }
-              >
-                {t("visit-github")}
+              
+              <div className="card" style={{padding: "50px", margin: "20px", borderRadius: "6px"}}>
+                <p>Please contact Effi support team to active your account.</p>
               </div>
             </div>
+          
           </div>
         </div>
       )}

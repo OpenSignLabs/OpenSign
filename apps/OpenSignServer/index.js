@@ -20,6 +20,8 @@ import { app as v1 } from './cloud/customRoute/v1/apiV1.js';
 import { PostHog } from 'posthog-node';
 import { appName, cloudServerUrl, smtpenable, smtpsecure, useLocal } from './Utils.js';
 import { SSOAuth } from './auth/authadapter.js';
+import mongoose from 'mongoose';
+
 let fsAdapter;
 if (useLocal !== 'true') {
   try {
@@ -87,7 +89,6 @@ if (smtpenable) {
     console.log('Please provide valid Mailgun credentials');
   }
 } else if (process.env.SENDGRID_API_KEY) {
-  
   sendgrid.setApiKey(process.env.SENDGRID_API_KEY);
   isMailAdapter = true;
 }
@@ -208,6 +209,35 @@ app.use('/v1', v1);
 // Parse Server plays nicely with the rest of your web routes
 app.get('/', function (req, res) {
   res.status(200).send('opensign-server is running !!!');
+});
+
+mongoose.connect(config.databaseURI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
+app.get('/health', async function (req, res) {
+  try {
+    // Check MongoDB connection
+    if (mongoose.connection.readyState !== 1) {
+      throw new Error('MongoDB not connected');
+    }
+
+    // Optionally perform a test query
+    await mongoose.connection.db.command({ ping: 1 });
+
+    res.status(200).json({
+      status: 'ok',
+      uptime: process.uptime(),
+      timestamp: new Date(),
+    });
+  } catch (error) {
+    res.status(503).json({
+      status: 'error',
+      message: error.message,
+      uptime: process.uptime(),
+      timestamp: new Date(),
+    });
+  }
 });
 
 if (!process.env.TESTING) {

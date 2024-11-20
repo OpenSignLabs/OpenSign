@@ -17,6 +17,7 @@ async function saveUser(userDetails) {
 
   return await user.signUp();
 }
+
 export default async function createUser(request, response) {
     const reqToken = request.headers['x-api-token'];
     if (!reqToken) {

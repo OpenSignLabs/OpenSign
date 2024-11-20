@@ -254,7 +254,7 @@ export class AppComponent{
                   className="cursor-pointer text-blue-700  "
                 >
                   {" "}
-                  OpenSign Angular package{" "}
+                  EffiSign Angular package{" "}
                 </a>
                 {t("public-template-mssg-5")}
               </p>
