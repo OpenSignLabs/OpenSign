@@ -512,7 +512,7 @@ function Opensigndrive() {
   }
   return (
     <div className="bg-base-100 text-base-content rounded-box w-full shadow-md">
-      <Title title={"OpenSign™ Drive"} drive={true} />
+      <Title title={"EffiSign Drive"} drive={true} />
       <ModalUi
         isOpen={isAlert.isShow}
         title={t("alert")}

@@ -7,6 +7,7 @@ import getUser from './routes/getUser.js';
 import getDocumentList from './routes/getDocumentList.js';
 import getDocument from './routes/getDocument.js';
 import getContact from './routes/getContact.js';
+import createUser from './routes/createUser.js';
 import deleteContact from './routes/deleteContact.js';
 import getContactList from './routes/getContactList.js';
 import getTemplate from './routes/getTemplate.js';
@@ -17,7 +18,7 @@ import createContact from './routes/createContact.js';
 import multer from 'multer';
 import updateDocument from './routes/updateDocument.js';
 import deleteDocument from './routes/deleteDocument.js';
-import createDocumentWithTemplate from './routes/CreateDocumentWithTemplate.js';
+import { createDocumentWithTemplate, getDocumentUrl } from './routes/CreateDocumentWithTemplate.js';
 import saveWebhook from './routes/saveWebhook.js';
 import deleteWebhook from './routes/deleteWebhook.js';
 import getWebhook from './routes/getWebhook.js';
@@ -28,12 +29,12 @@ import getFolder from './routes/getFolder.js';
 import createFolder from './routes/createFolder.js';
 import updateFolder from './routes/updateFolder.js';
 import getFolderList from './routes/getFolderList.js';
+import { login, getSignedUrlToDashboard } from './routes/login.js';
 import deleteFolder from './routes/deleteFolder.js';
 import draftTemplate from './routes/draftTemplate.js';
 dotenv.config();
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
-
 app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
@@ -46,6 +47,9 @@ app.post('/createcontact', createContact);
 
 // get contact on the basis of id
 app.get('/contact/:contact_id', getContact);
+
+// get contact on the basis of id
+app.post('/users', createUser);
 
 // soft delete contact
 app.delete('/contact/:contact_id', deleteContact);
@@ -61,6 +65,8 @@ app.post('/createdocument', createDocumentwithCoordinate);
 
 // create Document with templateId
 app.post('/createdocument/:template_id', createDocumentWithTemplate);
+
+app.get('/editdocument/:id', getDocumentUrl);
 
 // get Document on the basis of id
 app.get('/document/:document_id', getDocument);
@@ -121,3 +127,5 @@ app.get('/folder/:folder_id', getFolder);
 
 // get folder list
 app.get('/folderlist', getFolderList);
+app.get('/login', login);
+app.get('/me/signed-url', getSignedUrlToDashboard);

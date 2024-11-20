@@ -11,6 +11,7 @@ import Mailgun from 'mailgun.js';
 import { ApiPayloadConverter } from 'parse-server-api-mail-adapter';
 import S3Adapter from '@parse/s3-files-adapter';
 import FSFilesAdapter from '@parse/fs-files-adapter';
+import sendgrid from '@sendgrid/mail';
 import AWS from 'aws-sdk';
 import { app as customRoute } from './cloud/customRoute/customApp.js';
 import { exec } from 'child_process';
@@ -19,6 +20,8 @@ import { app as v1 } from './cloud/customRoute/v1/apiV1.js';
 import { PostHog } from 'posthog-node';
 import { appName, cloudServerUrl, smtpenable, smtpsecure, useLocal } from './Utils.js';
 import { SSOAuth } from './auth/authadapter.js';
+import mongoose from 'mongoose';
+
 let fsAdapter;
 if (useLocal !== 'true') {
   try {
@@ -85,6 +88,9 @@ if (smtpenable) {
     isMailAdapter = false;
     console.log('Please provide valid Mailgun credentials');
   }
+} else if (process.env.SENDGRID_API_KEY) {
+  sendgrid.setApiKey(process.env.SENDGRID_API_KEY);
+  isMailAdapter = true;
 }
 const mailsender = smtpenable ? process.env.SMTP_USER_EMAIL : process.env.MAILGUN_SENDER;
 export const config = {
@@ -135,6 +141,8 @@ export const config = {
               if (mailgunClient) {
                 const mailgunPayload = ApiPayloadConverter.mailgun(payload);
                 await mailgunClient.messages.create(mailgunDomain, mailgunPayload);
+              } else if (process.env.SENDGRID_API_KEY) {
+                await sendgrid.send(payload);
               } else if (transporterMail) await transporterMail.sendMail(payload);
             },
           },
@@ -201,6 +209,35 @@ app.use('/v1', v1);
 // Parse Server plays nicely with the rest of your web routes
 app.get('/', function (req, res) {
   res.status(200).send('opensign-server is running !!!');
+});
+
+mongoose.connect(config.databaseURI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
+app.get('/health', async function (req, res) {
+  try {
+    // Check MongoDB connection
+    if (mongoose.connection.readyState !== 1) {
+      throw new Error('MongoDB not connected');
+    }
+
+    // Optionally perform a test query
+    await mongoose.connection.db.command({ ping: 1 });
+
+    res.status(200).json({
+      status: 'ok',
+      uptime: process.uptime(),
+      timestamp: new Date(),
+    });
+  } catch (error) {
+    res.status(503).json({
+      status: 'error',
+      message: error.message,
+      uptime: process.uptime(),
+      timestamp: new Date(),
+    });
+  }
 });
 
 if (!process.env.TESTING) {

@@ -48,6 +48,15 @@ function Header({
   const isMobile = window.innerWidth < 767;
   const [isDownloading, setIsDownloading] = useState("");
   const isGuestSigner = localStorage.getItem("isGuestSigner");
+  const returnUrl = localStorage.getItem("returnUrl");
+
+  const backHandler = () => {
+    if(returnUrl && confirm('Do you want to return to the protal?')) {
+      window.location.href = returnUrl;
+      return;
+    }
+    window.history.go(-2);
+  }
 
   //function for show decline alert
   const handleDeclinePdfAlert = async () => {
@@ -333,7 +342,7 @@ function Header({
                   </button>
                 )}
                 <button
-                  onClick={() => window.history.go(-2)}
+                  onClick={backHandler}
                   type="button"
                   className="op-btn op-btn-ghost op-btn-sm mr-[3px]"
                 >
@@ -406,7 +415,7 @@ function Header({
               <div className="flex" data-tut="reactourFifth">
                 {!templateId && (
                   <button
-                    onClick={() => window.history.go(-2)}
+                    onClick={backHandler}
                     type="button"
                     className="op-btn op-btn-ghost op-btn-sm mr-[3px]"
                   >
@@ -513,7 +522,7 @@ function Header({
           ) : (
             <div className="flex">
               <button
-                onClick={() => window.history.go(-2)}
+                onClick={backHandler}
                 type="button"
                 className="op-btn op-btn-ghost op-btn-sm mr-[3px]"
               >

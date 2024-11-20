@@ -39,11 +39,11 @@ const Footer = () => {
     };
   }, []);
 
-  const appName = "OpenSign™";
+  const appName = "EffiSign";
   const openUrl = () => {
-    openInNewTab(
-      "https://github.com/OpenSignLabs/OpenSign/releases/tag/" + version
-    );
+    // openInNewTab(
+    //   "https://github.com/OpenSignLabs/OpenSign/releases/tag/" + version
+    // );
   };
   return (
     <>

@@ -149,12 +149,12 @@ const Sidebar = ({ isOpen, closeSidebar }) => {
       </div>
       <nav
         className="op-menu op-menu-sm"
-        aria-label="OpenSign Sidebar Navigation"
+        aria-label="EffiSign Sidebar Navigation"
       >
         <ul
           className="text-sm"
           role="menubar"
-          aria-label="OpenSign Sidebar Navigation"
+          aria-label="EffiSign Sidebar Navigation"
         >
           {menuList.map((item) =>
             !item.children ? (
@@ -176,9 +176,7 @@ const Sidebar = ({ isOpen, closeSidebar }) => {
           )}
         </ul>
       </nav>
-      <footer className="mt-4 flex justify-center items-center text-[25px] text-base-content gap-3">
-        <SocialMedia />
-      </footer>
+      
     </aside>
   );
 };

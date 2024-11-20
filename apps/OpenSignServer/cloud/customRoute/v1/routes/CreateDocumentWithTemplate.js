@@ -1,5 +1,7 @@
 import axios from 'axios';
 import { cloudServerUrl, customAPIurl, replaceMailVaribles } from '../../../../Utils.js';
+import { generateSessionTokenByUsername } from './login.js';
+import { request } from 'express';
 
 // `sendDoctoWebhook` is used to send res data of document on webhook
 async function sendDoctoWebhook(doc, WebhookUrl, userId) {
@@ -40,8 +42,32 @@ async function sendDoctoWebhook(doc, WebhookUrl, userId) {
     // console.log('res ', res.data);
   }
 }
-export default async function createDocumentWithTemplate(request, response) {
+
+export async function getDocumentUrl(request, response) {
+  const reqToken = request.headers['x-api-token'];
+  if (!reqToken) {
+    return response.status(400).json({ error: 'Please Provide API Token' });
+  }
+
+  const tokenQuery = new Parse.Query('appToken');
+  tokenQuery.equalTo('token', reqToken);
+  tokenQuery.include('userId');
+  const token = await tokenQuery.first({ useMasterKey: true });
+  if (token !== undefined) {
+    const parseUser = JSON.parse(JSON.stringify(token));
+    let { sessionToken } = await generateSessionTokenByUsername(parseUser.userId.username);
+    const url = `${process.env.PUBLIC_URL}/login/sender/${sessionToken}?goto=/placeHolderSign/${request.params.id}&returnUrl=${request.query.returnUrl}`;
+    return response.json({
+      url,
+    });
+  } else {
+    return response.status(405).json({ error: 'Invalid API Token!' });
+  }
+}
+
+export async function createDocumentWithTemplate(request, response) {
   const signers = request.body.signers;
+  const returnUrl = request.body.returnUrl;
   const folderId = request.body.folderId;
   const templateId = request.params.template_id;
   const protocol = customAPIurl();
@@ -192,7 +218,9 @@ export default async function createDocumentWithTemplate(request, response) {
                   object.set('Signers', templateSigner);
                 }
                 object.set('URL', template.URL);
-                object.set('SignedUrl', template.URL);
+                if (send_email) {
+                  object.set('SignedUrl', template.URL);
+                }
                 object.set('SentToOthers', true);
                 if (TimeToCompleteDays) {
                   object.set('TimeToCompleteDays', TimeToCompleteDays);
@@ -372,8 +400,14 @@ export default async function createDocumentWithTemplate(request, response) {
                 }
                 const resSubcription = await subscriptionCls.save(null, { useMasterKey: true });
                 // console.log("resSubcription ", resSubcription)
+                let { sessionToken } = await generateSessionTokenByUsername(
+                  parseUser.userId.username
+                );
+                const url = `${process.env.PUBLIC_URL}/login/sender/${sessionToken}?goto=/placeHolderSign/${res.id}&returnUrl=${returnUrl}`;
                 return response.json({
                   objectId: res.id,
+                  success: true,
+                  url,
                   signurl: contact.map(x => ({
                     email: x.email,
                     url: `${baseUrl.origin}/login/${btoa(
@@ -433,3 +467,5 @@ export default async function createDocumentWithTemplate(request, response) {
     return response.status(400).json({ error: 'Something went wrong, please try again later!' });
   }
 }
+
+export default createDocumentWithTemplate;

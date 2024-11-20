@@ -1100,7 +1100,7 @@ export const embedDocId = async (pdfDoc, documentId, allPages) => {
   const font = await pdfDoc.embedFont(fontBytes, { subset: true });
   for (let i = 0; i < allPages; i++) {
     const fontSize = 10;
-    const textContent = documentId && `OpenSign™ DocumentId: ${documentId} `;
+    const textContent = documentId && `EffiSign DocumentId: ${documentId} `;
     const pages = pdfDoc.getPages();
     const page = pages[i];
     try {
@@ -2089,7 +2089,7 @@ export const fetchUrl = async (url, pdfName) => {
       throw new Error("Network response was not ok");
     }
     const blob = await response.blob();
-    saveAs(blob, `${sanitizeFileName(pdfName)}_signed_by_OpenSign™.pdf`);
+    saveAs(blob, `${sanitizeFileName(pdfName)}_signed_by_EffiSign.pdf`);
   } catch (error) {
     alert("something went wrong, please try again later.");
     console.error("Error downloading the file:", error);
@@ -2214,7 +2214,7 @@ export const handleDownloadCertificate = async (
       if (isZip) {
         return certificateUrl;
       } else {
-        saveAs(certificateUrl, `Certificate_signed_by_OpenSign™.pdf`);
+        saveAs(certificateUrl, `Certificate_signed_by_EffiSign.pdf`);
       }
     } catch (err) {
       console.log("err in download in certificate", err);
@@ -2245,7 +2245,7 @@ export const handleDownloadCertificate = async (
             setIsDownloading("");
             return certificateUrl;
           } else {
-            saveAs(certificateUrl, `Certificate_signed_by_OpenSign™.pdf`);
+            saveAs(certificateUrl, `Certificate_signed_by_EffiSign.pdf`);
           }
 
           setIsDownloading("");

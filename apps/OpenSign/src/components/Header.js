@@ -23,6 +23,7 @@ const Header = ({ showSidebar }) => {
   const current_notification_version = "1"; // Update this with each new feature release
   // Get the dismissed version from local storage
   const dismissedVersion = localStorage.getItem("notificationDismissedVersion");
+  const returnUrl = localStorage.getItem("returnUrl");
   const username = localStorage.getItem("username") || "";
   const image = localStorage.getItem("profileImg") || dp;
   const [isOpen, setIsOpen] = useState(false);
@@ -119,11 +120,11 @@ const Header = ({ showSidebar }) => {
     };
   }, [isOpen]);
   const handleConsoleRedirect = () => {
-    if (isStaging) {
-      window.open(" https://staging-console.opensignlabs.com/");
-    } else {
-      window.open("https://console.opensignlabs.com/");
-    }
+    // if (isStaging) {
+    //   window.open(" https://staging-console.opensignlabs.com/");
+    // } else {
+    //   window.open("https://console.opensignlabs.com/");
+    // }
   };
   const handleNavigation = () => {
     navigate("/subscription");
@@ -142,7 +143,7 @@ const Header = ({ showSidebar }) => {
   };
   return (
     <div>
-      {isEnableSubscription && showNotification && (
+      {/* {isEnableSubscription && showNotification && (
         <div className="flex justify-between items-center shadow py-1 bg-[#CAE4FA]  p-1">
           <div className="text-center text-[14px] ml-auto">
             {t("header-news")} —
@@ -152,6 +153,30 @@ const Header = ({ showSidebar }) => {
             >
               {" " + t("header-news-btn") + "."}
             </span>
+          </div>
+          <div
+            className="ml-auto mr-1 cursor-pointer"
+            onClick={() => dismissNotification()}
+          >
+            <i className="fa-light fa-xmark"></i>
+          </div>
+        </div>
+      )} */}
+
+      {returnUrl && (
+        <div className="flex justify-between items-center shadow py-1 bg-[#CAE4FA]  p-1">
+          <div className="text-center text-[14px] ml-auto">
+            To return to the portal, please click &nbsp;
+            <span
+              className="cursor-pointer font-medium underline text-blue-800"
+              onClick={() => {
+                localStorage.removeItem("returnUrl");
+                window.location.href = returnUrl;
+              }}
+            >
+              here
+            </span>
+            .
           </div>
           <div
             className="ml-auto mr-1 cursor-pointer"
@@ -180,7 +205,7 @@ const Header = ({ showSidebar }) => {
           </div>
         </div>
         <div id="profile-menu" className="flex-none gap-2">
-          {!isSubscribe && (
+          {/* {!isSubscribe && (
             <div>
               <button
                 className="text-xs md:text-sm shadow op-btn op-btn-outline op-btn-sm md:op-btn-md op-btn-accent"
@@ -189,8 +214,8 @@ const Header = ({ showSidebar }) => {
                 {t("upgrade-now")}
               </button>
             </div>
-          )}
-          {isTeam.isValid && !validplan[isTeam.plan] && (
+          )} */}
+          {/* {isTeam.isValid && !validplan[isTeam.plan] && (
             <div className="w-[35px] h-[35px] bg-white rounded-full ring-[1px] ring-offset-2 ring-[#002862] text-[#002862] overflow-hidden font-semibold flex items-center justify-center">
               {t("pro")}
             </div>
@@ -199,7 +224,7 @@ const Header = ({ showSidebar }) => {
             <div className="w-[35px] h-[35px] bg-white rounded-full ring-[1px] text-[13px] ring-offset-2 ring-[#002862] text-[#002862] overflow-hidden font-semibold flex items-center justify-center">
               {t("team")}
             </div>
-          )}
+          )} */}
           <div>
             <FullScreenButton />
           </div>
@@ -240,11 +265,11 @@ const Header = ({ showSidebar }) => {
               tabIndex={0}
               className="mt-3 z-[1] p-2 shadow op-menu op-menu-sm op-dropdown-content text-base-content bg-base-100 rounded-box w-52"
             >
-              <li onClick={() => openInNewTab("https://docs.opensignlabs.com")}>
+              {/* <li onClick={() => openInNewTab("https://docs.opensignlabs.com")}>
                 <span>
                   <i className="fa-light fa-book"></i> {t("docs")}
                 </span>
-              </li>
+              </li> */}
               <li
                 onClick={() => {
                   setIsOpen(false);
@@ -265,21 +290,21 @@ const Header = ({ showSidebar }) => {
                   <i className="fa-light fa-lock"></i> {t("change-password")}
                 </span>
               </li>
-              {isEnableSubscription && (
+              {/* {isEnableSubscription && (
                 <li onClick={() => handleConsoleRedirect()}>
                   <span>
                     <i className="fa-light fa-id-card"></i> Console
                   </span>
                 </li>
-              )}
-              {isEnableSubscription && isTeam?.plan === "freeplan" && (
+              )} */}
+              {/* {isEnableSubscription && isTeam?.plan === "freeplan" && (
                 <li className="cursor-pointer" onClick={handleMailUsed}>
                   <span>
                     <i className="fa-light fa-envelope"></i>
                     {emailUsed}/15 {t("sent-this-month")}
                   </span>
                 </li>
-              )}
+              )} */}
               <li onClick={closeDropdown}>
                 <span>
                   <i className="fa-light fa-arrow-right-from-bracket"></i>{" "}

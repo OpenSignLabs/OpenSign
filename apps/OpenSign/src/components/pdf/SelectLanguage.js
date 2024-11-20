@@ -6,10 +6,10 @@ function SelectLanguage(props) {
   const { i18n } = useTranslation();
   const languages = [
     { value: "en", text: "English" },
-    { value: "es", text: "Española" },
-    { value: "fr", text: "Français" }
+    // { value: "es", text: "Española" },
+    // { value: "fr", text: "Français" }
   ];
-  const [lang, setLang] = useState(i18next.language || "en");
+  const [lang, setLang] = useState(i18next?.language || "en");
   // This function put query that helps to change the language
   const handleChangeLang = (e) => {
     setLang(e.target.value);

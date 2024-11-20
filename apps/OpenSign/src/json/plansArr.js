@@ -2,7 +2,7 @@ import { isStaging } from "../constant/const";
 
 const plans = [
   {
-    planName: "OPENSIGN™ FREE",
+    planName: "EffiSign FREE",
     code: { monthly: "freeplan", yearly: "freeplan" },
     img: "free.png",
     currency: "",
@@ -50,7 +50,7 @@ const plans = [
     ]
   },
   {
-    planName: "OPENSIGN™ PROFESSIONAL",
+    planName: "EffiSign PROFESSIONAL",
     code: isStaging
       ? { monthly: "pro-weekly", yearly: "pro-yearly" }
       : { monthly: "professional-monthly", yearly: "professional-yearly" },
@@ -68,10 +68,10 @@ const plans = [
       : "https://billing.opensignlabs.com/subscribe/ef798486e6a0a11ea65f2bae8f2af901d8ad1135190dff951330360e47585a71/professional-yearly",
     target: "_self",
     benefits: [
-      "Everything in OpenSign™ free",
+      "Everything in EffiSign free",
       "Field validations",
       "Regular expression validations",
-      "Organize docs in OpenSign™ Drive",
+      "Organize docs in EffiSign Drive",
       "Webhooks",
       "Zapier integration",
       "API Access",
@@ -83,10 +83,10 @@ const plans = [
       "Embedding (coming soon)"
     ],
     yearlyBenefits: [
-      "Everything in OpenSign™ free",
+      "Everything in EffiSign free",
       "Field validations",
       "Regular expression validations",
-      "Organize docs in OpenSign™ Drive",
+      "Organize docs in EffiSign Drive",
       "Webhooks",
       "Zapier integration",
       "API Access",
@@ -99,7 +99,7 @@ const plans = [
     ]
   },
   {
-    planName: "OPENSIGN™ TEAMS",
+    planName: "EffiSign TEAMS",
     code: { monthly: "teams-monthly", yearly: "teams-yearly" },
     img: "teams.png",
     currency: "$",
@@ -115,7 +115,7 @@ const plans = [
       : "https://billing.opensignlabs.com/subscribe/ef798486e6a0a11ea65f2bae8f2af9011a864994bbeeec71fcf106188630199d/teams-yearly",
     target: "_self",
     benefits: [
-      "Everything in OpenSign™ professional",
+      "Everything in EffiSign professional",
       "upto 100 API signatures",
       "Teams and Organizations",
       "Share Templates with teams",
@@ -126,7 +126,7 @@ const plans = [
       "Mobile app (coming soon)"
     ],
     yearlyBenefits: [
-      "Everything in OpenSign™ professional",
+      "Everything in EffiSign professional",
       "upto 500 API signatures",
       "Teams and Organizations",
       "Share Templates with teams",
@@ -138,7 +138,7 @@ const plans = [
     ]
   },
   {
-    planName: "OPENSIGN™ ENTERPRISE",
+    planName: "EffiSign ENTERPRISE",
     img: "enterprise.png",
     currency: "",
     monthlyPrice: `<p style="font-size: 22px;">Request Price</p>`,
