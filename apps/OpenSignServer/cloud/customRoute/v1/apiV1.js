@@ -29,7 +29,6 @@ import createFolder from './routes/createFolder.js';
 import updateFolder from './routes/updateFolder.js';
 import getFolderList from './routes/getFolderList.js';
 import deleteFolder from './routes/deleteFolder.js';
-import draftTemplate from './routes/draftTemplate.js';
 dotenv.config();
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
@@ -73,9 +72,6 @@ app.delete('/document/:document_id', deleteDocument);
 
 // get all types of documents on the basis of doctype
 app.get('/documentlist/:doctype', getDocumentList);
-
-// create draft template with file base64
-app.post('/drafttemplate', draftTemplate);
 
 // create Template with co-ordinate
 app.post('/createtemplate', createTemplatewithCoordinate);
