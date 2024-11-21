@@ -82,4 +82,4 @@ jobs:
 
       - name: Invalidate CloudFront Distribution Cache
         run: |
-          aws cloudfront create-invalidation --distribution-id ${{ secrets.CF_ID_PRODUCTION }} --paths "/*"
+          aws cloudfront create-invalidation --distribution-id E1260K2VFTPEU1 --paths "/*"
