@@ -9,7 +9,7 @@ export default async function Newsletter(request) {
       'X-Parse-Application-Id': 'legadranaxn',
     };
     const newsletter = await axios.post(
-      'https://app.opensignlabs.com/api/app/classes/Newsletter',
+      'https://effi.com.au/contact/',
       { Name: name, Email: email, Domain: domain },
       { headers: headers }
     );

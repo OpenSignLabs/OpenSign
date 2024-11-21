@@ -21,7 +21,7 @@ export default async function generateApiToken(request) {
         const AppToken = Parse.Object.extend('appToken');
         const updateToken = new AppToken();
         updateToken.id = token.id;
-        const newToken = generateApiKey({ method: 'base62', prefix: 'opensign' });
+        const newToken = generateApiKey({ method: 'base62', prefix: 'effisign' });
         updateToken.set('token', newToken);
         const updatedRes = await updateToken.save(null, { useMasterKey: true });
         return updatedRes;
@@ -30,7 +30,7 @@ export default async function generateApiToken(request) {
         console.log('New API Token Generation');
         const appToken = Parse.Object.extend('appToken');
         const appTokenQuery = new appToken();
-        const token = generateApiKey({ method: 'base62', prefix: 'opensign' });
+        const token = generateApiKey({ method: 'base62', prefix: 'effisign' });
         appTokenQuery.set('token', token);
         appTokenQuery.set('userId', { __type: 'Pointer', className: '_User', objectId: userId });
         const newRes = await appTokenQuery.save(null, { useMasterKey: true });

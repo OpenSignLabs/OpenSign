@@ -5,7 +5,7 @@ const serverUrl = cloudServerUrl; //process.env.SERVER_URL;
 const APPID = process.env.APP_ID;
 const masterKEY = process.env.MASTER_KEY;
 const clientUrl = process.env.PUBLIC_URL;
-const ssoApiUrl = process.env.SSO_API_URL || 'https://sso.opensignlabs.com/api'; //'https://osl-jacksonv2.vercel.app/api';
+const ssoApiUrl = process.env.SSO_API_URL || 'https://essign.effi.com.au/'; //'https://osl-jacksonv2.vercel.app/api';
 /**
  * ssoSign is function which is used to sign up/sign in with SSO
  * @param code It is code return by jackson using authorize endpoint
@@ -24,7 +24,7 @@ export default async function ssoSignin(request) {
         grant_type: 'authorization_code',
         client_id: 'dummy',
         tenant: 'Okta-dev-nxglabs-in',
-        product: 'OpenSign',
+        product: 'EffiSign',
         client_secret: 'dummy',
         redirect_uri: clientUrl + '/sso',
         code: code,

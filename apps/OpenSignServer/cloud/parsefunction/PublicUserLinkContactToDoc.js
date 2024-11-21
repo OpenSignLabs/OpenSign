@@ -146,14 +146,14 @@ const sendMailToAllSigners = async docId => {
                 month: 'long',
                 year: 'numeric',
               });
-              const imgPng = 'https://qikinnovation.ams3.digitaloceanspaces.com/logo.png';
+              const imgPng = 'https://raw.githubusercontent.com/EFFI-Technologies/OpenSign/refs/heads/main/apps/OpenSign/src/assets/images/logo.png';
               const objectId = signerMail[i].objectId;
-              const hostPublicUrl = 'https://app.opensignlabs.com';
+              const hostPublicUrl = 'https://esign.effi.com.au';
 
               //encode this url value `${Doc.objectId}/${signerMail[i].Email}/${objectId}` to base64 using `btoa` function
               const encodeBase64 = btoa(`${Doc?.objectId}/${signerMail[i].Email}/${objectId}`);
               let signPdf = `${hostPublicUrl}/login/${encodeBase64}`;
-              const openSignUrl = 'https://www.opensignlabs.com/';
+              const effiSignUrl = 'https://esign.effi.com.au';
               const orgName = Doc?.ExtUserPtr?.Company || '';
               const themeBGcolor = '#47a3ad';
               const senderName = `${Doc?.ExtUserPtr.Name}`;
@@ -206,10 +206,10 @@ const sendMailToAllSigners = async docId => {
                     localExpireDate +
                     "</td></tr><tr> <td></td> <td> </td></tr></table> </div> <div style='margin-left:70px'><a href=" +
                     signPdf +
-                    "> <button style='padding: 12px 12px 12px 12px;background-color: #d46b0f;color: white;  border: 0px;box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px,rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;font-weight:bold;margin-top:30px'>Sign here</button></a> </div> <div style='display: flex; justify-content: center;margin-top: 10px;'> </div></div></div><div><p> This is an automated email from OpenSign™. For any queries regarding this email, please contact the sender " +
+                    "> <button style='padding: 12px 12px 12px 12px;background-color: #d46b0f;color: white;  border: 0px;box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px,rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;font-weight:bold;margin-top:30px'>Sign here</button></a> </div> <div style='display: flex; justify-content: center;margin-top: 10px;'> </div></div></div><div><p> This is an automated email from EffiSign. For any queries regarding this email, please contact the sender " +
                     senderEmail +
-                    ' directly.If you think this email is inappropriate or spam, you may file a complaint with OpenSign™   <a href= ' +
-                    openSignUrl +
+                    ' directly.If you think this email is inappropriate or spam, you may file a complaint with EffiSign   <a href= ' +
+                    effiSignUrl +
                     ' target=_blank>here</a>.</p> </div></div></body> </html>',
               };
 

@@ -1,34 +1,34 @@
 {
   "openapi": "3.0.3",
   "info": {
-    "title": "OpenSign API v1",
-    "description": "This is API documentation for OpenSign API v1 based on the OpenAPI 3.1 specification. \n\nSome useful links:\n- [Official Website](https://www.opensignlabs.com)\n- [Github repo](https://github.com/opensignlabs/opensign)",
-    "termsOfService": "http://www.opensignlabs.com/terms/",
+    "title": "EffiSign API v1",
+    "description": "This is API documentation for EffiSign API v1 based on the OpenAPI 3.1 specification. \n\nSome useful links:\n- [Official Website](https://www.EffiSignlabs.com)\n- [Github repo](https://github.com/EffiSignlabs/EffiSign)",
+    "termsOfService": "http://www.EffiSignlabs.com/terms/",
     "contact": {
-      "email": "contact@opensignlabs.com"
+      "email": "contact@EffiSignlabs.com"
     },
     "license": {
       "name": "AGPL 3.0",
-      "url": "http://github.com/opensignlabs/opensign/LICENSE"
+      "url": "http://github.com/EffiSignlabs/EffiSign/LICENSE"
     },
     "version": "1.0.0"
   },
   "externalDocs": {
-    "description": "Find out more about OpenSign",
-    "url": "http://docs.opensignlabs.com"
+    "description": "Find out more about EffiSign",
+    "url": "http://docs.EffiSignlabs.com"
   },
   "servers": [
     {
-      "url": "https://app.opensignlabs.com/api/v1"
+      "url": "https://app.EffiSignlabs.com/api/v1"
     }
   ],
   "tags": [
     {
-      "name": "OpenSign",
+      "name": "EffiSign",
       "description": "OpenSource DocuSign alternative",
       "externalDocs": {
         "description": "Find out more",
-        "url": "http://www.opensignlabs.com"
+        "url": "http://www.EffiSignlabs.com"
       }
     },
     {
@@ -36,7 +36,7 @@
       "description": "Access the source code",
       "externalDocs": {
         "description": "Visit github",
-        "url": "http://github.com/opensignlabs/opensign"
+        "url": "http://github.com/EffiSignlabs/EffiSign"
       }
     },
     {

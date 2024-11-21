@@ -58,7 +58,7 @@ async function uploadFile(req, res) {
           cb(null, 'files/files');
         },
         metadata: function (req, file, cb) {
-          cb(null, { fieldName: 'OPENSIGN_METADATA' });
+          cb(null, { fieldName: 'EFFISIGN_METADATA' });
         },
         filename: function (req, file, cb) {
           let filename = file.originalname;
@@ -86,7 +86,7 @@ async function uploadFile(req, res) {
           s3,
           bucket: DO_SPACE,
           metadata: function (req, file, cb) {
-            cb(null, { fieldName: 'OPENSIGN_METADATA' });
+            cb(null, { fieldName: 'EFFISIGN_METADATA' });
           },
           key: function (req, file, cb) {
             //console.log(file);
@@ -106,7 +106,7 @@ async function uploadFile(req, res) {
             cb(null, 'files/files');
           },
           metadata: function (req, file, cb) {
-            cb(null, { fieldName: 'OPENSIGN_METADATA' });
+            cb(null, { fieldName: 'EFFISIGN_METADATA' });
           },
           filename: function (req, file, cb) {
             let filename = file.originalname;

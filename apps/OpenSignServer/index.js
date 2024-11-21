@@ -99,7 +99,7 @@ export const config = {
   cloud: function () {
     import('./cloud/main.js');
   },
-  appId: process.env.APP_ID || 'opensign',
+  appId: process.env.APP_ID || 'effisign',
   logLevel: ['error'],
   maxLimit: 500,
   maxUploadSize: '30mb',
@@ -208,7 +208,7 @@ app.use('/v1', v1);
 
 // Parse Server plays nicely with the rest of your web routes
 app.get('/', function (req, res) {
-  res.status(200).send('opensign-server is running !!!');
+  res.status(200).send('effisign-server is running !!!');
 });
 
 mongoose.connect(config.databaseURI, {
@@ -247,7 +247,7 @@ if (!process.env.TESTING) {
   httpServer.keepAliveTimeout = 100000; // in milliseconds
   httpServer.headersTimeout = 100000; // in milliseconds
   httpServer.listen(port, '0.0.0.0', function () {
-    console.log('opensign-server running on port ' + port + '.');
+    console.log('effisign-server running on port ' + port + '.');
     const isWindows = process.platform === 'win32';
     // console.log('isWindows', isWindows);
 
