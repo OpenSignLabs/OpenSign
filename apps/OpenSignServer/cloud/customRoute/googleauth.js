@@ -20,7 +20,7 @@ export default async function gooogleauth(request, response) {
       const redirectUri =
         baseUrl?.hostname === 'localhost'
           ? 'http://localhost:3000'
-          : 'https://console.opensignlabs.com'; // Should match the redirect URI used in the authorization request
+          : 'https://console.com'; // Should match the redirect URI used in the authorization request
       const tokenEndpoint = 'https://oauth2.googleapis.com/token';
 
       const params = new URLSearchParams();

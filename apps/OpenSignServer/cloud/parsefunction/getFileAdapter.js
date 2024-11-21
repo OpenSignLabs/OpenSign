@@ -11,7 +11,7 @@ export default async function getFileAdapter(request) {
       const _extUser = JSON.parse(JSON.stringify(extUser));
       const FileAdapters =
         _extUser?.TenantId?.FileAdapters?.length > 0 ? _extUser?.TenantId?.FileAdapters : [];
-      const ActiveFileAdapter = _extUser?.TenantId?.ActiveFileAdapter || 'opensign';
+      const ActiveFileAdapter = _extUser?.TenantId?.ActiveFileAdapter || 'effisign';
       return { ActiveFileAdapter: ActiveFileAdapter, FileAdapters: FileAdapters };
     } else {
       throw new Parse.Error(Parse.Error.OBJECT_NOT_FOUND, 'User not found.');

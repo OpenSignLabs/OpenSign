@@ -108,7 +108,7 @@ export default async function addFileAdapter(request) {
         }
         const updateTenant = await saveTenant(tenantId, fileAdapters, id);
         await updateTenantSchema();
-        const ActiveFileAdapter = adapter === 'opensign' ? 'opensign' : id;
+        const ActiveFileAdapter = adapter === 'effisign' ? 'effisign' : id;
         return { ActiveFileAdapter: ActiveFileAdapter, updateAt: updateTenant.updatedAt };
       } else {
         throw new Parse.Error(Parse.Error.OBJECT_NOT_FOUND, 'User not found.');
@@ -119,14 +119,14 @@ export default async function addFileAdapter(request) {
       const msg = err.message || 'Something went wrong.';
       throw new Parse.Error(code, msg);
     }
-  } else if (adapter === 'opensign') {
+  } else if (adapter === 'effisign') {
     try {
       const extUser = await getExtUser(request);
       if (extUser) {
         const tenantId = extUser?.get('TenantId')?.id;
         const updateTenant = await saveTenant(tenantId);
         await updateTenantSchema();
-        return { ActiveFileAdapter: 'opensign', updateAt: updateTenant.updatedAt };
+        return { ActiveFileAdapter: 'effisign', updateAt: updateTenant.updatedAt };
       } else {
         throw new Parse.Error(Parse.Error.OBJECT_NOT_FOUND, 'User not found.');
       }

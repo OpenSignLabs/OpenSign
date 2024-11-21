@@ -26,7 +26,7 @@ export default async function addPfxFile(request) {
   const title = request.params.title;
   const password = request.params.password;
   const provider = request.params.provider;
-  if (provider === 'opensign' || (pfxBase64 && password)) {
+  if (provider === 'effisign' || (pfxBase64 && password)) {
     try {
       const extUserCls = new Parse.Query('contracts_Users');
       extUserCls.equalTo('UserId', request.user);
@@ -35,7 +35,7 @@ export default async function addPfxFile(request) {
       if (extUser) {
         const tenantCls = new Parse.Object('partners_Tenant');
         tenantCls.id = extUser?.get('TenantId')?.id;
-        if (provider === 'opensign') {
+        if (provider === 'effisign') {
           tenantCls.unset('PfxFile');
         } else {
           tenantCls.set('PfxFile', { title: title, password: password, base64: pfxBase64 });

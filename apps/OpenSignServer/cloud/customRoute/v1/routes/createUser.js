@@ -111,7 +111,7 @@ async function generateApiTokenForUser(username) {
           console.log('Generating New API Token');
           const AppToken = Parse.Object.extend('appToken');
           const newTokenObj = new AppToken();
-          const newToken = generateApiKey({ method: 'base62', prefix: 'opensign' });
+          const newToken = generateApiKey({ method: 'base62', prefix: 'effisign' });
           newTokenObj.set('token', newToken);
           newTokenObj.set('userId', { __type: 'Pointer', className: '_User', objectId: userId });
           const newRes = await newTokenObj.save(null, { useMasterKey: true });

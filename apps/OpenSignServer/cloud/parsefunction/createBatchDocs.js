@@ -52,7 +52,7 @@ async function sendMail(document, sessionToken) {
   }
   for (let i = 0; i < signerMail.length; i++) {
     try {
-      const imgPng = 'https://qikinnovation.ams3.digitaloceanspaces.com/logo.png';
+      const imgPng = 'https://raw.githubusercontent.com/EFFI-Technologies/OpenSign/refs/heads/main/apps/OpenSign/src/assets/images/logo.png';
       let url = `${serverUrl}/functions/sendmailv3`;
       const headers = {
         'Content-Type': 'application/json',
@@ -70,7 +70,7 @@ async function sendMail(document, sessionToken) {
         encodeBase64 = btoa(`${document.objectId}/${signerMail[i].email}`);
       }
       let signPdf = `${hostUrl}/login/${encodeBase64}`;
-      const openSignUrl = 'https://www.opensignlabs.com/';
+      const effiSignUrl = 'https://effi.com.au/contact/';
       const orgName = document.ExtUserPtr.Company ? document.ExtUserPtr.Company : '';
       const themeBGcolor = '#47a3ad';
       let params = {
@@ -97,10 +97,10 @@ async function sendMail(document, sessionToken) {
           localExpireDate +
           "</td></tr><tr> <td></td> <td> </td></tr></table> </div> <div style='margin-left:70px'><a target=_blank href=" +
           signPdf +
-          "> <button style='padding: 12px 12px 12px 12px;background-color: #d46b0f;color: white;  border: 0px;box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px,rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;font-weight:bold;margin-top:30px;'>Sign here</button></a> </div> <div style='display: flex; justify-content: center;margin-top: 10px;'> </div></div></div><div><p> This is an automated email from OpenSign™. For any queries regarding this email, please contact the sender " +
+          "> <button style='padding: 12px 12px 12px 12px;background-color: #d46b0f;color: white;  border: 0px;box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px,rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;font-weight:bold;margin-top:30px;'>Sign here</button></a> </div> <div style='display: flex; justify-content: center;margin-top: 10px;'> </div></div></div><div><p> This is an automated email from EffiSign. For any queries regarding this email, please contact the sender " +
           sender +
-          ' directly.If you think this email is inappropriate or spam, you may file a complaint with OpenSign™   <a href=' +
-          openSignUrl +
+          ' directly.If you think this email is inappropriate or spam, you may file a complaint with EffiSign   <a href=' +
+          effiSignUrl +
           ' target=_blank>here</a>.</p> </div></div></body> </html>',
       };
       const sendMail = await axios.post(url, params, { headers: headers });

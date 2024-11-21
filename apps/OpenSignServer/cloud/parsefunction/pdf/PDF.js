@@ -10,8 +10,8 @@ import uploadFileToS3 from '../uploadFiletoS3.js';
 const serverUrl = cloudServerUrl; // process.env.SERVER_URL;
 const APPID = process.env.APP_ID;
 const masterKEY = process.env.MASTER_KEY;
-const eSignName = 'opensign';
-const eSigncontact = 'hello@opensignlabs.com';
+const eSignName = 'effisign';
+const eSigncontact = 'https://effi.com.au/contact/';
 // `updateDoc` is used to create url in from pdfFile
 async function uploadFile(pdfName, filepath, adapter) {
   try {
@@ -101,7 +101,7 @@ async function sendCompletedMail(obj) {
   const doc = obj.doc;
   const sender = obj.doc.ExtUserPtr;
   const pdfName = doc.Name;
-  const mailLogo = 'https://qikinnovation.ams3.digitaloceanspaces.com/logo.png';
+  const mailLogo = 'https://raw.githubusercontent.com/EFFI-Technologies/OpenSign/refs/heads/main/apps/OpenSign/src/assets/images/logo.png';
   const recipient =
     doc?.Signers?.length > 0 ? doc?.Signers?.map(x => x?.Email)?.join(',') : sender.Email;
   let subject = `Document "${pdfName}" has been signed by all parties`;
@@ -110,9 +110,9 @@ async function sendCompletedMail(obj) {
     mailLogo +
     "  height='50' style='padding:20px'/> </div><div style='padding:2px;font-family:system-ui; background-color: #47a3ad;'>    <p style='font-size:20px;font-weight:400;color:white;padding-left:20px',> Document signed successfully</p></div><div><p style='padding:20px;font-family:system-ui;font-size:14px'>All parties have successfully signed the document " +
     `<b>"${pdfName}"</b>` +
-    '. Kindly download the document from the attachment.</p></div> </div><div><p>This is an automated email from OpenSign™. For any queries regarding this email, please contact the sender ' +
+    '. Kindly download the document from the attachment.</p></div> </div><div><p>This is an automated email from EffiSign. For any queries regarding this email, please contact the sender ' +
     sender.Email +
-    ' directly. If you think this email is inappropriate or spam, you may file a complaint with OpenSign™ <a href=www.opensignlabs.com target=_blank>here</a>.</p></div></div></body></html>';
+    ' directly. If you think this email is inappropriate or spam, you may file a complaint with EffiSign <a href=esign.effi.com.au target=_blank>here</a>.</p></div></div></body></html>';
 
   if (obj?.isCustomMail) {
     try {
@@ -161,7 +161,7 @@ async function sendCompletedMail(obj) {
   const params = {
     extUserId: sender.objectId,
     url: url,
-    from: 'OpenSign™',
+    from: 'EffiSign',
     recipient: recipient,
     subject: subject,
     pdfName: pdfName,
@@ -253,7 +253,7 @@ async function sendMailsaveCertifcate(doc, P12Buffer, isCustomMail, mailProvider
   //  `pdflibAddPlaceholder` is used to add code of only digitial sign in certificate
   pdflibAddPlaceholder({
     pdfDoc: certificatePdf,
-    reason: 'Digitally signed by OpenSign.',
+    reason: 'Digitally signed by EffiSign.',
     location: 'n/a',
     name: eSignName,
     contactInfo: eSigncontact,
@@ -387,7 +387,7 @@ async function PDF(req) {
           const pdfDoc = await PDFDocument.load(PdfBuffer);
           pdflibAddPlaceholder({
             pdfDoc: pdfDoc,
-            reason: 'Digitally signed by OpenSign for ' + signersName?.join(', '),
+            reason: 'Digitally signed by EffiSign for ' + signersName?.join(', '),
             location: 'n/a',
             name: eSignName,
             contactInfo: eSigncontact,
@@ -400,7 +400,7 @@ async function PDF(req) {
           const pdfDoc = await PDFDocument.load(PdfBuffer);
           pdflibAddPlaceholder({
             pdfDoc: pdfDoc,
-            reason: 'Digitally signed by OpenSign for ' + username + ' <' + userEmail + '>',
+            reason: 'Digitally signed by EffiSign for ' + username + ' <' + userEmail + '>',
             location: 'n/a',
             name: eSignName,
             contactInfo: eSigncontact,
