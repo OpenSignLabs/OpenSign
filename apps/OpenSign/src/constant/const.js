@@ -10,6 +10,6 @@ export const isEnableSubscription = true;
   //   ? true
   //   : false;
 export const isStaging =
-  window.location.origin === "https://staging-app.opensignlabs.com";
+  window.location.origin === "https://staging-app.com";
 export const isPublicStaging =
-  window.location.origin === "https://staging.opensign.me";
+  window.location.origin === "https://staging.me";
