@@ -1,0 +1,81 @@
+name: Backend-Production-Deploy-ECR
+
+on:
+  workflow_dispatch:  # Allows manual trigger of the workflow
+
+permissions:
+  id-token: write  # Allow GitHub to issue an OIDC token for authentication
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout the repository
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Step 2: Set up Docker Buildx
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      # Step 3: Build and tag the Docker image with the correct tag
+      - name: Build Docker image
+        run: |
+          IMAGE_TAG=saas-production
+          CONTAINER_NAME=opensign-service-api-saas-production  # Container name as per ECS config
+          APP_ID=effisign
+          APPLICATION_ID=effisign
+          MASTER_KEY1=PdRwTfGhNykL
+          SERVER_URL=https://esign-service.preprod.effi.com.au/
+          MONGODB_URI=mongodb+srv://opensign-saas-production-user:0POlAmSKnXzEvz6I@effi.eghdu.mongodb.net
+          NODE_ENV=production         # For Node.js production environment
+          SERVER_PORT=80              # Set server port to 80
+
+          docker build \
+            --build-arg NODE_ENV=$NODE_ENV \
+            --build-arg SERVER_PORT=$SERVER_PORT \
+            --build-arg APP_ID=$APP_ID \
+            --build-arg MASTER_KEY=$MASTER_KEY1 \
+            --build-arg APPLICATION_ID=$APPLICATION_ID \
+            --build-arg SERVER_URL=$SERVER_URL \
+            --build-arg MONGODB_URI=$MONGODB_URI \
+            -t $CONTAINER_NAME:$IMAGE_TAG \
+            -f apps/OpenSignServer/Dockerhubfile .
+
+          echo "Built and tagged image $CONTAINER_NAME:$IMAGE_TAG"
+
+      # Step 4: Configure AWS credentials from OIDC Provider
+      - name: Configure AWS credentials from OIDC Provider
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::241924812472:role/EFFI-GITHUB-CICD-Role  # IAM Role ARN to assume
+          aws-region: ${{ secrets.AWS_REGION }}  # AWS region (set as a secret)
+          role-session-name: GitHub-CI-CD-Session  # Custom session name
+          role-duration-seconds: 900  # Duration of the session (15 minutes)
+
+      # Step 5: Log in to Amazon ECR
+      - name: Log in to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v2
+        with:
+          registry-ids: 241924812472  # AWS Account ID
+
+      # Step 6: Tag Docker image for ECR
+      - name: Tag Docker image for ECR
+        run: |
+          IMAGE_TAG=saas-production
+          CONTAINER_NAME=opensign-service-api-saas-production  # Container name as per ECS config
+          REPOSITORY_URI=241924812472.dkr.ecr.ap-southeast-2.amazonaws.com/opensign-service-api  # Correct repository name
+
+          docker tag $CONTAINER_NAME:$IMAGE_TAG $REPOSITORY_URI:$IMAGE_TAG
+          echo "Tagged image as $REPOSITORY_URI:$IMAGE_TAG"
+
+      # Step 7: Push Docker image to ECR
+      - name: Push Docker image to ECR
+        run: |
+          IMAGE_TAG=saas-production
+          CONTAINER_NAME=opensign-service-api-saas-production  # Container name as per ECS config
+          REPOSITORY_URI=241924812472.dkr.ecr.ap-southeast-2.amazonaws.com/opensign-service-api  # Correct repository name
+
+          docker push $REPOSITORY_URI:$IMAGE_TAG
+          echo "Pushed image to $REPOSITORY_URI:$IMAGE_TAG"
