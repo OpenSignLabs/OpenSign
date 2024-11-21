@@ -4,9 +4,13 @@ import { isEnableSubscription } from "./const";
 export function serverUrl_fn() {
   let baseUrl;
   if (isEnableSubscription) {
-    baseUrl = 'http://127.0.0.1:8080/app';
+    baseUrl = process.env.REACT_APP_SERVERURL
+      ? process.env.REACT_APP_SERVERURL
+      : "http://localhost:8080/app";
   } else {
-    baseUrl = 'http://127.0.0.1:8080/app';
+    baseUrl = process.env.REACT_APP_SERVERURL
+      ? process.env.REACT_APP_SERVERURL
+      : "http://localhost:8080/app";
   }
   return baseUrl;
 }
