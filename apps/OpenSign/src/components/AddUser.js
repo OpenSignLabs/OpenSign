@@ -431,6 +431,7 @@ const AddUser = (props) => {
                       {t("phone")}
                       {/* <span className="text-[red] text-[13px]"> *</span> */}
                     </label>
+                    {/* added hint for phone number being optional  */}
                     <input
                       type="text"
                       name="phone"
