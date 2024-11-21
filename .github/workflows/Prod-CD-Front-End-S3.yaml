@@ -1,0 +1,85 @@
+name: FrontEnd-Production-Deploy-S3
+
+on:
+  workflow_dispatch:   # This allows manual triggers
+  # Uncomment below to trigger on push to tags or main branch
+  # push:
+  #   tags:
+  #     - 'v*.*.*'  # Example: Trigger on version tags like v1.2.3
+  #   branches:
+  #     - 'main'
+
+jobs:
+  OPENSIGN-Deploy:
+    if: ${{ ! failure() && ! cancelled() }}
+    name: Build and Copy OPENSIGN
+    runs-on: ubuntu-latest
+    environment:
+      name: Production
+      url: https://esign.effi.com.au/
+    permissions:
+      id-token: write
+      contents: read
+    env:  # Environment variables for the entire job
+      PUBLIC_URL: https://esign.effi.com.au/
+      GENERATE_SOURCEMAP: false
+      REACT_APP_SERVERURL: https://esign-service.effi.com.au/app
+      REACT_APP_APPID: effisign
+      CI: false
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '20.12.2' # Latest LTS
+
+      - name: Configure AWS credentials from OIDC Provider
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_PRODUCTION_ROLE }}
+          aws-region: ${{ secrets.AWS_REGION }}
+          role-session-name: EFFI-GitHub-CI-CD-GitHub-Runner
+          role-duration-seconds: 900
+
+      - name: Install Dependencies
+        run: |
+          cd apps/OpenSign  # Change directory to your frontend app folder
+          npm install
+
+      - name: Build the frontend
+        run: |
+          cd apps/OpenSign  # Change directory to your frontend app folder
+          npm run build  # This will build the frontend
+
+      - name: List Directory Contents
+        run: |
+          cd apps/OpenSign
+          ls -al
+
+      - name: Upload all files from OpenSign to S3
+        run: |
+          cd apps/OpenSign/build
+          aws s3 cp . s3://${{ secrets.BUCKET }}/ --recursive
+        continue-on-error: false
+
+  Invalidate:
+    name: CloudFront invalidation
+    runs-on: ubuntu-latest
+    needs: [OPENSIGN-Deploy]  
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Configure AWS credentials from OIDC Provider
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_PRODUCTION_ROLE }}
+          aws-region: ${{ secrets.AWS_REGION }}
+          role-session-name: EFFI-GitHub-CI-CD-GitHub-Runner
+          role-duration-seconds: 900
+
+      - name: Invalidate CloudFront Distribution Cache
+        run: |
+          aws cloudfront create-invalidation --distribution-id E1260K2VFTPEU1 --paths "/*"

@@ -1,7 +1,6 @@
 import dotenv from 'dotenv';
 dotenv.config();
-
-export const cloudServerUrl = 'http://localhost:8080/app';
+export const cloudServerUrl = process.env.CLOUD_PORT ? `http://localhost:${process.env.CLOUD_PORT}/app` : 'http://localhost/app';
 export const appName = process.env.APP_NAME || 'EffiSign';
 export function customAPIurl() {
   const url = new URL(cloudServerUrl);
@@ -234,3 +233,7 @@ export const planCredits = {
   'teams-monthly': 100,
   'teams-yearly': 500,
 };
+
+export function parseJwt(token) {
+  return JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+}
