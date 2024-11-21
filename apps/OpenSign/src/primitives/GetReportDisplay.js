@@ -1268,7 +1268,6 @@ const ReportTable = (props) => {
   };
   // `formatStatusRow` is used to format status row
   const formatStatusRow = (item) => {
-    console.log("item?.AuditTrail ", item?.AuditTrail);
     const signers = item?.Placeholders?.map((x, i) => {
       const matchSigner = item?.AuditTrail?.find(
         (audit) => audit?.UserPtr?.objectId === x.signerObjId
