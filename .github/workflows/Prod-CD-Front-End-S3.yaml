@@ -25,7 +25,7 @@ jobs:
       GENERATE_SOURCEMAP: false
       REACT_APP_SERVERURL: https://esign-service.preprod.effi.com.au/
       REACT_APP_APPID: effisign
-      REACT_APP_GTM: GTM-123N7LD
+      CI: false
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
