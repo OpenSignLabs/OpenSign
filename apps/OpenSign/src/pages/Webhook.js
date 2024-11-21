@@ -131,7 +131,7 @@ function Webhook() {
               </li>
             </ul>
             <div className="flex items-center justify-center">
-              <button
+              {/* <button
                 type="button"
                 onClick={() =>
                   openInNewTab(
@@ -141,7 +141,7 @@ function Webhook() {
                 className="op-btn op-btn-secondary mt-2 mb-3 px-7"
               >
                 {t("view-docs")}
-              </button>
+              </button> */}
             </div>
             <ModalUi
               isOpen={isModal}

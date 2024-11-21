@@ -23,9 +23,9 @@ jobs:
     env:  # Environment variables for the entire job
       PUBLIC_URL: https://esign.effi.com.au/
       GENERATE_SOURCEMAP: false
-      REACT_APP_SERVERURL: https://esign-service.preprod.effi.com.au/
+      REACT_APP_SERVERURL: https://esign-service.effi.com.au/app
       REACT_APP_APPID: effisign
-      REACT_APP_GTM: GTM-123N7LD
+      CI: false
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -82,4 +82,4 @@ jobs:
 
       - name: Invalidate CloudFront Distribution Cache
         run: |
-          aws cloudfront create-invalidation --distribution-id ${{ secrets.CF_ID_PRODUCTION }} --paths "/*"
+          aws cloudfront create-invalidation --distribution-id E1260K2VFTPEU1 --paths "/*"

@@ -228,7 +228,7 @@ const Header = ({ showSidebar }) => {
           <div>
             <FullScreenButton />
           </div>
-          {width >= 768 && (
+          {/* {width >= 768 && (
             <div
               onClick={toggleDropdown}
               className="cursor-pointer w-[35px] h-[35px] rounded-full ring-[1px] ring-offset-2 ring-gray-400 overflow-hidden"
@@ -239,7 +239,7 @@ const Header = ({ showSidebar }) => {
                 alt="img"
               />
             </div>
-          )}
+          )} */}
           {width >= 768 && (
             <div
               onClick={toggleDropdown}
