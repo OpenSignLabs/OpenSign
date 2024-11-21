@@ -1,4 +1,9 @@
-                    GNU AFFERO GENERAL PUBLIC LICENSE
+* All content that resides under the "apps/OpenSignServer/cloud/customRoute" directory of this repository, if that directory exists, is licensed under the license defined in "apps/OpenSignServer/cloud/customRoute".
+* All third party components incorporated into the OpenSign Software are licensed under the original license provided by the owner of the applicable component.
+* Content outside of the above mentioned directories or restrictions above is available under the "GNU AFFERO GENERAL PUBLIC LICENSE" as defined below -
+
+
+                  GNU AFFERO GENERAL PUBLIC LICENSE
                        Version 3, 19 November 2007
 
  Copyright (C) 2007 Free Software Foundation, Inc. <https://fsf.org/>
