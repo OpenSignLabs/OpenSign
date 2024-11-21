@@ -163,7 +163,7 @@ const PlanSubscriptions = () => {
                 </button>
               
               <div className="card" style={{padding: "50px", margin: "20px", borderRadius: "6px"}}>
-                <p>Please contact Effi support team to active your account.</p>
+                <p>Please contact Effi support team to activate your account.</p>
               </div>
             </div>
           
