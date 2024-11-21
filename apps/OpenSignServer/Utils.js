@@ -1,8 +1,8 @@
 import dotenv from 'dotenv';
 dotenv.config();
 
-export const cloudServerUrl = 'http://localhost:8080/app';
-export const appName = process.env.APP_NAME || 'OpenSign™';
+export const cloudServerUrl = process.env.CLOUD_PORT ? `http://localhost:${process.env.CLOUD_PORT}/app` : 'http://localhost/app';
+export const appName = process.env.APP_NAME || 'EffiSign';
 export function customAPIurl() {
   const url = new URL(cloudServerUrl);
   return url.pathname === '/api/app' ? url.origin + '/api' : url.origin;
