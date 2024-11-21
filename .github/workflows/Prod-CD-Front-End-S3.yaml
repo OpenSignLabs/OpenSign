@@ -23,7 +23,7 @@ jobs:
     env:  # Environment variables for the entire job
       PUBLIC_URL: https://esign.effi.com.au/
       GENERATE_SOURCEMAP: false
-      REACT_APP_SERVERURL: https://esign-service.preprod.effi.com.au/app
+      REACT_APP_SERVERURL: https://esign-service.effi.com.au/app
       REACT_APP_APPID: effisign
       CI: false
     steps:
