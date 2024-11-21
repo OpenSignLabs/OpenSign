@@ -1270,7 +1270,7 @@ const ReportTable = (props) => {
   const formatStatusRow = (item) => {
     const signers = item?.Placeholders?.map((x, i) => {
       const matchSigner = item?.AuditTrail?.find(
-        (audit) => audit.UserPtr.objectId === x.signerObjId
+        (audit) => audit?.UserPtr?.objectId === x.signerObjId
       );
       if (matchSigner) {
         return {
