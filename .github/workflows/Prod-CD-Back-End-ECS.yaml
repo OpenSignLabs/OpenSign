@@ -33,11 +33,11 @@ jobs:
 
           echo "Built and tagged image $CONTAINER_NAME:$IMAGE_TAG"
 
-      # Step 4: Configure AWS credentials from OIDC Provider
-      - name: Configure AWS credentials from OIDC Provider
+      # Step 4: Configure AWS credentials for ECR account
+      - name: Configure AWS credentials for ECR account
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::241924812472:role/EFFI-GITHUB-CICD-Role  # IAM Role ARN to assume
+          role-to-assume: arn:aws:iam::241924812472:role/EFFI-GITHUB-CICD-Role  # IAM Role ARN for the ECR account
           aws-region: ${{ secrets.AWS_REGION }}  # AWS region (set as a secret)
           role-session-name: GitHub-CI-CD-Session  # Custom session name
           role-duration-seconds: 900  # Duration of the session (15 minutes)
@@ -46,7 +46,7 @@ jobs:
       - name: Log in to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v2
         with:
-          registry-ids: 241924812472  # AWS Account ID
+          registry-ids: 241924812472  # AWS Account ID for ECR
 
       # Step 6: Tag Docker image for ECR
       - name: Tag Docker image for ECR
@@ -67,3 +67,29 @@ jobs:
 
           docker push $REPOSITORY_URI:$IMAGE_TAG
           echo "Pushed image to $REPOSITORY_URI:$IMAGE_TAG"
+
+      # Step 8: Configure AWS credentials for ECS account
+      - name: Configure AWS credentials for ECS account
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::020859241731:role/EFFI-GITHUB-CICD-Role  # IAM Role ARN for the ECS account
+          aws-region: ap-southeast-2  # AWS region for ECS service
+          role-session-name: GitHub-CI-CD-ECS-Session  # Custom session name
+          role-duration-seconds: 900  # Duration of the session (15 minutes)
+
+      # Step 9: Force restart ECS service
+      - name: Force restart ECS service
+        run: |
+          CLUSTER_NAME=ECS-Cluster-SAAS-Production  # ECS cluster name
+          SERVICE_NAME=opensign-service-api-saas-production  # ECS service name
+          REGION=ap-southeast-2  # AWS region
+
+          echo "Force restarting ECS service $SERVICE_NAME in cluster $CLUSTER_NAME"
+
+          aws ecs update-service \
+            --cluster $CLUSTER_NAME \
+            --service $SERVICE_NAME \
+            --force-new-deployment \
+            --region $REGION
+
+          echo "ECS service $SERVICE_NAME has been force restarted successfully"
