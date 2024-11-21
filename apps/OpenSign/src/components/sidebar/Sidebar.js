@@ -122,13 +122,13 @@ const Sidebar = ({ isOpen, closeSidebar }) => {
       <div className="flex px-2 py-3 gap-2 items-center shadow-md">
         <div
           onClick={() => handleProfile()}
-          className="w-[75px] h-[75px] rounded-full ring-[2px] ring-offset-2 ring-gray-400 overflow-hidden cursor-pointer"
+          className="w-[15px] h-[25px] rounded-full  ring-offset-2  overflow-hidden cursor-pointer"
         >
-          <img
+          {/* <img
             className="w-full h-full object-contain"
             src={image}
             alt="Profile"
-          />
+          /> */}
         </div>
         <div>
           <p

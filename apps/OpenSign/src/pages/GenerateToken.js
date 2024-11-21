@@ -344,7 +344,7 @@ function GenerateToken() {
               <hr />
             </ul>
             <div className="flex flex-col md:flex-row items-center justify-center gap-0 md:gap-1">
-              <button
+            {/*  <button
                 type="button"
                 onClick={() =>
                   openInNewTab(
@@ -355,13 +355,13 @@ function GenerateToken() {
               >
                 {t("view-docs")}
               </button>
-              <button
+               <button
                 type="button"
                 onClick={() => handleBuyAPIsModal()}
                 className="op-btn op-btn-accent mt-2 mb-3 px-8 w-[210px] md:w-auto"
               >
                 {t("buy-credits")}
-              </button>
+              </button> */}
             </div>
             <ModalUi
               isOpen={isModal.generateapi}

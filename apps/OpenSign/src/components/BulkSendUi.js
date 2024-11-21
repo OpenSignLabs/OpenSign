@@ -396,7 +396,7 @@ const BulkSendUi = (props) => {
                             </button>
                           </div>
                         </form>
-                        <ModalUi
+                        {/* <ModalUi
                           isOpen={isQuotaReached}
                           handleClose={() => handleCloseQuotaReached()}
                         >
@@ -411,7 +411,7 @@ const BulkSendUi = (props) => {
                               {t("buy-credits")}
                             </button>
                           </div>
-                        </ModalUi>
+                        </ModalUi> */}
                       </div>
                     ) : (
                       <div className="text-black p-3 bg-white w-full text-sm md:text-base flex justify-center items-center">
