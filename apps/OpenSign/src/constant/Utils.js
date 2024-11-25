@@ -2425,23 +2425,9 @@ export const getDefaultSignature = async (objectId) => {
 };
 
 //function to rotate pdf page
-export async function rotatePdfPage(
-  url,
-  rotateDegree,
-  pageNumber,
-  pdfRotateBase64
-) {
-  let file;
-
-  //condition to handle pdf base64 in arrayBuffer format
-  if (pdfRotateBase64) {
-    file = base64ToArrayBuffer(pdfRotateBase64);
-  } else {
-    //condition to handle pdf url in arrayBuffer format
-    file = await convertPdfArrayBuffer(url);
-  }
+export async function rotatePdfPage(rotateDegree, pageNumber, pdfArrayBuffer) {
   // Load the existing PDF
-  const pdfDoc = await PDFDocument.load(file);
+  const pdfDoc = await PDFDocument.load(pdfArrayBuffer);
   // Get the page according to page number
   const page = pdfDoc.getPage(pageNumber);
   //get current page rotation angle
@@ -2507,21 +2493,35 @@ export const handleRemoveWidgets = (
   setSignerPos,
   signerPos,
   pageNumber,
+  userId,
   setIsRotate
 ) => {
-  const updatedSignerPos = signerPos.map((placeholderObj) => {
-    return {
-      ...placeholderObj,
-      placeHolder: placeholderObj?.placeHolder?.filter(
-        (data) => data?.pageNumber !== pageNumber
-      )
-    };
-  });
-  setSignerPos(updatedSignerPos);
-  setIsRotate({
-    status: false,
-    degree: 0
-  });
+  const isSigners = signerPos.some((data) => data.signerPtr);
+  if (isSigners) {
+    const updatedSignerPos = signerPos.map((placeholderObj) => {
+      if (placeholderObj.Id === userId) {
+        return {
+          ...placeholderObj,
+          placeHolder: placeholderObj?.placeHolder?.filter(
+            (data) => data?.pageNumber !== pageNumber
+          )
+        };
+      } else {
+        return placeholderObj;
+      }
+    });
+    setSignerPos(updatedSignerPos);
+    setIsRotate &&
+      setIsRotate({
+        status: false,
+        degree: 0
+      });
+  } else {
+    const updatedSignerPos = signerPos.filter(
+      (data) => data?.pageNumber !== pageNumber
+    );
+    setSignerPos(updatedSignerPos);
+  }
 };
 //function to show warning when user rotate page and there are some already widgets on that page
 export const handleRotateWarning = (signerPos, pageNumber) => {
@@ -2609,4 +2609,24 @@ export const formatDate = (date) => {
   });
   const format = formattedDate.replaceAll(/ /g, "-");
   return format;
+};
+
+export const deletePdfPage = async (pdfArrayBuffer, pageNumber) => {
+  // Load the existing PDF
+  const pdfDoc = await PDFDocument.load(pdfArrayBuffer);
+  // Get the total number of pages
+  const totalPages = pdfDoc.getPageCount();
+  // Ensure the page index is valid
+  if (totalPages > 1) {
+    //Remove the specified page
+    pdfDoc.removePage(pageNumber - 1);
+    // Save the modified PDF
+    const modifiedPdfBytes = await pdfDoc.saveAsBase64({
+      useObjectStreams: false
+    });
+    const arrayBuffer = base64ToArrayBuffer(modifiedPdfBytes);
+    return { arrayBuffer: arrayBuffer, base64: modifiedPdfBytes };
+  } else {
+    return { totalPages: 1 };
+  }
 };

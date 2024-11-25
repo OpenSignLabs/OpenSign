@@ -6,9 +6,9 @@ function RotateAlert(props) {
   const { t } = useTranslation();
   return (
     <ModalUi
-      isOpen={props.isRotate}
+      isOpen={props.showRotateAlert}
       title={t("Rotation-alert")}
-      handleClose={() => props.setIsRotate({ status: false, degree: 0 })}
+      handleClose={() => props.setShowRotateAlert({ status: false, degree: 0 })}
     >
       {" "}
       <div className="p-[20px] h-full">
@@ -16,7 +16,9 @@ function RotateAlert(props) {
         <div className="h-[1px]  w-full my-[15px] bg-[#9f9f9f]"></div>
         <div className="flex gap-1">
           <button
-            onClick={() => props.setIsRotate({ status: false, degree: 0 })}
+            onClick={() =>
+              props.setShowRotateAlert({ status: false, degree: 0 })
+            }
             type="button"
             className="op-btn op-btn-ghost shadow-md"
           >

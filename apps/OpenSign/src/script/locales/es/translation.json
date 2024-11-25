@@ -709,5 +709,9 @@
   },
   "expiry-date": "Date d'expiration",
   "expiry-date-updated": "La fecha de vencimiento se ha extendido con éxito hasta el {{newexpirydate}}",
-  "expiry-date-error": "Proporcione una nueva fecha de vencimiento que sea posterior a la actual"
+  "expiry-date-error": "Proporcione una nueva fecha de vencimiento que sea posterior a la actual",
+  "delete-page": "eliminar página",
+  "delete-alert": "No se puede eliminar una sola página",
+  "delete-alert-2": "¿Está seguro de que desea eliminar esta página?",
+  "delete-note": "Nota: una vez que elimines esta página, no podrás deshacerla"
 }

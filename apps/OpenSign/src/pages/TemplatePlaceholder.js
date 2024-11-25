@@ -33,7 +33,9 @@ import {
   color,
   signatureTypes,
   getTenantDetails,
-  handleSignatureType
+  handleSignatureType,
+  getBase64FromUrl,
+  convertPdfArrayBuffer
 } from "../constant/Utils";
 import RenderPdf from "../components/pdf/RenderPdf";
 import "../styles/AddUser.css";
@@ -102,7 +104,8 @@ const TemplatePlaceholder = () => {
   const [isNameModal, setIsNameModal] = useState(false);
   const [isTextSetting, setIsTextSetting] = useState(false);
   const [pdfLoad, setPdfLoad] = useState(false);
-  const [pdfRotateBase64, setPdfRotatese64] = useState("");
+  const [pdfBase64Url, setPdfBase64Url] = useState("");
+  const [isUploadPdf, setIsUploadPdf] = useState(false);
   const isMobile = window.innerWidth < 767;
   const [, drop] = useDrop({
     accept: "BOX",
@@ -139,6 +142,7 @@ const TemplatePlaceholder = () => {
   const [zoomPercent, setZoomPercent] = useState(0);
   const [scale, setScale] = useState(1);
   const [signatureType, setSignatureType] = useState([]);
+  const [pdfArrayBuffer, setPdfArrayBuffer] = useState("");
 
   useEffect(() => {
     fetchTemplate();
@@ -247,6 +251,17 @@ const TemplatePlaceholder = () => {
           tenantSignTypes,
           docSignTypes
         );
+        const url = documentData[0] && documentData[0]?.URL;
+        if (url) {
+          const arrayBuffer = await convertPdfArrayBuffer(url);
+          const base64Pdf = await getBase64FromUrl(url);
+          if (arrayBuffer === "Error") {
+            setHandleError(t("something-went-wrong-mssg"));
+          } else {
+            setPdfBase64Url(base64Pdf);
+            setPdfArrayBuffer(arrayBuffer);
+          }
+        }
         setSignatureType(updatedSignatureType);
         const updatedPdfDetails = [...documentData];
         updatedPdfDetails[0].SignatureType = updatedSignatureType;
@@ -709,12 +724,19 @@ const TemplatePlaceholder = () => {
         }
       });
     }
+    let pdfUrl;
+    if (isUploadPdf) {
+      pdfUrl = await convertBase64ToFile(pdfDetails[0].Name, pdfBase64Url);
+    }
     try {
       const templateCls = new Parse.Object("contracts_Template");
       templateCls.id = templateId;
       templateCls.set("Placeholders", signerPos);
       templateCls.set("Signers", signers);
       templateCls.set("SignatureType", signatureType);
+      if (pdfUrl) {
+        templateCls.set("URL", pdfUrl);
+      }
       await templateCls.save();
     } catch (err) {
       console.log("error in autosave template", err);
@@ -739,12 +761,9 @@ const TemplatePlaceholder = () => {
         });
       }
       let pdfUrl = pdfDetails[0]?.URL;
-      if (pdfRotateBase64) {
+      if (pdfBase64Url) {
         try {
-          pdfUrl = await convertBase64ToFile(
-            pdfDetails[0].Name,
-            pdfRotateBase64
-          );
+          pdfUrl = await convertBase64ToFile(pdfDetails[0].Name, pdfBase64Url);
         } catch (e) {
           console.log("error to convertBase64ToFile in placeholder flow", e);
         }
@@ -900,9 +919,9 @@ const TemplatePlaceholder = () => {
     setIsCreateDocModal(false);
     setIsCreateDoc(true);
     let pdfUrl = pdfDetails[0]?.URL;
-    if (pdfRotateBase64) {
+    if (pdfBase64Url) {
       try {
-        pdfUrl = await convertBase64ToFile(pdfDetails[0].Name, pdfRotateBase64);
+        pdfUrl = await convertBase64ToFile(pdfDetails[0].Name, pdfBase64Url);
       } catch (e) {
         console.log("error to convertBase64ToFile in placeholder flow", e);
       }
@@ -1327,24 +1346,31 @@ const TemplatePlaceholder = () => {
     if (isRotate) {
       setIsRotate({ status: true, degree: rotateDegree });
     } else {
+      setIsUploadPdf(false);
       const urlDetails = await rotatePdfPage(
         pdfDetails[0].URL,
         rotateDegree,
         pageNumber - 1,
-        pdfRotateBase64
+        pdfArrayBuffer
       );
-      setPdfRotatese64(urlDetails.base64);
+      setPdfBase64Url(urlDetails.base64);
     }
   };
   const handleRemovePlaceholder = async () => {
-    handleRemoveWidgets(setSignerPos, signerPos, pageNumber, setIsRotate);
+    handleRemoveWidgets(
+      setSignerPos,
+      signerPos,
+      pageNumber,
+      uniqueId,
+      setIsRotate
+    );
     const urlDetails = await rotatePdfPage(
       pdfDetails[0].URL,
       isRotate.degree,
       pageNumber - 1,
-      pdfRotateBase64
+      pdfBase64Url
     );
-    setPdfRotatese64(urlDetails.base64);
+    setPdfBase64Url(urlDetails.base64);
   };
 
   return (
@@ -1389,6 +1415,7 @@ const TemplatePlaceholder = () => {
                 setPageNumber={setPageNumber}
                 setSignBtnPosition={setSignBtnPosition}
                 pageNumber={pageNumber}
+                pdfBase64Url={pdfBase64Url}
               />
 
               {/* pdf render view */}
@@ -1397,6 +1424,13 @@ const TemplatePlaceholder = () => {
                   clickOnZoomIn={clickOnZoomIn}
                   clickOnZoomOut={clickOnZoomOut}
                   handleRotationFun={handleRotationFun}
+                  pdfArrayBuffer={pdfArrayBuffer}
+                  pageNumber={pageNumber}
+                  setPdfBase64Url={setPdfBase64Url}
+                  setPdfArrayBuffer={setPdfArrayBuffer}
+                  setIsUploadPdf={setIsUploadPdf}
+                  setSignerPos={setSignerPos}
+                  signerPos={signerPos}
                 />
                 <div className="w-full md:w-[95%]">
                   {/* this modal is used show alert set placeholder for all signers before send mail */}
@@ -1542,6 +1576,7 @@ const TemplatePlaceholder = () => {
                     handleRotationFun={handleRotationFun}
                     clickOnZoomIn={clickOnZoomIn}
                     clickOnZoomOut={clickOnZoomOut}
+                    setSignerPos={setSignerPos}
                   />
                   <div
                     ref={divRef}
@@ -1586,7 +1621,7 @@ const TemplatePlaceholder = () => {
                         setScale={setScale}
                         scale={scale}
                         setIsSelectId={setIsSelectId}
-                        pdfRotateBase64={pdfRotateBase64}
+                        pdfBase64Url={pdfBase64Url}
                         fontSize={fontSize}
                         setFontSize={setFontSize}
                         fontColor={fontColor}

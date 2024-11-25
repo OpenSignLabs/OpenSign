@@ -709,5 +709,9 @@
   },
   "expiry-date": "Expiry Date",
   "expiry-date-updated": "The expiry date has been successfully extended to {{newexpirydate}}",
-  "expiry-date-error": "Please provide a new expiry date that is later than the current one"
+  "expiry-date-error": "Please provide a new expiry date that is later than the current one",
+  "delete-page":"Delete page",
+  "delete-alert":"Can not delete single page",
+  "delete-alert-2":"Are you sure want to delete this page ?",
+  "delete-note":"Note - once delete this page you can not undo"
 }

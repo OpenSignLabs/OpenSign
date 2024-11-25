@@ -708,5 +708,9 @@
   },
   "expiry-date": "Fecha de caducidad",
   "expiry-date-updated": "La date d'expiration a été prolongée avec succès jusqu'au {{newexpirydate}}",
-  "expiry-date-error": "Veuillez fournir une nouvelle date d'expiration postérieure à la date actuelle"
+  "expiry-date-error": "Veuillez fournir une nouvelle date d'expiration postérieure à la date actuelle",
+  "delete-page": "supprimer la page",
+  "delete-alert": "Impossible de supprimer une seule page",
+  "delete-alert-2": "Etes-vous sûr de vouloir supprimer cette page ?",
+  "delete-note": "Remarque : une fois cette page supprimée, vous ne pouvez plus l'annuler"
 }

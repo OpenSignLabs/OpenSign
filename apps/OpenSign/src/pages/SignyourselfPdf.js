@@ -37,7 +37,9 @@ import {
   onClickZoomIn,
   onClickZoomOut,
   rotatePdfPage,
-  signatureTypes
+  signatureTypes,
+  getBase64FromUrl,
+  convertBase64ToFile
 } from "../constant/Utils";
 import { useParams } from "react-router-dom";
 import Tour from "reactour";
@@ -129,11 +131,12 @@ function SignYourSelf() {
   const [zoomPercent, setZoomPercent] = useState(0);
   const isHeader = useSelector((state) => state.showHeader);
   const [scale, setScale] = useState(1);
-  const [pdfRotateBase64, setPdfRotatese64] = useState("");
+  const [pdfBase64Url, setPdfBase64Url] = useState("");
   const [isRotate, setIsRotate] = useState({ status: false, degree: 0 });
   const [isSubscribe, setIsSubscribe] = useState({ plan: "", isValid: true });
   const [isDownloadModal, setIsDownloadModal] = useState(false);
   const [isResize, setIsResize] = useState(false);
+  const [isUploadPdf, setIsUploadPdf] = useState(false);
   const divRef = useRef(null);
   const nodeRef = useRef(null);
   const [, drop] = useDrop({
@@ -221,13 +224,17 @@ function SignYourSelf() {
             ? documentData[0]?.Placeholders
             : [];
         setXyPostion(placeholders);
-        const url = documentData[0] && documentData[0]?.URL;
+        const url =
+          documentData[0] &&
+          (documentData[0]?.SignedUrl || documentData[0]?.URL);
         if (url) {
           //convert document url in array buffer format to use embed widgets in pdf using pdf-lib
           const arrayBuffer = await convertPdfArrayBuffer(url);
+          const base64Pdf = await getBase64FromUrl(url);
           if (arrayBuffer === "Error") {
             setHandleError(t("something-went-wrong-mssg"));
           } else {
+            setPdfBase64Url(base64Pdf);
             setPdfArrayBuffer(arrayBuffer);
           }
         } else {
@@ -562,15 +569,23 @@ function SignYourSelf() {
     }, 2000);
     return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [xyPostion]);
+  }, [xyPostion, pdfBase64Url]);
 
   // `autosavedetails` is used to save doc details after every 2 sec when changes are happern in placeholder like drag-drop widgets, remove signers
   const autosavedetails = async () => {
     try {
       const docCls = new Parse.Object("contracts_Document");
       docCls.id = documentId;
+      let pdfUrl;
+      if (isUploadPdf) {
+        pdfUrl = await convertBase64ToFile(pdfDetails[0].Name, pdfBase64Url);
+      }
+      console.log("isUploadPdf", isUploadPdf);
       docCls.set("Placeholders", xyPostion);
       docCls.set("IsSignyourself", true);
+      if (pdfUrl) {
+        docCls.set("URL", pdfUrl);
+      }
       await docCls.save();
     } catch (e) {
       console.log("error", e);
@@ -765,7 +780,7 @@ function SignYourSelf() {
       const signedpdf = JSON.parse(JSON.stringify(resSignPdf));
       setPdfUrl(signedpdf);
       getDocumentDetails(false);
-      setPdfRotatese64("");
+      setPdfBase64Url("");
     }
   };
 
@@ -1127,14 +1142,14 @@ function SignYourSelf() {
     if (isPlaceholder) {
       setIsRotate({ status: true, degree: rotateDegree });
     } else {
+      setIsUploadPdf(true);
       const urlDetails = await rotatePdfPage(
-        pdfUrl || pdfDetails[0].URL,
         rotateDegree,
         pageNumber - 1,
-        pdfRotateBase64
+        pdfBase64Url
       );
       setPdfArrayBuffer && setPdfArrayBuffer(urlDetails.arrayBuffer);
-      setPdfRotatese64(urlDetails.base64);
+      setPdfBase64Url(urlDetails.base64);
     }
   };
 
@@ -1158,10 +1173,10 @@ function SignYourSelf() {
       pdfUrl || pdfDetails[0].URL,
       isRotate.degree,
       pageNumber - 1,
-      pdfRotateBase64
+      pdfArrayBuffer
     );
     setPdfArrayBuffer && setPdfArrayBuffer(urlDetails.arrayBuffer);
-    setPdfRotatese64(urlDetails.base64);
+    setPdfBase64Url(urlDetails.base64);
     setXyPostion(updatePlaceholder);
     setIsRotate({ status: false, degree: 0 });
   };
@@ -1228,13 +1243,20 @@ function SignYourSelf() {
               setSignBtnPosition={setSignBtnPosition}
               pageNumber={pageNumber}
               containerWH={containerWH}
-              pdfRotateBase64={pdfRotateBase64}
+              pdfBase64Url={pdfBase64Url}
             />
             <div className=" w-full md:w-[57%] flex mr-4">
               <PdfZoom
                 clickOnZoomIn={clickOnZoomIn}
                 clickOnZoomOut={clickOnZoomOut}
                 handleRotationFun={handleRotationFun}
+                pdfArrayBuffer={pdfArrayBuffer}
+                pageNumber={pageNumber}
+                setPdfBase64Url={setPdfBase64Url}
+                setPdfArrayBuffer={setPdfArrayBuffer}
+                setIsUploadPdf={setIsUploadPdf}
+                setSignerPos={setXyPostion}
+                signerPos={xyPostion}
               />
               <div className="w-full md:w-[95%]">
                 <ModalUi
@@ -1348,6 +1370,12 @@ function SignYourSelf() {
                   clickOnZoomOut={clickOnZoomOut}
                   widgetsDetails={xyPostion}
                   setIsDownloadModal={setIsDownloadModal}
+                  setIsUploadPdf={setIsUploadPdf}
+                  pdfArrayBuffer={pdfArrayBuffer}
+                  setPdfArrayBuffer={setPdfArrayBuffer}
+                  setPdfBase64Url={setPdfBase64Url}
+                  setSignerPos={setXyPostion}
+                  signerPos={xyPostion}
                 />
                 <div ref={divRef} data-tut="reactourSecond" className="h-full">
                   {containerWH?.width && containerWH?.height && (
@@ -1388,7 +1416,7 @@ function SignYourSelf() {
                       handleTextSettingModal={handleTextSettingModal}
                       setScale={setScale}
                       scale={scale}
-                      pdfRotateBase64={pdfRotateBase64}
+                      pdfBase64Url={pdfBase64Url}
                       fontSize={fontSize}
                       setFontSize={setFontSize}
                       fontColor={fontColor}

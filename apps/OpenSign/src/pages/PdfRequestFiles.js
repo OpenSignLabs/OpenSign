@@ -41,7 +41,8 @@ import {
   fetchUrl,
   signatureTypes,
   handleSignatureType,
-  getTenantDetails
+  getTenantDetails,
+  getBase64FromUrl
 } from "../constant/Utils";
 import Header from "../components/pdf/PdfHeader";
 import RenderPdf from "../components/pdf/RenderPdf";
@@ -146,6 +147,7 @@ function PdfRequestFiles(props) {
   const divRef = useRef(null);
   const [isDownloadModal, setIsDownloadModal] = useState(false);
   const [signatureType, setSignatureType] = useState([]);
+  const [pdfBase64Url, setPdfBase64Url] = useState("");
   const isMobile = window.innerWidth < 767;
 
   let isGuestSignFlow = false;
@@ -323,10 +325,9 @@ function PdfRequestFiles(props) {
             documentData[0] &&
             (documentData[0]?.SignedUrl || documentData[0]?.URL);
           if (url) {
-            //convert document url in array buffer format to use embed widgets in pdf using pdf-lib
-            const arrayBuffer = await convertPdfArrayBuffer(url);
-            if (arrayBuffer === "Error") {
-              setHandleError(t("something-went-wrong-mssg"));
+            const base64Pdf = await getBase64FromUrl(url);
+            if (base64Pdf) {
+              setPdfBase64Url(base64Pdf);
             }
           } else {
             setHandleError(t("something-went-wrong-mssg"));
@@ -443,10 +444,9 @@ function PdfRequestFiles(props) {
           documentData[0] &&
           (documentData[0]?.SignedUrl || documentData[0]?.URL);
         if (url) {
-          //convert document url in array buffer format to use embed widgets in pdf using pdf-lib
-          const arrayBuffer = await convertPdfArrayBuffer(url);
-          if (arrayBuffer === "Error") {
-            setHandleError(t("something-went-wrong-mssg"));
+          const base64Pdf = await getBase64FromUrl(url);
+          if (base64Pdf) {
+            setPdfBase64Url(base64Pdf);
           }
         } else {
           setHandleError(t("something-went-wrong-mssg"));
@@ -2063,15 +2063,12 @@ function PdfRequestFiles(props) {
                 <RenderAllPdfPage
                   signerPos={signerPos}
                   signerObjectId={signerObjectId}
-                  signPdfUrl={
-                    pdfDetails[0] &&
-                    (pdfDetails[0]?.SignedUrl || pdfDetails[0]?.URL)
-                  }
                   allPages={allPages}
                   setAllPages={setAllPages}
                   setPageNumber={setPageNumber}
                   pageNumber={pageNumber}
                   containerWH={containerWH}
+                  pdfBase64Url={pdfBase64Url}
                 />
                 {/* pdf render view */}
                 <div className=" w-full md:w-[57%] flex mr-4">
@@ -2079,6 +2076,7 @@ function PdfRequestFiles(props) {
                     clickOnZoomIn={clickOnZoomIn}
                     clickOnZoomOut={clickOnZoomOut}
                     isDisableRotate={true}
+                    isDisableDelete={true}
                   />
                   <div className=" w-full md:w-[95%] ">
                     {/* this modal is used show this document is already sign */}
@@ -2272,6 +2270,7 @@ function PdfRequestFiles(props) {
                           uniqueId={uniqueId}
                           ispublicTemplate={isPublicTemplate}
                           handleUserDetails={handleUserDetails}
+                          pdfBase64Url={pdfBase64Url}
                         />
                       )}
                     </div>

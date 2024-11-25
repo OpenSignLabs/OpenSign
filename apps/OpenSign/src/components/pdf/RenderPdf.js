@@ -61,7 +61,7 @@ function RenderPdf({
   setIsSelectId,
   ispublicTemplate,
   handleUserDetails,
-  pdfRotateBase64,
+  pdfBase64Url,
   fontSize,
   setFontSize,
   fontColor,
@@ -256,8 +256,7 @@ function RenderPdf({
       );
     }
   };
-  const pdfDataBase64 = `data:application/pdf;base64,${pdfRotateBase64}`;
-
+  const pdfDataBase64 = `data:application/pdf;base64,${pdfBase64Url}`;
   return (
     <>
       {successEmail && (
@@ -377,10 +376,11 @@ function RenderPdf({
                       return (
                         <React.Fragment key={ind}>
                           {data.pageNumber === pageNumber &&
-                            data.pos.map((pos) => {
+                            data.pos.map((pos, id) => {
                               return (
                                 pos && (
                                   <Placeholder
+                                    key={id}
                                     pos={pos}
                                     setIsPageCopy={setIsPageCopy}
                                     setSignKey={setSignKey}
@@ -443,7 +443,7 @@ function RenderPdf({
                 }
               }}
               file={
-                (pdfRotateBase64 && pdfDataBase64) ||
+                (pdfBase64Url && pdfDataBase64) ||
                 pdfDetails[0]?.SignedUrl ||
                 pdfDetails[0].URL
               }
@@ -640,9 +640,8 @@ function RenderPdf({
                   setSelectWidgetId("");
                 }
               }}
-              // ref={pdfRef}
               file={
-                (pdfRotateBase64 && pdfDataBase64) ||
+                (pdfBase64Url && pdfDataBase64) ||
                 pdfDetails[0]?.SignedUrl ||
                 pdfDetails[0].URL
               }

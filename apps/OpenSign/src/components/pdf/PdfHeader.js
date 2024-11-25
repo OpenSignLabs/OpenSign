@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import PrevNext from "./PrevNext";
 import {
+  deletePdfPage,
   handleDownloadCertificate,
   handleDownloadPdf,
+  handleRemoveWidgets,
   handleToPrint
 } from "../../constant/Utils";
 import "../../styles/signature.css";
@@ -41,7 +43,13 @@ function Header({
   isDisableRotate,
   templateId,
   setIsDownloadModal,
-  disabledBackBtn
+  disabledBackBtn,
+  setPdfArrayBuffer,
+  setPdfBase64Url,
+  pdfArrayBuffer,
+  setIsUploadPdf,
+  setSignerPos,
+  userId
 }) {
   const { t } = useTranslation();
   const filterPrefill =
@@ -49,12 +57,25 @@ function Header({
   const isMobile = window.innerWidth < 767;
   const [isDownloading, setIsDownloading] = useState("");
   const isGuestSigner = localStorage.getItem("isGuestSigner");
+  const [isDeletePage, setIsDeletePage] = useState(false);
   const enabledBackBtn = disabledBackBtn === true ? false : true;
 
   //function for show decline alert
   const handleDeclinePdfAlert = async () => {
     const currentDecline = { currnt: "Sure", isDeclined: true };
     setIsDecline(currentDecline);
+  };
+  const handleDetelePage = async () => {
+    setIsUploadPdf(true);
+    const pdfupdatedData = await deletePdfPage(pdfArrayBuffer, pageNumber);
+    if (pdfupdatedData?.totalPages === 1) {
+      alert(t("delete-alert"));
+    } else {
+      setPdfBase64Url(pdfupdatedData.base64);
+      setPdfArrayBuffer(pdfupdatedData.arrayBuffer);
+      setIsDeletePage(false);
+      handleRemoveWidgets(setSignerPos, signerPos, pageNumber, userId);
+    }
   };
   return (
     <div className="flex py-[5px]">
@@ -252,6 +273,17 @@ function Header({
                                   <i className="fa-light fa-rotate-left text-gray-500 2xl:text-[30px] mr-[3px]"></i>
                                   <span className="font-[500]">
                                     {t("rotate-left")}
+                                  </span>
+                                </div>
+                              </DropdownMenu.Item>
+                              <DropdownMenu.Item
+                                className="DropdownMenuItem"
+                                onClick={() => setIsDeletePage(true)}
+                              >
+                                <div className="flex flex-row">
+                                  <i className="fa-light fa-trash  text-gray-500 2xl:text-[30px] mr-[3px]"></i>
+                                  <span className="font-[500]">
+                                    {t("delete-page")}
                                   </span>
                                 </div>
                               </DropdownMenu.Item>
@@ -551,6 +583,32 @@ function Header({
         <div className="p-3 md:p-5 text-[13px] md:text-base text-center text-base-content">
           {isDownloading === "certificate"}{" "}
           <p>{t("generate-certificate-alert")}</p>
+        </div>
+      </ModalUi>
+      <ModalUi
+        isOpen={isDeletePage}
+        title={t("validation-alert")}
+        handleClose={() => setIsDeletePage(false)}
+      >
+        <div className="h-[100%] p-[20px]">
+          <p>{t("delete-alert-2")}</p>
+          <p className="pt-3 font-medium">{t("delete-note")}</p>
+          {/* <p>{t("deletepage-alert")}</p> */}
+          <div className="h-[1px] bg-[#9f9f9f] w-full my-[15px]"></div>
+          <button
+            onClick={() => handleDetelePage()}
+            type="button"
+            className="op-btn op-btn-primary"
+          >
+            {t("yes")}
+          </button>
+          <button
+            onClick={() => setIsDeletePage(false)}
+            type="button"
+            className="op-btn op-btn-ghost"
+          >
+            {t("no")}
+          </button>
         </div>
       </ModalUi>
     </div>
