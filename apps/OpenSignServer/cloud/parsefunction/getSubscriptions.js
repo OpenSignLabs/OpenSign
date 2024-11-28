@@ -95,13 +95,22 @@ export default async function getSubscription(request) {
   } else if (contactId) {
     try {
       const contactCls = new Parse.Query('contracts_Contactbook');
+      contactCls.include('CreatedBy');
       const contactUser = await contactCls.get(contactId, { useMasterKey: true });
       if (contactUser) {
+        const _contractUser = JSON.parse(JSON.stringify(contactUser));
+        let TenantId = _contractUser?.TenantId?.objectId || '';
+        if (!TenantId) {
+          const extUserCls = new Parse.Query('contracts_Users');
+          extUserCls.equalTo('Email', _contractUser.CreatedBy.email);
+          const contactUser = await extUserCls.first({ useMasterKey: true });
+          TenantId = contactUser?.get('TenantId')?.id || '';
+        }
         const subscriptionCls = new Parse.Query('contracts_Subscriptions');
         subscriptionCls.equalTo('TenantId', {
           __type: 'Pointer',
           className: 'partners_Tenant',
-          objectId: contactUser.get('TenantId').id,
+          objectId: TenantId,
         });
         subscriptionCls.descending('createdAt');
         const subcripitions = await subscriptionCls.first({ useMasterKey: true });
