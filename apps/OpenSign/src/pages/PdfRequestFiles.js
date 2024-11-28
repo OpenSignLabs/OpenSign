@@ -531,9 +531,9 @@ function PdfRequestFiles(props) {
           const obj = documentData?.[0];
           setSendInOrder(obj?.SendinOrder || false);
           if (
-            obj &&
-            obj?.Signers?.length > 0 &&
-            obj?.Placeholders?.length > 0
+            obj?.Signers?.length &&
+            obj?.Placeholders?.length &&
+            currUserId !== "undefined"
           ) {
             const params = {
               event: "viewed",
