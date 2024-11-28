@@ -1599,7 +1599,11 @@ function PlaceHolderSign() {
     }
   };
   const handleRecipientSign = () => {
-    navigate(`/recipientSignPdf/${documentId}/${currentId}`);
+    if (currentId) {
+      navigate(`/recipientSignPdf/${documentId}/${currentId}`);
+    } else {
+      navigate(`/recipientSignPdf/${documentId}`);
+    }
   };
   const handleLinkUser = (id) => {
     setIsAddUser({ [id]: true });
