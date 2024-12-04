@@ -14,6 +14,7 @@ async function uploadFileToS3(buffer, fileName, mimeType, adapter) {
     client = new S3Client({
       region: adapter?.region,
       credentials: { accessKeyId: adapter?.accessKeyId, secretAccessKey: adapter?.secretAccessKey },
+      signatureVersion: "v4" 
     });
   }
   const prefixId = crypto.randomBytes(16).toString('hex');
