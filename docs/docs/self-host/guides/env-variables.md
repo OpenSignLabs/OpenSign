@@ -25,7 +25,7 @@ Environment Varaibles:
 | DO_ACCESS_KEY_ID  | YOUR_S3_ACCESS_ID  | Digital ocean spaces access key ID or AWS s3 Access key ID for uploading the docs |
 | DO_SECRET_ACCESS_KEY  | YOUR_S3_ACCESS_KEY  | Digital ocean spaces secret access key or AWS s3 secret access key for uploading the docs |
 | DO_REGION  | YOUR_S3_REGION  | Digital ocean spaces region or AWS s3 region |
-| USE_LOCAL  | FALSE  | To use local file storage to save file |
+| USE_LOCAL  | FALSE  | Set this to true in order to use local file storage to save files |
 | MAILGUN_API_KEY  | YOUR_MAILGUNAPI_KEY  | Mailgun API Key |
 | MAILGUN_DOMAIN  | YOUR_MAILGUNAPI_DOMAIN | Mailgun API Domain |
 | MAILGUN_SENDER  | - | Mailgun Sender Mail ID |
