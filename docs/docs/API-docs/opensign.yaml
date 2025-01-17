@@ -289,7 +289,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/createdocument_body'
+              $ref: '#/components/schemas/draftdocument_body'
         required: true
       responses:
         "200":
@@ -1543,9 +1543,72 @@ components:
           type: boolean
           description: "true - this option will enable a guided tour for signers, providing instructions during the signing process. false - disable the guided tour, ensuring a faster, uninterrupted signing experience."
           example: false
+    draftdocument_body:
+      required:
+      - file
+      - title
+      type: object
+      properties:
+        file:
+          type: string
+          format: base64
+          example: base64 encoded pdf
+        title:
+          type: string
+          format: string
+          example: sample document
+        description:
+          type: string
+          format: string
+          example: sample Description
+        note:
+          type: string
+          format: string
+          example: sample Note
+        timeToCompleteDays:
+          type: number
+          description: time to complete days is used to calculate expiry date of your document
+          format: number
+          example: 15
+        signers:
+          type: array
+          items:
+            $ref: '#/components/schemas/createdocument_body_signers'
+        folderId:
+          type: string
+          example: ""
+        send_email:
+          type: boolean
+          description: "This parameter allows you to specify whether you want emails to be sent to signers. The default value is \"true\". If the value of this parameter is \"true\" and no 'email_subject'/'email_body' parameters are specified default email templates will be used.          \n"
+          example: true
+        email_subject:
+          type: string
+          description: "Custom mail subject for signature request. Can include the following  {{document_title}} {{sender_name}}, {{sender_mail}}, {{sender_phone}}, {{receiver_name}}, {{receiver_email}}, {{receiver_phone}}, {{expiry_date}}, {{company_name}}, {{signing_url}}."
+          example: ""
+        email_body:
+          type: string
+          description: "Custom signature request email body. Can include the following  {{document_title}} {{sender_name}}, {{sender_mail}}, {{sender_phone}}, {{receiver_name}}, {{receiver_email}}, {{receiver_phone}}, {{expiry_date}}, {{company_name}}, {{signing_url}}."
+          example: ""
+        sendInOrder:
+          type: boolean
+          description: "If set to 'true', only the first signer will receive the signature request email initially. Emails to subsequent signers will be triggered sequentially, with each sent only after the previous signer has completed their signing. By default, sendInOrder is set to 'true'."
+          example: true
+        enableOTP:
+          type: boolean
+          description: "true - this option will enable OTP verification. Users will receive a verification code via email, which they must enter to sign the document. false -  this option will disable OTP verification, allowing users to sign the document directly without additional steps."
+          example: false
+        enableTour:
+          type: boolean
+          description: "true - this option will enable a guided tour for signers, providing instructions during the signing process. false - disable the guided tour, ensuring a faster, uninterrupted signing experience."
+          example: false
+        email_sender_name:
+          type: string
+          description: name or email of the person or organization on the behalf of which you are sending the mail.
+          example: opensign
     createdocument_body:
       required:
       - file
+      - signers
       - title
       type: object
       properties:
