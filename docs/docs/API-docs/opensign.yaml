@@ -1265,6 +1265,16 @@ components:
           $ref: '#/components/schemas/date'
         updatedAt:
           $ref: '#/components/schemas/date'
+        enableTour:
+          type: boolean
+          example: true
+        redirect_url:
+          type: string
+          format: string
+          example: ""
+        allow_modifications:
+          type: boolean
+          example: false
       xml:
         name: template
     contact:
@@ -1405,6 +1415,16 @@ components:
           $ref: '#/components/schemas/date'
         updatedAt:
           $ref: '#/components/schemas/date'
+        enableTour:
+          type: boolean
+          example: true
+        redirect_url:
+          type: string
+          format: string
+          example: ""
+        allow_modifications:
+          type: boolean
+          example: false
       xml:
         name: document
     invalidtoken:
@@ -1543,6 +1563,10 @@ components:
           type: boolean
           description: "true - this option will enable a guided tour for signers, providing instructions during the signing process. false - disable the guided tour, ensuring a faster, uninterrupted signing experience."
           example: false
+        redirect_url:
+          type: string
+          description: Specifies the URL where the signer will be redirected upon completing the document signing process.
+          example: ""
     draftdocument_body:
       required:
       - file
@@ -1601,10 +1625,18 @@ components:
           type: boolean
           description: "true - this option will enable a guided tour for signers, providing instructions during the signing process. false - disable the guided tour, ensuring a faster, uninterrupted signing experience."
           example: false
+        redirect_url:
+          type: string
+          description: Specifies the URL where the signer will be redirected upon completing the document signing process.
+          example: ""
         email_sender_name:
           type: string
           description: name or email of the person or organization on the behalf of which you are sending the mail.
-          example: opensign
+          example: opensign™
+        allow_modifications:
+          type: boolean
+          description: "true - Permits signers to add elements such as signatures, initials, stamps, or text on top of existing widgets in the document. false - Restricts signers from adding any additional elements to the document. This is the default value."
+          example: false
     createdocument_body:
       required:
       - file
@@ -1664,10 +1696,18 @@ components:
           type: boolean
           description: "true - this option will enable a guided tour for signers, providing instructions during the signing process. false - disable the guided tour, ensuring a faster, uninterrupted signing experience."
           example: false
+        redirect_url:
+          type: string
+          description: Specifies the URL where the signer will be redirected upon completing the document signing process.
+          example: ""
         email_sender_name:
           type: string
           description: name or email of the person or organization on the behalf of which you are sending the mail.
-          example: opensign
+          example: opensign™
+        allow_modifications:
+          type: boolean
+          description: "true - Permits signers to add elements such as signatures, initials, stamps, or text on top of existing widgets in the document. false - Restricts signers from adding any additional elements to the document. This is the default value."
+          example: false
     inline_response_200_1:
       type: object
       properties:
@@ -1748,6 +1788,14 @@ components:
           type: boolean
           description: "true - this option will enable a guided tour for signers, providing instructions during the signing process. false - disable the guided tour, ensuring a faster, uninterrupted signing experience."
           example: false
+        email_sender_name:
+          type: string
+          description: name or email of the person or organization on the behalf of which you are sending the mail.
+          example: opensign™
+        allow_modifications:
+          type: boolean
+          description: "true - Permits signers to add elements such as signatures, initials, stamps, or text on top of existing widgets in the document. false - Restricts signers from adding any additional elements to the document. This is the default value."
+          example: false
     resendmail_body:
       required:
       - document_id
@@ -1816,6 +1864,10 @@ components:
         enableTour:
           type: boolean
           description: "true - this option will enable a guided tour for signers, providing instructions during the signing process. false - disable the guided tour, ensuring a faster, uninterrupted signing experience."
+          example: false
+        allow_modifications:
+          type: boolean
+          description: "true - Permits signers to add elements such as signatures, initials, stamps, or text on top of existing widgets in the document. false - Restricts signers from adding any additional elements to the document. This is the default value."
           example: false
     inline_response_200_3:
       type: object
@@ -1892,6 +1944,18 @@ components:
           type: boolean
           description: "true - this option will enable a guided tour for signers, providing instructions during the signing process. false - disable the guided tour, ensuring a faster, uninterrupted signing experience."
           example: false
+        redirect_url:
+          type: string
+          description: Specifies the URL where the signer will be redirected upon completing the document signing process.
+          example: ""
+        email_sender_name:
+          type: string
+          description: name or email of the person or organization on the behalf of which you are sending the mail.
+          example: opensign™
+        allow_modifications:
+          type: boolean
+          description: "true - Permits signers to add elements such as signatures, initials, stamps, or text on top of existing widgets in the document. false - Restricts signers from adding any additional elements to the document. This is the default value."
+          example: false
     inline_response_draft_200:
       type: object
       properties:
@@ -1941,6 +2005,10 @@ components:
         enableTour:
           type: boolean
           description: "true - this option will enable a guided tour for signers, providing instructions during the signing process. false - disable the guided tour, ensuring a faster, uninterrupted signing experience."
+          example: false
+        allow_modifications:
+          type: boolean
+          description: "true - Permits signers to add elements such as signatures, initials, stamps, or text on top of existing widgets in the document. false - Restricts signers from adding any additional elements to the document. This is the default value."
           example: false
     inline_response_404_7:
       type: object
