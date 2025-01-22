@@ -6,6 +6,7 @@ function SelectLanguage(props) {
   const { i18n } = useTranslation();
   const languages = [
     { value: "en", text: "English" },
+    { value: "de", text: "Deutsch" },
     { value: "es", text: "Española" },
     { value: "fr", text: "Français" }
   ];

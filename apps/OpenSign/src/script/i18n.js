@@ -2,6 +2,7 @@ import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 import LanguageDetector from "i18next-browser-languagedetector";
 import en from "./locales/en/translation.json";
+import de from "./locales/de/translation.json";
 import es from "./locales/es/translation.json";
 import fr from "./locales/fr/translation.json";
 
@@ -12,6 +13,9 @@ i18n
     resources: {
       en: {
         translation: en
+      },
+      de: {
+        translation: de
       },
       es: {
         translation: es
@@ -31,7 +35,7 @@ i18n
     interpolation: {
       escapeValue: false // React already does escaping
     },
-    whitelist: ["en", "es", "fr"] // List of allowed languages
+    whitelist: ["en", "de", "es", "fr"] // List of allowed languages
   });
 
 export default i18n;
