@@ -20,6 +20,7 @@ export default async function createTemplatewithCoordinate(request, response) {
   const SendinOrder = request.body.sendInOrder || true;
   const isEnableOTP = request.body?.enableOTP === true ? true : false;
   const isTourEnabled = request.body?.enableTour || false;
+  const baseDocument = request.body.baseDocument || null; // P243d
 
   // console.log('fileData ', fileData);
   const protocol = customAPIurl();
@@ -98,6 +99,9 @@ export default async function createTemplatewithCoordinate(request, response) {
         object.set('ExtUserPtr', extUserPtr);
         object.set('IsEnableOTP', isEnableOTP);
         object.set('IsTourEnabled', isTourEnabled);
+        if (baseDocument) { // P335d
+          object.set('BaseDocument', baseDocument);
+        }
         let contact = [];
         if (signers && signers.length > 0) {
           let parseSigners;

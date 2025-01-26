@@ -51,6 +51,7 @@ export default async function createDocumentWithTemplate(request, response) {
   const email_body = request.body.email_body;
   const sendInOrder = request.body.sendInOrder || true;
   const TimeToCompleteDays = request.body.timeToCompleteDays || 15;
+  const baseDocument = request.body.baseDocument || null; // Pbbc3
 
   try {
     const reqToken = request.headers['x-api-token'];
@@ -191,8 +192,13 @@ export default async function createDocumentWithTemplate(request, response) {
                 } else {
                   object.set('Signers', templateSigner);
                 }
-                object.set('URL', template.URL);
-                object.set('SignedUrl', template.URL);
+                if (baseDocument) { // P69e9
+                  object.set('URL', baseDocument);
+                  object.set('SignedUrl', baseDocument);
+                } else {
+                  object.set('URL', template.URL);
+                  object.set('SignedUrl', template.URL);
+                }
                 object.set('SentToOthers', true);
                 if (TimeToCompleteDays) {
                   object.set('TimeToCompleteDays', TimeToCompleteDays);

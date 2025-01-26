@@ -139,6 +139,7 @@ const TemplatePlaceholder = () => {
   const [zoomPercent, setZoomPercent] = useState(0);
   const [scale, setScale] = useState(1);
   const [signatureType, setSignatureType] = useState([]);
+  const [baseDocument, setBaseDocument] = useState(null); // P9c02
 
   useEffect(() => {
     fetchTemplate();
@@ -769,6 +770,10 @@ const TemplatePlaceholder = () => {
               ? pdfDetails[0]?.NotifyOnSignatures
               : false
         };
+        if (baseDocument) { // P7c26
+          const base64 = await convertBase64ToFile(baseDocument.name, baseDocument);
+          data.BaseDocument = base64;
+        }
         const updateTemplate = new Parse.Object("contracts_Template");
         updateTemplate.id = templateId;
         for (const key in data) {
@@ -1060,6 +1065,9 @@ const TemplatePlaceholder = () => {
     });
     setPdfDetails(updateTemplate);
     setIsMailSend(false);
+    if (data.BaseDocument) { // P86bd
+      setBaseDocument(data.BaseDocument);
+    }
   };
 
   const handleCloseRoleModal = () => {

@@ -21,7 +21,8 @@ const EditTemplate = ({ template, onSuccess, jwttoken }) => {
     NotifyOnSignatures:
       template?.NotifyOnSignatures !== undefined
         ? template?.NotifyOnSignatures
-        : false
+        : false,
+    BaseDocument: null
   });
   const [isSubscribe, setIsSubscribe] = useState(false);
   useEffect(() => {
@@ -36,6 +37,10 @@ const EditTemplate = ({ template, onSuccess, jwttoken }) => {
   };
   const handleStrInput = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleFileInput = (e) => {
+    setFormData({ ...formData, BaseDocument: e.target.files[0] });
   };
 
   // Define a function to handle form submission
@@ -84,6 +89,17 @@ const EditTemplate = ({ template, onSuccess, jwttoken }) => {
             <div className="op-input op-input-bordered op-input-sm focus:outline-none py-2 font-semibold w-full text-xs">
               {getFileName(template.URL)}
             </div>
+          </div>
+          <div className="mb-[0.35rem]">
+            <label htmlFor="baseDocument" className="text-[13px]">
+              {t("Base Document")}
+            </label>
+            <input
+              type="file"
+              name="BaseDocument"
+              onChange={handleFileInput}
+              className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
+            />
           </div>
           <div className="mb-[0.35rem]">
             <label htmlFor="name" className="text-[13px]">
