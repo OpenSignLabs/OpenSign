@@ -8,7 +8,7 @@
     "@pdf-lib/fontkit": "^1.1.1",
     "@radix-ui/themes": "^3.1.6",
     "@react-pdf/renderer": "^4.1.4",
-    "@reduxjs/toolkit": "^2.3.0",
+    "@reduxjs/toolkit": "^2.5.1",
     "axios": "^1.7.7",
     "file-saver": "^2.0.5",
     "i18next": "^23.16.5",
