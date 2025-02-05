@@ -1529,10 +1529,6 @@ components:
           type: string
           format: string
           example: sample document
-        description:
-          type: string
-          format: string
-          example: sample Description
         note:
           type: string
           format: string
@@ -1581,10 +1577,6 @@ components:
           type: string
           format: string
           example: sample document
-        description:
-          type: string
-          format: string
-          example: sample Description
         note:
           type: string
           format: string
