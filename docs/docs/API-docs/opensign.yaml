@@ -13,6 +13,9 @@ externalDocs:
   description: Find out more about OpenSign
   url: http://docs.opensignlabs.com
 servers:
+# Added by API Auto Mocking Plugin
+- description: SwaggerHub API Auto Mocking
+  url: https://virtserver.swaggerhub.com/PrafullNavkar/open/1.0.0
 - url: https://sandbox.opensignlabs.com/api/v1
 - url: https://app.opensignlabs.com/api/v1
 - url: https://staging-app.opensignlabs.com/api/v1
@@ -1652,10 +1655,6 @@ components:
           type: string
           format: string
           example: sample document
-        description:
-          type: string
-          format: string
-          example: sample Description
         note:
           type: string
           format: string
@@ -1850,10 +1849,6 @@ components:
           type: string
           format: string
           example: Please review and sign this document
-        description:
-          type: string
-          format: string
-          example: document description
         folderId:
           type: string
           example: ""
