@@ -416,7 +416,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/document'
+                $ref: '#/components/schemas/documentwithstatus'
         "400":
           description: "Something went wrong, please try again later!"
           content:
@@ -1379,6 +1379,58 @@ components:
           $ref: '#/components/schemas/date'
       xml:
         name: user
+    documentwithstatus:
+      type: object
+      properties:
+        status:
+          type: string
+          format: string
+          example: in-progress
+        objectId:
+          type: string
+          format: string
+          example: FGik23bhUJ
+        file:
+          type: string
+          format: string
+          example: https://exampleurl.com
+        title:
+          type: string
+          format: string
+          example: sample doc
+        note:
+          type: string
+          format: string
+          example: please sign document
+        folder:
+          $ref: '#/components/schemas/document_folder'
+        owner:
+          type: string
+          format: string
+          example: joe bee
+        signers:
+          type: array
+          items:
+            $ref: '#/components/schemas/template_Signers'
+        sendInOrder:
+          type: boolean
+          example: true
+        createdAt:
+          $ref: '#/components/schemas/date'
+        updatedAt:
+          $ref: '#/components/schemas/date'
+        enableTour:
+          type: boolean
+          example: true
+        redirect_url:
+          type: string
+          format: string
+          example: ""
+        allow_modifications:
+          type: boolean
+          example: false
+      xml:
+        name: documentwithstatus
     document:
       type: object
       properties:
@@ -1621,10 +1673,14 @@ components:
           type: string
           description: Specifies the URL where the signer will be redirected upon completing the document signing process.
           example: ""
-        email_sender_name:
+        sender_name:
           type: string
-          description: name or email of the person or organization on the behalf of which you are sending the mail.
+          description: The name of the person or organization on whose behalf the email is being sent.
           example: opensign™
+        sender_email:
+          type: string
+          description: The email address of the person or organization that users can reply to.
+          example: mailer@opensignlabs.com
         allow_modifications:
           type: boolean
           description: "true - Permits signers to add elements such as signatures, initials, stamps, or text on top of existing widgets in the document. false - Restricts signers from adding any additional elements to the document. This is the default value."
@@ -1688,10 +1744,14 @@ components:
           type: string
           description: Specifies the URL where the signer will be redirected upon completing the document signing process.
           example: ""
-        email_sender_name:
+        sender_name:
           type: string
-          description: name or email of the person or organization on the behalf of which you are sending the mail.
+          description: The name of the person or organization on whose behalf the email is being sent.
           example: opensign™
+        sender_email:
+          type: string
+          description: The email address of the person or organization that users can reply to.
+          example: mailer@opensignlabs.com
         allow_modifications:
           type: boolean
           description: "true - Permits signers to add elements such as signatures, initials, stamps, or text on top of existing widgets in the document. false - Restricts signers from adding any additional elements to the document. This is the default value."
@@ -1776,10 +1836,14 @@ components:
           type: boolean
           description: "true - this option will enable a guided tour for signers, providing instructions during the signing process. false - disable the guided tour, ensuring a faster, uninterrupted signing experience."
           example: false
-        email_sender_name:
+        sender_name:
           type: string
-          description: name or email of the person or organization on the behalf of which you are sending the mail.
+          description: The name of the person or organization on whose behalf the email is being sent.
           example: opensign™
+        sender_email:
+          type: string
+          description: The email address of the person or organization that users can reply to.
+          example: mailer@opensignlabs.com
         allow_modifications:
           type: boolean
           description: "true - Permits signers to add elements such as signatures, initials, stamps, or text on top of existing widgets in the document. false - Restricts signers from adding any additional elements to the document. This is the default value."
@@ -1932,10 +1996,14 @@ components:
           type: string
           description: Specifies the URL where the signer will be redirected upon completing the document signing process.
           example: ""
-        email_sender_name:
+        sender_name:
           type: string
-          description: name or email of the person or organization on the behalf of which you are sending the mail.
+          description: The name of the person or organization on whose behalf the email is being sent.
           example: opensign™
+        sender_email:
+          type: string
+          description: The email address of the person or organization that users can reply to.
+          example: mailer@opensignlabs.com
         allow_modifications:
           type: boolean
           description: "true - Permits signers to add elements such as signatures, initials, stamps, or text on top of existing widgets in the document. false - Restricts signers from adding any additional elements to the document. This is the default value."
