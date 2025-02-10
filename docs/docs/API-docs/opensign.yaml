@@ -1615,6 +1615,14 @@ components:
           type: string
           description: Specifies the URL where the signer will be redirected upon completing the document signing process.
           example: ""
+        sender_name:
+          type: string
+          description: The name of the person or organization on whose behalf the email is being sent.
+          example: opensign™
+        sender_email:
+          type: string
+          description: The email address of the person or organization that users can reply to.
+          example: mailer@opensignlabs.com
     draftdocument_body:
       required:
       - file
