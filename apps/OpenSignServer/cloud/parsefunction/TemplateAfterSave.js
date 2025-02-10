@@ -6,13 +6,16 @@ export default async function TemplateAfterSave(request) {
       const signers = request.object.get('Signers');
       const AutoReminder = request?.object?.get('AutomaticReminders') || false;
       const ip = request?.headers?.['x-real-ip'] || '';
+      const originIp = request?.object?.get('OriginIp') || '';
       if (AutoReminder) {
         const RemindOnceInEvery = request?.object?.get('RemindOnceInEvery') || 5;
         const ReminderDate = new Date(request?.object?.get('createdAt'));
         ReminderDate.setDate(ReminderDate.getDate() + RemindOnceInEvery);
         request.object.set('NextReminderDate', ReminderDate);
       }
-      request.object.set('OriginIp', ip);
+      if (!originIp) {
+        request.object.set('OriginIp', ip);
+      }
       await request.object.save(null, { useMasterKey: true });
       if (signers && signers.length > 0) {
         await updateAclDoc(request.object.id);

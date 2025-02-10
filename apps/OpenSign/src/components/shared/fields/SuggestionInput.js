@@ -25,7 +25,9 @@ const SuggestionInput = (props) => {
       if (timer) clearTimeout(timer);
       timer = setTimeout(() => {
         (async () => {
-          const res = await findContact(inputValue, props.jwttoken);
+          const res = await findContact(
+            inputValue,
+          );
           if (res?.length > 0) {
             setSuggestions(res);
             setShowSuggestions(true);
@@ -74,7 +76,7 @@ const SuggestionInput = (props) => {
       {showSuggestions && (
         <ul
           ref={ref}
-          className="absolute z-50 left-0 top-[2.55rem] w-full max-h-[100px] overflow-auto bg-base-200 border border-gray-300 rounded shadow-md"
+          className="absolute z-50 left-0 top-[2.55rem] w-full max-h-[100px] overflow-y-auto bg-base-200 border border-gray-300 rounded shadow-md"
         >
           {suggestions.map((suggestion, index) => (
             <li
@@ -82,7 +84,7 @@ const SuggestionInput = (props) => {
               className="py-2 px-2 w-full text-sm cursor-pointer hover:bg-base-300"
               onClick={() => handleSuggestionClick(suggestion)}
             >
-              {suggestion.Email}
+              {suggestion.Name} {"<" + suggestion.Email + ">"}
             </li>
           ))}
         </ul>

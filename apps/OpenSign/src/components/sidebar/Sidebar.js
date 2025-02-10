@@ -3,9 +3,8 @@ import Menu from "./Menu";
 import Submenu from "./SubMenu";
 import SocialMedia from "./SocialMedia";
 import dp from "../../assets/images/dp.png";
-import sidebarList from "../../json/menuJson";
-import { useNavigate } from "react-router-dom";
-import { isEnableSubscription } from "../../constant/const";
+import sidebarList, { subSetting } from "../../json/menuJson";
+import { useNavigate } from "react-router";
 
 const Sidebar = ({ isOpen, closeSidebar }) => {
   const navigate = useNavigate();
@@ -41,47 +40,14 @@ const Sidebar = ({ isOpen, closeSidebar }) => {
             if (item.title === "Settings") {
               // Make a shallow copy of the item
               const newItem = { ...item };
-              if (isEnableSubscription) {
-                newItem.children = [
-                  ...newItem.children,
-                  {
-                    icon: "fa-light fa-building-memo",
-                    title: "Teams",
-                    target: "_self",
-                    pageType: "",
-                    description: "",
-                    objectId: "teams"
-                  },
-                  {
-                    icon: "fa-light fa-users fa-fw",
-                    title: "Users",
-                    target: "_self",
-                    pageType: "",
-                    description: "",
-                    objectId: "users"
-                  }
-                ];
-              } else {
                 const arr = newItem.children.slice(0, 1);
-                newItem.children = [
-                  ...arr,
-                  {
-                    icon: "fa-light fa-users fa-fw",
-                    title: "Users",
-                    target: "_self",
-                    pageType: "",
-                    description: "",
-                    objectId: "users"
-                  }
-                ];
-              }
+                newItem.children = [...arr, ...subSetting];
               return newItem;
             }
             return item;
           });
           setmenuList(newSidebarList);
         } else {
-          if (!isEnableSubscription) {
             const newSidebarList = sidebarList.map((item) => {
               if (item.title === "Settings") {
                 // Make a shallow copy of the item
@@ -93,9 +59,6 @@ const Sidebar = ({ isOpen, closeSidebar }) => {
               return item;
             });
             setmenuList(newSidebarList);
-          } else {
-            setmenuList(sidebarList);
-          }
         }
       }
     } catch (e) {
@@ -112,6 +75,7 @@ const Sidebar = ({ isOpen, closeSidebar }) => {
     setSubmenuOpen({});
   };
   const handleProfile = () => {
+    closeSidebar();
     navigate("/profile");
   };
   return (

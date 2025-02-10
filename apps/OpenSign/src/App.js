@@ -1,5 +1,5 @@
 import React, { useState, useEffect, lazy } from "react";
-import { Routes, Route, BrowserRouter } from "react-router-dom";
+import { Routes, Route, BrowserRouter } from "react-router";
 import { pdfjs } from "react-pdf";
 import Login from "./pages/Login";
 import Form from "./pages/Form";
@@ -15,28 +15,20 @@ import DraftDocument from "./components/pdf/DraftDocument";
 import PlaceHolderSign from "./pages/PlaceHolderSign";
 import PdfRequestFiles from "./pages/PdfRequestFiles";
 import LazyPage from "./primitives/LazyPage";
-import { isEnableSubscription } from "./constant/const";
-import SSOVerify from "./pages/SSOVerify";
 import Loader from "./primitives/Loader";
-import TeamList from "./pages/TeamList";
 import UserList from "./pages/UserList";
 import { serverUrl_fn } from "./constant/appinfo";
+import DocSuccessPage from "./pages/DocSuccessPage";
 const DebugPdf = lazy(() => import("./pages/DebugPdf"));
 const ForgetPassword = lazy(() => import("./pages/ForgetPassword"));
 const GuestLogin = lazy(() => import("./pages/GuestLogin"));
-const Pgsignup = lazy(() => import("./pages/Pgsignup"));
-const Subscriptions = lazy(() => import("./pages/PlanSubscriptions"));
 const ChangePassword = lazy(() => import("./pages/ChangePassword"));
 const UserProfile = lazy(() => import("./pages/UserProfile"));
-const Signup = lazy(() => import("./pages/Signup"));
 const Opensigndrive = lazy(() => import("./pages/Opensigndrive"));
 const ManageSign = lazy(() => import("./pages/Managesign"));
-const GenerateToken = lazy(() => import("./pages/GenerateToken"));
-const Webhook = lazy(() => import("./pages/Webhook"));
 const AddAdmin = lazy(() => import("./pages/AddAdmin"));
 const UpdateExistUserAdmin = lazy(() => import("./pages/UpdateExistUserAdmin"));
 const Preferences = lazy(() => import("./pages/Preferences"));
-
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/legacy/build/pdf.worker.min.mjs`;
 const AppLoader = () => {
   return (
@@ -74,11 +66,6 @@ function App() {
           <Routes>
             <Route element={<ValidateRoute />}>
               <Route exact path="/" element={<Login />} />
-              {isEnableSubscription && (
-                <Route path="/signup" element={<LazyPage Page={Signup} />} />
-              )}
-              {!isEnableSubscription && (
-                <>
                   <Route
                     path="/addadmin"
                     element={<LazyPage Page={AddAdmin} />}
@@ -87,8 +74,6 @@ function App() {
                     path="/upgrade-2.1"
                     element={<LazyPage Page={UpdateExistUserAdmin} />}
                   />
-                </>
-              )}
             </Route>
             <Route element={<Validate />}>
               <Route
@@ -123,18 +108,6 @@ function App() {
               path="/forgetpassword"
               element={<LazyPage Page={ForgetPassword} />}
             />
-            {isEnableSubscription && (
-              <>
-                <Route
-                  path="/pgsignup"
-                  element={<LazyPage Page={Pgsignup} />}
-                />
-                <Route
-                  path="/subscription"
-                  element={<LazyPage Page={Subscriptions} />}
-                />
-              </>
-            )}
             <Route element={<HomeLayout />}>
               <Route
                 path="/changepassword"
@@ -175,7 +148,6 @@ function App() {
                 path="/pdfRequestFiles/:docId"
                 element={<PdfRequestFiles />}
               />
-
               {/* recipient signature route with no rowlevel data using docId from url */}
               <Route
                 path="/recipientSignPdf/:docId/:contactBookId"
@@ -185,26 +157,13 @@ function App() {
                 path="/recipientSignPdf/:docId"
                 element={<PdfRequestFiles />}
               />
-              {isEnableSubscription && (
-                <>
-                  <Route path="/teams" element={<TeamList />} />
-                  <Route
-                    path="/generatetoken"
-                    element={<LazyPage Page={GenerateToken} />}
-                  />
-                  <Route
-                    path="/webhook"
-                    element={<LazyPage Page={Webhook} />}
-                  />
-                </>
-              )}
               <Route path="/users" element={<UserList />} />
               <Route
                 path="/preferences"
                 element={<LazyPage Page={Preferences} />}
               />
             </Route>
-            <Route path="/sso" element={<SSOVerify />} />
+            <Route path="/success" element={<DocSuccessPage />} />
             <Route path="*" element={<PageNotFound />} />
           </Routes>
         </BrowserRouter>

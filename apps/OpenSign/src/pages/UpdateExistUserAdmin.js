@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Loader from "../primitives/Loader";
 import Parse from "parse";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router";
 import Alert from "../primitives/Alert";
 import Title from "../components/Title";
 import { useTranslation } from "react-i18next";
@@ -153,23 +153,6 @@ const UpdateExistUserAdmin = () => {
                       onInput={(e) => e.target.setCustomValidity("")}
                       required
                     />
-
-                    {/*          
-                  <div className="mt-2.5 ml-1 flex flex-row items-center">
-                    <input
-                      type="checkbox"
-                      className="op-checkbox op-checkbox-sm"
-                      id="termsandcondition"
-                      checked={isSubscribeNews}
-                      onChange={(e) => setIsSubscribeNews(e.target.checked)}
-                    />
-                    <label
-                      className="text-xs cursor-pointer ml-1 mb-0"
-                      htmlFor="termsandcondition"
-                    >
-                      Subscribe to OpenSign newsletter
-                    </label>
-                  </div> */}
                   </div>
                   <div className="mx-4 text-center text-xs font-bold mb-3">
                     <button

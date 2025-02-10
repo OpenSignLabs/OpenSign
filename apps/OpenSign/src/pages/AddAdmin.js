@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
 import Parse from "parse";
 import { appInfo } from "../constant/appinfo";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router";
 import {
   getAppLogo,
   openInNewTab,
-  saveLanguageInLocal
+  saveLanguageInLocal,
+  usertimezone
 } from "../constant/Utils";
 import { useDispatch } from "react-redux";
 import { showTenant } from "../redux/reducers/ShowTenant";
@@ -116,7 +117,8 @@ const AddAdmin = () => {
                 name: name,
                 email: email,
                 phone: phone,
-                role: "contracts_Admin"
+                role: "contracts_Admin",
+                timezone: usertimezone
               }
             };
             try {

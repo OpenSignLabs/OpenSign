@@ -32,7 +32,7 @@ const RecipientList = (props) => {
   };
 
   //handle draggable element drop and also used in mobile view on up and down key to chnage sequence of recipient's list
-  const handleChangeSequence = (e, ind, isUp, isDown) => {
+  const handleChangeSequence = (e, ind, isUp, isDown, obj) => {
     e.preventDefault();
     let draggedItemId;
     let index = ind;
@@ -66,8 +66,7 @@ const RecipientList = (props) => {
     props?.setIsSelectId(index);
     props?.setUniqueId(remainingItems[index]?.Id);
     props?.setRoleName(remainingItems[index]?.Role);
-    props?.setBlockColor(remainingItems[index]?.blockColor);
-
+    props?.setBlockColor(obj.blockColor);
     //change order of placeholder's list using sorting method
     //`remainingItems` is correct order of signers after change order
     const changeOrderSignerList = props?.signerPos.sort((a, b) => {
@@ -97,7 +96,9 @@ const RecipientList = (props) => {
                 props.sendInOrder && !isMobile && handleDragOver(e)
               }
               onDrop={(e) =>
-                props.sendInOrder && !isMobile && handleChangeSequence(e, ind)
+                props.sendInOrder &&
+                !isMobile &&
+                handleChangeSequence(e, ind, null, null, obj)
               }
               data-tut="recipientArea"
               onMouseEnter={() => setIsHover(ind)}
@@ -196,7 +197,7 @@ const RecipientList = (props) => {
                           }}
                         />
                       ) : (
-                        <span className="text-[13px] 2xl:text-[25px]">
+                        <span className="text-[13px] 2xl:text-[17px]">
                           {obj.Role}
                         </span>
                       )}
@@ -222,7 +223,7 @@ const RecipientList = (props) => {
                     onClick={(e) => {
                       if (ind !== 0) {
                         e.stopPropagation();
-                        handleChangeSequence(e, ind, "up");
+                        handleChangeSequence(e, ind, "up", null, obj);
                       }
                     }}
                     className={ind === 0 ? "text-[gray]" : "text-black"}
@@ -233,7 +234,7 @@ const RecipientList = (props) => {
                     onClick={(e) => {
                       if (ind !== props.signersdata.length - 1) {
                         e.stopPropagation();
-                        handleChangeSequence(e, ind, null, "down");
+                        handleChangeSequence(e, ind, null, "down", obj);
                       }
                     }}
                     className={
@@ -259,7 +260,7 @@ const RecipientList = (props) => {
                       : "text-base-content"
                   } cursor-pointer`}
                 >
-                  <i className="fa-light fa-trash-can 2xl:text-[30px]"></i>
+                  <i className="fa-light fa-trash-can 2xl:text-[22px]"></i>
                 </div>
               )}
               <hr />

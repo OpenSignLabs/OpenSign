@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import GetDashboard from "../components/dashboard/GetDashboard";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router";
 import Title from "../components/Title";
 import { useDispatch } from "react-redux";
 import { saveTourSteps } from "../redux/reducers/TourStepsReducer";

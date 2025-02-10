@@ -1,27 +1,15 @@
 import axios from 'axios';
-import { cloudServerUrl, parseJwt } from '../../Utils.js';
-import jwt from 'jsonwebtoken';
+import {
+  cloudServerUrl,
+  replaceMailVaribles,
+} from '../../Utils.js';
 const serverUrl = cloudServerUrl; //process.env.SERVER_URL;
 const appId = process.env.APP_ID;
-const licenseKey = process.env.LICENSE_KEY;
-async function deductcount(docsCount, extUserId, subscription) {
+async function deductcount(
+  docsCount,
+  extUserId,
+) {
   try {
-    if (licenseKey) {
-      const allowedCredits = subscription?.AllowedCredits || 0;
-      const addonCredits = subscription?.AddonCredits || 0;
-      const subscriptionCls = new Parse.Object('contracts_Subscriptions');
-      subscriptionCls.id = subscription.objectId;
-      if (docsCount <= allowedCredits) {
-        const updateAllowedcredits = allowedCredits - docsCount;
-        subscriptionCls.set('AllowedCredits', updateAllowedcredits);
-      } else {
-        const remaingCount = docsCount - allowedCredits;
-        const updateAddonCredits = addonCredits - remaingCount;
-        subscriptionCls.set('AllowedCredits', 0);
-        subscriptionCls.set('AddonCredits', updateAddonCredits);
-      }
-      await subscriptionCls.save(null, { useMasterKey: true });
-    }
     const extCls = new Parse.Object('contracts_Users');
     extCls.id = extUserId;
     extCls.increment('DocumentCount', docsCount);
@@ -55,11 +43,7 @@ async function sendMail(document) {
     try {
       const imgPng = 'https://qikinnovation.ams3.digitaloceanspaces.com/logo.png';
       let url = `${serverUrl}/functions/sendmailv3`;
-      const headers = {
-        'Content-Type': 'application/json',
-        'X-Parse-Application-Id': appId,
-        // sessionToken: sessionToken,
-      };
+      const headers = { 'Content-Type': 'application/json', 'X-Parse-Application-Id': appId };
       const objectId = signerMail[i]?.signerObjId;
       const hostUrl = baseUrl.origin;
       let encodeBase64;
@@ -74,35 +58,67 @@ async function sendMail(document) {
       const openSignUrl = 'https://www.opensignlabs.com/';
       const orgName = document.ExtUserPtr.Company ? document.ExtUserPtr.Company : '';
       const themeBGcolor = '#47a3ad';
+      const senderObj = document?.ExtUserPtr;
+      const mailBody = document?.ExtUserPtr?.TenantId?.RequestBody || '';
+      const mailSubject = document?.ExtUserPtr?.TenantId?.RequestSubject || '';
+      let replaceVar;
+      if (mailBody && mailSubject) {
+        const replacedRequestBody = mailBody.replace(/"/g, "'");
+        const htmlReqBody =
+          "<html><head><meta http-equiv='Content-Type' content='text/html; charset=UTF-8' /></head><body>" +
+          replacedRequestBody +
+          '</body></html>';
+        const variables = {
+          document_title: document?.Name,
+          sender_name:
+            senderObj?.Name,
+          sender_mail:
+            senderObj?.Email,
+          sender_phone: senderObj?.Phone || '',
+          receiver_name: existSigner?.Name || '',
+          receiver_email: existSigner?.Email || signerMail[i].email,
+          receiver_phone: existSigner?.Phone || '',
+          expiry_date: localExpireDate,
+          company_name: orgName,
+          signing_url: `<a href=${signPdf} target=_blank>Sign here</a>`,
+        };
+        replaceVar = replaceMailVaribles(mailSubject, htmlReqBody, variables);
+      }
+
       let params = {
-        mailProvider: document?.ExtUserPtr?.active_mail_adapter || '',
         extUserId: document.ExtUserPtr.objectId,
         recipient: objectId ? existSigner?.Email : signerMail[i].email,
-        subject: `${document.ExtUserPtr.Name} has requested you to sign "${document.Name}"`,
-        mailProvider: document?.ExtUserPtr?.active_mail_adapter || '',
-        from: sender,
-        html:
-          "<html><head><meta http-equiv='Content-Type' content='text/html; charset=UTF-8' /> </head>   <body> <div style='background-color: #f5f5f5; padding: 20px'> <div style='box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;background: white;padding-bottom: 20px;'> <div style='padding:10px 10px 0 10px'><img src='" +
-          imgPng +
-          "' height='50' style='padding:20px; width:170px; height:40px;' /></div><div style='padding: 2px;font-family: system-ui;background-color:" +
-          themeBGcolor +
-          ";'><p style='font-size: 20px;font-weight: 400;color: white;padding-left: 20px;' > Digital Signature Request</p></div><div><p style='padding: 20px;font-family: system-ui;font-size: 14px; margin-bottom: 10px;'> " +
-          document.ExtUserPtr.Name +
-          ' has requested you to review and sign <strong> ' +
-          document.Name +
-          "</strong>.</p><div style='padding: 5px 0px 5px 25px;display: flex;flex-direction: row;justify-content: space-around;'><table> <tr> <td style='font-weight:bold;font-family:sans-serif;font-size:15px'>Sender</td> <td> </td> <td  style='color:#626363;font-weight:bold'>" +
-          sender +
-          "</td></tr><tr><td style='font-weight:bold;font-family:sans-serif;font-size:15px'>Organization</td> <td> </td><td style='color:#626363;font-weight:bold'> " +
-          orgName +
-          "</td></tr> <tr> <td style='font-weight:bold;font-family:sans-serif;font-size:15px'>Expires on</td><td> </td> <td style='color:#626363;font-weight:bold'>" +
-          localExpireDate +
-          "</td></tr><tr> <td></td> <td> </td></tr></table> </div> <div style='margin-left:70px'><a target=_blank href=" +
-          signPdf +
-          "> <button style='padding: 12px 12px 12px 12px;background-color: #d46b0f;color: white;  border: 0px;box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px,rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;font-weight:bold;margin-top:30px;'>Sign here</button></a> </div> <div style='display: flex; justify-content: center;margin-top: 10px;'> </div></div></div><div><p> This is an automated email from OpenSign™. For any queries regarding this email, please contact the sender " +
-          sender +
-          ' directly.If you think this email is inappropriate or spam, you may file a complaint with OpenSign™   <a href=' +
-          openSignUrl +
-          ' target=_blank>here</a>.</p> </div></div></body> </html>',
+        subject: replaceVar?.subject
+          ? replaceVar?.subject
+          : `${document.ExtUserPtr.Name} has requested you to sign "${document.Name}"`,
+        from:
+          sender,
+        replyto:
+          sender ||
+          '',
+        html: replaceVar?.body
+          ? replaceVar?.body
+          : "<html><head><meta http-equiv='Content-Type' content='text/html;charset=UTF-8' /></head><body><div style='background-color:#f5f5f5;padding:20px;'><div style='box-shadow:rgba(0, 0, 0, 0.1) 0px 4px 12px;background:white;padding-bottom:20px;'><div style='padding:10px 10px 0 10px'><img src=" +
+            imgPng +
+            " height='50' style='padding:20px;width:170px;height:40px;' /></div><div style='padding:2px;font-family:system-ui;background-color:" +
+            themeBGcolor +
+            ";'><p style='font-size:20px;font-weight:400;color:white;padding-left:20px;' > Digital Signature Request</p></div><div><p style='padding:20px;font-family:system-ui;font-size:14px;margin-bottom:10px;'> " +
+            document.ExtUserPtr.Name +
+            ' has requested you to review and sign <strong> ' +
+            document.Name +
+            "</strong>.</p><div style='padding: 5px 0px 5px 25px;display:flex;flex-direction:row;justify-content:space-around;'><table><tr><td style='font-weight:bold;font-family:sans-serif;font-size:15px'>Sender</td><td></td><td style='color:#626363;font-weight:bold'>" +
+            sender +
+            "</td></tr><tr><td style='font-weight:bold;font-family:sans-serif;font-size:15px'>Organization</td><td></td><td style='color:#626363;font-weight:bold'> " +
+            orgName +
+            "</td></tr><tr><td style='font-weight:bold;font-family:sans-serif;font-size:15px'>Expires on</td><td></td><td style='color:#626363;font-weight:bold'>" +
+            localExpireDate +
+            "</td></tr><tr><td></td><td></td></tr></table></div><div style='margin-left:70px;'><a target=_blank href=" +
+            signPdf +
+            "><button style='padding:12px 12px 12px 12px;background-color:#d46b0f;color:white;border:0px;box-shadow:rgba(0, 0, 0, 0.05) 0px 6px 24px 0px,rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;font-weight:bold;margin-top:30px;'>Sign here</button></a></div><div style='display:flex;justify-content:center;margin-top:10px;'></div></div></div><div><p> This is an automated email from OpenSign™. For any queries regarding this email, please contact the sender " +
+            sender +
+            ' directly.If you think this email is inappropriate or spam, you may file a complaint with OpenSign™ <a href=' +
+            openSignUrl +
+            ' target=_blank>here</a>.</p></div></div></body></html>',
       };
       const sendMail = await axios.post(url, params, { headers: headers });
       // if (sendMail.data.result.status === 'success') {
@@ -113,75 +129,13 @@ async function sendMail(document) {
     }
   }
 }
-async function callwebhookevent(document) {
-  const Signers = document.Signers;
-  const allSigner = document?.Placeholders?.map(item => {
-    if (item.signerObjId) {
-      const signer = Signers?.find(e => item?.signerPtr?.objectId === e?.objectId);
-      if (signer) {
-        return {
-          role: item?.Role || '',
-          name: signer?.Name || '',
-          email: signer?.Email || '',
-          phone: signer?.Phone || '',
-        };
-      }
-    } else {
-      return { role: item?.Role || '', name: '', email: item?.email || '', phone: '' };
-    }
-  });
-  const params = {
-    event: 'created',
-    body: {
-      objectId: document?.objectId,
-      file: document?.SignedUrl || document?.URL,
-      name: document?.Name,
-      note: document?.Note || '',
-      description: document?.Description || '',
-      signers: allSigner,
-      createdBy: document?.ExtUserPtr.Email,
-      createdAt: document?.createdAt,
-    },
-  };
-  try {
-    await axios
-      .post(document?.ExtUserPtr?.Webhook, params, {
-        headers: { 'Content-Type': 'application/json' },
-      })
-      .then(res => {
-        try {
-          const webhook = new Parse.Object('contracts_Webhook');
-          webhook.set('Log', res?.status);
-          webhook.set('UserId', {
-            __type: 'Pointer',
-            className: '_User',
-            objectId: document.CreatedBy.objectId,
-          });
-          webhook.save(null, { useMasterKey: true });
-        } catch (err) {
-          console.log('err save in contracts_Webhook', err);
-        }
-      })
-      .catch(err => {
-        console.log('Err send data to webhook', err?.message);
-        try {
-          const webhook = new Parse.Object('contracts_Webhook');
-          webhook.set('Log', err?.status);
-          webhook.set('UserId', {
-            __type: 'Pointer',
-            className: '_User',
-            objectId: document.CreatedBy.objectId,
-          });
-          webhook.save(null, { useMasterKey: true });
-        } catch (err) {
-          console.log('err save in contracts_Webhook', err?.message);
-        }
-      });
-  } catch (err) {
-    console.log('Err ', err?.message);
-  }
-}
-async function batchQuery(userId, Documents, Ip, parseConfig) {
+async function batchQuery(
+  userId,
+  Documents,
+  Ip,
+  parseConfig,
+  type
+) {
   const extCls = new Parse.Query('contracts_Users');
   extCls.equalTo('UserId', {
     __type: 'Pointer',
@@ -202,10 +156,14 @@ async function batchQuery(userId, Documents, Ip, parseConfig) {
         let Acl = { [x.CreatedBy.objectId]: { read: true, write: true } };
         if (allSigner && allSigner.length > 0) {
           allSigner.forEach(x => {
-            const obj = { [x.CreatedBy.objectId]: { read: true, write: true } };
-            Acl = { ...Acl, ...obj };
+            if (x?.CreatedBy?.objectId) {
+              const obj = { [x.CreatedBy.objectId]: { read: true, write: true } };
+              Acl = { ...Acl, ...obj };
+            }
           });
         }
+        const mailBody = x?.ExtUserPtr?.TenantId?.RequestBody || '';
+        const mailSubject = x?.ExtUserPtr?.TenantId?.RequestSubject || '';
         return {
           method: 'POST',
           path: '/app/classes/contracts_Document',
@@ -231,8 +189,9 @@ async function batchQuery(userId, Documents, Ip, parseConfig) {
                       objectId: y.signerPtr.objectId,
                     },
                     signerObjId: y.signerObjId,
+                    email: y?.signerPtr?.Email || y?.email || '',
                   }
-                : { ...y, signerPtr: {}, signerObjId: '' }
+                : { ...y, signerPtr: {}, signerObjId: '', email: y.email || '' }
             ),
             SignedUrl: x.URL || x.SignedUrl,
             SentToOthers: true,
@@ -250,55 +209,17 @@ async function batchQuery(userId, Documents, Ip, parseConfig) {
             DocSentAt: { __type: 'Date', iso: isoDate },
             IsEnableOTP: x?.IsEnableOTP || false,
             IsTourEnabled: x?.IsTourEnabled || false,
-            FileAdapterId: x?.FileAdapterId || '',
+            AllowModifications: x?.AllowModifications || false,
             ...(x?.SignatureType ? { SignatureType: x?.SignatureType } : {}),
             ...(x?.NotifyOnSignatures ? { NotifyOnSignatures: x?.NotifyOnSignatures } : {}),
+            ...(x?.Bcc?.length > 0 ? { Bcc: x?.Bcc } : {}),
+            ...(x?.RedirectUrl ? { RedirectUrl: x?.RedirectUrl } : {}),
+            ...(mailBody ? { RequestBody: mailBody } : {}),
+            ...(mailSubject ? { RequestSubject: mailSubject } : {}),
           },
         };
       });
       // console.log('requests ', requests);
-      if (licenseKey) {
-        const subscription = new Parse.Query('contracts_Subscriptions');
-        subscription.equalTo('TenantId', {
-          __type: 'Pointer',
-          className: 'partners_Tenant',
-          objectId: _resExt.TenantId.objectId,
-        });
-        subscription.include('ExtUserPtr');
-        subscription.greaterThanOrEqualTo('Next_billing_date', new Date());
-        const resSub = await subscription.first({ useMasterKey: true });
-        if (resSub) {
-          const _resSub = JSON.parse(JSON.stringify(resSub));
-          const allowedCredits = _resSub?.AllowedCredits || 0;
-          const addonCredits = _resSub?.AddonCredits || 0;
-          const totalcredits = allowedCredits + addonCredits;
-          if (requests?.length <= totalcredits) {
-            const response = await axios.post('batch', { requests: requests }, parseConfig);
-            // Handle the batch query response
-            // console.log('Batch query response:', response.data);
-            if (response.data && response.data.length > 0) {
-              const updateDocuments = Documents.map((x, i) => ({
-                ...x,
-                objectId: response.data[i]?.success?.objectId,
-                createdAt: response.data[i]?.success?.createdAt,
-              }));
-              deductcount(response.data.length, resExt.id, _resSub);
-              for (let i = 0; i < updateDocuments.length; i++) {
-                sendMail(updateDocuments[i], ''); //sessionToken
-              }
-              callwebhookevent(Documents[0]);
-              return 'success';
-            }
-          } else {
-            throw new Parse.Error(429, 'Quota reached, Please buy credits and try again later.');
-          }
-        } else {
-          throw new Parse.Error(
-            Parse.Error.INVALID_QUERY,
-            'Please purchase or renew your subscription.'
-          );
-        }
-      } else {
         if (requests?.length > 0) {
           const newrequests = [requests?.[0]];
           const response = await axios.post('batch', { requests: newrequests }, parseConfig);
@@ -313,10 +234,8 @@ async function batchQuery(userId, Documents, Ip, parseConfig) {
             };
             deductcount(response.data.length, resExt.id);
             sendMail(updateDocuments); //sessionToken
-            callwebhookevent(Documents[0]);
             return 'success';
           }
-        }
       }
     } catch (error) {
       const code = error?.response?.data?.code || error?.response?.status || error?.code || 400;
@@ -335,7 +254,7 @@ async function batchQuery(userId, Documents, Ip, parseConfig) {
 export default async function createBatchDocs(request) {
   const strDocuments = request.params.Documents;
   const sessionToken = request.headers?.sessiontoken;
-  const jwttoken = request.headers?.jwttoken;
+  const type = request.headers?.type || 'quicksend';
   const Documents = JSON.parse(strDocuments);
   const Ip = request?.headers?.['x-real-ip'] || '';
   const parseConfig = {
@@ -348,31 +267,9 @@ export default async function createBatchDocs(request) {
   };
   try {
     if (request?.user) {
-      return await batchQuery(request.user.id, Documents, Ip, parseConfig);
-    } else if (jwttoken) {
-      const jwtDecode = parseJwt(jwttoken);
-      if (jwtDecode?.user_email) {
-        const userCls = new Parse.Query(Parse.User);
-        userCls.equalTo('email', jwtDecode?.user_email);
-        const userRes = await userCls.first({ useMasterKey: true });
-        const userId = userRes?.id;
-        const tokenQuery = new Parse.Query('appToken');
-        tokenQuery.equalTo('userId', {
-          __type: 'Pointer',
-          className: '_User',
-          objectId: userId,
-        });
-        const appRes = await tokenQuery.first({ useMasterKey: true });
-        const decoded = jwt.verify(jwttoken, appRes?.get('token'));
-        if (decoded?.user_email) {
-          return await batchQuery(userId, Documents, Ip, parseConfig);
-        } else {
-          throw new Parse.Error(Parse.Error.INVALID_SESSION_TOKEN, 'Invalid token.');
-        }
-      } else {
-        throw new Parse.Error(Parse.Error.INVALID_SESSION_TOKEN, 'Invalid token.');
-      }
-    } else {
+      return await batchQuery(request.user.id, Documents, Ip, parseConfig, '', type);
+    }
+    else {
       throw new Parse.Error(Parse.Error.INVALID_SESSION_TOKEN, 'User is not authenticated.');
     }
   } catch (err) {
