@@ -1507,7 +1507,6 @@ components:
       required:
       - email
       - name
-      - phone
       type: object
       properties:
         name:
