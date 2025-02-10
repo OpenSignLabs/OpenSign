@@ -1,18 +1,19 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router";
 import axios from "axios";
-import { emailRegex, isEnableSubscription } from "../constant/const";
+import {
+  emailRegex,
+} from "../constant/const";
 import {
   contractUsers,
-  getAppLogo,
   saveLanguageInLocal
 } from "../constant/Utils";
 import logo from "../assets/images/logo.png";
 import { appInfo } from "../constant/appinfo";
 import Parse from "parse";
-import Loader from "../primitives/Loader";
 import { useTranslation } from "react-i18next";
 import SelectLanguage from "../components/pdf/SelectLanguage";
+import LoaderWithMsg from "../primitives/LoaderWithMsg";
 
 function GuestLogin() {
   const { t, i18n } = useTranslation();
@@ -22,7 +23,10 @@ function GuestLogin() {
   const [OTP, setOTP] = useState("");
   const [EnterOTP, setEnterOtp] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState({
+    isLoad: true,
+    message: t("loading-mssg")
+  });
   const [appLogo, setAppLogo] = useState("");
   const [documentId, setDocumentId] = useState(id);
   const [contactId, setContactId] = useState(contactBookId);
@@ -43,6 +47,7 @@ function GuestLogin() {
         }
         return true;
       } else {
+        setIsLoading({ isLoad: false });
         return false;
       }
     } catch (err) {
@@ -57,18 +62,11 @@ function GuestLogin() {
 
   //function generate serverUrl and parseAppId from url and save it in local storage
   const handleServerUrl = async () => {
-    if (isEnableSubscription) {
-      const app = await getAppLogo();
-      if (app?.logo) {
-        setAppLogo(app?.logo);
-      } else {
-        setAppLogo(logo);
-      }
-    } else {
       setAppLogo(logo);
-    }
 
     localStorage.clear();
+    //save isGuestSigner true in local to handle login flow header in mobile view
+    localStorage.setItem("isGuestSigner", true);
     saveLanguageInLocal(i18n);
     const parseId = appInfo.appId;
     const newServer = `${appInfo.baseUrl}/`;
@@ -95,6 +93,7 @@ function GuestLogin() {
           setContactId(linkContactRes?.contactId);
           await navigateToDoc(checkSplit[0], linkContactRes?.contactId);
         } catch (err) {
+          setIsLoading({ isLoad: false });
           console.log("Err in link ext contact", err);
         }
       } else {
@@ -102,8 +101,6 @@ function GuestLogin() {
         await navigateToDoc(checkSplit[0], checkSplit[2]);
       }
     }
-
-    setIsLoading(false);
   };
 
   //send email OTP function
@@ -154,23 +151,21 @@ function GuestLogin() {
           let _user = user.data.result;
           await Parse.User.become(_user.sessionToken);
           const parseId = localStorage.getItem("parseAppId");
+          if (_user) {
+            localStorage.setItem("accesstoken", _user?.sessionToken);
+            localStorage.setItem("UserInformation", JSON.stringify(_user));
+            localStorage.setItem(
+              `Parse/${parseId}/currentUser`,
+              JSON.stringify(_user)
+            );
+          }
           const contractUserDetails = await contractUsers();
-          localStorage.setItem("UserInformation", JSON.stringify(_user));
-          localStorage.setItem(
-            `Parse/${parseId}/currentUser`,
-            JSON.stringify(_user)
-          );
           if (contractUserDetails && contractUserDetails.length > 0) {
             localStorage.setItem(
               "Extand_Class",
               JSON.stringify(contractUserDetails)
             );
           }
-
-          localStorage.setItem("username", _user.name);
-          localStorage.setItem("accesstoken", _user.sessionToken);
-          //save isGuestSigner true in local to handle login flow header in mobile view
-          localStorage.setItem("isGuestSigner", true);
           setLoading(false);
           if (sendmail === "false") {
             navigate(
@@ -219,14 +214,11 @@ function GuestLogin() {
     setContact((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
   return (
-    <div className="p-14">
-      <div>
-        {isLoading ? (
-          <div className="flex flex-col justify-center items-center h-[100vh]">
-            <Loader />
-            <span className="text-[13px] text-[gray]">{isLoading.message}</span>
-          </div>
-        ) : (
+    <div>
+      {isLoading.isLoad ? (
+        <LoaderWithMsg isLoading={isLoading} />
+      ) : (
+        <div className="p-14 h">
           <div className="m-1 md:m-2 p-[30px] text-base-content bg-base-100 op-card shadow-md">
             <div className="md:w-[250px] md:h-[66px] inline-block overflow-hidden mt-2 mb-11">
               {appLogo && (
@@ -371,9 +363,9 @@ function GuestLogin() {
               </div>
             )}
           </div>
-        )}
-      </div>
-      <SelectLanguage />
+          <SelectLanguage />
+        </div>
+      )}
     </div>
   );
 }

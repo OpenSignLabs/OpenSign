@@ -37,8 +37,31 @@ const SignersInput = (props) => {
   const [state, setState] = useState(undefined);
   const [selected, setSelected] = useState([]);
   const [isModal, setIsModel] = useState(false);
-  const onChange = (selectedOptions) => setSelected(selectedOptions);
   const [modalIsOpen, setModalIsOpen] = useState(false);
+
+  useEffect(() => {
+    // to provide initial data for selected list items in Bcc for edit template
+    if (props?.initialData && props?.initialData?.length > 0) {
+      const trimEmail = props?.initialData.map((item) => ({
+        value: item?.objectId,
+        label: item?.Name,
+        email: item?.Email
+      }));
+      setSelected(trimEmail);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  const onChange = (selectedOptions) => {
+    if (selectedOptions && selectedOptions?.length > 0) {
+      const trimEmail = selectedOptions.map((item) => ({
+        ...item,
+        label: item?.label?.split("<")?.shift()
+      }));
+      setSelected(trimEmail);
+    } else {
+      setSelected(selectedOptions);
+    }
+  };
 
   const onSortEnd = ({ oldIndex, newIndex }) => {
     const newValue = arrayMove(selected, oldIndex, newIndex);
@@ -55,7 +78,11 @@ const SignersInput = (props) => {
     if (selected && selected.length) {
       let newData = [];
       selected.forEach((x) => {
-        newData.push(x.value);
+        if (props?.isCaptureAllData) {
+          newData.push(x);
+        } else {
+          newData.push(x.value);
+        }
       });
       if (props.onChange) {
         props.onChange(newData);
@@ -85,17 +112,8 @@ const SignersInput = (props) => {
   };
   const loadOptions = async (inputValue) => {
     try {
-      const currentUser = Parse.User.current();
-      const contactbook = new Parse.Query("contracts_Contactbook");
-      contactbook.equalTo(
-        "CreatedBy",
-        Parse.User.createWithoutData(currentUser.id)
-      );
-      if (inputValue.length > 1) {
-        contactbook.matches("Name", new RegExp(inputValue, "i"));
-      }
-      contactbook.notEqualTo("IsDeleted", true);
-      const contactRes = await contactbook.find();
+      const params = { search: inputValue };
+      const contactRes = await Parse.Cloud.run("getsigners", params);
       if (contactRes) {
         const res = JSON.parse(JSON.stringify(contactRes));
         //compareArrays is a function where compare between two array (total signersList and dcument signers list)
@@ -114,8 +132,9 @@ const SignersInput = (props) => {
         const result = updateSignersList ? updateSignersList : res;
         setState(result);
         return await result.map((item) => ({
-          label: item.Name,
+          label: item.Name + "<" + item.Email + ">",
           value: item.objectId,
+          email: item.Email,
           isChecked: true
         }));
       }
@@ -126,14 +145,19 @@ const SignersInput = (props) => {
   return (
     <div className="text-xs mt-2 ">
       <label className="block relative">
-        {t("signers")}
+        {props.label ? props.label : t("signers")}
         {props.required && <span className="text-red-500 text-[13px]">*</span>}
-        <span className="absolute ml-1 text-xs z-30">
-          <Tooltip id={"signer-tooltip"} message={t("signers-help")} />
+        <span
+          className={`z-[${props?.helptextZindex ? props.helptextZindex : 30}] absolute ml-1 text-xs`}
+        >
+          <Tooltip
+            id={`${props.label ? props.label : "signers"}-tooltip`}
+            message={props.helpText ? props.helpText : t("signers-help")}
+          />
         </span>
       </label>
       <div className="flex gap-x-[5px]">
-        <div className="w-full">
+        <div className="w-full z-40">
           <AsyncSelect
             onSortEnd={onSortEnd}
             distance={4}
@@ -176,7 +200,7 @@ const SignersInput = (props) => {
         </div>
         <AddSignerModal isOpen={modalIsOpen}>
           <h3 className="text-base-content font-bold text-lg pt-[15px] px-[20px]">
-            {t("add-signer")}
+            {t("add-contact")}
           </h3>
           <button
             onClick={handleModalCloseClick}

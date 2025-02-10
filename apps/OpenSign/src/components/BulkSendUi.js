@@ -3,38 +3,18 @@ import axios from "axios";
 import SuggestionInput from "./shared/fields/SuggestionInput";
 import Loader from "../primitives/Loader";
 import { useTranslation } from "react-i18next";
-import Parse from "parse";
-import ModalUi from "../primitives/ModalUi";
-import { emailRegex, isEnableSubscription } from "../constant/const";
-import { fetchSubscription } from "../constant/Utils";
-import { useNavigate } from "react-router-dom";
+import {
+  emailRegex,
+} from "../constant/const";
 const BulkSendUi = (props) => {
   const { t } = useTranslation();
-  const navigate = useNavigate();
   const [forms, setForms] = useState([]);
-  const [formId, setFormId] = useState(2);
   const formRef = useRef(null);
   const [scrollOnNextUpdate, setScrollOnNextUpdate] = useState(false);
   const [isSubmit, setIsSubmit] = useState(false);
-  const [allowedForm, setAllowedForm] = useState(0);
   const [isSignatureExist, setIsSignatureExist] = useState();
   const [isBulkAvailable, setIsBulkAvailable] = useState(false);
-  const quantityList = [500, 1000, 5000, 50000];
-  const [amount, setAmount] = useState({
-    price: (75.0).toFixed(2),
-    quantity: 500,
-    priceperbulksend: 0.15,
-    totalcredits: 0
-  });
-  const [isQuotaReached, setIsQuotaReached] = useState(false);
   const [isLoader, setIsLoader] = useState(false);
-  const [isFreePlan, setIsFreePlan] = useState(false);
-  const [admin, setAdmin] = useState({
-    objectId: "",
-    email: "",
-    isAdmin: true
-  });
-  const allowedSigners = 50;
   useEffect(() => {
     signatureExist();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -42,75 +22,7 @@ const BulkSendUi = (props) => {
 
   //function to check atleast one signature field exist
   const signatureExist = async () => {
-    if (isEnableSubscription) {
-      setIsLoader(true);
-      try {
-        const subscription = await fetchSubscription();
-        const extUser =
-          localStorage.getItem("Extand_Class") &&
-          JSON.parse(localStorage.getItem("Extand_Class"))?.[0];
-        if (
-          subscription?.adminId &&
-          extUser?.objectId === subscription?.adminId
-        ) {
-          setAdmin((obj) => ({
-            ...obj,
-            objectId: subscription?.adminId,
-            isAdmin: true
-          }));
-        } else {
-          setAdmin((obj) => ({
-            ...obj,
-            isAdmin: false,
-            email: extUser?.TenantId?.EmailAddress
-          }));
-        }
-        setAdmin((obj) => ({ ...obj, objectId: subscription?.adminId }));
-        if (subscription?.plan === "freeplan") {
-          setIsFreePlan(true);
-        }
-        const token = props.jwttoken
-          ? { jwttoken: props.jwttoken }
-          : { "X-Parse-Session-Token": localStorage.getItem("accesstoken") };
-        const axiosres = await axios.post(
-          `${localStorage.getItem("baseUrl")}functions/allowedcredits`,
-          {},
-          {
-            headers: {
-              "Content-Type": "application/json",
-              "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
-              ...token
-            }
-          }
-        );
-        const resCredits = axiosres.data && axiosres.data.result;
-        if (resCredits) {
-          const allowedcredits = resCredits?.allowedcredits || 0;
-          const addoncredits = resCredits?.addoncredits || 0;
-          const totalcredits = allowedcredits + addoncredits;
-          if (totalcredits > 0) {
-            if (subscription?.plan !== "freeplan") {
-              setIsBulkAvailable(true);
-            }
-          }
-          setAmount((obj) => ({ ...obj, totalcredits: totalcredits }));
-        }
-        const getPlaceholder = props?.Placeholders;
-        const checkIsSignatureExistt = getPlaceholder?.every((placeholderObj) =>
-          placeholderObj?.placeHolder?.some((holder) =>
-            holder?.pos?.some((posItem) => posItem?.type === "signature")
-          )
-        );
-        setIsSignatureExist(checkIsSignatureExistt);
-        setIsLoader(false);
-      } catch (err) {
-        setIsLoader(false);
-        alert(t("something-went-wrong-mssg"));
-        console.log("Err", err);
-      }
-    } else {
       setIsBulkAvailable(true);
-      setAdmin((obj) => ({ ...obj, isAdmin: true }));
       const getPlaceholder = props?.Placeholders;
       const checkIsSignatureExistt = getPlaceholder?.every((placeholderObj) =>
         placeholderObj?.placeHolder?.some((holder) =>
@@ -119,7 +31,6 @@ const BulkSendUi = (props) => {
       );
       setIsSignatureExist(checkIsSignatureExistt);
       setIsLoader(false);
-    }
   };
   useEffect(() => {
     if (scrollOnNextUpdate && formRef.current) {
@@ -150,8 +61,6 @@ const BulkSendUi = (props) => {
           }
         });
         setForms((prevForms) => [...prevForms, { Id: 1, fields: users }]);
-        const totalForms = Math.floor(allowedSigners / users?.length);
-        setAllowedForm(totalForms);
       }
     })();
     // eslint-disable-next-line
@@ -165,38 +74,6 @@ const BulkSendUi = (props) => {
     setForms(newForms);
   };
 
-  const handleAddForm = (e) => {
-    e.preventDefault();
-    // Check if the quick send limit has been reached
-    if (isEnableSubscription && forms.length >= amount.totalcredits) {
-      setIsQuotaReached(true);
-    } else {
-      if (forms?.length < allowedForm) {
-        if (props?.Placeholders.length > 0) {
-          let newForm = [];
-          props?.Placeholders?.forEach((element) => {
-            if (!element.signerObjId) {
-              newForm = [
-                ...newForm,
-                {
-                  fieldId: element.Id,
-                  email: "",
-                  label: element.Role,
-                  signer: {}
-                }
-              ];
-            }
-          });
-          setForms([...forms, { Id: formId, fields: newForm }]);
-        }
-        setFormId(formId + 1);
-        setScrollOnNextUpdate(true);
-      } else {
-        // If the limit has been reached, throw an error with the appropriate message
-        alert(t("quick-send-alert-4"));
-      }
-    }
-  };
 
   const handleRemoveForm = (index) => {
     const updatedForms = forms.filter((_, i) => i !== index);
@@ -285,16 +162,15 @@ const BulkSendUi = (props) => {
   };
 
   const batchQuery = async (Documents) => {
-    const token = props.jwttoken
-      ? { jwttoken: props.jwttoken }
-      : { "X-Parse-Session-Token": localStorage.getItem("accesstoken") };
+    const token =
+          { "X-Parse-Session-Token": localStorage.getItem("accesstoken") };
     const functionsUrl = `${localStorage.getItem(
       "baseUrl"
     )}functions/batchdocuments`;
     const headers = {
       "Content-Type": "application/json",
       "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
-      ...token
+      ...token,
     };
     const params = { Documents: JSON.stringify(Documents) };
     try {
@@ -309,51 +185,6 @@ const BulkSendUi = (props) => {
     } finally {
       setIsSubmit(false);
     }
-  };
-  const handleAddOnQuickSubmit = async (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsSubmit(true);
-    try {
-      const resAddon = await Parse.Cloud.run("buycredits", {
-        credits: amount.quantity
-      });
-      if (resAddon) {
-        const _resAddon = JSON.parse(JSON.stringify(resAddon));
-        if (_resAddon.status === "success") {
-          setIsBulkAvailable(true);
-          handleCloseQuotaReached();
-          setAmount((obj) => ({
-            ...obj,
-            quantity: 500,
-            priceperbulksend: 0.15,
-            price: (75.0).toFixed(2),
-            totalcredits: obj?.totalcredits + _resAddon.addon
-          }));
-        }
-      }
-    } catch (err) {
-      console.log("Err in buy addon", err);
-      alert(t("something-went-wrong-mssg"));
-    } finally {
-      setIsSubmit(false);
-    }
-  };
-  const handlePricePerQuick = async (e) => {
-    const quantity = e.target?.value;
-    const price =
-      quantity > 0
-        ? (Math.round(quantity * amount.priceperbulksend * 100) / 100).toFixed(
-            2
-          )
-        : 500 * amount.priceperbulksend;
-    setAmount((prev) => ({ ...prev, quantity: quantity, price: price }));
-  };
-  const handleCloseQuotaReached = () => {
-    setIsQuotaReached(false);
-  };
-  const handleNavigation = () => {
-    navigate("/subscription");
   };
   return (
     <>
@@ -374,7 +205,7 @@ const BulkSendUi = (props) => {
                 isSignatureExist ? (
                   <>
                     {props.Placeholders?.some((x) => !x.signerObjId) ? (
-                      <div>
+                      <>
                         <form onSubmit={handleSubmit}>
                           <div className="min-h-max max-h-[250px] overflow-y-auto">
                             {forms?.map((form, index) => (
@@ -400,7 +231,6 @@ const BulkSendUi = (props) => {
                                           fieldIndex
                                         )
                                       }
-                                      jwttoken={props?.jwttoken}
                                     />
                                   </div>
                                 ))}
@@ -417,15 +247,6 @@ const BulkSendUi = (props) => {
                             ))}
                           </div>
                           <div className="flex flex-col mx-4 mb-4 gap-3">
-                            {isEnableSubscription && (
-                              <button
-                                onClick={handleAddForm}
-                                className="op-btn op-btn-primary focus:outline-none"
-                              >
-                                <i className="fa-light fa-plus"></i>{" "}
-                                <span>{t("add-new")}</span>
-                              </button>
-                            )}
                             <button
                               type="submit"
                               className="op-btn op-btn-accent focus:outline-none"
@@ -435,23 +256,7 @@ const BulkSendUi = (props) => {
                             </button>
                           </div>
                         </form>
-                        <ModalUi
-                          isOpen={isQuotaReached}
-                          handleClose={() => handleCloseQuotaReached()}
-                        >
-                          <div className="p-4 flex justify-center items-center flex-col gap-y-3">
-                            <p className="text-center text-base-content">
-                              {t("quota-err-quicksend")}
-                            </p>
-                            <button
-                              onClick={() => setIsBulkAvailable(false)}
-                              className=" op-btn op-btn-primary w-[200px]"
-                            >
-                              {t("buy-credits")}
-                            </button>
-                          </div>
-                        </ModalUi>
-                      </div>
+                      </>
                     ) : (
                       <div className="text-black p-3 bg-white w-full text-sm md:text-base flex justify-center items-center">
                         {t("quick-send-alert-1")}
@@ -471,68 +276,6 @@ const BulkSendUi = (props) => {
             </>
           ) : (
             <>
-              {isFreePlan ? (
-                <div className="w-full h-[130px] flex flex-col justify-center items-center text-center p-4">
-                  <p className="text-base font-medium mb-2.5">
-                    {t("bulk-send-subcription-alert")}
-                  </p>
-                  <button
-                    onClick={() => handleNavigation()}
-                    className="op-btn op-btn-primary"
-                  >
-                    {t("upgrade-now")}
-                  </button>
-                </div>
-              ) : (
-                <>
-                  {admin?.isAdmin ? (
-                    <form onSubmit={handleAddOnQuickSubmit} className="p-3">
-                      <p className="flex justify-center text-center mx-2 mb-3 text-base op-text-accent font-medium">
-                        {t("additional-credits")}
-                      </p>
-                      <div className="mb-3 flex justify-between">
-                        <label
-                          htmlFor="quantity"
-                          className="block text-xs text-gray-700 font-semibold"
-                        >
-                          {t("quantity-of-credits")}
-                          <span className="text-[red] text-[13px]">*</span>
-                        </label>
-                        <select
-                          value={amount.quantity}
-                          onChange={(e) => handlePricePerQuick(e)}
-                          name="quantity"
-                          className="op-select op-select-bordered op-select-sm focus:outline-none hover:border-base-content w-1/4 text-xs"
-                          required
-                        >
-                          {quantityList.length > 0 &&
-                            quantityList.map((x) => (
-                              <option key={x} value={x}>
-                                {x}
-                              </option>
-                            ))}
-                        </select>
-                      </div>
-                      <div className="mb-3 flex justify-between">
-                        <label className="block text-xs text-gray-700 font-semibold">
-                          {t("Price")} (1 * {amount.priceperbulksend})
-                        </label>
-                        <div className="w-1/4 flex justify-center items-center text-sm">
-                          USD {amount.price}
-                        </div>
-                      </div>
-                      <hr className="text-base-content mb-3" />
-                      <button className="op-btn op-btn-primary w-full mt-2">
-                        {t("Proceed")}
-                      </button>
-                    </form>
-                  ) : (
-                    <div className="mx-8 mt-4 mb-8 flex justify-center text-center items-center font-medium break-all">
-                      {t("unauthorized-modal", { adminEmail: admin?.email })}
-                    </div>
-                  )}
-                </>
-              )}
             </>
           )}
         </>

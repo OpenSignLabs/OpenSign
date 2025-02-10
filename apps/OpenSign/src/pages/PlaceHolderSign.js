@@ -3,18 +3,21 @@ import axios from "axios";
 import Parse from "parse";
 import "../styles/signature.css";
 import { PDFDocument } from "pdf-lib";
-import { isEnableSubscription, themeColor } from "../constant/const";
+import {
+  themeColor
+} from "../constant/const";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
-import { useDrag, useDrop } from "react-dnd";
+import { useDrop } from "react-dnd";
 import RenderAllPdfPage from "../components/pdf/RenderAllPdfPage";
 import WidgetComponent from "../components/pdf/WidgetComponent";
 import Tour from "reactour";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router";
 import SignerListPlace from "../components/pdf/SignerListPlace";
 import Header from "../components/pdf/PdfHeader";
 import { RWebShare } from "react-web-share";
 import {
+  replaceMailVaribles,
   pdfNewWidthFun,
   contractDocument,
   contractUsers,
@@ -28,9 +31,7 @@ import {
   radioButtonWidget,
   color,
   getTenantDetails,
-  replaceMailVaribles,
   copytoData,
-  fetchSubscription,
   convertPdfArrayBuffer,
   getContainerScale,
   convertBase64ToFile,
@@ -41,16 +42,16 @@ import {
   handleRotateWarning,
   signatureTypes,
   handleSignatureType,
-  formatDate
+  getBase64FromUrl,
+  generatePdfName
 } from "../constant/Utils";
 import RenderPdf from "../components/pdf/RenderPdf";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import PlaceholderCopy from "../components/pdf/PlaceholderCopy";
 import Title from "../components/Title";
 import DropdownWidgetOption from "../components/pdf/DropdownWidgetOption";
 import WidgetNameModal from "../components/pdf/WidgetNameModal";
 import { SaveFileSize } from "../constant/saveFileSize";
-import { EmailBody } from "../components/pdf/EmailBody";
 import { useSelector } from "react-redux";
 import PdfZoom from "../components/pdf/PdfZoom";
 import { useTranslation } from "react-i18next";
@@ -61,16 +62,25 @@ import TourContentWithBtn from "../primitives/TourContentWithBtn";
 import HandleError from "../primitives/HandleError";
 import LoaderWithMsg from "../primitives/LoaderWithMsg";
 import LinkUserModal from "../primitives/LinkUserModal";
-import QuotaCard from "../primitives/QuotaCard";
+import { EmailBody } from "../components/pdf/EmailBody";
 import LottieWithLoader from "../primitives/DotLottieReact";
 import Alert from "../primitives/Alert";
-import Upgrade from "../primitives/Upgrade";
+import AsyncSelect from "react-select/async";
+import AddContact from "../primitives/AddContact";
 
 function PlaceHolderSign() {
   const { t } = useTranslation();
   const editorRef = useRef();
-  const navigate = useNavigate();
   const { state } = useLocation();
+  const navigate = useNavigate();
+  const [defaultBody, setDefaultBody] = useState("");
+  const [defaultSubject, setDefaultSubject] = useState("");
+  const [requestSubject, setRequestSubject] = useState("");
+  const [requestBody, setRequestBody] = useState("");
+  const [tenantMailTemplate, setTenantMailTemplate] = useState({
+    body: "",
+    subject: ""
+  });
   const [pdfDetails, setPdfDetails] = useState([]);
   const [isMailSend, setIsMailSend] = useState(false);
   const [allPages, setAllPages] = useState(null);
@@ -102,8 +112,6 @@ function PlaceHolderSign() {
   const [pdfOriginalWH, setPdfOriginalWH] = useState([]);
   const [containerWH, setContainerWH] = useState();
   const { docId } = useParams();
-  const signRef = useRef(null);
-  const dragRef = useRef(null);
   const divRef = useRef(null);
   const [isShowEmail, setIsShowEmail] = useState(false);
   const [selectedEmail, setSelectedEmail] = useState(false);
@@ -112,8 +120,6 @@ function PlaceHolderSign() {
   const [signKey, setSignKey] = useState();
   const [tempSignerId, setTempSignerId] = useState("");
   const [blockColor, setBlockColor] = useState("");
-  const [defaultBody, setDefaultBody] = useState("");
-  const [defaultSubject, setDefaultSubject] = useState("");
   const [isTextSetting, setIsTextSetting] = useState(false);
   const [pdfLoad, setPdfLoad] = useState(false);
   const [isPageCopy, setIsPageCopy] = useState(false);
@@ -134,13 +140,9 @@ function PlaceHolderSign() {
   const [widgetName, setWidgetName] = useState(false);
   const [mailStatus, setMailStatus] = useState("");
   const [isCurrUser, setIsCurrUser] = useState(false);
-  const [isSubscribe, setIsSubscribe] = useState(false);
-  const [requestSubject, setRequestSubject] = useState("");
-  const [requestBody, setRequestBody] = useState("");
   const [pdfArrayBuffer, setPdfArrayBuffer] = useState("");
   const isHeader = useSelector((state) => state.showHeader);
-  const [activeMailAdapter, setActiveMailAdapter] = useState("");
-  const [isRotate, setIsRotate] = useState({
+  const [showRotateAlert, setShowRotateAlert] = useState({
     status: false,
     degree: 0
   });
@@ -152,27 +154,23 @@ function PlaceHolderSign() {
   const [isCustomize, setIsCustomize] = useState(false);
   const [zoomPercent, setZoomPercent] = useState(0);
   const [scale, setScale] = useState(1);
-  const [pdfRotateBase64, setPdfRotatese64] = useState("");
-  const [planCode, setPlanCode] = useState("");
+  const [pdfBase64Url, setPdfBase64Url] = useState("");
   const [unSignedWidgetId, setUnSignedWidgetId] = useState("");
   const [signatureType, setSignatureType] = useState(signatureTypes);
-  const [emailResetDate, setEmailResetDate] = useState("");
+  const [isUploadPdf, setIsUploadPdf] = useState(false);
+  //'signersName' variable used to show all signer's name that do not have a signature widget assigned
+  const [signersName, setSignersName] = useState("");
+  const [forms, setForms] = useState([]);
+  const [userList, setUserList] = useState([]);
+  const [isAttchSignerModal, setIsAttchSignerModal] = useState(false);
+  const [isNewContact, setIsNewContact] = useState({ status: false, id: "" });
   const isMobile = window.innerWidth < 767;
   const [, drop] = useDrop({
     accept: "BOX",
     drop: (item, monitor) => addPositionOfSignature(item, monitor),
     collect: (monitor) => ({ isOver: !!monitor.isOver() })
   });
-  const [{ isDragSign }, dragSignature] = useDrag({
-    type: "BOX",
-    item: { type: "BOX", id: 1, text: "signature" },
-    collect: (monitor) => ({ isDragSign: !!monitor.isDragging() })
-  });
-  const [{ isDragStamp }, dragStamp] = useDrag({
-    type: "BOX",
-    item: { type: "BOX", id: 2, text: "stamp" },
-    collect: (monitor) => ({ isDragStamp: !!monitor.isDragging() })
-  });
+
   const documentId = docId;
   useEffect(() => {
     if (documentId) {
@@ -207,6 +205,10 @@ function PlaceHolderSign() {
           if (tenantDetails?.RequestBody) {
             setRequestBody(tenantDetails?.RequestBody);
             setRequestSubject(tenantDetails?.RequestSubject);
+            setTenantMailTemplate({
+              body: tenantDetails?.RequestBody,
+              subject: tenantDetails?.RequestSubject
+            });
           }
           return filterSignTypes;
         }
@@ -236,51 +238,51 @@ function PlaceHolderSign() {
     return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [divRef.current, isHeader]);
-  const handleNavigation = () => {
-    navigate("/subscription");
-  };
-  async function checkIsSubscribed() {
-    const res = await fetchSubscription();
-    const plan = res.plan;
-    const billingDate = res.billingDate;
-    setPlanCode(plan);
-    if (plan === "freeplan") {
-      return true;
-    } else if (billingDate) {
-      if (new Date(billingDate) > new Date()) {
-        setIsSubscribe(true);
-        return true;
-      } else {
-        handleNavigation(plan);
-      }
-    } else {
-      handleNavigation(plan);
-    }
-  }
   //function for get document details
   const getDocumentDetails = async () => {
     const tenantSignTypes = await fetchTenantDetails();
     //getting document details
     const documentData = await contractDocument(documentId);
     if (documentData && documentData.length > 0) {
+      if (documentData[0]?.Placeholders?.length > 0) {
+        const signerNotExist = documentData[0]?.Placeholders.some(
+          (data) => !data.signerObjId
+        );
+        //condition to check any role does not attach signer
+        if (signerNotExist) {
+          let users = [];
+          documentData[0]?.Placeholders?.forEach((element) => {
+            let label = "";
+            const signerData = documentData[0]?.Signers.find(
+              (x) => element.signerObjId && element.signerObjId === x.objectId
+            );
+            if (signerData) {
+              label = `${signerData.Name}<${signerData.Email}>`;
+            }
+            users = [
+              ...users,
+              {
+                value: element.Id,
+                label: label || "",
+                role: element.Role
+              }
+            ];
+          });
+          setIsAttchSignerModal(true);
+          setForms(users);
+        }
+      }
       const url = documentData[0] && documentData[0]?.URL;
       //convert document url in array buffer format to use embed widgets in pdf using pdf-lib
       const arrayBuffer = await convertPdfArrayBuffer(url);
+      const base64Pdf = await getBase64FromUrl(url);
       if (arrayBuffer === "Error") {
         setHandleError(t("something-went-wrong-mssg"));
       } else {
         setPdfArrayBuffer(arrayBuffer);
-      }
-      if (documentData[0]?.ExtUserPtr?.LastEmailCountReset?.iso) {
-        const resetDate = formatDate(
-          documentData[0]?.ExtUserPtr?.LastEmailCountReset?.iso
-        );
-        setEmailResetDate(resetDate);
+        setPdfBase64Url(base64Pdf);
       }
       setExtUserId(documentData[0]?.ExtUserPtr?.objectId);
-      if (isEnableSubscription) {
-        checkIsSubscribed(documentData[0]?.ExtUserPtr?.Email);
-      }
       const alreadyPlaceholder = documentData[0]?.SignedUrl;
       // Check if document is sent for signing
       if (alreadyPlaceholder) {
@@ -334,6 +336,12 @@ function PlaceHolderSign() {
       const updatedPdfDetails = [...documentData];
       updatedPdfDetails[0].SignatureType = updatedSignatureType;
       setPdfDetails(updatedPdfDetails);
+      if (documentData?.[0]?.RequestBody && documentData?.[0]?.RequestSubject) {
+        setTenantMailTemplate({
+          body: documentData?.[0]?.RequestBody,
+          subject: documentData?.[0]?.RequestSubject
+        });
+      }
       //condition when placeholder have empty array with role details and signers array have signers data
       //and both array length are same
       //this case happen using placeholder form in auto save funtionality to save draft type document without adding any placehlder
@@ -456,7 +464,6 @@ function PlaceHolderSign() {
       setHandleError(t("something-went-wrong-mssg"));
       setIsLoading({ isLoad: false });
     } else if (res.length && res[0]?.objectId) {
-      setActiveMailAdapter(res[0]?.active_mail_adapter);
       setSignerUserId(res[0].objectId);
       const tourstatus = res[0].TourStatus && res[0].TourStatus;
       const alreadyPlaceholder = documentData[0]?.SignedUrl;
@@ -851,26 +858,32 @@ function PlaceHolderSign() {
           isSignYourSelfFlow,
           scale
         );
-        const pdfUrl = await convertBase64ToFile(pdfDetails[0].Name, pdfBase64);
+        const pdfName = generatePdfName(16);
+        const pdfUrl = await convertBase64ToFile(
+          pdfName,
+          pdfBase64,
+          "",
+        );
         const tenantId = localStorage.getItem("TenantId");
         const buffer = atob(pdfBase64);
         SaveFileSize(buffer.length, pdfUrl, tenantId);
         return pdfUrl;
-      } catch (e) {
-        console.log("error to convertBase64ToFile in placeholder flow", e);
+      } catch (err) {
+        console.log("error to convertBase64ToFile in placeholder flow", err);
+        alert(err?.message);
       }
-    } else if (pdfRotateBase64) {
+    } else if (pdfBase64Url) {
       try {
+        const pdfName = generatePdfName(16);
         const pdfUrl = await convertBase64ToFile(
-          pdfDetails[0].Name,
-          pdfRotateBase64
+          pdfName,
+          pdfBase64Url,
+          "",
         );
-        const tenantId = localStorage.getItem("TenantId");
-        const buffer = atob(pdfRotateBase64);
-        SaveFileSize(buffer.length, pdfUrl, tenantId);
         return pdfUrl;
-      } catch (e) {
-        console.log("error to convertBase64ToFile in placeholder flow", e);
+      } catch (err) {
+        console.log("error to convertBase64ToFile in placeholder flow", err);
+        alert(err?.message);
       }
     } else {
       return pdfDetails[0].URL;
@@ -879,6 +892,8 @@ function PlaceHolderSign() {
   const alertSendEmail = async () => {
     const filterPrefill = signerPos?.filter((data) => data.Role !== "prefill");
     const getPrefill = signerPos?.find((data) => data.Role === "prefill");
+    //unassigned signature widgets signer's list
+    let unassignedWidget = [];
     let isLabel = false;
     let unfilledTextWidgetId = "";
     //checking all signers placeholder exist or not
@@ -900,56 +915,60 @@ function PlaceHolderSign() {
         });
       }
     }
-    let isSignatureExist = true; // variable is used to check a signature widget exit or not then execute other code
-    if (isPlaceholderExist) {
-      //for loop is used to check signature widget exist or not
-      for (let item of filterPrefill) {
-        let signatureExist = false; // Reset for each iteration
+
+    //for loop is used to check signature widget exist or not
+    //if signature widget does not exist then show tour messages on signature widgets
+    //and show list of signers who need to add signature widget
+    for (let item of filterPrefill) {
+      let signatureExist = false; // Reset for each iteration
+      //condition if placeholder filed exist then check which signer do not have signature widget
+      if (item.placeHolder) {
         for (let x of item.placeHolder) {
           if (!signatureExist) {
-            const typeExist = x.pos.some((data) => data?.type);
-            if (typeExist) {
-              signatureExist = x.pos.some((data) => data?.type === "signature");
-            } else {
-              signatureExist = x.pos.some((data) => !data.isStamp);
-            }
+            signatureExist = x.pos.some((data) => data?.type === "signature");
           }
         }
         if (!signatureExist) {
-          isSignatureExist = false;
-          setIsSendAlert({ mssg: "sure", alert: true });
+          unassignedWidget.push(item);
         }
+      } else {
+        //condition if placeholder filed does not exist then it means there are no any signature widget for any signer
+        unassignedWidget.push(item);
       }
     }
+    //checking if there are any signer list which do not have signture widget then show signers name on tour messages
+    if (unassignedWidget.length > 0) {
+      const getSigner = unassignedWidget.map((x) => {
+        return signersdata.find((y) => y.Id === x.Id).Name;
+      });
+      const signersName = getSigner.join(", ");
+      setSignersName(signersName);
+      setIsSendAlert({ mssg: "sure", alert: true });
+    }
+
     if (getPrefill && isLabel) {
       setIsSendAlert({ mssg: textWidget, alert: true });
       setUnSignedWidgetId(unfilledTextWidgetId);
-    } else if (isSignatureExist) {
-      if (isPlaceholderExist) {
-        const IsSignerNotExist = filterPrefill?.filter((x) => !x.signerObjId);
-        if (IsSignerNotExist && IsSignerNotExist?.length > 0) {
-          setSignerExistModal(true);
-          setSelectWidgetId(
-            IsSignerNotExist[0]?.placeHolder?.[0]?.pos?.[0]?.key
-          );
-        } else {
-          saveDocumentDetails();
-        }
+    } else if (isPlaceholderExist && unassignedWidget.length === 0) {
+      const IsSignerNotExist = filterPrefill?.filter((x) => !x.signerObjId);
+      if (IsSignerNotExist && IsSignerNotExist?.length > 0) {
+        setSignerExistModal(true);
+        setSelectWidgetId(IsSignerNotExist[0]?.placeHolder?.[0]?.pos?.[0]?.key);
       } else {
-        setIsSendAlert({ mssg: "sure", alert: true });
+        saveDocumentDetails();
       }
     }
   };
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      if (signerPos?.length > 0 && !pdfDetails?.[0]?.IsCompleted) {
+      if (!pdfDetails?.[0]?.IsCompleted) {
         autosavedetails();
       }
     }, 2000);
     return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [signerPos, signersdata, signatureType]);
+  }, [signerPos, signersdata, signatureType, pdfBase64Url]);
 
   // `autosavedetails` is used to save doc details after every 2 sec when changes are happern in placeholder like drag-drop widgets, remove signers
   const autosavedetails = async () => {
@@ -963,13 +982,30 @@ function PlaceHolderSign() {
       }
       return acc;
     }, []);
+    let pdfUrl;
+    if (isUploadPdf) {
+      const pdfName = generatePdfName(16);
+      pdfUrl = await convertBase64ToFile(
+        pdfName,
+        pdfBase64Url,
+        "",
+      );
+    }
     try {
       const docCls = new Parse.Object("contracts_Document");
       docCls.id = documentId;
-      docCls.set("Placeholders", signerPos);
+      if (signerPos?.length > 0) {
+        docCls.set("Placeholders", signerPos);
+      }
       docCls.set("Signers", signers);
       docCls.set("SignatureType", signatureType);
-      await docCls.save();
+      if (pdfUrl) {
+        docCls.set("URL", pdfUrl);
+      }
+      const res = await docCls.save();
+      if (res) {
+        pdfDetails[0] = { ...pdfDetails[0], URL: pdfUrl };
+      }
     } catch (e) {
       console.log("error", e);
       alert(t("something-went-wrong-mssg"));
@@ -983,69 +1019,76 @@ function PlaceHolderSign() {
       signerMail.splice(1);
     }
     const pdfUrl = await embedPrefilllData();
-    const signers = signersdata?.map((x) => {
-      return {
-        __type: "Pointer",
-        className: "contracts_Contactbook",
-        objectId: x.objectId
-      };
-    });
-    const addExtraDays = pdfDetails[0]?.TimeToCompleteDays
-      ? pdfDetails[0].TimeToCompleteDays
-      : 15;
-    const currentUser = signersdata.find((x) => x.Email === currentId);
-    setCurrentId(currentUser?.objectId);
-    if (pdfDetails?.[0]?.SendinOrder && pdfDetails?.[0]?.SendinOrder === true) {
-      const currentUserMail = Parse.User.current()?.getEmail();
-      const isCurrentUser = signerMail?.[0]?.Email === currentUserMail;
-      setIsCurrUser(isCurrentUser);
-    } else {
-      setIsCurrUser(currentUser?.objectId ? true : false);
-    }
-    let updateExpiryDate, data;
-    updateExpiryDate = new Date();
-    updateExpiryDate.setDate(updateExpiryDate.getDate() + addExtraDays);
-    //filter label widgets after add label widgets data on pdf
-    const filterPrefill = signerPos.filter((data) => data.Role !== "prefill");
-    try {
-      data = {
-        Placeholders: filterPrefill,
-        SignedUrl: pdfUrl,
-        Signers: signers,
-        SentToOthers: true,
-        SignatureType: pdfDetails?.[0]?.SignatureType
-      };
-      if (updateExpiryDate) {
-        data["ExpiryDate"] = { iso: updateExpiryDate, __type: "Date" };
+    if (pdfUrl) {
+      const signers = signersdata?.map((x) => {
+        return {
+          __type: "Pointer",
+          className: "contracts_Contactbook",
+          objectId: x.objectId
+        };
+      });
+      const addExtraDays = pdfDetails[0]?.TimeToCompleteDays
+        ? pdfDetails[0].TimeToCompleteDays
+        : 15;
+      const currentUser = signersdata.find((x) => x.Email === currentId);
+      setCurrentId(currentUser?.objectId);
+      if (
+        pdfDetails?.[0]?.SendinOrder &&
+        pdfDetails?.[0]?.SendinOrder === true
+      ) {
+        const currentUserMail = Parse.User.current()?.getEmail();
+        const isCurrentUser = signerMail?.[0]?.Email === currentUserMail;
+        setIsCurrUser(isCurrentUser);
+      } else {
+        setIsCurrUser(currentUser?.objectId ? true : false);
       }
-      await axios
-        .put(
-          `${localStorage.getItem(
-            "baseUrl"
-          )}classes/contracts_Document/${documentId}`,
-          data,
-          {
-            headers: {
-              "Content-Type": "application/json",
-              "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
-              "X-Parse-Session-Token": localStorage.getItem("accesstoken")
+      let updateExpiryDate, data;
+      updateExpiryDate = new Date();
+      updateExpiryDate.setDate(updateExpiryDate.getDate() + addExtraDays);
+      //filter label widgets after add label widgets data on pdf
+      const filterPrefill = signerPos.filter((data) => data.Role !== "prefill");
+      try {
+        data = {
+          Placeholders: filterPrefill,
+          SignedUrl: pdfUrl,
+          Signers: signers,
+          SentToOthers: true,
+          SignatureType: pdfDetails?.[0]?.SignatureType
+        };
+        if (updateExpiryDate) {
+          data["ExpiryDate"] = { iso: updateExpiryDate, __type: "Date" };
+        }
+        await axios
+          .put(
+            `${localStorage.getItem(
+              "baseUrl"
+            )}classes/contracts_Document/${documentId}`,
+            data,
+            {
+              headers: {
+                "Content-Type": "application/json",
+                "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
+                "X-Parse-Session-Token": localStorage.getItem("accesstoken")
+              }
             }
-          }
-        )
-        .then(() => {
-          setIsMailSend(true);
-          setIsLoading({ isLoad: false });
-          setIsUiLoading(false);
-          setSignerPos([]);
-          setIsSendAlert({ mssg: "confirm", alert: true });
-        })
-        .catch((err) => {
-          console.log("axois err ", err);
-          alert(t("something-went-wrong-mssg"));
-        });
-    } catch (e) {
-      console.log("error", e);
-      alert(t("something-went-wrong-mssg"));
+          )
+          .then(() => {
+            setIsMailSend(true);
+            setIsLoading({ isLoad: false });
+            setIsUiLoading(false);
+            setSignerPos([]);
+            setIsSendAlert({ mssg: "confirm", alert: true });
+          })
+          .catch((err) => {
+            console.log("axois err ", err);
+            alert(t("something-went-wrong-mssg"));
+          });
+      } catch (e) {
+        console.log("error", e);
+        alert(t("something-went-wrong-mssg"));
+      }
+    } else {
+      setIsUiLoading(false);
     }
   };
 
@@ -1142,7 +1185,12 @@ function PlaceHolderSign() {
         const senderName = `${pdfDetails?.[0].ExtUserPtr.Name}`;
         const documentName = `${pdfDetails?.[0].Name}`;
         let replaceVar;
-        if (requestBody && requestSubject && isCustomize && isSubscribe) {
+
+        if (
+          requestBody &&
+          requestSubject &&
+          isCustomize
+        ) {
           const replacedRequestBody = requestBody.replace(/"/g, "'");
           htmlReqBody =
             "<html><head><meta http-equiv='Content-Type' content='text/html; charset=UTF-8' /></head><body>" +
@@ -1151,10 +1199,12 @@ function PlaceHolderSign() {
 
           const variables = {
             document_title: documentName,
-            sender_name: senderName,
-            sender_mail: senderEmail,
+            sender_name:
+              senderName,
+            sender_mail:
+              senderEmail,
             sender_phone: senderPhone || "",
-            receiver_name: signerMail[i].Name,
+            receiver_name: signerMail[i]?.Name || "",
             receiver_email: signerMail[i].Email,
             receiver_phone: signerMail[i]?.Phone || "",
             expiry_date: localExpireDate,
@@ -1166,40 +1216,67 @@ function PlaceHolderSign() {
             htmlReqBody,
             variables
           );
+        } else if (
+          tenantMailTemplate?.body &&
+          tenantMailTemplate?.subject
+        ) {
+          const mailBody = tenantMailTemplate?.body;
+          const mailSubject = tenantMailTemplate?.subject;
+          const replacedRequestBody = mailBody.replace(/"/g, "'");
+          const htmlReqBody =
+            "<html><head><meta http-equiv='Content-Type' content='text/html; charset=UTF-8' /></head><body>" +
+            replacedRequestBody +
+            "</body> </html>";
+          const variables = {
+            document_title: documentName,
+            sender_name:
+              senderName,
+            sender_mail:
+              senderEmail,
+            sender_phone: senderPhone || "",
+            receiver_name: signerMail[i]?.Name || "",
+            receiver_email: signerMail[i].Email,
+            receiver_phone: signerMail[i]?.Phone || "",
+            expiry_date: localExpireDate,
+            company_name: orgName,
+            signing_url: `<a href=${signPdf} target=_blank>Sign here</a>`
+          };
+          replaceVar = replaceMailVaribles(mailSubject, htmlReqBody, variables);
         }
-
         let params = {
-          mailProvider: activeMailAdapter,
           extUserId: extUserId,
           recipient: signerMail[i].Email,
-          subject: isCustomize
+          subject: replaceVar?.subject
             ? replaceVar?.subject
             : `${senderName} has requested you to sign "${documentName}"`,
-          from: senderEmail,
-          plan: planCode,
-          html: isCustomize
+          replyto:
+            senderEmail ||
+            "",
+          from:
+            senderEmail,
+          html: replaceVar?.body
             ? replaceVar?.body
-            : "<html><head><meta http-equiv='Content-Type' content='text/html; charset=UTF-8' /> </head>   <body> <div style='background-color: #f5f5f5; padding: 20px'=> <div   style=' box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;background: white;padding-bottom: 20px;'> <div style='padding:10px 10px 0 10px'><img src=" +
+            : "<html><head><meta http-equiv='Content-Type' content='text/html;charset=UTF-8' /></head><body><div style='background-color:#f5f5f5; padding:20px;'><div style='box-shadow:rgba(0, 0, 0, 0.1) 0px 4px 12px;background:white;padding-bottom:20px;'><div style='padding:10px 10px 0 10px'><img src=" +
               imgPng +
-              " height='50' style='padding: 20px,width:170px,height:40px' /></div>  <div  style=' padding: 2px;font-family: system-ui;background-color:" +
+              " height='50' style='padding:20px,width:170px,height:40px' /></div><div style='padding:2px;font-family:system-ui;background-color:" +
               themeBGcolor +
-              ";'><p style='font-size: 20px;font-weight: 400;color: white;padding-left: 20px;' > Digital Signature Request</p></div><div><p style='padding: 20px;font-family: system-ui;font-size: 14px;   margin-bottom: 10px;'> " +
+              ";'><p style='font-size:20px;font-weight:400;color:white;padding-left:20px;' > Digital Signature Request</p></div><div><p style='padding:20px;font-family:system-ui;font-size:14px;margin-bottom:10px;'> " +
               pdfDetails?.[0].ExtUserPtr.Name +
               " has requested you to review and sign <strong> " +
               pdfDetails?.[0].Name +
-              "</strong>.</p><div style='padding: 5px 0px 5px 25px;display: flex;flex-direction: row;justify-content: space-around;'><table> <tr> <td style='font-weight:bold;font-family:sans-serif;font-size:15px'>Sender</td> <td> </td> <td  style='color:#626363;font-weight:bold'>" +
+              "</strong>.</p><div style='padding: 5px 0px 5px 25px;display:flex;flex-direction:row;justify-content:space-around;'><table><tr><td style='font-weight:bold;font-family:sans-serif;font-size:15px'>Sender</td><td></td><td style='color:#626363;font-weight:bold;'>" +
               senderEmail +
-              "</td></tr><tr><td style='font-weight:bold;font-family:sans-serif;font-size:15px'>Organization</td> <td> </td><td style='color:#626363;font-weight:bold'> " +
+              "</td></tr><tr><td style='font-weight:bold;font-family:sans-serif;font-size:15px'>Organization</td><td></td><td style='color:#626363;font-weight:bold'> " +
               orgName +
-              "</td></tr> <tr> <td style='font-weight:bold;font-family:sans-serif;font-size:15px'>Expire on</td><td> </td> <td style='color:#626363;font-weight:bold'>" +
+              "</td></tr><tr><td style='font-weight:bold;font-family:sans-serif;font-size:15px'>Expire on</td><td></td><td style='color:#626363;font-weight:bold'>" +
               localExpireDate +
-              "</td></tr><tr> <td></td> <td> </td></tr></table> </div> <div style='margin-left:70px'><a target=_blank href=" +
+              "</td></tr><tr><td></td><td></td></tr></table></div> <div style='margin-left:70px'><a target=_blank href=" +
               signPdf +
-              "> <button style='padding: 12px 12px 12px 12px;background-color: #d46b0f;color: white;  border: 0px;box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px,rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;font-weight:bold;margin-top:30px'>Sign here</button></a> </div> <div style='display: flex; justify-content: center;margin-top: 10px;'> </div></div></div><div><p> This is an automated email from OpenSign™. For any queries regarding this email, please contact the sender " +
+              "><button style='padding: 12px 12px 12px 12px;background-color:#d46b0f;color:white;border:0px;box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px,rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;font-weight:bold;margin-top:30px'>Sign here</button></a></div><div style='display: flex; justify-content: center;margin-top: 10px;'></div></div></div><div><p> This is an automated email from OpenSign™. For any queries regarding this email, please contact the sender " +
               senderEmail +
-              " directly.If you think this email is inappropriate or spam, you may file a complaint with OpenSign™   <a href= " +
+              " directly.If you think this email is inappropriate or spam, you may file a complaint with OpenSign™ <a href= " +
               openSignUrl +
-              " target=_blank>here</a>.</p> </div></div></body> </html>"
+              " target=_blank>here</a>.</p></div></div></body></html>"
         };
 
         sendMail = await axios.post(url, params, { headers: headers });
@@ -1211,10 +1288,23 @@ function PlaceHolderSign() {
       setMailStatus("success");
       try {
         let data;
-        if (requestBody && requestSubject && isCustomize && isSubscribe) {
+        if (
+          requestBody &&
+          requestSubject &&
+          isCustomize
+        ) {
           data = {
             RequestBody: htmlReqBody,
             RequestSubject: requestSubject,
+            SendMail: true
+          };
+        } else if (
+          tenantMailTemplate?.body &&
+          tenantMailTemplate?.subject
+        ) {
+          data = {
+            RequestBody: tenantMailTemplate?.body,
+            RequestSubject: tenantMailTemplate?.subject,
             SendMail: true
           };
         } else {
@@ -1428,7 +1518,8 @@ function PlaceHolderSign() {
                   fontColor:
                     fontColor ||
                     currWidgetsDetails?.options?.fontColor ||
-                    "black"
+                    "black",
+                  ...(isReadOnly ? { isReadOnly: isReadOnly || false } : {})
                 }
               };
             }
@@ -1467,13 +1558,6 @@ function PlaceHolderSign() {
       setPdfDetails(updatedPdfDetails);
       setSignatureType(signtypes);
     }
-    const options = ["email", "number", "text"];
-    let inputype;
-    if (defaultdata.textvalidate) {
-      inputype = options.includes(defaultdata.textvalidate)
-        ? defaultdata.textvalidate
-        : "regex";
-    }
     const filterSignerPos = signerPos.filter((data) => data.Id === uniqueId);
     if (filterSignerPos.length > 0) {
       const getPlaceHolder = filterSignerPos[0].placeHolder;
@@ -1497,19 +1581,14 @@ function PlaceHolderSign() {
                   hint: defaultdata?.hint || "",
                   defaultValue: defaultdata?.defaultValue || "",
                   validation:
-                    isSubscribe && inputype
-                      ? {
-                          type: inputype,
-                          pattern:
-                            inputype === "regex" ? defaultdata.textvalidate : ""
-                        }
-                      : {},
+                        {},
                   fontSize:
                     fontSize || currWidgetsDetails?.options?.fontSize || 12,
                   fontColor:
                     fontColor ||
                     currWidgetsDetails?.options?.fontColor ||
-                    "black"
+                    "black",
+                  isReadOnly: defaultdata?.isReadOnly || false
                 }
               };
             } else {
@@ -1607,43 +1686,61 @@ function PlaceHolderSign() {
     }
   };
   const handleRecipientSign = () => {
-    navigate(`/recipientSignPdf/${documentId}/${currentId}`);
+    if (currentId) {
+      navigate(`/recipientSignPdf/${documentId}/${currentId}`);
+    } else {
+      navigate(`/recipientSignPdf/${documentId}`);
+    }
   };
   const handleLinkUser = (id) => {
     setIsAddUser({ [id]: true });
   };
-  const handleAddUser = (data) => {
-    if (data && data.objectId) {
-      const signerPtr = {
-        __type: "Pointer",
-        className: "contracts_Contactbook",
-        objectId: data.objectId
-      };
-      const updatePlaceHolder = signerPos.map((x) => {
-        if (x.Id === uniqueId) {
-          return { ...x, signerPtr: signerPtr, signerObjId: data.objectId };
+  //`handleAddUser` function to use add new user
+  const handleAddUser = (data, signerObjId) => {
+    const id = signerObjId ? signerObjId : isNewContact?.id || uniqueId;
+    if (isAddSigner) {
+      handleAddNewRecipients(data);
+    } else {
+      if (data && data.objectId) {
+        const signerPtr = {
+          __type: "Pointer",
+          className: "contracts_Contactbook",
+          objectId: data.objectId
+        };
+        const updatePlaceHolder = signerPos.map((x) => {
+          if (x.Id === id) {
+            return { ...x, signerPtr: signerPtr, signerObjId: data.objectId };
+          }
+          return { ...x };
+        });
+        setSignerPos(updatePlaceHolder);
+        const updateSigner = signersdata.map((x) => {
+          if (x.Id === id) {
+            return { ...x, ...data, className: "contracts_Contactbook" };
+          }
+          return { ...x };
+        });
+        if (updateSigner && updateSigner.length > 0) {
+          const currEmail = pdfDetails[0].ExtUserPtr.Email;
+          const getCurrentUserDeatils = updateSigner.filter(
+            (x) => x.Email === currEmail
+          );
+          if (getCurrentUserDeatils && getCurrentUserDeatils.length > 0) {
+            setCurrentId(getCurrentUserDeatils[0].Email);
+          }
         }
-        return { ...x };
-      });
-      setSignerPos(updatePlaceHolder);
-      const updateSigner = signersdata.map((x) => {
-        if (x.Id === uniqueId) {
-          return { ...x, ...data, className: "contracts_Contactbook" };
-        }
-        return { ...x };
-      });
-      if (updateSigner && updateSigner.length > 0) {
-        const currEmail = pdfDetails[0].ExtUserPtr.Email;
-        const getCurrentUserDeatils = updateSigner.filter(
-          (x) => x.Email === currEmail
-        );
-        if (getCurrentUserDeatils && getCurrentUserDeatils.length > 0) {
-          setCurrentId(getCurrentUserDeatils[0].Email);
-        }
+        setSignersData(updateSigner);
+        const index = signersdata.findIndex((x) => x.Id === id);
+        setIsSelectId(index);
       }
-      setSignersData(updateSigner);
-      const index = signersdata.findIndex((x) => x.Id === uniqueId);
-      setIsSelectId(index);
+      if (isNewContact.status) {
+        let newForm = [...forms];
+        const label = `${data.Name}<${data.Email}>`;
+        const index = newForm.findIndex((x) => x.value === id);
+        newForm[index].label = label;
+        newForm[index].value = data?.objectId;
+        setForms(newForm);
+      }
     }
   };
   //function to add new signer in document signers list
@@ -1669,12 +1766,13 @@ function PlaceHolderSign() {
     setSignerPos((prev) => [...prev, signerPosObj]);
     setUniqueId(newId);
     setIsSelectId(signersdata.length - 1);
-    setBlockColor(color[signersdata.length]);
+    setBlockColor(color[signersdata.length - 1]);
   };
 
   const closePopup = () => {
     setIsAddUser({});
     setIsAddSigner(false);
+    setIsNewContact({ status: false, id: "" });
   };
 
   //function for handle ontext change and save again text in delta in Request Email flow
@@ -1697,6 +1795,14 @@ function PlaceHolderSign() {
     {
       selector: '[data-tut="IsSigned"]',
       content: t("text-field-tour"),
+      position: "top",
+      style: { fontSize: "13px" }
+    }
+  ];
+  const signatureWidgetTour = [
+    {
+      selector: '[data-tut="isSignatureWidget"]',
+      content: t("signature-field-widget", { signersName }),
       position: "top",
       style: { fontSize: "13px" }
     }
@@ -1741,30 +1847,98 @@ function PlaceHolderSign() {
   };
   //`handleRotationFun` function is used to roatate pdf particular page
   const handleRotationFun = async (rotateDegree) => {
-    const isRotate = handleRotateWarning(signerPos, pageNumber);
-    if (isRotate) {
-      setIsRotate({ status: true, degree: rotateDegree });
+    const rotatePlaceholderExist = handleRotateWarning(signerPos, pageNumber);
+    //show rotation alert if widgets already exist
+    if (rotatePlaceholderExist) {
+      setShowRotateAlert({ status: true, degree: rotateDegree });
     } else {
+      setIsUploadPdf(true);
       const urlDetails = await rotatePdfPage(
-        pdfDetails[0].URL,
         rotateDegree,
         pageNumber - 1,
-        pdfRotateBase64
+        pdfArrayBuffer
       );
-      setPdfArrayBuffer && setPdfArrayBuffer(urlDetails.arrayBuffer);
-      setPdfRotatese64(urlDetails.base64);
+      setPdfArrayBuffer(urlDetails.arrayBuffer);
+      setPdfBase64Url(urlDetails.base64);
     }
   };
   const handleRemovePlaceholder = async () => {
-    handleRemoveWidgets(setSignerPos, signerPos, pageNumber, setIsRotate);
-    const urlDetails = await rotatePdfPage(
-      pdfDetails[0].URL,
-      isRotate.degree,
-      pageNumber - 1,
-      pdfRotateBase64
+    handleRemoveWidgets(
+      setSignerPos,
+      signerPos,
+      pageNumber,
+      setShowRotateAlert
     );
-    setPdfArrayBuffer && setPdfArrayBuffer(urlDetails.arrayBuffer);
-    setPdfRotatese64(urlDetails.base64);
+    const urlDetails = await rotatePdfPage(
+      showRotateAlert.degree,
+      pageNumber - 1,
+      pdfArrayBuffer
+    );
+    setPdfArrayBuffer(urlDetails.arrayBuffer);
+    setPdfBase64Url(urlDetails.base64);
+  };
+  const handleSendDoc = () => {
+    setIsAttchSignerModal(false);
+    setCheckTourStatus(true);
+    alertSendEmail();
+  };
+
+  //show modal to create new contact
+  const handleCreateNew = (e, id) => {
+    e.preventDefault();
+    setIsNewContact({ status: true, id: id });
+  };
+  //`handleInputChange` function to get signers list from dropdown
+  const handleInputChange = (item, id) => {
+    const signerExist = forms.some((x) => x.value === item.value);
+    if (signerExist) {
+      alert(t("already-exist-signer"));
+    } else {
+      let newForm = [...forms];
+      let signerId = newForm[id].value;
+      newForm[id].label = item?.label;
+      newForm[id].value = item?.value;
+      setForms(newForm);
+      const getSigner = userList.find((x) => x.objectId === item.value);
+      handleAddUser(getSigner, signerId);
+    }
+  };
+
+  //`loadOptions` function to use show all list of signer in dropdown
+  const loadOptions = async (inputValue) => {
+    try {
+      const baseURL = localStorage.getItem("baseUrl");
+      const url = `${baseURL}functions/getsigners`;
+      const token = {
+        "X-Parse-Session-Token": localStorage.getItem("accesstoken")
+      };
+      const headers = {
+        "Content-Type": "application/json",
+        "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
+        ...token
+      };
+      const search = inputValue;
+      const axiosRes = await axios.post(url, { search }, { headers });
+      const contactRes = axiosRes?.data?.result || [];
+      if (contactRes) {
+        const res = JSON.parse(JSON.stringify(contactRes));
+        const result = res;
+        setUserList(result);
+        return await result.map((item) => ({
+          label: `${item.Name}<${item.Email}>`,
+          value: item.objectId
+        }));
+      }
+    } catch (error) {
+      console.log("err", error);
+    }
+  };
+  const handleDisable = () => {
+    const isAllSigner = signerPos.some((x) => !x.signerObjId);
+    return isAllSigner;
+  };
+  const handleCloseAttachSigner = () => {
+    setIsAttchSignerModal(false);
   };
   return (
     <>
@@ -1786,7 +1960,7 @@ function PlaceHolderSign() {
             )}
             <div className="relative op-card overflow-hidden flex flex-col md:flex-row justify-between bg-base-300">
               {/* this component used for UI interaction and show their functionality */}
-              {!checkTourStatus && (
+              {!checkTourStatus && !isAttchSignerModal && (
                 //this tour component used in your html component where you want to put
                 //onRequestClose function to close tour
                 //steps is defined what will be your messages and style also
@@ -1813,15 +1987,27 @@ function PlaceHolderSign() {
                 rounded={5}
                 closeWithMask={false}
               />
+              <Tour
+                onRequestClose={() => handleCloseSendmailModal()}
+                steps={signatureWidgetTour}
+                isOpen={isSendAlert.mssg === "sure" && true}
+                rounded={5}
+                closeWithMask={false}
+              />
               {/* this component used to render all pdf pages in left side */}
               <RenderAllPdfPage
-                signPdfUrl={pdfDetails[0].URL}
                 allPages={allPages}
                 setAllPages={setAllPages}
                 setPageNumber={setPageNumber}
                 setSignBtnPosition={setSignBtnPosition}
                 pageNumber={pageNumber}
-                pdfRotateBase64={pdfRotateBase64}
+                pdfBase64Url={pdfBase64Url}
+                signedUrl={pdfDetails?.[0]?.SignedUrl || ""}
+                setPdfArrayBuffer={setPdfArrayBuffer}
+                setPdfBase64Url={setPdfBase64Url}
+                setIsUploadPdf={setIsUploadPdf}
+                pdfArrayBuffer={pdfArrayBuffer}
+                isMergePdfBtn={true}
               />
               {/* pdf render view */}
               <div className=" w-full md:w-[57%] flex mr-4">
@@ -1829,84 +2015,88 @@ function PlaceHolderSign() {
                   clickOnZoomIn={clickOnZoomIn}
                   clickOnZoomOut={clickOnZoomOut}
                   handleRotationFun={handleRotationFun}
+                  pdfArrayBuffer={pdfArrayBuffer}
+                  pageNumber={pageNumber}
+                  setPdfBase64Url={setPdfBase64Url}
+                  setPdfArrayBuffer={setPdfArrayBuffer}
+                  setIsUploadPdf={setIsUploadPdf}
+                  setSignerPos={setSignerPos}
+                  signerPos={signerPos}
+                  userId={uniqueId}
+                  allPages={allPages}
+                  setAllPages={setAllPages}
+                  setPageNumber={setPageNumber}
                 />
                 <div className=" w-full md:w-[95%] ">
                   {/* this modal is used show alert set placeholder for all signers before send mail */}
                   <ModalUi
                     isOpen={
-                      isSendAlert.alert && isSendAlert.mssg !== textWidget
+                      isSendAlert.alert &&
+                      isSendAlert.mssg !== textWidget &&
+                      isSendAlert.mssg === "confirm"
                     }
-                    title={
-                      isSendAlert.mssg === "sure" ||
-                      (isSendAlert.mssg === "confirm" && t("send-mail"))
-                    }
+                    title={isSendAlert.mssg === "confirm" && t("send-mail")}
                     handleClose={() => handleCloseSendmailModal()}
                   >
                     <div className="max-h-96 overflow-y-scroll scroll-hide p-[20px] text-base-content">
-                      {isSendAlert.mssg === "sure" ? (
-                        <span>{t("placeholder-alert-1")}</span>
-                      ) : (
-                        isSendAlert.mssg === "confirm" && (
-                          <>
-                            {!isCustomize && (
-                              <span>{t("placeholder-alert-3")}</span>
-                            )}
-                            {isCustomize && isSubscribe && (
-                              <>
-                                <EmailBody
-                                  editorRef={editorRef}
-                                  requestBody={requestBody}
-                                  requestSubject={requestSubject}
-                                  handleOnchangeRequest={handleOnchangeRequest}
-                                  setRequestSubject={setRequestSubject}
-                                />
-                                <div
-                                  className="flex justify-end items-center gap-1 mt-2 op-link op-link-primary"
-                                  onClick={() => {
-                                    setRequestBody(defaultBody);
-                                    setRequestSubject(defaultSubject);
-                                  }}
-                                >
-                                  <span>{t("reset-to-default")}</span>
-                                </div>
-                              </>
-                            )}
-                            <div className="flex flex-row md:items-center gap-2 md:gap-6 mt-2">
-                              <div className="flex flex-row gap-2">
-                                <button
-                                  onClick={() => sendEmailToSigners()}
-                                  className="op-btn op-btn-primary font-[500] text-sm shadow"
-                                >
-                                  {t("send")}
-                                </button>
-                                {isCustomize && (
-                                  <button
-                                    onClick={() => setIsCustomize(false)}
-                                    className="op-btn op-btn-ghost font-[500] text-sm"
-                                  >
-                                    {t("close")}
-                                  </button>
-                                )}
-                              </div>
-                              {!isCustomize && isSubscribe && (
-                                <span
-                                  className="op-link op-link-accent text-sm"
-                                  onClick={() => setIsCustomize(!isCustomize)}
-                                >
-                                  {t("cutomize-email")}
-                                </span>
-                              )}
-                              {!isSubscribe && isEnableSubscription && (
-                                <div className="mt-2">
-                                  <Upgrade
-                                    message={t("upgrade-to-customize-email")}
-                                    newWindow={true}
+                      {isSendAlert.mssg === "confirm" && (
+                        <>
+                          {!isCustomize && (
+                            <span>{t("placeholder-alert-3")}</span>
+                          )}
+                          {
+                              isCustomize && (
+                                <>
+                                  <EmailBody
+                                    editorRef={editorRef}
+                                    requestBody={requestBody}
+                                    requestSubject={requestSubject}
+                                    handleOnchangeRequest={
+                                      handleOnchangeRequest
+                                    }
+                                    setRequestSubject={setRequestSubject}
                                   />
-                                </div>
+                                  <div
+                                    className="flex justify-end items-center gap-1 mt-2 op-link op-link-primary"
+                                    onClick={() => {
+                                      setRequestBody(defaultBody);
+                                      setRequestSubject(defaultSubject);
+                                    }}
+                                  >
+                                    <span>{t("reset-to-default")}</span>
+                                  </div>
+                                </>
+                              )
+                          }
+                          <div className="flex flex-row items-center gap-2 md:gap-6 mt-2">
+                            <div className="flex flex-row gap-2">
+                              <button
+                                onClick={() => sendEmailToSigners()}
+                                className="op-btn op-btn-primary font-[500] text-sm shadow"
+                              >
+                                {t("send")}
+                              </button>
+                              {isCustomize && (
+                                <button
+                                  onClick={() => setIsCustomize(false)}
+                                  className="op-btn op-btn-ghost font-[500] text-sm"
+                                >
+                                  {t("close")}
+                                </button>
                               )}
                             </div>
-                          </>
-                        )
+                            {
+                                !isCustomize && (
+                                  <span
+                                    className="op-link op-link-accent text-sm"
+                                    onClick={() => setIsCustomize(!isCustomize)}
+                                  >
+                                    {t("cutomize-email")}
+                                  </span>
+                                )
+                            }
+                          </div>
+                        </>
                       )}
                       {isSendAlert.mssg === "confirm" && (
                         <>
@@ -1920,7 +2110,6 @@ function PlaceHolderSign() {
                       )}
                     </div>
                   </ModalUi>
-
                   {/* this modal is used show send mail  message and after send mail success message */}
                   <ModalUi
                     isOpen={isSend}
@@ -1941,19 +2130,19 @@ function PlaceHolderSign() {
                       {mailStatus === "success" ? (
                         <div className="text-center mb-[10px]">
                           <LottieWithLoader />
-                          <p>{t("placeholder-alert-4")}</p>
+                          {pdfDetails[0].SendinOrder ? (
+                            <p>
+                              {t("placeholder-mail-alert", {
+                                name: pdfDetails[0]?.Signers[0]?.Name
+                              })}
+                            </p>
+                          ) : (
+                            <p>{t("placeholder-alert-4")}</p>
+                          )}
                           {isCurrUser && <p>{t("placeholder-alert-5")}</p>}
                         </div>
                       ) : mailStatus === "quotareached" ? (
                         <div className="flex flex-col gap-y-3">
-                          <QuotaCard
-                            emailResetDate={emailResetDate}
-                            handleClose={() => {
-                              setIsSend(false);
-                              setSignerPos([]);
-                              navigate("/report/1MwEuxLEkF");
-                            }}
-                          />
                           <div className="my-3">{handleShareList()}</div>
                         </div>
                       ) : (
@@ -2016,11 +2205,117 @@ function PlaceHolderSign() {
                       </button>
                     </div>
                   </ModalUi>
+                  <ModalUi
+                    isOpen={isAttchSignerModal}
+                    title={t("add-signer")}
+                    handleClose={() => handleCloseAttachSigner()}
+                  >
+                    <div className="h-[100%] p-[20px]">
+                      {pdfDetails[0].Placeholders?.some(
+                        (x) => !x.signerObjId
+                      ) && (
+                        <>
+                          {/* grid grid-cols-1 md:grid-cols-2 */}
+                          <div className="min-h-max max-h-[250px] overflow-y-auto">
+                            <div className="p-3 op-card border-[1px] border-gray-400 mt-3 mx-4 mb-4 bg-base-200 text-base-content flex flex-col gap-2 relative">
+                              {forms?.map((field, id) => {
+                                return (
+                                  <div
+                                    className="flex flex-col"
+                                    key={field?.value}
+                                  >
+                                    <label>{field?.role}</label>
+                                    <div className="flex justify-between items-center gap-2">
+                                      <div className="flex-1">
+                                        <AsyncSelect
+                                          cacheOptions
+                                          defaultOptions
+                                          value={field}
+                                          loadingMessage={() => t("loading")}
+                                          noOptionsMessage={() =>
+                                            t("contact-not-found")
+                                          }
+                                          loadOptions={loadOptions}
+                                          onChange={(item) =>
+                                            handleInputChange(item, id)
+                                          }
+                                          unstyled
+                                          onFocus={() => loadOptions()}
+                                          classNames={{
+                                            control: () =>
+                                              "op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full h-full text-[11px]",
+                                            valueContainer: () =>
+                                              "flex flex-row gap-x-[2px] gap-y-[2px] md:gap-y-0 w-full my-[2px]",
+                                            multiValue: () =>
+                                              "op-badge op-badge-primary h-full text-[11px]",
+                                            multiValueLabel: () => "mb-[2px]",
+                                            menu: () =>
+                                              "mt-1 shadow-md rounded-lg bg-base-200 text-base-content absolute z-9999",
+                                            menuList: () =>
+                                              "shadow-md rounded-lg  ",
+                                            option: () =>
+                                              "bg-base-200 text-base-content rounded-lg m-1 hover:bg-base-300 p-2 ",
+                                            noOptionsMessage: () =>
+                                              "p-2 bg-base-200 rounded-lg m-1 p-2"
+                                          }}
+                                          menuPortalTarget={document.getElementById(
+                                            "selectSignerModal"
+                                          )}
+                                        />
+                                      </div>
+                                      <button
+                                        onClick={(e) =>
+                                          handleCreateNew(e, field.value)
+                                        }
+                                        className="op-btn op-btn-accent  op-btn-outline op-btn-sm  "
+                                      >
+                                        <i className="fa-light fa-plus"></i>
+                                      </button>
+                                    </div>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </div>
+                          <div className="w-full h-[1px] bg-[#9f9f9f] my-[15px]"></div>
+                          <div className="flex  mx-4 mb-4 gap-3">
+                            <button
+                              disabled={handleDisable()}
+                              onClick={() => handleSendDoc()}
+                              type="submit"
+                              className="op-btn op-btn-primary focus:outline-none"
+                            >
+                              <i className="fa-light fa-paper-plane"></i>{" "}
+                              <span>{t("next")}</span>
+                            </button>
+                            <button
+                              onClick={() => handleCloseAttachSigner()}
+                              type="submit"
+                              className="op-btn op-btn-secondary focus:outline-none"
+                            >
+                              <i className="fa-regular fa-pen-to-square"></i>
+                              <span>{t("edit")}</span>
+                            </button>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </ModalUi>
+                  <ModalUi
+                    title={""}
+                    isOpen={isNewContact.status}
+                    handleClose={closePopup}
+                  >
+                    <AddContact
+                      details={handleAddUser}
+                      closePopup={closePopup}
+                    />
+                  </ModalUi>
                   <PlaceholderCopy
                     isPageCopy={isPageCopy}
                     setIsPageCopy={setIsPageCopy}
-                    xyPostion={signerPos}
-                    setXyPostion={setSignerPos}
+                    xyPosition={signerPos}
+                    setXyPosition={setSignerPos}
                     allPages={allPages}
                     pageNumber={pageNumber}
                     signKey={signKey}
@@ -2039,11 +2334,11 @@ function PlaceHolderSign() {
                     currWidgetsDetails={currWidgetsDetails}
                     setCurrWidgetsDetails={setCurrWidgetsDetails}
                     handleClose={handleNameModal}
-                    isSubscribe={isSubscribe}
                     fontSize={fontSize}
                     setFontSize={setFontSize}
                     fontColor={fontColor}
                     setFontColor={setFontColor}
+                    isShowAdvanceFeature={true}
                   />
                   <DropdownWidgetOption
                     type="checkbox"
@@ -2054,11 +2349,11 @@ function PlaceHolderSign() {
                     currWidgetsDetails={currWidgetsDetails}
                     setCurrWidgetsDetails={setCurrWidgetsDetails}
                     handleClose={handleNameModal}
-                    isSubscribe={isSubscribe}
                     fontSize={fontSize}
                     setFontSize={setFontSize}
                     fontColor={fontColor}
                     setFontColor={setFontColor}
+                    isShowAdvanceFeature={true}
                   />
                   <DropdownWidgetOption
                     type="dropdown"
@@ -2069,11 +2364,11 @@ function PlaceHolderSign() {
                     currWidgetsDetails={currWidgetsDetails}
                     setCurrWidgetsDetails={setCurrWidgetsDetails}
                     handleClose={handleNameModal}
-                    isSubscribe={isSubscribe}
                     fontSize={fontSize}
                     setFontSize={setFontSize}
                     fontColor={fontColor}
                     setFontColor={setFontColor}
+                    isShowAdvanceFeature={true}
                   />
 
                   {/* pdf header which contain funish back button */}
@@ -2093,6 +2388,13 @@ function PlaceHolderSign() {
                     handleRotationFun={handleRotationFun}
                     clickOnZoomIn={clickOnZoomIn}
                     clickOnZoomOut={clickOnZoomOut}
+                    setIsUploadPdf={setIsUploadPdf}
+                    pdfArrayBuffer={pdfArrayBuffer}
+                    setPdfArrayBuffer={setPdfArrayBuffer}
+                    setPdfBase64Url={setPdfBase64Url}
+                    setSignerPos={setSignerPos}
+                    userId={uniqueId}
+                    pdfBase64={pdfBase64Url}
                   />
 
                   <div
@@ -2141,12 +2443,13 @@ function PlaceHolderSign() {
                         setScale={setScale}
                         scale={scale}
                         setIsSelectId={setIsSelectId}
-                        pdfRotateBase64={pdfRotateBase64}
+                        pdfBase64Url={pdfBase64Url}
                         fontSize={fontSize}
                         setFontSize={setFontSize}
                         fontColor={fontColor}
                         setFontColor={setFontColor}
                         unSignedWidgetId={unSignedWidgetId}
+                        divRef={divRef}
                       />
                     )}
                   </div>
@@ -2160,14 +2463,8 @@ function PlaceHolderSign() {
                     <div>
                       <WidgetComponent
                         pdfUrl={isMailSend}
-                        dragSignature={dragSignature}
-                        signRef={signRef}
                         handleDivClick={handleDivClick}
                         handleMouseLeave={handleMouseLeave}
-                        isDragSign={isDragSign}
-                        dragStamp={dragStamp}
-                        dragRef={dragRef}
-                        isDragStamp={isDragStamp}
                         isSignYourself={false}
                         addPositionOfSignature={addPositionOfSignature}
                         signerPos={signerPos}
@@ -2189,6 +2486,8 @@ function PlaceHolderSign() {
                         setIsAddSigner={setIsAddSigner}
                         handleDeleteUser={handleDeleteUser}
                         uniqueId={uniqueId}
+                        setSignerPos={setSignerPos}
+                        setSelectWidgetId={setSelectWidgetId}
                       />
                     </div>
                   ) : (
@@ -2219,14 +2518,8 @@ function PlaceHolderSign() {
                         <div data-tut="addWidgets">
                           <WidgetComponent
                             isMailSend={isMailSend}
-                            dragSignature={dragSignature}
-                            signRef={signRef}
                             handleDivClick={handleDivClick}
                             handleMouseLeave={handleMouseLeave}
-                            isDragSign={isDragSign}
-                            dragStamp={dragStamp}
-                            dragRef={dragRef}
-                            isDragStamp={isDragStamp}
                             isSignYourself={false}
                             addPositionOfSignature={addPositionOfSignature}
                             initial={true}
@@ -2257,19 +2550,15 @@ function PlaceHolderSign() {
             </button>
           </div>
         </ModalUi>
-        <LinkUserModal
-          handleAddUser={handleAddUser}
-          isAddUser={isAddUser}
-          uniqueId={uniqueId}
-          closePopup={closePopup}
-          signersData={signersdata}
-        />
-        <LinkUserModal
-          handleAddUser={handleAddNewRecipients}
-          isAddSigner={isAddSigner}
-          closePopup={closePopup}
-          signersData={signersdata}
-        />
+        {(isAddSigner || (isAddUser && isAddUser[uniqueId])) && (
+          <LinkUserModal
+            handleAddUser={handleAddUser}
+            uniqueId={uniqueId}
+            closePopup={closePopup}
+            signersData={signersdata}
+            signerPos={signerPos}
+          />
+        )}
         <WidgetNameModal
           signatureType={signatureType}
           widgetName={widgetName}
@@ -2277,7 +2566,6 @@ function PlaceHolderSign() {
           isOpen={isNameModal}
           handleClose={handleNameModal}
           handleData={handleWidgetdefaultdata}
-          isSubscribe={isSubscribe}
           isTextSetting={isTextSetting}
           setIsTextSetting={setIsTextSetting}
           fontSize={fontSize}
@@ -2286,8 +2574,8 @@ function PlaceHolderSign() {
           setFontColor={setFontColor}
         />
         <RotateAlert
-          isRotate={isRotate.status}
-          setIsRotate={setIsRotate}
+          showRotateAlert={showRotateAlert.status}
+          setShowRotateAlert={setShowRotateAlert}
           handleRemoveWidgets={handleRemovePlaceholder}
         />
       </DndProvider>

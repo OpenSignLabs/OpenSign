@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { isEnableSubscription } from "../../constant/const";
 import ModalUi from "../../primitives/ModalUi";
 import { radioButtonWidget } from "../../constant/Utils";
-import Upgrade from "../../primitives/Upgrade";
 import { useTranslation } from "react-i18next";
 import { fontColorArr, fontsizeArr } from "../../constant/Utils";
 
@@ -130,14 +128,6 @@ function DropdownWidgetOption(props) {
     setDefaultValue("");
   };
 
-  const handleSetMinMax = (e) => {
-    const minValue = e.target.value;
-    if (minValue > dropdownOptionList.length) {
-      return "";
-    } else {
-      return minValue;
-    }
-  };
 
   const handleDefaultCheck = (index) => {
     const getDefaultCheck = defaultCheckbox.includes(index);
@@ -181,7 +171,7 @@ function DropdownWidgetOption(props) {
                   key={index}
                   className="flex flex-row mb-[5px] items-center"
                 >
-                  {props.type === "checkbox" && !props.isSignYourself && (
+                  {props.type === "checkbox" && props.isShowAdvanceFeature && (
                     <input
                       type="checkbox"
                       checked={handleDefaultCheck(index)}
@@ -224,65 +214,6 @@ function DropdownWidgetOption(props) {
                 onClick={handleAddInput}
                 className="fa-light fa-square-plus text-[25px] ml-[10px] op-text-primary cursor-pointer"
               ></i>
-              {isEnableSubscription && (
-                <div>
-                  {props.type === "checkbox" && !props.isSignYourself && (
-                    <>
-                      <label
-                        className={`${
-                          !props.isSubscribe ? "text-[gray]" : ""
-                        } text-[13px] font-semibold`}
-                      >
-                        {t("minimun-check")}
-                      </label>
-                      {!props.isSubscribe && isEnableSubscription && (
-                        <Upgrade />
-                      )}
-                      <input
-                        onInvalid={(e) =>
-                          e.target.setCustomValidity(t("input-required"))
-                        }
-                        onInput={(e) => e.target.setCustomValidity("")}
-                        required
-                        defaultValue={0}
-                        value={minCount}
-                        disabled={props.isSubscribe ? false : true}
-                        onChange={(e) => {
-                          const count = handleSetMinMax(e);
-                          setMinCount(count);
-                        }}
-                        className={`${
-                          props.isSubscribe ? "" : "pointer-events-none"
-                        } op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs`}
-                      />
-                      <label
-                        className={`${
-                          !props.isSubscribe ? "text-[gray]" : ""
-                        } text-[13px] font-semibold`}
-                      >
-                        {t("maximum-check")}
-                      </label>
-                      <input
-                        onInvalid={(e) =>
-                          e.target.setCustomValidity(t("input-required"))
-                        }
-                        onInput={(e) => e.target.setCustomValidity("")}
-                        required
-                        defaultValue={0}
-                        value={maxCount}
-                        disabled={props.isSubscribe ? false : true}
-                        onChange={(e) => {
-                          const count = handleSetMinMax(e);
-                          setMaxCount(count);
-                        }}
-                        className={`${
-                          props.isSubscribe ? "" : "pointer-events-none"
-                        } op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs`}
-                      />
-                    </>
-                  )}
-                </div>
-              )}
             </div>
             {["dropdown", radioButtonWidget].includes(props.type) && (
               <>
@@ -381,9 +312,11 @@ function DropdownWidgetOption(props) {
                 ></span>
               </div>
             </div>
-            {["checkbox", radioButtonWidget].includes(props.type) && (
+            {["checkbox", radioButtonWidget, "dropdown"].includes(
+              props.type
+            ) && (
               <div className="flex flex-row gap-5 my-2 items-center text-center">
-                {!props.isSignYourself && (
+                {props.isShowAdvanceFeature && (
                   <div className="flex items-center">
                     <input
                       id="isreadonly"
@@ -397,26 +330,28 @@ function DropdownWidgetOption(props) {
                     </label>
                   </div>
                 )}
-                <div className="flex items-center">
-                  <input
-                    id="ishidelabel"
-                    type="checkbox"
-                    checked={isHideLabel}
-                    className="op-checkbox op-checkbox-sm"
-                    onChange={(e) => setIsHideLabel(e.target.checked)}
-                  />
+                {props.type !== "dropdown" && (
+                  <div className="flex items-center">
+                    <input
+                      id="ishidelabel"
+                      type="checkbox"
+                      checked={isHideLabel}
+                      className="op-checkbox op-checkbox-sm"
+                      onChange={(e) => setIsHideLabel(e.target.checked)}
+                    />
 
-                  <label className="ml-1 mb-0" htmlFor="ishidelabel">
-                    {t("hide-labels")}
-                  </label>
-                </div>
+                    <label className="ml-1 mb-0" htmlFor="ishidelabel">
+                      {t("hide-labels")}
+                    </label>
+                  </div>
+                )}
               </div>
             )}
           </div>
 
           <div
             className={`${
-              props.type === "checkbox" && !props.isSignYourself
+              props.type === "checkbox" && props.isShowAdvanceFeature
                 ? "mb-[15px]"
                 : "my-[15px]"
             } w-full h-[1px] bg-[#9f9f9f]`}

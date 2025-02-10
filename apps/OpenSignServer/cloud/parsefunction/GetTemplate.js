@@ -1,45 +1,17 @@
 import axios from 'axios';
-import { cloudServerUrl, parseJwt } from '../../Utils.js';
-import jwt from 'jsonwebtoken';
+import {
+  cloudServerUrl,
+} from '../../Utils.js';
 
 export default async function GetTemplate(request) {
   const serverUrl = cloudServerUrl; //process.env.SERVER_URL;
   const templateId = request.params.templateId;
   const ispublic = request.params.ispublic;
-  const jwttoken = request.headers?.jwttoken;
   const sessiontoken = request.headers?.sessiontoken;
   try {
     if (!ispublic) {
       let userEmail;
-      if (jwttoken) {
-        try {
-          const jwtDecode = parseJwt(jwttoken);
-          if (jwtDecode?.user_email) {
-            const userCls = new Parse.Query(Parse.User);
-            userCls.equalTo('email', jwtDecode?.user_email);
-            const userRes = await userCls.first({ useMasterKey: true });
-            const userId = userRes?.id;
-            const tokenQuery = new Parse.Query('appToken');
-            tokenQuery.equalTo('userId', {
-              __type: 'Pointer',
-              className: '_User',
-              objectId: userId,
-            });
-            const appRes = await tokenQuery.first({ useMasterKey: true });
-            const decoded = jwt.verify(jwttoken, appRes?.get('token'));
-            if (decoded?.user_email) {
-              userEmail = decoded?.user_email;
-            } else {
-              return { error: 'Invalid token!' };
-            }
-          } else {
-            return { error: 'Invalid token!' };
-          }
-        } catch (err) {
-          console.log('err in jwt', err);
-          return { error: "You don't have access of this document!" };
-        }
-      } else if (sessiontoken) {
+      if (sessiontoken) {
         const userRes = await axios.get(serverUrl + '/users/me', {
           headers: {
             'X-Parse-Application-Id': process.env.APP_ID,
@@ -56,6 +28,7 @@ export default async function GetTemplate(request) {
           template.include('Signers');
           template.include('CreatedBy');
           template.include('ExtUserPtr.TenantId');
+          template.include('Bcc');
           const extUserQuery = new Parse.Query('contracts_Users');
           extUserQuery.equalTo('Email', userEmail);
           extUserQuery.include('TeamIds');
@@ -83,6 +56,7 @@ export default async function GetTemplate(request) {
               template.include('CreatedBy');
               template.include('ExtUserPtr.TenantId');
               template.include('Placeholders.signerPtr');
+              template.include('Bcc');
             }
           }
           const res = await template.first({ useMasterKey: true });
@@ -109,6 +83,7 @@ export default async function GetTemplate(request) {
         template.include('Signers');
         template.include('CreatedBy');
         template.include('ExtUserPtr.TenantId');
+        template.include('Bcc');
         const res = await template.first({ useMasterKey: true });
         // console.log("res ", res)
         if (res) {

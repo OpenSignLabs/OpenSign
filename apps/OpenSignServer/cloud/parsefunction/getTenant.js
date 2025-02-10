@@ -1,5 +1,3 @@
-import { parseJwt } from '../../Utils.js';
-import jwt from 'jsonwebtoken';
 
 async function getTenantByUserId(userId, contactId) {
   try {
@@ -50,34 +48,13 @@ async function getTenantByUserId(userId, contactId) {
   }
 }
 export default async function getTenant(request) {
-  const jwttoken = request.headers.jwttoken || '';
   const userId = request.params.userId || '';
   const contactId = request.params.contactId || '';
-  if (jwttoken) {
-    const jwtDecode = parseJwt(jwttoken);
-    if (jwtDecode?.user_email) {
-      const verifyToken = jwttoken;
-      const userCls = new Parse.Query(Parse.User);
-      userCls.equalTo('email', jwtDecode?.user_email);
-      const userRes = await userCls.first({ useMasterKey: true });
-      const apiUserId = userRes?.id;
-      const tokenQuery = new Parse.Query('appToken');
-      tokenQuery.equalTo('userId', {
-        __type: 'Pointer',
-        className: '_User',
-        objectId: apiUserId,
-      });
-      const appRes = await tokenQuery.first({ useMasterKey: true });
-      const decoded = jwt.verify(verifyToken, appRes?.get('token'));
-      if (decoded?.user_email) {
-        return await getTenantByUserId(apiUserId, contactId);
-      } else {
-        return { status: 'error', result: 'Invalid token!' };
-      }
-    }
-  } else if (userId || contactId) {
+
+  if (userId || contactId) {
     return await getTenantByUserId(userId, contactId);
-  } else {
+  }
+  else {
     return {};
   }
 }

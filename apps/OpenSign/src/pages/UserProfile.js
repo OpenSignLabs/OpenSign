@@ -1,5 +1,8 @@
-import React, { useState, useEffect, useRef } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
+import React, {
+  useState,
+  useEffect,
+} from "react";
+import { Navigate, useNavigate } from "react-router";
 import Parse from "parse";
 import { SaveFileSize } from "../constant/saveFileSize";
 import dp from "../assets/images/dp.png";
@@ -7,23 +10,14 @@ import Title from "../components/Title";
 import sanitizeFileName from "../primitives/sanitizeFileName";
 import axios from "axios";
 import Tooltip from "../primitives/Tooltip";
-import { isEnableSubscription, isStaging } from "../constant/const";
 import {
-  checkIsSubscribed,
-  copytoData,
+  getSecureUrl,
   handleSendOTP,
-  openInNewTab
 } from "../constant/Utils";
-import Upgrade from "../primitives/Upgrade";
 import ModalUi from "../primitives/ModalUi";
 import Loader from "../primitives/Loader";
-import { validplan } from "../json/plansArr";
 import { useTranslation } from "react-i18next";
 import SelectLanguage from "../components/pdf/SelectLanguage";
-import { RWebShare } from "react-web-share";
-import Alert from "../primitives/Alert";
-import Tour from "reactour";
-import TourContentWithBtn from "../primitives/TourContentWithBtn";
 
 function UserProfile() {
   const navigate = useNavigate();
@@ -38,14 +32,6 @@ function UserProfile() {
   const [Image, setImage] = useState(localStorage.getItem("profileImg"));
   const [isLoader, setIsLoader] = useState(false);
   const [percentage, setpercentage] = useState(0);
-  const [isDisableDocId, setIsDisableDocId] = useState(false);
-  const [isSubscribe, setIsSubscribe] = useState(false);
-  const [isUpgrade, setIsUpgrade] = useState(false);
-  const [isAlert, setIsAlert] = useState({ type: "success", message: "" });
-  const [publicUserName, setPublicUserName] = useState(
-    extendUser && extendUser?.[0]?.UserName
-  );
-  const previousPublicUserName = useRef(publicUserName);
   const [company, setCompany] = useState(
     extendUser && extendUser?.[0]?.Company
   );
@@ -56,45 +42,12 @@ function UserProfile() {
   const [otp, setOtp] = useState("");
   const [otpLoader, setOtpLoader] = useState(false);
   const [isEmailVerified, setIsEmailVerified] = useState(false);
-  const [tagLine, setTagLine] = useState(
-    extendUser && extendUser?.[0]?.Tagline
-  );
-  const [isPlan, setIsPlan] = useState({ plan: "", isValid: false });
-  const [tourStatus, setTourStatus] = useState([]);
-  const [isProfileTour, setIsProfileTour] = useState(false);
-  const [isDontShow, setIsDontShow] = useState(false);
-  const getPublicUrl = isStaging
-    ? `https://staging.opensign.me/${extendUser?.[0]?.UserName}`
-    : `https://opensign.me/${extendUser?.[0]?.UserName}`;
   useEffect(() => {
     getUserDetail();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const getUserDetail = async () => {
     setIsLoader(true);
-    const extClass = localStorage.getItem("Extand_Class");
-    const jsonSender = JSON.parse(extClass);
-    const tourstatuss = jsonSender[0]?.TourStatus && jsonSender[0].TourStatus;
-    if (!isEnableSubscription) {
-      setIsProfileTour(true);
-    } else if (tourstatuss && tourstatuss.length > 0) {
-      setTourStatus(tourstatuss);
-      const checkTourRecipients = tourstatuss.filter(
-        (data) => data.profileTour
-      );
-      if (checkTourRecipients && checkTourRecipients.length > 0) {
-        setIsProfileTour(checkTourRecipients[0]?.profileTour);
-      }
-    }
-    const HeaderDocId = jsonSender[0]?.HeaderDocId;
-    if (isEnableSubscription) {
-      const subscribe = await checkIsSubscribed();
-      setIsSubscribe(subscribe.isValid);
-      setIsPlan(subscribe);
-    }
-    if (HeaderDocId) {
-      setIsDisableDocId(HeaderDocId);
-    }
     const currentUser = JSON.parse(JSON.stringify(Parse.User.current()));
     let isEmailVerified = currentUser?.emailVerified || false;
     if (isEmailVerified) {
@@ -116,30 +69,11 @@ function UserProfile() {
       }
     }
   };
-  //function to check public username already exist
-  const handleCheckPublicUserName = async () => {
-    try {
-      const res = await Parse.Cloud.run("getpublicusername", {
-        username: publicUserName
-      });
-      if (res) {
-        setIsLoader(false);
-        setIsAlert({ type: "danger", message: t("user-name-exist") });
-        setTimeout(() => setIsAlert({}), 3000);
-        return res;
-      }
-    } catch (e) {
-      console.log("error in getpublicusername cloud function");
-    }
-  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     let phn = Phone,
       res = "";
-    //condition to call cloud function when user change publicUserName
-    if (publicUserName && previousPublicUserName.current !== publicUserName) {
-      res = await handleCheckPublicUserName();
-    }
     if (!res) {
       setIsLoader(true);
       try {
@@ -191,12 +125,9 @@ function UserProfile() {
       const body = {
         Phone: obj?.Phone || "",
         Name: obj.Name,
-        HeaderDocId: isDisableDocId,
         JobTitle: jobTitle,
         Company: company,
-        UserName: publicUserName || "",
-        Tagline: tagLine || "",
-        Language: obj?.language || ""
+        Language: obj?.language || "",
       };
 
       await axios.put(
@@ -215,7 +146,6 @@ function UserProfile() {
       const json = JSON.parse(JSON.stringify([res]));
       const extRes = JSON.stringify(json);
       localStorage.setItem("Extand_Class", extRes);
-      previousPublicUserName.current = publicUserName;
     } catch (e) {
       console.log("error in save data in contracts_Users class");
     }
@@ -247,14 +177,15 @@ function UserProfile() {
       // // The response object will contain information about the uploaded file
       // console.log("File uploaded:", response);
 
-      // You can access the URL of the uploaded file using response.url()
-      // console.log("File URL:", response.url());
-      if (response.url()) {
-        setImage(response.url());
-        setpercentage(0);
-        const tenantId = localStorage.getItem("TenantId");
-        SaveFileSize(size, response.url(), tenantId);
-        return response.url();
+      if (response?.url()) {
+        const fileRes = await getSecureUrl(response?.url());
+        if (fileRes?.url) {
+          setImage(fileRes?.url);
+          setpercentage(0);
+          const tenantId = localStorage.getItem("TenantId");
+          SaveFileSize(size, fileRes?.url, tenantId);
+          return fileRes?.url;
+        }
       }
     } catch (error) {
       console.error("Error uploading file:", error);
@@ -268,9 +199,6 @@ function UserProfile() {
     return <Navigate to={_redirect} />;
   }
 
-  const handleDisableDocId = () => {
-    setIsDisableDocId((prevChecked) => !prevChecked);
-  };
   //`handleVerifyBtn` function is used to send otp on user mail
   const handleVerifyBtn = async () => {
     setIsVerifyModal(true);
@@ -311,99 +239,16 @@ function UserProfile() {
     setOtpLoader(false);
     alert(t("otp-sent-alert"));
   };
-  //function to handle onchange username and restrict 6-characters username for free users
-  const handleOnchangeUserName = (e) => {
-    const newValue = e.target.value.replace(/\s+/g, "");
-    setPublicUserName(newValue);
-  };
 
-  const handleOnchangeTagLine = (e) => {
-    setTagLine(e.target.value);
-  };
   const handleCancel = () => {
     setEditMode(false);
     SetName(localStorage.getItem("username"));
     SetPhone(UserProfile && UserProfile.phone);
     setImage(localStorage.getItem("profileImg"));
-    setPublicUserName(extendUser && extendUser?.[0]?.UserName);
     setCompany(extendUser && extendUser?.[0]?.Company);
     setJobTitle(extendUser?.[0]?.JobTitle);
-    setIsDisableDocId(extendUser?.[0]?.HeaderDocId);
-  };
-  const handlePaidRoute = () => {
-    navigate("/subscription");
   };
 
-  const copytoclipboard = () => {
-    copytoData(getPublicUrl);
-    setIsAlert({ type: "success", message: t("copied") });
-    setTimeout(() => setIsAlert({}), 3000);
-  };
-
-  const tourConfig = [
-    {
-      content: () => (
-        <TourContentWithBtn
-          message={t("tour-mssg.public-template")}
-          isChecked={handleDontShow}
-          video="https://www.youtube.com/embed/_wB4UA7Jz5Q?si=I40CI3nVUWQzf42Y"
-        />
-      ),
-      position: "top",
-      style: { fontSize: "13px" }
-    }
-  ];
-  //function for update TourStatus
-  const closeTour = async () => {
-    try {
-      setIsProfileTour(true);
-      if (isDontShow) {
-        let updatedTourStatus = [];
-        if (tourStatus.length > 0) {
-          updatedTourStatus = [...tourStatus];
-          const profileIndex = tourStatus.findIndex(
-            (obj) => obj["profileTour"] === false || obj["profileTour"] === true
-          );
-          if (profileIndex !== -1) {
-            updatedTourStatus[profileIndex] = { profileTour: true };
-          } else {
-            updatedTourStatus.push({ profileTour: true });
-          }
-        } else {
-          updatedTourStatus = [{ profileTour: true }];
-        }
-
-        await axios.put(
-          `${localStorage.getItem("baseUrl")}classes/contracts_Users/${
-            extendUser?.[0]?.objectId
-          }`,
-          {
-            TourStatus: updatedTourStatus
-          },
-          {
-            headers: {
-              "Content-Type": "application/json",
-              "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
-              sessionToken: localStorage.getItem("accesstoken")
-            }
-          }
-        );
-        const res = await Parse.Cloud.run("getUserDetails");
-        const json = JSON.parse(JSON.stringify([res]));
-        const extRes = JSON.stringify(json);
-        localStorage.setItem("Extand_Class", extRes);
-      }
-    } catch (err) {
-      console.log("axois err ", err);
-      alert(t("something-went-wrong-mssg"));
-    }
-  };
-  const handleDontShow = (isChecked) => {
-    setIsDontShow(isChecked);
-  };
-  const handleOnlickHelp = () => {
-    setIsProfileTour(false);
-  };
   return (
     <React.Fragment>
       <Title title={"Profile"} />
@@ -413,19 +258,6 @@ function UserProfile() {
         </div>
       ) : (
         <div className="flex justify-center items-center w-full relative">
-          {isAlert.message && (
-            <Alert className="z-[1000] fixed top-[10%]" type={isAlert.type}>
-              {isAlert.message}
-            </Alert>
-          )}
-          <Tour
-            className="md:!min-w-[650px]"
-            onRequestClose={closeTour}
-            steps={tourConfig}
-            isOpen={!isProfileTour}
-            rounded={5}
-            closeWithMask={false}
-          />
           <div className="bg-base-100 text-base-content flex flex-col justify-center shadow-md rounded-box w-[450px]">
             <div className="flex flex-col justify-center items-center my-4">
               <div className="w-[200px] h-[200px] overflow-hidden rounded-full">
@@ -463,7 +295,7 @@ function UserProfile() {
             </div>
             <ul className="w-full flex flex-col p-2 text-sm">
               <li
-                className={`flex justify-between items-center border-t-[1px] border-gray-300 break-all ${
+                className={`flex justify-between items-center border-y-[1px] border-gray-300 break-all ${
                   editmode ? "py-1.5" : "py-2"
                 }`}
               >
@@ -480,7 +312,7 @@ function UserProfile() {
                 )}
               </li>
               <li
-                className={`flex justify-between items-center border-t-[1px] border-gray-300 break-all ${
+                className={`flex justify-between items-center border-b-[1px] border-gray-300 break-all ${
                   editmode ? "py-1.5" : "py-2"
                 }`}
               >
@@ -496,12 +328,23 @@ function UserProfile() {
                   <span>{UserProfile && UserProfile.phone}</span>
                 )}
               </li>
-              <li className="flex justify-between items-center border-t-[1px] border-gray-300 py-2 break-all">
-                <span className="font-semibold">{t("email")}:</span>{" "}
+              <li className="flex justify-between items-center border-b-[1px] border-gray-300 py-2 break-all">
+                <span
+                  data-tooltip-id="email-tooltip"
+                  className="font-semibold flex gap-1"
+                >
+                  {t("email")} :{" "}
+                  {editmode && (
+                    <Tooltip
+                      message={t("email-help")}
+                      maxWidth="max-w-[250px]"
+                    />
+                  )}
+                </span>
                 <span>{UserProfile && UserProfile.email}</span>
               </li>
               <li
-                className={`flex justify-between items-center border-t-[1px] border-gray-300 break-all ${
+                className={`flex justify-between items-center border-b-[1px] border-gray-300 break-all ${
                   editmode ? "py-1.5" : "py-2"
                 }`}
               >
@@ -518,7 +361,7 @@ function UserProfile() {
                 )}
               </li>
               <li
-                className={`flex justify-between items-center border-t-[1px] border-gray-300 break-all ${
+                className={`flex justify-between items-center border-b-[1px] border-gray-300 break-all ${
                   editmode ? "py-1.5" : "py-2"
                 }`}
               >
@@ -534,7 +377,7 @@ function UserProfile() {
                   <span>{extendUser?.[0]?.JobTitle}</span>
                 )}
               </li>
-              <li className="flex justify-between items-center border-t-[1px] border-gray-300 py-2 break-all">
+              <li className="flex justify-between items-center border-b-[1px] border-gray-300 py-2 break-all">
                 <span className="font-semibold">{t("is-email-verified")}:</span>{" "}
                 <span>
                   {isEmailVerified ? (
@@ -553,118 +396,6 @@ function UserProfile() {
                   )}
                 </span>
               </li>
-              {isEnableSubscription && (
-                <>
-                  <li className="flex flex-row justify-between md:items-center border-t-[1px] border-gray-300 py-2 break-all">
-                    <span className="font-semibold flex gap-1">
-                      {t("public-profile")} :{" "}
-                      <Tooltip handleOnlickHelp={handleOnlickHelp} />
-                    </span>
-                    <div className="flex flex-row items-center gap-1">
-                      {editmode || !extendUser?.[0]?.UserName ? (
-                        <>
-                          <input
-                            maxLength={40}
-                            onChange={handleOnchangeUserName}
-                            value={publicUserName}
-                            disabled={!editmode}
-                            placeholder="enter user name"
-                            className="op-input op-input-bordered op-input-sm w-[180px] focus:outline-none hover:border-base-content text-sm"
-                          />
-                        </>
-                      ) : (
-                        <div className="flex flex-row gap-1 items-center justify-between md:justify-start">
-                          <span
-                            rel="noreferrer"
-                            target="_blank"
-                            onClick={() => openInNewTab(getPublicUrl)}
-                            className="cursor-pointer underline hover:text-blue-800 w-[110px] md:w-[150px] whitespace-nowrap overflow-hidden text-ellipsis"
-                          >
-                            {isStaging
-                              ? `staging.opensign.me/${extendUser?.[0]?.UserName}`
-                              : `opensign.me/${extendUser?.[0]?.UserName}`}
-                          </span>
-                          <div className="flex items-center gap-2">
-                            <RWebShare
-                              data={{ url: getPublicUrl, title: "Sign url" }}
-                            >
-                              <button className="op-btn op-btn-primary op-btn-outline op-btn-xs md:op-btn-sm ">
-                                <i className="fa-light fa-share-from-square"></i>{" "}
-                              </button>
-                            </RWebShare>
-                            <button
-                              className="op-btn op-btn-primary op-btn-outline op-btn-xs md:op-btn-sm"
-                              onClick={() => copytoclipboard()}
-                            >
-                              <i className="fa-light fa-copy" />
-                            </button>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </li>
-                  <li className="flex flex-row justify-between items-center border-t-[1px] border-gray-300 py-2 break-all">
-                    <span className="font-semibold flex gap-1">
-                      {t("tagline")} :{" "}
-                      <Tooltip handleOnlickHelp={handleOnlickHelp} />
-                    </span>
-                    <div className="flex flex-row md:items-center gap-1">
-                      {editmode || !extendUser?.[0]?.Tagline ? (
-                        <input
-                          maxLength={100}
-                          onChange={handleOnchangeTagLine}
-                          value={tagLine}
-                          disabled={!editmode}
-                          placeholder="enter tagline"
-                          className="op-input op-input-bordered op-input-sm w-[180px] focus:outline-none hover:border-base-content text-sm"
-                        />
-                      ) : (
-                        <span>{extendUser?.[0]?.Tagline}</span>
-                      )}
-                    </div>
-                  </li>
-                </>
-              )}
-              {isEnableSubscription && (
-                <li className="border-y-[1px] border-gray-300 break-all">
-                  <div className="flex justify-between items-center py-2">
-                    <span
-                      className={
-                        validplan[isPlan.plan]
-                          ? "font-semibold"
-                          : "font-semibold text-gray-300"
-                      }
-                    >
-                      {t("disable-documentId")} :{" "}
-                      <Tooltip
-                        url={
-                          "https://docs.opensignlabs.com/docs/help/Settings/disabledocumentid"
-                        }
-                      />
-                      {!validplan[isPlan.plan] && isEnableSubscription && (
-                        <Upgrade />
-                      )}
-                    </span>
-                    <label
-                      className={`${
-                        validplan[isPlan.plan]
-                          ? `${editmode ? "cursor-pointer" : ""}`
-                          : "pointer-events-none opacity-50"
-                      } relative block items-center mb-0`}
-                    >
-                      <input
-                        disabled={
-                          validplan[isPlan.plan] && editmode ? false : true
-                        }
-                        type="checkbox"
-                        className="op-toggle transition-all checked:[--tglbg:#3368ff] checked:bg-white"
-                        checked={isDisableDocId}
-                        onChange={handleDisableDocId}
-                      />
-                    </label>
-                  </div>
-                </li>
-              )}
               <li
                 className={`flex justify-between items-center border-b-[1px] border-gray-300 break-all ${
                   editmode ? "py-1.5" : "py-2"
@@ -677,26 +408,13 @@ function UserProfile() {
                 />
               </li>
             </ul>
-            <div
-              className={`${
-                !isEnableSubscription ? "border-t-[1px] border-gray-300" : ""
-              } flex justify-center gap-2 pt-2 pb-3 md:pt-3 md:pb-4`}
-            >
+            <div className="flex justify-center gap-2 pt-2 pb-3 md:pt-3 md:pb-4">
               <button
                 type="button"
                 onClick={(e) => {
-                  if (
-                    editmode &&
-                    !isSubscribe &&
-                    publicUserName?.length > 0 &&
-                    publicUserName?.length < 9
-                  ) {
-                    setIsUpgrade(true);
-                  } else {
                     editmode ? handleSubmit(e) : setEditMode(true);
-                  }
                 }}
-                className="op-btn op-btn-primary"
+                className="op-btn op-btn-primary w-[100px]"
               >
                 {editmode ? t("save") : t("edit")}
               </button>
@@ -706,7 +424,7 @@ function UserProfile() {
                   editmode ? handleCancel() : navigate("/changepassword")
                 }
                 className={`op-btn ${
-                  editmode ? "op-btn-ghost" : "op-btn-secondary"
+                  editmode ? "op-btn-ghost w-[100px]" : "op-btn-secondary"
                 }`}
               >
                 {editmode ? t("cancel") : t("change-password")}
@@ -755,38 +473,6 @@ function UserProfile() {
                 </form>
               )}
             </ModalUi>
-          )}
-
-          {isUpgrade && (
-            <div className="op-modal op-modal-open">
-              <div className="max-h-90 bg-base-100 w-[95%] md:max-w-[500px] rounded-box relative">
-                <>
-                  <div
-                    className="op-btn op-btn-sm op-btn-circle op-btn-ghost text-primary-content absolute right-2 top-2 z-40"
-                    onClick={() => setIsUpgrade(false)}
-                  >
-                    ✕
-                  </div>
-
-                  <div className="op-card op-bg-primary text-primary-content w-full shadow-lg">
-                    <div className="op-card-body">
-                      <h2 className="op-card-title">
-                        {t("upgrade-to")} {t("plan")}
-                      </h2>
-                      <p>{t("user-name-limit-char")}</p>
-                      <div className="op-card-actions justify-end">
-                        <button
-                          onClick={() => handlePaidRoute()}
-                          className="op-btn op-btn-accent"
-                        >
-                          {t("upgrade-now")}
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </>
-              </div>
-            </div>
           )}
         </div>
       )}

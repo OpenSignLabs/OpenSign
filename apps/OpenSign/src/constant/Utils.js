@@ -6,12 +6,13 @@ import Parse from "parse";
 import { appInfo } from "./appinfo";
 import { saveAs } from "file-saver";
 import printModule from "print-js";
-import { validplan } from "../json/plansArr";
 import fontkit from "@pdf-lib/fontkit";
 
 export const fontsizeArr = [2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28];
 export const fontColorArr = ["red", "black", "blue", "yellow"];
 export const isMobile = window.innerWidth < 767;
+export const isTab = 767 < window.innerWidth < 1023;
+export const isHighResolution = window.innerWidth > 1023;
 export const isTabAndMobile = window.innerWidth < 1023;
 export const textInputWidget = "text input";
 export const textWidget = "text";
@@ -30,124 +31,25 @@ export const openInNewTab = (url, target) => {
   }
 };
 
-export async function fetchSubscription(
-  extUserId,
-  contactObjId,
-  isGuestSign = false,
-  isPublic = false,
-  jwtToken
-) {
-  try {
-    const Extand_Class = localStorage.getItem("Extand_Class");
-    const extClass = Extand_Class && JSON.parse(Extand_Class);
-    // console.log("extClass ", extClass);
-    let extUser;
-    if (extClass && extClass.length > 0 && !isPublic) {
-      extUser = extClass[0].objectId;
-    } else {
-      extUser = extUserId;
-    }
-    const baseURL = localStorage.getItem("baseUrl");
-    const url = `${baseURL}functions/getsubscriptions`;
-    const token = jwtToken
-      ? { jwttoken: jwtToken }
-      : { sessionToken: localStorage.getItem("accesstoken") };
-    const headers = {
-      "Content-Type": "application/json",
-      "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
-      ...token
-    };
-    const params = isGuestSign
-      ? { contactId: contactObjId }
-      : { extUserId: extUser, ispublic: isPublic };
-    const tenatRes = await axios.post(url, params, { headers: headers });
-    let plan, status, billingDate, adminId;
-    if (isGuestSign) {
-      plan = tenatRes.data?.result?.result?.plan;
-      status = tenatRes.data?.result?.result?.isSubscribed;
-    } else {
-      plan = tenatRes.data?.result?.result?.PlanCode;
-      billingDate = tenatRes.data?.result?.result?.Next_billing_date?.iso;
-      const allowedUsers = tenatRes.data?.result?.result?.AllowedUsers || 0;
-      adminId = tenatRes?.data?.result?.result?.ExtUserPtr?.objectId;
-      localStorage.setItem("allowedUsers", allowedUsers);
-    }
-    return { plan, billingDate, status, adminId };
-  } catch (err) {
-    console.log("Err in fetch subscription", err);
-    return { plan: "", billingDate: "", status: "", adminId: "" };
-  }
-}
-
-export async function fetchSubscriptionInfo() {
-  try {
-    const Extand_Class = localStorage.getItem("Extand_Class");
-    const extClass = Extand_Class && JSON.parse(Extand_Class);
-    // console.log("extClass ", extClass);
-    if (extClass && extClass.length > 0) {
-      const extUser = extClass[0].objectId;
-      const baseURL = localStorage.getItem("baseUrl");
-      const url = `${baseURL}functions/getsubscriptions`;
-      const headers = {
-        "Content-Type": "application/json",
-        "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
-        sessionToken: localStorage.getItem("accesstoken")
-      };
-      const params = { extUserId: extUser };
-      const tenatRes = await axios.post(url, params, { headers: headers });
-
-      const price =
-        tenatRes.data?.result?.result?.SubscriptionDetails?.data?.subscription
-          ?.plan?.price;
-      const totalPrice =
-        tenatRes.data?.result?.result?.SubscriptionDetails?.data?.subscription
-          ?.amount;
-      const planId =
-        tenatRes.data?.result?.result?.SubscriptionDetails?.data?.subscription
-          ?.subscription_id;
-      const plan_code = tenatRes.data?.result?.result?.PlanCode;
-      const totalAllowedUser = tenatRes.data?.result?.result?.AllowedUsers || 0;
-      const adminId =
-        tenatRes?.data?.result?.result?.ExtUserPtr?.objectId || "";
-
-      return {
-        status: "success",
-        price: price,
-        totalPrice: totalPrice,
-        planId: planId,
-        plan_code: plan_code,
-        totalAllowedUser: totalAllowedUser,
-        adminId: adminId
-      };
-    }
-  } catch (err) {
-    console.log("Err in fetch subscription", err);
-    return { status: "error", error: err };
-  }
-}
-//function to get subcripition details from subscription class
-export async function checkIsSubscribed(jwttoken) {
-  try {
-    const res = await fetchSubscription("", "", false, false, jwttoken);
-    if (res.plan === "freeplan") {
-      return { plan: res.plan, isValid: false, adminId: res?.adminId };
-    } else if (res.billingDate) {
-      const plan = validplan[res.plan] || false;
-      if (plan && new Date(res.billingDate) > new Date()) {
-        return { plan: res.plan, isValid: true, adminId: res?.adminId };
-      } else if (new Date(res.billingDate) > new Date()) {
-        return { plan: res.plan, isValid: true, adminId: res?.adminId };
+// `getSecureUrl` is used to return local secure url if local files
+export const getSecureUrl = async (url) => {
+  const fileUrl = new URL(url)?.pathname?.includes("files");
+  if (fileUrl) {
+    try {
+      const fileRes = await Parse.Cloud.run("fileupload", { url: url });
+      if (fileRes.url) {
+        return { url: fileRes.url };
       } else {
-        return { plan: res.plan, isValid: false, adminId: res?.adminId };
+        return { url: "" };
       }
-    } else {
-      return { plan: res.plan, isValid: false, adminId: res?.adminId };
+    } catch (err) {
+      console.log("err while fileupload ", err);
+      return { url: "" };
     }
-  } catch (err) {
-    console.log("Err in fetch subscription", err);
-    return { plan: "no-plan", isValid: false, adminId: "" };
+  } else {
+    return { url: url };
   }
-}
+};
 
 export const color = [
   "#93a3db",
@@ -189,7 +91,7 @@ export const toDataUrl = (file) => {
 };
 
 //function for getting document details for getDrive cloud function
-export const getDrive = async (documentId, skip = 0, limit = 100) => {
+export const getDrive = async (documentId, skip = 0, limit = 50) => {
   const data = {
     docId: documentId && documentId,
     limit: limit,
@@ -230,14 +132,14 @@ export const pdfNewWidthFun = (divRef) => {
 };
 
 //`contractUsers` function is used to get contract_User details
-export const contractUsers = async (jwttoken) => {
+export const contractUsers = async (
+) => {
   try {
     const url = `${localStorage.getItem("baseUrl")}functions/getUserDetails`;
     const parseAppId = localStorage.getItem("parseAppId");
     const accesstoken = localStorage.getItem("accesstoken");
-    const token = jwttoken
-      ? { jwttoken: jwttoken }
-      : { "X-Parse-Session-Token": accesstoken };
+    const token =
+          { "X-Parse-Session-Token": accesstoken };
     const headers = {
       headers: {
         "Content-Type": "application/json",
@@ -310,76 +212,24 @@ export const handleImageResize = (
   }
 };
 export const widgets = [
-  {
-    type: "signature",
-    icon: "fa-light fa-pen-nib",
-    iconSize: "20px"
-  },
-  {
-    type: "stamp",
-    icon: "fa-light fa-stamp",
-    iconSize: "19px"
-  },
-  {
-    type: "initials",
-    icon: "fa-light fa-signature",
-    iconSize: "15px"
-  },
-  {
-    type: "name",
-    icon: "fa-light fa-user",
-    iconSize: "21px"
-  },
-  {
-    type: "job title",
-    icon: "fa-light fa-address-card",
-    iconSize: "17px"
-  },
-  {
-    type: "company",
-    icon: "fa-light fa-building",
-    iconSize: "25px"
-  },
-  {
-    type: "date",
-    icon: "fa-light fa-calendar-days",
-    iconSize: "20px"
-  },
-  {
-    type: textWidget,
-    icon: "fa-light fa-text-width",
-    iconSize: "20px"
-  },
-  {
-    type: textInputWidget,
-    icon: "fa-light fa-font",
-    iconSize: "21px"
-  },
-  {
-    type: "checkbox",
-    icon: "fa-light fa-square-check",
-    iconSize: "22px"
-  },
+  { type: "signature", icon: "fa-light fa-pen-nib", iconSize: "20px" },
+  { type: "stamp", icon: "fa-light fa-stamp", iconSize: "19px" },
+  { type: "initials", icon: "fa-light fa-signature", iconSize: "15px" },
+  { type: "name", icon: "fa-light fa-user", iconSize: "21px" },
+  { type: "job title", icon: "fa-light fa-address-card", iconSize: "17px" },
+  { type: "company", icon: "fa-light fa-building", iconSize: "25px" },
+  { type: "date", icon: "fa-light fa-calendar-days", iconSize: "20px" },
+  { type: textWidget, icon: "fa-light fa-text-width", iconSize: "20px" },
+  { type: textInputWidget, icon: "fa-light fa-font", iconSize: "21px" },
+  { type: "checkbox", icon: "fa-light fa-square-check", iconSize: "22px" },
   {
     type: "dropdown",
     icon: "fa-light fa-circle-chevron-down",
     iconSize: "19px"
   },
-  {
-    type: radioButtonWidget,
-    icon: "fa-light fa-circle-dot",
-    iconSize: "20px"
-  },
-  {
-    type: "image",
-    icon: "fa-light fa-image",
-    iconSize: "20px"
-  },
-  {
-    type: "email",
-    icon: "fa-light fa-envelope",
-    iconSize: "20px"
-  }
+  { type: radioButtonWidget, icon: "fa-light fa-circle-dot", iconSize: "20px" },
+  { type: "image", icon: "fa-light fa-image", iconSize: "20px" },
+  { type: "email", icon: "fa-light fa-envelope", iconSize: "20px" }
 ];
 
 export const getDate = () => {
@@ -404,7 +254,7 @@ export const addWidgetOptions = (type) => {
         options: { isReadOnly: false, isHideLabel: false }
       };
     case textInputWidget:
-      return { ...defaultOpt };
+      return { ...defaultOpt, isReadOnly: false };
     case "initials":
       return defaultOpt;
     case "name":
@@ -434,6 +284,55 @@ export const addWidgetOptions = (type) => {
       };
     case textWidget:
       return defaultOpt;
+    default:
+      return {};
+  }
+};
+
+export const addWidgetSelfsignOptions = (type, getWidgetValue) => {
+  switch (type) {
+    case "signature":
+      return { name: "signature" };
+    case "stamp":
+      return { name: "stamp" };
+    case "checkbox":
+      return { name: "checkbox" };
+    case textWidget:
+      return { name: "text" };
+    case "initials":
+      return { name: "initials" };
+    case "name":
+      return {
+        name: "name",
+        defaultValue: getWidgetValue(type),
+        validation: { type: "text", pattern: "" }
+      };
+    case "company":
+      return {
+        name: "company",
+        defaultValue: getWidgetValue(type),
+        validation: { type: "text", pattern: "" }
+      };
+    case "job title":
+      return {
+        name: "job title",
+        defaultValue: getWidgetValue(type),
+        validation: { type: "text", pattern: "" }
+      };
+    case "date":
+      return {
+        name: "date",
+        response: getDate(),
+        validation: { format: "MM/dd/yyyy", type: "date-format" }
+      };
+    case "image":
+      return { name: "image" };
+    case "email":
+      return {
+        name: "email",
+        defaultValue: getWidgetValue(type),
+        validation: { type: "email", pattern: "" }
+      };
     default:
       return {};
   }
@@ -557,13 +456,13 @@ export const convertPNGtoJPEG = (base64Data) => {
 export const handleSignYourselfImageResize = (
   ref,
   key,
-  xyPostion,
-  setXyPostion,
+  xyPosition,
+  setXyPosition,
   index,
   containerScale,
   scale
 ) => {
-  const getXYdata = xyPostion[index].pos;
+  const getXYdata = xyPosition[index].pos;
   const getPosData = getXYdata;
   const addSign = getPosData.map((url) => {
     if (url.key === key) {
@@ -577,13 +476,13 @@ export const handleSignYourselfImageResize = (
     return url;
   });
 
-  const newUpdateUrl = xyPostion.map((obj, ind) => {
+  const newUpdateUrl = xyPosition.map((obj, ind) => {
     if (ind === index) {
       return { ...obj, pos: addSign };
     }
     return obj;
   });
-  setXyPostion(newUpdateUrl);
+  setXyPosition(newUpdateUrl);
 };
 
 //function for call cloud function signPdf and generate digital signature
@@ -592,8 +491,6 @@ export const signPdfFun = async (
   documentId,
   signerObjectId,
   objectId,
-  isSubscribed,
-  activeMailAdapter,
   widgets
 ) => {
   let isCustomCompletionMail = false;
@@ -605,8 +502,7 @@ export const signPdfFun = async (
     } else {
       if (
         tenantDetails?.CompletionBody &&
-        tenantDetails?.CompletionSubject &&
-        isSubscribed
+        tenantDetails?.CompletionSubject
       ) {
         isCustomCompletionMail = true;
       }
@@ -643,7 +539,6 @@ export const signPdfFun = async (
     const suffixbase64 = imagebase64 && imagebase64.split(",").pop();
 
     const params = {
-      mailProvider: activeMailAdapter,
       pdfFile: base64Url,
       docId: documentId,
       userId: signerObjectId,
@@ -708,6 +603,10 @@ export const createDocument = async (
     const NotifyOnSignatures = Doc?.NotifyOnSignatures
       ? { NotifyOnSignatures: Doc?.NotifyOnSignatures }
       : {};
+    const Bcc = Doc?.Bcc?.length > 0 ? { Bcc: Doc?.Bcc } : {};
+    const RedirectUrl = Doc?.RedirectUrl
+      ? { RedirectUrl: Doc?.RedirectUrl }
+      : {};
     const data = {
       Name: Doc.Name,
       URL: pdfUrl,
@@ -732,9 +631,11 @@ export const createDocument = async (
       RemindOnceInEvery: parseInt(Doc?.RemindOnceInEvery || 5),
       IsEnableOTP: Doc?.IsEnableOTP || false,
       IsTourEnabled: Doc?.IsTourEnabled || false,
-      FileAdapterId: Doc?.FileAdapterId || "",
+      AllowModifications: Doc?.AllowModifications || false,
       ...SignatureType,
-      ...NotifyOnSignatures
+      ...NotifyOnSignatures,
+      ...Bcc,
+      ...RedirectUrl
     };
 
     try {
@@ -817,9 +718,9 @@ export const addZIndex = (signerPos, key, setZIndex) => {
 export const onChangeInput = (
   value,
   signKey,
-  xyPostion,
+  xyPosition,
   index,
-  setXyPostion,
+  setXyPosition,
   userId,
   initial,
   dateFormat,
@@ -828,16 +729,16 @@ export const onChangeInput = (
   fontSize,
   fontColor
 ) => {
-  const isSigners = xyPostion.some((data) => data.signerPtr);
+  const isSigners = xyPosition.some((data) => data.signerPtr);
   let filterSignerPos;
   if (isSigners) {
     if (userId) {
-      filterSignerPos = xyPostion.filter((data) => data.Id === userId);
+      filterSignerPos = xyPosition.filter((data) => data.Id === userId);
     }
     const getPlaceHolder = filterSignerPos[0]?.placeHolder;
     if (initial) {
-      const xyData = addInitialData(xyPostion, setXyPostion, value, userId);
-      setXyPostion(xyData);
+      const xyData = addInitialData(xyPosition, setXyPosition, value, userId);
+      setXyPosition(xyData);
     } else {
       const getPageNumer = getPlaceHolder.filter(
         (data) => data.pageNumber === index
@@ -889,18 +790,18 @@ export const onChangeInput = (
           return obj;
         });
 
-        const newUpdateSigner = xyPostion.map((obj) => {
+        const newUpdateSigner = xyPosition.map((obj) => {
           if (obj.Id === userId) {
             return { ...obj, placeHolder: newUpdateSignPos };
           }
           return obj;
         });
 
-        setXyPostion(newUpdateSigner);
+        setXyPosition(newUpdateSigner);
       }
     }
   } else {
-    let getXYdata = xyPostion[index].pos;
+    let getXYdata = xyPosition[index].pos;
     const updatePosition = getXYdata.map((positionData) => {
       if (positionData.key === signKey) {
         if (dateFormat) {
@@ -930,13 +831,13 @@ export const onChangeInput = (
       return positionData;
     });
 
-    const updatePlaceholder = xyPostion.map((obj, ind) => {
+    const updatePlaceholder = xyPosition.map((obj, ind) => {
       if (ind === index) {
         return { ...obj, pos: updatePosition };
       }
       return obj;
     });
-    setXyPostion(updatePlaceholder);
+    setXyPosition(updatePlaceholder);
   }
 };
 
@@ -945,16 +846,16 @@ export const onChangeHeightOfTextArea = (
   height,
   widgetType,
   signKey,
-  xyPostion,
+  xyPosition,
   index,
-  setXyPostion,
+  setXyPosition,
   userId
 ) => {
-  const isSigners = xyPostion.some((data) => data.signerPtr);
+  const isSigners = xyPosition.some((data) => data.signerPtr);
   let filterSignerPos;
   if (isSigners) {
     if (userId) {
-      filterSignerPos = xyPostion.filter((data) => data.Id === userId);
+      filterSignerPos = xyPosition.filter((data) => data.Id === userId);
     }
     const getPlaceHolder = filterSignerPos[0]?.placeHolder;
 
@@ -982,17 +883,17 @@ export const onChangeHeightOfTextArea = (
         return obj;
       });
 
-      const newUpdateSigner = xyPostion.map((obj) => {
+      const newUpdateSigner = xyPosition.map((obj) => {
         if (obj.Id === userId) {
           return { ...obj, placeHolder: newUpdateSignPos };
         }
         return obj;
       });
 
-      setXyPostion(newUpdateSigner);
+      setXyPosition(newUpdateSigner);
     }
   } else {
-    let getXYdata = xyPostion[index].pos;
+    let getXYdata = xyPosition[index].pos;
 
     const updatePosition = getXYdata.map((position) => {
       if (position.key === signKey) {
@@ -1006,13 +907,13 @@ export const onChangeHeightOfTextArea = (
       return position;
     });
 
-    const updatePlaceholder = xyPostion.map((obj, ind) => {
+    const updatePlaceholder = xyPosition.map((obj, ind) => {
       if (ind === index) {
         return { ...obj, pos: updatePosition };
       }
       return obj;
     });
-    setXyPostion(updatePlaceholder);
+    setXyPosition(updatePlaceholder);
   }
 };
 //calculate width and height
@@ -1032,7 +933,7 @@ export const calculateInitialWidthHeight = (widgetData) => {
     getHeight: height
   };
 };
-export const addInitialData = (signerPos, setXyPostion, value, userId) => {
+export const addInitialData = (signerPos, setXyPosition, value, userId) => {
   function widgetDataValue(type) {
     switch (type) {
       case "name":
@@ -1055,7 +956,7 @@ export const addInitialData = (signerPos, setXyPostion, value, userId) => {
           ...item,
           placeHolder: addInitialData(
             item.placeHolder,
-            setXyPostion,
+            setXyPosition,
             value,
             userId
           )
@@ -1069,7 +970,7 @@ export const addInitialData = (signerPos, setXyPostion, value, userId) => {
       // If there is no nested array, add the new field
       return {
         ...item,
-        pos: addInitialData(item.pos, setXyPostion, value, userId)
+        pos: addInitialData(item.pos, setXyPosition, value, userId)
         // Adjust this line to add the desired field
       };
     } else {
@@ -1132,25 +1033,32 @@ export const embedDocId = async (pdfDoc, documentId, allPages) => {
 //function for save button to save signature or image url
 export function onSaveSign(
   type,
-  xyPostion,
+  xyPosition,
   index,
   signKey,
   signatureImg,
-  imgWH,
+  defaultImgWH,
   isDefaultSign,
-  isTypeText
+  isTypeText,
+  typedSignature,
+  isAutoSign,
+  widgetsType,
+  isApplyAll
 ) {
-  let getIMGWH;
-  let getXYdata = xyPostion[index].pos;
+  let getIMGWH, posWidth, posHeight;
+  let getXYdata = xyPosition[index].pos;
   const updateXYData = getXYdata.map((position) => {
     if (position.key === signKey) {
       if (isDefaultSign === "initials") {
         let imgWH = { width: position.Width, height: position.Height };
         getIMGWH = calculateImgAspectRatio(imgWH, position);
       } else if (isDefaultSign === "default") {
-        getIMGWH = calculateImgAspectRatio(imgWH, position);
+        getIMGWH = calculateImgAspectRatio(defaultImgWH, position);
       } else if (isTypeText) {
-        getIMGWH = { newWidth: imgWH.width, newHeight: imgWH.height };
+        getIMGWH = {
+          newWidth: defaultImgWH.width,
+          newHeight: defaultImgWH.height
+        };
       } else {
         const defaultWidth = defaultWidthHeight(position?.type).width;
         const defaultHeight = defaultWidthHeight(position?.type).height;
@@ -1163,31 +1071,125 @@ export function onSaveSign(
           position
         );
       }
-
-      const posWidth = getIMGWH ? getIMGWH.newWidth : 150;
-      const posHeight = getIMGWH ? getIMGWH.newHeight : 60;
-
+      posWidth = getIMGWH ? getIMGWH.newWidth : 150;
+      posHeight = getIMGWH ? getIMGWH.newHeight : 60;
       return {
         ...position,
         Width: posWidth,
         Height: posHeight,
         SignUrl: signatureImg,
-        signatureType: type && type,
-        options: { ...position.options, response: signatureImg }
+        ...(type && { signatureType: type }),
+        options: { ...position.options, response: signatureImg },
+        ...(typedSignature && { typeSignature: typedSignature })
       };
     }
     return position;
   });
 
-  const updateXYposition = xyPostion.map((obj, ind) => {
+  const updateXYposition = xyPosition.map((obj, ind) => {
     if (ind === index) {
       return { ...obj, pos: updateXYData };
     }
     return obj;
   });
-  return updateXYposition;
+  //condition  when user click on apply(signature,image,typed signature or defaullt signature) all widgets on signature pad for same widgets
+  if (isAutoSign) {
+    const updatedArray = updateXYposition.map((page) => ({
+      ...page,
+      pos: page.pos.map(
+        (item) =>
+          item.type === widgetsType
+            ? {
+                ...item,
+                Width: posWidth,
+                Height: posHeight,
+                SignUrl: signatureImg,
+                ...(type && { signatureType: type }),
+                options: { ...item.options, response: signatureImg },
+                ...(typedSignature && { typeSignature: typedSignature })
+              }
+            : item // Otherwise, keep it unchanged
+      )
+    }));
+    return updatedArray;
+  } //condition when user edit signature/initial then updated signature apply all existing drawn signatures
+  else if (isApplyAll) {
+    // console.log("signatureImg",signatureImg)
+    const updatedArray = updateXYposition.map((page) => ({
+      ...page,
+      pos: page.pos.map(
+        (item) =>
+          item.SignUrl && item.type === widgetsType
+            ? {
+                ...item,
+                Width: posWidth,
+                Height: posHeight,
+                SignUrl: signatureImg,
+                ...(type && { signatureType: type }),
+                options: { ...item.options, response: signatureImg },
+                ...(typedSignature && { typeSignature: typedSignature })
+              }
+            : item // Otherwise, keep it unchanged
+      )
+    }));
+    return updatedArray;
+  } else {
+    return updateXYposition;
+  }
 }
 
+//function to use After setting the signature URL for the first signature widget, clicking on subsequent
+//signature widgets should automatically apply and display the signature. apply for initial,signature and stamp widget
+export const handleCopySignUrl = (
+  currentPos,
+  existSignPosition,
+  setXyPosition,
+  xyPosition,
+  pageNumber,
+  signerObjectId
+) => {
+  //get current signer details
+  const currentSigner = xyPosition.filter(
+    (data) => data.signerObjId === signerObjectId
+  );
+  //get current signer placeholder details
+  const placeholderPosition = currentSigner[0].placeHolder;
+  //get current pagenumber position
+  const getcurrentPagePosition = placeholderPosition.find(
+    (data) => data.pageNumber === pageNumber
+  );
+  let getXYdata = getcurrentPagePosition.pos;
+  const updatePos = getXYdata.map((x) => {
+    //update widgets sign url details
+    if (x.key === currentPos.key) {
+      return {
+        ...x,
+        Width: existSignPosition.Width,
+        Height: existSignPosition.Height,
+        SignUrl: existSignPosition.SignUrl,
+        signatureType: existSignPosition.signatureType,
+        options: { ...x.options, response: existSignPosition.SignUrl },
+        ...(existSignPosition.typedSignature && {
+          typeSignature: existSignPosition.typedSignature
+        })
+      };
+    }
+    return x;
+  });
+  const updateXYposition = placeholderPosition.map((obj) => {
+    if (obj.pageNumber === pageNumber) {
+      return { ...obj, pos: updatePos };
+    }
+    return obj;
+  });
+  const newUpdateSigner = xyPosition.map((obj) => {
+    if (obj.signerObjId === signerObjectId) {
+      return { ...obj, placeHolder: updateXYposition };
+    }
+    return obj;
+  });
+  setXyPosition(newUpdateSigner);
+};
 export const calculateImgAspectRatio = (imgWH, pos) => {
   let newWidth, newHeight;
 
@@ -1200,11 +1202,20 @@ export const calculateImgAspectRatio = (imgWH, pos) => {
 };
 
 //function for upload stamp or image
-export function onSaveImage(xyPostion, index, signKey, imgWH, image) {
+export function onSaveImage(
+  xyPosition,
+  index,
+  signKey,
+  imgWH,
+  image,
+  isAutoSign,
+  widgetsType,
+  isApplyAll
+) {
   let getIMGWH;
 
   //get current page position
-  const getXYData = xyPostion[index].pos;
+  const getXYData = xyPosition[index].pos;
   const updateXYData = getXYData.map((position) => {
     if (position.key === signKey) {
       getIMGWH = calculateImgAspectRatio(imgWH, position);
@@ -1224,31 +1235,74 @@ export function onSaveImage(xyPostion, index, signKey, imgWH, image) {
     return position;
   });
 
-  const updateXYposition = xyPostion.map((obj, ind) => {
+  const updateXYposition = xyPosition.map((obj, ind) => {
     if (ind === index) {
       return { ...obj, pos: updateXYData };
     }
     return obj;
   });
-  return updateXYposition;
+  //condition  when user click on apply(stamp) all widgets on signature pad for same widgets
+  if (isAutoSign) {
+    const updatedArray = updateXYposition.map((page) => ({
+      ...page,
+      pos: page.pos.map(
+        (item) =>
+          item.type === widgetsType
+            ? {
+                ...item,
+                Width: getIMGWH.newWidth,
+                Height: getIMGWH.newHeight,
+                SignUrl: image.src,
+                ImageType: image.imgType,
+                options: {
+                  ...item.options,
+                  response: image.src
+                }
+              }
+            : item // Otherwise, keep it unchanged
+      )
+    }));
+    return updatedArray;
+  } //condition when user edit stamp then updated signature apply all existing drawn signatures
+  else if (isApplyAll) {
+    const updatedArray = updateXYposition.map((page) => ({
+      ...page,
+      pos: page.pos.map(
+        (item) =>
+          item.SignUrl && item.type === widgetsType && item.type !== "image"
+            ? {
+                ...item,
+                Width: getIMGWH.newWidth,
+                Height: getIMGWH.newHeight,
+                SignUrl: image.src,
+                ImageType: image.imgType,
+                options: {
+                  ...item.options,
+                  response: image.src
+                }
+              }
+            : item // Otherwise, keep it unchanged
+      )
+    }));
+    return updatedArray;
+  } else {
+    return updateXYposition;
+  }
 }
 
 //function for select image and upload image
-export const onImageSelect = (event, setImgWH, setImage) => {
-  const imageType = event.target.files[0].type;
+export const onImageSelect = (setImgWH, setImage, file) => {
   const reader = new FileReader();
-  reader.readAsDataURL(event.target.files[0]);
+  reader.readAsDataURL(file);
   reader.onloadend = function (e) {
     let width, height;
     const image = new Image();
-
     image.src = e.target.result;
     image.onload = function () {
       width = image.width;
       height = image.height;
       const aspectRatio = 460 / 184;
       const imgR = width / height;
-
       if (imgR > aspectRatio) {
         width = 460;
         height = 460 / imgR;
@@ -1258,11 +1312,55 @@ export const onImageSelect = (event, setImgWH, setImage) => {
       }
       setImgWH({ width: width, height: height });
     };
-
     image.src = reader.result;
-
-    setImage({ src: image.src, imgType: imageType });
+    setImage({ src: image.src, imgType: file.type });
   };
+};
+export const compressedFileSize = (file, setImgWH, setImage) => {
+  // Create a new FileReader instance to read the uploaded file
+  const reader = new FileReader();
+
+  // Event listener triggered when the file is read successfully
+  reader.onload = (e) => {
+    // Create a new Image instance to manipulate the image data
+    const img = new Image();
+
+    // Set the image source to the file's data URL (base64 string)
+    img.src = e.target.result;
+
+    // Event listener triggered when the image is fully loaded
+    img.onload = () => {
+      // Create a canvas element to resize and compress the image
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d"); // Get the drawing context of the canvas
+
+      // Set the canvas dimensions, ensuring they don't exceed 1920x1920
+      canvas.width = Math.min(img.width, 1920); // Limit width to 1920px
+      canvas.height = Math.min(img.height, 1920); // Limit height to 1920px
+
+      // Draw the image onto the canvas with the specified dimensions
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      // Get the original file type (default to "image/png" if not recognized)
+      const fileType = file.type || "image/png";
+      // Compress the image and convert it into a Blob
+      canvas.toBlob(
+        (blob) => {
+          // Create a new File object from the compressed Blob
+          const compressedFile = new File([blob], file.name, {
+            type: fileType, // Set the file type to JPEG
+            lastModified: Date.now() // Update the last modified timestamp
+          });
+          // Pass the compressed file to a custom function for further processing
+          onImageSelect(setImgWH, setImage, compressedFile);
+        },
+        fileType, // Output format for the compressed image
+        0.3 // Compression quality (30%)
+      );
+    };
+  };
+
+  // Read the file as a data URL (base64 string) to be processed
+  reader.readAsDataURL(file);
 };
 //convert https url to base64
 export const fetchImageBase64 = async (imageUrl) => {
@@ -1763,11 +1861,12 @@ export const contactBook = async (objectId) => {
 };
 
 //function for getting document details from contract_Documents class
-export const contractDocument = async (documentId, JwtToken) => {
+export const contractDocument = async (
+  documentId,
+) => {
   const data = { docId: documentId };
-  const token = JwtToken
-    ? { jwtToken: JwtToken }
-    : { sessionToken: localStorage.getItem("accesstoken") };
+  const token =
+        { sessionToken: localStorage.getItem("accesstoken") };
   const documentDeatils = await axios
     .post(`${localStorage.getItem("baseUrl")}functions/getDocument`, data, {
       headers: {
@@ -1797,7 +1896,7 @@ export const contractDocument = async (documentId, JwtToken) => {
 };
 
 //function for add default signature or image for all requested location
-export const addDefaultSignatureImg = (xyPostion, defaultSignImg) => {
+export const addDefaultSignatureImg = (xyPosition, defaultSignImg, type) => {
   let imgWH = { width: "", height: "" };
   const img = new Image();
   img.src = defaultSignImg;
@@ -1809,16 +1908,16 @@ export const addDefaultSignatureImg = (xyPostion, defaultSignImg) => {
   }
 
   let xyDefaultPos = [];
-  for (let i = 0; i < xyPostion.length; i++) {
+  for (let i = 0; i < xyPosition.length; i++) {
     let getIMGWH;
-    const getXYdata = xyPostion[i].pos;
-    const getPageNo = xyPostion[i].pageNumber;
+    const getXYdata = xyPosition[i].pos;
+    const getPageNo = xyPosition[i].pageNumber;
     const getPosData = getXYdata;
 
     const addSign = getPosData.map((position) => {
       getIMGWH = calculateImgAspectRatio(imgWH, position);
       if (position.type) {
-        if (position?.type === "signature") {
+        if (position?.type === type) {
           return {
             ...position,
             SignUrl: defaultSignImg,
@@ -1880,9 +1979,9 @@ export const getYear = (date) => {
 export const handleCopyNextToWidget = (
   position,
   widgetType,
-  xyPostion,
+  xyPosition,
   index,
-  setXyPostion,
+  setXyPosition,
   userId
 ) => {
   let filterSignerPos;
@@ -1901,7 +2000,7 @@ export const handleCopyNextToWidget = (
   };
   //if condition to create widget in request-sign flow
   if (userId) {
-    filterSignerPos = xyPostion.filter((data) => data.Id === userId);
+    filterSignerPos = xyPosition.filter((data) => data.Id === userId);
     const getPlaceHolder = filterSignerPos && filterSignerPos[0]?.placeHolder;
     const getPageNumer = getPlaceHolder?.filter(
       (data) => data.pageNumber === index
@@ -1916,26 +2015,26 @@ export const handleCopyNextToWidget = (
         return obj;
       });
 
-      const newUpdateSigner = xyPostion.map((obj) => {
+      const newUpdateSigner = xyPosition.map((obj) => {
         if (obj.Id === userId) {
           return { ...obj, placeHolder: newUpdateSignPos };
         }
         return obj;
       });
 
-      setXyPostion(newUpdateSigner);
+      setXyPosition(newUpdateSigner);
     }
   } else {
-    let getXYdata = xyPostion[index]?.pos || [];
+    let getXYdata = xyPosition[index]?.pos || [];
     getXYdata.push(newposition);
-    const updatePlaceholder = xyPostion.map((obj, ind) => {
+    const updatePlaceholder = xyPosition.map((obj, ind) => {
       if (ind === index) {
         return { ...obj, pos: getXYdata };
       }
       return obj;
     });
 
-    setXyPostion(updatePlaceholder);
+    setXyPosition(updatePlaceholder);
   }
 };
 
@@ -1951,9 +2050,6 @@ export const getFileName = (fileUrl) => {
 
 //fetch tenant app logo from `partners_Tenant` class by domain name
 export const getAppLogo = async () => {
-  if (window.location.host === "app.opensignlabs.com") {
-    return { logo: appInfo.applogo, user: "exist" };
-  } else {
     const domain = window.location.host;
     try {
       const tenant = await Parse.Cloud.run("getlogobydomain", {
@@ -1970,18 +2066,19 @@ export const getAppLogo = async () => {
         return { logo: appInfo.applogo, user: "exist" };
       }
     }
-  }
 };
-
-export const getTenantDetails = async (objectId, jwttoken, contactId) => {
+export const getTenantDetails = async (
+  objectId,
+  contactId
+) => {
   try {
     const url = `${localStorage.getItem("baseUrl")}functions/gettenant`;
     const parseAppId = localStorage.getItem("parseAppId");
     const accesstoken = localStorage.getItem("accesstoken");
-    const token = jwttoken
-      ? { jwttoken: jwttoken }
-      : { "X-Parse-Session-Token": accesstoken };
-    const data = jwttoken ? {} : { userId: objectId, contactId: contactId };
+    const token =
+          { "X-Parse-Session-Token": accesstoken };
+    const data =
+          { userId: objectId, contactId: contactId };
     const res = await axios.post(url, data, {
       headers: {
         "Content-Type": "application/json",
@@ -1989,9 +2086,11 @@ export const getTenantDetails = async (objectId, jwttoken, contactId) => {
         ...token
       }
     });
-    if (res) {
+    if (res.data.result) {
       const updateRes = JSON.parse(JSON.stringify(res.data.result));
       return updateRes;
+    } else {
+      return "";
     }
   } catch (err) {
     console.log("err in gettenant", err);
@@ -2082,7 +2181,6 @@ export const fetchUrl = async (url, pdfName) => {
 export const getSignedUrl = async (
   pdfUrl,
   docId,
-  fileAdapterId,
   templateId
 ) => {
   //use only axios here due to public template sign
@@ -2091,7 +2189,6 @@ export const getSignedUrl = async (
     {
       url: pdfUrl,
       docId: docId || "",
-      fileAdapterId: fileAdapterId,
       templateId: templateId || ""
     },
     {
@@ -2105,23 +2202,58 @@ export const getSignedUrl = async (
   const url = axiosRes.data.result;
   return url;
 };
+//download base64 type pdf
+export const fetchBase64 = async (pdfBase64, pdfName) => {
+  // Create a Blob from the Base64 string
+  const byteCharacters = atob(pdfBase64);
+  const byteNumbers = new Array(byteCharacters.length)
+    .fill(0)
+    .map((_, i) => byteCharacters.charCodeAt(i));
+  const byteArray = new Uint8Array(byteNumbers);
+  const blob = new Blob([byteArray], { type: "application/pdf" });
+
+  // Create a link element
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = pdfName;
+
+  // Programmatically click the link to trigger the download
+  document.body.appendChild(link);
+  link.click();
+
+  // Clean up
+  document.body.removeChild(link);
+  URL.revokeObjectURL(link.href);
+};
 //handle download signed pdf
-export const handleDownloadPdf = async (pdfDetails, setIsDownloading) => {
-  const pdfName = pdfDetails[0] && pdfDetails[0]?.Name;
-  const pdfUrl = pdfDetails?.[0]?.SignedUrl || pdfDetails?.[0]?.URL;
-  setIsDownloading && setIsDownloading("pdf");
-  const docId = pdfDetails?.[0]?.objectId || "";
-  const fileAdapterId = pdfDetails?.[0]?.FileAdapterId
-    ? pdfDetails?.[0]?.FileAdapterId
-    : "";
-  try {
-    const url = await getSignedUrl(pdfUrl, docId, fileAdapterId);
-    await fetchUrl(url, pdfName);
+export const handleDownloadPdf = async (
+  pdfDetails,
+  setIsDownloading,
+  pdfBase64
+) => {
+  const pdfName =
+    pdfDetails?.[0]?.Name?.length > 100
+      ? pdfDetails?.[0]?.Name?.slice(0, 100)
+      : pdfDetails?.[0]?.Name || "Document";
+  if (pdfBase64) {
+    await fetchBase64(pdfBase64, pdfName);
     setIsDownloading && setIsDownloading("");
-  } catch (err) {
-    console.log("err in getsignedurl", err);
-    setIsDownloading("");
-    alert("something went wrong, please try again later.");
+  } else {
+    const pdfUrl = pdfDetails?.[0]?.SignedUrl || pdfDetails?.[0]?.URL;
+    setIsDownloading && setIsDownloading("pdf");
+    const docId = pdfDetails?.[0]?.objectId || "";
+    try {
+      const url = await getSignedUrl(
+        pdfUrl,
+        docId,
+      );
+      await fetchUrl(url, pdfName);
+      setIsDownloading && setIsDownloading("");
+    } catch (err) {
+      console.log("err in getsignedurl", err);
+      setIsDownloading("");
+      alert("something went wrong, please try again later.");
+    }
   }
 };
 
@@ -2130,25 +2262,22 @@ export const sanitizeFileName = (pdfName) => {
   return pdfName.replace(/ /g, "_");
 };
 //function for print digital sign pdf
-export const handleToPrint = async (
-  event,
-  pdfUrl,
-  setIsDownloading,
-  pdfDetails
-) => {
+export const handleToPrint = async (event, setIsDownloading, pdfDetails) => {
   event.preventDefault();
   setIsDownloading("pdf");
+  const pdfUrl = pdfDetails?.[0]?.SignedUrl || pdfDetails?.[0]?.URL;
   const docId = pdfDetails?.[0]?.objectId || "";
-  const FileAdapterId = pdfDetails?.[0]?.FileAdapterId
-    ? pdfDetails?.[0]?.FileAdapterId
-    : "";
+
   try {
     // const url = await Parse.Cloud.run("getsignedurl", { url: pdfUrl });
     //`localStorage.getItem("baseUrl")` is also use in public-profile flow for public-sign
     //if we give this `appInfo.baseUrl` as a base url then in public-profile it will create base url of it's window.location.origin ex- opensign.me which is not base url
     const axiosRes = await axios.post(
       `${localStorage.getItem("baseUrl")}/functions/getsignedurl`,
-      { url: pdfUrl, docId: docId, fileAdapterId: FileAdapterId },
+      {
+        url: pdfUrl,
+        docId: docId,
+      },
       {
         headers: {
           "content-type": "Application/json",
@@ -2206,9 +2335,7 @@ export const handleDownloadCertificate = async (
   } else {
     setIsDownloading("certificate");
     try {
-      const data = {
-        docId: pdfDetails[0]?.objectId
-      };
+      const data = { docId: pdfDetails[0]?.objectId };
       const docDetails = await axios.post(
         `${localStorage.getItem("baseUrl")}functions/getDocument`,
         data,
@@ -2230,33 +2357,66 @@ export const handleDownloadCertificate = async (
             return certificateUrl;
           } else {
             saveAs(certificateUrl, `Certificate_signed_by_OpenSign™.pdf`);
+            setIsDownloading("");
           }
-
-          setIsDownloading("");
         } else {
-          setIsDownloading("certificate");
+          const generateRes = await axios.post(
+            `${localStorage.getItem("baseUrl")}functions/generatecertificate`,
+            data,
+            {
+              headers: {
+                "Content-Type": "application/json",
+                "X-Parse-Application-Id": localStorage.getItem("parseAppId")
+              }
+            }
+          );
+          if (generateRes?.data?.result?.CertificateUrl) {
+            try {
+              const certificateUrl = generateRes.data.result.CertificateUrl;
+              const fetchCertificate = await fetch(certificateUrl);
+              if (isZip) {
+                setIsDownloading("");
+                return certificateUrl;
+              } else {
+                // Convert the response into a Blob
+                const certificateBlob = await fetchCertificate.blob();
+                setIsDownloading("");
+                saveAs(certificateBlob, `Certificate_signed_by_OpenSign™.pdf`);
+              }
+            } catch (err) {
+              console.log("err in download in certificate", err);
+              setIsDownloading("certificate_err");
+            }
+          } else {
+            setIsDownloading("certificate_err");
+          }
         }
       }
     } catch (err) {
+      setIsDownloading("certificate_err");
       console.log("err in download in certificate", err);
       alert("something went wrong, please try again later.");
     }
   }
 };
-export async function findContact(value, jwttoken) {
+// Function to escape special characters in the search string
+export function escapeRegExp(string) {
+  return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); // Escape special characters
+}
+export async function findContact(
+  value,
+) {
   try {
     const baseURL = localStorage.getItem("baseUrl");
     const url = `${baseURL}functions/getsigners`;
-    const token = jwttoken
-      ? { jwttoken: jwttoken }
-      : { "X-Parse-Session-Token": localStorage.getItem("accesstoken") };
+    const token =
+          { "X-Parse-Session-Token": localStorage.getItem("accesstoken") };
     const headers = {
       "Content-Type": "application/json",
       "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
       ...token
     };
-    const searchEmail = value;
-    const axiosRes = await axios.post(url, { searchEmail }, { headers });
+    const axiosRes = await axios.post(url, { search: value }, { headers });
     const contactRes = axiosRes?.data?.result || [];
     if (contactRes) {
       const res = JSON.parse(JSON.stringify(contactRes));
@@ -2411,37 +2571,25 @@ export const getDefaultSignature = async (objectId) => {
       return {
         status: "success",
         res: {
+          id: result?.id,
           defaultSignature: defaultSignature,
           defaultInitial: defaultInitial
         }
       };
     }
   } catch (err) {
-    console.log("Error: error in fetch data in contracts_Signature", err);
-    return {
-      status: "error"
-    };
+    console.log(
+      "Error: error in fetch data in contracts_Signature",
+      err?.message || err
+    );
+    return { status: "error" };
   }
 };
 
 //function to rotate pdf page
-export async function rotatePdfPage(
-  url,
-  rotateDegree,
-  pageNumber,
-  pdfRotateBase64
-) {
-  let file;
-
-  //condition to handle pdf base64 in arrayBuffer format
-  if (pdfRotateBase64) {
-    file = base64ToArrayBuffer(pdfRotateBase64);
-  } else {
-    //condition to handle pdf url in arrayBuffer format
-    file = await convertPdfArrayBuffer(url);
-  }
+export async function rotatePdfPage(rotateDegree, pageNumber, pdfArrayBuffer) {
   // Load the existing PDF
-  const pdfDoc = await PDFDocument.load(file);
+  const pdfDoc = await PDFDocument.load(pdfArrayBuffer);
   // Get the page according to page number
   const page = pdfDoc.getPage(pageNumber);
   //get current page rotation angle
@@ -2460,7 +2608,7 @@ export async function rotatePdfPage(
   //`base64` is used to show pdf
   return { arrayBuffer: arrayBuffer, base64: pdfbase64 };
 }
-function base64ToArrayBuffer(base64) {
+export function base64ToArrayBuffer(base64) {
   // Decode the base64 string to a binary string
   const binaryString = atob(base64);
   // Create a new ArrayBuffer with the same length as the binary string
@@ -2474,13 +2622,23 @@ function base64ToArrayBuffer(base64) {
   return bytes.buffer;
 }
 
-export const convertBase64ToFile = async (pdfName, pdfBase64) => {
+export const convertBase64ToFile = async (
+  pdfName,
+  pdfBase64,
+) => {
   const fileName = sanitizeFileName(pdfName) + ".pdf";
-  const pdfFile = new Parse.File(fileName, { base64: pdfBase64 });
-  // Save the Parse File if needed
-  const pdfData = await pdfFile.save();
-  const pdfUrl = pdfData.url();
-  return pdfUrl;
+    try {
+        const pdfFile = new Parse.File(fileName, { base64: pdfBase64 });
+        // Save the Parse File if needed
+        const pdfData = await pdfFile.save();
+        const pdfUrl = pdfData.url();
+        const fileRes = await getSecureUrl(pdfUrl);
+        if (fileRes?.url) {
+          return fileRes.url;
+        }
+    } catch (e) {
+      console.log("error in convertbase64tofile", e);
+    }
 };
 export const onClickZoomIn = (scale, zoomPercent, setScale, setZoomPercent) => {
   setScale(scale + 0.1 * scale);
@@ -2509,19 +2667,63 @@ export const handleRemoveWidgets = (
   pageNumber,
   setIsRotate
 ) => {
-  const updatedSignerPos = signerPos.map((placeholderObj) => {
-    return {
-      ...placeholderObj,
-      placeHolder: placeholderObj?.placeHolder?.filter(
-        (data) => data?.pageNumber !== pageNumber
-      )
-    };
-  });
-  setSignerPos(updatedSignerPos);
-  setIsRotate({
-    status: false,
-    degree: 0
-  });
+  const isSigners = signerPos.some((data) => data.signerPtr);
+  //placeholder,template,draftTemplate flow
+  if (isSigners) {
+    const updatedSignerPos = signerPos.map((placeholderObj) => {
+      return {
+        ...placeholderObj,
+        placeHolder: placeholderObj?.placeHolder?.filter(
+          (data) => data?.pageNumber !== pageNumber
+        )
+      };
+    });
+
+    if (setIsRotate) {
+      setSignerPos(updatedSignerPos);
+      setIsRotate({ status: false, degree: 0 });
+    } else {
+      //after deleting pdf page we need to update page number of widgets
+      //For example, consider a PDF with 3 pages where widgets are placed on the 2nd page.
+      //If we delete the 1st page, the total number of pages will be reduced to 2. In this case,
+      // the widgets need to be updated to reflect the new page numbering and should now appear on the 1st page.
+      const updatePageNumber = updatedSignerPos?.map((placeholderObj) => {
+        return {
+          ...placeholderObj,
+          placeHolder: placeholderObj?.placeHolder?.map((data) => {
+            if (data.pageNumber > pageNumber) {
+              return { ...data, pageNumber: data.pageNumber - 1 };
+            } else {
+              return data;
+            }
+          })
+        };
+      });
+      setSignerPos(updatePageNumber);
+    }
+  } else {
+    //signyourself flow
+    const updatedSignerPos = signerPos?.filter(
+      (data) => data?.pageNumber !== pageNumber
+    );
+    if (setIsRotate) {
+      setSignerPos(updatedSignerPos);
+      setIsRotate({ status: false, degree: 0 });
+    } else {
+      //after deleting pdf page we need to update page number of widgets
+      //For example, consider a PDF with 3 pages where widgets are placed on the 2nd page.
+      //If we delete the 1st page, the total number of pages will be reduced to 2. In this case,
+      // the widgets need to be updated to reflect the new page numbering and should now appear on the 1st page.
+      const updatePageNumber = updatedSignerPos?.map((data) => {
+        if (data.pageNumber > pageNumber) {
+          return { ...data, pageNumber: data.pageNumber - 1 };
+        } else {
+          return data;
+        }
+      });
+      setSignerPos(updatePageNumber);
+    }
+  }
 };
 //function to show warning when user rotate page and there are some already widgets on that page
 export const handleRotateWarning = (signerPos, pageNumber) => {
@@ -2609,4 +2811,127 @@ export const formatDate = (date) => {
   });
   const format = formattedDate.replaceAll(/ /g, "-");
   return format;
+};
+
+export const deletePdfPage = async (pdfArrayBuffer, pageNumber) => {
+  try {
+    // Load the existing PDF
+    const pdfDoc = await PDFDocument.load(pdfArrayBuffer);
+    // Get the total number of pages
+    const totalPages = pdfDoc.getPageCount();
+    // Ensure the page index is valid
+    if (totalPages > 1) {
+      //Remove the specified page
+      pdfDoc.removePage(pageNumber - 1);
+      // Save the modified PDF
+      const modifiedPdfBytes = await pdfDoc.saveAsBase64({
+        useObjectStreams: false
+      });
+      const arrayBuffer = base64ToArrayBuffer(modifiedPdfBytes);
+      return {
+        arrayBuffer: arrayBuffer,
+        base64: modifiedPdfBytes,
+        remainingPages: totalPages - 1
+      };
+    } else {
+      return { totalPages: 1 };
+    }
+  } catch (err) {
+    console.log("Err while deleting page", err);
+  }
+};
+
+// `generatePdfName` is used to generate file name
+export function generatePdfName(length) {
+  const characters =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  let result = "";
+  const charactersLength = characters.length;
+
+  for (let i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+  return result;
+}
+
+// Format date and time for the selected timezone
+export const formatTimeInTimezone = (date, timezone) => {
+  return timezone
+    ? new Intl.DateTimeFormat("en-US", {
+        weekday: "short",
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        timeZone: timezone,
+        timeZoneName: "short",
+        hour12: false
+      }).format(date)
+    : new Date(date).toUTCString();
+};
+
+// `usertimezone` is used to get timezone of current user
+export const usertimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+export const handleHeighlightWidget = (
+  getCurrentSignerPos,
+  key,
+  pageNumber
+) => {
+  const placeholder = getCurrentSignerPos.placeHolder;
+  // Find the highest zIndex value
+  const highestZIndex = placeholder
+    .flatMap((item) => item.pos.map((position) => position.zIndex))
+    .reduce((max, zIndex) => (zIndex > max ? zIndex : max), -Infinity); //-Infinity represents the smallest possible number
+  // Update the zIndex of the current signer
+  const updateZindex = placeholder.map((data) => {
+    if (data.pageNumber === pageNumber) {
+      return {
+        ...data,
+        pos: data.pos.map((position) => {
+          if (position.key === key) {
+            return {
+              ...position,
+              zIndex: highestZIndex + 1
+            };
+          }
+          return position;
+        })
+      };
+    }
+    return data;
+  });
+  return updateZindex;
+};
+/**
+ * FlattenPdf is used to remove existing widgets if present any and flatten pdf.
+ * @param {string | Uint8Array | ArrayBuffer} pdfFile - pdf file.
+ * @returns {Promise<Uint8Array>} flatPdf - pdf file in unit8arry
+ */
+export const flattenPdf = async (pdfFile) => {
+  const pdfDoc = await PDFDocument.load(pdfFile);
+  // Get the form
+  const form = pdfDoc.getForm();
+  // fetch form fields
+  const fields = form.getFields();
+  // remove form all existing fields and their widgets
+  if (fields && fields?.length > 0) {
+    try {
+      for (const field of fields) {
+        while (field.acroField.getWidgets().length) {
+          field.acroField.removeWidget(0);
+        }
+        form.removeField(field);
+      }
+    } catch (err) {
+      console.log("err while removing field from pdf", err);
+    }
+  }
+  // Updates the field appearances to ensure visual changes are reflected.
+  form.updateFieldAppearances();
+  // Flattens the form, converting all form fields into non-editable, static content
+  form.flatten();
+  const flatPdf = await pdfDoc.save({ useObjectStreams: false });
+  return flatPdf;
 };

@@ -14,13 +14,15 @@ export const formJson = {
     msgVar: "Document",
     redirectRoute: "placeHolderSign",
     Cls: documentCls,
-    signers: true
+    signers: true,
+    bcc: true
   },
   //json form for template
   template: {
     title: "New Template",
     redirectRoute: "template",
     msgVar: "Template",
-    Cls: templateCls
+    Cls: templateCls,
+    bcc: true
   }
 };

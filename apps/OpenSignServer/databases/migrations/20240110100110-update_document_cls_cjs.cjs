@@ -3,7 +3,6 @@
  * @param {Parse} Parse
  */
 exports.up = async Parse => {
-    // TODO: set className here
     const className = 'contracts_Document';
     const schema = new Parse.Schema(className);
     schema.addBoolean('IsArchive');
@@ -15,7 +14,6 @@ exports.up = async Parse => {
    * @param {Parse} Parse
    */
   exports.down = async Parse => {
-    // TODO: set className here
     const className = 'contracts_Document';
     const schema = new Parse.Schema(className);
     schema.deleteField('IsArchive');

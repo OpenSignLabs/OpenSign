@@ -4,7 +4,8 @@ export default async function updatePreferences(request) {
   }
   const SignatureType = request.params.SignatureType || [];
   const NotifyOnSignatures = request.params.NotifyOnSignatures;
-  if (SignatureType?.length > 0 || NotifyOnSignatures !== undefined) {
+  const Timezone = request.params.Timezone;
+  if (SignatureType?.length > 0 || NotifyOnSignatures !== undefined || Timezone) {
     try {
       const orgQuery = new Parse.Query('contracts_Users');
       orgQuery.equalTo('UserId', {
@@ -18,6 +19,9 @@ export default async function updatePreferences(request) {
         newOrg.id = resUser.id;
         if (NotifyOnSignatures !== undefined) {
           newOrg.set('NotifyOnSignatures', NotifyOnSignatures);
+        }
+        if (Timezone) {
+          newOrg.set('Timezone', Timezone);
         }
         if (SignatureType.length > 0) {
           const enabledSignTypes = SignatureType?.filter(x => x.enabled);
