@@ -12,7 +12,7 @@ export default function TourContentWithBtn({ message, isChecked, video }) {
   };
   return (
     <div>
-      <p>{message}</p>
+      <p className="p-1 md:p-0">{message}</p>
       {video && (
         <div className="flex items-center justify-center w-full md:h-[300px] my-[10px] border-[1.3px] border-gray-400 rounded-sm">
           <iframe

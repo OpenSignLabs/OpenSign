@@ -19,8 +19,9 @@ body {
 }
 
 @media screen and (max-width: 766px) {
-  .bBofGr {
-    width: 14px !important;
+  .reactour__close {
+    width: 17px !important;
+    padding-left: 3px  !important;
   }
 }
 

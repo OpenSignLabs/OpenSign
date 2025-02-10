@@ -225,7 +225,7 @@ const DebugPdf = () => {
             <div className="flex flex-row justify-between">
               {/* this component used to render all pdf pages in left side */}
               <RenderAllPdfPage
-                signPdfUrl={pdf}
+                pdfBase64Url={pdfDetails.base64}
                 allPages={allPages}
                 setAllPages={setAllPages}
                 setPageNumber={setPageNumber}

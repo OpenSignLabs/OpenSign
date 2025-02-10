@@ -23,7 +23,7 @@ function PrevNext({ pageNumber, allPages, changePage }) {
           <i className="fa-light fa-backward" aria-hidden="true"></i>
         </span>
       </button>
-      <span className="text-xs text-base-content font-medium mx-2 2xl:text-[30px]">
+      <span className="text-xs text-base-content font-medium mx-2 2xl:text-[20px]">
         {pageNumber || (allPages ? 1 : "--")} {t("of")} {allPages || "--"}
       </span>
       <button

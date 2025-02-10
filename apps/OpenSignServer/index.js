@@ -15,11 +15,14 @@ import AWS from 'aws-sdk';
 import { app as customRoute } from './cloud/customRoute/customApp.js';
 import { exec } from 'child_process';
 import { createTransport } from 'nodemailer';
-import { app as v1 } from './cloud/customRoute/v1/apiV1.js';
 import { PostHog } from 'posthog-node';
 import { appName, cloudServerUrl, smtpenable, smtpsecure, useLocal } from './Utils.js';
 import { SSOAuth } from './auth/authadapter.js';
+import createContactIndex from './migrationdb/createContactIndex.js';
+import { validateSignedLocalUrl } from './cloud/parsefunction/getSignedUrl.js';
+import maintenance_mode_message from 'aws-sdk/lib/maintenance_mode_message.js';
 let fsAdapter;
+maintenance_mode_message.suppress = true;
 if (useLocal !== 'true') {
   try {
     const spacesEndpoint = new AWS.Endpoint(process.env.DO_ENDPOINT);
@@ -33,8 +36,10 @@ if (useLocal !== 'true') {
       presignedUrl: true,
       presignedUrlExpires: 900,
       s3overrides: {
-        accessKeyId: process.env.DO_ACCESS_KEY_ID,
-        secretAccessKey: process.env.DO_SECRET_ACCESS_KEY,
+        credentials: {
+          accessKeyId: process.env.DO_ACCESS_KEY_ID,
+          secretAccessKey: process.env.DO_SECRET_ACCESS_KEY,
+        },
         endpoint: spacesEndpoint,
       },
     };
@@ -178,6 +183,28 @@ app.use(function (req, res, next) {
   }
   next();
 });
+
+app.use(async function (req, res, next) {
+  const isFilePath = req.path.includes('files') || false;
+  if (isFilePath && req.method.toLowerCase() === 'get') {
+    const serverUrl = new URL(process.env.SERVER_URL);
+    const origin = serverUrl.pathname === '/api/app' ? serverUrl.origin + '/api' : serverUrl.origin;
+    const fileUrl = origin + req.originalUrl;
+    const params = fileUrl?.split('?')?.[1];
+    if (params) {
+      const fileRes = await validateSignedLocalUrl(fileUrl);
+      if (fileRes === 'Unauthorized') {
+        return res.status(400).json({ message: 'unauthorized' });
+      }
+    } else {
+      return res.status(400).json({ message: 'unauthorized' });
+    }
+    next();
+  } else {
+    next();
+  }
+});
+
 // Serve static assets from the /public folder
 app.use('/public', express.static(path.join(__dirname, '/public')));
 
@@ -190,13 +217,12 @@ if (!process.env.TESTING) {
     app.use(mountPath, server.app);
   } catch (err) {
     console.log(err);
+    process.exit();
   }
 }
 // Mount your custom express app
 app.use('/', customRoute);
 
-// Mount v1
-app.use('/v1', v1);
 
 // Parse Server plays nicely with the rest of your web routes
 app.get('/', function (req, res) {
@@ -227,6 +253,7 @@ if (!process.env.TESTING) {
         console.error(`Error: ${stderr}`);
         return;
       }
+      createContactIndex();
       console.log(`Command output: ${stdout}`);
     });
   });

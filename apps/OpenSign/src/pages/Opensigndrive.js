@@ -1,8 +1,10 @@
 import React, { useEffect, useState, useRef } from "react";
 import "../styles/opensigndrive.css";
-import { iconColor } from "../constant/const";
+import {
+  iconColor,
+} from "../constant/const";
 import { getDrive } from "../constant/Utils";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import Title from "../components/Title";
 import Parse from "parse";
 import ModalUi from "../primitives/ModalUi";
@@ -11,10 +13,11 @@ import Tour from "reactour";
 import axios from "axios";
 import Loader from "../primitives/Loader";
 import { useTranslation } from "react-i18next";
-
 const DriveBody = React.lazy(
   () => import("../components/opensigndrive/DriveBody")
 );
+const dropdowncss =
+  "absolute right-0 py-2 text-[1rem] text-left bg-white border-[1px] border-gray-300 min-w-1 hover:bg-gray-300  rounded-[0.25rem] z-[800]";
 const AppLoader = () => {
   return (
     <div className="h-[100vh] flex justify-center items-center">
@@ -45,9 +48,9 @@ function Opensigndrive() {
   const [handleError, setHandleError] = useState("");
   const [folderName, setFolderName] = useState([]);
   const [isAlert, setIsAlert] = useState({ isShow: false, alertMessage: "" });
-  const [isNewFol, setIsNewFol] = useState(false);
+  const [isOptions, setIsOptions] = useState(false);
   const [skip, setSkip] = useState(0);
-  const limit = 100;
+  const limit = 50;
   const [loading, setLoading] = useState(false);
   const sortOrder = ["Ascending", "Descending"];
   const sortingValue = ["Name", "Date"];
@@ -223,8 +226,7 @@ function Opensigndrive() {
       //disableLoading is used disable initial loader
       const disableLoading = true;
       // If the fetched data length is less than the limit, it means there's no more data to fetch
-
-      if (!loading && pdfData.length % 100 === 0) {
+      if (!loading && pdfData.length % 50 === 0) {
         getPdfDocumentList(disableLoading);
       }
     }
@@ -420,8 +422,8 @@ function Opensigndrive() {
     const closeMenuOnOutsideClick = (e) => {
       if (isShowSort && !e.target.closest("#menu-container")) {
         setIsShowSort(!isShowSort);
-      } else if (isNewFol && !e.target.closest("#folder-menu")) {
-        setIsNewFol(!isNewFol);
+      } else if (isOptions && !e.target.closest("#folder-menu")) {
+        setIsOptions(!isOptions);
       }
     };
 
@@ -432,7 +434,7 @@ function Opensigndrive() {
       document.removeEventListener("click", closeMenuOnOutsideClick);
     };
     // eslint-disable-next-line
-  }, [isShowSort, isNewFol]);
+  }, [isShowSort, isOptions]);
 
   const handleFolderTab = (folderData) => {
     return folderData.map((data, id) => {
@@ -601,7 +603,7 @@ function Opensigndrive() {
         </div>
       ) : (
         <>
-          <div className="flex flex-row justify-between items-center px-[25px] pt-[20px]">
+          <div className="flex flex-row justify-between items-center px-[15px] md:px-[25px] pt-[20px]">
             {tourData && (
               <Tour
                 onRequestClose={closeTour}
@@ -623,10 +625,8 @@ function Opensigndrive() {
             <div className="flex flex-row items-center">
               <div
                 id="folder-menu"
-                className={
-                  isNewFol ? "dropdown show dropDownStyle" : "dropdown"
-                }
-                onClick={() => setIsNewFol(!isNewFol)}
+                className={`${isOptions ? "dropdown show dropDownStyle" : "dropdown"} hidden md:block`}
+                onClick={() => setIsOptions(!isOptions)}
               >
                 <div className="sort" data-tut="reactourSecond">
                   <i
@@ -636,9 +636,10 @@ function Opensigndrive() {
                   ></i>
                 </div>
                 <div
-                  className={isNewFol ? "dropdown-menu show" : "dropdown-menu"}
+                  className={`${isOptions ? "block" : "hidden"} ${dropdowncss}`}
+                  // className={isOptions ? "dropdown-menu show" : "dropdown-menu"}
                   aria-labelledby="dropdownMenuButton"
-                  aria-expanded={isNewFol ? "true" : "false"}
+                  aria-expanded={isOptions ? "true" : "false"}
                 >
                   <div className="flex flex-col">
                     <span
@@ -719,7 +720,6 @@ function Opensigndrive() {
                       </span>
                     );
                   })}
-
                   <hr className="hrStyle" />
                   {sortOrder.map((order, ind) => {
                     return (
@@ -748,30 +748,66 @@ function Opensigndrive() {
                   })}
                 </div>
               </div>
-
-              <div>
-                {isList ? (
-                  <div className="sort" onClick={() => setIsList(!isList)}>
-                    <i
-                      onClick={() => setIsList(!isList)}
-                      className="fa-light fa-th-large"
-                      style={{ fontSize: "24px", color: `${iconColor}` }}
-                      aria-hidden="true"
-                    ></i>
+              <div
+                data-tut="reactourForth"
+                className="sort"
+                onClick={() => setIsList(!isList)}
+              >
+                <i
+                  className={
+                    isList ? "fa-light fa-th-large" : "fa-light fa-list"
+                  }
+                  style={{ fontSize: "24px", color: `${iconColor}` }}
+                  aria-hidden="true"
+                ></i>
+              </div>
+              <div
+                id="folder-menu"
+                className={`${isOptions ? "dropdown show dropDownStyle" : "dropdown"} md:hidden`}
+                onClick={() => setIsOptions(!isOptions)}
+              >
+                <div
+                  className="p-[19px] my-2 flex items-center justify-center cursor-pointer hover:bg-[var(--mauve-3)] rounded-[2px] shadow-[0_2px_4px_rgba(168,204,206,0.1)]"
+                  data-tut="reactourSecond"
+                >
+                  <i
+                    className="fa-light fa-ellipsis-vertical fa-lg"
+                    aria-hidden="true"
+                    style={{ color: `${iconColor}` }}
+                  ></i>
+                </div>
+                <div
+                  className={`${isOptions ? "block" : "hidden"} ${dropdowncss}`}
+                  aria-labelledby="dropdownMenuButton"
+                  aria-expanded={isOptions ? "true" : "false"}
+                >
+                  <div className="flex flex-col">
+                    <span
+                      className="dropdown-item text-[10px] md:text-[13px]"
+                      onClick={() => setIsFolder(true)}
+                    >
+                      <i
+                        className="fa-light fa-plus mr-[5px]"
+                        aria-hidden="true"
+                      ></i>
+                      {t("create-folder")}
+                    </span>
+                    <span
+                      className="dropdown-item text-[10px] md:text-[13px]"
+                      onClick={() => navigate("/form/sHAnZphf69")}
+                    >
+                      <i className="fa-light fa-pen-nib mr-[5px]"></i>
+                      {t("form-name.Sign Yourself")}
+                    </span>
+                    <span
+                      className="dropdown-item text-[10px] md:text-[13px]"
+                      onClick={() => navigate("/form/8mZzFxbG1z")}
+                    >
+                      <i className="fa-light fa-file-signature mr-[5px]"></i>
+                      {t("form-name.Request Signatures")}
+                    </span>
                   </div>
-                ) : (
-                  <div
-                    data-tut="reactourForth"
-                    className="sort"
-                    onClick={() => setIsList(!isList)}
-                  >
-                    <i
-                      className="fa-light fa-list"
-                      aria-hidden="true"
-                      style={{ fontSize: "23px", color: `${iconColor}` }}
-                    ></i>
-                  </div>
-                )}
+                </div>
               </div>
             </div>
           </div>

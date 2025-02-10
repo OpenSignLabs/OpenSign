@@ -2,13 +2,14 @@ import React, { useState, useEffect, useRef } from "react";
 import "../../styles/opensigndrive.css";
 import axios from "axios";
 import * as ContextMenu from "@radix-ui/react-context-menu";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import Table from "react-bootstrap/Table";
 import * as HoverCard from "@radix-ui/react-hover-card";
 import ModalUi from "../../primitives/ModalUi";
 import FolderModal from "../shared/fields/FolderModal";
 import { useTranslation } from "react-i18next";
-import { handleDownloadPdf } from "../../constant/Utils";
+import { handleDownloadPdf, isMobile } from "../../constant/Utils";
+import Parse from "parse";
 
 function DriveBody(props) {
   const { t } = useTranslation();
@@ -17,7 +18,7 @@ function DriveBody(props) {
   const inputRef = useRef(null);
   const [isOpenMoveModal, setIsOpenMoveModal] = useState(false);
   const [selectDoc, setSelectDoc] = useState();
-  const [isDeleteDoc, setIsDeleteDoc] = useState(false);
+  const [isDeleteDoc, setIsDeleteDoc] = useState({});
   const contextMenu = [
     { type: "Download", icon: "fa-light fa-arrow-down" },
     { type: "Rename", icon: "fa-light fa-font" },
@@ -137,7 +138,7 @@ function DriveBody(props) {
     }
   };
 
-  const handleMenuItemClick = async (selectType, data) => {
+  const handleMenuItemClick = async (selectType, data, deleteType) => {
     switch (selectType) {
       case "Download": {
         await handleDownloadPdf([data]);
@@ -149,7 +150,7 @@ function DriveBody(props) {
         break;
       }
       case "Delete": {
-        setIsDeleteDoc(true);
+        setIsDeleteDoc({ status: true, deleteType });
         setSelectDoc(data);
         break;
       }
@@ -163,7 +164,7 @@ function DriveBody(props) {
   };
   //function for delete document
   const handleDeleteDocument = async (docData) => {
-    setIsDeleteDoc(false);
+    setIsDeleteDoc({});
     const docId = docData.objectId;
     const data = {
       IsArchive: true
@@ -269,6 +270,50 @@ function DriveBody(props) {
     }
   };
 
+  const checkFolderEmpty = async (docData) => {
+    let isEmptyFolder = true;
+    const query = new Parse.Query("contracts_Document");
+    query.equalTo("Folder", {
+      __type: "Pointer",
+      className: "contracts_Document",
+      objectId: docData.objectId
+    });
+    query.notEqualTo("IsArchive", true);
+    const res = await query.find();
+    const jsonRes = JSON.parse(JSON.stringify(res));
+    if (jsonRes && jsonRes.length > 0) {
+      isEmptyFolder = false;
+      return isEmptyFolder;
+    } else {
+      return isEmptyFolder;
+    }
+  };
+  const handleDeleteFolder = async (docData) => {
+    setIsDeleteDoc({});
+    const isEmptyFolder = await checkFolderEmpty(docData);
+    if (isEmptyFolder) {
+      const docId = docData?.objectId;
+      try {
+        const updateQuery = new Parse.Query("contracts_Document");
+        const updateObj = await updateQuery.get(docId);
+        updateObj.set("IsArchive", true);
+        const res = await updateObj.save();
+        if (res) {
+          const updatedData = props.pdfData.filter((x) => x.objectId !== docId);
+          props.setPdfData(updatedData);
+        }
+      } catch (err) {
+        console.log("Err ", err);
+        props.setIsAlert({
+          isShow: true,
+          alertMessage: t("something-went-wrong-mssg")
+        });
+      }
+    } else {
+      alert(t("delete-folder-alert-1"));
+    }
+  };
+
   //component to handle type of document and render according to type
   const handleFolderData = (data, ind, listType) => {
     let createddate, status, isDecline, signerExist, isComplete;
@@ -311,6 +356,7 @@ function DriveBody(props) {
         </span>
       );
     };
+
     return listType === "table" ? (
       data.Type === "Folder" ? (
         <tr onClick={() => handleOnclikFolder(data)}>
@@ -359,7 +405,7 @@ function DriveBody(props) {
     ) : listType === "list" && data.Type === "Folder" ? (
       <div key={ind} className="relative w-[100px] h-[100px] mx-2 my-3">
         <ContextMenu.Root>
-          <ContextMenu.Trigger className="flex flex-col justify-center items-center">
+          <ContextMenu.Trigger className="flex flex-col justify-center items-center select-none-cls">
             {/* folder */}
             <div
               data-tut={props.dataTutSeventh}
@@ -395,7 +441,7 @@ function DriveBody(props) {
                   className="op-input op-input-bordered op-input-xs w-[100px] focus:outline-none hover:border-base-content text-[10px]"
                 />
               ) : (
-                <span className="fileName">{data.Name}</span>
+                <span className="fileName select-none-cls">{data.Name}</span>
               )}
             </div>
           </ContextMenu.Trigger>
@@ -413,13 +459,20 @@ function DriveBody(props) {
                 <i className="fa-light fa-font mr-[8px]"></i>
                 <span>Rename</span>
               </ContextMenu.Item>
+              <ContextMenu.Item
+                onClick={() => handleMenuItemClick("Delete", data, data.Type)}
+                className="ContextMenuItem"
+              >
+                <i className="fa-light fa-trash mr-[8px]"></i>
+                <span>Delete</span>
+              </ContextMenu.Item>
             </ContextMenu.Content>
           </ContextMenu.Portal>
         </ContextMenu.Root>
       </div>
     ) : (
       <HoverCard.Root
-        open={rename ? false : undefined}
+        open={rename || isMobile ? false : undefined}
         openDelay={0}
         closeDelay={100}
       >
@@ -427,7 +480,10 @@ function DriveBody(props) {
           <div>
             <ContextMenu.Root>
               <div className="relative w-[100px] h-[100px] mx-2 my-3">
-                <ContextMenu.Trigger className="flex flex-col justify-center items-center">
+                <ContextMenu.Trigger
+                  asChild
+                  className="flex flex-col justify-center items-center select-none-cls"
+                >
                   {/* pdf */}
                   <div
                     data-tut={props.dataTutSixth}
@@ -456,14 +512,16 @@ function DriveBody(props) {
                           }
                         }}
                         onBlur={() => handledRenameDoc(data)}
-                        onKeyDown={(e) => handleEnterPress(e, data)}
+                        onKeyDown={(e) => handleEnterPress(e, data, data.Type)}
                         ref={inputRef}
                         defaultValue={renameValue}
                         onChange={(e) => setRenameValue(e.target.value)}
                         className="op-input op-input-bordered op-input-xs w-[100px] focus:outline-none hover:border-base-content text-[10px]"
                       />
                     ) : (
-                      <span className="fileName">{data.Name}</span>
+                      <span className="fileName select-none-cls">
+                        {data.Name}
+                      </span>
                     )}
                   </div>
                 </ContextMenu.Trigger>
@@ -596,22 +654,33 @@ function DriveBody(props) {
         />
       )}
       <ModalUi
-        isOpen={isDeleteDoc}
+        isOpen={isDeleteDoc.status}
         title={t("delete-document")}
-        handleClose={() => setIsDeleteDoc(false)}
+        handleClose={() => setIsDeleteDoc({})}
       >
         <div className="h-full p-[20px] text-base-content">
-          <p>{t("delete-document-alert")}</p>
+          {isDeleteDoc.deleteType ? (
+            <p>{t("delete-folder-alert")}</p>
+          ) : (
+            <p>{t("delete-document-alert")}</p>
+          )}
+
           <div className="h-[1px] w-full bg-[#9f9f9f] my-[15px]"></div>
           <button
-            onClick={() => handleDeleteDocument(selectDoc)}
+            onClick={() => {
+              if (isDeleteDoc.deleteType) {
+                handleDeleteFolder(selectDoc);
+              } else {
+                handleDeleteDocument(selectDoc);
+              }
+            }}
             type="button"
             className="op-btn op-btn-primary mr-2"
           >
             {t("yes")}
           </button>
           <button
-            onClick={() => setIsDeleteDoc(false)}
+            onClick={() => setIsDeleteDoc({})}
             type="button"
             className="op-btn op-btn-neutral"
           >

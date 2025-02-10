@@ -1,4 +1,3 @@
-import { isEnableSubscription } from "../constant/const";
 
 export default function reportJson(id) {
   // console.log("json ", json);
@@ -8,31 +7,6 @@ export default function reportJson(id) {
   const contactbook = ["Name", "Email", "Phone"];
   const dashboardReportHead = ["Title", "File", "Owner", "Signers"];
   const templateReport = ["Title", "File", "Owner", "Signers"];
-  const templateSubAction = isEnableSubscription
-    ? [
-        {
-          btnId: "2435",
-          btnLabel: "Embed",
-          hoverLabel: "Embed",
-          btnIcon: "fa-light fa-code",
-          action: "Embed"
-        },
-        {
-          btnId: "2436",
-          btnLabel: "Copy TemplateId",
-          hoverLabel: "Copy TemplateId",
-          btnIcon: "fa-light fa-copy",
-          action: "CopyTemplateId"
-        },
-        {
-          btnId: "2437",
-          btnLabel: "Copy Public URL",
-          hoverLabel: "Copy Public URL",
-          btnIcon: "fa-light fa-copy",
-          action: "CopyPublicURL"
-        }
-      ]
-    : [];
   switch (id) {
     // draft documents report
     case "ByHuevtCFY":
@@ -118,6 +92,14 @@ export default function reportJson(id) {
                 action: "resend"
               },
               {
+                btnId: "1633",
+                btnLabel: "Rename",
+                hoverLabel: "Rename",
+                btnIcon: "fa-light fa-pen-to-square",
+                redirectUrl: "",
+                action: "rename"
+              },
+              {
                 btnId: "1688",
                 btnLabel: "Revoke",
                 hoverLabel: "Revoke",
@@ -158,6 +140,7 @@ export default function reportJson(id) {
             hoverLabel: "Delete",
             btnColor: "op-btn-secondary",
             btnIcon: "fa-light fa-trash",
+            restrictBtn: true,
             redirectUrl: "",
             action: "delete"
           }
@@ -275,6 +258,14 @@ export default function reportJson(id) {
                 action: "resend"
               },
               {
+                btnId: "1633",
+                btnLabel: "Rename",
+                hoverLabel: "Rename",
+                btnIcon: "fa-light fa-pen-to-square",
+                redirectUrl: "",
+                action: "rename"
+              },
+              {
                 btnId: "6788",
                 btnLabel: "Revoke",
                 hoverLabel: "Revoke",
@@ -336,11 +327,18 @@ export default function reportJson(id) {
         ]
       };
     // contactbook report
-    case "5KhaPr482K":
+    case "contacts":
       return {
         reportName: "Contactbook",
         heading: contactbook,
         actions: [
+          {
+            btnId: "2674",
+            hoverLabel: "Edit",
+            btnColor: "op-btn-primary",
+            btnIcon: "fa-light fa-pen",
+            action: "edit"
+          },
           {
             btnId: "2204",
             hoverLabel: "Delete",
@@ -349,6 +347,7 @@ export default function reportJson(id) {
             action: "delete"
           }
         ],
+        import: true,
         form: "ContactBook",
         helpMsg:
           "This is a list of contacts/signers added by you. These will appear as suggestions when you try to add signers to a new document."
@@ -393,7 +392,14 @@ export default function reportJson(id) {
               redirectUrl: "template",
               action: "redirect"
             },
-            ...templateSubAction,
+            {
+              btnId: "1633",
+              btnLabel: "Rename",
+              hoverLabel: "Rename",
+              btnIcon: "fa-light fa-pen-to-square",
+              redirectUrl: "",
+              action: "rename"
+            },
             {
               btnId: "1834",
               btnLabel: "Delete",

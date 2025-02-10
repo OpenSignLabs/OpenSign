@@ -1,4 +1,5 @@
 import React from "react";
+import "../styles/signature.css";
 
 const ModalUi = ({
   children,
@@ -13,7 +14,7 @@ const ModalUi = ({
   return (
     <>
       {isOpen && (
-        <dialog className="op-modal op-modal-open">
+        <dialog id="selectSignerModal" className="op-modal op-modal-open">
           <div
             className={`${
               width || "md:min-w-[500px]"

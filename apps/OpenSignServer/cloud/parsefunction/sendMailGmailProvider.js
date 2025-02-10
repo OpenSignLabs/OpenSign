@@ -2,8 +2,6 @@ import axios from 'axios';
 import { google } from 'googleapis';
 import fs from 'node:fs';
 import https from 'https';
-import http from 'http';
-import { useLocal } from '../../Utils.js';
 const clientId = process.env.GOOGLE_CLIENT_ID;
 const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
 // Function to create a Gmail client
@@ -27,10 +25,24 @@ const refreshAccessToken = async refreshToken => {
 };
 
 // Function to create a raw email message
-const makeEmail = async (to, from, subject, html, url, pdfName) => {
+const makeEmail = async (
+  to,
+  from,
+  subject,
+  html,
+  url,
+  pdfName,
+  bcc,
+  filename,
+  certificatePath,
+  replyto
+) => {
   const publicUrl = new URL(process.env.SERVER_URL);
   const htmlContent = html;
   const boundary = 'boundary_' + Date.now().toString(16);
+  const bccHeader = bcc && bcc.length > 0 ? `BCC: ${bcc.join(',')}\n` : ''; // Construct BCC header if provided
+  const replyToHeader = replyto ? `Reply-To: ${replyto}\n` : ''; // Construct Reply-To header if provided
+
   let str;
   if (url) {
     let attachments;
@@ -39,18 +51,24 @@ const makeEmail = async (to, from, subject, html, url, pdfName) => {
       return new Promise((resolve, reject) => {
         const isSecure =
           new URL(url)?.protocol === 'https:' && new URL(url)?.hostname !== 'localhost';
-        if (useLocal !== 'true' || isSecure) {
+        if (isSecure) {
           https.get(url, async function (response) {
             response.pipe(Pdf);
             response.on('end', () => resolve('success'));
           });
         } else {
-          const path = new URL(url)?.pathname;
-          const localurl = 'http://localhost:8080' + path;
-          http.get(localurl, async function (response) {
-            response.pipe(Pdf);
-            response.on('end', () => resolve('success'));
-          });
+          const httpsAgent = new https.Agent({ rejectUnauthorized: false }); // Disable SSL validation
+          axios
+            .get(url, { responseType: 'stream', httpsAgent })
+            .then(response => {
+              response.data.pipe(Pdf);
+              Pdf.on('finish', () => resolve('success'));
+              Pdf.on('error', () => resolve('error'));
+            })
+            .catch(e => {
+              console.log('error', e.message);
+              resolve('error');
+            });
         }
       });
     };
@@ -58,7 +76,7 @@ const makeEmail = async (to, from, subject, html, url, pdfName) => {
     const ress = await writeToLocalDisk();
     if (ress) {
       const file = {
-        filename: `${pdfName}.pdf` || 'exported.pdf',
+        filename: filename || `${pdfName}.pdf` || 'exported.pdf',
         type: 'application/pdf',
         path: Pdf.path,
       };
@@ -68,7 +86,7 @@ const makeEmail = async (to, from, subject, html, url, pdfName) => {
         const certificate = {
           filename: 'certificate.pdf',
           type: 'application/pdf',
-          path: './exports/certificate.pdf',
+          path: certificatePath || './exports/certificate.pdf',
         };
         if (fs.existsSync(certificate.path)) {
           attachments = [file, certificate];
@@ -99,6 +117,8 @@ const makeEmail = async (to, from, subject, html, url, pdfName) => {
       'MIME-Version: 1.0\n',
       `To: ${to}\n`,
       `From: ${from}\n`,
+      bccHeader,
+      replyToHeader,
       `Subject: ${subject}\n\n`,
       '--' + boundary + '\n',
       'Content-Type: text/html; charset="UTF-8"\n',
@@ -114,6 +134,8 @@ const makeEmail = async (to, from, subject, html, url, pdfName) => {
       'MIME-Version: 1.0\n',
       `To: ${to}\n`,
       `From: ${from}\n`,
+      bccHeader,
+      replyToHeader,
       `Subject: ${subject}\n\n`,
       '--' + boundary + '\n',
       'Content-Type: text/html; charset="UTF-8"\n',
@@ -127,7 +149,8 @@ const makeEmail = async (to, from, subject, html, url, pdfName) => {
   return encodedMail;
 };
 export default async function sendMailGmailProvider(_extRes, template) {
-  const { sender, receiver, subject, html, url, pdfName } = template;
+  const { sender, receiver, subject, html, url, pdfName, bcc, filename, certificatePath, replyto } =
+    template;
 
   if (_extRes) {
     const refresh_token = _extRes.google_refresh_token;
@@ -138,21 +161,30 @@ export default async function sendMailGmailProvider(_extRes, template) {
       // Construct email message
       const from = sender || _extRes.Email || 'me';
       const to = receiver;
-      const email = await makeEmail(to, from, subject, html, url, pdfName);
+      const email = await makeEmail(
+        to,
+        from,
+        subject,
+        html,
+        url,
+        pdfName,
+        bcc,
+        filename,
+        certificatePath,
+        replyto
+      );
       // Update Gmail client with new access token
       const newGmail = createGmailClient(access_token);
       // sending email with new client
       const response = await newGmail.users.messages.send({
         userId: 'me',
-        requestBody: {
-          raw: email,
-        },
+        requestBody: { raw: email },
       });
       console.log('gmail provider res: ', response?.status);
-      const certificatePath = './exports/certificate.pdf';
-      if (fs.existsSync(certificatePath)) {
+      const certificatepath = certificatePath || './exports/certificate.pdf';
+      if (fs.existsSync(certificatepath)) {
         try {
-          fs.unlinkSync(certificatePath);
+          fs.unlinkSync(certificatepath);
         } catch (err) {
           console.log('Err in unlink certificate sendmailgmail provider');
         }
