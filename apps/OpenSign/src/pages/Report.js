@@ -3,7 +3,7 @@ import ReportTable from "../primitives/GetReportDisplay";
 import Parse from "parse";
 import axios from "axios";
 import reportJson from "../json/ReportJson";
-import { useParams } from "react-router-dom";
+import { useParams } from "react-router";
 import Title from "../components/Title";
 import PageNotFound from "./PageNotFound";
 import TourContentWithBtn from "../primitives/TourContentWithBtn";
@@ -24,7 +24,7 @@ const Report = () => {
   const [form, setForm] = useState("");
   const [tourData, setTourData] = useState([]);
   const [isDontShow, setIsDontShow] = useState(false);
-  const [isPublic, setIsPublic] = useState({});
+  const [isImport, setIsImport] = useState(false);
   const abortController = new AbortController();
   const docPerPage = 10;
 
@@ -48,7 +48,7 @@ const Report = () => {
   // below useEffect call when isNextRecord state is true and fetch next record
   useEffect(() => {
     if (isNextRecord) {
-      getReportData(List.length, 200);
+      getReportData(List.length, 20);
     }
     // eslint-disable-next-line
   }, [isNextRecord]);
@@ -56,7 +56,7 @@ const Report = () => {
   const handleDontShow = (isChecked) => {
     setIsDontShow(isChecked);
   };
-  const getReportData = async (skipUserRecord = 0, limit = 200) => {
+  const getReportData = async (skipUserRecord = 0, limit = 20) => {
     // setIsLoader(true);
     const json = reportJson(id);
     if (json) {
@@ -65,6 +65,7 @@ const Report = () => {
       setReportName(json.reportName);
       setForm(json.form);
       setReportHelp(json?.helpMsg);
+      setIsImport(json?.import || false);
       const currentUser = Parse.User.current().id;
 
       const headers = {
@@ -73,8 +74,10 @@ const Report = () => {
         sessiontoken: localStorage.getItem("accesstoken")
       };
       try {
-        const params = { reportId: id, skip: skipUserRecord, limit: limit };
-        const url = `${localStorage.getItem("baseUrl")}/functions/getReport`;
+        const skipRecord = id === "4Hhwbp482K" ? 0 : skipUserRecord;
+        const limitRecord = id === "4Hhwbp482K" ? 200 : limit;
+        const params = { reportId: id, skip: skipRecord, limit: limitRecord };
+        const url = `${localStorage.getItem("baseUrl")}functions/getReport`;
         const res = await axios.post(url, params, {
           headers: headers,
           signal: abortController.signal // is used to cancel fetch query
@@ -145,7 +148,7 @@ const Report = () => {
             prevRecord.length > 0 ? [...prevRecord, ...arr] : arr
           );
         } else {
-          if (res.data.result.length === docPerPage) {
+          if (res.data.result.length >= docPerPage) {
             setIsMoreDocs(true);
           } else {
             setIsMoreDocs(false);
@@ -156,13 +159,6 @@ const Report = () => {
               prevRecord.length > 0
                 ? [...prevRecord, ...res.data.result]
                 : res.data.result
-            );
-            const listData = res.data.result;
-            setIsPublic(
-              listData.reduce((acc, item) => {
-                acc[item.objectId] = item?.IsPublic || false;
-                return acc;
-              }, {})
             );
           }
         }
@@ -201,8 +197,7 @@ const Report = () => {
               report_help={reporthelp}
               tourData={tourData}
               isDontShow={isDontShow}
-              setIsPublic={setIsPublic}
-              isPublic={isPublic}
+              isImport={isImport}
             />
           ) : (
             <PageNotFound prefix={"Report"} />

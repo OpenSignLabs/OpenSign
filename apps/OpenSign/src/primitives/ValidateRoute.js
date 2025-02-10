@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import Parse from "parse";
-import { Outlet } from "react-router-dom";
+import { Outlet } from "react-router";
 import { saveLanguageInLocal } from "../constant/Utils";
 import { useTranslation } from "react-i18next";
 const ValidateRoute = () => {

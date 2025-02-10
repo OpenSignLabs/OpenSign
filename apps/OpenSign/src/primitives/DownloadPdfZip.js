@@ -22,25 +22,30 @@ function DownloadPdfZip(props) {
 
   const handleDownload = async () => {
     if (selectType === 1) {
-      await handleDownloadPdf(props.pdfDetails, setIsDownloading);
+      await handleDownloadPdf(
+        props.pdfDetails,
+        setIsDownloading,
+        props?.pdfBase64
+      );
       setSelectType(1);
       props.setIsDownloadModal(false);
     } else if (selectType === 2) {
       setIsDownloading("pdf");
       const zip = new JSZip();
       const pdfDetails = props.pdfDetails;
-      const pdfName = pdfDetails?.[0]?.Name || "Document";
+      const pdfName =
+        pdfDetails?.[0]?.Name?.length > 100
+          ? pdfDetails?.[0]?.Name?.slice(0, 100)
+          : pdfDetails?.[0]?.Name || "Document";
       const pdfUrl = pdfDetails?.[0]?.SignedUrl || "";
 
       try {
         // Fetch the first PDF (Signed Document)
         const docId = pdfDetails?.[0]?.objectId || "";
-        const fileAdapterId = pdfDetails?.[0]?.FileAdapterId
-          ? pdfDetails?.[0]?.FileAdapterId
-          : "";
-        console.log("pdfDetails?.[0] ", pdfDetails?.[0]);
-        const signedUrl = await getSignedUrl(pdfUrl, docId, fileAdapterId);
-        console.log("signedUrl ", signedUrl);
+        const signedUrl = await getSignedUrl(
+          pdfUrl,
+          docId,
+        );
         const pdf1Response = await fetch(signedUrl);
         if (!pdf1Response.ok) {
           throw new Error(`Failed to fetch PDF: ${signedUrl}`);
@@ -118,17 +123,22 @@ function DownloadPdfZip(props) {
         </div>
       )}
       <ModalUi
-        isOpen={isDownloading === "certificate"}
+        isOpen={
+          isDownloading === "certificate" || isDownloading === "certificate_err"
+        }
         title={
-          isDownloading === "certificate"
+          isDownloading === "certificate" || isDownloading === "certificate_err"
             ? t("generating-certificate")
             : t("pdf-download")
         }
         handleClose={() => setIsDownloading("")}
       >
         <div className="p-3 md:p-5 text-[13px] md:text-base text-center text-base-content">
-          {isDownloading === "certificate"}{" "}
-          <p>{t("generate-certificate-alert")}</p>
+          {isDownloading === "certificate" ? (
+            <p>{t("generate-certificate-alert")}</p>
+          ) : (
+            <p>{t("generate-certificate-err")}</p>
+          )}
         </div>
       </ModalUi>
     </ModalUi>

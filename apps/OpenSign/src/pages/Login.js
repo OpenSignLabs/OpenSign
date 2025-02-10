@@ -3,22 +3,21 @@ import Parse from "parse";
 import { useDispatch } from "react-redux";
 import axios from "axios";
 import Title from "../components/Title";
-import GoogleSignInBtn from "../components/LoginGoogle";
-// import LoginFacebook from "../components/LoginFacebook";
-import { NavLink, useNavigate, useLocation } from "react-router-dom";
+import { NavLink, useNavigate, useLocation } from "react-router";
 import login_img from "../assets/images/login_img.svg";
 import { useWindowSize } from "../hook/useWindowSize";
 import ModalUi from "../primitives/ModalUi";
-import { emailRegex, isEnableSubscription } from "../constant/const";
+import {
+  emailRegex,
+} from "../constant/const";
 import Alert from "../primitives/Alert";
 import { appInfo } from "../constant/appinfo";
 import { fetchAppInfo } from "../redux/reducers/infoReducer";
 import { showTenant } from "../redux/reducers/ShowTenant";
 import {
-  fetchSubscription,
   getAppLogo,
-  openInNewTab,
-  saveLanguageInLocal
+  saveLanguageInLocal,
+  usertimezone
 } from "../constant/Utils";
 import Loader from "../primitives/Loader";
 import { useTranslation } from "react-i18next";
@@ -42,7 +41,7 @@ function Login() {
     baseUrl: localStorage.getItem("baseUrl"),
     parseAppId: localStorage.getItem("parseAppId"),
     loading: false,
-    thirdpartyLoader: false
+    thirdpartyLoader: false,
   });
   const [userDetails, setUserDetails] = useState({
     Company: "",
@@ -50,9 +49,7 @@ function Login() {
   });
   const [isModal, setIsModal] = useState(false);
   const [image, setImage] = useState();
-  const [isLoginSSO, setIsLoginSSO] = useState(false);
   const [errMsg, setErrMsg] = useState();
-
   useEffect(() => {
     checkUserExt();
     // eslint-disable-next-line
@@ -62,7 +59,9 @@ function Login() {
     const app = await getAppLogo();
     if (app?.error === "invalid_json") {
       setErrMsg(t("server-down"));
-    } else if (!isEnableSubscription && app?.user === "not_exist") {
+    } else if (
+      app?.user === "not_exist"
+    ) {
       navigate("/addadmin");
     }
     if (app?.logo) {
@@ -83,9 +82,7 @@ function Login() {
     }
     setState({ ...state, [name]: value });
   };
-  const handlePaidRoute = () => {
-    navigate("/subscription");
-  };
+
   const handleSubmit = async (event) => {
     localStorage.removeItem("accesstoken");
     event.preventDefault();
@@ -154,42 +151,9 @@ function Login() {
                         localStorage.setItem("PageLanding", menu.pageId);
                         localStorage.setItem("defaultmenuid", menu.menuId);
                         localStorage.setItem("pageType", menu.pageType);
-                        if (isEnableSubscription) {
-                          const LocalUserDetails = {
-                            name: results[0].get("Name"),
-                            email: results[0].get("Email"),
-                            phone: results[0]?.get("Phone") || "",
-                            company: results[0].get("Company")
-                          };
-                          localStorage.setItem(
-                            "userDetails",
-                            JSON.stringify(LocalUserDetails)
-                          );
-                          const res = await fetchSubscription();
-                          const plan = res.plan;
-                          const billingDate = res.billingDate;
-                          if (plan === "freeplan") {
-                            setState({ ...state, loading: false });
-                            navigate(redirectUrl);
-                          } else if (billingDate) {
-                            if (new Date(billingDate) > new Date()) {
-                              localStorage.removeItem("userDetails");
-                              // Redirect to the appropriate URL after successful login                              setState({ ...state, loading: false });
-                              setState({ ...state, loading: false });
-                              navigate(redirectUrl);
-                            } else {
-                              setState({ ...state, loading: false });
-                              handlePaidRoute(plan);
-                            }
-                          } else {
-                            setState({ ...state, loading: false });
-                            handlePaidRoute(plan);
-                          }
-                        } else {
                           setState({ ...state, loading: false });
                           // Redirect to the appropriate URL after successful login
                           navigate(redirectUrl);
-                        }
                       } else {
                         setState({ ...state, loading: false });
                         setIsModal(true);
@@ -205,10 +169,6 @@ function Login() {
                       logOutUser();
                     }
                   } else {
-                    if (isEnableSubscription) {
-                      setState({ ...state, loading: false });
-                      setIsModal(true);
-                    } else {
                       setState({ ...state, loading: false });
                       setState({
                         ...state,
@@ -217,12 +177,9 @@ function Login() {
                         alertMsg: "User not found."
                       });
                       logOutUser();
-                    }
                   }
                 })
                 .catch((error) => {
-                  // const payload = { sessionToken: user.getSessionToken() };
-                  // handleSubmitbtn(payload);
                   setState({
                     ...state,
                     loading: false,
@@ -248,7 +205,7 @@ function Login() {
             ...state,
             loading: false,
             alertType: "danger",
-            alertMsg: "Invalid username or password!"
+            alertMsg: "Invalid username/password or region"
           });
           console.error("Error while logging in user", error);
         } finally {
@@ -264,18 +221,6 @@ function Login() {
   const setThirdpartyLoader = (value) => {
     setState({ ...state, thirdpartyLoader: value });
   };
-  const handleFreePlan = async (id) => {
-    try {
-      const params = { userId: id };
-      const res = await Parse.Cloud.run("freesubscription", params);
-      if (res.status === "error") {
-        alert(res.result);
-      }
-    } catch (err) {
-      console.log("err in free subscribe", err.message);
-      alert(t("something-went-wrong-mssg"));
-    }
-  };
   const thirdpartyLoginfn = async (sessionToken) => {
     const baseUrl = localStorage.getItem("baseUrl");
     const parseAppId = localStorage.getItem("parseAppId");
@@ -285,11 +230,6 @@ function Login() {
         "X-Parse-Application-Id": parseAppId
       }
     });
-    const param = new URLSearchParams(location.search);
-    const isFreeplan = param?.get("subscription") === "freeplan";
-    if (isFreeplan) {
-      await handleFreePlan(res.data.objectId);
-    }
     await Parse.User.become(sessionToken).then(() => {
       window.localStorage.setItem("accesstoken", sessionToken);
     });
@@ -340,33 +280,7 @@ function Login() {
                   localStorage.setItem("PageLanding", menu.pageId);
                   localStorage.setItem("defaultmenuid", menu.menuId);
                   localStorage.setItem("pageType", menu.pageType);
-                  if (isEnableSubscription) {
-                    const res = await fetchSubscription();
-                    const plan = res.plan;
-                    const billingDate = res.billingDate;
-                    if (plan === "freeplan") {
-                      navigate(redirectUrl);
-                    } else if (billingDate) {
-                      if (new Date(billingDate) > new Date()) {
-                        localStorage.removeItem("userDetails");
-                        navigate(redirectUrl);
-                      } else {
-                        if (isFreeplan) {
-                          navigate(redirectUrl);
-                        } else {
-                          handlePaidRoute(plan);
-                        }
-                      }
-                    } else {
-                      if (isFreeplan) {
-                        navigate(redirectUrl);
-                      } else {
-                        handlePaidRoute(plan);
-                      }
-                    }
-                  } else {
                     navigate(redirectUrl);
-                  }
                 } else {
                   setState({
                     ...state,
@@ -464,34 +378,8 @@ function Login() {
               localStorage.setItem("PageLanding", menu.pageId);
               localStorage.setItem("defaultmenuid", menu.menuId);
               localStorage.setItem("pageType", menu.pageType);
-              if (isEnableSubscription) {
-                const userInfo = {
-                  name: results[0].get("Name"),
-                  email: results[0].get("Email"),
-                  phone: results[0]?.get("Phone") || "",
-                  company: results[0]?.get("Company")
-                };
-                localStorage.setItem("userDetails", JSON.stringify(userInfo));
-                const res = await fetchSubscription();
-                const billingDate = res.billingDate;
-                const plan = res.plan;
-                if (plan === "freeplan") {
-                  navigate(redirectUrl);
-                } else if (billingDate) {
-                  if (new Date(billingDate) > new Date()) {
-                    localStorage.removeItem("userDetails");
-                    // Redirect to the appropriate URL after successful login
-                    navigate(redirectUrl);
-                  } else {
-                    handlePaidRoute(plan);
-                  }
-                } else {
-                  handlePaidRoute(plan);
-                }
-              } else {
                 // Redirect to the appropriate URL after successful login
                 navigate(redirectUrl);
-              }
             } else {
               setState({ ...state, loading: false });
               logOutUser();
@@ -550,7 +438,8 @@ function Login() {
             phone: userInformation?.phone || "",
             role: "contracts_User",
             company: userDetails.Company,
-            jobTitle: userDetails.Destination
+            jobTitle: userDetails.Destination,
+            timezone: usertimezone
           }
         };
         const userSignUp = await Parse.Cloud.run("usersignup", params);
@@ -610,25 +499,6 @@ function Login() {
     localStorage.setItem("parseAppId", appid);
   };
 
-  // `handleSignInWithSSO` is trigger when user click sign in with sso and open sso authorize endpoint
-  const handleSignInWithSSO = () => {
-    if (isLoginSSO === false) {
-      if (state?.email) {
-        setIsLoginSSO(true);
-        const encodedEmail = encodeURIComponent(state.email);
-        const clientUrl = window.location.origin;
-        const domain = state.email.split("@")?.pop();
-        const ssoApiUrl =
-          process.env.SSO_API_URL || "https://sso.opensignlabs.com/api";
-        openInNewTab(
-          `${ssoApiUrl}/oauth/authorize?response_type=code&provider=saml&tenant=${domain}&product=OpenSign&redirect_uri=${clientUrl}/sso&state=${encodedEmail}`,
-          "_self"
-        );
-      } else {
-        alert(t("provide-email"));
-      }
-    }
-  };
 
   return errMsg ? (
     <div className="h-screen flex justify-center text-center items-center p-4 text-gray-500 text-base">
@@ -650,7 +520,7 @@ function Login() {
           <div
             aria-labelledby="loginHeading"
             role="region"
-            className="md:p-10 lg:p-16"
+            className="pb-1 md:pb-4 pt-10 md:px-10 lg:px-16"
           >
             <div className="md:p-4 lg:p-10 p-4 bg-base-100 text-base-content op-card">
               <div className="w-[250px] h-[66px] inline-block overflow-hidden">
@@ -689,8 +559,6 @@ function Login() {
                           onInput={(e) => e.target.setCustomValidity("")}
                         />
                         <hr className="my-1 border-none" />
-                        {!isLoginSSO && (
-                          <>
                             <label className="block text-xs" htmlFor="password">
                               {t("password")}
                             </label>
@@ -724,8 +592,7 @@ function Login() {
                                 )}
                               </span>
                             </div>
-                          </>
-                        )}
+
                         <div className="relative mt-1">
                           <NavLink
                             to="/forgetpassword"
@@ -744,53 +611,8 @@ function Login() {
                       >
                         {state.loading ? t("loading") : t("login")}
                       </button>
-                      {isEnableSubscription && (
-                        <button
-                          type="button"
-                          className="op-btn op-btn-accent"
-                          disabled={state.loading}
-                          onClick={() =>
-                            navigate(
-                              location.search
-                                ? "/signup" + location.search
-                                : "/signup"
-                            )
-                          }
-                        >
-                          {t("create-account")}
-                        </button>
-                      )}
                     </div>
                   </form>
-                  {(appInfo.googleClietId || isEnableSubscription) && (
-                    <div className="op-divider my-4 text-sm">{t("or")}</div>
-                  )}
-                  <div className="flex flex-col justify-center items-center gap-y-3">
-                    {/* {appInfo?.fbAppId && (
-                      <LoginFacebook
-                        FBCred={appInfo.fbAppId}
-                        thirdpartyLoginfn={thirdpartyLoginfn}
-                        thirdpartyLoader={state.thirdpartyLoader}
-                        setThirdpartyLoader={setThirdpartyLoader}
-                      />
-                    )} */}
-                    {appInfo?.googleClietId && (
-                      <GoogleSignInBtn
-                        GoogleCred={appInfo.googleClietId}
-                        thirdpartyLoginfn={thirdpartyLoginfn}
-                        thirdpartyLoader={state.thirdpartyLoader}
-                        setThirdpartyLoader={setThirdpartyLoader}
-                      />
-                    )}
-                    {isEnableSubscription && (
-                      <div
-                        className="cursor-pointer border-[1px] border-gray-300 rounded px-[40px] py-2 font-semibold text-sm hover:border-[#d2e3fc] hover:bg-[#ecf3feb7]"
-                        onClick={() => handleSignInWithSSO()}
-                      >
-                        {t("sign-SSO")}
-                      </div>
-                    )}
-                  </div>
                 </div>
                 {width >= 768 && (
                   <div className="place-self-center">

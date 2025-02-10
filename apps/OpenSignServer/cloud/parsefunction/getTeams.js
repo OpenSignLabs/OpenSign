@@ -30,7 +30,7 @@ export default async function getTeams(request) {
       return [];
     }
   } catch (err) {
-    console.log('err in getOrganizations', err);
+    console.log('err in getTeams', err);
     const code = err?.code || 400;
     const msg = err?.message || 'Something went wrong.';
     throw new Parse.Error(code, msg);
