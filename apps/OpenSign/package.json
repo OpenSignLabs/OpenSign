@@ -11,7 +11,7 @@
     "@reduxjs/toolkit": "^2.5.1",
     "axios": "^1.7.9",
     "file-saver": "^2.0.5",
-    "i18next": "^23.16.8",
+    "i18next": "^24.2.2",
     "i18next-browser-languagedetector": "^8.0.2",
     "i18next-http-backend": "^3.0.1",
     "jszip": "^3.10.1",
