@@ -410,11 +410,7 @@ const Preferences = () => {
                         </div>
                       </div>
                       <div className="mb-[0.75rem]">
-                        <label
-                          className={
-                            "text-[14px] mb-[0.7rem] font-medium"
-                          }
-                        >
+                        <label className="text-[14px] mb-[0.7rem] font-medium">
                           {t("notify-on-signatures")}
                           <a data-tooltip-id="nos-tooltip" className="ml-1">
                             <sup>

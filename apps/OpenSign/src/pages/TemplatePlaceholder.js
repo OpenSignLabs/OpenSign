@@ -710,6 +710,10 @@ const TemplatePlaceholder = () => {
       if (pdfUrl) {
         templateCls.set("URL", pdfUrl);
       }
+      templateCls.set(
+        "TimeToCompleteDays",
+        parseInt(pdfDetails?.[0]?.TimeToCompleteDays) || 15
+      );
       if (pdfDetails[0]?.Bcc?.length) {
         const Bcc = pdfDetails[0]?.Bcc.map((x) => ({
           __type: "Pointer",
@@ -789,6 +793,8 @@ const TemplatePlaceholder = () => {
             pdfDetails[0]?.NotifyOnSignatures !== undefined
               ? pdfDetails[0]?.NotifyOnSignatures
               : false,
+          TimeToCompleteDays:
+            parseInt(pdfDetails?.[0]?.TimeToCompleteDays) || 15,
           ...Bcc,
           ...RedirectUrl
         };
@@ -1126,6 +1132,8 @@ const TemplatePlaceholder = () => {
           updateTemplate?.[0]?.NotifyOnSignatures !== undefined
             ? updateTemplate?.[0]?.NotifyOnSignatures
             : false,
+        TimeToCompleteDays:
+          parseInt(updateTemplate?.[0]?.TimeToCompleteDays) || 15,
         ...Bcc,
         ...RedirectUrl
       };
