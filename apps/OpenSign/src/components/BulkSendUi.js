@@ -13,7 +13,7 @@ const BulkSendUi = (props) => {
   const [scrollOnNextUpdate, setScrollOnNextUpdate] = useState(false);
   const [isSubmit, setIsSubmit] = useState(false);
   const [isSignatureExist, setIsSignatureExist] = useState();
-  const [isBulkAvailable, setIsBulkAvailable] = useState(false);
+  const [isDisableBulkSend, setIsDisableBulkSend] = useState(false);
   const [isLoader, setIsLoader] = useState(false);
   useEffect(() => {
     signatureExist();
@@ -22,7 +22,7 @@ const BulkSendUi = (props) => {
 
   //function to check atleast one signature field exist
   const signatureExist = async () => {
-      setIsBulkAvailable(true);
+      setIsDisableBulkSend(false);
       const getPlaceholder = props?.Placeholders;
       const checkIsSignatureExistt = getPlaceholder?.every((placeholderObj) =>
         placeholderObj?.placeHolder?.some((holder) =>
@@ -95,70 +95,70 @@ const BulkSendUi = (props) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     e.stopPropagation();
-    setIsSubmit(true);
-    if (validateEmails(forms)) {
-      // Create a copy of Placeholders array from props.item
-      let Placeholders = [...props.Placeholders];
-      // Initialize an empty array to store updated documents
-      let Documents = [];
-      // Loop through each form
-      forms.forEach((form) => {
-        //checking if user enter email which already exist as a signer then add user in a signers array
-        let existSigner = [];
-        form.fields.map((data) => {
-          if (data.signer) {
-            existSigner.push(data.signer);
-          }
-        });
-        // Map through the copied Placeholders array to update email values
-        const updatedPlaceholders = Placeholders.map((placeholder) => {
-          // Find the field in the current form that matches the placeholder Id
-          const field = form.fields.find(
-            (element) => parseInt(element.fieldId) === placeholder.Id
-          );
-          // If a matching field is found, update the email value in the placeholder
-          const signer = field?.signer?.objectId ? field.signer : "";
-          if (field) {
-            if (signer) {
-              return {
-                ...placeholder,
-                signerObjId: field?.signer?.objectId || "",
-                signerPtr: signer
-              };
-            } else {
-              return {
-                ...placeholder,
-                email: field.email,
-                signerObjId: field?.signer?.objectId || "",
-                signerPtr: signer
-              };
+      setIsSubmit(true);
+      if (validateEmails(forms)) {
+        // Create a copy of Placeholders array from props.item
+        let Placeholders = [...props.Placeholders];
+        // Initialize an empty array to store updated documents
+        let Documents = [];
+        // Loop through each form
+        forms.forEach((form) => {
+          //checking if user enter email which already exist as a signer then add user in a signers array
+          let existSigner = [];
+          form.fields.map((data) => {
+            if (data.signer) {
+              existSigner.push(data.signer);
             }
-          }
-          // If no matching field is found, keep the placeholder as is
-          return placeholder;
-        });
+          });
+          // Map through the copied Placeholders array to update email values
+          const updatedPlaceholders = Placeholders.map((placeholder) => {
+            // Find the field in the current form that matches the placeholder Id
+            const field = form.fields.find(
+              (element) => parseInt(element.fieldId) === placeholder.Id
+            );
+            // If a matching field is found, update the email value in the placeholder
+            const signer = field?.signer?.objectId ? field.signer : "";
+            if (field) {
+              if (signer) {
+                return {
+                  ...placeholder,
+                  signerObjId: field?.signer?.objectId || "",
+                  signerPtr: signer
+                };
+              } else {
+                return {
+                  ...placeholder,
+                  email: field.email,
+                  signerObjId: field?.signer?.objectId || "",
+                  signerPtr: signer
+                };
+              }
+            }
+            // If no matching field is found, keep the placeholder as is
+            return placeholder;
+          });
 
-        // Push a new document object with updated Placeholders into the Documents array
-        if (existSigner?.length > 0) {
-          Documents.push({
-            ...props.item,
-            Placeholders: updatedPlaceholders,
-            Signers: props.item.Signers
-              ? [...props.item.Signers, ...existSigner]
-              : [...existSigner]
-          });
-        } else {
-          Documents.push({
-            ...props.item,
-            Placeholders: updatedPlaceholders,
-            SignatureType: props.signatureType
-          });
-        }
-      });
-      await batchQuery(Documents);
-    } else {
-      setIsSubmit(false);
-    }
+          // Push a new document object with updated Placeholders into the Documents array
+          if (existSigner?.length > 0) {
+            Documents.push({
+              ...props.item,
+              Placeholders: updatedPlaceholders,
+              Signers: props.item.Signers
+                ? [...props.item.Signers, ...existSigner]
+                : [...existSigner]
+            });
+          } else {
+            Documents.push({
+              ...props.item,
+              Placeholders: updatedPlaceholders,
+              SignatureType: props.signatureType
+            });
+          }
+        });
+        await batchQuery(Documents);
+      } else {
+        setIsSubmit(false);
+      }
   };
 
   const batchQuery = async (Documents) => {
@@ -199,7 +199,7 @@ const BulkSendUi = (props) => {
               <Loader />
             </div>
           )}
-          {isBulkAvailable ? (
+          {!isDisableBulkSend ? (
             <>
               {props.Placeholders?.length > 0 ? (
                 isSignatureExist ? (
