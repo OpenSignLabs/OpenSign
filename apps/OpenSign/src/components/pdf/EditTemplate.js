@@ -30,7 +30,8 @@ const EditTemplate = ({
         : false,
     Bcc: template?.Bcc,
     RedirectUrl: template?.RedirectUrl || "",
-    AllowModifications: template?.AllowModifications || false
+    AllowModifications: template?.AllowModifications || false,
+    TimeToCompleteDays: template?.TimeToCompleteDays || 15
   });
 
   // `isValidURL` is used to check valid webhook url
@@ -228,14 +229,13 @@ const EditTemplate = ({
             </div>
           </div>
           <div className="text-xs mt-3">
-            <label
-            >
+            <label>
               {t("notify-on-signatures")}
               <a data-tooltip-id="nos-tooltip" className="ml-1">
                 <sup>
                   <i className="fa-light fa-question rounded-full border-[#33bbff] text-[#33bbff] text-[13px] border-[1px] py-[1.5px] px-[4px]"></i>
                 </sup>
-              </a>
+              </a>{" "}
               <Tooltip id="nos-tooltip" className="z-[999]">
                 <div className="max-w-[200px] md:max-w-[450px] text-[11px]">
                   <p className="font-bold">{t("notify-on-signatures")}</p>
@@ -247,7 +247,7 @@ const EditTemplate = ({
             <div className="flex flex-col md:flex-row md:gap-4">
               <div
                 className={
-                  "flex items-center gap-2 ml-2 mb-1"
+                  `flex items-center gap-2 ml-2 mb-1`
                 }
               >
                 <input
@@ -260,7 +260,7 @@ const EditTemplate = ({
               </div>
               <div
                 className={
-                  "flex items-center gap-2 ml-2 mb-1"
+                  `flex items-center gap-2 ml-2 mb-1`
                 }
               >
                 <input
@@ -292,6 +292,22 @@ const EditTemplate = ({
               onChange={handleStrInput}
               onInvalid={(e) => e.target.setCustomValidity(t("input-required"))}
               onInput={(e) => e.target.setCustomValidity("")}
+            />
+          </div>
+          <div className="text-xs mt-2">
+            <label className="block">
+              {t("time-to-complete")}
+              <span className="text-red-500 text-[13px]">*</span>
+            </label>
+            <input
+              type="number"
+              name="TimeToCompleteDays"
+              className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
+              value={formData.TimeToCompleteDays}
+              onChange={(e) => handleStrInput(e)}
+              onInvalid={(e) => e.target.setCustomValidity(t("input-required"))}
+              onInput={(e) => e.target.setCustomValidity("")}
+              required
             />
           </div>
           <div className="mt-[1rem] flex justify-start">

@@ -1003,7 +1003,7 @@ function PlaceHolderSign() {
         docCls.set("URL", pdfUrl);
       }
       const res = await docCls.save();
-      if (res) {
+      if (res && pdfUrl) {
         pdfDetails[0] = { ...pdfDetails[0], URL: pdfUrl };
       }
     } catch (e) {
@@ -1058,31 +1058,24 @@ function PlaceHolderSign() {
         if (updateExpiryDate) {
           data["ExpiryDate"] = { iso: updateExpiryDate, __type: "Date" };
         }
-        await axios
-          .put(
-            `${localStorage.getItem(
-              "baseUrl"
-            )}classes/contracts_Document/${documentId}`,
-            data,
-            {
-              headers: {
-                "Content-Type": "application/json",
-                "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
-                "X-Parse-Session-Token": localStorage.getItem("accesstoken")
-              }
+        await axios.put(
+          `${localStorage.getItem(
+            "baseUrl"
+          )}classes/contracts_Document/${documentId}`,
+          data,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
+              "X-Parse-Session-Token": localStorage.getItem("accesstoken")
             }
-          )
-          .then(() => {
-            setIsMailSend(true);
-            setIsLoading({ isLoad: false });
-            setIsUiLoading(false);
-            setSignerPos([]);
-            setIsSendAlert({ mssg: "confirm", alert: true });
-          })
-          .catch((err) => {
-            console.log("axois err ", err);
-            alert(t("something-went-wrong-mssg"));
-          });
+          }
+        );
+        setIsMailSend(true);
+        setIsLoading({ isLoad: false });
+        setIsUiLoading(false);
+        setSignerPos([]);
+        setIsSendAlert({ mssg: "confirm", alert: true });
       } catch (e) {
         console.log("error", e);
         alert(t("something-went-wrong-mssg"));

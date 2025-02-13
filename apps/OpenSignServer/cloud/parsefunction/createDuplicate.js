@@ -71,12 +71,6 @@ export default async function createDuplicate(request) {
         if (_templateRes?.SharedWith?.length > 0) {
           newTemplate.set('SharedWith', _templateRes.SharedWith);
         }
-        if (_templateRes?.IsPublic) {
-          newTemplate.set('IsPublic', _templateRes?.IsPublic);
-        }
-        if (_templateRes?.PublicRole?.length > 0) {
-          newTemplate.set('PublicRole', _templateRes?.PublicRole);
-        }
         if (_templateRes?.IsTourEnabled) {
           newTemplate.set('IsTourEnabled', _templateRes?.IsTourEnabled);
         }
@@ -90,6 +84,9 @@ export default async function createDuplicate(request) {
         }
         if (_templateRes?.RedirectUrl) {
           newTemplate.set('RedirectUrl', _templateRes?.RedirectUrl);
+        }
+        if (_templateRes?.TimeToCompleteDays) {
+          newTemplate.set('TimeToCompleteDays', parseInt(_templateRes?.TimeToCompleteDays));
         }
         const acl = templateRes.getACL();
         if (acl) {
