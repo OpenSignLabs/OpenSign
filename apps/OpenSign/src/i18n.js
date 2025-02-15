@@ -25,7 +25,7 @@ i18n
     interpolation: {
       escapeValue: false // Not needed for react as it escapes by default
     },
-    whitelist: ["en", "es", "fr", "it", "de"] // List of allowed languages
+    whitelist: ["en", "es", "fr", "it", "de","br"] // List of allowed languages
   });
 
 export default i18n;
