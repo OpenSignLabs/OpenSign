@@ -331,7 +331,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/inline_response_200_1'
+                $ref: '#/components/schemas/inline_response_doc'
         "400":
           description: "Something went wrong, please try again later!"
           content:
@@ -373,11 +373,11 @@ paths:
         required: true
       responses:
         "200":
-          description: "In success response you will get url in response if you are also signer in document otherwise only get objectId, messsage"
+          description: Document created successfully!
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/inline_response_200_2'
+                $ref: '#/components/schemas/inline_response_doc'
         "400":
           description: If you haven't add widgets and signers in template or not provide signers along with their roles in body
           content:
@@ -1774,6 +1774,21 @@ components:
           type: string
           format: string
           example: https://url-to-sign-document.com
+    inline_response_doc:
+      type: object
+      properties:
+        objectId:
+          type: string
+          format: string
+          example: hji2zxcv2P
+        signurl:
+          type: array
+          items:
+            $ref: '#/components/schemas/inline_response_doc_signurl'
+        message:
+          type: string
+          format: string
+          example: Document sent successfully!
     inline_draft_doc_res_200_1:
       type: object
       properties:
@@ -2384,6 +2399,17 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/createdocument_body_widgets'
+    inline_response_doc_signurl:
+      type: object
+      properties:
+        email:
+          type: string
+          format: string
+          example: mail@example.com
+        url:
+          type: string
+          format: string
+          example: https://url-to-sign-document.com
   securitySchemes:
     x-api-token:
       type: apiKey
