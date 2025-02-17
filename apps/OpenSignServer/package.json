@@ -32,7 +32,7 @@
     "date-fns-tz": "^3.2.0",
     "dotenv": "^16.4.7",
     "express": "^4.21.1",
-    "form-data": "^4.0.1",
+    "form-data": "^4.0.2",
     "generate-api-key": "^1.0.2",
     "googleapis": "^144.0.0",
     "mailgun.js": "^11.1.0",
