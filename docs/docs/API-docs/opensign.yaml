@@ -1479,6 +1479,7 @@ paths:
           "file": "DOCUMENT_URL",
           "name": "DOCUMENT_NAME",
           "note": "Please review and sign this document",
+          "description": "",
           "signers": [
             {
               "name": "SIGNER_NAME",
@@ -2344,6 +2345,7 @@ paths:
           "file": "DOCUMENT_URL",
           "name": "DOCUMENT_NAME",
           "note": "Please review and sign this document",
+          "description": "",
           "signers": [
             {
               "name": "SIGNER_NAME",
@@ -2367,6 +2369,7 @@ paths:
           "file": "DOCUMENT_URL",
           "name": "DOCUMENT_NAME",
           "note": "Please review and sign this document",
+          "description": "",
           "signers": [
             {
               "name": "SIGNER_NAME",
@@ -2386,6 +2389,7 @@ paths:
           "file": "DOCUMENT_URL",
           "name": "DOCUMENT_NAME",
           "note": "Please review and sign this document",
+          "description": "",
           "signers": [
             {
               "name": "SIGNER_NAME",
@@ -2408,6 +2412,7 @@ paths:
           "file": "DOCUMENT_URL",
           "name": "DOCUMENT_NAME",
           "note": "Please review and sign this document",
+          "description": "",
           "signer": {
             "name": "SIGNER_NAME",
             "email": "SIGNER_EMAIL",
@@ -2428,6 +2433,7 @@ paths:
           "file": "DOCUMENT_URL",
           "name": "DOCUMENT_NAME",
           "note": "Please review and sign this document",
+          "description": "",
           "signers": [
             {
               "name": "SIGNER_NAME",
@@ -2451,6 +2457,7 @@ paths:
           "file": "DOCUMENT_URL",
           "name": "DOCUMENT_NAME",
           "note": "Please review and sign this document",
+          "description": "",
           "signers": [
             {
               "name": "SIGNER_NAME",
@@ -3120,6 +3127,10 @@ components:
           type: string
           format: string
           example: sample Note
+        description:
+          type: string
+          format: string
+          example: sample Description
         timeToCompleteDays:
           type: number
           description: time to complete days is used to calculate expiry date of your document
@@ -3176,6 +3187,10 @@ components:
           type: string
           format: string
           example: sample Note
+        description:
+          type: string
+          format: string
+          example: sample Description
         timeToCompleteDays:
           type: number
           description: time to complete days is used to calculate expiry date of your document
@@ -3247,6 +3262,10 @@ components:
           type: string
           format: string
           example: sample Note
+        description:
+          type: string
+          format: string
+          example: sample Description
         timeToCompleteDays:
           type: number
           description: time to complete days is used to calculate expiry date of your document
@@ -3445,6 +3464,10 @@ components:
           type: string
           format: string
           example: Please review and sign this document
+        description:
+          type: string
+          format: string
+          example: document description
         folderId:
           type: string
           example: ""
