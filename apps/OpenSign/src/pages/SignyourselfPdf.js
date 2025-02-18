@@ -791,7 +791,7 @@ function SignYourSelf() {
       pdfFile: base64Url,
       docId: documentId,
       isCustomCompletionMail: isCustomCompletionMail,
-      signature: suffixbase64
+      signature: suffixbase64,
     };
     const resSignPdf = await Parse.Cloud.run("signPdf", params);
     if (resSignPdf) {
