@@ -453,35 +453,9 @@ function PdfRequestFiles(
           setRequestSignTour(true);
         } else {
           const isEnableOTP = documentData?.[0]?.IsEnableOTP || false;
-          if (!isEnableOTP) {
-            try {
-              const resContact = await axios.post(
-                `${localStorage.getItem("baseUrl")}functions/getcontact`,
-                { contactId: currUserId },
-                {
-                  headers: {
-                    "Content-Type": "application/json",
-                    "X-Parse-Application-Id": localStorage.getItem("parseAppId")
-                  }
-                }
-              );
-              const contact = resContact?.data?.result;
-              setContractName("_Contactbook");
-              setSignerUserId(contact?.objectId);
-              const tourData = contact?.TourStatus && contact?.TourStatus;
-              if (tourData && tourData.length > 0) {
-                const checkTourRequest =
-                  tourData?.some((data) => data?.requestSign) || false;
-                setTourStatus(tourData);
-                setRequestSignTour(checkTourRequest);
-              } else {
-                setRequestSignTour(false);
-              }
-            } catch (err) {
-              console.log("err while getting tourstatus", err);
-            }
-          } else {
-            //else condition to check current user exist in contracts_Users class and check tour message status
+          const sessionToken = localStorage.getItem("accesstoken");
+          if (sessionToken) {
+            //condition to check current user exist in contracts_Users class and check tour message status
             //if not then check user exist in contracts_Contactbook class and check tour message status
             const res = await contractUsers();
             if (res === "Error: Something went wrong!") {
@@ -537,6 +511,33 @@ function PdfRequestFiles(
               } else if (res.length === 0) {
                 setHandleError(t("user-not-exist"));
               }
+            }
+          } else if (!isEnableOTP) {
+            try {
+              const resContact = await axios.post(
+                `${localStorage.getItem("baseUrl")}functions/getcontact`,
+                { contactId: currUserId },
+                {
+                  headers: {
+                    "Content-Type": "application/json",
+                    "X-Parse-Application-Id": localStorage.getItem("parseAppId")
+                  }
+                }
+              );
+              const contact = resContact?.data?.result;
+              setContractName("_Contactbook");
+              setSignerUserId(contact?.objectId);
+              const tourData = contact?.TourStatus && contact?.TourStatus;
+              if (tourData && tourData.length > 0) {
+                const checkTourRequest =
+                  tourData?.some((data) => data?.requestSign) || false;
+                setTourStatus(tourData);
+                setRequestSignTour(checkTourRequest);
+              } else {
+                setRequestSignTour(false);
+              }
+            } catch (err) {
+              console.log("err while getting tourstatus", err);
             }
           }
         }
