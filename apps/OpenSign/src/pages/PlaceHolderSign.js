@@ -246,12 +246,15 @@ function PlaceHolderSign() {
     if (documentData && documentData.length > 0) {
       if (documentData[0]?.Placeholders?.length > 0) {
         const signerNotExist = documentData[0]?.Placeholders.some(
-          (data) => !data.signerObjId
+          (data) => !data.signerObjId && data.Role !== "prefill"
         );
         //condition to check any role does not attach signer
         if (signerNotExist) {
+          const filterPrefill = documentData[0]?.Placeholders?.filter(
+            (x) => x.Role !== "prefill"
+          );
           let users = [];
-          documentData[0]?.Placeholders?.forEach((element) => {
+          filterPrefill?.forEach((element) => {
             let label = "";
             const signerData = documentData[0]?.Signers.find(
               (x) => element.signerObjId && element.signerObjId === x.objectId
@@ -272,6 +275,7 @@ function PlaceHolderSign() {
           setForms(users);
         }
       }
+
       const url = documentData[0] && documentData[0]?.URL;
       //convert document url in array buffer format to use embed widgets in pdf using pdf-lib
       const arrayBuffer = await convertPdfArrayBuffer(url);
@@ -1927,7 +1931,9 @@ function PlaceHolderSign() {
     }
   };
   const handleDisable = () => {
-    const isAllSigner = signerPos.some((x) => !x.signerObjId);
+    const isAllSigner = signerPos.some(
+      (x) => !x.signerObjId && x.Role !== "prefill"
+    );
     return isAllSigner;
   };
   const handleCloseAttachSigner = () => {
@@ -2126,7 +2132,7 @@ function PlaceHolderSign() {
                           {pdfDetails[0].SendinOrder ? (
                             <p>
                               {t("placeholder-mail-alert", {
-                                name: pdfDetails[0]?.Signers[0]?.Name
+                                name: signersdata[0]?.Name
                               })}
                             </p>
                           ) : (
@@ -2210,7 +2216,7 @@ function PlaceHolderSign() {
                         <>
                           {/* grid grid-cols-1 md:grid-cols-2 */}
                           <div className="min-h-max max-h-[250px] overflow-y-auto">
-                            <div className="p-3 op-card border-[1px] border-gray-400 mt-3 mx-4 mb-4 bg-base-200 text-base-content flex flex-col gap-2 relative">
+                            <div className="py-3 px-[10px] op-card border-[1px] border-gray-400 mt-3 md:mx-3  mb-4 bg-base-200 text-base-content flex flex-col gap-2 relative">
                               {forms?.map((field, id) => {
                                 return (
                                   <div
@@ -2218,7 +2224,7 @@ function PlaceHolderSign() {
                                     key={field?.value}
                                   >
                                     <label>{field?.role}</label>
-                                    <div className="flex justify-between items-center gap-2">
+                                    <div className="flex justify-between items-center gap-1">
                                       <div className="flex-1">
                                         <AsyncSelect
                                           cacheOptions

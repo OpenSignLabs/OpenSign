@@ -833,5 +833,6 @@
   "variables-use": "Zu verwendende Variablen",
   "send-to-sign": "hat Sie gebeten zu unterschreiben",
   "use-template": "Vorlage verwenden",
-  "contact-already-exists": "Der Kontakt existiert bereits."
+  "contact-already-exists": "Der Kontakt existiert bereits.",
+  "agreement-note": "Hinweis: Durch Ihre Zustimmung unterzeichnen Sie das Dokument nicht sofort. Sie können das Dokument nur elektronisch einsehen. Sie haben die Möglichkeit, es vollständig zu lesen und anschließend zu entscheiden, ob Sie es unterzeichnen möchten."
 }

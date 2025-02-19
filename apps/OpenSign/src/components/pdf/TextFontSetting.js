@@ -14,53 +14,53 @@ function TextFontSetting(props) {
       handleClose={() => props.setIsTextSetting(false)}
     >
       <div className="h-full p-[20px]">
-        <div className="flex items-center">
-          <span>{t("font-size")} :</span>
-          <select
-            className="ml-[7px] op-select op-select-bordered op-select-sm focus:outline-none hover:border-base-content text-xs"
-            value={
-              props.fontSize ||
-              props.currWidgetsDetails?.options?.fontSize ||
-              12
-            }
-            onChange={(e) => {
-              props.setFontSize(parseInt(e.target.value));
-            }}
-          >
-            {fontsizeArr.map((size, ind) => {
-              return (
-                <option className="text-[13px]" value={size} key={ind}>
+        <div className="flex flex-col md:flex-row md:items-center gap-3">
+          {/* Font Size Selector */}
+          <div className="flex items-center gap-2">
+            <span className="whitespace-nowrap">{t("font-size")}:</span>
+            <select
+              className="ml-[7px] w-[60%] op-select op-select-bordered op-select-sm focus:outline-none hover:border-base-content text-xs"
+              value={
+                props.fontSize ||
+                props.currWidgetsDetails?.options?.fontSize ||
+                12
+              }
+              onChange={(e) => props.setFontSize(parseInt(e.target.value))}
+            >
+              {fontsizeArr.map((size, ind) => (
+                <option key={ind} className="text-[13px]" value={size}>
                   {size}
                 </option>
-              );
-            })}
-          </select>
-          <div className="flex flex-row gap-1 items-center ml-4">
-            <span>{t("color")}: </span>
+              ))}
+            </select>
+          </div>
+          {/* Font Color Selector */}
+          <div className="flex items-center">
+            <span className="whitespace-nowrap">{t("color")}:</span>
             <select
+              className="ml-[33px] md:ml-4 w-[65%] md:w-[full] op-select op-select-bordered op-select-sm focus:outline-none hover:border-base-content text-xs"
               value={
                 props.fontColor ||
                 props.currWidgetsDetails?.options?.fontColor ||
                 "black"
               }
               onChange={(e) => props.setFontColor(e.target.value)}
-              className="ml-[7px] op-select op-select-bordered op-select-sm focus:outline-none hover:border-base-content text-xs"
             >
-              {fontColorArr.map((color, ind) => {
-                return (
-                  <option value={color} key={ind}>
-                    {t(`color-type.${color}`)}
-                  </option>
-                );
-              })}
+              {fontColorArr.map((color, ind) => (
+                <option key={ind} value={color}>
+                  {t(`color-type.${color}`)}
+                </option>
+              ))}
             </select>
+            {/* Color Preview Box */}
             <span
+              className="w-5 h-5 ml-2 rounded border border-gray-300"
               style={{
-                background:
+                backgroundColor:
                   props.fontColor ||
-                  props.currWidgetsDetails?.options?.fontColor
+                  props.currWidgetsDetails?.options?.fontColor ||
+                  "black"
               }}
-              className="w-5 h-[19px] ml-1"
             ></span>
           </div>
         </div>

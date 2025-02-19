@@ -11,6 +11,8 @@ import Tour from "reactour";
 import SignerListPlace from "../components/pdf/SignerListPlace";
 import Header from "../components/pdf/PdfHeader";
 import WidgetNameModal from "../components/pdf/WidgetNameModal";
+import { PDFDocument } from "pdf-lib";
+import { SaveFileSize } from "../constant/saveFileSize";
 import {
   pdfNewWidthFun,
   contractUsers,
@@ -34,7 +36,9 @@ import {
   handleSignatureType,
   getBase64FromUrl,
   convertPdfArrayBuffer,
-  generatePdfName
+  generatePdfName,
+  textWidget,
+  multiSignEmbed
 } from "../constant/Utils";
 import RenderPdf from "../components/pdf/RenderPdf";
 import "../styles/AddUser.css";
@@ -132,6 +136,9 @@ const TemplatePlaceholder = () => {
   const [scale, setScale] = useState(1);
   const [signatureType, setSignatureType] = useState([]);
   const [pdfArrayBuffer, setPdfArrayBuffer] = useState("");
+  const [updatedPdfUrl, setUpdatedPdfUrl] = useState("");
+  const [tempSignerId, setTempSignerId] = useState("");
+  const [unSignedWidgetId, setUnSignedWidgetId] = useState("");
   useEffect(() => {
     fetchTemplate();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -238,9 +245,22 @@ const TemplatePlaceholder = () => {
             documentData[0].Placeholders &&
             documentData[0].Placeholders.length > 0
           ) {
-            setSignerPos(documentData[0].Placeholders);
+            const placeholder = documentData[0]?.Placeholders.filter(
+              (data) => data.Role !== "prefill"
+            );
+            setSignerPos(placeholder);
+            signersdata.forEach((x) => {
+              if (x.objectId) {
+                const obj = {
+                  __type: "Pointer",
+                  className: "contracts_Contactbook",
+                  objectId: x.objectId
+                };
+                signers.push(obj);
+              }
+            });
             let signers = [...documentData[0].Signers];
-            let updatedSigners = documentData[0].Placeholders.map((x) => {
+            let updatedSigners = placeholder.map((x) => {
               let matchingSigner = signers.find(
                 (y) => x.signerObjId && x.signerObjId === y.objectId
               );
@@ -275,10 +295,13 @@ const TemplatePlaceholder = () => {
             documentData[0].Placeholders &&
             documentData[0].Placeholders.length > 0
           ) {
-            let updatedSigners = documentData[0].Placeholders.map((x) => {
+            const placeholder = documentData[0]?.Placeholders.filter(
+              (data) => data.Role !== "prefill"
+            );
+            let updatedSigners = placeholder.map((x) => {
               return { Role: x.Role, Id: x.Id, blockColor: x.blockColor };
             });
-            setSignerPos(documentData[0].Placeholders);
+            setSignerPos(placeholder);
             setUniqueId(updatedSigners[0].Id);
             setSignersData(updatedSigners);
             setIsSelectId(0);
@@ -353,7 +376,8 @@ const TemplatePlaceholder = () => {
         const widgetHeight =
           defaultWidthHeight(dragTypeValue).height * containerScale;
         let dropData = [],
-          currentPagePosition;
+          currentPagePosition,
+          filterSignerPos;
         let placeHolder;
         if (item === "onclick") {
           // `getBoundingClientRect()` is used to get accurate measurement height of the div
@@ -406,7 +430,11 @@ const TemplatePlaceholder = () => {
           dropData.push(dropObj);
           placeHolder = { pageNumber: pageNumber, pos: dropData };
         }
-        let filterSignerPos = signerPos.find((data) => data.Id === uniqueId);
+        if (dragTypeValue === textWidget) {
+          filterSignerPos = signerPos.find((data) => data.Role === "prefill");
+        } else {
+          filterSignerPos = signerPos.find((data) => data.Id === uniqueId);
+        }
         const getPlaceHolder = filterSignerPos?.placeHolder;
         if (getPlaceHolder) {
           //checking exist placeholder on same page
@@ -423,20 +451,53 @@ const TemplatePlaceholder = () => {
           const newSignPos = getPos.concat(dropData);
           let xyPos = { pageNumber: pageNumber, pos: newSignPos };
           updatePlace.push(xyPos);
-          const updatesignerPos = signerPos.map((x) =>
-            x.Id === uniqueId ? { ...x, placeHolder: updatePlace } : x
-          );
+          let updatesignerPos;
+          if (dragTypeValue === textWidget) {
+            updatesignerPos = signerPos.map((x) =>
+              x.Role === "prefill" ? { ...x, placeHolder: updatePlace } : x
+            );
+          } else {
+            updatesignerPos = signerPos.map((x) =>
+              x.Id === uniqueId ? { ...x, placeHolder: updatePlace } : x
+            );
+          }
           setSignerPos(updatesignerPos);
         } else {
-          //else condition to add placeholder widgets on multiple page first time
-          const updatesignerPos = signerPos.map((x) =>
-            x.Id === uniqueId && x?.placeHolder
-              ? { ...x, placeHolder: [...x.placeHolder, placeHolder] }
-              : x.Id === uniqueId
-                ? { ...x, placeHolder: [placeHolder] }
-                : x
-          );
-          setSignerPos(updatesignerPos);
+          //if condition when widget type is prefill label text widget
+          if (dragTypeValue === textWidget) {
+            //check text widgets data (prefill) already exist then and want to add text widget on new page
+            //create new page entry with old data and update placeholder
+            if (filterSignerPos) {
+              const addPrefillData =
+                filterSignerPos && filterSignerPos?.placeHolder;
+              addPrefillData.push(placeHolder);
+              const updatePrefillPos = signerPos.map((x) =>
+                x.Role === "prefill" ? { ...x, placeHolder: addPrefillData } : x
+              );
+              setSignerPos(updatePrefillPos);
+            } //else condition if user do not have any text widget data
+            else {
+              const prefillTextWidget = {
+                signerPtr: {},
+                signerObjId: "",
+                blockColor: "#f58f8c",
+                placeHolder: [placeHolder],
+                Role: "prefill",
+                Id: key
+              };
+              setSignerPos((prev) => [...prev, prefillTextWidget]);
+            }
+          } else {
+            //else condition to add placeholder widgets on multiple page first time
+            const updatesignerPos = signerPos.map((x) =>
+              x.Id === uniqueId && x?.placeHolder
+                ? { ...x, placeHolder: [...x.placeHolder, placeHolder] }
+                : x.Id === uniqueId
+                  ? { ...x, placeHolder: [placeHolder] }
+                  : x
+            );
+            setSignerPos(updatesignerPos);
+          }
         }
 
         if (dragTypeValue === "dropdown") {
@@ -446,9 +507,14 @@ const TemplatePlaceholder = () => {
         } else if (dragTypeValue === radioButtonWidget) {
           setIsRadio(true);
         } else if (
-          [textInputWidget, "name", "company", "job title", "email"].includes(
-            dragTypeValue
-          )
+          [
+            textInputWidget,
+            textWidget,
+            "name",
+            "company",
+            "job title",
+            "email"
+          ].includes(dragTypeValue)
         ) {
           setFontSize(12);
           setFontColor("black");
@@ -509,20 +575,22 @@ const TemplatePlaceholder = () => {
         containerWH
       );
       if (keyValue >= 0) {
-        const filterSignerPos = updateSignPos.filter(
-          (data) => data.Id === signId
-        );
+        let filterSignerPos;
+        if (signId) {
+          filterSignerPos = updateSignPos.filter((data) => data.Id === signId);
+        } else {
+          filterSignerPos = updateSignPos.filter(
+            (data) => data.Role === "prefill"
+          );
+        }
 
         if (filterSignerPos.length > 0) {
           const getPlaceHolder = filterSignerPos[0].placeHolder;
-
           const getPageNumer = getPlaceHolder.filter(
             (data) => data.pageNumber === pageNumber
           );
-
           if (getPageNumer.length > 0) {
             const getXYdata = getPageNumer[0].pos;
-
             const getPosData = getXYdata;
             const addSignPos = getPosData.map((url) => {
               if (url.key === keyValue) {
@@ -542,12 +610,17 @@ const TemplatePlaceholder = () => {
               return obj;
             });
             const newUpdateSigner = updateSignPos.map((obj) => {
-              if (obj.Id === signId) {
-                return { ...obj, placeHolder: newUpdateSignPos };
+              if (signId) {
+                if (obj.Id === signId) {
+                  return { ...obj, placeHolder: newUpdateSignPos };
+                }
+              } else {
+                if (obj.Role === "prefill") {
+                  return { ...obj, placeHolder: newUpdateSignPos };
+                }
               }
               return obj;
             });
-
             setSignerPos(newUpdateSigner);
           }
         }
@@ -654,10 +727,34 @@ const TemplatePlaceholder = () => {
   };
   const alertSendEmail = async () => {
     const isPlaceholderExist = signerPos.every((data) => data.placeHolder);
-    if (isPlaceholderExist) {
+    const getPrefill = signerPos?.find((data) => data.Role === "prefill");
+    const prefillPlaceholder = getPrefill?.placeHolder;
+    let isLabel = false;
+    let unfilledTextWidgetId = "";
+    //condition is used to check text widget data is empty or have response
+    if (getPrefill) {
+      if (prefillPlaceholder) {
+        prefillPlaceholder.map((data) => {
+          if (!isLabel) {
+            const unfilledTextWidgets = data.pos.find(
+              (position) => !position.options.response
+            );
+            if (unfilledTextWidgets) {
+              isLabel = true;
+              unfilledTextWidgetId = unfilledTextWidgets.key;
+            }
+          }
+        });
+      }
+    }
+    if (getPrefill && isLabel) {
+      setUnSignedWidgetId(unfilledTextWidgetId);
+    } else if (isPlaceholderExist) {
       handleSaveTemplate();
     } else {
-      const signerList = signerPos.filter((data) => !data.placeHolder);
+      const signerList = signerPos.filter(
+        (data) => !data.placeHolder && data.Role !== "prefill"
+      );
       const getSigner = signerList.map((x) => {
         return signersdata.find((y) => y.Id === x.Id).Role;
       });
@@ -673,7 +770,7 @@ const TemplatePlaceholder = () => {
     }, 2000);
     return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [signerPos, signatureType, pdfBase64Url]);
+  }, [signerPos, signersdata, signatureType, pdfBase64Url]);
 
   // `autosavedetails` is used to save template details after every 2 sec when changes are happern in placeholder like drag-drop widgets, remove signers
   const autosavedetails = async () => {
@@ -703,7 +800,10 @@ const TemplatePlaceholder = () => {
       const templateCls = new Parse.Object("contracts_Template");
       templateCls.id = templateId;
       if (signerPos?.length > 0) {
-        templateCls.set("Placeholders", signerPos);
+        const removePrefill = signerPos.filter((x) => x.Role !== "prefill");
+        if (removePrefill.length > 0) {
+          templateCls.set("Placeholders", removePrefill);
+        }
       }
       templateCls.set("Signers", signers);
       templateCls.set("SignatureType", signatureType);
@@ -731,11 +831,60 @@ const TemplatePlaceholder = () => {
     }
   };
 
+  //embed prefill label widget data
+  const embedPrefilllData = async () => {
+    const prefillExist = signerPos.filter((data) => data.Role === "prefill");
+    if (prefillExist && prefillExist.length > 0) {
+      const placeholder = prefillExist[0].placeHolder;
+      const existingPdfBytes = pdfArrayBuffer;
+      const pdfDoc = await PDFDocument.load(existingPdfBytes, {
+        ignoreEncryption: true
+      });
+      const isSignYourSelfFlow = false;
+      try {
+        const pdfBase64 = await multiSignEmbed(
+          placeholder,
+          pdfDoc,
+          isSignYourSelfFlow,
+          scale
+        );
+        const pdfName = generatePdfName(16);
+        const pdfUrl = await convertBase64ToFile(
+          pdfName,
+          pdfBase64,
+          "",
+        );
+        const tenantId = localStorage.getItem("TenantId");
+        const buffer = atob(pdfBase64);
+        SaveFileSize(buffer.length, pdfUrl, tenantId);
+        return pdfUrl;
+      } catch (err) {
+        console.log("error to convertBase64ToFile in placeholder flow", err);
+        alert(err?.message);
+      }
+    } else if (pdfBase64Url) {
+      try {
+        const pdfName = generatePdfName(16);
+        const pdfUrl = await convertBase64ToFile(
+          pdfName,
+          pdfBase64Url,
+          "",
+        );
+        return pdfUrl;
+      } catch (err) {
+        console.log("error to convertBase64ToFile in placeholder flow", err);
+        alert(err?.message);
+      }
+    } else {
+      return pdfDetails[0].URL;
+    }
+  };
   const handleSaveTemplate = async () => {
     if (signersdata?.length) {
       setIsLoading({ isLoad: true, message: t("loading-mssg") });
       setIsSendAlert(false);
-      let signers = [];
+      let signers = [],
+        pdfUrl;
       if (signersdata?.length > 0) {
         signersdata.forEach((x) => {
           if (x.objectId) {
@@ -748,15 +897,10 @@ const TemplatePlaceholder = () => {
           }
         });
       }
-      let pdfUrl = pdfDetails[0]?.URL;
       if (pdfBase64Url) {
         try {
-          const pdfName = generatePdfName(16);
-          pdfUrl = await convertBase64ToFile(
-            pdfName,
-            pdfBase64Url,
-            "",
-          );
+          pdfUrl = await embedPrefilllData();
+          setUpdatedPdfUrl(pdfUrl);
         } catch (e) {
           console.log("error to convertBase64ToFile in placeholder flow", e);
         }
@@ -774,8 +918,9 @@ const TemplatePlaceholder = () => {
         const RedirectUrl = pdfDetails[0]?.RedirectUrl
           ? { RedirectUrl: pdfDetails[0]?.RedirectUrl }
           : {};
+        const removePrefill = signerPos.filter((x) => x?.Role !== "prefill");
         const data = {
-          Placeholders: signerPos,
+          Placeholders: removePrefill,
           Signers: signers,
           Name: pdfDetails[0]?.Name || "",
           Note: pdfDetails[0]?.Note || "",
@@ -927,25 +1072,13 @@ const TemplatePlaceholder = () => {
   const handleCreateDocModal = async () => {
     setIsCreateDocModal(false);
     setIsCreateDoc(true);
-    let pdfUrl = pdfDetails[0]?.URL;
-    if (pdfBase64Url) {
-      try {
-        const pdfName = generatePdfName(16);
-        pdfUrl = await convertBase64ToFile(
-          pdfName,
-          pdfBase64Url,
-          "",
-        );
-      } catch (e) {
-        console.log("error to convertBase64ToFile in placeholder flow", e);
-      }
-    }
+    const removePrefill = signerPos.filter((x) => x.Role !== "prefill");
     // handle create document
     const res = await createDocument(
       pdfDetails,
-      signerPos,
+      removePrefill,
       signersdata,
-      pdfUrl
+      updatedPdfUrl
     );
     if (res.status === "success") {
       navigate(`/placeHolderSign/${res.id}`, {
@@ -1386,6 +1519,13 @@ const TemplatePlaceholder = () => {
     setShowDropdown(false);
     setIsRadio(false);
     setIsCheckbox(false);
+    //condition for text widget type after set all values for text widget
+    //change setUniqueId which is set in tempsignerId
+    //because textwidget do not have signer user so for selected signers we have to do
+    if (currWidgetsDetails.type === textWidget) {
+      setUniqueId(tempSignerId);
+      setTempSignerId("");
+    }
   };
 
   const clickOnZoomIn = () => {
@@ -1433,7 +1573,14 @@ const TemplatePlaceholder = () => {
       style: { fontSize: "13px" }
     }
   ];
-
+  const textFieldTour = [
+    {
+      selector: '[data-tut="IsSigned"]',
+      content: t("text-field-tour"),
+      position: "top",
+      style: { fontSize: "13px" }
+    }
+  ];
   return (
     <>
       <Title title={"Template"} />
@@ -1468,13 +1615,25 @@ const TemplatePlaceholder = () => {
                   closeWithMask={false}
                 />
               )}
-              <Tour
-                onRequestClose={() => setIsSendAlert(false)}
-                steps={signatureWidgetTour}
-                isOpen={isSendAlert}
-                rounded={5}
-                closeWithMask={false}
-              />
+              {isSendAlert && (
+                <Tour
+                  onRequestClose={() => setIsSendAlert(false)}
+                  steps={signatureWidgetTour}
+                  isOpen={true}
+                  rounded={5}
+                  closeWithMask={false}
+                /> // this is the tour for add signature widget for all role
+              )}
+              {unSignedWidgetId && (
+                <Tour
+                  onRequestClose={() => setUnSignedWidgetId("")}
+                  steps={textFieldTour}
+                  isOpen={true}
+                  rounded={5}
+                  closeWithMask={false}
+                />
+              )}
+
               {/* this component used to render all pdf pages in left side */}
               <RenderAllPdfPage
                 allPages={allPages}
@@ -1614,6 +1773,10 @@ const TemplatePlaceholder = () => {
                     pageNumber={pageNumber}
                     signKey={signKey}
                     Id={uniqueId}
+                    widgetType={widgetType}
+                    setUniqueId={setUniqueId}
+                    tempSignerId={tempSignerId}
+                    setTempSignerId={setTempSignerId}
                   />
                   {/* pdf header which contain funish back button */}
                   <Header
@@ -1691,6 +1854,9 @@ const TemplatePlaceholder = () => {
                         setFontColor={setFontColor}
                         isResize={isResize}
                         divRef={divRef}
+                        setTempSignerId={setTempSignerId}
+                        uniqueId={uniqueId}
+                        unSignedWidgetId={unSignedWidgetId}
                       />
                     )}
                   </div>
@@ -1721,7 +1887,6 @@ const TemplatePlaceholder = () => {
                     handleOnBlur={handleOnBlur}
                     title={t("roles")}
                     initial={true}
-                    isTemplateFlow={true}
                     sendInOrder={pdfDetails[0].SendinOrder}
                     setSignersData={setSignersData}
                     blockColor={blockColor}
@@ -1729,6 +1894,7 @@ const TemplatePlaceholder = () => {
                     setSignerPos={setSignerPos}
                     uniqueId={uniqueId}
                     setSelectWidgetId={setSelectWidgetId}
+                    isTemplateFlow={true}
                   />
                 </div>
               ) : (
