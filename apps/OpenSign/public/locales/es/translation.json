@@ -834,5 +834,6 @@
   "variables-use": "Variables para usar",
   "send-to-sign": "le ha solicitado que firme",
   "use-template": "Usar plantilla",
-  "contact-already-exists": "El contacto ya existe."
+  "contact-already-exists": "El contacto ya existe.",
+  "agreement-note": "Nota: Aceptar esto no significa que esté firmando el documento de inmediato. Esto solo le permite revisar el documento electrónicamente. Tendrá la oportunidad de leerlo en su totalidad y decidir si desea firmarlo después."
 }

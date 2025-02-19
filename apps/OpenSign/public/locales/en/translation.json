@@ -834,5 +834,6 @@
   "variables-use": "Variables to use",
   "send-to-sign": "has requested you to sign",
   "use-template": "Use Template",
-  "contact-already-exists": "contact already exists."
+  "contact-already-exists": "contact already exists.",
+  "agreement-note": "Note:  Agreeing to this does not mean you are signing the document immediately. This only allows you to review the document electronically. You will have the opportunity to read it in full and decide whether to sign it afterward."
 }

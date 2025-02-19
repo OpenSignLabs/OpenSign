@@ -513,10 +513,14 @@ function PlaceholderType(props) {
           })}
         </select>
       ) : (
-        <div style={textWidgetStyle} className="select-none-cls">
+        <div
+          style={textWidgetStyle}
+          className="select-none-cls flex justify-between items-center"
+        >
           {props.pos?.options?.name
             ? props.pos.options.name
             : widgetTypeTraslation}
+          <i className="fa-light fa-circle-chevron-down mr-1 "></i>
         </div>
       );
     case "initials":
@@ -672,12 +676,7 @@ function PlaceholderType(props) {
           onBlur={handleInputBlur}
           closeOnScroll={true}
           className={`${selectWidgetCls} outline-[#007bff]`}
-          selected={
-            props?.startDate
-              ? props?.startDate
-              : props.pos.options?.response &&
-                new Date(props.pos.options.response)
-          }
+          selected={props?.startDate}
           onChange={(date) => handleOnDateChange(date)}
           popperPlacement="top-end"
           customInput={<ExampleCustomInput />}
