@@ -12,6 +12,8 @@ const EditTemplate = ({
   template,
   onSuccess,
 }) => {
+  const appName =
+    "OpenSign™";
   const { t } = useTranslation();
   const [formData, setFormData] = useState({
     Name: template?.Name || "",
@@ -199,7 +201,7 @@ const EditTemplate = ({
                       </li>
                     </ol>
                   </p>
-                  <p>{t("istourenabled-help.p3")}</p>
+                  <p>{t("istourenabled-help.p3", { appName: appName })}</p>
                 </div>
               </Tooltip>
             </label>

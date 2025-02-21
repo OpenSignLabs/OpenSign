@@ -10,16 +10,16 @@ import {
   saveLanguageInLocal
 } from "../constant/Utils";
 import { useTranslation } from "react-i18next";
-const Header = ({ showSidebar, setIsMenu }) => {
+import { appInfo } from "../constant/appinfo";
+
+const Header = ({ showSidebar, setIsMenu, isConsole }) => {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const { width } = useWindowSize();
   const username = localStorage.getItem("username") || "";
   const image = localStorage.getItem("profileImg") || dp;
   const [isOpen, setIsOpen] = useState(false);
-  const [applogo, setAppLogo] = useState(
-    localStorage.getItem("appLogo") || " "
-  );
+  const [applogo, setAppLogo] = useState("");
 
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
@@ -36,7 +36,8 @@ const Header = ({ showSidebar, setIsMenu }) => {
       if (applogo?.logo) {
         setAppLogo(applogo?.logo);
       } else {
-        setAppLogo(localStorage.getItem("appLogo") || "");
+        const logo = localStorage.getItem("appLogo") || appInfo.applogo;
+        setAppLogo(logo);
       }
   }
 
@@ -95,11 +96,13 @@ const Header = ({ showSidebar, setIsMenu }) => {
         </div>
         <div className="flex-1 ml-2">
           <div className="h-[25px] md:h-[40px] w-auto overflow-hidden">
-            <img
-              className="object-contain h-full w-auto"
-              src={applogo}
-              alt="img"
-            />
+            {applogo && (
+              <img
+                className="object-contain h-full w-auto"
+                src={applogo}
+                alt="logo"
+              />
+            )}
           </div>
         </div>
         <div id="profile-menu" className="flex-none gap-2">
@@ -121,55 +124,65 @@ const Header = ({ showSidebar, setIsMenu }) => {
           {width >= 768 && (
             <div
               onClick={toggleDropdown}
+              role="button"
+              tabIndex="0"
               className="cursor-pointer text-base-content text-sm"
             >
               {username && username}
             </div>
           )}
-          <div className="op-dropdown op-dropdown-end" id="profile-menu">
+          <div
+            className="op-dropdown op-dropdown-open op-dropdown-end"
+            id="profile-menu"
+          >
             <div
               tabIndex={0}
               role="button"
+              onClick={toggleDropdown}
               className="op-btn op-btn-ghost op-btn-xs w-[10px] h-[20px] hover:bg-transparent"
             >
-              <i
-                tabIndex={0}
-                role="button"
-                onClick={toggleDropdown}
-                className="fa-light fa-angle-down text-base-content"
-              ></i>
+              <i className="fa-light fa-angle-down text-base-content"></i>
             </div>
             <ul
               tabIndex={0}
-              className={`mt-3 z-[1] p-2 shadow op-menu op-menu-sm op-dropdown-content text-base-content bg-base-100 rounded-box w-52 ${
+              className={`mt-3 z-[1] p-2 shadow op-dropdown-open op-menu op-menu-sm op-dropdown-content text-base-content bg-base-100 rounded-box w-52 ${
                 isOpen ? "" : "hidden"
               }`}
             >
-              <li onClick={() => openInNewTab("https://docs.opensignlabs.com")}>
-                <span>
-                  <i className="fa-light fa-book"></i> {t("docs")}
-                </span>
-              </li>
-              <li
-                onClick={() => {
-                  setIsOpen(false);
-                  navigate("/profile");
-                }}
-              >
-                <span>
-                  <i className="fa-light fa-user"></i> {t("profile")}
-                </span>
-              </li>
-              <li
-                onClick={() => {
-                  setIsOpen(false);
-                  navigate("/changepassword");
-                }}
-              >
-                <span>
-                  <i className="fa-light fa-lock"></i> {t("change-password")}
-                </span>
-              </li>
+              {!isConsole && (
+                <>
+                    <li
+                      onClick={() =>
+                        openInNewTab("https://docs.opensignlabs.com")
+                      }
+                    >
+                      <span>
+                        <i className="fa-light fa-book"></i> {t("docs")}
+                      </span>
+                    </li>
+                  <li
+                    onClick={() => {
+                      setIsOpen(false);
+                      navigate("/profile");
+                    }}
+                  >
+                    <span>
+                      <i className="fa-light fa-user"></i> {t("profile")}
+                    </span>
+                  </li>
+                  <li
+                    onClick={() => {
+                      setIsOpen(false);
+                      navigate("/changepassword");
+                    }}
+                  >
+                    <span>
+                      <i className="fa-light fa-lock"></i>{" "}
+                      {t("change-password")}
+                    </span>
+                  </li>
+                </>
+              )}
               <li onClick={closeDropdown}>
                 <span>
                   <i className="fa-light fa-arrow-right-from-bracket"></i>{" "}

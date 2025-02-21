@@ -4,6 +4,7 @@ import axios from "axios";
 import { openInNewTab } from "../constant/Utils";
 import { useTranslation } from "react-i18next";
 const Footer = () => {
+  const appName = "OpenSign™";
   const { t } = useTranslation();
   const [showButton, setShowButton] = useState(false);
   const [version, setVersion] = useState("");
@@ -39,7 +40,6 @@ const Footer = () => {
     };
   }, []);
 
-  const appName = "OpenSign™";
   const openUrl = () => {
     openInNewTab(
       "https://github.com/OpenSignLabs/OpenSign/releases/tag/" + version

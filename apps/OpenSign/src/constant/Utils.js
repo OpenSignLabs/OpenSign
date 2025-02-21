@@ -7,6 +7,9 @@ import { appInfo } from "./appinfo";
 import { saveAs } from "file-saver";
 import printModule from "print-js";
 import fontkit from "@pdf-lib/fontkit";
+import {
+  themeColor
+} from "./const";
 
 export const fontsizeArr = [2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28];
 export const fontColorArr = ["red", "black", "blue", "yellow"];
@@ -17,6 +20,7 @@ export const isTabAndMobile = window.innerWidth < 1023;
 export const textInputWidget = "text input";
 export const textWidget = "text";
 export const radioButtonWidget = "radio button";
+
 export const fileasbytes = async (filepath) => {
   const response = await fetch(filepath); // Adjust the path accordingly
   const arrayBuffer = await response.arrayBuffer();
@@ -1001,6 +1005,8 @@ export const addInitialData = (signerPos, setXyPosition, value, userId) => {
 
 //function for embed document id
 export const embedDocId = async (pdfDoc, documentId, allPages) => {
+  const appName =
+    "OpenSign™";
   // `fontBytes` is used to embed custom font in pdf
   const fontBytes = await fileasbytes(
     "https://cdn.opensignlabs.com/webfonts/times.ttf"
@@ -1009,7 +1015,7 @@ export const embedDocId = async (pdfDoc, documentId, allPages) => {
   const font = await pdfDoc.embedFont(fontBytes, { subset: true });
   for (let i = 0; i < allPages; i++) {
     const fontSize = 10;
-    const textContent = documentId && `OpenSign™ DocumentId: ${documentId} `;
+    const textContent = documentId && `${appName} DocumentId: ${documentId} `;
     const pages = pdfDoc.getPages();
     const page = pages[i];
     try {
@@ -2057,6 +2063,7 @@ export const getAppLogo = async () => {
         domain: domain
       });
       if (tenant) {
+          localStorage.setItem("appname", "OpenSign™");
         return { logo: tenant?.logo, user: tenant?.user };
       }
     } catch (err) {
@@ -2166,6 +2173,8 @@ export const handleSendOTP = async (email) => {
   }
 };
 export const fetchUrl = async (url, pdfName) => {
+  const appName =
+    "OpenSign™";
   try {
     const response = await fetch(url);
     if (!response.ok) {
@@ -2173,7 +2182,7 @@ export const fetchUrl = async (url, pdfName) => {
       throw new Error("Network response was not ok");
     }
     const blob = await response.blob();
-    saveAs(blob, `${sanitizeFileName(pdfName)}_signed_by_OpenSign™.pdf`);
+    saveAs(blob, `${sanitizeFileName(pdfName)}_signed_by_${appName}.pdf`);
   } catch (error) {
     alert("something went wrong, please try again later.");
     console.error("Error downloading the file:", error);
@@ -2321,6 +2330,8 @@ export const handleDownloadCertificate = async (
   setIsDownloading,
   isZip
 ) => {
+  const appName =
+    "OpenSign™";
   if (pdfDetails?.length > 0 && pdfDetails[0]?.CertificateUrl) {
     try {
       await fetch(pdfDetails[0] && pdfDetails[0]?.CertificateUrl);
@@ -2328,7 +2339,7 @@ export const handleDownloadCertificate = async (
       if (isZip) {
         return certificateUrl;
       } else {
-        saveAs(certificateUrl, `Certificate_signed_by_OpenSign™.pdf`);
+        saveAs(certificateUrl, `Certificate_signed_by_${appName}.pdf`);
       }
     } catch (err) {
       console.log("err in download in certificate", err);
@@ -2357,7 +2368,7 @@ export const handleDownloadCertificate = async (
             setIsDownloading("");
             return certificateUrl;
           } else {
-            saveAs(certificateUrl, `Certificate_signed_by_OpenSign™.pdf`);
+            saveAs(certificateUrl, `Certificate_signed_by_${appName}.pdf`);
             setIsDownloading("");
           }
         } else {
@@ -2382,7 +2393,7 @@ export const handleDownloadCertificate = async (
                 // Convert the response into a Blob
                 const certificateBlob = await fetchCertificate.blob();
                 setIsDownloading("");
-                saveAs(certificateBlob, `Certificate_signed_by_OpenSign™.pdf`);
+                saveAs(certificateBlob, `Certificate_signed_by_${appName}.pdf`);
               }
             } catch (err) {
               console.log("err in download in certificate", err);
@@ -2935,4 +2946,40 @@ export const flattenPdf = async (pdfFile) => {
   form.flatten();
   const flatPdf = await pdfDoc.save({ useObjectStreams: false });
   return flatPdf;
+};
+
+export const mailTemplate = (param) => {
+  const appName =
+    "OpenSign™";
+  const logo =
+        `<div style='padding:10px'><img src='https://qikinnovation.ams3.digitaloceanspaces.com/logo.png' height='50' /></div>`;
+
+  const opurl =
+        ` <a href='https://www.opensignlabs.com' target=_blank>here</a>.</p></div></div></body></html>`;
+
+  const subject = `${param.senderName} has requested you to sign "${param.title}"`;
+  const body =
+    "<html><head><meta http-equiv='Content-Type' content='text/html;charset=UTF-8' /></head><body><div style='background-color:#f5f5f5;padding:20px'><div style='background:white;padding-bottom:20px'>" +
+    logo +
+    `<div style='padding:2px;font-family:system-ui;background-color:${themeColor}'><p style='font-size:20px;font-weight:400;color:white;padding-left:20px'>Digital Signature Request</p></div><div><p style='padding:20px;font-size:14px;margin-bottom:10px'>` +
+    param.senderName +
+    " has requested you to review and sign <strong>" +
+    param.title +
+    "</strong>.</p><div style='padding: 5px 0px 5px 25px;display:flex;flex-direction:row;justify-content:space-around'><table><tr><td style='font-weight:bold;font-family:sans-serif;font-size:15px'>Sender</td><td></td><td style='color:#626363;font-weight:bold'>" +
+    param.senderMail +
+    "</td></tr><tr><td style='font-weight:bold;font-family:sans-serif;font-size:15px'>Organization</td><td></td><td style='color:#626363;font-weight:bold'> " +
+    param.organization +
+    "</td></tr><tr><td style='font-weight:bold;font-family:sans-serif;font-size:15px'>Expire on</td><td></td><td style='color:#626363;font-weight:bold'>" +
+    param.localExpireDate +
+    "</td></tr><tr><td></td><td></td></tr></table></div> <div style='margin-left:70px'><a target=_blank href=" +
+    param.sigingUrl +
+    "><button style='padding:12px;background-color:#d46b0f;color:white;border:0px;font-weight:bold;margin-top:30px'>Sign here</button></a></div><div style='display:flex;justify-content:center;margin-top:10px'></div></div></div><div><p> This is an automated email from " +
+    appName +
+    ". For any queries regarding this email, please contact the sender " +
+    param.senderMail +
+    " directly. If you think this email is inappropriate or spam, you may file a complaint with " +
+    appName +
+    opurl;
+
+  return { subject, body };
 };

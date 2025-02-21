@@ -15,6 +15,8 @@ import { showHeader } from "../redux/reducers/showHeader";
 import { useTranslation } from "react-i18next";
 
 const HomeLayout = () => {
+  const appName =
+    "OpenSign™";
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
@@ -149,7 +151,7 @@ const HomeLayout = () => {
         ...resArr,
         {
           selector: '[data-tut="reactourLast"]',
-          content: t("tour-mssg.home-layout-3"),
+          content: t("tour-mssg.home-layout-3", { appName }),
           position: "top"
           // style: { backgroundColor: "#abd4d2" },
         }

@@ -9,13 +9,14 @@ import {
   replaceMailVaribles,
   saveFileUsage,
   getSecureUrl,
+  appName,
 } from '../../../Utils.js';
 import GenerateCertificate from './GenerateCertificate.js';
 import { Placeholder } from './Placeholder.js';
 const serverUrl = cloudServerUrl; // process.env.SERVER_URL;
 const APPID = process.env.APP_ID;
 const masterKEY = process.env.MASTER_KEY;
-const eSignName = 'opensign';
+const eSignName = 'OpenSign';
 const eSigncontact = 'hello@opensignlabs.com';
 // `updateDoc` is used to create url in from pdfFile
 async function uploadFile(
@@ -102,21 +103,22 @@ async function sendNotifyMail(doc, signUser, mailProvider) {
       const creatorEmail = doc.ExtUserPtr.Email;
       const signerName = signUser.Name;
       const signerEmail = signUser.Email;
-      const mailLogo = 'https://qikinnovation.ams3.digitaloceanspaces.com/logo.png';
       const viewDocUrl = `${process.env.PUBLIC_URL}/recipientSignPdf/${doc.objectId}`;
+      const logo =
+            `<div><img src='https://qikinnovation.ams3.digitaloceanspaces.com/logo.png' height='50' style='padding:20px' /></div>`;
+      const opurl =
+            ` <a href=www.opensignlabs.com target=_blank>here</a>`;
       const subject = `Document "${pdfName}" has been signed by ${signerName}`;
       const body =
-        "<html><head><meta http-equiv='Content-Type' content='text/html; charset=UTF-8' /></head><body><div style='background-color:#f5f5f5;padding:20px'><div style='box-shadow:rgba(0, 0, 0, 0.1) 0px 4px 12px;background-color:white;'>" +
-        `<div><img src=${mailLogo} height='50' style='padding:20px' /></div><div style='padding:2px;font-family:system-ui;background-color:#47a3ad;'>` +
-        `<p style='font-size:20px;font-weight:400;color:white;padding-left:20px'>Document signed by ${signerName}</p>` +
-        `</div><div style='padding:20px;font-family:system-ui;font-size:14px'><p>Dear ${creatorName},</p>` +
-        `<p>${pdfName} has been signed by ${signerName} "${signerEmail}" successfully</p>` +
-        `<p><a href=${viewDocUrl} target=_blank>View Document</a></p>` +
-        `</div></div><div><p>This is an automated email from OpenSign™. For any queries regarding this email, please contact the sender ${creatorEmail} directly. If you think this email is inappropriate or spam, you may file a complaint with OpenSign™ <a href=www.opensignlabs.com target=_blank>here</a>.</p></div></div></body></html>`;
+        "<html><head><meta http-equiv='Content-Type' content='text/html; charset=UTF-8'/></head><body><div style='background-color:#f5f5f5;padding:20px'><div style='background-color:white'>" +
+        `${logo}<div style='padding:2px;font-family:system-ui;background-color:#47a3ad'><p style='font-size:20px;font-weight:400;color:white;padding-left:20px'>Document signed by ${signerName}</p>` +
+        `</div><div style='padding:20px;font-family:system-ui;font-size:14px'><p>Dear ${creatorName},</p><p>${pdfName} has been signed by ${signerName} "${signerEmail}" successfully</p>` +
+        `<p><a href=${viewDocUrl} target=_blank>View Document</a></p></div></div><div><p>This is an automated email from ${appName}. For any queries regarding this email, ` +
+        `please contact the sender ${creatorEmail} directly. If you think this email is inappropriate or spam, you may file a complaint with ${appName}${opurl}.</p></div></div></body></html>`;
 
       const params = {
         extUserId: sender.objectId,
-        from: 'OpenSign™',
+        from: appName,
         recipient: creatorEmail,
         subject: subject,
         pdfName: pdfName,
@@ -142,7 +144,6 @@ async function sendCompletedMail(obj) {
   const doc = obj.doc;
   const sender = obj.doc.ExtUserPtr;
   const pdfName = doc.Name;
-  const mailLogo = 'https://qikinnovation.ams3.digitaloceanspaces.com/logo.png';
   let signersMail;
   if (doc?.Signers?.length > 0) {
     const isOwnerExistsinSigners = doc?.Signers?.find(x => x.Email === sender.Email);
@@ -153,14 +154,17 @@ async function sendCompletedMail(obj) {
     signersMail = sender.Email;
   }
   const recipient = signersMail;
+  const logo =
+        `<div><img src='https://qikinnovation.ams3.digitaloceanspaces.com/logo.png' height='50' style='padding:20px'/></div>`;
+  const opurl =
+        ` <a href=www.opensignlabs.com target=_blank>here</a>.</p></div></div></body></html>`;
   let subject = `Document "${pdfName}" has been signed by all parties`;
   let body =
-    "<html><head><meta http-equiv='Content-Type' content='text/html; charset=UTF-8' /></head><body><div style='background-color:#f5f5f5;padding:20px'><div style='background-color:white;'>" +
-    `<div><img src=${mailLogo} height='50' style='padding:20px'/></div><div style='padding:2px;font-family:system-ui; background-color: #47a3ad;'>` +
-    `<p style='font-size:20px;font-weight:400;color:white;padding-left:20px;'>Document signed successfully</p></div><div>` +
-    `<p style='padding:20px;font-family:system-ui;font-size:14px;'>All parties have successfully signed the document <b>"${pdfName}"</b>. Kindly download the document from the attachment.</p>` +
-    `</div> </div><div><p>This is an automated email from OpenSign™. For any queries regarding this email, please contact the sender ${sender.Email} directly.` +
-    'If you think this email is inappropriate or spam, you may file a complaint with OpenSign™ <a href=www.opensignlabs.com target=_blank>here</a>.</p></div></div></body></html>';
+    "<html><head><meta http-equiv='Content-Type' content='text/html; charset=UTF-8' /></head><body><div style='background-color:#f5f5f5;padding:20px'><div style='background-color:white'>" +
+    `${logo}<div style='padding:2px;font-family:system-ui;background-color:#47a3ad'><p style='font-size:20px;font-weight:400;color:white;padding-left:20px'>Document signed successfully</p></div><div>` +
+    `<p style='padding:20px;font-family:system-ui;font-size:14px'>All parties have successfully signed the document <b>"${pdfName}"</b>. Kindly download the document from the attachment.</p>` +
+    `</div></div><div><p>This is an automated email from ${appName}. For any queries regarding this email, please contact the sender ${sender.Email} directly.` +
+    `If you think this email is inappropriate or spam, you may file a complaint with ${appName}${opurl}`;
 
   if (obj?.isCustomMail) {
     const tenant = sender?.TenantId;
@@ -217,7 +221,7 @@ async function sendCompletedMail(obj) {
     extUserId: sender.objectId,
     url: url,
     from:
-      'OpenSign™',
+      appName,
     replyto:
       doc?.ExtUserPtr?.Email ||
       '',
@@ -258,7 +262,7 @@ async function sendMailsaveCertifcate(
   //  `pdflibAddPlaceholder` is used to add code of only digitial sign in certificate
   pdflibAddPlaceholder({
     pdfDoc: certificatePdf,
-    reason: 'Digitally signed by OpenSign.',
+    reason: `Digitally signed by ${eSignName}.`,
     location: 'n/a',
     name: eSignName,
     contactInfo: eSigncontact,
@@ -392,7 +396,7 @@ async function PDF(req) {
         form.flatten();
         Placeholder({
           pdfDoc: pdfDoc,
-          reason: 'Digitally signed by OpenSign for ' + reason,
+          reason: `Digitally signed by ${eSignName} for ${reason}`,
           location: 'n/a',
           name: eSignName,
           contactInfo: eSigncontact,

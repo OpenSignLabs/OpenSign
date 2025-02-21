@@ -45,7 +45,7 @@ const Tooltip = ({
       </a>
       <ReactTooltip
         id={id ? id : "my-tooltip"}
-        className={`${maxWidth ? maxWidth : "max-w-[200px]"}    z-[200]`}
+        className={`${maxWidth ? maxWidth : "max-w-[200px]"} z-[200]`}
       />
     </>
   );
