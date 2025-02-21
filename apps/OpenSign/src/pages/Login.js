@@ -24,6 +24,8 @@ import { useTranslation } from "react-i18next";
 import SelectLanguage from "../components/pdf/SelectLanguage";
 
 function Login() {
+  const appName =
+    "OpenSign™";
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
@@ -58,7 +60,7 @@ function Login() {
   const checkUserExt = async () => {
     const app = await getAppLogo();
     if (app?.error === "invalid_json") {
-      setErrMsg(t("server-down"));
+      setErrMsg(t("server-down", { appName: appName }));
     } else if (
       app?.user === "not_exist"
     ) {
@@ -506,7 +508,7 @@ function Login() {
     </div>
   ) : (
     <div>
-      <Title title={"Login Page"} />
+      <Title title="Login" />
       {state.loading && (
         <div
           aria-live="assertive"

@@ -36,6 +36,8 @@ function Form() {
 }
 
 const Forms = (props) => {
+  const appName =
+    "OpenSign™";
   const { t } = useTranslation();
   const maxFileSize = 20;
   const abortController = new AbortController();
@@ -1088,7 +1090,9 @@ const Forms = (props) => {
                                 </li>
                               </ol>
                             </p>
-                            <p>{t("istourenabled-help.p3")}</p>
+                            <p>
+                              {t("istourenabled-help.p3", { appName: appName })}
+                            </p>
                           </div>
                         </Tooltip>
                       </label>

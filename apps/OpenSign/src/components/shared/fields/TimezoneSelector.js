@@ -54,16 +54,10 @@ const TimezoneSelector = (props) => {
           }}
         />
       </div>
-      <div className="mt-[20px] text-[13px]">
-        <p>
-          {t("current-time")}:{" "}
-          <strong>
-            {formatDate(
-              new Date(),
-              selectedTimezone?.value || selectedTimezone
-            )}
-          </strong>{" "}
-        </p>
+      <div className="mt-[12px] ml-[10px] text-[13px]">
+        <strong>
+          {formatDate(new Date(), selectedTimezone?.value || selectedTimezone)}
+        </strong>{" "}
       </div>
     </>
   );

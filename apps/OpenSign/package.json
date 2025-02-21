@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "@formkit/auto-animate": "^0.8.2",
-    "@lottiefiles/dotlottie-react": "^0.12.3",
+    "@lottiefiles/dotlottie-react": "^0.13.0",
     "@pdf-lib/fontkit": "^1.1.1",
     "@radix-ui/themes": "^3.1.6",
     "@react-pdf/renderer": "^4.1.6",
@@ -42,7 +42,7 @@
     "react-redux": "^9.2.0",
     "react-rnd": "^10.4.14",
     "react-router": "^7.1.5",
-    "react-scripts": "5.0.1",
+    "react-scripts": "^5.0.1",
     "react-scrollbars-custom": "^4.1.1",
     "react-select": "^5.10.0",
     "react-signature-canvas": "^1.0.7",
@@ -58,7 +58,7 @@
     "styled-components": "^5.3.0",
     "web-vitals": "^4.2.4",
     "ws": "^8.18.0",
-    "xlsx": "^0.18.5"
+    "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz"
   },
   "scripts": {
     "build": "npm run version && react-scripts build",
@@ -96,10 +96,10 @@
     }
   },
   "devDependencies": {
-    "@babel/core": "^7.26.8",
-    "@babel/preset-env": "^7.26.8",
+    "@babel/core": "^7.26.9",
+    "@babel/preset-env": "^7.26.9",
     "@babel/preset-react": "^7.26.3",
-    "@babel/runtime-corejs2": "^7.26.7",
+    "@babel/runtime-corejs2": "^7.26.9",
     "autoprefixer": "^10.4.20",
     "babel-loader": "^9.2.1",
     "commitizen": "^4.3.1",
