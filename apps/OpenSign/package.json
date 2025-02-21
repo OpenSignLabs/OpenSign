@@ -118,7 +118,7 @@
     "pretty-quick": "^4.0.0",
     "tailwindcss": "^3.4.17",
     "terser-webpack-plugin": "^5.3.11",
-    "webpack-cli": "^5.1.4"
+    "webpack-cli": "^6.0.1"
   },
   "overrides": {
     "nth-check": "$nth-check",
