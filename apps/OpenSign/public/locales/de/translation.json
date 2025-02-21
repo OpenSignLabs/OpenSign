@@ -666,11 +666,11 @@
   "insufficient-credits": "Nicht genügend Signatur-Credits",
   "insufficient-credits-mssg": "Der Besitzer dieses Dokuments verfügt derzeit nicht über die notwendigen OpenSign-Credits, damit Sie unterzeichnen können. Bitte wenden Sie sich an den Besitzer, wenn Sie weitere Informationen benötigen.",
   "angular-npm-mssg-1": "Um OpenSign in Ihr Angular-Projekt zu integrieren, führen Sie einfach den folgenden Befehl aus:",
-  "quota-mail-info-head": "Monatliches Limit für Signaturanfragen per E-Mail",
-  "quota-mail-info": "Sie können bis zu 15 Signaturanfragen per E-Mail pro Monat senden. Jetzt upgraden, um unbegrenzt Signaturanfragen direkt zu senden.",
+  "quota-mail-info-head": "Monatliches E-Mail-Limit",
+  "quota-mail-info": "Um die Servicequalität aufrechtzuerhalten und Spam zu verhindern, erlaubt OpenSign bis zu 15 E-Mails pro Monat im kostenlosen Plan. Upgraden Sie jetzt für unbegrenzten E-Mail-Versand.",
   "quota-mail-reset": "Ihre Credits für Signaturanfragen per E-Mail werden zurückgesetzt am",
   "quota-mail": "Sie haben Ihr monatliches Limit von 15 Signaturanfragen per E-Mail erreicht. Jetzt upgraden, um weiter E-Mails direkt zu senden.",
-  "quota-mail-tip": "Tipp: Sie können weiterhin <1>unbegrenzt Dokumente</1> signieren, indem Sie die Signaturanfragelinks manuell teilen.",
+  "quota-mail-tip": "Tipp: Sie können weiterhin <1>unbegrenzt Dokumente</1> signieren, indem Sie den Signaturanfragelink manuell teilen.",
   "quota-mail-head": "Kontingent erreicht",
   "unauthorized-modal": "Sie haben keine Berechtigung, diese Aktion auszuführen. Bitte kontaktieren Sie {{adminEmail}}.",
   "sent-this-month": "Diesen Monat gesendet",
@@ -833,5 +833,6 @@
   "variables-use": "Zu verwendende Variablen",
   "send-to-sign": "hat Sie gebeten zu unterschreiben",
   "use-template": "Vorlage verwenden",
-  "contact-already-exists": "Der Kontakt existiert bereits."
+  "contact-already-exists": "Der Kontakt existiert bereits.",
+  "agreement-note": "Hinweis: Durch Ihre Zustimmung unterzeichnen Sie das Dokument nicht sofort. Sie können das Dokument nur elektronisch einsehen. Sie haben die Möglichkeit, es vollständig zu lesen und anschließend zu entscheiden, ob Sie es unterzeichnen möchten."
 }

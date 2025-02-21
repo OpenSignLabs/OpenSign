@@ -666,11 +666,11 @@
   "insufficient-credits": "Crédits de signature insuffisants",
   "insufficient-credits-mssg": "Le propriétaire de ce document ne dispose actuellement pas des crédits OpenSign nécessaires pour que vous puissiez le signer. Veuillez contacter le propriétaire si vous avez besoin de plus de détails.",
   "angular-npm-mssg-1": "Pour intégrer OpenSign dans votre projet Angular, exécutez simplement la commande suivante :",
-  "quota-mail-info-head": "Limite mensuelle d'e-mails de signatures de demandes",
-  "quota-mail-info": "Vous pouvez envoyer jusqu'à 15 e-mails de demande de signature chaque mois. Mettez à niveau maintenant pour envoyer directement des demandes de signature illimitées.",
+  "quota-mail-info-head": "Limite mensuelle d'e-mails",
+  "quota-mail-info": "Pour maintenir la qualité du service et prévenir le spam, OpenSign permet jusqu'à 15 e-mails par mois avec le plan gratuit. Passez à l'offre supérieure pour un envoi illimité d'e-mails.",
   "quota-mail-reset": "Les crédits de votre email de demande de signature seront réinitialisés le",
   "quota-mail": "Vous avez atteint votre limite de 15 e-mails de demande de signature pour ce mois. Mettez à niveau maintenant pour continuer à envoyer des e-mails directement.",
-  "quota-mail-tip-tip": "Astuce : Vous pouvez toujours signer un nombre <1>illimité de documents</1> en partageant manuellement les liens de demande de signature.",
+  "quota-mail-tip-tip": "Astuce: Vous pouvez toujours signer un nombre <1>illimité de documents</1> en partageant manuellement le lien de demande de signature.",
   "quota-mail-head": "Quota atteint",
   "unauthorized-modal": "Vous n'êtes pas autorisé à effectuer cette action, veuillez contacter {{adminEmail}}.",
   "sent-this-month": "envoyé ce mois-ci",
@@ -833,5 +833,7 @@
   "variables-use": "Variables à utiliser",
   "send-to-sign": "vous a demandé de signer",
   "use-template": "Utiliser le modèle",
-  "contact-already-exists": "Le contact existe déjà."
+  "contact-already-exists": "Le contact existe déjà.",
+  "agreement-note": "Remarque : Accepter cela ne signifie pas que vous signez immédiatement le document. Cela vous permet uniquement de consulter le document électroniquement. Vous aurez l'opportunité de le lire entièrement et de décider ensuite si vous souhaitez le signer."
+
 }

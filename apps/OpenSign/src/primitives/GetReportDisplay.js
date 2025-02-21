@@ -312,6 +312,7 @@ const ReportTable = (props) => {
                 AutomaticReminders: Doc?.AutomaticReminders || false,
                 RemindOnceInEvery: Doc?.RemindOnceInEvery || 5,
                 IsEnableOTP: Doc?.IsEnableOTP || false,
+                TimeToCompleteDays: parseInt(Doc?.TimeToCompleteDays) || 15,
                 AllowModifications: Doc?.AllowModifications || false,
                 ...SignatureType,
                 ...NotifyOnSignatures,

@@ -666,11 +666,11 @@
   "insufficient-credits": "Crediti di firma insufficienti",
   "insufficient-credits-mssg": "Il proprietario di questo documento non dispone attualmente dei crediti OpenSign necessari affinché tu possa firmare. Contatta il proprietario per ulteriori dettagli.",
   "angular-npm-mssg-1": "Per integrare OpenSign nel tuo progetto Angular, esegui semplicemente il seguente comando:",
-  "quota-mail-info-head": "Limite mensile email per richieste di firma",
-  "quota-mail-info": "Puoi inviare fino a 15 email di richiesta di firma ogni mese. Passa al piano superiore per inviare richieste di firma illimitate direttamente.",
+  "quota-mail-info-head": "Limite mensile di email",
+  "quota-mail-info": "Per mantenere la qualità del servizio e prevenire lo spam, OpenSign consente fino a 15 email al mese con il piano gratuito. Esegui l'upgrade ora per l'invio illimitato di email.",
   "quota-mail-reset": "I tuoi crediti email per richieste di firma saranno ripristinati il",
   "quota-mail": "Hai raggiunto il limite di 15 email di richiesta di firma per questo mese. Passa al piano superiore per continuare a inviare email direttamente.",
-  "quota-mail-tip": "Suggerimento: Puoi comunque firmare <1>documenti illimitati</1> condividendo manualmente i link per le richieste di firma.",
+  "quota-mail-tip": "Suggerimento: Puoi ancora firmare un numero <1>illimitato de documenti</1> condividendo manualmente il link della richiesta di firma.",
   "quota-mail-head": "Quota Raggiunta",
   "unauthorized-modal": "Non hai l'autorizzazione per eseguire questa azione, contatta {{adminEmail}}.",
   "sent-this-month": "Inviati questo mese",
@@ -833,5 +833,6 @@
   "variables-use": "Variabili da utilizzare",
   "send-to-sign": "ha richiesto la tua firma",
   "use-template": "Usa modello",
-  "contact-already-exists": "Il contatto esiste già."
+  "contact-already-exists": "Il contatto esiste già.",
+  "agreement-note": "Nota: Accettare questo non significa che stai firmando immediatamente il documento. Questo ti consente solo di esaminare il documento elettronicamente. Avrai l'opportunità di leggerlo per intero e decidere successivamente se firmarlo."
 }

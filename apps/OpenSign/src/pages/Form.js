@@ -360,10 +360,6 @@ const Forms = (props) => {
         object.set("Description", formData?.Description);
         object.set("Note", formData?.Note);
         if (props.title === "Request Signatures") {
-          object.set(
-            "TimeToCompleteDays",
-            parseInt(formData?.TimeToCompleteDays)
-          );
           if (
             extUserData?.TenantId?.RequestBody &&
             extUserData?.TenantId?.RequestSubject
@@ -380,6 +376,10 @@ const Forms = (props) => {
           object.set("AutomaticReminders", formData.autoreminder);
           object.set("RemindOnceInEvery", parseInt(formData.remindOnceInEvery));
           object.set("IsTourEnabled", isTourEnabled);
+          object.set(
+            "TimeToCompleteDays",
+            parseInt(formData?.TimeToCompleteDays)
+          );
             object.set("AllowModifications", false);
             object.set("IsEnableOTP", false);
             if (formData.NotifyOnSignatures !== undefined) {
@@ -449,11 +449,6 @@ const Forms = (props) => {
           setFileUpload("");
           setpercentage(0);
           navigate(`/${props?.redirectRoute}/${res.id}`);
-          setIsAlert((obj) => ({
-            ...obj,
-            type: "success",
-            message: `${props.msgVar} created successfully!`
-          }));
         }
       } catch (err) {
         console.log("err ", err);
@@ -991,7 +986,7 @@ const Forms = (props) => {
                         </>
                       )}
                       <div className="overflow-y-auto z-[40] transition-all">
-                        {props.title === "Request Signatures" && (
+                        {props.title !== "Sign yourself" && (
                           <div className="text-xs mt-2">
                             <label className="block">
                               {t("time-to-complete")}
@@ -1123,11 +1118,7 @@ const Forms = (props) => {
                       </div>
                     </div>
                     <div className="text-xs mt-3">
-                      <label
-                        className={
-                          "block"
-                        }
-                      >
+                      <label className="block">
                         {t("notify-on-signatures")}
                         <a data-tooltip-id="nos-tooltip" className="ml-1">
                           <sup>
@@ -1147,7 +1138,7 @@ const Forms = (props) => {
                       <div className="flex flex-col md:flex-row md:gap-4">
                         <div
                           className={
-                            "flex items-center gap-2 ml-2 mb-1"
+                            `flex items-center gap-2 ml-2 mb-1`
                           }
                         >
                           <input
@@ -1160,7 +1151,7 @@ const Forms = (props) => {
                         </div>
                         <div
                           className={
-                            "flex items-center gap-2 ml-2 mb-1"
+                            `flex items-center gap-2 ml-2 mb-1`
                           }
                         >
                           <input

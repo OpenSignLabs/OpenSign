@@ -667,11 +667,11 @@
   "insufficient-credits": "Insufficient signing credits",
   "insufficient-credits-mssg": "The owner of this document currently lacks the necessary OpenSign credits for you to sign. Please reach out to the owner if you require further details.",
   "angular-npm-mssg-1": "To integrate OpenSign into your Angular project, simply run the following command:",
-  "quota-mail-info-head": "Monthly request signatures email limit",
-  "quota-mail-info": "You can send upto 15 signature request emails every month. Upgrade now to send unlimited signing requests directly.",
+  "quota-mail-info-head": "Monthly Email Limit",
+  "quota-mail-info": "To maintain service quality and prevent spam, OpenSign allows up to 15 emails per month on the free plan. Upgrade now for unlimited email sending.",
   "quota-mail-reset": "Your signature request email credits will be reset on",
   "quota-mail": "You've reached your limit of 15 signature request emails for this month. Upgrade now to continue sending emails directly.",
-  "quota-mail-tip": "Tip: You can still sign <1>unlimited documents</1> by manually sharing the signing request links.",
+  "quota-mail-tip": "Tip: You can still sign <1>unlimited documents</1> by manually sharing the signing request link.",
   "quota-mail-head": "Quota reached",
   "unauthorized-modal": "You don't have permission to perform this action, please contact {{adminEmail}}.",
   "sent-this-month": "Sent this month",
@@ -834,5 +834,6 @@
   "variables-use": "Variables to use",
   "send-to-sign": "has requested you to sign",
   "use-template": "Use Template",
-  "contact-already-exists": "contact already exists."
+  "contact-already-exists": "contact already exists.",
+  "agreement-note": "Note:  Agreeing to this does not mean you are signing the document immediately. This only allows you to review the document electronically. You will have the opportunity to read it in full and decide whether to sign it afterward."
 }

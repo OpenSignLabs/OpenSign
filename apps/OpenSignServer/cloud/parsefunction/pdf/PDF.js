@@ -246,7 +246,7 @@ async function sendMailsaveCertifcate(
   P12Buffer,
   isCustomMail,
   mailProvider,
-  filename
+  filename,
 ) {
   const certificate = await GenerateCertificate(doc);
   const certificatePdf = await PDFDocument.load(certificate);
@@ -440,7 +440,7 @@ async function PDF(req) {
             P12Buffer,
             isCustomMail,
             mailProvider,
-            name
+            name,
           );
         }
         // `fs.unlinkSync` is used to remove exported signed pdf file from exports folder

@@ -491,7 +491,7 @@ export const signPdfFun = async (
   documentId,
   signerObjectId,
   objectId,
-  widgets
+  widgets,
 ) => {
   let isCustomCompletionMail = false;
   try {
@@ -632,6 +632,7 @@ export const createDocument = async (
       IsEnableOTP: Doc?.IsEnableOTP || false,
       IsTourEnabled: Doc?.IsTourEnabled || false,
       AllowModifications: Doc?.AllowModifications || false,
+      TimeToCompleteDays: parseInt(Doc?.TimeToCompleteDays) || 15,
       ...SignatureType,
       ...NotifyOnSignatures,
       ...Bcc,
