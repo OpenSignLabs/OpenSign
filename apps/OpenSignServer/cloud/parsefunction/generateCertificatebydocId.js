@@ -8,7 +8,7 @@ import dotenv from 'dotenv';
 import GenerateCertificate from './pdf/GenerateCertificate.js';
 import { getSecureUrl } from '../../Utils.js';
 dotenv.config();
-const eSignName = 'opensign';
+const eSignName = 'OpenSign';
 const eSigncontact = 'hello@opensignlabs.com';
 
 // `uploadFile` is used to create url in from pdfFile
@@ -71,7 +71,7 @@ export default async function generateCertificatebydocId(req) {
       //  `pdflibAddPlaceholder` is used to add code of only digitial sign in certificate
       pdflibAddPlaceholder({
         pdfDoc: certificatePdf,
-        reason: 'Digitally signed by OpenSign.',
+        reason: `Digitally signed by ${eSignName}.`,
         location: 'n/a',
         name: eSignName,
         contactInfo: eSigncontact,

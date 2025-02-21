@@ -19,6 +19,7 @@ import Loader from "./primitives/Loader";
 import UserList from "./pages/UserList";
 import { serverUrl_fn } from "./constant/appinfo";
 import DocSuccessPage from "./pages/DocSuccessPage";
+import ValidateSession from "./primitives/ValidateSession";
 const DebugPdf = lazy(() => import("./pages/DebugPdf"));
 const ForgetPassword = lazy(() => import("./pages/ForgetPassword"));
 const GuestLogin = lazy(() => import("./pages/GuestLogin"));
@@ -29,6 +30,7 @@ const ManageSign = lazy(() => import("./pages/Managesign"));
 const AddAdmin = lazy(() => import("./pages/AddAdmin"));
 const UpdateExistUserAdmin = lazy(() => import("./pages/UpdateExistUserAdmin"));
 const Preferences = lazy(() => import("./pages/Preferences"));
+
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/legacy/build/pdf.worker.min.mjs`;
 const AppLoader = () => {
   return (
@@ -108,7 +110,13 @@ function App() {
               path="/forgetpassword"
               element={<LazyPage Page={ForgetPassword} />}
             />
-            <Route element={<HomeLayout />}>
+            <Route
+              element={
+                <ValidateSession>
+                  <HomeLayout />
+                </ValidateSession>
+              }
+            >
               <Route
                 path="/changepassword"
                 element={<LazyPage Page={ChangePassword} />}
@@ -121,7 +129,7 @@ function App() {
                 element={<LazyPage Page={UserProfile} />}
               />
               <Route
-                path="/opensigndrive"
+                path="/drive"
                 element={<LazyPage Page={Opensigndrive} />}
               />
               <Route

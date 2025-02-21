@@ -347,12 +347,14 @@ function DriveBody(props) {
     }
 
     const signersName = () => {
-      const getSignersName = signerExist.map((data) => data.Name);
-      const signerName = getSignersName.join(", ");
+      const getSignersName =
+        signerExist?.length > 0 && signerExist?.map((data) => data?.Name || "");
+      const signerName =
+        getSignersName?.length > 0 ? getSignersName?.join(", ") : "";
 
       return (
         <span className="text-[12px] font-medium w-[90%] break-words">
-          {signerName}
+          {signerName && signerName}
         </span>
       );
     };
@@ -626,7 +628,7 @@ function DriveBody(props) {
               </tr>
             </thead>
             <tbody>
-              {props.pdfData.map((data, ind) => {
+              {props?.pdfData?.map((data, ind) => {
                 return (
                   <React.Fragment key={ind}>
                     {handleFolderData(data, ind, "table")}

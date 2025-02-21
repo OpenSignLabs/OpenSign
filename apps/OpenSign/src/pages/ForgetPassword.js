@@ -75,7 +75,7 @@ function ForgotPassword() {
   };
   return (
     <div>
-      <Title title="Forgot password page" />
+      <Title title="Forgot password" />
       {sentStatus === "success" && (
         <Alert type="success">{t("reset-password-alert-1")}</Alert>
       )}

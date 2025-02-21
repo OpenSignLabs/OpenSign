@@ -14,6 +14,7 @@ import Parse from "parse";
 import { useTranslation } from "react-i18next";
 import SelectLanguage from "../components/pdf/SelectLanguage";
 import LoaderWithMsg from "../primitives/LoaderWithMsg";
+import Title from "../components/Title";
 
 function GuestLogin() {
   const { t, i18n } = useTranslation();
@@ -215,6 +216,7 @@ function GuestLogin() {
   };
   return (
     <div>
+      <Title title="Request Sign" />
       {isLoading.isLoad ? (
         <LoaderWithMsg isLoading={isLoading} />
       ) : (
