@@ -65,7 +65,11 @@ function GuestLogin() {
   const handleServerUrl = async () => {
       setAppLogo(logo);
 
-    localStorage.clear();
+    localStorage.clear(); // Clears everything
+    localStorage.setItem(
+      "appname",
+        "OpenSign™"
+    );
     //save isGuestSigner true in local to handle login flow header in mobile view
     localStorage.setItem("isGuestSigner", true);
     saveLanguageInLocal(i18n);
@@ -220,11 +224,15 @@ function GuestLogin() {
       {isLoading.isLoad ? (
         <LoaderWithMsg isLoading={isLoading} />
       ) : (
-        <div className="p-14 h">
-          <div className="m-1 md:m-2 p-[30px] text-base-content bg-base-100 op-card shadow-md">
-            <div className="md:w-[250px] md:h-[66px] inline-block overflow-hidden mt-2 mb-11">
+        <div className="pb-1 md:pb-4 pt-10 md:px-10 lg:px-16">
+          <div className="md:p-4 lg:p-10 p-4 text-base-content bg-base-100 op-card shadow-md">
+            <div className="w-[250px] h-[66px] inline-block overflow-hidden mb-6">
               {appLogo && (
-                <img src={appLogo} className="object-contain" alt="logo" />
+                <img
+                  src={appLogo}
+                  className="object-contain h-full"
+                  alt="logo"
+                />
               )}
             </div>
             {contactId ? (
