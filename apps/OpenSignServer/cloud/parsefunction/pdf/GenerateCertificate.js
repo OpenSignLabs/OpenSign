@@ -1,7 +1,9 @@
-import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
+import { PDFDocument, rgb } from 'pdf-lib';
 import fs from 'node:fs';
 import fontkit from '@pdf-lib/fontkit';
-import { formatTimeInTimezone } from '../../../Utils.js';
+import {
+  formatTimeInTimezone,
+} from '../../../Utils.js';
 
 export default async function GenerateCertificate(docDetails) {
   const timezone = docDetails?.ExtUserPtr?.Timezone || '';
@@ -73,12 +75,12 @@ export default async function GenerateCertificate(docDetails) {
     borderColor: borderColor,
     borderWidth: 1,
   });
-  page.drawImage(pngImage, {
-    x: 30,
-    y: 790,
-    width: 100,
-    height: 25,
-  });
+    page.drawImage(pngImage, {
+      x: 30,
+      y: 790,
+      width: 100,
+      height: 25,
+    });
 
   page.drawText(generatedOn, {
     x: 320,
