@@ -54,6 +54,9 @@ function AgreementSign(props) {
               {t("agrre-button")}
             </button>
           </div>
+          <div className="mt-2">
+            <span className="text-[11px]">{t("agreement-note")}</span>
+          </div>
         </div>
       </div>
       {isShowAgreeTerms && (

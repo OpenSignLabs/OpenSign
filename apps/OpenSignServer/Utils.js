@@ -105,20 +105,29 @@ export const updateMailCount = async (extUserId, plan, monthchange) => {
   try {
     const contractUser = await query.first({ useMasterKey: true });
     if (contractUser) {
+      const _extRes = JSON.parse(JSON.stringify(contractUser));
+      let updateDate = new Date();
+      if (_extRes?.LastEmailCountReset?.iso) {
+        updateDate = new Date(_extRes?.LastEmailCountReset?.iso);
+        const newDate = new Date();
+        // Update the month while keeping the same day and year
+        updateDate.setMonth(newDate.getMonth());
+        updateDate.setFullYear(newDate.getFullYear());
+      }
       contractUser.increment('EmailCount', 1);
       if (plan === 'freeplan') {
         if (monthchange) {
-          contractUser.set('LastEmailCountReset', new Date());
+          contractUser.set('LastEmailCountReset', updateDate);
           contractUser.set('MonthlyFreeEmails', 1);
         } else {
           if (contractUser?.get('MonthlyFreeEmails')) {
             contractUser.increment('MonthlyFreeEmails', 1);
             if (contractUser?.get('LastEmailCountReset')) {
-              contractUser.set('LastEmailCountReset', new Date());
+              contractUser.set('LastEmailCountReset', updateDate);
             }
           } else {
             contractUser.set('MonthlyFreeEmails', 1);
-            contractUser.set('LastEmailCountReset', new Date());
+            contractUser.set('LastEmailCountReset', updateDate);
           }
         }
       }

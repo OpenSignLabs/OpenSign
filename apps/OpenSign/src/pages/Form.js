@@ -448,11 +448,6 @@ const Forms = (props) => {
           });
           setFileUpload("");
           setpercentage(0);
-          setIsAlert((obj) => ({
-            ...obj,
-            type: "success",
-            message: `${props.msgVar} created successfully!`
-          }));
           navigate(`/${props?.redirectRoute}/${res.id}`);
         }
       } catch (err) {
