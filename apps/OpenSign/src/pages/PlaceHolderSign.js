@@ -3,9 +3,6 @@ import axios from "axios";
 import Parse from "parse";
 import "../styles/signature.css";
 import { PDFDocument } from "pdf-lib";
-import {
-  themeColor
-} from "../constant/const";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { useDrop } from "react-dnd";
@@ -43,7 +40,8 @@ import {
   signatureTypes,
   handleSignatureType,
   getBase64FromUrl,
-  generatePdfName
+  generatePdfName,
+  mailTemplate
 } from "../constant/Utils";
 import RenderPdf from "../components/pdf/RenderPdf";
 import { useNavigate } from "react-router";
@@ -70,6 +68,8 @@ import AddContact from "../primitives/AddContact";
 
 function PlaceHolderSign() {
   const { t } = useTranslation();
+  const appName =
+    "OpenSign™";
   const editorRef = useRef();
   const { state } = useLocation();
   const navigate = useNavigate();
@@ -188,7 +188,7 @@ function PlaceHolderSign() {
     );
     if (user) {
       try {
-        const defaultRequestBody = `<p>Hi {{receiver_name}},</p><br><p>We hope this email finds you well. {{sender_name}}&nbsp;has requested you to review and sign&nbsp;{{document_title}}.</p><p>Your signature is crucial to proceed with the next steps as it signifies your agreement and authorization.</p><br><p>{{signing_url}}</p><br><p>If you have any questions or need further clarification regarding the document or the signing process,  please contact the sender.</p><br><p>Thanks</p><p> Team OpenSign™</p><br>`;
+        const defaultRequestBody = `<p>Hi {{receiver_name}},</p><br><p>We hope this email finds you well. {{sender_name}}&nbsp;has requested you to review and sign&nbsp;{{document_title}}.</p><p>Your signature is crucial to proceed with the next steps as it signifies your agreement and authorization.</p><br><p>{{signing_url}}</p><br><p>If you have any questions or need further clarification regarding the document or the signing process,  please contact the sender.</p><br><p>Thanks</p><p> Team ${appName}</p><br>`;
         const defaultSubject = `{{sender_name}} has requested you to sign {{document_title}}`;
         setDefaultBody(defaultRequestBody);
         setDefaultSubject(defaultSubject);
@@ -1149,7 +1149,8 @@ function PlaceHolderSign() {
       year: "numeric"
     });
 
-    let senderEmail = pdfDetails?.[0]?.ExtUserPtr?.Email;
+    let senderEmail =
+      pdfDetails?.[0]?.ExtUserPtr?.Email;
     let senderPhone = pdfDetails?.[0]?.ExtUserPtr?.Phone;
     let signerMail = signersdata.slice();
 
@@ -1159,8 +1160,6 @@ function PlaceHolderSign() {
 
     for (let i = 0; i < signerMail.length; i++) {
       try {
-        const imgPng =
-          "https://qikinnovation.ams3.digitaloceanspaces.com/logo.png";
         let url = `${localStorage.getItem("baseUrl")}functions/sendmailv3`;
         const headers = {
           "Content-Type": "application/json",
@@ -1174,12 +1173,11 @@ function PlaceHolderSign() {
           `${pdfDetails?.[0].objectId}/${signerMail[i].Email}/${objectId}`
         );
         let signPdf = `${hostUrl}/login/${encodeBase64}`;
-        const openSignUrl = "https://www.opensignlabs.com/";
         const orgName = pdfDetails[0]?.ExtUserPtr.Company
           ? pdfDetails[0].ExtUserPtr.Company
           : "";
-        const themeBGcolor = themeColor;
-        const senderName = `${pdfDetails?.[0].ExtUserPtr.Name}`;
+        const senderName =
+          pdfDetails?.[0].ExtUserPtr.Name;
         const documentName = `${pdfDetails?.[0].Name}`;
         let replaceVar;
 
@@ -1196,10 +1194,8 @@ function PlaceHolderSign() {
 
           const variables = {
             document_title: documentName,
-            sender_name:
-              senderName,
-            sender_mail:
-              senderEmail,
+            sender_name: senderName,
+            sender_mail: senderEmail,
             sender_phone: senderPhone || "",
             receiver_name: signerMail[i]?.Name || "",
             receiver_email: signerMail[i].Email,
@@ -1226,10 +1222,8 @@ function PlaceHolderSign() {
             "</body> </html>";
           const variables = {
             document_title: documentName,
-            sender_name:
-              senderName,
-            sender_mail:
-              senderEmail,
+            sender_name: senderName,
+            sender_mail: senderEmail,
             sender_phone: senderPhone || "",
             receiver_name: signerMail[i]?.Name || "",
             receiver_email: signerMail[i].Email,
@@ -1240,40 +1234,26 @@ function PlaceHolderSign() {
           };
           replaceVar = replaceMailVaribles(mailSubject, htmlReqBody, variables);
         }
+        const mailparam = {
+          senderName: senderName,
+          senderMail: senderEmail,
+          title: documentName,
+          organization: orgName,
+          localExpireDate: localExpireDate,
+          sigingUrl: signPdf
+        };
         let params = {
           extUserId: extUserId,
           recipient: signerMail[i].Email,
           subject: replaceVar?.subject
             ? replaceVar?.subject
-            : `${senderName} has requested you to sign "${documentName}"`,
-          replyto:
-            senderEmail ||
-            "",
+            : mailTemplate(mailparam).subject,
+          replyto: senderEmail,
           from:
             senderEmail,
           html: replaceVar?.body
             ? replaceVar?.body
-            : "<html><head><meta http-equiv='Content-Type' content='text/html;charset=UTF-8' /></head><body><div style='background-color:#f5f5f5; padding:20px;'><div style='box-shadow:rgba(0, 0, 0, 0.1) 0px 4px 12px;background:white;padding-bottom:20px;'><div style='padding:10px 10px 0 10px'><img src=" +
-              imgPng +
-              " height='50' style='padding:20px,width:170px,height:40px' /></div><div style='padding:2px;font-family:system-ui;background-color:" +
-              themeBGcolor +
-              ";'><p style='font-size:20px;font-weight:400;color:white;padding-left:20px;' > Digital Signature Request</p></div><div><p style='padding:20px;font-family:system-ui;font-size:14px;margin-bottom:10px;'> " +
-              pdfDetails?.[0].ExtUserPtr.Name +
-              " has requested you to review and sign <strong> " +
-              pdfDetails?.[0].Name +
-              "</strong>.</p><div style='padding: 5px 0px 5px 25px;display:flex;flex-direction:row;justify-content:space-around;'><table><tr><td style='font-weight:bold;font-family:sans-serif;font-size:15px'>Sender</td><td></td><td style='color:#626363;font-weight:bold;'>" +
-              senderEmail +
-              "</td></tr><tr><td style='font-weight:bold;font-family:sans-serif;font-size:15px'>Organization</td><td></td><td style='color:#626363;font-weight:bold'> " +
-              orgName +
-              "</td></tr><tr><td style='font-weight:bold;font-family:sans-serif;font-size:15px'>Expire on</td><td></td><td style='color:#626363;font-weight:bold'>" +
-              localExpireDate +
-              "</td></tr><tr><td></td><td></td></tr></table></div> <div style='margin-left:70px'><a target=_blank href=" +
-              signPdf +
-              "><button style='padding: 12px 12px 12px 12px;background-color:#d46b0f;color:white;border:0px;box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px,rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;font-weight:bold;margin-top:30px'>Sign here</button></a></div><div style='display: flex; justify-content: center;margin-top: 10px;'></div></div></div><div><p> This is an automated email from OpenSign™. For any queries regarding this email, please contact the sender " +
-              senderEmail +
-              " directly.If you think this email is inappropriate or spam, you may file a complaint with OpenSign™ <a href= " +
-              openSignUrl +
-              " target=_blank>here</a>.</p></div></div></body></html>"
+            : mailTemplate(mailparam).body
         };
 
         sendMail = await axios.post(url, params, { headers: headers });
