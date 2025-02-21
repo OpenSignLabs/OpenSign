@@ -65,19 +65,18 @@ function DownloadPdfZip(props) {
           throw new Error(`Failed to fetch certificate PDF: ${certificateUrl}`);
         }
         const pdf2Blob = await pdf2Response.blob();
-        // Add files to ZIP
-        zip.file(
-          `${sanitizeFileName(pdfName)}_signed_by_${appName}.pdf`,
-          pdf1Blob
-        );
-        zip.file(`Certificate_signed_by_${appName}.pdf`, pdf2Blob);
-
-        // Generate the ZIP and trigger download
-        const zipBlob = await zip.generateAsync({ type: "blob" });
-        saveAs(
-          zipBlob,
-          `${sanitizeFileName(pdfName)}_signed_by_${appName}.zip`
-        );
+          // Add files to ZIP
+          zip.file(
+            `${sanitizeFileName(pdfName)}_signed_by_${appName}.pdf`,
+            pdf1Blob
+          );
+          zip.file(`Certificate_signed_by_${appName}.pdf`, pdf2Blob);
+          // Generate the ZIP and trigger download
+          const zipBlob = await zip.generateAsync({ type: "blob" });
+          saveAs(
+            zipBlob,
+            `${sanitizeFileName(pdfName)}_signed_by_${appName}.zip`
+          );
         setSelectType(1);
         props.setIsDownloadModal(false);
         setIsDownloading("");
