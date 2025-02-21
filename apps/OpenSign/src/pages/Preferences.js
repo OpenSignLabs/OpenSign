@@ -22,6 +22,8 @@ import EditorToolbar, {
 } from "../components/pdf/EditorToolbar";
 
 const Preferences = () => {
+  const appName =
+    "OpenSign™";
   const { t } = useTranslation();
   const editorRef = useRef();
   const editorRefCom = useRef();
@@ -173,7 +175,7 @@ const Preferences = () => {
       setIsLoader(true);
       const updateRes = tenantRes;
       setTenantId(updateRes?.objectId);
-      const defaultRequestBody = `<p>Hi {{receiver_name}},</p><br><p>We hope this email finds you well. {{sender_name}}&nbsp;has requested you to review and sign&nbsp;{{document_title}}.</p><p>Your signature is crucial to proceed with the next steps as it signifies your agreement and authorization.</p><br><p>{{signing_url}}</p><br><p>If you have any questions or need further clarification regarding the document or the signing process, please contact the sender.</p><br><p>Thanks</p><p> Team OpenSign™</p><br>`;
+      const defaultRequestBody = `<p>Hi {{receiver_name}},</p><br><p>We hope this email finds you well. {{sender_name}}&nbsp;has requested you to review and sign&nbsp;{{document_title}}.</p><p>Your signature is crucial to proceed with the next steps as it signifies your agreement and authorization.</p><br><p>{{signing_url}}</p><br><p>If you have any questions or need further clarification regarding the document or the signing process, please contact the sender.</p><br><p>Thanks</p><p> Team ${appName}</p><br>`;
       if (updateRes?.RequestBody) {
         setRequestBody(updateRes?.RequestBody);
         setRequestSubject(updateRes?.RequestSubject);
@@ -187,7 +189,7 @@ const Preferences = () => {
         body: defaultRequestBody,
         subject: `{{sender_name}} has requested you to sign {{document_title}}`
       });
-      const defaultCompletionBody = `<p>Hi {{sender_name}},</p><br><p>All parties have successfully signed the document {{document_title}}. Kindly download the document from the attachment.</p><br><p>Thanks</p><p> Team OpenSign™</p><br>`;
+      const defaultCompletionBody = `<p>Hi {{sender_name}},</p><br><p>All parties have successfully signed the document {{document_title}}. Kindly download the document from the attachment.</p><br><p>Thanks</p><p> Team ${appName}</p><br>`;
       if (updateRes?.CompletionBody) {
         SetCompletionBody(updateRes?.CompletionBody);
         setCompletionSubject(updateRes?.CompletionSubject);
@@ -305,9 +307,9 @@ const Preferences = () => {
                 </div>
               )}
               <h1 className="ml-4 mt-3 mb-2 font-semibold">
-                OpenSign™ {t("Preferences")}{" "}
+                {appName} {t("Preferences")}{" "}
                 <span>
-                  <Tooltip message={`OpenSign™ ${t("Preferences")}`} />
+                  <Tooltip message={`${appName} ${t("Preferences")}`} />
                 </span>
               </h1>
               <div className="flex justify-center items-center mt-2">

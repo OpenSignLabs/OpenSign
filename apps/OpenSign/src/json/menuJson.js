@@ -74,7 +74,7 @@ const sidebarList = [
     target: "_self",
     pageType: "",
     description: "",
-    objectId: "opensigndrive"
+    objectId: "drive"
   },
   {
     icon: "fa-light fa-address-card",

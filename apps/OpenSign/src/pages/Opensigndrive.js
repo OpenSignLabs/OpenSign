@@ -3,7 +3,9 @@ import "../styles/opensigndrive.css";
 import {
   iconColor,
 } from "../constant/const";
-import { getDrive } from "../constant/Utils";
+import {
+  getDrive
+} from "../constant/Utils";
 import { useNavigate } from "react-router";
 import Title from "../components/Title";
 import Parse from "parse";
@@ -13,6 +15,7 @@ import Tour from "reactour";
 import axios from "axios";
 import Loader from "../primitives/Loader";
 import { useTranslation } from "react-i18next";
+
 const DriveBody = React.lazy(
   () => import("../components/opensigndrive/DriveBody")
 );
@@ -26,6 +29,9 @@ const AppLoader = () => {
   );
 };
 function Opensigndrive() {
+  const appName =
+    "OpenSign™";
+  const drivename = appName === "OpenSign™" ? "OpenSign™" : "";
   const { t } = useTranslation();
   const navigate = useNavigate();
   const scrollRef = useRef(null);
@@ -73,8 +79,7 @@ function Opensigndrive() {
   const jsonCurrentUser = JSON.parse(currentUser);
 
   useEffect(() => {
-    getPdfDocumentList();
-
+    getDetails();
     // eslint-disable-next-line
   }, [docId]);
 
@@ -124,6 +129,9 @@ function Opensigndrive() {
       style: { fontSize: "13px" }
     }
   ];
+  const getDetails = async () => {
+      getPdfDocumentList();
+  };
   //function for get all pdf document list
   const getPdfDocumentList = async (disbaleLoading) => {
     setLoading(true);
@@ -195,7 +203,9 @@ function Opensigndrive() {
         setTourData(tourConfigs);
       }
       if (!docId) {
-        setFolderName([{ name: t("OpenSign-drive"), objectId: "" }]);
+        setFolderName([
+          { name: t("OpenSign-drive", { appName: drivename }), objectId: "" }
+        ]);
       }
     } catch (e) {
       setIsAlert({
@@ -514,7 +524,7 @@ function Opensigndrive() {
   }
   return (
     <div className="bg-base-100 text-base-content rounded-box w-full shadow-md">
-      <Title title={"OpenSign™ Drive"} drive={true} />
+      <Title title={`${drivename} Drive`} drive={true} />
       <ModalUi
         isOpen={isAlert.isShow}
         title={t("alert")}
