@@ -293,24 +293,26 @@ const WidgetNameModal = (props) => {
           "job title",
           "email"
         ].includes(props.defaultdata?.type) && (
-          <div className="flex items-center mb-[0.75rem]">
-            <span>{t("font-size")}:</span>
-            <select
-              className="ml-[7px] op-select op-select-bordered op-select-sm focus:outline-none hover:border-base-content text-xs"
-              value={
-                props.fontSize || props.defaultdata?.options?.fontSize || 12
-              }
-              onChange={(e) => props.setFontSize(parseInt(e.target.value))}
-            >
-              {fontsizeArr.map((size, ind) => {
-                return (
-                  <option className="text-[13px]" value={size} key={ind}>
-                    {size}
-                  </option>
-                );
-              })}
-            </select>
-            <div className="flex flex-row gap-1 items-center ml-4">
+          <div className="flex flex-col md:flex-row md:items-center gap-3 mb-3">
+            <div className="flex items-center gap-2 ">
+              <span>{t("font-size")}:</span>
+              <select
+                className="ml-[7px] w-[60%] op-select op-select-bordered op-select-sm focus:outline-none hover:border-base-content text-xs"
+                value={
+                  props.fontSize || props.defaultdata?.options?.fontSize || 12
+                }
+                onChange={(e) => props.setFontSize(parseInt(e.target.value))}
+              >
+                {fontsizeArr.map((size, ind) => {
+                  return (
+                    <option className="text-[13px]" value={size} key={ind}>
+                      {size}
+                    </option>
+                  );
+                })}
+              </select>
+            </div>
+            <div className="flex items-center">
               <span>{t("color")}: </span>
               <select
                 value={
@@ -319,7 +321,7 @@ const WidgetNameModal = (props) => {
                   "black"
                 }
                 onChange={(e) => props.setFontColor(e.target.value)}
-                className="ml-[7px] op-select op-select-bordered op-select-sm focus:outline-none hover:border-base-content text-xs"
+                className="ml-[33px] md:ml-4 w-[65%] md:w-[full] op-select op-select-bordered op-select-sm focus:outline-none hover:border-base-content text-xs"
               >
                 {fontColorArr.map((color, ind) => {
                   return (
