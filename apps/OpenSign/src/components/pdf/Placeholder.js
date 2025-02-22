@@ -74,22 +74,6 @@ const changeDateToMomentFormat = (format) => {
       return "L";
   }
 };
-
-//function to get default date
-const getDefaultdate = (selectedDate, format = "dd-MM-yyyy") => {
-  let date;
-  if (format && format === "dd-MM-yyyy") {
-    const newdate = selectedDate
-      ? selectedDate
-      : moment(new Date()).format(changeDateToMomentFormat(format));
-    const [day, month, year] = newdate.split("-");
-    date = new Date(`${year}-${month}-${day}`);
-  } else {
-    date = new Date(selectedDate);
-  }
-  const value = date;
-  return value;
-};
 //function to get default format
 const getDefaultFormat = (dateFormat) => dateFormat || "MM/dd/yyyy";
 
@@ -104,29 +88,10 @@ function Placeholder(props) {
   const holdTimeout = useRef(null);
   const startTime = useRef(null); // Track when the user starts holdings
   const [isDisableDragging, setIsDisableDragging] = useState(true);
-  const [selectDate, setSelectDate] = useState({
-    date:
-      props.pos.type === "date"
-        ? moment(
-            getDefaultdate(
-              props?.pos?.options?.response,
-              props.pos?.options?.validation?.format
-            ).getTime()
-          ).format(
-            changeDateToMomentFormat(props.pos?.options?.validation?.format)
-          )
-        : "",
-    format:
-      props.pos.type === "date"
-        ? getDefaultFormat(props.pos?.options?.validation?.format)
-        : ""
-  });
+  const [selectDate, setSelectDate] = useState({});
   const [dateFormat, setDateFormat] = useState([]);
   const [clickonWidget, setClickonWidget] = useState({});
-  const [startDate, setStartDate] = useState(
-    props.pos.type === "date" &&
-      getDefaultdate(new Date(), props.pos?.options?.validation?.format)
-  );
+  const [startDate, setStartDate] = useState(new Date());
   const [getCheckboxRenderWidth, setGetCheckboxRenderWidth] = useState({
     width: null,
     height: null
@@ -164,7 +129,6 @@ function Placeholder(props) {
 
     return () => clearTimeout(timer);
   }, [props.pos]);
-
   useEffect(() => {
     const onOutsideClick = () => {
       if (!isDraggingEnabled) {
@@ -475,8 +439,8 @@ function Placeholder(props) {
     if (props.pos.type === "date") {
       const isDateChange = true;
       const dateObj = {
-        date: startDate,
-        format: selectDate.format
+        date: startDate || new Date(),
+        format: getDefaultFormat(props.pos?.options?.validation?.format)
       };
       handleSaveDate(dateObj, isDateChange); //function to save date and format in local array
     }
@@ -485,19 +449,18 @@ function Placeholder(props) {
   //function to save date and format on local array onchange date and onclick format
   const handleSaveDate = (data, isDateChange) => {
     let updateDate = data.date;
-    //check if date change by user
-    if (isDateChange) {
-      //`changeDateToMomentFormat` is used to convert date as per required to moment package
-      updateDate = moment(data.date).format(
-        changeDateToMomentFormat(data.format)
+    let date;
+    if (data?.format === "dd-MM-yyyy") {
+      date = isDateChange
+        ? moment(updateDate).format(changeDateToMomentFormat(data.format))
+        : updateDate;
+    } else {
+      //using moment package is used to change date as per the format provided in selectDate obj e.g. - MM/dd/yyyy -> 03/12/2024
+      const newDate = new Date(updateDate);
+      date = moment(newDate.getTime()).format(
+        changeDateToMomentFormat(data?.format)
       );
     }
-    //using moment package is used to change date as per the format provided in selectDate obj e.g. - MM/dd/yyyy -> 03/12/2024
-    //`getDefaultdate` is used to convert update date in new Date() format
-    const date = moment(
-      getDefaultdate(updateDate, data?.format).getTime()
-    ).format(changeDateToMomentFormat(data?.format));
-
     //`onChangeInput` is used to save data related to date in a placeholder field
     onChangeInput(
       date,
