@@ -47,11 +47,11 @@
     "parse-server-api-mail-adapter": "^4.1.0",
     "pdf-lib": "^1.17.1",
     "posthog-node": "^4.5.0",
-    "ws": "^8.18.1"
+    "ws": "^8.18.0"
   },
   "type": "module",
   "devDependencies": {
-    "@babel/eslint-parser": "^7.26.8",
+    "@babel/eslint-parser": "^7.26.5",
     "eslint": "^9.20.0",
     "jasmine": "^5.6.0",
     "mongodb-runner": "^5.7.1",
