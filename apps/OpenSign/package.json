@@ -13,7 +13,7 @@
     "css-minimizer-webpack-plugin": "^7.0.0",
     "file-saver": "^2.0.5",
     "i18next": "^23.16.8",
-    "i18next-browser-languagedetector": "^8.0.4",
+    "i18next-browser-languagedetector": "^8.0.2",
     "i18next-http-backend": "^3.0.1",
     "jszip": "^3.10.1",
     "jwt-decode": "^4.0.0",
@@ -118,7 +118,7 @@
     "pretty-quick": "^4.0.0",
     "tailwindcss": "^3.4.17",
     "terser-webpack-plugin": "^5.3.11",
-    "webpack-cli": "^6.0.1"
+    "webpack-cli": "^5.1.4"
   },
   "overrides": {
     "nth-check": "$nth-check",
