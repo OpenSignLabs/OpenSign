@@ -74,7 +74,7 @@ Add below Environment Varaibles to the ".env.prod" file that is automatically cr
 | Environment Varibale  | Value | Description |
 | ------------- | ------------- | ------------- |
 | PUBLIC_URL  | https://localhost:3001 or https://opensign.yourdomain.com  | Set it to the URL form where the app home page will be accessed |
-| APP_ID  | opensign  | A 12 character long random app identifier. The value of this should be same as REACT_APP_APPID which is a variable used by Frontend React App. |
+| APP_ID  | opensign  | A 12 character long random app identifier. |
 | MASTER_KEY  | XnAadwKxxByMr  | A 12 character long random secret key that allows access to all the data. It is used in Parse dashboard config to view all the data in the database. |
 | MONGODB_URI  | mongodb://mongo-container:27017/OpenSignDB  | Mongodb URI to connect to |
 | PARSE_MOUNT  | /app  | Path on which APIs should be mounted. Do not change this. This variable shall be removed & value hardcoded in the source code in coming versions. |
@@ -92,6 +92,7 @@ Add below Environment Varaibles to the ".env.prod" file that is automatically cr
 | SMTP_ENABLE | false | If this is set to true, emails will be sent through SMTP, and Mailgun credentials will be ignored.
 | SMTP_HOST | smtp.yourhost.com | Provide smtp host 
 | SMTP_PORT | 443 | Provide smtp port number
+| SMTP_USERNAME | - | Provide username of smtp
 | SMTP_USER_EMAIL | mailer@yourdomain.com | Provide user email of smtp
 | SMTP_PASS | password | Provide smtp password
 | PFX_BASE64  | - | Base64 encoded PFX or p12 document signing certificate file. You can generate base64 encoded self sign certificate using the passphrase. |
