@@ -89,14 +89,14 @@ Add below Environment Varaibles to the ".env.prod" file that is automatically cr
 | MAILGUN_API_KEY  | YOUR_MAILGUNAPI_KEY  | Mailgun API Key |
 | MAILGUN_DOMAIN  | YOUR_MAILGUNAPI_DOMAIN | Mailgun API Domain |
 | MAILGUN_SENDER  | - | Mailgun Sender Mail ID |
-| SMTP_ENABLE | false | If this is set to true, emails will be sent through SMTP, and Mailgun credentials will be ignored.
-| SMTP_HOST | smtp.yourhost.com | Provide smtp host 
-| SMTP_PORT | 443 | Provide smtp port number
-| SMTP_USERNAME | - | Provide username of smtp
-| SMTP_USER_EMAIL | mailer@yourdomain.com | Provide user email of smtp
-| SMTP_PASS | password | Provide smtp password
+| SMTP_ENABLE | false | If this is set to true, emails will be sent through SMTP, and Mailgun credentials will be ignored. |
+| SMTP_HOST | smtp.yourhost.com | Provide smtp host |
+| SMTP_PORT | 443 | Provide smtp port number |
+| SMTP_USERNAME | - | Provide username of smtp |
+| SMTP_USER_EMAIL | mailer@yourdomain.com | Provide user email of smtp |
+| SMTP_PASS | password | Provide smtp password |
 | PFX_BASE64  | - | Base64 encoded PFX or p12 document signing certificate file. You can generate base64 encoded self sign certificate using the passphrase. |
-| PASS_PHRASE | opensign | Pass phrase of PFX or p12 document signing certificate file.|
+| PASS_PHRASE | opensign | Pass phrase of PFX or p12 document signing certificate file. |
 
 # Steps to Generate Self Sign Certificate
 ```
