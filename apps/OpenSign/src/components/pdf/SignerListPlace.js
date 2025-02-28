@@ -19,7 +19,7 @@ function SignerListPlace(props) {
                   </sup>
                 </a>
                 <Tooltip id="my-tooltip" className="z-[100]">
-                  <div className="max-w-[450px] 2xl:max-w-[500px] p-[1px]">
+                  <div className="max-w-[450px] 2xl:max-w-[500px] 2xl:text-[20px] p-[1px]">
                     <p className="font-bold pb-[1px]">{t("role-help.p1")}</p>
                     <p>{t("role-help.p2")} </p>
                     <p className="font-bold">{t("role-help.p3")}</p>

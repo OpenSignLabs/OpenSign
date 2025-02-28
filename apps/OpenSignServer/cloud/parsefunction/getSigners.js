@@ -1,42 +1,61 @@
-// Function to escape special characters in the search string
-function escapeRegExp(string) {
-  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // Escape special characters
-}
+import { parseJwt } from '../../Utils.js';
+import jwt from 'jsonwebtoken';
 
-async function getContacts(searchObj, isJWT) {
-  try {
-    const escapedSearch = escapeRegExp(searchObj.search); // Escape the search input
-    const searchRegex = new RegExp(escapedSearch, 'i'); // Create regex once to reuse
-    const contactNameQuery = new Parse.Query('contracts_Contactbook');
-    contactNameQuery.matches('Name', searchRegex);
-
-    const conatctEmailQuery = new Parse.Query('contracts_Contactbook');
-    conatctEmailQuery.matches('Email', searchRegex);
-
-    // Combine the two queries with OR
-    const mainQuery = Parse.Query.or(contactNameQuery, conatctEmailQuery);
-
-    // Add the common condition for 'CreatedBy'
-    mainQuery.equalTo('CreatedBy', searchObj.CreatedBy);
-    mainQuery.notEqualTo('IsDeleted', true);
-    const findOpt = isJWT ? { useMasterKey: true } : { sessionToken: searchObj.sessionToken };
-    const contactRes = await mainQuery.find(findOpt);
-    const _contactRes = JSON.parse(JSON.stringify(contactRes));
-    return _contactRes;
-  } catch (err) {
-    console.log('err while fetch contacts', err);
-    throw err;
-  }
-}
 export default async function getSigners(request) {
-  const searchObj = { search: request.params.search || '', sessionToken: '' };
+  const jwttoken = request.headers.jwttoken || '';
+  const search = request.params.search || '';
+  const searchEmail = request.params.searchEmail || '';
   try {
     if (request.user) {
-      searchObj.CreatedBy = { __type: 'Pointer', className: '_User', objectId: request?.user?.id };
-      searchObj.sessionToken = request.user.getSessionToken();
-      return await getContacts(searchObj);
-    }
-    else {
+      const contactbook = new Parse.Query('contracts_Contactbook');
+      contactbook.equalTo('CreatedBy', {
+        __type: 'Pointer',
+        className: '_User',
+        objectId: request?.user?.id,
+      });
+      if (search) {
+        contactbook.matches('Name', new RegExp(search, 'i'));
+      } else if (searchEmail) {
+        contactbook.matches('Email', new RegExp(searchEmail, 'i'));
+      }
+      contactbook.notEqualTo('IsDeleted', true);
+      const contactRes = await contactbook.find({ sessionToken: request.user.getSessionToken() });
+      const _contactRes = JSON.parse(JSON.stringify(contactRes));
+      return _contactRes;
+    } else if (jwttoken) {
+      const jwtDecode = parseJwt(jwttoken);
+      const userCls = new Parse.Query(Parse.User);
+      userCls.equalTo('email', jwtDecode?.user_email);
+      const userRes = await userCls.first({ useMasterKey: true });
+      const userId = userRes?.id;
+      const tokenQuery = new Parse.Query('appToken');
+      tokenQuery.equalTo('userId', {
+        __type: 'Pointer',
+        className: '_User',
+        objectId: userId,
+      });
+      const appRes = await tokenQuery.first({ useMasterKey: true });
+      const decoded = jwt.verify(jwttoken, appRes?.get('token'));
+      if (decoded?.user_email) {
+        const contactbook = new Parse.Query('contracts_Contactbook');
+        contactbook.equalTo('CreatedBy', {
+          __type: 'Pointer',
+          className: '_User',
+          objectId: userId,
+        });
+        if (search) {
+          contactbook.matches('Name', new RegExp(search, 'i'));
+        } else if (searchEmail) {
+          contactbook.matches('Email', new RegExp(searchEmail, 'i'));
+        }
+        contactbook.notEqualTo('IsDeleted', true);
+        const contactRes = await contactbook.find({ useMasterKey: true });
+        const _contactRes = JSON.parse(JSON.stringify(contactRes));
+        return _contactRes;
+      } else {
+        throw new Parse.Error(Parse.Error.INVALID_SESSION_TOKEN, 'Invalid token');
+      }
+    } else {
       throw new Parse.Error(Parse.Error.INVALID_SESSION_TOKEN, 'Invalid session token');
     }
   } catch (err) {

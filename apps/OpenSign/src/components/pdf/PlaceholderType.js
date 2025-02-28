@@ -19,8 +19,6 @@ const textWidgetCls =
   "w-full h-full md:min-w-full md:min-h-full z-[999] text-[12px] rounded-[2px] border-[1px] border-[#007bff] overflow-hidden resize-none outline-none text-base-content item-center whitespace-pre-wrap bg-white";
 const selectWidgetCls =
   "w-full h-full absolute left-0 top-0 border-[1px] border-[#007bff] rounded-[2px] focus:outline-none text-base-content";
-const widgetCls =
-  "select-none-cls overflow-hidden w-full h-full text-black flex flex-col justify-center items-center";
 function PlaceholderType(props) {
   const { t } = useTranslation();
   const type = props?.pos?.type;
@@ -30,7 +28,7 @@ function PlaceholderType(props) {
   const inputRef = useRef(null);
   const [textValue, setTextValue] = useState();
   const [selectedCheckbox, setSelectedCheckbox] = useState([]);
-  const years = range(1950, getYear(new Date()) + 16, 1);
+  const years = range(1990, getYear(new Date()) + 16, 1);
   const fontSize = props.calculateFont(props.pos.options?.fontSize);
   const fontColor = props.pos.options?.fontColor || "black";
   const months = [
@@ -47,16 +45,6 @@ function PlaceholderType(props) {
     "November",
     "December"
   ];
-  const textWidgetStyle = {
-    fontSize: fontSize,
-    color: fontColor,
-    fontFamily: "Arial, sans-serif",
-    overflow: "hidden",
-    textAlign: "start",
-    width: "100%",
-    display: "flex",
-    height: "100%"
-  };
   const validateExpression = (regexValidation) => {
     if (textValue && regexValidation) {
       let regexObject = regexValidation;
@@ -73,6 +61,7 @@ function PlaceholderType(props) {
   };
 
   const handleInputBlur = () => {
+    props.setDraggingEnabled(true);
     const validateType = props.pos?.options?.validation?.type;
     let regexValidation;
     if (validateType && validateType !== "text") {
@@ -150,11 +139,6 @@ function PlaceholderType(props) {
       if (defaultData) {
         setTextValue(defaultData);
       }
-    } else if ([textInputWidget].includes(props.pos?.type)) {
-      const defaultData = props.pos?.options?.defaultValue;
-      if (defaultData) {
-        setTextValue(defaultData);
-      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.pos?.options?.defaultValue]);
@@ -188,9 +172,9 @@ function PlaceholderType(props) {
       onChangeInput(
         jsonSender && jsonSender[0],
         null,
-        props.xyPosition,
+        props.xyPostion,
         null,
-        props.setXyPosition,
+        props.setXyPostion,
         props.data.Id,
         isDefault
       );
@@ -256,9 +240,9 @@ function PlaceholderType(props) {
       onChangeInput(
         checkedList ? checkedList : updateSelectedCheckbox,
         props.pos.key,
-        props.xyPosition,
+        props.xyPostion,
         props.index,
-        props.setXyPosition,
+        props.setXyPostion,
         props.data && props.data.Id,
         false,
         null,
@@ -286,9 +270,9 @@ function PlaceholderType(props) {
     onChangeInput(
       data,
       props.pos.key,
-      props.xyPosition,
+      props.xyPostion,
       props.index,
-      props.setXyPosition,
+      props.setXyPostion,
       props.data && props.data.Id,
       false,
       null,
@@ -299,6 +283,12 @@ function PlaceholderType(props) {
   //function to set onchange date
   const handleOnDateChange = (date) => {
     props.setStartDate(date);
+    const isDateChange = true;
+    const dateObj = {
+      date: date,
+      format: props.selectDate.format
+    };
+    props.handleSaveDate(dateObj, isDateChange);
   };
   //handle height on enter press in text area
   const handleEnterPress = (e) => {
@@ -309,9 +299,9 @@ function PlaceholderType(props) {
         height,
         props.pos.type,
         props.pos.key,
-        props.xyPosition,
+        props.xyPostion,
         props.index,
-        props.setXyPosition,
+        props.setXyPostion,
         props.data && props.data?.Id
       );
     }
@@ -323,16 +313,15 @@ function PlaceholderType(props) {
           alt="signature"
           draggable="false"
           src={props.pos.SignUrl}
-          className="w-full h-full select-none-cls "
+          className="w-full h-full "
         />
       ) : (
-        <div className={widgetCls}>
+        <div className="text-[11px] w-full h-full text-black flex flex-col justify-center items-center">
           {props?.handleUserName &&
             props?.handleUserName(
               props?.data?.Id,
               props?.data?.Role,
-              widgetTypeTraslation,
-              props.pos
+              widgetTypeTraslation
             )}
         </div>
       );
@@ -342,16 +331,15 @@ function PlaceholderType(props) {
           alt="stamp"
           draggable="false"
           src={props.pos.SignUrl}
-          className="w-full h-full select-none-cls"
+          className="w-full h-full"
         />
       ) : (
-        <div className={widgetCls}>
+        <div className="text-[11px] w-full h-full text-black flex flex-col justify-center items-center">
           {props?.handleUserName &&
             props?.handleUserName(
               props?.data?.Id,
               props?.data?.Role,
-              widgetTypeTraslation,
-              props.pos
+              widgetTypeTraslation
             )}
         </div>
       );
@@ -360,13 +348,12 @@ function PlaceholderType(props) {
         <div style={{ zIndex: props.isSignYourself && "99" }}>
           {props.pos.options?.values?.map((data, ind) => {
             return (
-              <div
-                key={ind}
-                className="select-none-cls flex items-center text-center gap-0.5"
-              >
+              <div key={ind} className="flex items-center text-center gap-0.5">
                 <input
-                  id={`checkbox-${props.pos.key + ind}`}
-                  style={{ width: fontSize, height: fontSize }}
+                  style={{
+                    width: fontSize,
+                    height: fontSize
+                  }}
                   className={`${
                     ind === 0 ? "mt-0" : "mt-[5px]"
                   } flex justify-center op-checkbox rounded-[1px] `}
@@ -404,8 +391,10 @@ function PlaceholderType(props) {
                 />
                 {!props.pos.options?.isHideLabel && (
                   <label
-                    htmlFor={`checkbox-${props.pos.key + ind}`}
-                    style={{ fontSize: fontSize, color: fontColor }}
+                    style={{
+                      fontSize: fontSize,
+                      color: fontColor
+                    }}
                     className="text-xs mb-0 text-center"
                   >
                     {data}
@@ -418,11 +407,10 @@ function PlaceholderType(props) {
       );
     case textInputWidget:
       return props.isSignYourself ||
-        (props.isSelfSign && props.data?.signerObjId === props.signerObjId) ||
         (props.isNeedSign && props.data?.signerObjId === props.signerObjId) ? (
         <textarea
           ref={inputRef}
-          placeholder={validatePlaceholder || t("widgets-name.text")}
+          placeholder={validatePlaceholder || "please enter value"}
           rows={1}
           onKeyDown={handleEnterPress}
           value={textValue}
@@ -432,44 +420,39 @@ function PlaceholderType(props) {
             onChangeInput(
               e.target.value,
               props.pos.key,
-              props.xyPosition,
+              props.xyPostion,
               props.index,
-              props.setXyPosition,
+              props.setXyPostion,
               props.data && props.data?.Id,
               false
             );
           }}
-          className={`${
-            props.isNeedSign &&
-            (props.pos.options?.isReadOnly ||
-              props.data?.signerObjId !== props.signerObjId)
-              ? " bg-black/68 select-none "
-              : "" + textWidgetCls
-          }`}
-          style={{ fontSize: fontSize, color: fontColor }}
-          disabled={
-            props.isNeedSign &&
-            (props.pos.options?.isReadOnly ||
-              props.data?.signerObjId !== props.signerObjId)
-          }
+          className={textWidgetCls}
+          style={{
+            fontSize: fontSize,
+            color: fontColor
+          }}
           cols="50"
         />
       ) : (
-        <div style={textWidgetStyle} className="select-none-cls">
-          <span>{textValue || widgetTypeTraslation}</span>
+        <div
+          style={{
+            fontSize: fontSize,
+            color: fontColor,
+            overflow: "hidden"
+          }}
+        >
+          <span>{widgetTypeTraslation}</span>
         </div>
       );
     case "dropdown":
       return props.data?.signerObjId === props.signerObjId ? (
         <select
-          style={{ fontSize: fontSize, color: fontColor }}
-          className={`${
-            props.isNeedSign &&
-            (props.pos.options?.isReadOnly ||
-              props.data?.signerObjId !== props.signerObjId)
-              ? " disabled:bg-inherit select-none "
-              : "" + `${selectWidgetCls} text-[12px] bg-inherit`
-          }`}
+          style={{
+            fontSize: fontSize,
+            color: fontColor
+          }}
+          className={`${selectWidgetCls} text-[12px] bg-inherit`}
           id="myDropdown"
           value={selectOption}
           onChange={(e) => {
@@ -477,22 +460,20 @@ function PlaceholderType(props) {
             onChangeInput(
               e.target.value,
               props.pos.key,
-              props.xyPosition,
+              props.xyPostion,
               props.index,
-              props.setXyPosition,
+              props.setXyPostion,
               props.data && props.data?.Id,
               false
             );
           }}
-          disabled={
-            props.isNeedSign &&
-            (props.pos.options?.isReadOnly ||
-              props.data?.signerObjId !== props.signerObjId)
-          }
         >
           {/* Default/Title option */}
           <option
-            style={{ fontSize: fontSize, color: fontColor }}
+            style={{
+              fontSize: fontSize,
+              color: fontColor
+            }}
             value=""
             disabled
             hidden
@@ -503,7 +484,10 @@ function PlaceholderType(props) {
           {props.pos?.options?.values?.map((data, ind) => {
             return (
               <option
-                style={{ fontSize: fontSize, color: fontColor }}
+                style={{
+                  fontSize: fontSize,
+                  color: fontColor
+                }}
                 key={ind}
                 value={data}
               >
@@ -514,13 +498,15 @@ function PlaceholderType(props) {
         </select>
       ) : (
         <div
-          style={textWidgetStyle}
-          className="select-none-cls flex justify-between items-center"
+          style={{
+            fontSize: fontSize,
+            color: fontColor
+          }}
+          className=" overflow-hidden"
         >
           {props.pos?.options?.name
             ? props.pos.options.name
             : widgetTypeTraslation}
-          <i className="fa-light fa-circle-chevron-down mr-1 "></i>
         </div>
       );
     case "initials":
@@ -529,26 +515,24 @@ function PlaceholderType(props) {
           alt="initials"
           draggable="false"
           src={props.pos.SignUrl}
-          className="w-full h-full select-none-cls"
+          className="w-full h-full"
         />
       ) : (
-        <div className={widgetCls}>
+        <div className="text-[11px] w-full h-full text-black flex flex-col justify-center items-center">
           {props?.handleUserName &&
             props?.handleUserName(
               props?.data?.Id,
               props?.data?.Role,
-              widgetTypeTraslation,
-              props.pos
+              widgetTypeTraslation
             )}
         </div>
       );
     case "name":
       return props.isSignYourself ||
-        (props.isSelfSign && props.data?.signerObjId === props.signerObjId) ||
         (props.isNeedSign && props.data?.signerObjId === props.signerObjId) ? (
         <textarea
           ref={inputRef}
-          placeholder={t("widgets-name.name")}
+          placeholder={"name"}
           rows={1}
           onKeyDown={handleEnterPress}
           value={textValue}
@@ -558,29 +542,38 @@ function PlaceholderType(props) {
             onChangeInput(
               e.target.value,
               props.pos.key,
-              props.xyPosition,
+              props.xyPostion,
               props.index,
-              props.setXyPosition,
+              props.setXyPostion,
               props.data && props.data?.Id,
               isDefault
             );
           }}
           className={textWidgetCls}
-          style={{ fontSize: fontSize, color: fontColor }}
+          style={{
+            fontSize: fontSize,
+            color: fontColor
+          }}
           cols="50"
         />
       ) : (
-        <div className="flex h-full select-none-cls" style={textWidgetStyle}>
+        <div
+          style={{
+            fontSize: fontSize,
+            color: fontColor,
+            fontFamily: "Arial, sans-serif",
+            overflow: "hidden"
+          }}
+        >
           <span>{widgetTypeTraslation}</span>
         </div>
       );
     case "company":
       return props.isSignYourself ||
-        (props.isSelfSign && props.data?.signerObjId === props.signerObjId) ||
         (props.isNeedSign && props.data?.signerObjId === props.signerObjId) ? (
         <textarea
           ref={inputRef}
-          placeholder={t("widgets-name.company")}
+          placeholder="Enter text"
           rows={1}
           onKeyDown={handleEnterPress}
           value={textValue}
@@ -589,29 +582,38 @@ function PlaceholderType(props) {
             onChangeInput(
               e.target.value,
               props.pos.key,
-              props.xyPosition,
+              props.xyPostion,
               props.index,
-              props.setXyPosition,
+              props.setXyPostion,
               props.data && props.data?.Id,
               false
             );
           }}
           className={textWidgetCls}
-          style={{ fontSize: fontSize, color: fontColor }}
+          style={{
+            fontSize: fontSize,
+            color: fontColor
+          }}
           cols="50"
         />
       ) : (
-        <div style={textWidgetStyle} className="select-none-cls">
+        <div
+          style={{
+            fontSize: fontSize,
+            color: fontColor,
+            overflow: "hidden",
+            fontFamily: "Arial, sans-serif"
+          }}
+        >
           <span>{widgetTypeTraslation}</span>
         </div>
       );
     case "job title":
       return props.isSignYourself ||
-        (props.isSelfSign && props.data?.signerObjId === props.signerObjId) ||
         (props.isNeedSign && props.data?.signerObjId === props.signerObjId) ? (
         <textarea
           ref={inputRef}
-          placeholder={t("widgets-name.job title")}
+          placeholder={"job title"}
           rows={1}
           onKeyDown={handleEnterPress}
           value={textValue}
@@ -620,78 +622,99 @@ function PlaceholderType(props) {
             onChangeInput(
               e.target.value,
               props.pos.key,
-              props.xyPosition,
+              props.xyPostion,
               props.index,
-              props.setXyPosition,
+              props.setXyPostion,
               props.data && props.data?.Id,
               false
             );
           }}
           className={textWidgetCls}
-          style={{ fontSize: fontSize, color: fontColor }}
+          style={{
+            fontSize: fontSize,
+            color: fontColor
+          }}
           cols="50"
         />
       ) : (
-        <div style={textWidgetStyle} className="select-none-cls">
+        <div
+          style={{
+            fontSize: fontSize,
+            color: fontColor,
+            fontFamily: "Arial, sans-serif",
+            overflow: "hidden"
+          }}
+        >
           <span>{widgetTypeTraslation}</span>
         </div>
       );
     case "date":
       return props.isSignYourself ||
-        (props.isSelfSign && props.data?.signerObjId === props.signerObjId) ||
         (props.isNeedSign && props.data?.signerObjId === props.signerObjId) ? (
-        <DatePicker
-          renderCustomHeader={({ date, changeYear, changeMonth }) => (
-            <div className="flex justify-start ml-2 ">
-              <select
-                className="bg-transparent outline-none"
-                value={months[getMonth(date)]}
-                onChange={({ target: { value } }) =>
-                  changeMonth(months.indexOf(value))
-                }
-              >
-                {months.map((option) => (
-                  <option key={option} value={option}>
-                    {option}
-                  </option>
-                ))}
-              </select>
-              <select
-                className="bg-transparent outline-none"
-                value={getYear(date)}
-                onChange={({ target: { value } }) => changeYear(value)}
-              >
-                {years.map((option) => (
-                  <option key={option} value={option}>
-                    {option}
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
-          disabled={
-            props.isPlaceholder ||
-            (props.isNeedSign && props.data?.signerObjId !== props.signerObjId)
-          }
-          onBlur={handleInputBlur}
-          closeOnScroll={true}
-          className={`${selectWidgetCls} outline-[#007bff]`}
-          selected={props?.startDate}
-          onChange={(date) => handleOnDateChange(date)}
-          popperPlacement="top-end"
-          customInput={<ExampleCustomInput />}
-          dateFormat={
-            props.selectDate
-              ? props.selectDate?.format
-              : props.pos?.options?.validation?.format
-                ? props.pos?.options?.validation?.format
-                : "MM/dd/yyyy"
-          }
-        />
+        <div>
+          <DatePicker
+            renderCustomHeader={({ date, changeYear, changeMonth }) => (
+              <div className="flex justify-start ml-2 ">
+                <select
+                  className="bg-transparent outline-none"
+                  value={months[getMonth(date)]}
+                  onChange={({ target: { value } }) =>
+                    changeMonth(months.indexOf(value))
+                  }
+                >
+                  {months.map((option) => (
+                    <option key={option} value={option}>
+                      {option}
+                    </option>
+                  ))}
+                </select>
+                <select
+                  className="bg-transparent outline-none"
+                  value={getYear(date)}
+                  onChange={({ target: { value } }) => changeYear(value)}
+                >
+                  {years.map((option) => (
+                    <option key={option} value={option}>
+                      {option}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+            disabled={
+              props.isPlaceholder ||
+              (props.isNeedSign &&
+                props.data?.signerObjId !== props.signerObjId)
+            }
+            onBlur={handleInputBlur}
+            closeOnScroll={true}
+            className={`${selectWidgetCls} outline-[#007bff]`}
+            selected={
+              props?.startDate
+                ? props?.startDate
+                : props.pos.options?.response &&
+                  new Date(props.pos.options.response)
+            }
+            onChange={(date) => handleOnDateChange(date)}
+            popperPlacement="top-end"
+            customInput={<ExampleCustomInput />}
+            dateFormat={
+              props.selectDate
+                ? props.selectDate?.format
+                : props.pos?.options?.validation?.format
+                  ? props.pos?.options?.validation?.format
+                  : "MM/dd/yyyy"
+            }
+          />
+        </div>
       ) : (
         <div
-          style={textWidgetStyle}
-          className="select-none-cls overflow-hidden"
+          style={{
+            fontSize: fontSize,
+            color: fontColor,
+            fontFamily: "Arial, sans-serif"
+          }}
+          className="items-center overflow-hidden"
         >
           <span>
             {props.selectDate
@@ -708,33 +731,26 @@ function PlaceholderType(props) {
           alt="image"
           draggable="false"
           src={props.pos.SignUrl}
-          className="w-full h-full select-none-cls"
+          className="w-full h-full"
         />
       ) : (
-        <div className={widgetCls}>
+        <div className="text-[11px] w-full h-full text-black flex flex-col justify-center items-center">
           {props?.handleUserName &&
             props?.handleUserName(
               props?.data?.Id,
               props?.data?.Role,
-              widgetTypeTraslation,
-              props.pos
+              widgetTypeTraslation
             )}
         </div>
       );
     case "email":
       return props.isSignYourself ||
-        (props.isSelfSign && props.data?.signerObjId === props.signerObjId) ||
         (props.isNeedSign && props.data?.signerObjId === props.signerObjId) ? (
         <textarea
           ref={inputRef}
-          placeholder={t("widgets-name.email")}
+          placeholder={"enter email"}
           rows={1}
-          onKeyDown={(e) => {
-            // Prevent new line on Enter key press
-            if (e.key === "Enter") {
-              e.preventDefault();
-            }
-          }}
+          onKeyDown={handleEnterPress}
           value={textValue}
           onBlur={handleInputBlur}
           onChange={(e) => {
@@ -742,9 +758,9 @@ function PlaceholderType(props) {
             onChangeInput(
               e.target.value,
               props.pos.key,
-              props.xyPosition,
+              props.xyPostion,
               props.index,
-              props.setXyPosition,
+              props.setXyPostion,
               props.data && props.data?.Id,
               false
             );
@@ -755,10 +771,17 @@ function PlaceholderType(props) {
             color: fontColor,
             fontFamily: "Arial, sans-serif"
           }}
-          cols="1"
+          cols="50"
         />
       ) : (
-        <div style={textWidgetStyle} className="select-none-cls">
+        <div
+          style={{
+            fontSize: fontSize,
+            color: fontColor,
+            fontFamily: "Arial, sans-serif",
+            overflow: "hidden"
+          }}
+        >
           <span>{widgetTypeTraslation}</span>
         </div>
       );
@@ -767,12 +790,8 @@ function PlaceholderType(props) {
         <div>
           {props.pos.options?.values.map((data, ind) => {
             return (
-              <div
-                key={ind}
-                className="select-none-cls flex items-center text-center gap-0.5"
-              >
+              <div key={ind} className="flex items-center text-center gap-0.5">
                 <input
-                  id={`radio-${props.pos.key + ind}`}
                   style={{
                     width: fontSize,
                     height: fontSize,
@@ -794,8 +813,10 @@ function PlaceholderType(props) {
                 />
                 {!props.pos.options?.isHideLabel && (
                   <label
-                    htmlFor={`radio-${props.pos.key + ind}`}
-                    style={{ fontSize: fontSize, color: fontColor }}
+                    style={{
+                      fontSize: fontSize,
+                      color: fontColor
+                    }}
                     className="text-xs mb-0"
                   >
                     {data}
@@ -809,7 +830,7 @@ function PlaceholderType(props) {
     case textWidget:
       return (
         <textarea
-          placeholder={t("widgets-name.text")}
+          placeholder="Enter text"
           rows={1}
           onKeyDown={handleEnterPress}
           value={textValue}
@@ -819,9 +840,9 @@ function PlaceholderType(props) {
             onChangeInput(
               e.target.value,
               props.pos.key,
-              props.xyPosition,
+              props.xyPostion,
               props.index,
-              props.setXyPosition,
+              props.setXyPostion,
               props.data && props.data?.Id,
               false
             );
@@ -842,19 +863,14 @@ function PlaceholderType(props) {
             alt="image"
             draggable="false"
             src={props.pos.SignUrl}
-            className="w-full h-full "
+            className="w-full h-full"
           />
         </div>
       ) : (
-        <div className={widgetCls}>
+        <div className="text-[11px] w-full h-full text-black flex flex-col justify-center items-center">
           {props.pos.isStamp ? <div>stamp</div> : <div>signature</div>}
           {props?.handleUserName &&
-            props?.handleUserName(
-              props?.data?.Id,
-              props?.data?.Role,
-              null,
-              props.pos
-            )}
+            props?.handleUserName(props?.data?.Id, props?.data?.Role)}
         </div>
       );
   }

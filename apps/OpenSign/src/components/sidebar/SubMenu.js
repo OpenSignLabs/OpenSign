@@ -1,11 +1,8 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { NavLink } from "react-router";
+import { NavLink } from "react-router-dom";
 
 const Submenu = ({ item, closeSidebar, toggleSubmenu, submenuOpen }) => {
-  const appName =
-    "OpenSign™";
-  const drivename = appName === "OpenSign™" ? "OpenSign™" : "";
   const { t } = useTranslation();
   const { title, icon, children } = item;
   return (
@@ -19,9 +16,7 @@ const Submenu = ({ item, closeSidebar, toggleSubmenu, submenuOpen }) => {
       >
         <i className={`${icon} text-[18px]`}></i>
         <div className="flex justify-between items-center w-full">
-          <span className="ml-3 lg:ml-4">
-            {t(`sidebar.${item.title}`, { appName })}
-          </span>
+          <span className="ml-3 lg:ml-4">{t(`sidebar.${item.title}`)}</span>
           <i
             className={`${
               submenuOpen[item.title]
@@ -56,9 +51,7 @@ const Submenu = ({ item, closeSidebar, toggleSubmenu, submenuOpen }) => {
                   aria-hidden="true"
                 ></i>
                 <span className="ml-3 lg:ml-4">
-                  {t(`sidebar.${item.title}-Children.${childItem.title}`, {
-                    appName: drivename
-                  })}
+                  {t(`sidebar.${item.title}-Children.${childItem.title}`)}
                 </span>
               </NavLink>
             </li>

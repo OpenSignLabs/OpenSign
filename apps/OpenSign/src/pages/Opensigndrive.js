@@ -1,12 +1,8 @@
 import React, { useEffect, useState, useRef } from "react";
 import "../styles/opensigndrive.css";
-import {
-  iconColor,
-} from "../constant/const";
-import {
-  getDrive
-} from "../constant/Utils";
-import { useNavigate } from "react-router";
+import { iconColor } from "../constant/const";
+import { getDrive } from "../constant/Utils";
+import { useNavigate } from "react-router-dom";
 import Title from "../components/Title";
 import Parse from "parse";
 import ModalUi from "../primitives/ModalUi";
@@ -19,8 +15,6 @@ import { useTranslation } from "react-i18next";
 const DriveBody = React.lazy(
   () => import("../components/opensigndrive/DriveBody")
 );
-const dropdowncss =
-  "absolute right-0 py-2 text-[1rem] text-left bg-white border-[1px] border-gray-300 min-w-1 hover:bg-gray-300  rounded-[0.25rem] z-[800]";
 const AppLoader = () => {
   return (
     <div className="h-[100vh] flex justify-center items-center">
@@ -29,9 +23,6 @@ const AppLoader = () => {
   );
 };
 function Opensigndrive() {
-  const appName =
-    "OpenSign™";
-  const drivename = appName === "OpenSign™" ? "OpenSign™" : "";
   const { t } = useTranslation();
   const navigate = useNavigate();
   const scrollRef = useRef(null);
@@ -54,9 +45,9 @@ function Opensigndrive() {
   const [handleError, setHandleError] = useState("");
   const [folderName, setFolderName] = useState([]);
   const [isAlert, setIsAlert] = useState({ isShow: false, alertMessage: "" });
-  const [isOptions, setIsOptions] = useState(false);
+  const [isNewFol, setIsNewFol] = useState(false);
   const [skip, setSkip] = useState(0);
-  const limit = 50;
+  const limit = 100;
   const [loading, setLoading] = useState(false);
   const sortOrder = ["Ascending", "Descending"];
   const sortingValue = ["Name", "Date"];
@@ -79,7 +70,8 @@ function Opensigndrive() {
   const jsonCurrentUser = JSON.parse(currentUser);
 
   useEffect(() => {
-    getDetails();
+    getPdfDocumentList();
+
     // eslint-disable-next-line
   }, [docId]);
 
@@ -129,9 +121,6 @@ function Opensigndrive() {
       style: { fontSize: "13px" }
     }
   ];
-  const getDetails = async () => {
-      getPdfDocumentList();
-  };
   //function for get all pdf document list
   const getPdfDocumentList = async (disbaleLoading) => {
     setLoading(true);
@@ -203,9 +192,7 @@ function Opensigndrive() {
         setTourData(tourConfigs);
       }
       if (!docId) {
-        setFolderName([
-          { name: t("OpenSign-drive", { appName: drivename }), objectId: "" }
-        ]);
+        setFolderName([{ name: t("OpenSign-drive"), objectId: "" }]);
       }
     } catch (e) {
       setIsAlert({
@@ -236,7 +223,8 @@ function Opensigndrive() {
       //disableLoading is used disable initial loader
       const disableLoading = true;
       // If the fetched data length is less than the limit, it means there's no more data to fetch
-      if (!loading && pdfData.length % 50 === 0) {
+
+      if (!loading && pdfData.length % 100 === 0) {
         getPdfDocumentList(disableLoading);
       }
     }
@@ -432,8 +420,8 @@ function Opensigndrive() {
     const closeMenuOnOutsideClick = (e) => {
       if (isShowSort && !e.target.closest("#menu-container")) {
         setIsShowSort(!isShowSort);
-      } else if (isOptions && !e.target.closest("#folder-menu")) {
-        setIsOptions(!isOptions);
+      } else if (isNewFol && !e.target.closest("#folder-menu")) {
+        setIsNewFol(!isNewFol);
       }
     };
 
@@ -444,7 +432,7 @@ function Opensigndrive() {
       document.removeEventListener("click", closeMenuOnOutsideClick);
     };
     // eslint-disable-next-line
-  }, [isShowSort, isOptions]);
+  }, [isShowSort, isNewFol]);
 
   const handleFolderTab = (folderData) => {
     return folderData.map((data, id) => {
@@ -524,7 +512,7 @@ function Opensigndrive() {
   }
   return (
     <div className="bg-base-100 text-base-content rounded-box w-full shadow-md">
-      <Title title={`${drivename} Drive`} drive={true} />
+      <Title title={"OpenSign™ Drive"} drive={true} />
       <ModalUi
         isOpen={isAlert.isShow}
         title={t("alert")}
@@ -613,7 +601,7 @@ function Opensigndrive() {
         </div>
       ) : (
         <>
-          <div className="flex flex-row justify-between items-center px-[15px] md:px-[25px] pt-[20px]">
+          <div className="flex flex-row justify-between items-center px-[25px] pt-[20px]">
             {tourData && (
               <Tour
                 onRequestClose={closeTour}
@@ -635,8 +623,10 @@ function Opensigndrive() {
             <div className="flex flex-row items-center">
               <div
                 id="folder-menu"
-                className={`${isOptions ? "dropdown show dropDownStyle" : "dropdown"} hidden md:block`}
-                onClick={() => setIsOptions(!isOptions)}
+                className={
+                  isNewFol ? "dropdown show dropDownStyle" : "dropdown"
+                }
+                onClick={() => setIsNewFol(!isNewFol)}
               >
                 <div className="sort" data-tut="reactourSecond">
                   <i
@@ -646,10 +636,9 @@ function Opensigndrive() {
                   ></i>
                 </div>
                 <div
-                  className={`${isOptions ? "block" : "hidden"} ${dropdowncss}`}
-                  // className={isOptions ? "dropdown-menu show" : "dropdown-menu"}
+                  className={isNewFol ? "dropdown-menu show" : "dropdown-menu"}
                   aria-labelledby="dropdownMenuButton"
-                  aria-expanded={isOptions ? "true" : "false"}
+                  aria-expanded={isNewFol ? "true" : "false"}
                 >
                   <div className="flex flex-col">
                     <span
@@ -730,6 +719,7 @@ function Opensigndrive() {
                       </span>
                     );
                   })}
+
                   <hr className="hrStyle" />
                   {sortOrder.map((order, ind) => {
                     return (
@@ -758,66 +748,30 @@ function Opensigndrive() {
                   })}
                 </div>
               </div>
-              <div
-                data-tut="reactourForth"
-                className="sort"
-                onClick={() => setIsList(!isList)}
-              >
-                <i
-                  className={
-                    isList ? "fa-light fa-th-large" : "fa-light fa-list"
-                  }
-                  style={{ fontSize: "24px", color: `${iconColor}` }}
-                  aria-hidden="true"
-                ></i>
-              </div>
-              <div
-                id="folder-menu"
-                className={`${isOptions ? "dropdown show dropDownStyle" : "dropdown"} md:hidden`}
-                onClick={() => setIsOptions(!isOptions)}
-              >
-                <div
-                  className="p-[19px] my-2 flex items-center justify-center cursor-pointer hover:bg-[var(--mauve-3)] rounded-[2px] shadow-[0_2px_4px_rgba(168,204,206,0.1)]"
-                  data-tut="reactourSecond"
-                >
-                  <i
-                    className="fa-light fa-ellipsis-vertical fa-lg"
-                    aria-hidden="true"
-                    style={{ color: `${iconColor}` }}
-                  ></i>
-                </div>
-                <div
-                  className={`${isOptions ? "block" : "hidden"} ${dropdowncss}`}
-                  aria-labelledby="dropdownMenuButton"
-                  aria-expanded={isOptions ? "true" : "false"}
-                >
-                  <div className="flex flex-col">
-                    <span
-                      className="dropdown-item text-[10px] md:text-[13px]"
-                      onClick={() => setIsFolder(true)}
-                    >
-                      <i
-                        className="fa-light fa-plus mr-[5px]"
-                        aria-hidden="true"
-                      ></i>
-                      {t("create-folder")}
-                    </span>
-                    <span
-                      className="dropdown-item text-[10px] md:text-[13px]"
-                      onClick={() => navigate("/form/sHAnZphf69")}
-                    >
-                      <i className="fa-light fa-pen-nib mr-[5px]"></i>
-                      {t("form-name.Sign Yourself")}
-                    </span>
-                    <span
-                      className="dropdown-item text-[10px] md:text-[13px]"
-                      onClick={() => navigate("/form/8mZzFxbG1z")}
-                    >
-                      <i className="fa-light fa-file-signature mr-[5px]"></i>
-                      {t("form-name.Request Signatures")}
-                    </span>
+
+              <div>
+                {isList ? (
+                  <div className="sort" onClick={() => setIsList(!isList)}>
+                    <i
+                      onClick={() => setIsList(!isList)}
+                      className="fa-light fa-th-large"
+                      style={{ fontSize: "24px", color: `${iconColor}` }}
+                      aria-hidden="true"
+                    ></i>
                   </div>
-                </div>
+                ) : (
+                  <div
+                    data-tut="reactourForth"
+                    className="sort"
+                    onClick={() => setIsList(!isList)}
+                  >
+                    <i
+                      className="fa-light fa-list"
+                      aria-hidden="true"
+                      style={{ fontSize: "23px", color: `${iconColor}` }}
+                    ></i>
+                  </div>
+                )}
               </div>
             </div>
           </div>

@@ -6,9 +6,6 @@ import { useTranslation } from "react-i18next";
 
 const FolderModal = (props) => {
   const { t } = useTranslation();
-  const appName =
-    "OpenSign™";
-  const drivename = appName === "OpenSign™" ? "OpenSign™" : "";
   const [clickFolder, setClickFolder] = useState("");
   const [folderList, setFolderList] = useState([]);
   const [tabList, setTabList] = useState([]);
@@ -82,7 +79,7 @@ const FolderModal = (props) => {
 
   // `handleSubmit` is used to pass folderPtr to parent component
   const handleSubmit = () => {
-    let url = drivename + " Drive";
+    let url = "OpenSign™ Drive";
     tabList.forEach((t) => {
       url = url + " / " + t.Name;
     });
@@ -160,10 +157,10 @@ const FolderModal = (props) => {
           <div className="pt-1 text-[#ac4848] text-[14px] font-[500]">
             <span
               className="cursor-pointer"
-              title={`${drivename} Drive`}
+              title="OpenSign™ Drive"
               onClick={(e) => removeTabListItem(e)}
             >
-              {t("OpenSign-drive", { appName: drivename })} /{" "}
+              {t("OpenSign-drive")} /{" "}
             </span>
             {tabList &&
               tabList.map((tab, i) => (

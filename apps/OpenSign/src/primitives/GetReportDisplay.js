@@ -1,28 +1,27 @@
 import React, { useState, useEffect } from "react";
 import pad from "../assets/images/pad.svg";
-import { useLocation, useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import ModalUi from "./ModalUi";
 import AddSigner from "../components/AddSigner";
-import {
-  emailRegex,
-} from "../constant/const";
+import { isEnableSubscription, isStaging } from "../constant/const";
 import Alert from "./Alert";
 import Tooltip from "./Tooltip";
 import { RWebShare } from "react-web-share";
 import Tour from "reactour";
 import Parse from "parse";
 import {
+  checkIsSubscribed,
   copytoData,
   fetchUrl,
   formatDate,
-  formatTimeInTimezone,
   getSignedUrl,
   getTenantDetails,
   handleSignatureType,
   replaceMailVaribles,
   signatureTypes
 } from "../constant/Utils";
+import Confetti from "react-confetti";
 import EditorToolbar, {
   module1,
   formats
@@ -31,16 +30,15 @@ import ReactQuill from "react-quill-new";
 import "../styles/quill.css";
 import BulkSendUi from "../components/BulkSendUi";
 import Loader from "./Loader";
+import Select from "react-select";
+import SubscribeCard from "./SubscribeCard";
+import { validplan } from "../json/plansArr";
 import { serverUrl_fn } from "../constant/appinfo";
 import { useTranslation } from "react-i18next";
 import DownloadPdfZip from "./DownloadPdfZip";
-import * as XLSX from "xlsx";
-import EditContactForm from "../components/EditContactForm";
+import EmbedTab from "../components/pdf/EmbedTab";
 
 const ReportTable = (props) => {
-  const appName =
-    "OpenSign™";
-  const drivename = appName === "OpenSign™" ? "OpenSign™" : "";
   const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
@@ -60,6 +58,7 @@ const ReportTable = (props) => {
   const [isTour, setIsTour] = useState(false);
   const [tourStatusArr, setTourStatusArr] = useState([]);
   const [isResendMail, setIsResendMail] = useState({});
+  const [isMakePublicModal, setIsMakePublicModal] = useState({});
   const [mail, setMail] = useState({ subject: "", body: "" });
   const [userDetails, setUserDetails] = useState({});
   const [isNextStep, setIsNextStep] = useState({});
@@ -68,22 +67,24 @@ const ReportTable = (props) => {
   const [placeholders, setPlaceholders] = useState([]);
   const [isLoader, setIsLoader] = useState({});
   const [isShareWith, setIsShareWith] = useState({});
+  const [teamList, setTeamList] = useState([]);
   const [selectedTeam, setSelectedTeam] = useState([]);
+  const onChange = (selectedOptions) => setSelectedTeam(selectedOptions);
+  const [selectedPublicRole, setSelectedPublicRole] = useState("");
+  const [isCelebration, setIsCelebration] = useState(false);
+  const [isPublicProfile, setIsPublicProfile] = useState({});
+  const [publicUserName, setIsPublicUserName] = useState("");
   const [isViewShare, setIsViewShare] = useState({});
+  const [isSubscribe, setIsSubscribe] = useState(true);
   const [isModal, setIsModal] = useState({});
   const [reason, setReason] = useState("");
   const [isDownloadModal, setIsDownloadModal] = useState(false);
+  const [isEmbed, setIsEmbed] = useState(false);
+  const [isPublicTour, setIsPublicTour] = useState();
   const [signatureType, setSignatureType] = useState([]);
   const [expiryDate, setExpiryDate] = useState("");
   const Extand_Class = localStorage.getItem("Extand_Class");
   const extClass = Extand_Class && JSON.parse(Extand_Class);
-  const [importedData, setImportedData] = useState([]);
-  const [currentImportPage, setCurrentImportPage] = useState(1);
-  const [isShowAllSigners, setIsShowAllSigners] = useState({});
-  const [invalidRecords, setInvalidRecords] = useState(0);
-  const [renameDoc, setRenameDoc] = useState("");
-  const [contact, setContact] = useState({ Name: "", Email: "", Phone: "" });
-  const recordsPerPage = 5;
   const startIndex = (currentPage - 1) * props.docPerPage;
   const { isMoreDocs, setIsNextRecord } = props;
 
@@ -156,6 +157,12 @@ const ReportTable = (props) => {
           const teamtRes = await Parse.Cloud.run("getteams", { active: true });
           if (teamtRes.length > 0) {
             const _teamRes = JSON.parse(JSON.stringify(teamtRes));
+            const formatedList = _teamRes.map((x) => ({
+              label: x.Name,
+              value: x.objectId
+            }));
+            setTeamList(formatedList);
+            if (!isEnableSubscription) {
               const selected = _teamRes.map(
                 (x) =>
                   x.Name === "All Users" && {
@@ -164,6 +171,7 @@ const ReportTable = (props) => {
                   }
               );
               setSelectedTeam(selected);
+            }
           }
         }
       } catch (err) {
@@ -224,7 +232,7 @@ const ReportTable = (props) => {
   const handleURL = async (item, act) => {
     if (props.ReportName === "Templates") {
       if (act.hoverLabel === "Edit") {
-          navigate(`/${act.redirectUrl}/${item.objectId}`);
+        navigate(`/${act.redirectUrl}/${item.objectId}`);
       } else {
         setActLoader({ [`${item.objectId}_${act.btnId}`]: true });
         try {
@@ -259,6 +267,7 @@ const ReportTable = (props) => {
               });
             }
 
+            // console.log("extClass ", extClass);
             let extUserId = Doc.ExtUserPtr.objectId;
             let creatorId = Doc.CreatedBy.objectId;
             if (extClass && extClass.length > 0) {
@@ -282,13 +291,9 @@ const ReportTable = (props) => {
                 ? { SignatureType: updatedSignatureType }
                 : {};
             const NotifyOnSignatures =
-              Doc?.NotifyOnSignatures !== undefined
+              Doc.NotifyOnSignatures !== undefined
                 ? { NotifyOnSignatures: Doc.NotifyOnSignatures }
                 : {};
-            const Bcc = Doc?.Bcc?.length > 0 ? { Bcc: Doc?.Bcc } : {};
-            const RedirectUrl = Doc?.RedirectUrl
-              ? { RedirectUrl: Doc?.RedirectUrl }
-              : {};
             let placeholdersArr = [];
             if (Doc.Placeholders?.length > 0) {
               placeholdersArr = Doc.Placeholders;
@@ -315,12 +320,9 @@ const ReportTable = (props) => {
                 AutomaticReminders: Doc?.AutomaticReminders || false,
                 RemindOnceInEvery: Doc?.RemindOnceInEvery || 5,
                 IsEnableOTP: Doc?.IsEnableOTP || false,
-                TimeToCompleteDays: parseInt(Doc?.TimeToCompleteDays) || 15,
-                AllowModifications: Doc?.AllowModifications || false,
+                FileAdapterId: Doc?.FileAdapterId || "",
                 ...SignatureType,
-                ...NotifyOnSignatures,
-                ...Bcc,
-                ...RedirectUrl
+                ...NotifyOnSignatures
               };
               try {
                 const res = await axios.post(
@@ -401,6 +403,12 @@ const ReportTable = (props) => {
     } else if (act.action === "bulksend") {
       handleBulkSend(item);
     } else if (act.action === "sharewith") {
+      if (isEnableSubscription) {
+        const subscribe = await checkIsSubscribed();
+        setIsSubscribe(subscribe);
+      } else {
+        setIsSubscribe({ plan: "teams-yearly", isValid: true });
+      }
       if (item?.SharedWith && item?.SharedWith.length > 0) {
         // below code is used to get existing sharewith teams and formated them as per react-select
         const formatedList = item?.SharedWith.map((x) => ({
@@ -410,14 +418,23 @@ const ReportTable = (props) => {
         setSelectedTeam(formatedList);
       }
       setIsShareWith({ [item.objectId]: true });
-    }
-    else if (act.action === "duplicate") {
-      setIsModal({ [`duplicate_${item.objectId}`]: true });
-    } else if (act.action === "rename") {
-      setIsModal({ [`rename_${item.objectId}`]: true });
-    } else if (act.action === "edit") {
-      setContact(item);
-      setIsModal({ [`edit_${item.objectId}`]: true });
+    } else if (act.action === "Embed") {
+      handleEmbedFunction(item);
+    } else if (act.action === "CopyTemplateId") {
+      copyTemplateId(item.objectId);
+    } else if (act.action === "CopyPublicURL") {
+      const isPublic = item?.IsPublic;
+      if (isPublic) {
+        let publicUrl = "";
+        if (isStaging) {
+          publicUrl = `https://staging.opensign.me/publicsign?templateid=${item.objectId}`;
+        } else {
+          publicUrl = `https://opensign.me/publicsign?templateid=${item.objectId}`;
+        }
+        copyTemplateId(publicUrl);
+      } else {
+        setIsPublicTour({ [item.objectId]: true });
+      }
     } else if (act.action) {
       setIsModal({ [`extendexpiry_${item.objectId}`]: true });
     }
@@ -495,10 +512,18 @@ const ReportTable = (props) => {
       setActLoader({});
     }
   };
-  const handleClose = (
-  ) => {
+  const handleClose = (item) => {
     setIsRevoke({});
     setIsDeleteModal({});
+    setIsMakePublicModal({});
+    setSelectedPublicRole("");
+    setIsPublicProfile({});
+    if (item?.objectId) {
+      props.setIsPublic((prevStates) => ({
+        ...prevStates,
+        [item.objectId]: !prevStates[item.objectId]
+      }));
+    }
     setReason("");
   };
   const handleShare = (item) => {
@@ -574,6 +599,41 @@ const ReportTable = (props) => {
             (x) => x.objectId !== item.objectId
           );
           props.setList(upldatedList);
+          const params = {
+            event: "declined",
+            body: {
+              objectId: item.objectId,
+              file: item?.SignedUrl || item?.URL,
+              name: item?.Name,
+              note: item?.Note || "",
+              description: item?.Description || "",
+              signers: item?.Signers?.map((x) => ({
+                name: x?.Name,
+                email: x?.Email,
+                phone: x?.Phone
+              })),
+              declinedBy: jsonSender?.email,
+              declinedReason: reason,
+              declinedAt: new Date(),
+              createdAt: item?.createdAt
+            }
+          };
+
+          try {
+            await axios.post(
+              `${localStorage.getItem("baseUrl")}functions/callwebhook`,
+              params,
+              {
+                headers: {
+                  "Content-Type": "application/json",
+                  "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
+                  sessiontoken: localStorage.getItem("accesstoken")
+                }
+              }
+            );
+          } catch (err) {
+            console.log("Err ", err);
+          }
         }
         setReason("");
       })
@@ -640,13 +700,12 @@ const ReportTable = (props) => {
   const handleDownload = async (item) => {
     setActLoader({ [`${item.objectId}`]: true });
     const url = item?.SignedUrl || item?.URL || "";
-    const pdfName =
-      item?.Name?.length > 100
-        ? item?.Name?.slice(0, 100)
-        : item?.Name || "Document";
+    const pdfName = item?.Name || "exported_file";
     const isCompleted = item?.IsCompleted || false;
     const templateId = props?.ReportName === "Templates" && item.objectId;
     const docId = props?.ReportName !== "Templates" && item.objectId;
+    const fileAdapterId = item?.FileAdapterId ? item?.FileAdapterId : "";
+
     if (url) {
       try {
         if (isCompleted) {
@@ -655,6 +714,7 @@ const ReportTable = (props) => {
           const signedUrl = await getSignedUrl(
             url,
             docId,
+            fileAdapterId,
             templateId
           );
           await fetchUrl(signedUrl, pdfName);
@@ -683,12 +743,10 @@ const ReportTable = (props) => {
     const signPdf = `${window.location.origin}/login/${encodeBase64}`;
     const variables = {
       document_title: doc.Name,
-      sender_name:
-        doc.ExtUserPtr.Name,
-      sender_mail:
-        doc.ExtUserPtr.Email,
+      sender_name: doc.ExtUserPtr.Name,
+      sender_mail: doc.ExtUserPtr.Email,
       sender_phone: doc.ExtUserPtr?.Phone || "",
-      receiver_name: userDetails?.Name || "",
+      receiver_name: userDetails?.Name,
       receiver_email: userDetails?.Email,
       receiver_phone: userDetails?.Phone || "",
       expiry_date: localExpireDate,
@@ -714,10 +772,8 @@ const ReportTable = (props) => {
     const signPdf = `${window.location.origin}/login/${encodeBase64}`;
     const variables = {
       document_title: doc.Name,
-      sender_name:
-        doc.ExtUserPtr.Name,
-      sender_mail:
-        doc.ExtUserPtr.Email,
+      sender_name: doc.ExtUserPtr.Name,
+      sender_mail: doc.ExtUserPtr.Email,
       sender_phone: doc.ExtUserPtr?.Phone || "",
       receiver_name: userDetails?.Name || "",
       receiver_email: userDetails?.Email || "",
@@ -757,10 +813,8 @@ const ReportTable = (props) => {
     const signPdf = `${window.location.origin}/login/${encodeBase64}`;
     const variables = {
       document_title: doc.Name,
-      sender_name:
-        doc.ExtUserPtr.Name,
-      sender_mail:
-        doc.ExtUserPtr.Email,
+      sender_name: doc.ExtUserPtr.Name,
+      sender_mail: doc.ExtUserPtr.Email,
       sender_phone: doc.ExtUserPtr?.Phone || "",
       receiver_name: user?.signerPtr?.Name || "",
       receiver_email: user?.email ? user?.email : user?.signerPtr?.Email,
@@ -775,7 +829,7 @@ const ReportTable = (props) => {
       `{{sender_name}} has requested you to sign "{{document_title}}"`;
     const body =
       doc?.RequestBody ||
-      `<html><head><meta http-equiv='Content-Type' content='text/html; charset=UTF-8' /></head><body><p>Hi {{receiver_name}},</p><br><p>We hope this email finds you well. {{sender_name}} has requested you to review and sign <b>"{{document_title}}"</b>.</p><p>Your signature is crucial to proceed with the next steps as it signifies your agreement and authorization.</p><br><p>{{signing_url}}</p><br><p>If you have any questions or need further clarification regarding the document or the signing process,  please contact the sender.</p><br><p>Thanks</p><p> Team ${appName}</p><br></body> </html>`;
+      `<html><head><meta http-equiv='Content-Type' content='text/html; charset=UTF-8' /></head><body><p>Hi {{receiver_name}},</p><br><p>We hope this email finds you well. {{sender_name}} has requested you to review and sign <b>"{{document_title}}"</b>.</p><p>Your signature is crucial to proceed with the next steps as it signifies your agreement and authorization.</p><br><p>{{signing_url}}</p><br><p>If you have any questions or need further clarification regarding the document or the signing process,  please contact the sender.</p><br><p>Thanks</p><p> Team OpenSign™</p><br></body> </html>`;
     const res = replaceMailVaribles(subject, body, variables);
     setMail((prev) => ({ ...prev, subject: res.subject, body: res.body }));
     setIsNextStep({ [user.Id]: true });
@@ -790,14 +844,11 @@ const ReportTable = (props) => {
       sessionToken: localStorage.getItem("accesstoken")
     };
     let params = {
-      replyto:
-        doc?.ExtUserPtr?.Email ||
-        "",
+      mailProvider: doc?.ExtUserPtr?.active_mail_adapter || "",
       extUserId: doc?.ExtUserPtr?.objectId,
       recipient: userDetails?.Email,
       subject: mail.subject,
-      from:
-        doc?.ExtUserPtr?.Email,
+      from: doc?.ExtUserPtr?.Email,
       html: mail.body
     };
     try {
@@ -805,7 +856,6 @@ const ReportTable = (props) => {
       if (res?.data?.result?.status === "success") {
         setIsAlert(true);
         setAlertMsg({ type: "success", message: t("mail-sent-alert") });
-        setIsResendMail({});
       } else {
         setIsAlert(true);
         setAlertMsg({
@@ -918,9 +968,188 @@ const ReportTable = (props) => {
       setTimeout(() => setIsAlert(false), 1500);
     }
   };
+  //function to make template public and set public role
+  const handlePublicTemplate = async (item) => {
+    if (selectedPublicRole || !props.isPublic[item.objectId]) {
+      setActLoader({ [item.objectId]: true });
+      setIsMakePublicModal(false);
+      try {
+        const res = await Parse.Cloud.run("createpublictemplate", {
+          templateid: item.objectId,
+          ispublic: props.isPublic[item.objectId],
+          publicrole: [selectedPublicRole]
+        });
+
+        if (res.status === "success") {
+          setIsAlert(true);
+          setTimeout(() => setIsAlert(false), 1500);
+          if (props.isPublic[item.objectId]) {
+            setAlertMsg({
+              type: "success",
+              message: t("template-public-alert-1")
+            });
+            setIsCelebration(true);
+            setTimeout(() => {
+              setIsCelebration(false);
+            }, 5000);
+            setIsPublicProfile({
+              [item.objectId]: props.isPublic[item.objectId]
+            });
+          } else {
+            setAlertMsg({
+              type: "success",
+              message: t("template-public-alert-2")
+            });
+            setSelectedPublicRole("");
+          }
+          const updateList = props.List.map((x) =>
+            x.objectId === item.objectId
+              ? { ...x, IsPublic: props.isPublic[item.objectId] }
+              : x
+          );
+          props.setList(updateList);
+          setActLoader({});
+        }
+      } catch (e) {
+        console.log("error in createpublictemplate", e);
+        setIsAlert(true);
+        setAlertMsg({
+          type: "danger",
+          message: t("something-went-wrong-mssg")
+        });
+        setTimeout(() => setIsAlert(false), 1500);
+        props.setIsPublic((prevStates) => ({
+          ...prevStates,
+          [item.objectId]: !prevStates[item.objectId]
+        }));
+      }
+    } else {
+      setIsAlert(true);
+      setAlertMsg({
+        type: "danger",
+        message: t("template-public-alert-3")
+      });
+      setTimeout(() => setIsAlert(false), 1500);
+    }
+  };
 
   const handleViewSigners = (item) => {
     setIsViewShare({ [item.objectId]: true });
+  };
+  //function to handle change template status is public or private
+  const handlePublicChange = async (e, item) => {
+    const getPlaceholder = item?.Placeholders;
+    //checking index for public role
+    const getIndex = getPlaceholder?.findIndex((obj) => !obj?.signerObjId);
+    //conditon to check empty role is exist or not
+    if (getPlaceholder && getPlaceholder.length > 0 && getIndex >= 0) {
+      const signers = item?.Signers;
+      //condition to check that every role is attached to signers except the public role.
+      if (getPlaceholder.length - 1 === signers?.length) {
+        //check template send in order
+        const IsSendInOrder = item?.SendinOrder;
+        //condition for if send in order true then the public role order should be prioritized.
+        //When send in order is false and there's no need to verify the public role's order
+        if ((IsSendInOrder && getIndex === 0) || !IsSendInOrder) {
+          const checkIsSignatureExist = getPlaceholder?.every(
+            (placeholderObj) =>
+              placeholderObj?.placeHolder?.some((holder) =>
+                holder?.pos?.some((posItem) => posItem?.type === "signature")
+              )
+          );
+          //condition for validate signature widgets should be all signers
+          if (checkIsSignatureExist) {
+            let extendUser = JSON.parse(localStorage.getItem("Extand_Class"));
+            const userName = extendUser[0]?.UserName;
+            setIsPublicUserName(extendUser[0]?.UserName);
+            //condition to check user have public url or not
+            if (userName) {
+              //`setIsPublic` variable is used to collect all template public status
+              props.setIsPublic((prevStates) => ({
+                ...prevStates,
+                [item.objectId]: e.target.checked
+              }));
+              if (getPlaceholder[getIndex]?.Role) {
+                setSelectedPublicRole(getPlaceholder[getIndex].Role);
+              }
+              //`setIsMakePublicModal` is used to open modal after succesfully make public
+              setIsMakePublicModal({ [item.objectId]: true });
+            } else {
+              setIsPublicProfile({ [item.objectId]: true });
+            }
+          } else {
+            setIsAlert(true);
+            setAlertMsg({
+              type: "danger",
+              message: t("template-public-alert-4")
+            });
+            setTimeout(() => setIsAlert(false), 5000);
+          }
+        } else if (IsSendInOrder) {
+          setIsAlert(true);
+          setAlertMsg({
+            type: "danger",
+            message: t("template-public-alert-5")
+          });
+          setTimeout(() => setIsAlert(false), 5000);
+        }
+      } else {
+        setIsAlert(true);
+        setAlertMsg({
+          type: "danger",
+          message: t("template-public-alert-6")
+        });
+        setTimeout(() => setIsAlert(false), 5000);
+      }
+    } else {
+      setIsAlert(true);
+      setAlertMsg({
+        type: "danger",
+        message: t("template-public-alert-7")
+      });
+      setTimeout(() => setIsAlert(false), 5000);
+    }
+  };
+
+  const publicUrl = () => {
+    const subDomain = isStaging
+      ? `https://staging.opensign.me/`
+      : `https://opensign.me/`;
+    const url = `${subDomain}${publicUserName}`;
+    return url;
+  };
+  // function to copy public profile links
+  const copytoProfileLink = () => {
+    const url = publicUrl();
+    copytoData(url);
+    setIsAlert(true);
+    setAlertMsg({
+      type: "success",
+      message: t("copied")
+    });
+    setCopied({ ...copied, publicprofile: true });
+    setTimeout(() => {
+      setIsAlert(false);
+      setCopied(false);
+    }, 1500);
+  };
+
+  const copyTemplateId = (templateid) => {
+    copytoData(templateid);
+    setIsAlert(true);
+    setAlertMsg({
+      type: "success",
+      message: t("copied")
+    });
+    setCopied({ ...copied, templateid: true });
+    setTimeout(() => {
+      setIsAlert(false);
+      setCopied(false);
+    }, 1500);
+  };
+  const handleShowRole = (item) => {
+    const getRole = item.Placeholders.find((data) => !data.signerObjId);
+    return getRole?.Role;
   };
   // `handleShareWith` is used to save teams in sharedWith field
   const handleShareWith = async (e, template) => {
@@ -956,7 +1185,26 @@ const ReportTable = (props) => {
       setTimeout(() => setIsAlert(false), 1500);
     }
   };
+  const handleEmbedFunction = async (item) => {
+    setIsEmbed(true);
+    setIsPublicProfile({
+      [item.objectId]: true
+    });
+    let extendUser = JSON.parse(localStorage.getItem("Extand_Class"));
+    setIsPublicUserName(extendUser[0]?.UserName || "");
+  };
 
+  const publicTourConfig = [
+    {
+      selector: '[data-tut="IsPublic"]',
+      content: t("public-tour-message"),
+      position: "top",
+      style: { fontSize: "13px" }
+    }
+  ];
+  const closePublicTour = () => {
+    setIsPublicTour();
+  };
   const handleUpdateExpiry = async (e, item) => {
     e.preventDefault();
     e.stopPropagation();
@@ -1025,19 +1273,16 @@ const ReportTable = (props) => {
         (audit) => audit?.UserPtr?.objectId === x.signerObjId
       );
       if (matchSigner) {
-        const timezone = extClass?.[0]?.Timezone || "";
-        const signedon = matchSigner?.SignedOn
-          ? formatTimeInTimezone(new Date(matchSigner?.SignedOn), timezone)
-          : "-";
-        const viewedon = matchSigner?.ViewedOn
-          ? formatTimeInTimezone(new Date(matchSigner?.ViewedOn), timezone)
-          : "-";
         return {
           id: i,
           Email: matchSigner.UserPtr.Email,
           Activity: matchSigner?.Activity?.toUpperCase() || "-",
-          SignedOn: signedon,
-          ViewedOn: viewedon
+          SignedOn: matchSigner?.SignedOn
+            ? new Date(matchSigner?.SignedOn)?.toUTCString()
+            : "-",
+          ViewedOn: matchSigner?.ViewedOn
+            ? new Date(matchSigner?.ViewedOn)?.toUTCString()
+            : "-"
         };
       } else {
         return {
@@ -1049,357 +1294,39 @@ const ReportTable = (props) => {
         };
       }
     });
-    // Decide how many signers to display based on `showAllSignes` state
-    const displaySigners = isShowAllSigners[item.objectId]
-      ? signers
-      : signers.slice(0, 3);
-    return (
-      <>
-        {displaySigners?.map((x, i) => (
-          <div
-            key={i}
-            className="text-sm font-medium flex flex-row gap-2 items-center"
+    return signers?.map((x, i) => (
+      <div
+        key={i}
+        className="text-sm font-medium flex flex-row gap-2 items-center"
+      >
+        <button
+          onClick={() => setIsModal({ [`${item.objectId}_${i}`]: true })}
+          className={`${
+            x.Activity === "SIGNED"
+              ? "op-border-primary op-text-primary"
+              : x.Activity === "VIEWED"
+                ? "border-green-400 text-green-400"
+                : "border-black text-black"
+          } focus:outline-none border-2 w-[60px] h-[30px] text-[11px] rounded-full`}
+        >
+          {x?.Activity?.toUpperCase() || "-"}
+        </button>
+        <div className="py-2 font-bold text-[12px]">{x?.Email || "-"}</div>
+        {isModal[`${item.objectId}_${i}`] && (
+          <ModalUi
+            isOpen
+            title={t("document-logs")}
+            handleClose={() => setIsModal({})}
           >
-            <button
-              onClick={() => setIsModal({ [`${item.objectId}_${i}`]: true })}
-              className={`${
-                x.Activity === "SIGNED"
-                  ? "op-border-primary op-text-primary"
-                  : x.Activity === "VIEWED"
-                    ? "border-green-400 text-green-400"
-                    : "border-black text-black"
-              } focus:outline-none border-2 w-[60px] h-[30px] text-[11px] rounded-full`}
-            >
-              {x?.Activity?.toUpperCase() || "-"}
-            </button>
-            <div className="py-2 font-bold text-[12px]">{x?.Email || "-"}</div>
-            {isModal[`${item.objectId}_${i}`] && (
-              <ModalUi
-                isOpen
-                title={t("document-logs")}
-                handleClose={() => setIsModal({})}
-              >
-                <div className="pl-3 first:mt-2 border-t-[1px] border-gray-600 text-[12px] py-2">
-                  <p className="font-bold"> {x?.Email}</p>
-                  <p>Viewed on: {x?.ViewedOn}</p>
-                  <p>Signed on: {x?.SignedOn}</p>
-                </div>
-              </ModalUi>
-            )}
-          </div>
-        ))}
-        {/* Show More / Hide button */}
-        {signers?.length > 3 && (
-          <button
-            onClick={() =>
-              setIsShowAllSigners({
-                [item.objectId]: !isShowAllSigners[item.objectId]
-              })
-            }
-            className="ml-2 text-xs font-medium text-blue-500 underline focus:outline-none"
-          >
-            {isShowAllSigners[item.objectId] ? "Hide" : "Show More"}
-          </button>
+            <div className="pl-3 first:mt-2 border-t-[1px] border-gray-600 text-[12px] py-2">
+              <p className="font-bold"> {x?.Email}</p>
+              <p>Viewed on: {x?.ViewedOn}</p>
+              <p>Signed on: {x?.SignedOn}</p>
+            </div>
+          </ModalUi>
         )}
-      </>
-    );
-  };
-
-  // `handleImportBtn` is trigger when user click on upload icon from contactbook
-  const handleImportBtn = () => {
-    setIsModal({ export: true });
-  };
-
-  // `capitalize` is used to make word capitalize
-  const capitalize = (s) =>
-    s && String(s[0]).toUpperCase() + String(s).slice(1);
-
-  // `checkRequiredHeaders` is used to check required headers present or not in csv/excel file
-  const checkRequiredHeaders = (headers) => {
-    const requiredHeaders = ["Name", "Email"];
-    // Normalize headers to lowercase once
-    const headersSet = new Set(headers.map((header) => header.toLowerCase()));
-
-    // Check all required headers
-    const allPresent = requiredHeaders.every((requiredHeader) =>
-      headersSet.has(requiredHeader.toLowerCase())
-    );
-    return allPresent;
-  };
-
-  const processCSVFile = async (file, event) => {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const text = e.target.result;
-      // Parse CSV data
-      const rows = text.split("\n").map((row) => row.trim());
-      const headers = rows[0].split(",").map((header) => header.trim());
-      if (checkRequiredHeaders(headers)) {
-        const records = rows.slice(1).reduce((acc, row) => {
-          const values = row?.split(",").map((value) => value.trim()) || [];
-          if (values.length > 1) {
-            acc.push(
-              headers.reduce(
-                (obj, header, index) => ({
-                  ...obj,
-                  [capitalize(header)]: values[index] || ""
-                }),
-                {}
-              )
-            );
-          }
-          return acc;
-        }, []);
-        if (records.length <= 100) {
-          const validRecords = records.length
-            ? records.filter((x) => emailRegex.test(x.Email))
-            : [];
-          const invalidItems = records?.length - validRecords?.length;
-          setInvalidRecords(invalidItems);
-          setImportedData(validRecords);
-        } else {
-          alert(t("100-records-only"));
-          event.target.value = "";
-          setImportedData([]);
-        }
-      } else {
-        alert(t("invalid-data"));
-        event.target.value = "";
-      }
-    };
-    reader.readAsText(file);
-  };
-
-  const processExcelFile = (file, event) => {
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const arrayBuffer = e.target.result;
-        const workbook = XLSX.read(new Uint8Array(arrayBuffer), {
-          type: "array"
-        });
-
-        // Get the first sheet
-        const sheetName = workbook.SheetNames[0];
-        const sheet = workbook.Sheets[sheetName];
-
-        // Convert sheet to JSON
-        const sheetData = XLSX.utils.sheet_to_json(sheet);
-        if (sheetData.length <= 100) {
-          // Get all unique keys from the data to handle missing fields
-          const headers = [
-            ...new Set(sheetData.flatMap((item) => Object.keys(item)))
-          ];
-
-          if (checkRequiredHeaders(headers)) {
-            const updateSheetData = sheetData.map((obj) => {
-              for (let key in obj) {
-                const capitalizedKey = capitalize(key);
-                if (capitalizedKey !== key) {
-                  obj[capitalizedKey] = obj[key];
-                  delete obj[key]; // delete the old key to avoid duplicates
-                }
-              }
-              return obj;
-            });
-            const validRecords = updateSheetData.length
-              ? updateSheetData.filter((x) => emailRegex.test(x.Email))
-              : [];
-            const invalidItems = updateSheetData?.length - validRecords?.length;
-            setInvalidRecords(invalidItems);
-            setImportedData(validRecords);
-          } else {
-            alert(t("invalid-data"));
-            event.target.value = "";
-          }
-        } else {
-          alert(t("100-records-only"));
-          event.target.value = "";
-          setImportedData([]);
-        }
-      };
-
-      reader.readAsArrayBuffer(file);
-    }
-  };
-  // `handleFileUpload` is trigger when user upload excel file from contactbook
-  const handleFileUpload = (event) => {
-    const file = event.target?.files?.[0];
-    if (file) {
-      const fileName = file.name;
-      const fileNameExt = fileName
-        .substr(fileName.lastIndexOf(".") + 1)
-        .toLowerCase();
-      const isValidExt = ["csv", "xlsx", "xls"].includes(fileNameExt);
-      if (isValidExt) {
-        setCurrentImportPage(1);
-        if (fileNameExt !== "csv") {
-          processExcelFile(file, event);
-        } else {
-          processCSVFile(file, event);
-        }
-      } else {
-        event.target.value = "";
-        alert(t("csv-excel-support-only"));
-      }
-    } else {
-      setImportedData([]);
-      setCurrentImportPage(1);
-      setInvalidRecords(0);
-    }
-  };
-
-  // Get all unique keys from the data to handle missing fields
-  const allKeys = importedData?.length
-    ? [...new Set(importedData.flatMap((item) => Object.keys(item)))]
-    : [];
-
-  // Pagination logic for import data table in modal
-  const totalImportPages = Math.ceil(importedData.length / recordsPerPage);
-  const currentRecords = importedData.slice(
-    (currentImportPage - 1) * recordsPerPage,
-    currentImportPage * recordsPerPage
-  );
-
-  // `handleNextPage` is used to importdata table in modal
-  const handleNextPage = (e) => {
-    e.preventDefault();
-    if (currentImportPage < totalImportPages) {
-      setCurrentImportPage(currentImportPage + 1);
-    }
-  };
-
-  // `handlePreviousPage` is used to importdata table in modal
-  const handlePreviousPage = (e) => {
-    e.preventDefault();
-    if (currentImportPage > 1) {
-      setCurrentImportPage(currentImportPage - 1);
-    }
-  };
-  // `handleImportData` is used to create batch in contact
-  const handleImportData = async (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setActLoader({ import: true });
-    try {
-      const filterdata = importedData.map((x) => ({
-        Name: x.Name,
-        Email: x.Email,
-        Phone: x.Phone,
-        TenantId: localStorage.getItem("TenantId")
-      }));
-      const contacts = JSON.stringify(filterdata);
-      const res = await Parse.Cloud.run("createbatchcontact", { contacts });
-      if (res) {
-        setIsAlert(true);
-        setAlertMsg({
-          type: "info",
-          message: t("contact-imported", {
-            imported: res?.success || 0,
-            failed: res?.failed || 0
-          })
-        });
-        if (res?.success > 0) {
-          setTimeout(() => window.location.reload(), 2000);
-        }
-      }
-    } catch (err) {
-      console.log("err while creating batch contact", err);
-      setIsAlert(true);
-      setAlertMsg({ type: "danger", message: t("something-went-wrong-mssg") });
-    } finally {
-      setActLoader({});
-      setIsModal({});
-      setImportedData([]);
-      setInvalidRecords(0);
-      setTimeout(() => setIsAlert(false), 2000);
-    }
-  };
-
-  // `handleCreateDuplicate` is used to create duplicate from current entry using objectId
-  const handleCreateDuplicate = async (item) => {
-    setActLoader({ [item.objectId]: true });
-    setIsModal({});
-    try {
-      const duplicateRes = await Parse.Cloud.run("createduplicate", {
-        templateId: item.objectId
-      });
-      if (duplicateRes) {
-        const newTemplate = JSON.parse(JSON.stringify(duplicateRes));
-        props.setList((prevData) => [newTemplate, ...prevData]);
-        setIsAlert(true);
-        setAlertMsg({
-          type: "success",
-          message: t("duplicate-template-created")
-        });
-      }
-    } catch (err) {
-      setIsAlert(true);
-      setAlertMsg({
-        type: "danger",
-        message: t("something-went-wrong-mssg")
-      });
-      console.log("Err while create duplicate template", err);
-    } finally {
-      setActLoader({});
-      setTimeout(() => setIsAlert(false), 2000);
-    }
-  };
-  // `handleRenameDoc` is used to update document name
-  const handleRenameDoc = async (item) => {
-    setActLoader({ [item.objectId]: true });
-    setIsModal({});
-    const className =
-      props.ReportName === "Templates"
-        ? "contracts_Template"
-        : "contracts_Document";
-    try {
-      const query = new Parse.Query(className);
-      const docObj = await query.get(item.objectId);
-      docObj.set("Name", renameDoc);
-      await docObj.save();
-      //update report list data
-      const updateList = props.List.map((x) =>
-        x.objectId === item.objectId ? { ...x, Name: renameDoc } : x
-      );
-      props.setList(updateList);
-      setIsAlert(true);
-      setAlertMsg({
-        type: "success",
-        message: "Document updated"
-      });
-      setActLoader({});
-      setTimeout(() => setIsAlert(false), 2000);
-    } catch (err) {
-      setIsAlert(true);
-      setAlertMsg({
-        type: "danger",
-        message: t("something-went-wrong-mssg")
-      });
-      setActLoader({});
-      setTimeout(() => setIsAlert(false), 2000);
-    }
-  };
-  const handleBtnVisibility = (act, item) => {
-    if (!act.restrictBtn) {
-      return true;
-    } else if (
-      act.restrictBtn === true &&
-      item.ExtUserPtr?.objectId === extClass?.[0]?.objectId
-    ) {
-      return true;
-    }
-  };
-
-  // `handleEditContact` is used to update contactas per old contact Id
-  const handleEditContact = async (updateContact) => {
-    const updateList = props.List.map((x) =>
-      x.objectId === contact.objectId ? { ...x, ...updateContact } : x
-    );
-    props.setList(updateList);
-  };
-  const handleCloseModal = () => {
-    setIsModal({});
+      </div>
+    ));
   };
   return (
     <div className="relative">
@@ -1409,6 +1336,16 @@ const ReportTable = (props) => {
         </div>
       )}
       <div className="p-2 w-full bg-base-100 text-base-content op-card shadow-lg">
+        {isCelebration && (
+          <div className="relative z-[1000]">
+            <Confetti
+              width={window.innerWidth}
+              height={window.innerHeight}
+              recycle={false} // Prevents confetti from repeating
+              gravity={0.1} // Adjust the gravity to control the speed
+            />
+          </div>
+        )}
         {isAlert && <Alert type={alertMsg.type}>{alertMsg.message}</Alert>}
         {props.tourData && props.ReportName === "Templates" && (
           <>
@@ -1419,127 +1356,44 @@ const ReportTable = (props) => {
               // rounded={5}
               closeWithMask={false}
             />
+            {isPublicTour && (
+              <Tour
+                showNumber={false}
+                showNavigation={false}
+                showNavigationNumber={false}
+                onRequestClose={closePublicTour}
+                steps={publicTourConfig}
+                isOpen={true}
+                rounded={5}
+                closeWithMask={false}
+              />
+            )}
           </>
         )}
         <div className="flex flex-row items-center justify-between my-2 mx-3 text-[20px] md:text-[23px]">
           <div className="font-light">
-            {t(`report-name.${props.ReportName}`)}{" "}
+            {t(`report-name.${props.ReportName}`)}
             {props.report_help && (
               <span className="text-xs md:text-[13px] font-normal">
-                <Tooltip
-                  id="report_help"
-                  message={t(`report-help.${props.ReportName}`)}
-                />
+                <Tooltip message={t(`report-help.${props.ReportName}`)} />
               </span>
             )}
           </div>
-          <div className="flex flex-row justify-center items-center gap-3">
-            {props.isImport && (
-              <div className="cursor-pointer" onClick={() => handleImportBtn()}>
-                <i className="fa-light fa-upload op-text-secondary text-[23px] md:text-[30px]"></i>
-              </div>
-            )}
-            {props.form && (
-              <div
-                className="cursor-pointer"
-                onClick={() => handleContactFormModal()}
-              >
-                <i className="fa-light fa-square-plus text-accent text-[30px] md:text-[35px]"></i>
-              </div>
-            )}
-            {props.ReportName === "Templates" && (
-              <i
-                data-tut="reactourFirst"
-                onClick={() => navigate("/form/template")}
-                className="cursor-pointer fa-light fa-square-plus text-accent text-[30px] md:text-[35px]"
-              ></i>
-            )}
-            <ModalUi
-              isOpen={isModal?.export}
-              title={t("bulk-import")}
-              handleClose={() => {
-                setIsModal({});
-                setImportedData([]);
-                setInvalidRecords(0);
-              }}
+          {props.ReportName === "Templates" && (
+            <i
+              data-tut="reactourFirst"
+              onClick={() => navigate("/form/template")}
+              className="fa-light fa-square-plus text-accent text-[40px]"
+            ></i>
+          )}
+          {props.form && (
+            <div
+              className="cursor-pointer"
+              onClick={() => handleContactFormModal()}
             >
-              <div className="relative">
-                {Object.keys(actLoader)?.length > 0 && (
-                  <div className="absolute w-full h-full flex justify-center items-center bg-black bg-opacity-30 z-30">
-                    <Loader />
-                  </div>
-                )}
-                <form onSubmit={handleImportData} className="p-[20px] h-full ">
-                  <div className="text-xs">
-                    <label className="block ml-2">
-                      {t("contacts-file")}
-                      <span className="text-red-500 text-[13px]"> *</span>
-                    </label>
-                    <input
-                      type="file"
-                      accept=".csv, .xlsx, .xls"
-                      onChange={handleFileUpload}
-                      required
-                      className="op-file-input op-file-input-bordered op-file-input-sm focus:outline-none hover:border-base-content w-full text-xs"
-                    />
-                  </div>
-                  <div className="text-md m-2">
-                    <div className="flex flex-col md:flex-row gap-1">
-                      <span>Total records found: {importedData.length} </span>
-                      <span>Invalid records found: {invalidRecords}</span>
-                    </div>
-                    <div className="overflow-x-auto p-1">
-                      {importedData?.length > 0 && (
-                        <>
-                          <table className="op-table op-table-zebra w-full">
-                            <thead>
-                              <tr>
-                                {allKeys.map((key, index) => (
-                                  <th key={index}>{key}</th>
-                                ))}
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {currentRecords.map((row, rowIndex) => (
-                                <tr key={rowIndex}>
-                                  {allKeys.map((key, colIndex) => (
-                                    <td key={colIndex}>{row[key] || "-"}</td>
-                                  ))}
-                                </tr>
-                              ))}
-                            </tbody>
-                          </table>
-                          <div className="flex justify-between items-center mt-4">
-                            <button
-                              className="op-btn op-btn-primary op-btn-sm"
-                              disabled={currentImportPage === 1}
-                              onClick={handlePreviousPage}
-                            >
-                              Previous
-                            </button>
-                            <span>
-                              Page {currentImportPage} of {totalImportPages}
-                            </span>
-                            <button
-                              className="op-btn op-btn-primary op-btn-sm"
-                              disabled={currentImportPage === totalImportPages}
-                              onClick={handleNextPage}
-                            >
-                              Next
-                            </button>
-                          </div>
-                        </>
-                      )}
-                    </div>
-                  </div>
-                  <div className="h-[1px] w-full my-[15px] bg-[#9f9f9f]"></div>
-                  <button type="submit" className="op-btn op-btn-primary">
-                    Import
-                  </button>
-                </form>
-              </div>
-            </ModalUi>
-          </div>
+              <i className="fa-light fa-square-plus text-accent text-[40px]"></i>
+            </div>
+          )}
         </div>
         <div
           className={`overflow-auto w-full border-b ${
@@ -1560,6 +1414,9 @@ const ReportTable = (props) => {
                     <th className="p-2">{t(`report-heading.${item}`)}</th>
                   </React.Fragment>
                 ))}
+                {props.ReportName === "Templates" && isEnableSubscription && (
+                  <th className="p-2">{t("public")}</th>
+                )}
                 {props.actions?.length > 0 && (
                   <th className="p-2 text-transparent pointer-events-none">
                     {t("action")}
@@ -1645,11 +1502,11 @@ const ReportTable = (props) => {
                             {startIndex + index + 1}
                           </th>
                         )}
-                        <td className="p-2 min-w-56 max-w-56">
+                        <td className="p-2 min-w-56 max-w-56 flex flex-col">
                           <div className="font-semibold">{item?.Name}</div>
                           {item?.ExpiryDate?.iso && (
                             <div className="text-gray-500">
-                              Expires {formatDate(item?.ExpiryDate?.iso)}
+                              Expire: {formatDate(item?.ExpiryDate?.iso)}
                             </div>
                           )}
                         </td>
@@ -1670,9 +1527,7 @@ const ReportTable = (props) => {
                         {props.heading.includes("Folder") && (
                           <td className="p-2 text-center">
                             {item?.Folder?.Name ||
-                              t("sidebar.OpenSign™ Drive", {
-                                appName: drivename
-                              })}
+                              t("sidebar.OpenSign™ Drive")}
                           </td>
                         )}
                         <td className="p-2 text-center">
@@ -1712,6 +1567,166 @@ const ReportTable = (props) => {
                             )}
                           </td>
                         )}
+                        {props.ReportName === "Templates" &&
+                          isEnableSubscription && (
+                            <td className=" pl-[20px] py-2">
+                              {props.ReportName === "Templates" && (
+                                <div
+                                  className="flex flex-row"
+                                  data-tut="IsPublic"
+                                >
+                                  <label className="cursor-pointer relative inline-flex items-center mb-0">
+                                    <input
+                                      checked={props.isPublic?.[item.objectId]}
+                                      onChange={(e) => {
+                                        setIsPublicTour();
+                                        handlePublicChange(e, item);
+                                      }}
+                                      type="checkbox"
+                                      value=""
+                                      className="sr-only peer"
+                                    />
+                                    <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-1 peer-focus:ring-black rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-black peer-checked:bg-blue-600"></div>
+                                  </label>
+                                </div>
+                              )}
+                              {isMakePublicModal[item.objectId] && (
+                                <ModalUi
+                                  isOpen
+                                  title={
+                                    props.isPublic[item.objectId]
+                                      ? t("make-template-public")
+                                      : t("make-template-private")
+                                  }
+                                  handleClose={() => {
+                                    setIsMakePublicModal({});
+                                    setSelectedPublicRole("");
+                                    props.setIsPublic((prevStates) => ({
+                                      ...prevStates,
+                                      [item.objectId]:
+                                        !prevStates[item.objectId]
+                                    }));
+                                  }}
+                                >
+                                  <div className="m-[20px]">
+                                    <div className="font-normal text-black">
+                                      <p className="text-lg">
+                                        {props.isPublic[item.objectId]
+                                          ? t("make-template-public-alert")
+                                          : t("make-template-private-alert")}
+                                      </p>
+                                      {props.isPublic[item.objectId] && (
+                                        <div className="flex mt-2 gap-2 md:items-center">
+                                          <p className="text-[15px]">
+                                            {t("public-role")} :{" "}
+                                          </p>
+
+                                          <input
+                                            className="op-input op-input-bordered focus:outline-none hover:border-base-content op-input-sm"
+                                            value={handleShowRole(item)}
+                                          />
+                                        </div>
+                                      )}
+                                    </div>
+                                    <hr className="bg-[#ccc] mt-2 " />
+                                    <div className="flex items-center mt-3 gap-2 text-white">
+                                      <button
+                                        onClick={() =>
+                                          handlePublicTemplate(item)
+                                        }
+                                        className="op-btn op-btn-primary"
+                                      >
+                                        {t("yes")}
+                                      </button>
+                                      <button
+                                        onClick={() => handleClose(item)}
+                                        className="op-btn op-btn-secondary"
+                                      >
+                                        {t("no")}
+                                      </button>
+                                    </div>
+                                  </div>
+                                </ModalUi>
+                              )}
+                              {isPublicProfile[item.objectId] && (
+                                <ModalUi
+                                  isOpen
+                                  title={t("public-url")}
+                                  handleClose={() => {
+                                    setIsPublicProfile({});
+                                    setIsEmbed(false);
+                                  }}
+                                >
+                                  <div className="m-[20px]">
+                                    {isEmbed && !item?.IsPublic ? (
+                                      <>
+                                        <p>{t("public-template-mssg-6")}</p>
+                                        <EmbedTab templateId={item.objectId} />
+                                      </>
+                                    ) : publicUserName ? (
+                                      <div className="font-normal text-black">
+                                        <span>{t("public-url-copy")}</span>
+                                        <div className=" flex items-center justify-between gap-3 p-[2px] ">
+                                          <div className="w-[280px] whitespace-nowrap overflow-hidden text-ellipsis">
+                                            <a
+                                              rel="noreferrer"
+                                              target="_blank"
+                                              href={publicUrl()}
+                                              className="ml-[2px] underline underline-offset-2 cursor-pointer text-blue-800"
+                                            >
+                                              {publicUrl()}
+                                            </a>
+                                          </div>
+                                          <div className="flex items-center gap-2">
+                                            <RWebShare
+                                              data={{
+                                                url: publicUrl(),
+                                                title: "Public url"
+                                              }}
+                                            >
+                                              <button className="op-btn op-btn-primary op-btn-outline op-btn-xs md:op-btn-sm ">
+                                                <i className="fa-light fa-share-from-square"></i>{" "}
+                                                <span className="hidden md:inline-block">
+                                                  {t("btnLabel.Share")}
+                                                </span>
+                                              </button>
+                                            </RWebShare>
+                                            <button
+                                              className="op-btn op-btn-primary op-btn-outline op-btn-xs md:op-btn-sm md:w-[100px]"
+                                              onClick={() =>
+                                                copytoProfileLink()
+                                              }
+                                            >
+                                              <i className="fa-light fa-copy" />
+                                              <span className="hidden md:inline-block">
+                                                {copied["publicprofile"]
+                                                  ? t("copied")
+                                                  : t("copy")}
+                                              </span>
+                                            </button>
+                                          </div>
+                                        </div>
+                                        <p className="text-[13px] mt-[5px]">
+                                          {t("public-url-copy-mssg")}
+                                        </p>
+                                        <EmbedTab templateId={item.objectId} />
+                                      </div>
+                                    ) : (
+                                      <div className="font-normal text-black">
+                                        <p>{t("add-public-url-alert")}</p>
+                                        <button
+                                          className="mt-3 op-btn op-btn-primary"
+                                          onClick={() => navigate("/profile")}
+                                        >
+                                          {t("Proceed")}
+                                        </button>
+                                      </div>
+                                    )}
+                                  </div>
+                                </ModalUi>
+                              )}
+                            </td>
+                          )}
                         <td className="px-2 py-2">
                           <div className="text-base-content min-w-max flex flex-row gap-x-2 gap-y-1 justify-start items-center">
                             {props.actions?.length > 0 &&
@@ -1740,11 +1755,13 @@ const ReportTable = (props) => {
                                         <i className={act.btnIcon}></i>
                                         {act.btnLabel && (
                                           <span className="uppercase font-medium">
-                                            {
-                                                  `${t(
-                                                    `btnLabel.${act.btnLabel}`
-                                                  )}`
-                                            }
+                                            {act.btnLabel.includes(
+                                              "Quick send"
+                                            ) && isEnableSubscription
+                                              ? "Bulk Send"
+                                              : `${t(
+                                                  `btnLabel.${act.btnLabel}`
+                                                )}`}
                                           </span>
                                         )}
                                         {/* template report */}
@@ -1782,94 +1799,59 @@ const ReportTable = (props) => {
                                           )}
                                       </div>
                                     )}
-                                    <ModalUi
-                                      title={t("btnLabel.Duplicate")}
-                                      isOpen={
-                                        isModal["duplicate_" + item.objectId]
-                                      }
-                                      handleClose={() => setIsModal({})}
-                                    >
-                                      <div className=" flex flex-col px-4 pb-3 pt-2 ">
-                                        <p className="text-base">
-                                          {t("duplicate-template-alert")}
-                                        </p>
-                                        <div className="flex flex-row gap-2 pt-3 mt-3 border-t-[1.5px] border-gray-500">
-                                          <button
-                                            className="w-[100px] op-btn op-btn-primary op-btn-md"
-                                            onClick={() =>
-                                              handleCreateDuplicate(item)
-                                            }
-                                          >
-                                            {t("yes")}
-                                          </button>
-                                          <button
-                                            className="w-[100px] op-btn op-btn-secondary op-btn-md"
-                                            onClick={() => setIsModal({})}
-                                          >
-                                            {t("no")}
-                                          </button>
-                                        </div>
-                                      </div>
-                                    </ModalUi>
                                   </React.Fragment>
                                 ) : (
-                                  <React.Fragment key={index}>
-                                    {handleBtnVisibility(act, item) && (
-                                      <div
-                                        role="button"
-                                        data-tut={act?.selector}
-                                        onClick={() =>
-                                          handleActionBtn(act, item)
-                                        }
-                                        title={t(`btnLabel.${act.hoverLabel}`)}
-                                        className={
-                                          act.action !== "option"
-                                            ? `${act?.btnColor || ""} op-btn op-btn-sm mr-1`
-                                            : "text-base-content focus:outline-none text-lg mr-2 relative"
-                                        }
-                                      >
-                                        <i className={act.btnIcon}></i>
-                                        {act.btnLabel && (
-                                          <span className="uppercase font-medium">
-                                            {t(`btnLabel.${act.btnLabel}`)}
-                                          </span>
-                                        )}
-                                        {/* doc report */}
-                                        {isOption[item.objectId] &&
-                                          act.action === "option" && (
-                                            <ul className="absolute -right-1 top-auto z-[70] w-max op-dropdown-content op-menu shadow-black/20 shadow bg-base-100 text-base-content rounded-box">
-                                              {act.subaction?.map((subact) => (
-                                                <li
-                                                  key={subact.btnId}
-                                                  onClick={() =>
-                                                    handleActionBtn(
-                                                      subact,
-                                                      item
-                                                    )
-                                                  }
-                                                  title={t(
-                                                    `btnLabel.${subact.hoverLabel}`
-                                                  )}
-                                                >
-                                                  <span>
-                                                    <i
-                                                      className={`${subact.btnIcon} mr-1.5`}
-                                                    ></i>
-                                                    {subact.btnLabel && (
-                                                      <span className="text-[13px] capitalize font-medium">
-                                                        {t(
-                                                          `btnLabel.${subact.btnLabel}`
-                                                        )}
-                                                      </span>
+                                  <div
+                                    role="button"
+                                    data-tut={act?.selector}
+                                    key={index}
+                                    onClick={() => handleActionBtn(act, item)}
+                                    title={t(`btnLabel.${act.hoverLabel}`)}
+                                    className={
+                                      act.action !== "option"
+                                        ? `${
+                                            act?.btnColor ? act.btnColor : ""
+                                          } op-btn op-btn-sm mr-1`
+                                        : "text-base-content focus:outline-none text-lg mr-2 relative"
+                                    }
+                                  >
+                                    <i className={act.btnIcon}></i>
+                                    {act.btnLabel && (
+                                      <span className="uppercase font-medium">
+                                        {t(`btnLabel.${act.btnLabel}`)}
+                                      </span>
+                                    )}
+                                    {/* doc report */}
+                                    {isOption[item.objectId] &&
+                                      act.action === "option" && (
+                                        <ul className="absolute -right-1 top-auto z-[70] w-max op-dropdown-content op-menu shadow-black/20 shadow bg-base-100 text-base-content rounded-box">
+                                          {act.subaction?.map((subact) => (
+                                            <li
+                                              key={subact.btnId}
+                                              onClick={() =>
+                                                handleActionBtn(subact, item)
+                                              }
+                                              title={t(
+                                                `btnLabel.${subact.hoverLabel}`
+                                              )}
+                                            >
+                                              <span>
+                                                <i
+                                                  className={`${subact.btnIcon} mr-1.5`}
+                                                ></i>
+                                                {subact.btnLabel && (
+                                                  <span className="text-[13px] capitalize font-medium">
+                                                    {t(
+                                                      `btnLabel.${subact.btnLabel}`
                                                     )}
                                                   </span>
-                                                </li>
-                                              ))}
-                                            </ul>
-                                          )}
-                                      </div>
-                                    )}
-                                  </React.Fragment>
+                                                )}
+                                              </span>
+                                            </li>
+                                          ))}
+                                        </ul>
+                                      )}
+                                  </div>
                                 )
                               )}
                           </div>
@@ -1911,6 +1893,93 @@ const ReportTable = (props) => {
                           {isShareWith[item.objectId] && (
                             <div className="op-modal op-modal-open">
                               <div className="max-h-90 bg-base-100 w-[95%] md:max-w-[500px] rounded-box relative">
+                                {validplan[isSubscribe.plan] &&
+                                  isEnableSubscription && (
+                                    <>
+                                      {item?.Signers?.length > 0 ? (
+                                        <div className="h-[150px] flex justify-center items-center mx-2">
+                                          <div
+                                            className="op-btn op-btn-sm op-btn-circle op-btn-ghost text-base-content absolute right-2 top-2 z-40"
+                                            onClick={() => setIsShareWith({})}
+                                          >
+                                            ✕
+                                          </div>
+                                          <div className="text-base-content text-base text-center">
+                                            {t("share-with-alert")}
+                                          </div>
+                                        </div>
+                                      ) : (
+                                        <>
+                                          <h3 className="text-base-content font-bold text-lg pt-[15px] px-[20px]">
+                                            {t("share-with")}
+                                          </h3>
+                                          <div
+                                            className="op-btn op-btn-sm op-btn-circle op-btn-ghost text-base-content absolute right-2 top-2 z-40"
+                                            onClick={() => setIsShareWith({})}
+                                          >
+                                            ✕
+                                          </div>
+                                          <form
+                                            className="h-full w-full z-[1300] px-2 mt-3"
+                                            onSubmit={(e) =>
+                                              handleShareWith(e, item)
+                                            }
+                                          >
+                                            <Select
+                                              // onSortEnd={onSortEnd}
+                                              distance={4}
+                                              isMulti
+                                              options={teamList}
+                                              value={selectedTeam}
+                                              onChange={onChange}
+                                              closeMenuOnSelect
+                                              required={true}
+                                              noOptionsMessage={() =>
+                                                t("team-not-found")
+                                              }
+                                              unstyled
+                                              classNames={{
+                                                control: () =>
+                                                  "op-input op-input-bordered op-input-sm border-gray-400 focus:outline-none hover:border-base-content w-full h-full text-[11px]",
+                                                valueContainer: () =>
+                                                  "flex flex-row gap-x-[2px] gap-y-[2px] md:gap-y-0 w-full my-[2px]",
+                                                multiValue: () =>
+                                                  "op-badge op-badge-primary h-full text-[11px]",
+                                                multiValueLabel: () =>
+                                                  "mb-[2px]",
+                                                menu: () =>
+                                                  "mt-1 shadow-md rounded-lg bg-base-200 text-base-content",
+                                                menuList: () =>
+                                                  "shadow-md rounded-lg overflow-hidden",
+                                                option: () =>
+                                                  "bg-base-200 text-base-content rounded-lg m-1 hover:bg-base-300 p-2",
+                                                noOptionsMessage: () =>
+                                                  "p-2 bg-base-200 rounded-lg m-1 p-2"
+                                              }}
+                                            />
+                                            <button className="op-btn op-btn-primary ml-[10px] my-3">
+                                              {t("submit")}
+                                            </button>
+                                          </form>
+                                        </>
+                                      )}
+                                    </>
+                                  )}
+                                {isEnableSubscription &&
+                                  !validplan[isSubscribe.plan] && (
+                                    <>
+                                      <div
+                                        className="op-btn op-btn-sm op-btn-circle op-btn-ghost text-primary-content absolute right-2 top-2 z-40"
+                                        onClick={() => setIsShareWith({})}
+                                      >
+                                        ✕
+                                      </div>
+                                      <SubscribeCard plan="TEAMS" />
+                                    </>
+                                  )}
+                                {!isEnableSubscription &&
+                                  validplan[isSubscribe.plan] && (
+                                    <>
                                       <h3 className="text-base-content font-bold text-lg pt-[15px] px-[20px]">
                                         {t("share-with")}
                                       </h3>
@@ -1933,6 +2002,8 @@ const ReportTable = (props) => {
                                       >
                                         {t("submit")}
                                       </button>
+                                    </>
+                                  )}
                               </div>
                             </div>
                           )}
@@ -2026,7 +2097,9 @@ const ReportTable = (props) => {
                             <ModalUi
                               isOpen
                               title={
-                                    t("quick-send")
+                                isEnableSubscription
+                                  ? "Bulk send"
+                                  : t("quick-send")
                               }
                               handleClose={() => setIsBulkSend({})}
                             >
@@ -2233,38 +2306,6 @@ const ReportTable = (props) => {
                               </div>
                             </ModalUi>
                           )}
-                          <ModalUi
-                            title={t("btnLabel.Rename")}
-                            isOpen={isModal["rename_" + item.objectId]}
-                            handleClose={() => setIsModal({})}
-                          >
-                            <div className=" flex flex-col px-4 pb-3 pt-2 ">
-                              <div className="flex flex-col gap-2">
-                                <input
-                                  maxLength={200}
-                                  autoFocus={true}
-                                  type="text"
-                                  defaultValue={renameDoc || item.Name}
-                                  onChange={(e) => setRenameDoc(e.target.value)}
-                                  className="op-input op-input-bordered op-input-sm w-full  focus:outline-none hover:border-base-content text-[10px]"
-                                />
-                              </div>
-                              <div className="flex flex-row gap-2 pt-3 mt-3 border-t-[1.5px] border-gray-500">
-                                <button
-                                  className="w-[100px] op-btn op-btn-primary op-btn-md"
-                                  onClick={() => handleRenameDoc(item)}
-                                >
-                                  {t("save")}
-                                </button>
-                                <button
-                                  className="w-[100px] op-btn op-btn-secondary op-btn-md"
-                                  onClick={() => setIsModal({})}
-                                >
-                                  {t("cancel")}
-                                </button>
-                              </div>
-                            </div>
-                          </ModalUi>
                           {isDownloadModal[item.objectId] && (
                             <DownloadPdfZip
                               setIsDownloadModal={setIsDownloadModal}
@@ -2340,19 +2381,6 @@ const ReportTable = (props) => {
             closePopup={handleContactFormModal}
           />
         </ModalUi>
-        {isModal?.["edit_" + contact.objectId] && (
-          <ModalUi
-            isOpen
-            title={t("edit-contact")}
-            handleClose={handleCloseModal}
-          >
-            <EditContactForm
-              contact={contact}
-              handleClose={handleCloseModal}
-              handleEditContact={handleEditContact}
-            />
-          </ModalUi>
-        )}
       </div>
     </div>
   );

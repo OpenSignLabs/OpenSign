@@ -1,14 +1,12 @@
 import React, { useEffect, useState } from "react";
 import Loader from "../primitives/Loader";
 import Parse from "parse";
-import { NavLink, useNavigate } from "react-router";
+import { NavLink, useNavigate } from "react-router-dom";
 import Alert from "../primitives/Alert";
 import Title from "../components/Title";
 import { useTranslation } from "react-i18next";
 import { emailRegex } from "../constant/const";
 const UpdateExistUserAdmin = () => {
-  const appName =
-    "OpenSign™";
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [formdata, setFormdata] = useState({ email: "", masterkey: "" });
@@ -95,7 +93,7 @@ const UpdateExistUserAdmin = () => {
                     </div>
                   )}
                   <h2 className="text-[30px] text-center mt-3 font-medium">
-                    {t("opensign-setup", { appName })}
+                    {t("opensign-Setup")}
                   </h2>
                   <NavLink
                     to="https://discord.com/invite/xe9TDuyAyj"
@@ -155,6 +153,23 @@ const UpdateExistUserAdmin = () => {
                       onInput={(e) => e.target.setCustomValidity("")}
                       required
                     />
+
+                    {/*          
+                  <div className="mt-2.5 ml-1 flex flex-row items-center">
+                    <input
+                      type="checkbox"
+                      className="op-checkbox op-checkbox-sm"
+                      id="termsandcondition"
+                      checked={isSubscribeNews}
+                      onChange={(e) => setIsSubscribeNews(e.target.checked)}
+                    />
+                    <label
+                      className="text-xs cursor-pointer ml-1 mb-0"
+                      htmlFor="termsandcondition"
+                    >
+                      Subscribe to OpenSign newsletter
+                    </label>
+                  </div> */}
                   </div>
                   <div className="mx-4 text-center text-xs font-bold mb-3">
                     <button

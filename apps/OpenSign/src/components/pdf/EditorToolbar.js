@@ -54,20 +54,17 @@ Quill.register(Font, true);
 export const module1 = {
   toolbar: {
     container: "#toolbar1",
-    handlers: { undo: undoChange, redo: redoChange }
+    handlers: {
+      undo: undoChange,
+      redo: redoChange
+    }
   },
-  history: { delay: 500, maxStack: 100, userOnly: true }
+  history: {
+    delay: 500,
+    maxStack: 100,
+    userOnly: true
+  }
 };
-
-// Modules object for setting up the Quill editor
-export const module2 = {
-  toolbar: {
-    container: "#toolbar2",
-    handlers: { undo: undoChange, redo: redoChange }
-  },
-  history: { delay: 500, maxStack: 100, userOnly: true }
-};
-
 // Formats objects for setting up the Quill editor
 export const formats = [
   "header",

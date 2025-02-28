@@ -6,12 +6,7 @@
 .react-datepicker__input-container {
   position: initial !important;
 }
-.select-none-cls{
-  -webkit-user-select: none;
-  /* Disable text selection in WebKit browsers */
-  -moz-user-select: none;
-  user-select: none;
-}
+
 .widgets {
   -webkit-user-select: none;
   /* Disable text selection in WebKit browsers */
@@ -31,11 +26,15 @@
 }
 
 .signatureCanvas {
+  border: 2px solid #888;
+  background-color: rgb(255, 255, 255);
   width: 460px;
   height: 184px;
 }
 
 .intialSignatureCanvas {
+  border: 2px solid #888;
+  background-color: rgb(255, 255, 255);
   width: 150px;
   height: 150px;
 }

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Parse from "parse";
-import { Outlet, useNavigate, useLocation } from "react-router";
+import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import ModalUi from "./ModalUi";
 import { useTranslation } from "react-i18next";
 const Validate = () => {

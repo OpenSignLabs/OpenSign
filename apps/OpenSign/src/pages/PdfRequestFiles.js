@@ -1,9 +1,15 @@
 import React, { useState, useRef, useEffect } from "react";
+import {
+  emailRegex,
+  isEnableSubscription,
+  isStaging,
+  themeColor
+} from "../constant/const";
 import { PDFDocument } from "pdf-lib";
 import "../styles/signature.css";
 import Parse from "parse";
 import axios from "axios";
-import { DndProvider, useDrop } from "react-dnd";
+import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import SignPad from "../components/pdf/SignPad";
 import RenderAllPdfPage from "../components/pdf/RenderAllPdfPage";
@@ -16,13 +22,16 @@ import {
   embedDocId,
   pdfNewWidthFun,
   signPdfFun,
+  onImageSelect,
   onSaveSign,
   onSaveImage,
   addDefaultSignatureImg,
   radioButtonWidget,
   replaceMailVaribles,
+  fetchSubscription,
   convertPdfArrayBuffer,
   contractUsers,
+  handleSendOTP,
   contactBook,
   handleToPrint,
   handleDownloadCertificate,
@@ -32,16 +41,7 @@ import {
   fetchUrl,
   signatureTypes,
   handleSignatureType,
-  getTenantDetails,
-  getBase64FromUrl,
-  openInNewTab,
-  getContainerScale,
-  randomId,
-  defaultWidthHeight,
-  addWidgetOptions,
-  textWidget,
-  compressedFileSize,
-  mailTemplate
+  getTenantDetails
 } from "../constant/Utils";
 import Header from "../components/pdf/PdfHeader";
 import RenderPdf from "../components/pdf/RenderPdf";
@@ -49,6 +49,7 @@ import Title from "../components/Title";
 import DefaultSignature from "../components/pdf/DefaultSignature";
 import { useSelector } from "react-redux";
 import SignerListComponent from "../components/pdf/SignerListComponent";
+import VerifyEmail from "../components/pdf/VerifyEmail";
 import PdfZoom from "../components/pdf/PdfZoom";
 import { useTranslation } from "react-i18next";
 import ModalUi from "../primitives/ModalUi";
@@ -59,16 +60,9 @@ import DownloadPdfZip from "../primitives/DownloadPdfZip";
 import Loader from "../primitives/Loader";
 import PdfDeclineModal from "../primitives/PdfDeclineModal";
 import { serverUrl_fn } from "../constant/appinfo";
-import AgreementSign from "../components/pdf/AgreementSign";
-import WidgetComponent from "../components/pdf/WidgetComponent";
-import PlaceholderCopy from "../components/pdf/PlaceholderCopy";
-import TextFontSetting from "../components/pdf/TextFontSetting";
 
-function PdfRequestFiles(
-) {
+function PdfRequestFiles(props) {
   const { t } = useTranslation();
-  const appName =
-    "OpenSign™";
   const [pdfDetails, setPdfDetails] = useState([]);
   const [signedSigners, setSignedSigners] = useState([]);
   const [unsignedSigners, setUnSignedSigners] = useState([]);
@@ -86,6 +80,7 @@ function PdfRequestFiles(
   const imageRef = useRef(null);
   const [handleError, setHandleError] = useState();
   const [selectWidgetId, setSelectWidgetId] = useState("");
+  const [otpLoader, setOtpLoader] = useState(false);
   const [isCelebration, setIsCelebration] = useState(false);
   const [requestSignTour, setRequestSignTour] = useState(true);
   const [tourStatus, setTourStatus] = useState([]);
@@ -113,6 +108,7 @@ function PdfRequestFiles(
     isShow: false,
     alertMessage: ""
   });
+  const [isSubscribed, setIsSubscribed] = useState(false);
   const [isCompleted, setIsCompleted] = useState({
     isCertificate: false,
     isModal: false
@@ -129,52 +125,35 @@ function PdfRequestFiles(
   const [minRequiredCount, setminRequiredCount] = useState();
   const [sendInOrder, setSendInOrder] = useState(false);
   const [currWidgetsDetails, setCurrWidgetsDetails] = useState({});
+  const [isSubscriptionExpired, setIsSubscriptionExpired] = useState(false);
   const [extUserId, setExtUserId] = useState("");
+  const [isEmailVerified, setIsEmailVerified] = useState(true);
+  const [isVerifyModal, setIsVerifyModal] = useState(false);
+  const [otp, setOtp] = useState("");
   const [contractName, setContractName] = useState("");
   const [zoomPercent, setZoomPercent] = useState(0);
   const [scale, setScale] = useState(1);
   const [uniqueId, setUniqueId] = useState("");
+  const [isPublicTemplate, setIsPublicTemplate] = useState(false);
+  const [contact, setContact] = useState({ name: "", phone: "", email: "" });
+  const [isOtp, setIsOtp] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [publicRes, setPublicRes] = useState({});
   const [documentId, setDocumentId] = useState("");
+  const [isPublicContact, setIsPublicContact] = useState(false);
+  const [plancode, setPlanCode] = useState("");
   const isHeader = useSelector((state) => state.showHeader);
   const divRef = useRef(null);
   const [isDownloadModal, setIsDownloadModal] = useState(false);
   const [signatureType, setSignatureType] = useState([]);
-  const [pdfBase64Url, setPdfBase64Url] = useState("");
-  const [isAgree, setIsAgree] = useState(false);
-  const [isAgreeTour, setIsAgreeTour] = useState(false);
-  const [redirectTimeLeft, setRedirectTimeLeft] = useState(5);
-  const [isredirectCanceled, setIsredirectCanceled] = useState(true);
-  const [isDragging, setIsDragging] = useState(false);
-  const [dragKey, setDragKey] = useState();
-  const [isAutoSign, setIsAutoSign] = useState(false);
-  const [signBtnPosition, setSignBtnPosition] = useState([]);
-  const [xySignature, setXYSignature] = useState({});
-  const [zIndex, setZIndex] = useState(1);
-  const [fontSize, setFontSize] = useState();
-  const [fontColor, setFontColor] = useState();
-  const [widgetType, setWidgetType] = useState("");
-  const [isTextSetting, setIsTextSetting] = useState(false);
-  const [isPageCopy, setIsPageCopy] = useState(false);
-  const [assignedWidgetId, setAssignedWidgetId] = useState([]);
-  const [saveSignCheckbox, setSaveSignCheckbox] = useState({
-    isVisible: false,
-    signId: ""
-  });
-  const [showSignPagenumber, setShowSignPagenumber] = useState([]);
-  const [, drop] = useDrop({
-    accept: "BOX",
-    drop: (item, monitor) => addPositionOfSignature(item, monitor),
-    collect: (monitor) => ({ isOver: !!monitor.isOver() })
-  });
   const isMobile = window.innerWidth < 767;
+
   let isGuestSignFlow = false;
   let sendmail;
   let getDocId = "";
   let contactBookId = "";
-  const route =
-    window.location.pathname;
-  const getQuery =
-    window.location?.search?.split("?"); //['','sendmail=false']
+  const route = !props.templateId && window.location.pathname;
+  const getQuery = !props.templateId && window.location?.search?.split("?"); //['','sendmail=false']
   if (getQuery) {
     sendmail = getQuery?.[1]?.split("=")[1]; //false
   }
@@ -195,11 +174,11 @@ function PdfRequestFiles(
     if (getDocumentId) {
       setDocumentId(getDocumentId);
       getDocumentDetails(getDocumentId);
+    } else if (props.templateId) {
+      getTemplateDetails();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    getDocumentId
-  ]);
+  }, [props.templateId, getDocumentId]);
   useEffect(() => {
     const updateSize = () => {
       if (divRef.current) {
@@ -217,20 +196,194 @@ function PdfRequestFiles(
     return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [divRef.current, isHeader]);
-  const redirectUrl = pdfDetails?.[0]?.RedirectUrl || "";
-  useEffect(() => {
-    if (isredirectCanceled) return; // Stop the redirect timer if canceled
-    if (redirectUrl) {
-      if (redirectTimeLeft === 0) {
-        openInNewTab(redirectUrl, "_self"); // Replace with your target URL
+  //function to use resend otp for email verification
+  const handleResend = async (e) => {
+    e.preventDefault();
+    setOtpLoader(true);
+    const localuser = localStorage.getItem(
+      `Parse/${localStorage.getItem("parseAppId")}/currentUser`
+    );
+    const currentUser = JSON.parse(localuser);
+    await handleSendOTP(currentUser?.email);
+    setOtpLoader(false);
+    alert(t("otp-sent-alert"));
+  };
+  //`handleVerifyEmail` function is used to verify email with otp
+  const handleVerifyEmail = async (e) => {
+    e.preventDefault();
+    setOtpLoader(true);
+    const localuser = localStorage.getItem(
+      `Parse/${localStorage.getItem("parseAppId")}/currentUser`
+    );
+    const currentUser = JSON.parse(localuser);
+    try {
+      const resEmail = await Parse.Cloud.run("verifyemail", {
+        otp: otp,
+        email: currentUser?.email
+      });
+      if (resEmail?.message === "Email is verified.") {
+        setIsEmailVerified(true);
+        alert(t("Email-verified-alert-1"));
+      } else if (resEmail?.message === "Email is already verified.") {
+        setIsEmailVerified(true);
+        alert(t("Email-verified-alert-2"));
       }
-      const timer = setTimeout(() => {
-        setRedirectTimeLeft((prev) => prev - 1); // Decrement the timer
-      }, 1000);
-      return () => clearTimeout(timer); // Cleanup the timer
+      setOtp("");
+      setIsVerifyModal(false);
+      //handleRecipientSign();
+    } catch (error) {
+      alert(error.message);
+    } finally {
+      setOtpLoader(false);
     }
-  }, [redirectTimeLeft, isredirectCanceled, redirectUrl]);
+  };
+  //`handleVerifyBtn` function is used to send otp on user mail
+  const handleVerifyBtn = async () => {
+    setIsVerifyModal(true);
+    const localuser = localStorage.getItem(
+      `Parse/${localStorage.getItem("parseAppId")}/currentUser`
+    );
+    const currentUser = JSON.parse(localuser);
+    await handleSendOTP(currentUser?.email);
+  };
 
+  const handleNavigation = () => {
+    window.location.href = "/subscription";
+  };
+  async function checkIsSubscribed(extUserId, contactId) {
+    const isGuestSign = isGuestSignFlow || false;
+    const isPublic = props.templateId ? true : false;
+    const res = await fetchSubscription(
+      extUserId,
+      contactId,
+      isGuestSign,
+      isPublic
+    );
+    const plan = res.plan;
+    const billingDate = res?.billingDate;
+    const status = res?.status;
+    setPlanCode(plan);
+    if (plan === "freeplan") {
+      return true;
+    } else if (billingDate) {
+      if (new Date(billingDate) > new Date()) {
+        setIsSubscribed(true);
+        return true;
+      } else {
+        if (isGuestSign) {
+          setIsSubscriptionExpired(true);
+        } else {
+          handleNavigation(plan);
+        }
+      }
+    } else if (isGuestSign) {
+      if (status) {
+        setIsSubscribed(true);
+        return true;
+      } else {
+        setIsSubscriptionExpired(true);
+      }
+    } else {
+      if (isGuestSign) {
+        setIsSubscriptionExpired(true);
+      } else {
+        handleNavigation(res.plan);
+      }
+    }
+  }
+  //function for get document details for perticular signer with signer'object id
+  //whenever change anything in this function check react/angular packages also in plan js
+  const getTemplateDetails = async () => {
+    try {
+      const params = { templateId: props.templateId, ispublic: true };
+      const templateDeatils = await axios.post(
+        `${localStorage.getItem("baseUrl")}functions/getTemplate`,
+        params,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
+            sessiontoken: localStorage.getItem("accesstoken")
+          }
+        }
+      );
+      const documentData = templateDeatils?.data?.result
+        ? [templateDeatils?.data?.result]
+        : [];
+      if (documentData && documentData[0]?.error) {
+        props?.setTemplateStatus &&
+          props?.setTemplateStatus({ status: "Invalid" });
+        throw new Error("error: Invalid TemplateId");
+      } else if (documentData && documentData.length > 0) {
+        if (documentData[0]?.IsPublic) {
+          //handle condition when someone use plan js then setTemplateStatus is not supporting
+          props?.setTemplateStatus &&
+            props?.setTemplateStatus({ status: "Success" });
+          const url =
+            documentData[0] &&
+            (documentData[0]?.SignedUrl || documentData[0]?.URL);
+          if (url) {
+            //convert document url in array buffer format to use embed widgets in pdf using pdf-lib
+            const arrayBuffer = await convertPdfArrayBuffer(url);
+            if (arrayBuffer === "Error") {
+              setHandleError(t("something-went-wrong-mssg"));
+            }
+          } else {
+            setHandleError(t("something-went-wrong-mssg"));
+          }
+          setIsPublicTemplate(true);
+          const getPublicRole = documentData[0]?.PublicRole[0];
+          const getUniqueIdDetails = documentData[0]?.Placeholders.find(
+            (x) => x.Role === getPublicRole
+          );
+          if (getUniqueIdDetails) {
+            setUniqueId(getUniqueIdDetails.Id);
+          }
+          setSignerPos(documentData[0]?.Placeholders);
+          let placeholdersOrSigners = [];
+          // const placeholder = documentData[0]?.Placeholders;
+          for (const placeholder of documentData[0].Placeholders) {
+            //`emailExist` variable to handle condition for quick send flow and show unsigned signers list
+            const signerIdExist = placeholder?.signerObjId;
+            if (signerIdExist) {
+              const getSignerData = documentData[0].Signers.find(
+                (data) => data.objectId === placeholder?.signerObjId
+              );
+              placeholdersOrSigners.push(getSignerData);
+            } else {
+              placeholdersOrSigners.push(placeholder);
+            }
+          }
+          setUnSignedSigners(placeholdersOrSigners);
+          setPdfDetails(documentData);
+          setIsLoading({ isLoad: false });
+        } else {
+          props?.setTemplateStatus &&
+            props?.setTemplateStatus({ status: "Private" });
+          setIsLoading({ isLoad: false });
+          setHandleError(t("something-went-wrong-mssg"));
+          console.error("error:  TemplateId is not public");
+          return;
+        }
+      } else {
+        props?.setTemplateStatus &&
+          props?.setTemplateStatus({ status: "Invalid" });
+        setIsLoading(false);
+        setHandleError(t("something-went-wrong-mssg"));
+        console.error("error: Invalid TemplateId");
+        return;
+      }
+    } catch (err) {
+      setIsLoading(false);
+      if (err?.response?.data?.code === 101) {
+        setHandleError(t("error-template"));
+      } else {
+        setHandleError(t("something-went-wrong-mssg"));
+      }
+      console.error("error: Invalid TemplateId");
+      return;
+    }
+  };
   const fetchTenantDetails = async (contactId) => {
     const user = JSON.parse(
       localStorage.getItem(
@@ -240,6 +393,7 @@ function PdfRequestFiles(
     try {
       const tenantDetails = await getTenantDetails(
         user?.objectId, // userId
+        "", // jwttoken
         contactId // contactId
       );
       if (tenantDetails && tenantDetails === "user does not exist!") {
@@ -258,11 +412,7 @@ function PdfRequestFiles(
   };
 
   //function for get document details for perticular signer with signer'object id
-  const getDocumentDetails = async (
-    docId,
-    isNextUser,
-    isSuccessPage = false
-  ) => {
+  const getDocumentDetails = async (docId, isNextUser) => {
     try {
       const senderUser = localStorage.getItem(
         `Parse/${localStorage.getItem("parseAppId")}/currentUser`
@@ -293,9 +443,10 @@ function PdfRequestFiles(
           documentData[0] &&
           (documentData[0]?.SignedUrl || documentData[0]?.URL);
         if (url) {
-          const base64Pdf = await getBase64FromUrl(url);
-          if (base64Pdf) {
-            setPdfBase64Url(base64Pdf);
+          //convert document url in array buffer format to use embed widgets in pdf using pdf-lib
+          const arrayBuffer = await convertPdfArrayBuffer(url);
+          if (arrayBuffer === "Error") {
+            setHandleError(t("something-went-wrong-mssg"));
           }
         } else {
           setHandleError(t("something-went-wrong-mssg"));
@@ -318,6 +469,12 @@ function PdfRequestFiles(
         currUserId = getCurrentSigner?.objectId
           ? getCurrentSigner.objectId
           : contactBookId || signerObjectId || ""; //signerObjectId is contactBookId refer from public template flow
+        if (isEnableSubscription) {
+          await checkIsSubscribed(
+            documentData[0]?.ExtUserPtr?.objectId,
+            currUserId
+          );
+        }
         if (currUserId) {
           setSignerObjectId(currUserId);
         }
@@ -328,13 +485,11 @@ function PdfRequestFiles(
         }
         if (isCompleted) {
           setIsSigned(true);
+          const data = { isCertificate: true, isModal: true };
           setAlreadySign(true);
+          setIsCompleted(data);
           setIsCelebration(true);
           setTimeout(() => setIsCelebration(false), 5000);
-          if (!isSuccessPage) {
-            const data = { isCertificate: true, isModal: true };
-            setIsCompleted(data);
-          }
         } else if (declined) {
           const currentDecline = { currnt: "another", isDeclined: true };
           setIsDecline(currentDecline);
@@ -348,26 +503,16 @@ function PdfRequestFiles(
         else if (isNextUser) {
           setIsCelebration(true);
           setTimeout(() => setIsCelebration(false), 5000);
-          if (!isSuccessPage) {
-            setIsCompleted({
-              isModal: true,
-              message: t("document-signed-alert-1")
-            });
-          }
+          setIsCompleted({
+            isModal: true,
+            message: t("document-signed-alert-1")
+          });
         } else {
           if (currUserId) {
             const checkCurrentUser = documentData[0].Placeholders.find(
               (data) => data?.signerObjId === currUserId
             );
             if (checkCurrentUser) {
-              const widgetId = [];
-              for (let placeholder of checkCurrentUser.placeHolder) {
-                for (let item of placeholder.pos) {
-                  widgetId.push(item.key);
-                }
-              }
-              setAssignedWidgetId(widgetId);
-              setUniqueId(checkCurrentUser.Id);
               setCurrentSigner(true);
             }
           }
@@ -386,6 +531,51 @@ function PdfRequestFiles(
         } else {
           const obj = documentData?.[0];
           setSendInOrder(obj?.SendinOrder || false);
+          if (
+            obj &&
+            obj?.Signers?.length > 0 &&
+            obj?.Placeholders?.length > 0
+          ) {
+            const params = {
+              event: "viewed",
+              contactId: currUserId,
+              body: {
+                objectId: documentData?.[0].objectId,
+                file: documentData?.[0]?.SignedUrl || documentData?.[0]?.URL,
+                name: documentData?.[0].Name,
+                note: documentData?.[0].Note || "",
+                description: documentData?.[0].Description || "",
+                signers: documentData?.[0].Signers?.map((x) => ({
+                  name: x?.Name,
+                  email: x?.Email,
+                  phone: x?.Phone
+                })),
+                viewedBy:
+                  documentData?.[0].Signers?.find(
+                    (x) => x.objectId === currUserId
+                  )?.Email || jsonSender?.email,
+                viewedAt: new Date(),
+                createdAt: documentData?.[0].createdAt
+              }
+            };
+
+            try {
+              await axios.post(
+                `${localStorage.getItem("baseUrl")}functions/callwebhook`,
+                params,
+                {
+                  headers: {
+                    "Content-Type": "application/json",
+                    "X-Parse-Application-Id":
+                      localStorage.getItem("parseAppId"),
+                    sessiontoken: localStorage.getItem("accesstoken")
+                  }
+                }
+              );
+            } catch (err) {
+              console.log("Err ", err);
+            }
+          }
         }
 
         let signers = [];
@@ -453,9 +643,37 @@ function PdfRequestFiles(
           setRequestSignTour(true);
         } else {
           const isEnableOTP = documentData?.[0]?.IsEnableOTP || false;
-          const sessionToken = localStorage.getItem("accesstoken");
-          if (sessionToken) {
-            //condition to check current user exist in contracts_Users class and check tour message status
+          if (!isEnableOTP) {
+            try {
+              const resContact = await axios.post(
+                `${localStorage.getItem("baseUrl")}functions/getcontact`,
+                {
+                  contactId: currUserId
+                },
+                {
+                  headers: {
+                    "Content-Type": "application/json",
+                    "X-Parse-Application-Id": localStorage.getItem("parseAppId")
+                  }
+                }
+              );
+              const contact = resContact?.data?.result;
+              setContractName("_Contactbook");
+              setSignerUserId(contact?.objectId);
+              const tourData = contact?.TourStatus && contact?.TourStatus;
+              if (tourData && tourData.length > 0) {
+                const checkTourRequest =
+                  tourData?.some((data) => data?.requestSign) || false;
+                setTourStatus(tourData);
+                setRequestSignTour(checkTourRequest);
+              } else {
+                setRequestSignTour(false);
+              }
+            } catch (err) {
+              console.log("err while getting tourstatus", err);
+            }
+          } else {
+            //else condition to check current user exist in contracts_Users class and check tour message status
             //if not then check user exist in contracts_Contactbook class and check tour message status
             const res = await contractUsers();
             if (res === "Error: Something went wrong!") {
@@ -473,22 +691,6 @@ function PdfRequestFiles(
                 setRequestSignTour(checkTourRequest[0]?.requestSign || false);
               } else {
                 setRequestSignTour(false);
-              }
-              setSaveSignCheckbox((prev) => ({ ...prev, isVisible: true }));
-              //function to get default signatur of current user from `contracts_Signature` class
-              const defaultSignRes = await getDefaultSignature(
-                jsonSender?.objectId
-              );
-              if (defaultSignRes?.status === "success") {
-                setSaveSignCheckbox((prev) => ({
-                  ...prev,
-                  isVisible: true,
-                  signId: defaultSignRes?.res?.id
-                }));
-                const sign = defaultSignRes?.res?.defaultSignature || "";
-                const initials = defaultSignRes?.res?.defaultInitial || "";
-                setDefaultSignImg(sign);
-                setMyInitial(initials);
               }
             } else if (res?.length === 0) {
               const res = await contactBook(currUserId);
@@ -512,38 +714,9 @@ function PdfRequestFiles(
                 setHandleError(t("user-not-exist"));
               }
             }
-          } else if (!isEnableOTP) {
-            try {
-              const resContact = await axios.post(
-                `${localStorage.getItem("baseUrl")}functions/getcontact`,
-                { contactId: currUserId },
-                {
-                  headers: {
-                    "Content-Type": "application/json",
-                    "X-Parse-Application-Id": localStorage.getItem("parseAppId")
-                  }
-                }
-              );
-              const contact = resContact?.data?.result;
-              setContractName("_Contactbook");
-              setSignerUserId(contact?.objectId);
-              const tourData = contact?.TourStatus && contact?.TourStatus;
-              if (tourData && tourData.length > 0) {
-                const checkTourRequest =
-                  tourData?.some((data) => data?.requestSign) || false;
-                setTourStatus(tourData);
-                setRequestSignTour(checkTourRequest);
-              } else {
-                setRequestSignTour(false);
-              }
-            } catch (err) {
-              console.log("err while getting tourstatus", err);
-            }
           }
         }
         setIsUiLoading(false);
-        setIsLoading({ isLoad: false });
-        return updatedPdfDetails;
       } else if (
         documentData === "Error: Something went wrong!" ||
         (documentData.result && documentData.result.error)
@@ -553,8 +726,15 @@ function PdfRequestFiles(
         console.log("err in  getDocument cloud function ");
       } else {
         setHandleError(t("no-data"));
-        setIsUiLoading(false);
-        setIsLoading({ isLoad: false });
+        setIsUiLoading({ isLoad: false });
+      }
+      //function to get default signatur eof current user from `contracts_Signature` class
+      const defaultSignRes = await getDefaultSignature(jsonSender?.objectId);
+      if (defaultSignRes?.status === "success") {
+        const sign = defaultSignRes?.res?.defaultSignature || "";
+        const initials = defaultSignRes?.res?.defaultInitial || "";
+        setDefaultSignImg(sign);
+        setMyInitial(initials);
       }
       setIsLoading({ isLoad: false });
     } catch (err) {
@@ -586,6 +766,7 @@ function PdfRequestFiles(
           }
         }
         isEmailVerified = currentUser?.emailVerified;
+        setIsEmailVerified(isEmailVerified);
       } catch (err) {
         console.log("err in get email verification ", err);
         setHandleError(t("something-went-wrong-mssg"));
@@ -792,12 +973,16 @@ function PdfRequestFiles(
               //get ExistUserPtr object id of user class to get tenantDetails
               if (!pdfBytes?.error) {
                 const objectId = pdfDetails?.[0]?.ExtUserPtr?.UserId?.objectId;
+                let activeMailAdapter =
+                  pdfDetails?.[0]?.ExtUserPtr?.active_mail_adapter;
                 //function for call to embed signature in pdf and get digital signature pdf
                 const resSign = await signPdfFun(
                   pdfBytes,
                   documentId,
                   signerObjectId,
                   objectId,
+                  isSubscribed,
+                  activeMailAdapter,
                   widgets
                 );
                 if (resSign && resSign.status === "success") {
@@ -805,14 +990,7 @@ function PdfRequestFiles(
                   setIsSigned(true);
                   setSignedSigners([]);
                   setUnSignedSigners([]);
-                  const isSuccessRoute = pdfDetails?.[0]?.RedirectUrl
-                    ? false
-                    : window.location?.pathname?.includes("load");
-                  const updateDoc = await getDocumentDetails(
-                    documentId,
-                    true,
-                    isSuccessRoute
-                  );
+                  getDocumentDetails(documentId, true);
                   const index = pdfDetails?.[0]?.Signers.findIndex(
                     (x) => x.objectId === signerObjectId
                   );
@@ -833,14 +1011,16 @@ function PdfRequestFiles(
                         "en-US",
                         { day: "numeric", month: "long", year: "numeric" }
                       );
-                      let senderEmail =
-                        pdfDetails?.[0]?.ExtUserPtr?.Email;
+                      let senderEmail = pdfDetails?.[0].ExtUserPtr.Email;
                       let senderPhone = pdfDetails?.[0]?.ExtUserPtr?.Phone;
-                      const senderName =
-                        pdfDetails?.[0].ExtUserPtr.Name;
-                      const documentName = pdfDetails?.[0].Name;
+                      const senderName = `${pdfDetails?.[0].ExtUserPtr.Name}`;
+
                       try {
-                        let url = `${localStorage.getItem("baseUrl")}functions/sendmailv3`;
+                        const imgPng =
+                          "https://qikinnovation.ams3.digitaloceanspaces.com/logo.png";
+                        let url = `${localStorage.getItem(
+                          "baseUrl"
+                        )}functions/sendmailv3`;
                         const headers = {
                           "Content-Type": "application/json",
                           "X-Parse-Application-Id":
@@ -860,16 +1040,20 @@ function PdfRequestFiles(
                             `${pdfDetails?.[0].objectId}/${user.Email}`
                           );
                         }
-                        let signPdf =
-                              `${hostUrl}/login/${encodeBase64}`;
+                        const hostPublicUrl = isStaging
+                          ? "https://staging-app.opensignlabs.com"
+                          : "https://app.opensignlabs.com";
+                        let signPdf = props?.templateId
+                          ? `${hostPublicUrl}/login/${encodeBase64}`
+                          : `${hostUrl}/login/${encodeBase64}`;
+                        const openSignUrl =
+                          "https://www.opensignlabs.com/contact-us";
                         const orgName = pdfDetails[0]?.ExtUserPtr.Company
                           ? pdfDetails[0].ExtUserPtr.Company
                           : "";
+                        const themeBGcolor = themeColor;
                         let replaceVar;
-                        if (
-                          requestBody &&
-                          requestSubject
-                        ) {
+                        if (requestBody && requestSubject && isSubscribed) {
                           const replacedRequestBody = requestBody.replace(
                             /"/g,
                             "'"
@@ -880,13 +1064,13 @@ function PdfRequestFiles(
                             "</body> </html>";
 
                           const variables = {
-                            document_title: documentName,
+                            document_title: pdfDetails?.[0].Name,
                             sender_name: senderName,
                             sender_mail: senderEmail,
                             sender_phone: senderPhone,
-                            receiver_name: user?.Name || "",
+                            receiver_name: user.Name,
                             receiver_email: user.Email,
-                            receiver_phone: user?.Phone || "",
+                            receiver_phone: user.Phone,
                             expiry_date: localExpireDate,
                             company_name: orgName,
                             signing_url: `<a href=${signPdf} target=_blank>Sign here</a>`
@@ -897,45 +1081,45 @@ function PdfRequestFiles(
                             variables
                           );
                         }
-                        const mailparam = {
-                          senderName: senderName,
-                          senderMail: senderEmail,
-                          title: documentName,
-                          organization: orgName,
-                          localExpireDate: localExpireDate,
-                          sigingUrl: signPdf
-                        };
+
                         let params = {
-                          replyto: senderEmail || "",
+                          mailProvider: activeMailAdapter,
                           extUserId: extUserId,
                           recipient: user.Email,
-                          subject: replaceVar?.subject
+                          subject: requestSubject
                             ? replaceVar?.subject
-                            : mailTemplate(mailparam).subject,
-                          from:
-                            senderEmail,
-                          html: replaceVar?.body
+                            : `${pdfDetails?.[0].ExtUserPtr.Name} has requested you to sign "${pdfDetails?.[0].Name}"`,
+                          from: senderEmail,
+                          plan: plancode,
+                          html: requestBody
                             ? replaceVar?.body
-                            : mailTemplate(mailparam).body
+                            : "<html><head><meta http-equiv='Content-Type' content='text/html; charset=UTF-8' /> </head>   <body> <div style='background-color: #f5f5f5; padding: 20px'=> <div   style=' box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;background: white;padding-bottom: 20px;'> <div style='padding:10px 10px 0 10px'><img src=" +
+                              imgPng +
+                              " height='50' style='padding: 20px,width:170px,height:40px' /></div>  <div  style=' padding: 2px;font-family: system-ui;background-color:" +
+                              themeBGcolor +
+                              ";'><p style='font-size: 20px;font-weight: 400;color: white;padding-left: 20px;' > Digital Signature Request</p></div><div><p style='padding: 20px;font-family: system-ui;font-size: 14px;   margin-bottom: 10px;'> " +
+                              pdfDetails?.[0].ExtUserPtr.Name +
+                              " has requested you to review and sign <strong> " +
+                              pdfDetails?.[0].Name +
+                              "</strong>.</p><div style='padding: 5px 0px 5px 25px;display: flex;flex-direction: row;justify-content: space-around;'><table> <tr> <td style='font-weight:bold;font-family:sans-serif;font-size:15px'>Sender</td> <td> </td> <td  style='color:#626363;font-weight:bold'>" +
+                              senderEmail +
+                              "</td></tr><tr><td style='font-weight:bold;font-family:sans-serif;font-size:15px'>Organization</td> <td> </td><td style='color:#626363;font-weight:bold'> " +
+                              orgName +
+                              "</td></tr> <tr> <td style='font-weight:bold;font-family:sans-serif;font-size:15px'>Expires on</td><td> </td> <td style='color:#626363;font-weight:bold'>" +
+                              localExpireDate +
+                              "</td></tr><tr> <td></td> <td> </td></tr></table> </div> <div style='margin-left:70px'><a target=_blank href=" +
+                              signPdf +
+                              "> <button style='padding: 12px 12px 12px 12px;background-color: #d46b0f;color: white;  border: 0px;box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px,rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;font-weight:bold;margin-top:30px'>Sign here</button></a> </div> <div style='display: flex; justify-content: center;margin-top: 10px;'> </div></div></div><div><p> This is an automated email from OpenSign™. For any queries regarding this email, please contact the sender " +
+                              senderEmail +
+                              " directly.If you think this email is inappropriate or spam, you may file a complaint with OpenSign™   <a href= " +
+                              openSignUrl +
+                              " target=_blank>here</a>.</p> </div></div></body> </html>"
                         };
                         await axios.post(url, params, { headers: headers });
                       } catch (error) {
                         console.log("error", error);
                       }
                     }
-                  }
-                  if (!isSuccessRoute) {
-                    setIsredirectCanceled(false);
-                  } else {
-                    const url =
-                      updateDoc?.[0]?.SignedUrl || updateDoc?.[0]?.URL;
-                    const fileAdapter =
-                          "";
-                    const isCompleted = updateDoc?.[0]?.IsCompleted
-                      ? `&completed=true`
-                      : "";
-                    const params = `docid=${updateDoc[0].objectId}&docurl=${encodeURIComponent(url)}${isCompleted}${fileAdapter}`;
-                    window.location.href = `/success?${params}`;
                   }
                 } else {
                   setIsUiLoading(false);
@@ -950,7 +1134,7 @@ function PdfRequestFiles(
                 setIsAlert({
                   title: "Error",
                   isShow: true,
-                  alertMessage: t("pdf-uncompatible", { appName: appName })
+                  alertMessage: t("pdf-uncompatible")
                 });
               }
             } catch (err) {
@@ -987,126 +1171,6 @@ function PdfRequestFiles(
     }
   }
 
-  //function for save x and y position and show signature  tab on that position
-  const handleTabDrag = (key) => {
-    setDragKey(key);
-    setIsDragging(true);
-  };
-  //function for set and update x and y postion after drag and drop signature tab
-  const handleStop = (event, dragElement, signerId, key) => {
-    if (!isResize && isDragging) {
-      let updateSignPos = [...signerPos];
-      const signerObjId = signerId ? signerId : uniqueId;
-      const keyValue = key ? key : dragKey;
-      const containerScale = getContainerScale(
-        pdfOriginalWH,
-        pageNumber,
-        containerWH
-      );
-      if (keyValue >= 0) {
-        let filterSignerPos = [];
-        if (signerObjId) {
-          //get current signerObjId placeholder details
-          filterSignerPos = updateSignPos.filter(
-            (data) => data.Id === signerObjId
-          );
-        }
-
-        if (filterSignerPos.length > 0) {
-          const getPlaceHolder = filterSignerPos[0].placeHolder;
-          //get position of current pagenumber
-          const getPageNumer = getPlaceHolder.filter(
-            (data) => data.pageNumber === pageNumber
-          );
-          if (getPageNumer.length > 0) {
-            const getXYdata = getPageNumer[0].pos;
-            const addSignPos = getXYdata.map((url) => {
-              //add new position after drag widgets
-              if (url.key === keyValue) {
-                return {
-                  ...url,
-                  xPosition: dragElement.x / (containerScale * scale),
-                  yPosition: dragElement.y / (containerScale * scale)
-                };
-              }
-              return url;
-            });
-            //update new position of current page number
-            const newUpdateSignPos = getPlaceHolder.map((obj) => {
-              if (obj.pageNumber === pageNumber) {
-                return { ...obj, pos: addSignPos };
-              }
-              return obj;
-            });
-            //update new placeholder of current signer
-            const newUpdateSigner = updateSignPos.map((obj) => {
-              if (signerObjId) {
-                if (obj.Id === signerObjId) {
-                  return { ...obj, placeHolder: newUpdateSignPos };
-                }
-              }
-              return obj;
-            });
-            setSignerPos(newUpdateSigner);
-          }
-        }
-      }
-    }
-    setTimeout(() => setIsDragging(false), 200);
-  };
-
-  const handleTextSettingModal = (value) => {
-    setIsTextSetting(value);
-  };
-  const handleSaveFontSize = () => {
-    const filterSignerPos = signerPos.filter((data) => data.Id === uniqueId);
-    if (filterSignerPos) {
-      const placehoder = filterSignerPos[0].placeHolder;
-      const getPageNumer = placehoder.filter(
-        (data) => data.pageNumber === pageNumber
-      );
-      if (getPageNumer.length > 0) {
-        const getXYdata = getPageNumer[0].pos;
-        const getPosData = getXYdata;
-        const updateSignPos = getPosData.map((position) => {
-          if (position.key === signKey) {
-            return {
-              ...position,
-              options: {
-                ...position.options,
-                fontSize:
-                  fontSize || currWidgetsDetails?.options?.fontSize || 12,
-                fontColor:
-                  fontColor || currWidgetsDetails?.options?.fontColor || "black"
-              }
-            };
-          }
-          return position;
-        });
-
-        //update new position of current page number
-        const newUpdateSignPos = placehoder.map((obj) => {
-          if (obj.pageNumber === pageNumber) {
-            return { ...obj, pos: updateSignPos };
-          }
-          return obj;
-        });
-        //update new placeholder of current signer
-        const newUpdateSigner = signerPos.map((obj) => {
-          if (obj.Id === uniqueId) {
-            return { ...obj, placeHolder: newUpdateSignPos };
-          }
-
-          return obj;
-        });
-        setSignerPos(newUpdateSigner);
-
-        setFontSize();
-        setFontColor();
-        handleTextSettingModal(false);
-      }
-    }
-  };
   //function for update TourStatus
   const closeTour = async () => {
     setWidgetsTour(false);
@@ -1143,13 +1207,11 @@ function PdfRequestFiles(
   //function for image upload or update
   const onImageChange = (event) => {
     if (event.target.files && event.target.files[0]) {
-      const file = event.target.files[0];
-      compressedFileSize(file, setImgWH, setImage);
+      onImageSelect(event, setImgWH, setImage);
     }
   };
   //function for upload stamp image
   const saveImage = () => {
-    const widgetsType = currWidgetsDetails?.type;
     //get current signers placeholder position data
     const currentSigner = signerPos.filter(
       (data) => data.signerObjId === signerObjectId
@@ -1160,18 +1222,13 @@ function PdfRequestFiles(
     });
     //get current signer placeholder position data
     const placeholderPosition = currentSigner[0].placeHolder;
-    //`isApplyAll` is used when user edit stamp then updated signature apply all existing drawn signatures
-    const isApplyAll = true;
     //function of save image and get updated position with image url
     const getUpdatePosition = onSaveImage(
       placeholderPosition,
       getIndex,
       signKey,
       imgWH,
-      image,
-      isAutoSign,
-      widgetsType,
-      isApplyAll
+      image
     );
 
     //replace updated placeholder position with old data
@@ -1190,11 +1247,9 @@ function PdfRequestFiles(
       newState.splice(indexofSigner, 1, ...currentSigner); // Modify the copy
       return newState; // Update the state with the modified copy
     });
-    setIsAutoSign(false);
   };
   //function for save button to save signature or image url
-  const saveSign = (type, isDefaultSign, width, height, typedSignature) => {
-    const widgetsType = currWidgetsDetails?.type;
+  const saveSign = (type, isDefaultSign, width, height) => {
     const isTypeText = width && height ? true : false;
     const signatureImg = isDefaultSign
       ? isDefaultSign === "initials"
@@ -1225,8 +1280,6 @@ function PdfRequestFiles(
     }
     //get current signer placeholder position data
     const placeholderPosition = currentSigner[0].placeHolder;
-    //`isApplyAll` is used when user edit signature/initial then updated signature apply all existing drawn signatures
-    const isApplyAll = true;
     //function of save signature image and get updated position with signature image url
     const getUpdatePosition = onSaveSign(
       type,
@@ -1236,12 +1289,9 @@ function PdfRequestFiles(
       signatureImg,
       imgWH,
       isDefaultSign,
-      isTypeText,
-      typedSignature,
-      isAutoSign,
-      widgetsType,
-      isApplyAll
+      isTypeText
     );
+
     const updateSignerData = currentSigner.map((obj) => {
       if (obj.signerObjId === signerObjectId) {
         return { ...obj, placeHolder: getUpdatePosition };
@@ -1257,8 +1307,6 @@ function PdfRequestFiles(
       newState.splice(index, 1, ...updateSignerData);
       return newState;
     });
-
-    setIsAutoSign(false);
   };
   //function for set decline true on press decline button
   const declineDoc = async (reason) => {
@@ -1268,6 +1316,9 @@ function PdfRequestFiles(
     const jsonSender = JSON.parse(senderUser);
     setIsDecline({ isDeclined: false });
     setIsUiLoading(true);
+    const email =
+      pdfDetails?.[0].Signers?.find((x) => x.objectId === signerObjectId)
+        ?.Email || jsonSender?.email;
     const userId =
       pdfDetails?.[0].Signers?.find((x) => x.objectId === signerObjectId)
         ?.UserId?.objectId || jsonSender?.objectId;
@@ -1290,6 +1341,41 @@ function PdfRequestFiles(
           const currentDecline = { currnt: "YouDeclined", isDeclined: true };
           setIsDecline(currentDecline);
           setIsUiLoading(false);
+          const params = {
+            event: "declined",
+            body: {
+              objectId: pdfDetails?.[0].objectId,
+              file: pdfDetails?.[0]?.SignedUrl || pdfDetails?.[0]?.URL,
+              name: pdfDetails?.[0].Name,
+              note: pdfDetails?.[0].Note || "",
+              description: pdfDetails?.[0].Description || "",
+              signers: pdfDetails?.[0].Signers?.map((x) => ({
+                name: x?.Name,
+                email: x?.Email,
+                phone: x?.Phone
+              })),
+              declinedBy: email,
+              declinedReason: reason,
+              declinedAt: new Date(),
+              createdAt: pdfDetails?.[0].createdAt
+            }
+          };
+
+          try {
+            await axios.post(
+              `${localStorage.getItem("baseUrl")}functions/callwebhook`,
+              params,
+              {
+                headers: {
+                  "Content-Type": "application/json",
+                  "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
+                  sessiontoken: localStorage.getItem("accesstoken")
+                }
+              }
+            );
+          } catch (err) {
+            console.log("Err ", err);
+          }
         }
       })
       .catch((err) => {
@@ -1304,17 +1390,14 @@ function PdfRequestFiles(
   };
   //function to add default signature for all requested placeholder of sign
   const addDefaultSignature = () => {
-    const type = defaultSignAlert?.type;
     //get current signers placeholder position data
     const currentSignerPosition = signerPos.filter(
       (data) => data.signerObjId === signerObjectId
     );
-    const defaultSign = type === "signature" ? defaultSignImg : myInitial;
     //function for save default signature url for all placeholder position
     const updatePlace = addDefaultSignatureImg(
       currentSignerPosition[0].placeHolder,
-      defaultSign,
-      type
+      defaultSignImg
     );
 
     const updatesignerPos = signerPos.map((x) =>
@@ -1383,27 +1466,8 @@ function PdfRequestFiles(
       }
     }
   };
-  const formatArrayToString = (arr) => {
-    if (arr.length === 0) return ""; // Handle empty array
-    if (arr.length === 1) return `${arr[0]}`; // Handle single-element array
-
-    const lastElement = arr.pop(); // Remove and store the last element
-    return `${arr.join(", ")} ${t("and")} ${lastElement}`; // Format the string
-  };
   const requestSignTourFunction = () => {
-    const pagenumbers = formatArrayToString(showSignPagenumber);
     const tourConfig = [
-      {
-        selector: '[data-tut="IsSigned"]',
-        content: () => (
-          <TourContentWithBtn
-            message={t("tour-mssg.pdf-request-file-6", { pagenumbers })}
-            isChecked={handleDontShow}
-          />
-        ),
-        position: "top",
-        style: { fontSize: "13px" }
-      },
       {
         selector: '[data-tut="reactourFirst"]',
         content: () => (
@@ -1449,13 +1513,13 @@ function PdfRequestFiles(
       position: "top",
       style: { fontSize: "13px" }
     };
-    //checking if signed by user component exist then add signed by tour step
+    //checking if signed by user component exist then add signed step
     const signedBy =
       signedSigners.length > 0
         ? [...tourConfig.slice(0, 0), signedByStep, ...tourConfig.slice(0)]
         : tourConfig;
 
-    //checking if default signature component exist then add defaultSign tour step
+    //checking if default signature component exist then add defaultSign step
     const defaultSignStep = {
       selector: '[data-tut="reactourThird"]',
       content: () => (
@@ -1467,47 +1531,20 @@ function PdfRequestFiles(
       position: "top",
       style: { fontSize: "13px" }
     };
-    //checking if AllowModifications is true then add allow widgets panel tour step
-    const allModifyWidgets = {
-      selector: '[data-tut="reactourFourth"]',
-      content: () => (
-        <TourContentWithBtn
-          message={t("tour-mssg.allowModify-widgets")}
-          isChecked={handleDontShow}
-        />
-      ),
-      position: "top",
-      style: { fontSize: "13px" }
-    };
-
-    //handle signed by panel index if signed by exist then 2 else 1 to add tour step
-    const index = signedSigners.length > 0 ? 3 : 2;
-    let defaultSignTour = defaultSignImg
+    //index is handle is signed by exist then 2 else 1 to add tour step
+    const index = signedSigners.length > 0 ? 2 : 1;
+    const defaultSignTour = defaultSignImg
       ? [...signedBy.slice(0, index), defaultSignStep, ...signedBy.slice(index)]
       : signedBy;
-    //handle index when AllowModifications is true and defaultSignImg & signedSigners both exist or only
-    //signedSigners or defaultSignImg exist then adjust index
-    const modifyIndex =
-      signedSigners > 0 && defaultSignImg
-        ? 4
-        : signedSigners > 0 || defaultSignImg
-          ? 3
-          : 2;
-    if (pdfDetails[0]?.AllowModifications) {
-      defaultSignTour = [
-        ...defaultSignTour.slice(0, modifyIndex),
-        allModifyWidgets,
-        ...defaultSignTour.slice(modifyIndex)
-      ];
-    }
-    let mobileTour;
+
     if (isMobile) {
-      mobileTour = tourConfig.filter((_, ind) => ind !== 1);
+      tourConfig.shift();
     }
+
     return (
       <Tour
         onRequestClose={closeRequestSignTour}
-        steps={isMobile ? mobileTour : defaultSignTour}
+        steps={isMobile ? tourConfig : defaultSignTour}
         isOpen={true}
         closeWithMask={false}
         rounded={5}
@@ -1515,6 +1552,178 @@ function PdfRequestFiles(
     );
   };
 
+  const handleUserDetails = () => {
+    setIsPublicContact(true);
+  };
+
+  //`handlePublicUser` function to use create user from public role and create document from public template
+  const handlePublicUser = async (e) => {
+    e.preventDefault();
+    if (!emailRegex.test(contact.email)) {
+      alert("Please enter a valid email address.");
+    } else {
+      setLoading(true);
+      try {
+        const params = {
+          ...contact,
+          templateid: pdfDetails[0]?.objectId,
+          role: pdfDetails[0]?.PublicRole[0]
+        };
+        const userRes = await axios.post(
+          `${localStorage.getItem(
+            "baseUrl"
+          )}/functions/publicuserlinkcontacttodoc`,
+          params,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              "X-Parse-Application-Id": localStorage.getItem("parseAppId")
+            }
+          }
+        );
+
+        if (userRes?.data?.result) {
+          setPublicRes(userRes.data.result);
+          const isEnableOTP = pdfDetails?.[0]?.IsEnableOTP || false;
+          if (isEnableOTP) {
+            await SendOtp();
+          } else {
+            setIsPublicContact(false);
+            setIsPublicTemplate(false);
+            setDocumentId(userRes.data?.result?.docId);
+            const contactId = userRes.data.result?.contactId;
+            setSignerObjectId(contactId);
+          }
+        } else {
+          console.log("error in public-sign to create user details");
+          setIsAlert({
+            title: "Error",
+            isShow: true,
+            alertMessage: t("something-went-wrong-mssg")
+          });
+        }
+      } catch (e) {
+        console.log("e", e);
+        if (
+          e?.response?.data?.error === "Insufficient Credit" ||
+          e?.response?.data?.error === "Plan expired"
+        ) {
+          handleCloseOtp();
+          setIsAlert({
+            title: t("insufficient-credits"),
+            isShow: true,
+            alertMessage: t("insufficient-credits-mssg")
+          });
+        } else {
+          handleCloseOtp();
+          setIsAlert({
+            title: "Error",
+            isShow: true,
+            alertMessage: t("something-went-wrong-mssg")
+          });
+        }
+      }
+    }
+  };
+
+  const handleInputChange = (e) => {
+    let { name, value } = e.target;
+    if (name === "email") {
+      value = value?.toLowerCase()?.replace(/\s/g, "");
+    }
+    setContact({ ...contact, [name]: value });
+  };
+
+  const SendOtp = async () => {
+    try {
+      const params = { email: contact.email, docId: publicRes?.docId };
+      const Otp = await axios.post(
+        `${localStorage.getItem("baseUrl")}/functions/SendOTPMailV1`,
+        params,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "X-Parse-Application-Id": localStorage.getItem("parseAppId")
+          }
+        }
+      );
+
+      if (Otp) {
+        setIsOtp(true);
+        setLoading(false);
+      }
+    } catch (error) {
+      console.log("error in verify otp in public-sign", error);
+      setIsAlert({
+        title: "Error",
+        isShow: true,
+        alertMessage: t("something-went-wrong-mssg")
+      });
+    }
+  };
+
+  //verify OTP send on via email
+  const VerifyOTP = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    const serverUrl =
+      localStorage.getItem("baseUrl") && localStorage.getItem("baseUrl");
+    const parseId =
+      localStorage.getItem("parseAppId") && localStorage.getItem("parseAppId");
+    if (otp) {
+      // setLoading(true);
+      try {
+        let url = `${serverUrl}/functions/AuthLoginAsMail/`;
+        const headers = {
+          "Content-Type": "application/json",
+          "X-Parse-Application-Id": parseId
+        };
+        let body = { email: contact.email, otp: otp };
+        let user = await axios.post(url, body, { headers: headers });
+        if (user.data.result === "Invalid Otp") {
+          alert(t("invalid-otp"));
+          setLoading(false);
+        } else if (user.data.result === "user not found!") {
+          alert(t("user-not-found"));
+          setLoading(false);
+        } else {
+          let _user = user.data.result;
+          const parseId = localStorage.getItem("parseAppId");
+          await Parse.User.become(_user.sessionToken);
+          const contractUserDetails = await contractUsers();
+          localStorage.setItem("UserInformation", JSON.stringify(_user));
+          localStorage.setItem(
+            `Parse/${parseId}/currentUser`,
+            JSON.stringify(_user)
+          );
+          if (contractUserDetails && contractUserDetails.length > 0) {
+            localStorage.setItem(
+              "Extand_Class",
+              JSON.stringify(contractUserDetails)
+            );
+          }
+          localStorage.setItem("username", _user.name);
+          localStorage.setItem("accesstoken", _user.sessionToken);
+          setLoading(false);
+          setIsPublicContact(false);
+          setIsPublicTemplate(false);
+          setIsLoading({ isLoad: false });
+          setDocumentId(publicRes?.docId);
+        }
+      } catch (error) {
+        console.log("err ", error);
+      }
+    } else {
+      alert(t("enter-otp-alert"));
+    }
+  };
+  const handleCloseOtp = () => {
+    setIsPublicContact(false);
+    setLoading(false);
+    setIsOtp(false);
+    setOtp();
+    setContact({ name: "", email: "", phone: "" });
+  };
 
   const clickOnZoomIn = () => {
     onClickZoomIn(scale, zoomPercent, setScale, setZoomPercent);
@@ -1524,10 +1733,7 @@ function PdfRequestFiles(
   };
   const handleDownloadBtn = async () => {
     const url = pdfDetails?.[0]?.SignedUrl || pdfDetails?.[0]?.URL;
-    const name =
-      pdfDetails?.[0]?.Name?.length > 100
-        ? pdfDetails?.[0]?.Name?.slice(0, 100)
-        : pdfDetails?.[0]?.Name || "Document";
+    const name = pdfDetails?.[0]?.Name;
     await fetchUrl(url, name);
   };
   const handleDeclineMssg = () => {
@@ -1583,295 +1789,29 @@ function PdfRequestFiles(
       alert(t("expiry-date-error"));
     }
   };
-  const AgreementTour = [
-    {
-      selector: '[data-tut="IsAgree"]',
-      content: () => <p className="p-0">{t("agrrement-alert")}</p>,
-      position: "top",
-      style: { fontSize: "13px" }
-    }
-  ];
-  const handleCloseAgreeTour = () => {
-    setIsAgreeTour(false);
-  };
-  // `handleRedirectCancel` is used to cancel redirecting to redirectUrl
-  const handleRedirectCancel = () => {
-    setIsredirectCanceled(true);
-  };
-  //function for capture position on hover or touch widgets
-  const handleDivClick = (e) => {
-    const isTouchEvent = e.type.startsWith("touch");
-    const divRect = e.currentTarget.getBoundingClientRect();
-    let mouseX, mouseY;
-    if (isTouchEvent) {
-      const touch = e.touches[0]; // Get the first touch point
-      mouseX = touch.clientX - divRect.left;
-      mouseY = touch.clientY - divRect.top;
-      setSignBtnPosition([{ xPos: mouseX, yPos: mouseY }]);
-    } else {
-      mouseX = e.clientX - divRect.left;
-      mouseY = e.clientY - divRect.top;
-      setXYSignature({ xPos: mouseX, yPos: mouseY });
-    }
-  };
-  //function for capture position of x and y on hover signature button last position
-  const handleMouseLeave = () => {
-    setSignBtnPosition([xySignature]);
-  };
-  //function for setting position after drop signature button over pdf
-  const addPositionOfSignature = (item, monitor) => {
-    getSignerPos(item, monitor);
-  };
-  const getSignerPos = (item, monitor) => {
-    const posZIndex = zIndex + 1;
-    setZIndex(posZIndex);
-    const key = randomId();
-    const containerScale = getContainerScale(
-      pdfOriginalWH,
-      pageNumber,
-      containerWH
-    );
-    let dropData = [];
-    let placeHolder;
-    const dragTypeValue = item?.text ? item.text : monitor.type;
-    const widgetWidth =
-      defaultWidthHeight(dragTypeValue).width * containerScale;
-    const widgetHeight =
-      defaultWidthHeight(dragTypeValue).height * containerScale;
-    //adding and updating drop position in array when user drop signature button in div
-    if (item === "onclick") {
-      const divHeight = divRef.current.getBoundingClientRect().height;
-      // `getBoundingClientRect()` is used to get accurate measurement height of the div
-      const dropObj = {
-        //onclick put placeholder center on pdf
-        xPosition: widgetWidth / 4 + containerWH.width / 2,
-        yPosition: widgetHeight + divHeight / 2,
-        isStamp:
-          (dragTypeValue === "stamp" || dragTypeValue === "image") && true,
-        key: key,
-        scale: containerScale,
-        zIndex: posZIndex,
-        type: dragTypeValue,
-        options: addWidgetOptions(dragTypeValue),
-        Width: widgetWidth / (containerScale * scale),
-        Height: widgetHeight / (containerScale * scale)
-      };
-      dropData.push(dropObj);
-      placeHolder = { pageNumber: pageNumber, pos: dropData };
-    } else {
-      const offset = monitor.getClientOffset();
-      //This method returns the offset of the current pointer (mouse) position relative to the client viewport.
-      const containerRect = document
-        .getElementById("container")
-        .getBoundingClientRect();
-      //`containerRect.left`,  The distance from the left of the viewport to the left side of the element.
-      //`containerRect.top` The distance from the top of the viewport to the top of the element.
-      const x = offset.x - containerRect.left;
-      const y = offset.y - containerRect.top;
-      const getXPosition = signBtnPosition[0] ? x - signBtnPosition[0].xPos : x;
-      const getYPosition = signBtnPosition[0] ? y - signBtnPosition[0].yPos : y;
-      const dropObj = {
-        xPosition: getXPosition / (containerScale * scale),
-        yPosition: getYPosition / (containerScale * scale),
-        isStamp:
-          (dragTypeValue === "stamp" || dragTypeValue === "image") && true,
-        key: key,
-        scale: containerScale,
-        zIndex: posZIndex,
-        type: dragTypeValue,
-        options: addWidgetOptions(dragTypeValue),
-        Width: widgetWidth / (containerScale * scale),
-        Height: widgetHeight / (containerScale * scale)
-      };
-      dropData.push(dropObj);
-      placeHolder = { pageNumber: pageNumber, pos: dropData };
-    }
-    setSelectWidgetId(key);
-    if (uniqueId) {
-      let filterSignerPos, currentPagePosition;
-      filterSignerPos = signerPos.find((data) => data.Id === uniqueId);
-      const getPlaceHolder = filterSignerPos?.placeHolder;
-      if (getPlaceHolder) {
-        //checking exist placeholder on same page
-        currentPagePosition = getPlaceHolder.find(
-          (data) => data.pageNumber === pageNumber
-        );
-      }
-      //checking current page has already some placeholders then update that placeholder and add upcoming placehoder position
-      if (getPlaceHolder && currentPagePosition) {
-        const updatePlace = getPlaceHolder.filter(
-          (data) => data.pageNumber !== pageNumber
-        );
-        const getPos = currentPagePosition?.pos;
-        const newSignPos = getPos.concat(dropData);
-        let xyPos = { pageNumber: pageNumber, pos: newSignPos };
-        updatePlace.push(xyPos);
-        const updatesignerPos = signerPos.map((x) =>
-          x.Id === uniqueId ? { ...x, placeHolder: updatePlace } : x
-        );
-        setSignerPos(updatesignerPos);
-      } else {
-        //else condition to add placeholder widgets on multiple page first time
-        const updatesignerPos = signerPos.map((x) =>
-          x.Id === uniqueId && x?.placeHolder
-            ? { ...x, placeHolder: [...x.placeHolder, placeHolder] }
-            : x.Id === uniqueId
-              ? { ...x, placeHolder: [placeHolder] }
-              : x
-        );
-        setSignerPos(updatesignerPos);
-      }
-
-      // if (dragTypeValue === "dropdown") {
-      //   setShowDropdown(true);
-      // } else if (dragTypeValue === "checkbox") {
-      //   setIsCheckbox(true);
-      // } else
-      if (
-        [textWidget, "name", "company", "job title", "email"].includes(
-          dragTypeValue
-        )
-      ) {
-        setFontSize(12);
-        setFontColor("black");
-      }
-      setWidgetType(dragTypeValue);
-      setSignKey(key);
-      setCurrWidgetsDetails({});
-    }
-  };
-
-  //function for delete signature block
-  const handleDeleteSign = (key, Id) => {
-    const updateData = [];
-    const filterSignerPos = signerPos.filter((data) => data.Id === Id);
-    if (filterSignerPos.length > 0) {
-      const getPlaceHolder = filterSignerPos[0].placeHolder;
-      const getPageNumer = getPlaceHolder.filter(
-        (data) => data.pageNumber === pageNumber
-      );
-      if (getPageNumer.length > 0) {
-        const getXYdata = getPageNumer[0].pos.filter(
-          (data) => data.key !== key
-        );
-        //condition to check on same has multiple widgets so do not delete all widgets
-        if (getXYdata.length > 0) {
-          updateData.push(getXYdata);
-          const newUpdatePos = getPlaceHolder.map((obj) => {
-            if (obj.pageNumber === pageNumber) {
-              return { ...obj, pos: updateData[0] };
-            }
-            return obj;
-          });
-
-          const newUpdateSigner = signerPos.map((obj) => {
-            if (obj.Id === Id) {
-              return { ...obj, placeHolder: newUpdatePos };
-            }
-            return obj;
-          });
-          setSignerPos(newUpdateSigner);
-        } else {
-          const getRemainPage = filterSignerPos[0].placeHolder.filter(
-            (data) => data.pageNumber !== pageNumber
-          );
-          //condition to check placeholder length is greater than 1 do not need to remove whole placeholder
-          //array only resove particular widgets
-          if (getRemainPage && getRemainPage.length > 0) {
-            const newUpdatePos = filterSignerPos.map((obj) => {
-              if (obj.Id === Id) {
-                return { ...obj, placeHolder: getRemainPage };
-              }
-              return obj;
-            });
-            let signerupdate = [];
-            signerupdate = signerPos.filter((data) => data.Id !== Id);
-            signerupdate.push(newUpdatePos[0]);
-            setSignerPos(signerupdate);
-          } else {
-            const updatedData = signerPos.map((item) => {
-              if (item.Id === Id) {
-                // Create a copy of the item object and delete the placeHolder field
-                const updatedItem = { ...item };
-                delete updatedItem.placeHolder;
-                return updatedItem;
-              }
-              return item;
-            });
-            setSignerPos(updatedData);
-          }
-        }
-      }
-    }
-  };
-  //function to get first widget and page number to assign currect signer and tour message
-  const showFirstWidget = () => {
-    if (!requestSignTour) {
-      const getCurrentUserPlaceholder = signerPos.find(
-        (x) => x.Id === uniqueId
-      );
-      const placeholder = getCurrentUserPlaceholder.placeHolder;
-      //checking minimum pagnumber of existing widgets and throw tour message on that page
-      const getPosition = placeholder.reduce(
-        (min, obj) => (obj.pageNumber < min.pageNumber ? obj : min),
-        placeholder[0]
-      );
-      const getWidgetId = getPosition.pos[0].key;
-      setUnSignedWidgetId(getWidgetId);
-      setPageNumber(getPosition.pageNumber);
-      let pagenumber = [];
-      for (let item of getCurrentUserPlaceholder.placeHolder) {
-        pagenumber.push(item.pageNumber);
-      }
-      // Sort the pagenumber in ascending order
-      const sortedPagenumber = [...pagenumber].sort((a, b) => a - b);
-      setShowSignPagenumber(sortedPagenumber);
-    }
-  };
   return (
     <DndProvider backend={HTML5Backend}>
-      <Title
-        title={
-              "Request Sign"
-        }
-      />
+      <Title title={props.templateId ? "Public Sign" : "Request Sign"} />
+      {isSubscriptionExpired ? (
+        <ModalUi
+          title={t("subscription-expired")}
+          isOpen={isSubscriptionExpired}
+          showClose={false}
+        >
+          <div className="flex flex-col justify-center items-center py-4 md:py-5 gap-5">
+            <p className="text-sm md:text-lg font-normal">
+              {t("owner-subscription-expired")}
+            </p>
+          </div>
+        </ModalUi>
+      ) : (
+        <>
           {isLoading.isLoad ? (
             <LoaderWithMsg isLoading={isLoading} />
           ) : handleError ? (
             <HandleError handleError={handleError} />
           ) : (
             <div>
-              {!isAgree &&
-                currentSigner &&
-                !isExpired &&
-                !alreadySign &&
-                !isCompleted?.isCertificate &&
-                !isDecline?.isDeclined && (
-                  <AgreementSign
-                    setIsAgree={setIsAgree}
-                    setIsAgreeTour={setIsAgreeTour}
-                    showFirstWidget={showFirstWidget}
-                  />
-                )}
-              <Tour
-                showNumber={false}
-                showNavigation={false}
-                showNavigationNumber={false}
-                onRequestClose={handleCloseAgreeTour}
-                steps={AgreementTour}
-                isOpen={isAgreeTour}
-                rounded={5}
-                closeWithMask={false}
-              />
-
-              {isUiLoading && (
-                <div className="absolute h-[100vh] w-full flex flex-col justify-center items-center z-[999] bg-[#e6f2f2] bg-opacity-80">
-                  <Loader />
-                  <span className="text-[13px] text-base-content">
-                    {t("loading-mssg")}
-                  </span>
-                </div>
-              )}
               {isUiLoading && (
                 <div className="absolute h-[100vh] w-full flex flex-col justify-center items-center z-[999] bg-[#e6f2f2] bg-opacity-80">
                   <Loader />
@@ -1899,13 +1839,11 @@ function PdfRequestFiles(
                       : "auto"
                 }}
                 className={`${
-                      isGuestSignFlow
-                      ? "border-[0.5px] border-gray-300"
-                      : "op-card"
-                } relative overflow-hidden flex flex-col md:flex-row justify-between bg-base-300`}
+                  (props.templateId || isGuestSignFlow) &&
+                  "mx-2 border-[0.5px] border-gray-300"
+                } relative op-card overflow-hidden flex flex-col md:flex-row justify-between bg-base-300`}
               >
                 {!requestSignTour &&
-                  isAgree &&
                   signerObjectId &&
                   requestSignTourFunction()}
                 <Tour
@@ -1944,6 +1882,138 @@ function PdfRequestFiles(
                   handleDownloadBtn={handleDownloadBtn}
                   handleExpiry={handleExpiry}
                 />
+                {!isEmailVerified && (
+                  <VerifyEmail
+                    isVerifyModal={isVerifyModal}
+                    setIsVerifyModal={setIsVerifyModal}
+                    handleVerifyEmail={handleVerifyEmail}
+                    setOtp={setOtp}
+                    otp={otp}
+                    otpLoader={otpLoader}
+                    handleVerifyBtn={handleVerifyBtn}
+                    handleResend={handleResend}
+                  />
+                )}
+                <ModalUi
+                  isOpen={isPublicContact}
+                  title={isOtp ? t("verify-email-1") : t("contact-details")}
+                  handleClose={() => handleCloseOtp()}
+                >
+                  <div className="h-full p-[20px]">
+                    {isOtp ? (
+                      <form onSubmit={VerifyOTP}>
+                        <div className="mb-[0.75rem]">
+                          <label className="block text-xs font-semibold mb-2">
+                            {t("get-otp-alert")}
+                            <span className="text-[13px] text-[red]"> *</span>
+                          </label>
+                          <input
+                            type="number"
+                            name="otp"
+                            placeholder={t("otp-placeholder")}
+                            onInvalid={(e) =>
+                              e.target.setCustomValidity(t("input-required"))
+                            }
+                            onInput={(e) => e.target.setCustomValidity("")}
+                            required
+                            value={otp}
+                            onChange={(e) => setOtp(e.target.value)}
+                            disabled={loading}
+                            className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
+                          />
+                        </div>
+                        <div className="mt-6 flex justify-start gap-2">
+                          <button
+                            className="op-btn op-btn-primary"
+                            disabled={loading}
+                          >
+                            {loading ? t("loading") : t("verify")}
+                          </button>
+                          <button
+                            className="op-btn op-btn-ghost"
+                            onClick={() => handleCloseOtp()}
+                          >
+                            {t("cancel")}
+                          </button>
+                        </div>
+                      </form>
+                    ) : (
+                      <form
+                        className="text-base-content p-2 mx-auto"
+                        onSubmit={handlePublicUser}
+                      >
+                        <div className="mb-[0.75rem]">
+                          <label className="block text-xs font-semibold mb-[5px]">
+                            {t("name")}
+                            <span className="text-[13px] text-[red]"> *</span>
+                          </label>
+                          <input
+                            type="text"
+                            id="name"
+                            name="name"
+                            value={contact.name}
+                            onChange={handleInputChange}
+                            onInvalid={(e) =>
+                              e.target.setCustomValidity(t("input-required"))
+                            }
+                            onInput={(e) => e.target.setCustomValidity("")}
+                            required
+                            disabled={loading}
+                            className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
+                          />
+                        </div>
+                        <div className="mb-[0.75rem]">
+                          <label className="block text-xs font-semibold mb-[5px]">
+                            {t("email")}
+                            <span className="text-[13px] text-[red]"> *</span>
+                          </label>
+                          <input
+                            type="email"
+                            name="email"
+                            value={contact.email}
+                            onChange={handleInputChange}
+                            onInvalid={(e) =>
+                              e.target.setCustomValidity(t("input-required"))
+                            }
+                            onInput={(e) => e.target.setCustomValidity("")}
+                            required
+                            disabled={loading}
+                            className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
+                          />
+                        </div>
+                        <div className="mb-[0.75rem]">
+                          <label className="block text-xs font-semibold mb-[5px]">
+                            {t("phone")}
+                          </label>
+                          <input
+                            value={contact.phone}
+                            onChange={handleInputChange}
+                            type="text"
+                            name="phone"
+                            placeholder={t("phone-optional")}
+                            disabled={loading}
+                            className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
+                          />
+                        </div>
+
+                        <div className="mt-6 flex justify-start gap-2">
+                          <button
+                            className="op-btn op-btn-primary"
+                            disabled={loading}
+                          >
+                            {loading ? t("loading") : t("submit")}
+                          </button>
+                          <button
+                            className="op-btn op-btn-ghost"
+                            onClick={() => handleCloseOtp()}
+                          >
+                            {t("close")}
+                          </button>
+                        </div>
+                      </form>
+                    )}
+                  </div>
+                </ModalUi>
                 <ModalUi
                   isOpen={defaultSignAlert.isShow}
                   title={t("auto-sign-all")}
@@ -1992,36 +2062,23 @@ function PdfRequestFiles(
                 {/* this component used to render all pdf pages in left side */}
                 <RenderAllPdfPage
                   signerPos={signerPos}
-                  id={uniqueId}
+                  signerObjectId={signerObjectId}
+                  signPdfUrl={
+                    pdfDetails[0] &&
+                    (pdfDetails[0]?.SignedUrl || pdfDetails[0]?.URL)
+                  }
                   allPages={allPages}
                   setAllPages={setAllPages}
                   setPageNumber={setPageNumber}
                   pageNumber={pageNumber}
                   containerWH={containerWH}
-                  pdfBase64Url={pdfBase64Url}
-                  signedUrl={pdfDetails?.[0]?.SignedUrl || ""}
                 />
                 {/* pdf render view */}
                 <div className=" w-full md:w-[57%] flex mr-4">
                   <PdfZoom
                     clickOnZoomIn={clickOnZoomIn}
                     clickOnZoomOut={clickOnZoomOut}
-                    isDisableEditTools={true}
-                    allPages={allPages}
-                    setAllPages={setAllPages}
-                    setPageNumber={setPageNumber}
-                  />
-                  <PlaceholderCopy
-                    isPageCopy={isPageCopy}
-                    setIsPageCopy={setIsPageCopy}
-                    xyPosition={signerPos}
-                    setXyPosition={setSignerPos}
-                    allPages={allPages}
-                    pageNumber={pageNumber}
-                    signKey={signKey}
-                    Id={uniqueId}
-                    widgetType={widgetType}
-                    setUniqueId={setUniqueId}
+                    isDisableRotate={true}
                   />
                   <div className=" w-full md:w-[95%] ">
                     {/* this modal is used show this document is already sign */}
@@ -2038,96 +2095,71 @@ function PdfRequestFiles(
                     >
                       <div className="h-full p-[20px] text-base-content">
                         {isCompleted?.message ? (
-                          <>
-                            <p>{isCompleted?.message}</p>
-                            {!isredirectCanceled && redirectUrl && (
-                              <div className="flex flex-row gap-1 items-center justify-center mb-3 mt-2">
-                                <p>
-                                  Redirecting you in {redirectTimeLeft} sec...
-                                </p>
-                                <button
-                                  onClick={handleRedirectCancel}
-                                  className="underline cursor-pointer op-text-primary focus:outline-none ml-2"
-                                >
-                                  Cancel
-                                </button>
-                              </div>
-                            )}
-                          </>
+                          <p>{isCompleted?.message}</p>
                         ) : (
                           <div className="px-[15px]">
                             <span>{t("document-signed-alert-4")}</span>
                           </div>
                         )}
                         {!isCompleted?.message && (
-                          <div className="flex flex-col mt-3 gap-1 px-[10px] justify-center items-center">
-                            {!isredirectCanceled && redirectUrl && (
-                              <div className="flex flex-row gap-1 items-center justify-center mb-3">
-                                <p>
-                                  Redirecting you in {redirectTimeLeft} sec...
-                                </p>
-                                <button
-                                  onClick={handleRedirectCancel}
-                                  className="underline cursor-pointer op-text-primary focus:outline-none ml-2"
-                                >
-                                  Cancel
-                                </button>
-                              </div>
-                            )}
-                            <div className={`${!redirectUrl ? "m-2" : ""}`}>
-                              <button
-                                onClick={(e) =>
-                                  handleToPrint(e, setIsDownloading, pdfDetails)
-                                }
-                                type="button"
-                                className="font-[500] text-[13px] mr-[5px] op-btn op-btn-neutral"
-                              >
-                                <i
-                                  className="fa-light fa-print"
-                                  aria-hidden="true"
-                                ></i>
-                                <span className="hidden lg:block">
-                                  {t("print")}
-                                </span>
-                              </button>
-                              <button
-                                type="button"
-                                onClick={() =>
-                                  handleDownloadCertificate(
-                                    pdfDetails,
-                                    setIsDownloading
-                                  )
-                                }
-                                className="font-[500] text-[13px] mr-[5px] op-btn op-btn-secondary"
-                              >
-                                <i
-                                  className="fa-light fa-award mx-[3px] lg:mx-0"
-                                  aria-hidden="true"
-                                ></i>
-                                <span className="hidden lg:block">
-                                  {t("certificate")}
-                                </span>
-                              </button>
-                              <button
-                                type="button"
-                                className="font-[500] text-[13px] mr-[5px] op-btn op-btn-primary"
-                                onClick={() => {
-                                  setIsCompleted((prev) => ({
-                                    ...prev,
-                                    isModal: false
-                                  }));
-                                  setIsDownloadModal(true);
-                                }}
-                              >
-                                <i
-                                  className="fa-light fa-download"
-                                  aria-hidden="true"
-                                ></i>
-                                <span className="hidden lg:block">
-                                  {t("download")}
-                                </span>
-                              </button>
-                            </div>
+                          <div className="flex mt-4 gap-1 px-[15px]">
+                            <button
+                              onClick={(e) =>
+                                handleToPrint(
+                                  e,
+                                  pdfUrl,
+                                  setIsDownloading,
+                                  pdfDetails
+                                )
+                              }
+                              type="button"
+                              className="font-[500] text-[13px] mr-[5px] op-btn op-btn-neutral"
+                            >
+                              <i
+                                className="fa-light fa-print"
+                                aria-hidden="true"
+                              ></i>
+                              <span className="hidden lg:block">
+                                {t("print")}
+                              </span>
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() =>
+                                handleDownloadCertificate(
+                                  pdfDetails,
+                                  setIsDownloading
+                                )
+                              }
+                              className="font-[500] text-[13px] mr-[5px] op-btn op-btn-secondary"
+                            >
+                              <i
+                                className="fa-light fa-award mx-[3px] lg:mx-0"
+                                aria-hidden="true"
+                              ></i>
+                              <span className="hidden lg:block">
+                                {t("certificate")}
+                              </span>
+                            </button>
+                            <button
+                              type="button"
+                              className="font-[500] text-[13px] mr-[5px] op-btn op-btn-primary"
+                              onClick={() => {
+                                setIsCompleted((prev) => ({
+                                  ...prev,
+                                  isModal: false
+                                }));
+                                setIsDownloadModal(true);
+                              }}
+                            >
+                              <i
+                                className="fa-light fa-download"
+                                aria-hidden="true"
+                              ></i>
+                              <span className="hidden lg:block">
+                                {t("download")}
+                              </span>
+                            </button>
                           </div>
                         )}
                       </div>
@@ -2138,31 +2170,22 @@ function PdfRequestFiles(
                       </div>
                     )}
                     <ModalUi
-                      isOpen={
-                        isDownloading === "certificate" ||
-                        isDownloading === "certificate_err"
-                      }
+                      isOpen={isDownloading === "certificate"}
                       title={
-                        isDownloading === "certificate" ||
-                        isDownloading === "certificate_err"
+                        isDownloading === "certificate"
                           ? t("generating-certificate")
                           : t("pdf-download")
                       }
                       handleClose={() => setIsDownloading("")}
                     >
                       <div className="p-3 md:p-5 text-[13px] md:text-base text-center text-base-content">
-                        {isDownloading === "certificate" ? (
-                          <p>{t("generate-certificate-alert")}</p>
-                        ) : (
-                          <p>{t("generate-certificate-err")}</p>
-                        )}
+                        {isDownloading === "certificate"}{" "}
+                        <p>{t("generate-certificate-alert")}</p>
                       </div>
                     </ModalUi>
                     {/* this component is used for signature pad modal */}
-                    {documentId && isSignPad && (
+                    {documentId && (
                       <SignPad
-                        saveSignCheckbox={saveSignCheckbox}
-                        setSaveSignCheckbox={setSaveSignCheckbox}
                         signatureTypes={signatureType}
                         isSignPad={isSignPad}
                         isStamp={isStamp}
@@ -2178,22 +2201,16 @@ function PdfRequestFiles(
                         onSaveSign={saveSign}
                         defaultSign={defaultSignImg}
                         myInitial={myInitial}
-                        setDefaultSignImg={setDefaultSignImg}
-                        setMyInitial={setMyInitial}
                         isInitial={isInitial}
                         setIsInitial={setIsInitial}
                         setIsStamp={setIsStamp}
                         currWidgetsDetails={currWidgetsDetails}
                         setCurrWidgetsDetails={setCurrWidgetsDetails}
-                        setIsAutoSign={setIsAutoSign}
-                        isAutoSign={isAutoSign}
                       />
                     )}
                     {/* pdf header which contain funish back button */}
                     <Header
-                      isPdfRequestFiles={
-                            true
-                      }
+                      isPdfRequestFiles={isPublicTemplate ? false : true}
                       pageNumber={pageNumber}
                       allPages={allPages}
                       changePage={changePage}
@@ -2202,31 +2219,26 @@ function PdfRequestFiles(
                       isSigned={isSigned}
                       isCompleted={isCompleted.isCertificate}
                       embedWidgetsData={
-                            embedWidgetsData
+                        isPublicTemplate ? handleUserDetails : embedWidgetsData
                       }
                       isShowHeader={true}
                       setIsDecline={setIsDecline}
                       decline={true}
                       currentSigner={currentSigner}
+                      pdfUrl={pdfUrl}
                       alreadySign={alreadySign}
                       containerWH={containerWH}
+                      isPublicTemplate={isPublicTemplate}
                       clickOnZoomIn={clickOnZoomIn}
                       clickOnZoomOut={clickOnZoomOut}
-                      isDisablePdfEditTools={true}
+                      isDisableRotate={true}
+                      templateId={props.templateId}
                       setIsDownloadModal={setIsDownloadModal}
-                      pdfBase64={pdfBase64Url}
-                      isGuestSignFlow={isGuestSignFlow}
                     />
 
-                    <div
-                      ref={divRef}
-                      data-tut="pdfArea"
-                      className="h-full md:h-[95%]"
-                    >
+                    <div ref={divRef} data-tut="pdfArea" className="h-[95%]">
                       {containerWH && (
                         <RenderPdf
-                          setIsPageCopy={setIsPageCopy}
-                          drop={drop}
                           pageNumber={pageNumber}
                           pdfOriginalWH={pdfOriginalWH}
                           pdfNewWidth={pdfNewWidth}
@@ -2258,111 +2270,78 @@ function PdfRequestFiles(
                           setScale={setScale}
                           scale={scale}
                           uniqueId={uniqueId}
-                          pdfBase64Url={pdfBase64Url}
-                          setIsAgreeTour={setIsAgreeTour}
-                          isAgree={isAgree}
-                          handleTabDrag={handleTabDrag}
-                          handleStop={handleStop}
-                          isDragging={isDragging}
-                          isAlllowModify={pdfDetails[0]?.AllowModifications}
-                          setUniqueId={setUniqueId}
-                          handleDeleteSign={handleDeleteSign}
-                          handleTextSettingModal={handleTextSettingModal}
-                          setWidgetType={setWidgetType}
-                          assignedWidgetId={assignedWidgetId}
-                          setRequestSignTour={setRequestSignTour}
+                          ispublicTemplate={isPublicTemplate}
+                          handleUserDetails={handleUserDetails}
                         />
                       )}
                     </div>
                   </div>
                 </div>
 
-                <div className="w-full md:w-[23%] bg-base-100 overflow-y-auto hide-scrollbar ">
+                <div className="w-full md:w-[23%] bg-base-100 overflow-y-auto hide-scrollbar hidden md:inline-block">
                   <div className={`max-h-screen`}>
-                    <div className="w-full hidden md:inline-block">
-                      {signedSigners.length > 0 && (
-                        <>
-                          <div
-                            data-tut="reactourSecond"
-                            className="mx-2 pr-2 pt-2 pb-1 text-[15px] text-base-content font-semibold border-b-[1px] border-base-300"
-                          >
-                            <span>{t("signed-by")}</span>
-                          </div>
-                          <div className="mt-[2px]">
-                            {signedSigners.map((obj, ind) => {
-                              return (
-                                <div key={ind}>
-                                  <SignerListComponent
-                                    ind={ind}
-                                    obj={obj}
-                                    isMenu={isHeader}
-                                    signerPos={signerPos}
-                                  />
-                                </div>
-                              );
-                            })}
-                          </div>
-                        </>
-                      )}
-
-                      {unsignedSigners.length > 0 && (
-                        <>
-                          <div
-                            data-tut="reactourFirst"
-                            className="mx-2 pr-2 pt-2 pb-1 text-[15px] text-base-content font-semibold border-b-[1px] border-base-300"
-                          >
-                            <span>{t("yet-to-sign")}</span>
-                          </div>
-                          <div className="mt-[5px]">
-                            {unsignedSigners.map((obj, ind) => {
-                              return (
-                                <div key={ind}>
-                                  <SignerListComponent
-                                    ind={ind}
-                                    obj={obj}
-                                    isMenu={isHeader}
-                                    signerPos={signerPos}
-                                  />
-                                </div>
-                              );
-                            })}
-                          </div>
-                        </>
-                      )}
-                      {(defaultSignImg || myInitial) &&
-                        !alreadySign &&
-                        currentSigner && (
-                          <DefaultSignature
-                            defaultSignImg={defaultSignImg}
-                            myInitial={myInitial}
-                            userObjectId={signerObjectId}
-                            setIsLoading={setIsLoading}
-                            xyPosition={signerPos}
-                            uniqueId={uniqueId}
-                            setDefaultSignAlert={setDefaultSignAlert}
-                            isDefault={
-                              signatureType?.find((x) => x.name === "default")
-                                ?.enabled || false
-                            }
-                            isAgree={isAgree}
-                            setIsAgreeTour={setIsAgreeTour}
-                          />
-                        )}
-                    </div>
-                    {pdfDetails[0]?.AllowModifications &&
-                      currentSigner &&
-                      !alreadySign && (
-                        <div data-tut="reactourFourth">
-                          <WidgetComponent
-                            pdfUrl={pdfUrl}
-                            handleDivClick={handleDivClick}
-                            handleMouseLeave={handleMouseLeave}
-                            xyPosition={signerPos}
-                            addPositionOfSignature={addPositionOfSignature}
-                            isAlllowModify={true}
-                          />
+                    {signedSigners.length > 0 && (
+                      <>
+                        <div
+                          data-tut="reactourSecond"
+                          className="mx-2 pr-2 pt-2 pb-1 text-[15px] text-base-content font-semibold border-b-[1px] border-base-300"
+                        >
+                          <span>{t("signed-by")}</span>
                         </div>
-                      )}
+                        <div className="mt-[2px]">
+                          {signedSigners.map((obj, ind) => {
+                            return (
+                              <div key={ind}>
+                                <SignerListComponent
+                                  ind={ind}
+                                  obj={obj}
+                                  isMenu={isHeader}
+                                  signerPos={signerPos}
+                                />
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </>
+                    )}
+
+                    {unsignedSigners.length > 0 && (
+                      <>
+                        <div
+                          data-tut="reactourFirst"
+                          className="mx-2 pr-2 pt-2 pb-1 text-[15px] text-base-content font-semibold border-b-[1px] border-base-300"
+                        >
+                          <span>{t("yet-to-sign")}</span>
+                        </div>
+                        <div className="mt-[5px]">
+                          {unsignedSigners.map((obj, ind) => {
+                            return (
+                              <div key={ind}>
+                                <SignerListComponent
+                                  ind={ind}
+                                  obj={obj}
+                                  isMenu={isHeader}
+                                  signerPos={signerPos}
+                                />
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </>
+                    )}
+                    {defaultSignImg && !alreadySign && currentSigner && (
+                      <DefaultSignature
+                        defaultSignImg={defaultSignImg}
+                        userObjectId={signerObjectId}
+                        setIsLoading={setIsLoading}
+                        xyPostion={signerPos}
+                        setDefaultSignAlert={setDefaultSignAlert}
+                        isDefault={
+                          signatureType?.find((x) => x.name === "default")
+                            ?.enabled || false
+                        }
+                      />
+                    )}
                   </div>
                 </div>
               </div>
@@ -2390,7 +2369,6 @@ function PdfRequestFiles(
             isDownloadModal={isDownloadModal}
             pdfDetails={pdfDetails}
             isDocId={true}
-            pdfBase64={pdfBase64Url}
           />
           <ModalUi
             isOpen={isAlert.isShow}
@@ -2408,16 +2386,8 @@ function PdfRequestFiles(
               </button>
             </div>
           </ModalUi>
-          <TextFontSetting
-            isTextSetting={isTextSetting}
-            setIsTextSetting={setIsTextSetting}
-            fontSize={fontSize}
-            setFontSize={setFontSize}
-            fontColor={fontColor}
-            setFontColor={setFontColor}
-            handleSaveFontSize={handleSaveFontSize}
-            currWidgetsDetails={currWidgetsDetails}
-          />
+        </>
+      )}
     </DndProvider>
   );
 }

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import BorderResize from "./BorderResize";
 import PlaceholderBorder from "./PlaceholderBorder";
 import { Rnd } from "react-rnd";
@@ -8,8 +8,7 @@ import {
   fontsizeArr,
   getContainerScale,
   handleCopyNextToWidget,
-  handleCopySignUrl,
-  handleHeighlightWidget,
+  isTabAndMobile,
   onChangeInput,
   radioButtonWidget,
   textInputWidget,
@@ -74,48 +73,62 @@ const changeDateToMomentFormat = (format) => {
       return "L";
   }
 };
+
+//function to get default date
+const getDefaultdate = (selectedDate, format = "dd-MM-yyyy") => {
+  let date;
+  if (format && format === "dd-MM-yyyy") {
+    const newdate = selectedDate
+      ? selectedDate
+      : moment(new Date()).format(changeDateToMomentFormat(format));
+    const [day, month, year] = newdate.split("-");
+    date = new Date(`${year}-${month}-${day}`);
+  } else {
+    date = new Date(selectedDate);
+  }
+  const value = date;
+  return value;
+};
 //function to get default format
 const getDefaultFormat = (dateFormat) => dateFormat || "MM/dd/yyyy";
-//function to convert formated date to new Date() format
-const getDefaultDate = (dateStr, format) => {
-  //get valid date format for moment to convert formated date to new Date() format
-  const formats = changeDateToMomentFormat(format);
-  const parsedDate = moment(dateStr, formats);
-  let date;
-  if (parsedDate.isValid()) {
-    date = new Date(parsedDate.toISOString());
-    return date;
-  } else {
-    date = new Date();
-    return date;
-  }
-};
+
 function Placeholder(props) {
-  //'isTouchDevice' is used to detect whether a device has a touchscreen or is mouse-based
-  const isTouchDevice = navigator.maxTouchPoints > 0;
   const { t } = useTranslation();
   const [placeholderBorder, setPlaceholderBorder] = useState({ w: 0, h: 0 });
   const [isDraggingEnabled, setDraggingEnabled] = useState(true);
   const [isDateModal, setIsDateModal] = useState(false);
   const [containerScale, setContainerScale] = useState();
-  const holdTimeout = useRef(null);
-  const startTime = useRef(null); // Track when the user starts holdings
-  const [isDisableDragging, setIsDisableDragging] = useState(true);
-  const [selectDate, setSelectDate] = useState({});
+  const [selectDate, setSelectDate] = useState({
+    date:
+      props.pos.type === "date"
+        ? moment(
+            getDefaultdate(
+              props?.pos?.options?.response,
+              props.pos?.options?.validation?.format
+            ).getTime()
+          ).format(
+            changeDateToMomentFormat(props.pos?.options?.validation?.format)
+          )
+        : "",
+    format:
+      props.pos.type === "date"
+        ? getDefaultFormat(props.pos?.options?.validation?.format)
+        : ""
+  });
   const [dateFormat, setDateFormat] = useState([]);
   const [clickonWidget, setClickonWidget] = useState({});
   const [startDate, setStartDate] = useState(
-    props?.pos?.options?.response
-      ? getDefaultDate(
-          props?.pos?.options?.response,
-          props.pos?.options?.validation?.format
-        )
-      : new Date()
+    props.pos.type === "date" &&
+      getDefaultdate(
+        props?.pos?.options?.response,
+        props.pos?.options?.validation?.format
+      )
   );
   const [getCheckboxRenderWidth, setGetCheckboxRenderWidth] = useState({
     width: null,
     height: null
   });
+
   useEffect(() => {
     const getPdfPageWidth = props.pdfOriginalWH.find(
       (data) => data.pageNumber === props.pageNumber
@@ -149,18 +162,19 @@ function Placeholder(props) {
 
     return () => clearTimeout(timer);
   }, [props.pos]);
+
   useEffect(() => {
-    const onOutsideClick = () => {
-      if (!isDraggingEnabled) {
+    const closeMenuOnOutsideClick = (e) => {
+      if (!isDraggingEnabled && !e.target.closest("#changeIsDragging")) {
         setDraggingEnabled(true);
       }
     };
 
-    document.addEventListener("click", onOutsideClick);
+    document.addEventListener("click", closeMenuOnOutsideClick);
 
     return () => {
       // Cleanup the event listener when the component unmounts
-      document.removeEventListener("click", onOutsideClick);
+      document.removeEventListener("click", closeMenuOnOutsideClick);
     };
   }, [isDraggingEnabled]);
   //function change format array list with selected date and format
@@ -186,7 +200,7 @@ function Placeholder(props) {
   };
 
   useEffect(() => {
-    if (props.isPlaceholder || props.isSignYourself || props.isSelfSign) {
+    if (props.isPlaceholder || props.isSignYourself) {
       selectDate && changeDateFormat();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -212,34 +226,29 @@ function Placeholder(props) {
     if (widgetTypeExist) {
       setDraggingEnabled(false);
     }
-    if (props.isOpenSignPad && !props.isDragging) {
+    if ((props.isNeedSign || props.isSignYourself) && !props.isDragging) {
       if (props?.ispublicTemplate) {
         props.handleUserDetails();
       } else {
-        if (props?.isNeedSign) {
-          //funcion is used to height widgets on top if two widgets on overlap
-          const getCurrentSignerPos = props.xyPosition.find(
-            (x) => x.Id === props.uniqueId
-          );
-          const updateZindex = handleHeighlightWidget(
-            getCurrentSignerPos,
-            props.pos.key,
-            props.pageNumber
-          );
-          const updatesignerPos = props.xyPosition.map((x) =>
-            x.Id === props.uniqueId ? { ...x, placeHolder: updateZindex } : x
-          );
-          props.setXyPosition(updatesignerPos);
-        }
-        if (
-          ["signature", "stamp", "image", "initials"].includes(props.pos.type)
-        ) {
+        if (props.pos.type) {
+          if (
+            props.pos.type === "signature" ||
+            props.pos.type === "stamp" ||
+            props.pos.type === "image"
+          ) {
+            props.setIsSignPad(true);
+            props.setSignKey(props.pos.key);
+            props.setIsStamp(props.pos.isStamp);
+          } else if (props.pos.type === "initials") {
+            props.setIsSignPad(true);
+            props.setSignKey(props.pos.key);
+            props.setIsStamp(props.pos.isStamp);
+            props.setIsInitial(true);
+          }
+        } else {
           props.setIsSignPad(true);
           props.setSignKey(props.pos.key);
-          props.setIsStamp(props.pos.isStamp);
-        }
-        if (props.pos.type === "initials") {
-          props.setIsInitial(true);
+          props.setIsStamp(props.pos?.isStamp ? props.pos.isStamp : false);
         }
       }
     } else if (
@@ -250,7 +259,7 @@ function Placeholder(props) {
       if (props.pos.key === props.selectWidgetId) {
         props.handleLinkUser(props.data.Id);
         props.setUniqueId(props.data.Id);
-        const checkIndex = props.xyPosition.findIndex(
+        const checkIndex = props.xyPostion.findIndex(
           (data) => data.Id === props.data.Id
         );
         props.setIsSelectId(checkIndex || 0);
@@ -276,95 +285,20 @@ function Placeholder(props) {
       }
     }
   };
-
-  const widgetClickHandler = () => {
-    //The else condition opens the signature pad if it's a request signature flow and the user clicking is identified as a signer.
-    props.setCurrWidgetsDetails && props.setCurrWidgetsDetails(props.pos);
-    if (props?.data?.signerObjId === props?.signerObjId && !props.isDragging) {
-      if (!props.isAgree && !props.isSelfSign) {
-        props.setIsAgreeTour && props.setIsAgreeTour(true);
-      } else {
-        handleWidgetIdandPopup();
-      }
-    } //condition for open contact details popup when sign templet from public signing flow
-    else if (props?.uniqueId && props.data?.Id === props?.uniqueId) {
-      handleWidgetIdandPopup();
-    }
-  };
   const handleOnClickPlaceholder = () => {
-    //condition only for request signing flow and self signing flow then apply one click copy sign url of previous drawn signature
-    if (props.isApplyAll) {
-      props.setRequestSignTour && props.setRequestSignTour(true);
-      let isCopySignature = false;
-      let existSignPosition = "";
-      //condition for 'signature','initials','stamp' widgets only
-      if (["signature", "initials", "stamp"].includes(props.pos.type)) {
-        const widgetKey = props.pos.key;
-        let exitLoop = false;
-        const placeholders = props.data.placeHolder;
-        //check onclick current widget signature/stamp/initials signature url exist or not
-        placeholders?.forEach((holder) => {
-          holder?.pos?.forEach((posItem) => {
-            if (posItem.SignUrl && posItem.type === props.pos.type) {
-              existSignPosition = posItem;
-              return; // Break out of the current iteration
-            }
-          });
-          if (existSignPosition) {
-            return;
-          }
-        });
-        //case:-
-        //1- Open signpad once when if there are no any signature url draw
-        //2- If multiple signature widgets are present, clicking on the next widget should copy the signature URL from the previously drawn signature
-        //3- If the user attempts to edit the signature, open the signature pad to allow drawing a new signature upon clicking.
-        for (const placeholderObj of props.data.placeHolder || []) {
-          for (const posItem of placeholderObj.pos || []) {
-            if (posItem.key === widgetKey) {
-              //This condition is used to open signature pad to draw signature in some case
-              //case-1 : The condition (!posItem.SignUrl && !existSignPosition) checks if the current widget being clicked does not have a drawn signature and no signature URL exists for any signature widget.
-              //case-2 : The condition posItem.SignUrl is used to verify if the current widget already has a drawn signature and if the user is attempting to edit it
-              if ((!posItem.SignUrl && !existSignPosition) || posItem.SignUrl) {
-                exitLoop = true;
-              } else {
-                //else condition is used to copy the signature URL from the previously drawn signature
-                exitLoop = true;
-                isCopySignature = true;
-                break;
-              }
-            }
-          }
-          if (exitLoop) {
-            break; // Stop iterating through placeholders if exitLoop true
-          }
-        }
-        //existSignPosition.type === props.pos.type ensures that the current widget's type matches the type of the widget associated with the existing signature URL during the click event
-        if (
-          existSignPosition.type === props.pos.type &&
-          existSignPosition &&
-          isCopySignature
-        ) {
-          props.setCurrWidgetsDetails && props.setCurrWidgetsDetails(props.pos);
-          //function to copy the signature URL from the previously drawn signature when clicking on the next widget.
-          handleCopySignUrl(
-            props.pos, //currect widget position details
-            existSignPosition, //exist sign url widget's position details
-            props.setXyPosition, //used to update Placeholders details
-            props.xyPosition, //keep Placeholders details
-            props.pageNumber, //current page number
-            props.signerObjId //current signer's object id
-          );
-          existSignPosition = "";
-        } else {
-          widgetClickHandler();
-        }
-      } else {
-        widgetClickHandler();
-      }
-    } else {
-      //The else condition is used to handle the case when the user clicks on a widget and open signature pad to draw sign
-      props.setCurrWidgetsDetails && props.setCurrWidgetsDetails(props.pos);
+    props.setCurrWidgetsDetails && props.setCurrWidgetsDetails(props.pos);
+    if (!props.isNeedSign) {
       props.setWidgetType(props.pos.type);
+    }
+    if (props.isNeedSign && props.data?.signerObjId === props.signerObjId) {
+      handleWidgetIdandPopup();
+    } else if (
+      props?.isNeedSign &&
+      props?.uniqueId &&
+      props.data?.Id === props?.uniqueId
+    ) {
+      handleWidgetIdandPopup();
+    } else if (props.isPlaceholder || props.isSignYourself) {
       handleWidgetIdandPopup();
     }
   };
@@ -387,7 +321,7 @@ function Placeholder(props) {
         "job title",
         "email"
       ].includes(props.pos.type) &&
-      (props.isSignYourself || props.isSelfSign)
+      props.isSignYourself
     ) {
       props.handleTextSettingModal(true);
     } else {
@@ -397,14 +331,14 @@ function Placeholder(props) {
     //condition for only placeholder and template flow
     if (props.data && props?.pos?.type !== textWidget) {
       props.setUniqueId(props?.data?.Id);
-      const checkIndex = props.xyPosition
+      const checkIndex = props.xyPostion
         .filter((data) => data.Role !== "prefill")
         .findIndex((data) => data.Id === props.data.Id);
-      props.setIsSelectId && props.setIsSelectId(checkIndex || 0);
+      props.setIsSelectId(checkIndex || 0);
     }
     //condition to handle in placeholder and template flow for text widget signerId for text widgets i have to set uniqueId in tempSignerId because
     //it does not have any signer user and any signerobjId
-    else if (props.data && props.pos.type === textWidget && !props.isSelfSign) {
+    else if (props.data && props.pos.type === textWidget) {
       props.setTempSignerId(props.uniqueId);
       props.setUniqueId(props?.data?.Id);
     }
@@ -422,22 +356,18 @@ function Placeholder(props) {
 
     if (props.data && props?.pos?.type !== textWidget) {
       props.setUniqueId(props?.data?.Id);
-      const checkIndex = props.xyPosition
+      const checkIndex = props.xyPostion
         .filter((data) => data.Role !== "prefill")
         .findIndex((data) => data.Id === props.data.Id);
-      props.setIsSelectId && props.setIsSelectId(checkIndex || 0);
-    } else if (
-      props.data &&
-      props.pos.type === textWidget &&
-      !props.isSelfSign
-    ) {
+      props.setIsSelectId(checkIndex || 0);
+    } else if (props.data && props.pos.type === textWidget) {
       props.setTempSignerId(props.uniqueId);
       props.setUniqueId(props?.data?.Id);
     }
 
     //checking widget's type and open widget copy modal for required widgets
     if (
-      ["signature", textWidget, "stamp", "initials"].includes(props.pos.type)
+      ["signature", textWidget, "stamp", "initial"].includes(props.pos.type)
     ) {
       props.setIsPageCopy(true);
       props.setSignKey(props.pos.key);
@@ -446,48 +376,37 @@ function Placeholder(props) {
       handleCopyNextToWidget(
         props.pos,
         props.pos.type,
-        props.xyPosition,
+        props.xyPostion,
         props.index,
-        props.setXyPosition,
+        props.setXyPostion,
         props.data && props.data?.Id
       );
     }
   };
 
-  //function to save date and format after seleted new date in response field and after finish document it should be emebed new selected date instead of current date
-  useEffect(() => {
-    if (props.pos.type === "date") {
-      const isDateChange = true;
-      const dateObj = {
-        date: startDate,
-        format: getDefaultFormat(props.pos?.options?.validation?.format)
-      };
-      handleSaveDate(dateObj, isDateChange); //function to save date and format in local array
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [startDate]);
   //function to save date and format on local array onchange date and onclick format
   const handleSaveDate = (data, isDateChange) => {
     let updateDate = data.date;
-    let date;
-    if (data?.format === "dd-MM-yyyy") {
-      date = isDateChange
-        ? moment(updateDate).format(changeDateToMomentFormat(data.format))
-        : updateDate;
-    } else {
-      //using moment package is used to change date as per the format provided in selectDate obj e.g. - MM/dd/yyyy -> 03/12/2024
-      const newDate = new Date(updateDate);
-      date = moment(newDate.getTime()).format(
-        changeDateToMomentFormat(data?.format)
+    //check if date change by user
+    if (isDateChange) {
+      //`changeDateToMomentFormat` is used to convert date as per required to moment package
+      updateDate = moment(data.date).format(
+        changeDateToMomentFormat(data.format)
       );
     }
+    //using moment package is used to change date as per the format provided in selectDate obj e.g. - MM/dd/yyyy -> 03/12/2024
+    //`getDefaultdate` is used to convert update date in new Date() format
+    const date = moment(
+      getDefaultdate(updateDate, data?.format).getTime()
+    ).format(changeDateToMomentFormat(data?.format));
+
     //`onChangeInput` is used to save data related to date in a placeholder field
     onChangeInput(
       date,
       props.pos.key,
-      props.xyPosition,
+      props.xyPostion,
       props.index,
-      props.setXyPosition,
+      props.setXyPostion,
       props.data && props.data.Id,
       false,
       data?.format,
@@ -499,18 +418,10 @@ function Placeholder(props) {
     setSelectDate({ date: date, format: data?.format });
   };
   const PlaceholderIcon = () => {
-    // 1- If props.isShowBorder is true, display border's icon for all widgets. OR
-    // 2- Use the combination of props?.isAlllowModify and !props?.assignedWidgetId.includes(props.pos.key) to determine when to show border's icon:
-    //    1- When isAlllowModify is true, show border's icon.
-    //    2- Do not display border's icon for widgets already assigned (props.assignedWidgetId.includes(props.pos.key) is true).
     return (
-      (props.isShowBorder ||
-        (props?.isAlllowModify &&
-          !props?.assignedWidgetId.includes(props.pos.key))) && (
+      props.isShowBorder && (
         <>
-          {(props.isPlaceholder ||
-            props.isSignYourself ||
-            props.isSelfSign) && (
+          {(props.isPlaceholder || props.isSignYourself) && (
             <>
               {/* condition to add setting icon for signyour-self flow for particular text widgets
             and also it have diffrent position 
@@ -523,8 +434,7 @@ function Placeholder(props) {
                 "company",
                 "job title",
                 "email"
-              ].includes(props.pos.type) &&
-              (props.isSignYourself || props.isSelfSign) ? (
+              ].includes(props.pos.type) && props.isSignYourself ? (
                 <i
                   onClick={(e) => {
                     e.stopPropagation();
@@ -542,8 +452,7 @@ function Placeholder(props) {
                 ((!props?.pos?.type && props.pos.isStamp) ||
                   (props?.pos?.type &&
                     !["date"].includes(props.pos.type) &&
-                    !props.isSignYourself &&
-                    !props.isSelfSign)) && (
+                    !props.isSignYourself)) && (
                   <i
                     onClick={(e) => {
                       e.stopPropagation();
@@ -563,33 +472,31 @@ function Placeholder(props) {
                 )
               )}
               {/* condition for usericon for all widgets except text widgets and signyour-self flow */}
-              {props.pos.type !== textWidget &&
-                !props.isSignYourself &&
-                !props.isSelfSign && (
-                  <i
-                    data-tut="assignSigner"
-                    className="fa-light fa-user icon"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      props.handleLinkUser(props.data.Id);
-                      props.setUniqueId(props.data.Id);
-                      const checkIndex = props.xyPosition.findIndex(
-                        (data) => data.Id === props.data.Id
-                      );
-                      props.setIsSelectId(checkIndex || 0);
-                    }}
-                    onTouchEnd={(e) => {
-                      e.stopPropagation();
-                      props.handleLinkUser(props.data.Id);
-                      props.setUniqueId(props.data.Id);
-                      const checkIndex = props.xyPosition.findIndex(
-                        (data) => data.Id === props.data.Id
-                      );
-                      props.setIsSelectId(checkIndex || 0);
-                    }}
-                    style={{ color: "#188ae2", right: "32px", top: "-18px" }}
-                  ></i>
-                )}
+              {props.pos.type !== textWidget && !props.isSignYourself && (
+                <i
+                  data-tut="assignSigner"
+                  className="fa-light fa-user icon"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    props.handleLinkUser(props.data.Id);
+                    props.setUniqueId(props.data.Id);
+                    const checkIndex = props.xyPostion.findIndex(
+                      (data) => data.Id === props.data.Id
+                    );
+                    props.setIsSelectId(checkIndex || 0);
+                  }}
+                  onTouchEnd={(e) => {
+                    e.stopPropagation();
+                    props.handleLinkUser(props.data.Id);
+                    props.setUniqueId(props.data.Id);
+                    const checkIndex = props.xyPostion.findIndex(
+                      (data) => data.Id === props.data.Id
+                    );
+                    props.setIsSelectId(checkIndex || 0);
+                  }}
+                  style={{ color: "#188ae2", right: "32px", top: "-18px" }}
+                ></i>
+              )}
             </>
           )}
           {/* setting icon only for date widgets */}
@@ -603,7 +510,7 @@ function Placeholder(props) {
                 if (props.data) {
                   props.setSignKey(props.pos.key);
                   props.setUniqueId(props.data.Id);
-                  const checkIndex = props.xyPosition.findIndex(
+                  const checkIndex = props.xyPostion.findIndex(
                     (data) => data.Id === props.data.Id
                   );
                   props.setIsSelectId(checkIndex || 0);
@@ -616,7 +523,7 @@ function Placeholder(props) {
                 if (props.data) {
                   props.setSignKey(props.pos.key);
                   props.setUniqueId(props.data.Id);
-                  const checkIndex = props.xyPosition.findIndex(
+                  const checkIndex = props.xyPostion.findIndex(
                     (data) => data.Id === props.data.Id
                   );
                   props.setIsSelectId(checkIndex || 0);
@@ -740,7 +647,7 @@ function Placeholder(props) {
     const fontSize = (size || 12) * containerScale * props.scale;
     //isMinHeight to set text box minimum height
     if (isMinHeight) {
-      return fontSize * 1.5 + "px";
+      return fontSize * 1.2 + "px";
     } else {
       return fontSize + "px";
     }
@@ -759,296 +666,173 @@ function Placeholder(props) {
       return "all-scroll";
     }
   };
-  const handleDragging = () => {
-    //condition for request signing flow
-    if (props.isNeedSign) {
-      //enable dragging functionality only if isAlllowModify true on tab that widget and hold 1sec
-      if (
-        props.isAlllowModify &&
-        props?.assignedWidgetId.includes(props.pos.key) &&
-        props.data?.signerObjId === props.signerObjId
-      ) {
-        //if 'isTouchDevice' then handle dragging functionality conditionaly
-        if (isTouchDevice) {
-          return isDisableDragging;
-        } else {
-          //no need to handle dragging functionality it auto enable and working or mouse click devices
-          return false;
-        }
-      } else if (
-        //condition when 'isAlllowModify' is true and user add new widgets then handle dragging functionality like signyourself flow
-        props.isAlllowModify &&
-        !props?.assignedWidgetId.includes(props.pos.key) &&
-        props.data?.signerObjId === props.signerObjId
-      ) {
-        return !isDraggingEnabled;
-      } else {
-        //if 'isAlllowModify' is false then disbale dragging functionality
-        return true;
-      }
-    } //dragging enable in placeholder,template and not text widget flow
-    else if (props.isPlaceholder && ![textWidget].includes(props.pos.type)) {
-      return false;
-    } //dragging depend on 'isDraggingEnabled' variable in self sign and signyourself flow
-    else if (isTouchDevice) {
-      return !isDraggingEnabled;
-    } else {
-      return false;
-    }
-  };
-  //function to handle widget background color
-  const handleBackground = () => {
-    if (props.data) {
-      if (props.isNeedSign) {
-        if (props.data?.Id === props?.uniqueId) {
-          return props.data?.blockColor + "b0";
-        } else {
-          return "#dedddc";
-        }
-      } else {
-        return props.data?.blockColor + "b0";
-      }
-    } else {
-      return "rgba(203, 233, 237, 0.69)";
-    }
-  };
-  const handleTouchEnd = () => {
-    if (!props.isNeedSign || props.isAlllowModify) {
-      const holdDuration = Date.now() - startTime.current; // Calculate hold time
-      clearTimeout(holdTimeout.current); // Cancel timeout if touch ended early
 
-      if (holdDuration < 1000) {
-        try {
-          navigator.vibrate([]); // Cancel any ongoing vibration
-        } catch (e) {
-          console.log("error in  navigator.vibrate", e);
-        }
-      }
-    }
-    if (!props.isNeedSign || props.isAlllowModify) handleOnClickPlaceholder();
-  };
-  const handleTouchStart = () => {
-    clearTimeout(holdTimeout.current); // Ensure no previous timeouts are running
-    startTime.current = Date.now(); // Store touch start time
-
-    holdTimeout.current = setTimeout(() => {
-      //handlle vibration and tab any widget and hold for 1 sec then show border outside widget and then user can able to drag
-      if (isDisableDragging) {
-        if (
-          props.isNeedSign &&
-          props.isAlllowModify &&
-          props?.assignedWidgetId.includes(props.pos.key)
-        ) {
-          try {
-            navigator.vibrate(200); // Vibrate for 200ms
-          } catch (e) {
-            console.log("error in  navigator.vibrate", e);
-          }
-          setIsDisableDragging(false);
-          props.setSelectWidgetId(props.pos.key);
-        } else if (!props.isNeedSign) {
-          setIsDisableDragging(false);
-        }
-      }
-    }, 1000); // Hold for 1 second before vibrating
-  };
-  const fontSize = calculateFont(props.pos.options?.fontSize);
-  const fontColor = props.pos.options?.fontColor || "black";
   return (
     <>
-      {/*  Check if a text widget (prefill type) exists. Once the user enters a value and clicks outside or the widget becomes non-selectable, it should appear as plain text (just like embedded text in a document). When the user clicks on the text again, it should become editable. */}
-      {props.pos?.options?.response &&
-      props.pos.key !== props.selectWidgetId &&
-      props.pos.type === textWidget ? (
-        <span
-          onClick={() => {
-            props.setSelectWidgetId && props.setSelectWidgetId(props.pos.key);
-          }}
-          style={{
-            fontFamily: "Arial, sans-serif",
-            position: "absolute",
-            left: xPos(props.pos, props.isSignYourself),
-            top: yPos(props.pos, props.isSignYourself),
-            fontSize: fontSize,
-            color: fontColor,
-            zIndex: 99
-          }}
-        >
-          {props.pos?.options?.response}
-        </span>
-      ) : (
-        <Rnd
-          id={props.pos.key}
-          data-tut={props.pos.key === props.unSignedWidgetId ? "IsSigned" : ""}
-          key={props.pos.key}
-          lockAspectRatio={
-            !props.isFreeResize &&
-            ![
-              textWidget,
-              "email",
-              "name",
-              "company",
-              "job title",
-              textInputWidget
-            ].includes(props.pos.type) &&
-            (props.pos.Width
-              ? props.pos.Width / props.pos.Height
-              : defaultWidthHeight(props.pos.type).width /
-                defaultWidthHeight(props.pos.type).height)
-          }
-          enableResizing={{
-            top: false,
-            right: false,
-            bottom: false,
-            left: false,
-            topRight: false,
-            bottomRight:
-              props.data && props.isNeedSign
-                ? props.data?.signerObjId === props.signerObjId &&
-                  props.pos.type !== "checkbox" &&
-                  props.pos.type !== radioButtonWidget
-                  ? true
-                  : false
-                : props.pos.type !== radioButtonWidget &&
-                  props.pos.type !== "checkbox" &&
-                  props.pos.key === props.selectWidgetId &&
-                  true,
-            bottomLeft: false,
-            topLeft: false
-          }}
-          bounds="parent"
-          className="signYourselfBlock"
-          style={{
-            border: "1px solid #007bff",
-            borderRadius: "2px",
-            cursor: getCursor(),
-            zIndex:
-              props.pos.type === "date"
-                ? props.pos.key === props.selectWidgetId
-                  ? 99 + 1
-                  : 99
-                : props?.pos?.zIndex
-                  ? props.pos.zIndex
-                  : "5",
-            opacity:
-              props.isNeedSign && props.data?.Id !== props?.uniqueId && "0.4",
-            background: handleBackground()
-          }}
-          onDrag={() => {
-            setDraggingEnabled(true);
-            props.handleTabDrag && props.handleTabDrag(props.pos.key);
-          }}
-          size={{
-            width:
-              props.pos.type === radioButtonWidget ||
-              props.pos.type === "checkbox"
-                ? "auto"
-                : props.posWidth(props.pos, props.isSignYourself),
-            height:
-              props.pos.type === radioButtonWidget ||
-              props.pos.type === "checkbox"
-                ? "auto"
-                : props.posHeight(props.pos, props.isSignYourself)
-          }}
-          minHeight={calculateFont(props.pos.options?.fontSize, true)}
-          maxHeight="auto"
-          onResizeStart={() => {
-            setDraggingEnabled(true);
-            props.setIsResize && props.setIsResize(true);
-          }}
-          onResizeStop={(e, direction, ref) => {
-            setTimeout(() => {
-              props.setIsResize && props.setIsResize(false);
-            }, 50);
-            props.handleSignYourselfImageResize &&
-              props.handleSignYourselfImageResize(
-                ref,
-                props.pos.key,
-                props.xyPosition,
-                props.setXyPosition,
-                props.index,
-                containerScale,
-                props.scale,
-                props.data && props.data.Id,
-                props.isResize
-              );
-          }}
-          disableDragging={handleDragging()}
-          onDragStop={(event, dragElement) => {
-            setIsDisableDragging(true);
-            props.handleStop &&
-              props.handleStop(
-                event,
-                dragElement,
-                props.data?.Id,
-                props.pos?.key
-              );
-          }}
-          position={{
-            x: xPos(props.pos, props.isSignYourself),
-            y: yPos(props.pos, props.isSignYourself)
-          }}
-          onResize={(e, direction, ref) => {
-            setPlaceholderBorder({
-              w: ref.offsetWidth / (props.scale * containerScale),
-              h: ref.offsetHeight / (props.scale * containerScale)
-            });
-          }}
-          // onClick={() =>
-          //   !props.isResize && !isMobile && handleOnClickPlaceholder()
-          // }
-        >
-          {props.pos.key === props.selectWidgetId &&
-          ((props.isShowBorder &&
-            ![radioButtonWidget, "checkbox"].includes(props.pos.type)) ||
-            (props?.isAlllowModify &&
-              !props?.assignedWidgetId.includes(props.pos.key))) ? (
+      <Rnd
+        id={props.pos.key}
+        data-tut={props.pos.key === props.unSignedWidgetId ? "IsSigned" : ""}
+        key={props.pos.key}
+        lockAspectRatio={
+          ![
+            textWidget,
+            "email",
+            "name",
+            "company",
+            "job title",
+            textInputWidget
+          ].includes(props.pos.type) &&
+          (props.pos.Width
+            ? props.pos.Width / props.pos.Height
+            : defaultWidthHeight(props.pos.type).width /
+              defaultWidthHeight(props.pos.type).height)
+        }
+        enableResizing={{
+          top: false,
+          right: false,
+          bottom: false,
+          left: false,
+          topRight: false,
+          bottomRight:
+            props.data && props.isNeedSign
+              ? props.data?.signerObjId === props.signerObjId &&
+                props.pos.type !== "checkbox" &&
+                props.pos.type !== radioButtonWidget
+                ? true
+                : false
+              : props.pos.type !== radioButtonWidget &&
+                props.pos.type !== "checkbox" &&
+                props.pos.key === props.selectWidgetId &&
+                true,
+          bottomLeft: false,
+          topLeft: false
+        }}
+        bounds="parent"
+        className="signYourselfBlock"
+        style={{
+          border: "1px solid #007bff",
+          borderRadius: "2px",
+          textAlign:
+            props.pos.type !== "name" &&
+            props.pos.type !== "company" &&
+            props.pos.type !== "job title" &&
+            "center",
+          cursor: getCursor(),
+          zIndex:
+            props.pos.type === "date"
+              ? props.pos.key === props.selectWidgetId
+                ? 99 + 1
+                : 99
+              : props?.pos?.zIndex
+                ? props.pos.zIndex
+                : "5",
+          background: props.data
+            ? props.data?.blockColor + "b0"
+            : "rgba(203, 233, 237, 0.69)"
+        }}
+        onDrag={() => {
+          setDraggingEnabled(true);
+          props.handleTabDrag && props.handleTabDrag(props.pos.key);
+        }}
+        size={{
+          width:
+            props.pos.type === radioButtonWidget ||
+            props.pos.type === "checkbox"
+              ? "auto"
+              : props.posWidth(props.pos, props.isSignYourself),
+          height:
+            props.pos.type === radioButtonWidget ||
+            props.pos.type === "checkbox"
+              ? "auto"
+              : props.posHeight(props.pos, props.isSignYourself)
+        }}
+        minHeight={calculateFont(props.pos.options?.fontSize, true)}
+        maxHeight="auto"
+        onResizeStart={() => {
+          setDraggingEnabled(true);
+          props.setIsResize && props.setIsResize(true);
+        }}
+        onResizeStop={(e, direction, ref) => {
+          setTimeout(() => {
+            props.setIsResize && props.setIsResize(false);
+          }, 50);
+          props.handleSignYourselfImageResize &&
+            props.handleSignYourselfImageResize(
+              ref,
+              props.pos.key,
+              props.xyPostion,
+              props.setXyPostion,
+              props.index,
+              containerScale,
+              props.scale,
+              props.data && props.data.Id,
+              props.isResize
+            );
+        }}
+        disableDragging={
+          props.isNeedSign
+            ? true
+            : props.isPlaceholder && ![textWidget].includes(props.pos.type)
+              ? false
+              : !isDraggingEnabled
+        }
+        onDragStop={(event, dragElement) =>
+          props.handleStop &&
+          props.handleStop(event, dragElement, props.data?.Id, props.pos?.key)
+        }
+        position={{
+          x: xPos(props.pos, props.isSignYourself),
+          y: yPos(props.pos, props.isSignYourself)
+        }}
+        onResize={(e, direction, ref) => {
+          setPlaceholderBorder({
+            w: ref.offsetWidth / (props.scale * containerScale),
+            h: ref.offsetHeight / (props.scale * containerScale)
+          });
+        }}
+        onClick={() => !props.isResize && handleOnClickPlaceholder()}
+      >
+        {props.isShowBorder &&
+        props.pos.type !== radioButtonWidget &&
+        props.pos.type !== "checkbox" &&
+        props.pos.key === props.selectWidgetId ? (
+          <BorderResize
+            right={-12}
+            top={-11}
+            pos={props.pos}
+            posHeight={props.posHeight}
+            isSignYourself={props.isSignYourself}
+          />
+        ) : props.data && props.isNeedSign && props.pos.type !== "checkbox" ? (
+          props.data?.signerObjId === props.signerObjId &&
+          props.pos.type !== radioButtonWidget &&
+          props.pos.type !== "checkbox" ? (
             <BorderResize
-              right={-12}
-              top={-11}
-              pos={props.pos}
               posHeight={props.posHeight}
-              isSignYourself={props.isSignYourself || props.isSelfSign}
+              isSignYourself={props.isSignYourself}
+              pos={props.pos}
             />
-          ) : props.data &&
-            props.isNeedSign &&
-            props.pos.type !== "checkbox" ? (
-            props.data?.signerObjId === props.signerObjId &&
-            ![radioButtonWidget, "checkbox"].includes(props.pos.type) ? (
-              <BorderResize
-                posHeight={props.posHeight}
-                isSignYourself={props.isSignYourself || props.isSelfSign}
-                pos={props.pos}
-              />
-            ) : (
-              <></>
-            )
           ) : (
-            ![radioButtonWidget, "checkbox"].includes(props.pos.type) &&
-            props.pos.key === props.selectWidgetId && <BorderResize />
-          )}
+            <></>
+          )
+        ) : (
+          props.pos.type !== radioButtonWidget &&
+          props.pos.type !== "checkbox" &&
+          props.pos.key === props.selectWidgetId && <BorderResize />
+        )}
 
-          {/* 1- Show a border if props.pos.key === props.selectWidgetId, indicating the current user's selected widget.
-            2- If props.isShowBorder is true, display borders for all widgets. 
-            3- Use the combination of props?.isAlllowModify and !props?.assignedWidgetId.includes(props.pos.key) to determine when to show borders:
-               1- When isAlllowModify is true, show borders.
-               2- Do not display border for widgets already assigned (props.assignedWidgetId.includes(props.pos.key) is true).
-    */}
-          {props.pos.key === props.selectWidgetId &&
-            (props.isShowBorder ||
-              !isDisableDragging ||
-              (props?.isAlllowModify &&
-                !props?.assignedWidgetId.includes(props.pos.key))) && (
-              <PlaceholderBorder
-                setDraggingEnabled={setDraggingEnabled}
-                pos={props.pos}
-                isPlaceholder={props.isPlaceholder}
-                getCheckboxRenderWidth={getCheckboxRenderWidth}
-                scale={props.scale}
-                containerScale={containerScale}
-                placeholderBorder={placeholderBorder}
-              />
-            )}
+        {props.isShowBorder && props.pos.key === props.selectWidgetId && (
+          <PlaceholderBorder
+            setDraggingEnabled={setDraggingEnabled}
+            pos={props.pos}
+            isPlaceholder={props.isPlaceholder}
+            getCheckboxRenderWidth={getCheckboxRenderWidth}
+            scale={props.scale}
+            containerScale={containerScale}
+            placeholderBorder={placeholderBorder}
+          />
+        )}
+        {isTabAndMobile ? (
           <div
             className="flex items-stretch justify-center"
             style={{
@@ -1066,24 +850,24 @@ function Placeholder(props) {
                   : props.posHeight(props.pos, props.isSignYourself),
               zIndex: "10"
             }}
-            onTouchEnd={() => handleTouchEnd()}
+            onTouchEnd={() => handleOnClickPlaceholder()}
             onClick={() => handleOnClickPlaceholder()}
-            onTouchStart={() => handleTouchStart()}
           >
             {props.pos.key === props.selectWidgetId && <PlaceholderIcon />}
+
             <PlaceholderType
               pos={props.pos}
-              xyPosition={props.xyPosition}
+              xyPostion={props.xyPostion}
               index={props.index}
-              setXyPosition={props.setXyPosition}
+              setXyPostion={props.setXyPostion}
               data={props.data}
               setSignKey={props.setSignKey}
               isShowDropdown={props?.isShowDropdown}
               isPlaceholder={props.isPlaceholder}
               isSignYourself={props.isSignYourself}
-              isSelfSign={props.isSelfSign}
               signerObjId={props.signerObjId}
               handleUserName={props.handleUserName}
+              setDraggingEnabled={setDraggingEnabled}
               pdfDetails={props?.pdfDetails && props?.pdfDetails[0]}
               isNeedSign={props.isNeedSign}
               setSelectDate={setSelectDate}
@@ -1096,9 +880,36 @@ function Placeholder(props) {
               calculateFont={calculateFont}
             />
           </div>
-        </Rnd>
-      )}
-
+        ) : (
+          <>
+            {props.pos.key === props.selectWidgetId && <PlaceholderIcon />}
+            <PlaceholderType
+              pos={props.pos}
+              xyPostion={props.xyPostion}
+              index={props.index}
+              setXyPostion={props.setXyPostion}
+              data={props.data}
+              setSignKey={props.setSignKey}
+              isShowDropdown={props?.isShowDropdown}
+              isPlaceholder={props.isPlaceholder}
+              isSignYourself={props.isSignYourself}
+              signerObjId={props.signerObjId}
+              handleUserName={props.handleUserName}
+              setDraggingEnabled={setDraggingEnabled}
+              pdfDetails={props?.pdfDetails && props?.pdfDetails[0]}
+              isNeedSign={props.isNeedSign}
+              setSelectDate={setSelectDate}
+              selectDate={selectDate}
+              setValidateAlert={props.setValidateAlert}
+              setStartDate={setStartDate}
+              startDate={startDate}
+              handleSaveDate={handleSaveDate}
+              xPos={props.xPos}
+              calculateFont={calculateFont}
+            />
+          </>
+        )}
+      </Rnd>
       <ModalUi isOpen={isDateModal} title={t("widget-info")} showClose={false}>
         <div className="h-[100%] p-[20px]">
           <div className="flex flex-row items-center">

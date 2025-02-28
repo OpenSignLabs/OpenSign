@@ -109,8 +109,7 @@ const AddSigner = (props) => {
                 if (props.details) {
                   props.details({
                     value: parseData[props.valueKey],
-                    label: parseData[props.displayKey],
-                    email: parseData?.Email
+                    label: parseData[props.displayKey]
                   });
                 }
                 if (props.closePopup) {
@@ -156,8 +155,7 @@ const AddSigner = (props) => {
                 if (props.details) {
                   props.details({
                     value: parseData[props.valueKey],
-                    label: parseData[props.displayKey],
-                    email: parseData?.Email
+                    label: parseData[props.displayKey]
                   });
                 }
                 if (props.closePopup) {
@@ -213,7 +211,7 @@ const AddSigner = (props) => {
         </div>
       )}
       <div className="w-full mx-auto p-2 text-base-content">
-        <p className="mb-3 text-xs text-gray-500">{t("add-signer-note")}</p>
+        <p className="mb-3">{t("add-signer-note")}</p>
         {isUserExist && (
           <div className="mb-3 flex items-center">
             <input

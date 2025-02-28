@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import LoaderWithMsg from "../../primitives/LoaderWithMsg";
 import { contractDocument } from "../../constant/Utils";
 import HandleError from "../../primitives/HandleError";
-import { useLocation, useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 function useQuery() {
   return new URLSearchParams(useLocation().search);

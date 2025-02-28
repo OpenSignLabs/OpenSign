@@ -4,11 +4,12 @@ export default async function Newsletter(request) {
   const email = request.params.email;
   const domain = request.params.domain;
   try {
-    const envAppId = process.env.REACT_APP_APPID || 'legadranaxn';
-    const headers = { 'Content-Type': 'application/json', 'X-Parse-Application-Id': envAppId };
-    const envProdServer = process.env.REACT_APP_SERVERURL || 'https://app.opensignlabs.com/api/app';
+    const headers = {
+      'Content-Type': 'application/json',
+      'X-Parse-Application-Id': 'legadranaxn',
+    };
     const newsletter = await axios.post(
-      `${envProdServer}/classes/Newsletter`,
+      'https://app.opensignlabs.com/api/app/classes/Newsletter',
       { Name: name, Email: email, Domain: domain },
       { headers: headers }
     );

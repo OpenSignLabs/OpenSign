@@ -2,18 +2,13 @@ import React, { useState, useRef, useEffect } from "react";
 import SignatureCanvas from "react-signature-canvas";
 import "../styles/managesign.css";
 import "../styles/signature.css";
-import {
-  generateTitleFromFilename,
-  getSecureUrl,
-  toDataUrl
-} from "../constant/Utils";
+import { generateTitleFromFilename, toDataUrl } from "../constant/Utils";
 import Parse from "parse";
 import { SaveFileSize } from "../constant/saveFileSize";
 import Alert from "../primitives/Alert";
 import Loader from "../primitives/Loader";
 import { useTranslation } from "react-i18next";
 import sanitizeFileName from "../primitives/sanitizeFileName";
-import Title from "../components/Title";
 const ManageSign = () => {
   const { t } = useTranslation();
   const [penColor, setPenColor] = useState("blue");
@@ -203,20 +198,9 @@ const ManageSign = () => {
       const parseFile = new Parse.File(file.name, file);
       const response = await parseFile.save();
       if (response?.url()) {
-        const fileRes = await getSecureUrl(response?.url());
-        if (fileRes?.url) {
-          const tenantId = localStorage.getItem("TenantId");
-          SaveFileSize(file.size, fileRes?.url, tenantId);
-          return fileRes?.url;
-        } else {
-          alert(t("something-went-wrong-mssg"));
-          setIsLoader(false);
-          return false;
-        }
-      } else {
-        alert(t("something-went-wrong-mssg"));
-        setIsLoader(false);
-        return false;
+        const tenantId = localStorage.getItem("TenantId");
+        SaveFileSize(file.size, response.url(), tenantId);
+        return response?.url();
       }
     } catch (err) {
       console.log("sign upload err", err);
@@ -298,7 +282,6 @@ const ManageSign = () => {
   };
   return (
     <div className="relative h-full bg-base-100 text-base-content flex shadow-md rounded-box overflow-auto">
-      <Title title="My signature" />
       {isLoader && (
         <div className="absolute bg-black bg-opacity-30 z-50 w-full h-full flex justify-center items-center">
           <Loader />
@@ -340,8 +323,7 @@ const ManageSign = () => {
                       canvasProps={{
                         width: "456px",
                         height: "180px",
-                        className:
-                          "signatureCanvas border-[2px] border-[#888] rounded-box"
+                        className: "signatureCanvas rounded-box"
                       }}
                       // backgroundColor="rgb(255, 255, 255)"
                       onEnd={() =>
@@ -353,13 +335,35 @@ const ManageSign = () => {
                   <div className="penContainerDefault flex flex-row justify-between">
                     <div>
                       {!image && (
-                        <div className="flex flex-row gap-1.5 m-[5px]">
+                        <div className="flex flex-row">
                           {allColor.map((data, key) => {
                             return (
                               <i
+                                style={{
+                                  margin: "5px",
+                                  color: data,
+                                  borderBottom:
+                                    key === 0 && penColor === "blue"
+                                      ? "2px solid blue"
+                                      : key === 1 && penColor === "red"
+                                        ? "2px solid red"
+                                        : key === 2 && penColor === "black"
+                                          ? "2px solid black"
+                                          : "2px solid white"
+                                }}
+                                onClick={() => {
+                                  if (key === 0) {
+                                    setPenColor("blue");
+                                  } else if (key === 1) {
+                                    setPenColor("red");
+                                  } else if (key === 2) {
+                                    setPenColor("black");
+                                  }
+                                }}
                                 key={key}
-                                onClick={() => setPenColor(allColor[key])}
-                                className={`border-b-[2px] ${key === 0 && penColor === "blue" ? "border-blue-600" : key === 1 && penColor === "red" ? "border-red-500" : key === 2 && penColor === "black" ? "border-black" : "border-white"} text-[${data}] text-[16px] fa-light fa-pen-nib`}
+                                className="fa-light fa-pen-nib"
+                                width={20}
+                                height={20}
                               ></i>
                             );
                           })}
@@ -428,13 +432,35 @@ const ManageSign = () => {
                 <div className="flex flex-row justify-between w-[183px]">
                   <div>
                     {!isInitials && (
-                      <div className="flex flex-row gap-1.5 m-[5px]">
+                      <div className="flex flex-row">
                         {allColor.map((data, key) => {
                           return (
                             <i
+                              style={{
+                                margin: "5px",
+                                color: data,
+                                borderBottom:
+                                  key === 0 && initialPen === "blue"
+                                    ? "2px solid blue"
+                                    : key === 1 && initialPen === "red"
+                                      ? "2px solid red"
+                                      : key === 2 && initialPen === "black"
+                                        ? "2px solid black"
+                                        : "2px solid white"
+                              }}
+                              className="fa-light fa-pen-nib"
+                              onClick={() => {
+                                if (key === 0) {
+                                  setInitialPen("blue");
+                                } else if (key === 1) {
+                                  setInitialPen("red");
+                                } else if (key === 2) {
+                                  setInitialPen("black");
+                                }
+                              }}
                               key={key}
-                              onClick={() => setInitialPen(allColor[key])}
-                              className={`border-b-[2px] ${key === 0 && initialPen === "blue" ? "border-blue-600" : key === 1 && initialPen === "red" ? "border-red-500" : key === 2 && initialPen === "black" ? "border-black" : "border-white"} text-[${data}] text-[16px] fa-light fa-pen-nib`}
+                              width={20}
+                              height={20}
                             ></i>
                           );
                         })}

@@ -8,15 +8,15 @@ import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import Parse from "parse";
 import ModalUi from "../primitives/ModalUi";
-import { useNavigate, useLocation, Outlet } from "react-router";
+import { useNavigate, useLocation, Outlet } from "react-router-dom";
+import { isEnableSubscription } from "../constant/const";
 import { useCookies } from "react-cookie";
+import { fetchSubscription } from "../constant/Utils";
 import Loader from "../primitives/Loader";
 import { showHeader } from "../redux/reducers/showHeader";
 import { useTranslation } from "react-i18next";
 
 const HomeLayout = () => {
-  const appName =
-    "OpenSign™";
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
@@ -26,6 +26,7 @@ const HomeLayout = () => {
   const arr = useSelector((state) => state.TourSteps);
   const [isUserValid, setIsUserValid] = useState(true);
   const [isLoader, setIsLoader] = useState(true);
+  // reactour state
   const [isCloseBtn, setIsCloseBtn] = useState(true);
   const [isTour, setIsTour] = useState(false);
   const [tourStatusArr, setTourStatusArr] = useState([]);
@@ -37,7 +38,6 @@ const HomeLayout = () => {
   useEffect(() => {
     const language = localStorage.getItem("i18nextLng");
     i18n.changeLanguage(language);
-    localStorage.setItem("isGuestSigner", "");
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -54,8 +54,7 @@ const HomeLayout = () => {
           });
           if (user) {
             localStorage.setItem("profileImg", user.get("ProfilePic") || "");
-              setIsUserValid(true);
-              setIsLoader(false);
+            checkIsSubscribed();
           } else {
             setIsUserValid(false);
           }
@@ -96,6 +95,30 @@ const HomeLayout = () => {
       domain: updateDomain
     });
   };
+  const handleNavigation = () => {
+    navigate("/subscription");
+  };
+  async function checkIsSubscribed() {
+    if (isEnableSubscription) {
+      const res = await fetchSubscription();
+      if (res.plan === "freeplan") {
+        setIsUserValid(true);
+        setIsLoader(false);
+      } else if (res.billingDate) {
+        if (new Date(res.billingDate) > new Date()) {
+          setIsUserValid(true);
+          setIsLoader(false);
+        } else {
+          handleNavigation(res.plan);
+        }
+      } else {
+        handleNavigation(res.plan);
+      }
+    } else {
+      setIsUserValid(true);
+      setIsLoader(false);
+    }
+  }
   const showSidebar = () => {
     setIsOpen((value) => !value);
     dispatch(showHeader(!isOpen));
@@ -151,7 +174,7 @@ const HomeLayout = () => {
         ...resArr,
         {
           selector: '[data-tut="reactourLast"]',
-          content: t("tour-mssg.home-layout-3", { appName }),
+          content: t("tour-mssg.home-layout-3"),
           position: "top"
           // style: { backgroundColor: "#abd4d2" },
         }

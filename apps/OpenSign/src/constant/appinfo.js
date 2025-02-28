@@ -1,11 +1,17 @@
 import logo from "../assets/images/logo.png";
+import { isEnableSubscription } from "./const";
 
 export function serverUrl_fn() {
   let baseUrl;
+  if (isEnableSubscription) {
+    baseUrl = process.env.REACT_APP_SERVERURL
+      ? process.env.REACT_APP_SERVERURL
+      : window.location.origin + "/api/app";
+  } else {
     baseUrl = process.env.REACT_APP_SERVERURL
       ? process.env.REACT_APP_SERVERURL
       : window.location.origin + "/app";
-
+  }
   return baseUrl;
 }
 export const appInfo = {

@@ -7,6 +7,9 @@ import {
   textInputWidget,
   textWidget
 } from "../../constant/Utils";
+import Upgrade from "../../primitives/Upgrade";
+import { isEnableSubscription } from "../../constant/const";
+import Tooltip from "../../primitives/Tooltip";
 import { fontColorArr, fontsizeArr } from "../../constant/Utils";
 import { useTranslation } from "react-i18next";
 
@@ -18,11 +21,11 @@ const WidgetNameModal = (props) => {
     defaultValue: "",
     status: "required",
     hint: "",
-    textvalidate: "",
-    isReadOnly: false
+    textvalidate: ""
   });
   const [isValid, setIsValid] = useState(true);
   const statusArr = ["Required", "Optional"];
+  const inputOpt = ["text", "email", "number"];
   const [signatureType, setSignatureType] = useState([]);
 
   useEffect(() => {
@@ -35,8 +38,7 @@ const WidgetNameModal = (props) => {
         textvalidate:
           props.defaultdata?.options?.validation?.type === "regex"
             ? props.defaultdata?.options?.validation?.pattern
-            : props.defaultdata?.options?.validation?.type || "",
-        isReadOnly: props.defaultdata?.options?.isReadOnly || false
+            : props.defaultdata?.options?.validation?.type || ""
       });
     } else {
       setFormdata({
@@ -71,7 +73,6 @@ const WidgetNameModal = (props) => {
         props.handleData(formdata);
       }
       setFormdata({
-        isReadOnly: false,
         name: "",
         defaultValue: "",
         status: "required",
@@ -113,24 +114,35 @@ const WidgetNameModal = (props) => {
     }
   }
 
+  function handleBlurRegex() {
+    if (!formdata.textvalidate) {
+      setFormdata({ ...formdata, textvalidate: "" });
+    } else {
+      if (formdata.defaultValue) {
+        const regexObject = RegexParser(
+          handleValidation(formdata.textvalidate)
+        );
+        const isValidate = regexObject?.test(formdata.defaultValue);
+        if (isValidate === false) {
+          setFormdata({ ...formdata, defaultValue: "" });
+        }
+      }
+    }
+  }
 
   const handleCheckboxChange = (index) => {
+    // Create a copy of the signatureType array
+    const updatedSignatureType = [...signatureType];
+    // Toggle the enabled value for the clicked item
+    updatedSignatureType[index].enabled = !updatedSignatureType[index].enabled;
     // Update the state with the modified array
-    setSignatureType((prev) =>
-      prev.map((item, i) =>
-        i === index ? { ...item, enabled: !item.enabled } : item
-      )
-    );
+    setSignatureType(updatedSignatureType);
   };
   return (
     <ModalUi
       isOpen={props.isOpen}
       handleClose={props.handleClose && props.handleClose}
-      title={
-        ["signature", "initials"].includes(props.defaultdata?.type)
-          ? t("signature-setting")
-          : t("widget-info")
-      }
+      title={t("widget-info")}
     >
       <form
         onSubmit={handleSubmit}
@@ -161,6 +173,69 @@ const WidgetNameModal = (props) => {
         )}
         {props.defaultdata?.type === textInputWidget && (
           <>
+            {isEnableSubscription && (
+              <div className="mb-[0.75rem]">
+                <div className="flex items-center gap-1">
+                  <label
+                    htmlFor="textvalidate"
+                    className={`${
+                      !props.isSubscribe && isEnableSubscription
+                        ? "bg-opacity-50 pointer-events-none"
+                        : ""
+                    } text-[13px]`}
+                  >
+                    {t("validation")}
+                  </label>
+                  <Tooltip
+                    url={"https://www.w3schools.com/jsref/jsref_obj_regexp.asp"}
+                  />
+                  {!props.isSubscribe && isEnableSubscription && <Upgrade />}
+                </div>
+                <div
+                  className={`${
+                    !props.isSubscribe && isEnableSubscription
+                      ? "bg-opacity-50 pointer-events-none"
+                      : ""
+                  } flex flex-row gap-[10px] mb-[0.5rem]`}
+                >
+                  <div className="w-full relative group">
+                    <input
+                      className="z-20 relative op-input op-input-bordered rounded-r-none op-input-sm focus:outline-none group-hover:border-base-content w-[87%] md:w-[92%] text-xs"
+                      name="textvalidate"
+                      placeholder="Enter custom regular expression"
+                      value={formdata.textvalidate}
+                      onChange={(e) => handleChange(e)}
+                      // onBlur={() => handleBlurRegex()}
+                    />
+                    <select
+                      className="validationlist op-input op-input-bordered op-input-sm focus:outline-none group-hover:border-base-content w-full text-xs"
+                      name="textvalidate"
+                      value={formdata.textvalidate}
+                      onChange={(e) => handleChange(e)}
+                      onBlur={() => handleBlurRegex()}
+                    >
+                      <option
+                        disabled={formdata?.textvalidate}
+                        className="text-[13px]"
+                      >
+                        Select...
+                      </option>
+                      {inputOpt.map((data, ind) => {
+                        return (
+                          <option
+                            className="text-[13px]"
+                            key={ind}
+                            value={data}
+                          >
+                            {data}
+                          </option>
+                        );
+                      })}
+                    </select>
+                  </div>
+                </div>
+              </div>
+            )}
             <div className="mb-[0.75rem]">
               <label htmlFor="name" className="text-[13px]">
                 {t("default-value")}
@@ -193,9 +268,7 @@ const WidgetNameModal = (props) => {
             </div>
           </>
         )}
-        {!["signature", "initials", textWidget].includes(
-          props.defaultdata?.type
-        ) && (
+        {!["signature", "initials"].includes(props.defaultdata?.type) && (
           <div className="mb-[0.75rem]">
             <div className="flex flex-row gap-[10px] mb-[0.5rem]">
               {statusArr.map((data, ind) => {
@@ -222,26 +295,6 @@ const WidgetNameModal = (props) => {
                 );
               })}
             </div>
-            {[textInputWidget].includes(props.defaultdata?.type) && (
-              <div className="flex items-center">
-                <input
-                  id="isReadOnly"
-                  name="isReadOnly"
-                  type="checkbox"
-                  checked={formdata.isReadOnly}
-                  className="op-checkbox op-checkbox-xs"
-                  onChange={() =>
-                    setFormdata((prev) => ({
-                      ...formdata,
-                      isReadOnly: !prev.isReadOnly
-                    }))
-                  }
-                />
-                <label className="ml-1 mb-0" htmlFor="isreadonly">
-                  {t("read-only")}
-                </label>
-              </div>
-            )}
           </div>
         )}
         {["signature", "initials"].includes(props.defaultdata?.type) && (
@@ -293,26 +346,24 @@ const WidgetNameModal = (props) => {
           "job title",
           "email"
         ].includes(props.defaultdata?.type) && (
-          <div className="flex flex-col md:flex-row md:items-center gap-3 mb-3">
-            <div className="flex items-center gap-2 ">
-              <span>{t("font-size")}:</span>
-              <select
-                className="ml-[7px] w-[60%] op-select op-select-bordered op-select-sm focus:outline-none hover:border-base-content text-xs"
-                value={
-                  props.fontSize || props.defaultdata?.options?.fontSize || 12
-                }
-                onChange={(e) => props.setFontSize(parseInt(e.target.value))}
-              >
-                {fontsizeArr.map((size, ind) => {
-                  return (
-                    <option className="text-[13px]" value={size} key={ind}>
-                      {size}
-                    </option>
-                  );
-                })}
-              </select>
-            </div>
-            <div className="flex items-center">
+          <div className="flex items-center mb-[0.75rem]">
+            <span>{t("font-size")}:</span>
+            <select
+              className="ml-[7px] op-select op-select-bordered op-select-sm focus:outline-none hover:border-base-content text-xs"
+              value={
+                props.fontSize || props.defaultdata?.options?.fontSize || 12
+              }
+              onChange={(e) => props.setFontSize(parseInt(e.target.value))}
+            >
+              {fontsizeArr.map((size, ind) => {
+                return (
+                  <option className="text-[13px]" value={size} key={ind}>
+                    {size}
+                  </option>
+                );
+              })}
+            </select>
+            <div className="flex flex-row gap-1 items-center ml-4">
               <span>{t("color")}: </span>
               <select
                 value={
@@ -321,7 +372,7 @@ const WidgetNameModal = (props) => {
                   "black"
                 }
                 onChange={(e) => props.setFontColor(e.target.value)}
-                className="ml-[33px] md:ml-4 w-[65%] md:w-[full] op-select op-select-bordered op-select-sm focus:outline-none hover:border-base-content text-xs"
+                className="ml-[7px] op-select op-select-bordered op-select-sm focus:outline-none hover:border-base-content text-xs"
               >
                 {fontColorArr.map((color, ind) => {
                   return (

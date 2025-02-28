@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Parse from "parse";
 import getReplacedHashQuery from "../../constant/getReplacedHashQuery";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import Tooltip from "../../primitives/Tooltip";
 import { useTranslation } from "react-i18next";
 
@@ -133,7 +133,7 @@ const DashboardCard = (props) => {
             skip: 0,
             limit: 200
           };
-          const url = `${parseBaseUrl}functions/getReport`;
+          const url = `${parseBaseUrl}/functions/getReport`;
           await axios
             .post(url, params, {
               headers: {
@@ -346,6 +346,7 @@ const DashboardCard = (props) => {
           id={props.Label}
           iconColor={"white"}
           message={t(`tour-mssg.${props.Label}`)}
+          // {props?.Data?.tourMessage}
         />
       </div>
     </div>

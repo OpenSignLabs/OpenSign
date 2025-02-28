@@ -19,89 +19,56 @@ function PlaceholderCopy(props) {
   //function for get copy placeholder position
   const getCopyPlaceholderPosition = (
     type,
-    newPlaceholder,
+    currentPlaceholder,
     newPageNumber,
     existPlaceholderPosition
   ) => {
-    //remove existing page position when used option copy but first or copy but last
     const filterPosition =
       existPlaceholderPosition &&
       existPlaceholderPosition.filter(
-        (data) => data.xPosition !== newPlaceholder.xPosition
+        (data) => data.xPosition !== currentPlaceholder.xPosition
       );
-    //first option - copy all page but not first
     //copy all page placeholder at requested position except first page
     if (newPageNumber === 1 && type === 3) {
-      //when user choose this option and placed widget on first page then do not remove first page widget
-      //it should be copy all page included first page on same postion
-      if (props.pageNumber === 1) {
-        return {
-          pageNumber: newPageNumber,
-          pos: [...existPlaceholderPosition]
-        };
-      } //else when user copy widget and choose this option and not at first page then copy all page but not at first
-      else if (filterPosition && filterPosition.length > 0) {
+      if (filterPosition && filterPosition.length > 0) {
         return {
           pageNumber: newPageNumber,
           pos: [...filterPosition]
         };
       }
     }
-    //second option - copy all page but not last
     //copy all page placeholder at requested position except  last page
     else if (newPageNumber === props.allPages && type === 2) {
       if (existPlaceholderPosition) {
-        //when user choose this option and placed widget on last page then do not remove last page widget
-        //it should be copy all page included last page on same postion
-        if (props.pageNumber === props.allPages) {
-          return {
-            pageNumber: newPageNumber,
-            pos: [...existPlaceholderPosition]
-          };
-        } else {
-          return {
-            pageNumber: newPageNumber,
-            pos: [...filterPosition]
-          };
-        }
-      }
-    }
-    //this optin - copy all page with exiting widgets on same page
-    //copy all page placeholder at requested position with existing placeholder position
-    else if (existPlaceholderPosition) {
-      if (newPageNumber === props.pageNumber) {
-        return {
-          pageNumber: props.pageNumber,
-          pos: [...existPlaceholderPosition]
-        };
-      } else {
         return {
           pageNumber: newPageNumber,
-          pos: [...existPlaceholderPosition, newPlaceholder]
+          pos: [...filterPosition]
         };
       }
+    }
+    //copy all page placeholder at requested position with existing placeholder position
+    else if (existPlaceholderPosition) {
+      return {
+        pageNumber: newPageNumber,
+        pos: [...filterPosition, currentPlaceholder]
+      };
     }
     //copy all page placeholder at requested position
     else {
-      if (newPageNumber === props.pageNumber) {
-        return {
-          pageNumber: props.pageNumber,
-          pos: [...existPlaceholderPosition]
-        };
-      } else {
-        return {
-          pageNumber: newPageNumber,
-          pos: [newPlaceholder]
-        };
-      }
+      return {
+        pageNumber: newPageNumber,
+        pos: [currentPlaceholder]
+      };
     }
   };
+
   //function for copy placeholder as per select copy type
   const copyPlaceholder = (type) => {
     let newPlaceholderPosition = [];
     let newPageNumber = 1;
-    const signerPosition = props.xyPosition;
+    const signerPosition = props.xyPostion;
     const signerId = props.signerObjId ? props.signerObjId : props.Id;
+
     //handle placeholder array and copy for multiple signers placeholder at requested location
     if (signerId) {
       //get current signers data
@@ -123,9 +90,10 @@ function PlaceholderCopy(props) {
       const currentPlaceholder = placeholderPosition[0].pos.find(
         (position) => position.key === props.signKey
       );
+
       for (let i = 0; i < props.allPages; i++) {
         const newId = randomId();
-        const newPlaceholder = { ...currentPlaceholder, key: newId };
+        currentPlaceholder.key = newId;
         //get exist placeholder position for particular page
         const existPlaceholder = filterSignerPosition[0].placeHolder.filter(
           (data) => data.pageNumber === newPageNumber
@@ -136,11 +104,11 @@ function PlaceholderCopy(props) {
         //function for get copy to requested location of placeholder position
         const getPlaceholderObj = getCopyPlaceholderPosition(
           type,
-          newPlaceholder,
+          currentPlaceholder,
           newPageNumber,
           existPlaceholderPosition
         );
-        if (getPlaceholderObj?.pos) {
+        if (getPlaceholderObj) {
           newPlaceholderPosition.push(getPlaceholderObj);
         }
         newPageNumber++;
@@ -170,13 +138,13 @@ function PlaceholderCopy(props) {
 
       const signersData = signerPosition;
       signersData.splice(0, signerPosition.length, ...updatedSignerPlaceholder);
-      props.setXyPosition(signersData);
+      props.setXyPostion(signersData);
     }
     //handle signyourself array and copy for single signers placeholder at requested location
     else {
-      const xyPosition = props.xyPosition;
+      const xyPostion = props.xyPostion;
 
-      const placeholderPosition = xyPosition.filter(
+      const placeholderPosition = xyPostion.filter(
         (data) => data.pageNumber === props.pageNumber
       );
       //get current placeholder position data which user want to copy
@@ -186,18 +154,18 @@ function PlaceholderCopy(props) {
 
       for (let i = 0; i < props.allPages; i++) {
         //get exist placeholder position for particular page
-        const existPlaceholder = xyPosition.filter(
+        const existPlaceholder = xyPostion.filter(
           (data) => data.pageNumber === newPageNumber
         );
         const existPlaceholderPosition =
           existPlaceholder[0] && existPlaceholder[0].pos;
 
         const newId = randomId();
-        const newPlaceholder = { ...currentPlaceholder, key: newId };
+        currentPlaceholder.key = newId;
         //function for get copy to requested location of placeholder position
         const getPlaceholderObj = getCopyPlaceholderPosition(
           type,
-          newPlaceholder,
+          currentPlaceholder,
           newPageNumber,
           existPlaceholderPosition
         );
@@ -207,14 +175,14 @@ function PlaceholderCopy(props) {
 
         newPageNumber++;
       }
-      props.setXyPosition(newPlaceholderPosition);
+      props.setXyPostion(newPlaceholderPosition);
     }
   };
 
   //function for getting selected type placeholder copy
   const handleApplyCopy = () => {
     if (selectCopyType === 4) {
-      const signerPosition = props.xyPosition;
+      const signerPosition = props.xyPostion;
       let currentXYposition;
       const signerId = props.signerObjId ? props.signerObjId : props.Id;
       if (signerId) {
@@ -232,16 +200,16 @@ function PlaceholderCopy(props) {
         handleCopyNextToWidget(
           currentXYposition,
           props.widgetType,
-          props.xyPosition,
+          props.xyPostion,
           props.pageNumber,
-          props.setXyPosition,
+          props.setXyPostion,
           props?.Id
         );
       } else {
-        const getIndex = props?.xyPosition.findIndex(
+        const getIndex = props?.xyPostion.findIndex(
           (data) => data.pageNumber === props.pageNumber
         );
-        const placeholderPosition = props?.xyPosition[getIndex];
+        const placeholderPosition = props?.xyPostion[getIndex];
         //get current placeholder position data which user want to copy
         currentXYposition = placeholderPosition.pos.find(
           (pos) => pos.key === props.signKey
@@ -250,9 +218,9 @@ function PlaceholderCopy(props) {
         handleCopyNextToWidget(
           currentXYposition,
           props.widgetType,
-          props.xyPosition,
+          props.xyPostion,
           getIndex,
-          props.setXyPosition
+          props.setXyPostion
         );
       }
     } else {
@@ -261,7 +229,7 @@ function PlaceholderCopy(props) {
   };
   const handleUniqueId = () => {
     const signerId = props.signerObjId ? props.signerObjId : props.Id;
-    if (signerId && props.widgetType === textWidget && props.setTempSignerId) {
+    if (signerId && props.widgetType === textWidget) {
       props.setUniqueId(props?.tempSignerId);
       props.setTempSignerId("");
     }
@@ -292,7 +260,7 @@ function PlaceholderCopy(props) {
           );
         })}
 
-        <div className="flex flex-row bg-[#9f9f9f] w-full my-[15px]"></div>
+        <div className="flex bg-[#9f9f9f] w-full my-[15px]"></div>
         <button
           onClick={() => {
             handleApplyCopy();
@@ -306,7 +274,7 @@ function PlaceholderCopy(props) {
         </button>
         <button
           type="button"
-          className="op-btn op-btn-ghost ml-2"
+          className="op-btn op-btn-ghost"
           onClick={() => handleUniqueId()}
         >
           {t("cancel")}

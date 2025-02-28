@@ -1,12 +1,8 @@
 import dotenv from 'dotenv';
-import { format, toZonedTime } from 'date-fns-tz';
-import { getSignedLocalUrl } from './cloud/parsefunction/getSignedUrl.js';
-import { PDFDocument } from 'pdf-lib';
 dotenv.config();
 
 export const cloudServerUrl = 'http://localhost:8080/app';
-export const appName =
-  'OpenSign™';
+export const appName = process.env.APP_NAME || 'OpenSign™';
 export function customAPIurl() {
   const url = new URL(cloudServerUrl);
   return url.pathname === '/api/app' ? url.origin + '/api' : url.origin;
@@ -106,29 +102,20 @@ export const updateMailCount = async (extUserId, plan, monthchange) => {
   try {
     const contractUser = await query.first({ useMasterKey: true });
     if (contractUser) {
-      const _extRes = JSON.parse(JSON.stringify(contractUser));
-      let updateDate = new Date();
-      if (_extRes?.LastEmailCountReset?.iso) {
-        updateDate = new Date(_extRes?.LastEmailCountReset?.iso);
-        const newDate = new Date();
-        // Update the month while keeping the same day and year
-        updateDate.setMonth(newDate.getMonth());
-        updateDate.setFullYear(newDate.getFullYear());
-      }
       contractUser.increment('EmailCount', 1);
       if (plan === 'freeplan') {
         if (monthchange) {
-          contractUser.set('LastEmailCountReset', updateDate);
+          contractUser.set('LastEmailCountReset', new Date());
           contractUser.set('MonthlyFreeEmails', 1);
         } else {
           if (contractUser?.get('MonthlyFreeEmails')) {
             contractUser.increment('MonthlyFreeEmails', 1);
             if (contractUser?.get('LastEmailCountReset')) {
-              contractUser.set('LastEmailCountReset', updateDate);
+              contractUser.set('LastEmailCountReset', new Date());
             }
           } else {
             contractUser.set('MonthlyFreeEmails', 1);
-            contractUser.set('LastEmailCountReset', updateDate);
+            contractUser.set('LastEmailCountReset', new Date());
           }
         }
       }
@@ -213,7 +200,6 @@ export function formatWidgetOptions(type, options) {
         validation: { type: 'regex', pattern: options?.regularexpression || '/^[a-zA-Z0-9s]+$/' },
         fontColor: fontColor,
         fontSize: fontSize,
-        isReadOnly: options?.readonly || false,
       };
     case 'checkbox': {
       const arr = options?.values;
@@ -257,7 +243,6 @@ export function formatWidgetOptions(type, options) {
         defaultValue: defaultValue,
         fontColor: fontColor,
         fontSize: fontSize,
-        isReadOnly: options?.readonly || false,
       };
     default:
       break;
@@ -276,112 +261,17 @@ export const smtpsecure = process.env.SMTP_PORT && process.env.SMTP_PORT !== '46
 export const smtpenable =
   process.env.SMTP_ENABLE && process.env.SMTP_ENABLE.toLowerCase() === 'true' ? true : false;
 
+export const planCredits = {
+  'pro-weekly': 100,
+  'pro-yearly': 240,
+  'professional-monthly': 100,
+  'professional-yearly': 240,
+  'team-weekly': 100,
+  'team-yearly': 500,
+  'teams-monthly': 100,
+  'teams-yearly': 500,
+};
 
-// `generateId` is used to unique Id for fileAdapter
-export function generateId(length) {
-  const characters = 'abcdefghijklmnopqrstuvwxyz0123456789';
-  let result = '';
-  const charactersLength = characters.length;
-  for (let i = 0; i < length; i++) {
-    result += characters.charAt(Math.floor(Math.random() * charactersLength));
-  }
-  return result;
+export function parseJwt(token) {
+  return JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
 }
-
-// Format date and time for the selected timezone
-export const formatTimeInTimezone = (date, timezone) => {
-  const nyDate = timezone && toZonedTime(date, timezone);
-  const generatedDate = timezone
-    ? format(nyDate, 'EEE, dd MMM yyyy HH:mm:ss zzz', { timeZone: timezone })
-    : new Date(date).toUTCString();
-  return generatedDate;
-};
-
-// `getSecureUrl` is used to return local secure url if local files
-export const getSecureUrl = url => {
-  const fileUrl = new URL(url)?.pathname?.includes('files');
-  if (fileUrl) {
-    try {
-      const file = getSignedLocalUrl(url);
-      if (file) {
-        return { url: file };
-      } else {
-        return { url: '' };
-      }
-    } catch (err) {
-      console.log('err while fileupload ', err);
-      return { url: '' };
-    }
-  } else {
-    return { url: url };
-  }
-};
-
-/**
- * FlattenPdf is used to remove existing widgets if present any and flatten pdf.
- * @param {string | Uint8Array | ArrayBuffer} pdfFile - pdf file.
- * @returns {Promise<Uint8Array>} flatPdf - pdf file in unit8arry
- */
-export const flattenPdf = async pdfFile => {
-  try {
-    const pdfDoc = await PDFDocument.load(pdfFile);
-    // Get the form
-    const form = pdfDoc.getForm();
-    // fetch form fields
-    const fields = form.getFields();
-    // remove form all existing fields and their widgets
-    if (fields && fields?.length > 0) {
-      try {
-        for (const field of fields) {
-          while (field.acroField.getWidgets().length) {
-            field.acroField.removeWidget(0);
-          }
-          form.removeField(field);
-        }
-      } catch (err) {
-        console.log('err while removing field from pdf', err);
-      }
-    }
-    // Updates the field appearances to ensure visual changes are reflected.
-    form.updateFieldAppearances();
-    // Flattens the form, converting all form fields into non-editable, static content
-    form.flatten();
-    const flatPdf = await pdfDoc.save({ useObjectStreams: false });
-    return flatPdf;
-  } catch (err) {
-    throw new Error('error in pdf');
-  }
-};
-
-export const mailTemplate = param => {
-  const themeColor = '#47a3ad';
-  const subject = `${param.senderName} has requested you to sign "${param.title}"`;
-  const logo =
-        `<img src='https://qikinnovation.ams3.digitaloceanspaces.com/logo.png' height='50' />`;
-
-  const opurl =
-        ` <a href='www.opensignlabs.com' target=_blank>here</a>`;
-
-  const body =
-    "<html><head><meta http-equiv='Content-Type' content='text/html;charset=UTF-8' /></head><body><div style='background-color:#f5f5f5;padding:20px'><div style='background:white;padding-bottom:20px'><div style='padding:10px'>" +
-    logo +
-    `</div><div style='padding:2px;font-family:system-ui;background-color:${themeColor}'><p style='font-size:20px;font-weight:400;color:white;padding-left:20px'>Digital Signature Request</p></div><div><p style='padding:20px;font-size:14px;margin-bottom:10px'>` +
-    param.senderName +
-    ' has requested you to review and sign <strong>' +
-    param.title +
-    "</strong>.</p><div style='padding: 5px 0px 5px 25px;display:flex;flex-direction:row;justify-content:space-around'><table><tr><td style='font-weight:bold;font-family:sans-serif;font-size:15px'>Sender</td><td></td><td style='color:#626363;font-weight:bold'>" +
-    param.senderMail +
-    "</td></tr><tr><td style='font-weight:bold;font-family:sans-serif;font-size:15px'>Organization</td><td></td><td style='color:#626363;font-weight:bold'> " +
-    param.organization +
-    "</td></tr><tr><td style='font-weight:bold;font-family:sans-serif;font-size:15px'>Expire on</td><td></td><td style='color:#626363;font-weight:bold'>" +
-    param.localExpireDate +
-    "</td></tr><tr><td></td><td></td></tr></table></div> <div style='margin-left:70px'><a target=_blank href=" +
-    param.sigingUrl +
-    "><button style='padding:12px;background-color:#d46b0f;color:white;border:0px;font-weight:bold;margin-top:30px'>Sign here</button></a></div><div style='display:flex;justify-content:center;margin-top:10px'></div></div></div><div><p> This is an automated email from " +
-    appName +
-    '. For any queries regarding this email, please contact the sender ' +
-    param.senderMail +
-    ` directly. If you think this email is inappropriate or spam, you may file a complaint with ${appName}${opurl}.</p></div></div></body></html>`;
-
-  return { subject, body };
-};

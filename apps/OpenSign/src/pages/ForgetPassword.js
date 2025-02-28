@@ -1,15 +1,14 @@
 import React, { useEffect, useState } from "react";
 import Title from "../components/Title";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import login_img from "../assets/images/login_img.svg";
 import Parse from "parse";
 import Alert from "../primitives/Alert";
 import { appInfo } from "../constant/appinfo";
 import { useDispatch } from "react-redux";
 import { fetchAppInfo } from "../redux/reducers/infoReducer";
-import {
-  emailRegex,
-} from "../constant/const";
+import { emailRegex, isEnableSubscription } from "../constant/const";
+import { getAppLogo } from "../constant/Utils";
 import { useTranslation } from "react-i18next";
 
 function ForgotPassword() {
@@ -71,11 +70,20 @@ function ForgotPassword() {
     } catch (err) {
       console.log("err while logging out ", err);
     }
+    if (isEnableSubscription) {
+      const app = await getAppLogo();
+      if (app?.logo) {
+        setImage(app?.logo);
+      } else {
+        setImage(appInfo?.applogo || undefined);
+      }
+    } else {
       setImage(appInfo?.applogo || undefined);
+    }
   };
   return (
     <div>
-      <Title title="Forgot password" />
+      <Title title="Forgot password page" />
       {sentStatus === "success" && (
         <Alert type="success">{t("reset-password-alert-1")}</Alert>
       )}

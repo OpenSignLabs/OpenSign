@@ -12,7 +12,6 @@ const AddContact = (props) => {
   const [addYourself, setAddYourself] = useState(false);
   const [isLoader, setIsLoader] = useState(false);
   const [isUserExist, setIsUserExist] = useState(false);
-
   useEffect(() => {
     checkUserExist();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -33,8 +32,9 @@ const AddContact = (props) => {
     try {
       const baseURL = localStorage.getItem("baseUrl");
       const url = `${baseURL}functions/isuserincontactbook`;
-      const token =
-            { "X-Parse-Session-Token": localStorage.getItem("accesstoken") };
+      const token = props?.jwttoken
+        ? { jwttoken: props?.jwttoken }
+        : { "X-Parse-Session-Token": localStorage.getItem("accesstoken") };
       const headers = {
         "Content-Type": "application/json",
         "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
@@ -63,18 +63,15 @@ const AddContact = (props) => {
         )
       );
       const userId = user?.objectId || "";
-      const tenantDetails = await getTenantDetails(
-        userId,
-      );
+      const tenantDetails = await getTenantDetails(userId, props.jwttoken);
       const tenantId = tenantDetails?.objectId || "";
       if (tenantId) {
         try {
           const baseURL = localStorage.getItem("baseUrl");
           const url = `${baseURL}functions/savecontact`;
-          const token =
-                {
-                  "X-Parse-Session-Token": localStorage.getItem("accesstoken")
-                };
+          const token = props?.jwttoken
+            ? { jwttoken: props?.jwttoken }
+            : { "X-Parse-Session-Token": localStorage.getItem("accesstoken") };
           const data = { name, email, phone, tenantId };
           const headers = {
             "Content-Type": "application/json",
@@ -124,9 +121,6 @@ const AddContact = (props) => {
   };
   const handleReset = () => {
     setAddYourself(false);
-    setName("");
-    setPhone("");
-    setEmail("");
   };
 
   return (

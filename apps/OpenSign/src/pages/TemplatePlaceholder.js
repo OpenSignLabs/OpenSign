@@ -1,18 +1,17 @@
 import React, { useEffect, useState, useRef } from "react";
 import RenderAllPdfPage from "../components/pdf/RenderAllPdfPage";
-import { useParams, useNavigate } from "react-router";
+import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import "../styles/signature.css";
+import { isEnableSubscription } from "../constant/const";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
-import { useDrop } from "react-dnd";
+import { useDrag, useDrop } from "react-dnd";
 import WidgetComponent from "../components/pdf/WidgetComponent";
 import Tour from "reactour";
 import SignerListPlace from "../components/pdf/SignerListPlace";
 import Header from "../components/pdf/PdfHeader";
 import WidgetNameModal from "../components/pdf/WidgetNameModal";
-import { PDFDocument } from "pdf-lib";
-import { SaveFileSize } from "../constant/saveFileSize";
 import {
   pdfNewWidthFun,
   contractUsers,
@@ -23,6 +22,7 @@ import {
   addWidgetOptions,
   textInputWidget,
   radioButtonWidget,
+  fetchSubscription,
   getContainerScale,
   convertBase64ToFile,
   rotatePdfPage,
@@ -33,12 +33,7 @@ import {
   color,
   signatureTypes,
   getTenantDetails,
-  handleSignatureType,
-  getBase64FromUrl,
-  convertPdfArrayBuffer,
-  generatePdfName,
-  textWidget,
-  multiSignEmbed
+  handleSignatureType
 } from "../constant/Utils";
 import RenderPdf from "../components/pdf/RenderPdf";
 import "../styles/AddUser.css";
@@ -60,13 +55,13 @@ import LinkUserModal from "../primitives/LinkUserModal";
 
 const TemplatePlaceholder = () => {
   const { t } = useTranslation();
-  const { templateId } = useParams();
-  const divRef = useRef(null);
   const navigate = useNavigate();
-  const numPages = 1;
   const isHeader = useSelector((state) => state.showHeader);
+  const { templateId } = useParams();
   const [pdfDetails, setPdfDetails] = useState([]);
+  const [isMailSend, setIsMailSend] = useState(false);
   const [allPages, setAllPages] = useState(null);
+  const numPages = 1;
   const [pageNumber, setPageNumber] = useState(1);
   const [signBtnPosition, setSignBtnPosition] = useState([]);
   const [xySignature, setXYSignature] = useState({});
@@ -76,17 +71,14 @@ const TemplatePlaceholder = () => {
   const [isSelectListId, setIsSelectId] = useState();
   const [isSendAlert, setIsSendAlert] = useState(false);
   const [isCreateDocModal, setIsCreateDocModal] = useState(false);
-  //'signersName' variable used to show all signer's name that do not have a signature widget assigned
-  const [signersName, setSignersName] = useState("");
-  const [showRotateAlert, setShowRotateAlert] = useState({
-    status: false,
-    degree: 0
-  });
+  const [isSubscribe, setIsSubscribe] = useState(false);
+  const [isRotate, setIsRotate] = useState({ status: false, degree: 0 });
   const [isLoading, setIsLoading] = useState({
     isLoad: true,
     message: t("loading-mssg")
   });
   const [handleError, setHandleError] = useState();
+  const [currentEmail, setCurrentEmail] = useState();
   const [pdfNewWidth, setPdfNewWidth] = useState();
   const [templateTour, setTemplateTour] = useState(true);
   const [checkTourStatus, setCheckTourStatus] = useState(false);
@@ -94,6 +86,9 @@ const TemplatePlaceholder = () => {
   const [signerUserId, setSignerUserId] = useState();
   const [pdfOriginalWH, setPdfOriginalWH] = useState([]);
   const [containerWH, setContainerWH] = useState();
+  const signRef = useRef(null);
+  const dragRef = useRef(null);
+  const divRef = useRef(null);
   const [isShowEmail, setIsShowEmail] = useState(false);
   const [selectedEmail, setSelectedEmail] = useState(false);
   const [isResize, setIsResize] = useState(false);
@@ -107,13 +102,22 @@ const TemplatePlaceholder = () => {
   const [isNameModal, setIsNameModal] = useState(false);
   const [isTextSetting, setIsTextSetting] = useState(false);
   const [pdfLoad, setPdfLoad] = useState(false);
-  const [pdfBase64Url, setPdfBase64Url] = useState("");
-  const [isUploadPdf, setIsUploadPdf] = useState(false);
+  const [pdfRotateBase64, setPdfRotatese64] = useState("");
   const isMobile = window.innerWidth < 767;
   const [, drop] = useDrop({
     accept: "BOX",
     drop: (item, monitor) => addPositionOfSignature(item, monitor),
     collect: (monitor) => ({ isOver: !!monitor.isOver() })
+  });
+  const [{ isDragSign }, dragSignature] = useDrag({
+    type: "BOX",
+    item: { type: "BOX", id: 1, text: "signature" },
+    collect: (monitor) => ({ isDragSign: !!monitor.isDragging() })
+  });
+  const [{ isDragStamp }, dragStamp] = useDrag({
+    type: "BOX",
+    item: { type: "BOX", id: 2, text: "stamp" },
+    collect: (monitor) => ({ isDragStamp: !!monitor.isDragging() })
   });
   const [uniqueId, setUniqueId] = useState("");
   const [isModalRole, setIsModalRole] = useState(false);
@@ -135,10 +139,7 @@ const TemplatePlaceholder = () => {
   const [zoomPercent, setZoomPercent] = useState(0);
   const [scale, setScale] = useState(1);
   const [signatureType, setSignatureType] = useState([]);
-  const [pdfArrayBuffer, setPdfArrayBuffer] = useState("");
-  const [updatedPdfUrl, setUpdatedPdfUrl] = useState("");
-  const [tempSignerId, setTempSignerId] = useState("");
-  const [unSignedWidgetId, setUnSignedWidgetId] = useState("");
+
   useEffect(() => {
     fetchTemplate();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -165,6 +166,26 @@ const TemplatePlaceholder = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [divRef.current, isHeader]);
 
+  const handleNavigation = () => {
+    navigate("/subscription");
+  };
+  async function checkIsSubscribed() {
+    const res = await fetchSubscription();
+    const plan = res.plan;
+    const billingDate = res.billingDate;
+    if (plan === "freeplan") {
+      return true;
+    } else if (billingDate) {
+      if (new Date(billingDate) > new Date()) {
+        setIsSubscribe(true);
+        return true;
+      } else {
+        handleNavigation(plan);
+      }
+    } else {
+      handleNavigation(plan);
+    }
+  }
 
   //function to fetch tenant Details
   const fetchTenantDetails = async () => {
@@ -215,16 +236,8 @@ const TemplatePlaceholder = () => {
           : [];
 
       if (documentData && documentData.length > 0) {
-        const url = documentData[0] && documentData[0]?.URL;
-        if (url) {
-          const arrayBuffer = await convertPdfArrayBuffer(url);
-          const base64Pdf = await getBase64FromUrl(url);
-          if (arrayBuffer === "Error") {
-            setHandleError(t("something-went-wrong-mssg"));
-          } else {
-            setPdfBase64Url(base64Pdf);
-            setPdfArrayBuffer(arrayBuffer);
-          }
+        if (isEnableSubscription) {
+          checkIsSubscribed(documentData[0]?.ExtUserPtr?.Email);
         }
         const userSignatureType =
           documentData[0]?.ExtUserPtr?.SignatureType || signatureTypes;
@@ -245,22 +258,9 @@ const TemplatePlaceholder = () => {
             documentData[0].Placeholders &&
             documentData[0].Placeholders.length > 0
           ) {
-            const placeholder = documentData[0]?.Placeholders.filter(
-              (data) => data.Role !== "prefill"
-            );
-            setSignerPos(placeholder);
-            signersdata.forEach((x) => {
-              if (x.objectId) {
-                const obj = {
-                  __type: "Pointer",
-                  className: "contracts_Contactbook",
-                  objectId: x.objectId
-                };
-                signers.push(obj);
-              }
-            });
+            setSignerPos(documentData[0].Placeholders);
             let signers = [...documentData[0].Signers];
-            let updatedSigners = placeholder.map((x) => {
+            let updatedSigners = documentData[0].Placeholders.map((x) => {
               let matchingSigner = signers.find(
                 (y) => x.signerObjId && x.signerObjId === y.objectId
               );
@@ -295,13 +295,10 @@ const TemplatePlaceholder = () => {
             documentData[0].Placeholders &&
             documentData[0].Placeholders.length > 0
           ) {
-            const placeholder = documentData[0]?.Placeholders.filter(
-              (data) => data.Role !== "prefill"
-            );
-            let updatedSigners = placeholder.map((x) => {
+            let updatedSigners = documentData[0].Placeholders.map((x) => {
               return { Role: x.Role, Id: x.Id, blockColor: x.blockColor };
             });
-            setSignerPos(placeholder);
+            setSignerPos(documentData[0].Placeholders);
             setUniqueId(updatedSigners[0].Id);
             setSignersData(updatedSigners);
             setIsSelectId(0);
@@ -321,6 +318,7 @@ const TemplatePlaceholder = () => {
       const res = await contractUsers();
       if (res[0] && res.length) {
         setSignerUserId(res[0].objectId);
+        setCurrentEmail(res[0].Email);
         const tourstatus = res[0].TourStatus && res[0].TourStatus;
         if (tourstatus && tourstatus.length > 0) {
           setTourStatus(tourstatus);
@@ -376,8 +374,7 @@ const TemplatePlaceholder = () => {
         const widgetHeight =
           defaultWidthHeight(dragTypeValue).height * containerScale;
         let dropData = [],
-          currentPagePosition,
-          filterSignerPos;
+          currentPagePosition;
         let placeHolder;
         if (item === "onclick") {
           // `getBoundingClientRect()` is used to get accurate measurement height of the div
@@ -430,11 +427,7 @@ const TemplatePlaceholder = () => {
           dropData.push(dropObj);
           placeHolder = { pageNumber: pageNumber, pos: dropData };
         }
-        if (dragTypeValue === textWidget) {
-          filterSignerPos = signerPos.find((data) => data.Role === "prefill");
-        } else {
-          filterSignerPos = signerPos.find((data) => data.Id === uniqueId);
-        }
+        let filterSignerPos = signerPos.find((data) => data.Id === uniqueId);
         const getPlaceHolder = filterSignerPos?.placeHolder;
         if (getPlaceHolder) {
           //checking exist placeholder on same page
@@ -451,53 +444,20 @@ const TemplatePlaceholder = () => {
           const newSignPos = getPos.concat(dropData);
           let xyPos = { pageNumber: pageNumber, pos: newSignPos };
           updatePlace.push(xyPos);
-          let updatesignerPos;
-          if (dragTypeValue === textWidget) {
-            updatesignerPos = signerPos.map((x) =>
-              x.Role === "prefill" ? { ...x, placeHolder: updatePlace } : x
-            );
-          } else {
-            updatesignerPos = signerPos.map((x) =>
-              x.Id === uniqueId ? { ...x, placeHolder: updatePlace } : x
-            );
-          }
+          const updatesignerPos = signerPos.map((x) =>
+            x.Id === uniqueId ? { ...x, placeHolder: updatePlace } : x
+          );
           setSignerPos(updatesignerPos);
         } else {
-          //if condition when widget type is prefill label text widget
-          if (dragTypeValue === textWidget) {
-            //check text widgets data (prefill) already exist then and want to add text widget on new page
-            //create new page entry with old data and update placeholder
-            if (filterSignerPos) {
-              const addPrefillData =
-                filterSignerPos && filterSignerPos?.placeHolder;
-              addPrefillData.push(placeHolder);
-              const updatePrefillPos = signerPos.map((x) =>
-                x.Role === "prefill" ? { ...x, placeHolder: addPrefillData } : x
-              );
-              setSignerPos(updatePrefillPos);
-            } //else condition if user do not have any text widget data
-            else {
-              const prefillTextWidget = {
-                signerPtr: {},
-                signerObjId: "",
-                blockColor: "#f58f8c",
-                placeHolder: [placeHolder],
-                Role: "prefill",
-                Id: key
-              };
-              setSignerPos((prev) => [...prev, prefillTextWidget]);
-            }
-          } else {
-            //else condition to add placeholder widgets on multiple page first time
-            const updatesignerPos = signerPos.map((x) =>
-              x.Id === uniqueId && x?.placeHolder
-                ? { ...x, placeHolder: [...x.placeHolder, placeHolder] }
-                : x.Id === uniqueId
-                  ? { ...x, placeHolder: [placeHolder] }
-                  : x
-            );
-            setSignerPos(updatesignerPos);
-          }
+          //else condition to add placeholder widgets on multiple page first time
+          const updatesignerPos = signerPos.map((x) =>
+            x.Id === uniqueId && x?.placeHolder
+              ? { ...x, placeHolder: [...x.placeHolder, placeHolder] }
+              : x.Id === uniqueId
+                ? { ...x, placeHolder: [placeHolder] }
+                : x
+          );
+          setSignerPos(updatesignerPos);
         }
 
         if (dragTypeValue === "dropdown") {
@@ -507,14 +467,9 @@ const TemplatePlaceholder = () => {
         } else if (dragTypeValue === radioButtonWidget) {
           setIsRadio(true);
         } else if (
-          [
-            textInputWidget,
-            textWidget,
-            "name",
-            "company",
-            "job title",
-            "email"
-          ].includes(dragTypeValue)
+          [textInputWidget, "name", "company", "job title", "email"].includes(
+            dragTypeValue
+          )
         ) {
           setFontSize(12);
           setFontColor("black");
@@ -523,6 +478,7 @@ const TemplatePlaceholder = () => {
         setWidgetType(dragTypeValue);
         setSignKey(key);
         setSelectWidgetId(key);
+        setIsMailSend(false);
       } else {
         setIsReceipent(false);
       }
@@ -575,22 +531,20 @@ const TemplatePlaceholder = () => {
         containerWH
       );
       if (keyValue >= 0) {
-        let filterSignerPos;
-        if (signId) {
-          filterSignerPos = updateSignPos.filter((data) => data.Id === signId);
-        } else {
-          filterSignerPos = updateSignPos.filter(
-            (data) => data.Role === "prefill"
-          );
-        }
+        const filterSignerPos = updateSignPos.filter(
+          (data) => data.Id === signId
+        );
 
         if (filterSignerPos.length > 0) {
           const getPlaceHolder = filterSignerPos[0].placeHolder;
+
           const getPageNumer = getPlaceHolder.filter(
             (data) => data.pageNumber === pageNumber
           );
+
           if (getPageNumer.length > 0) {
             const getXYdata = getPageNumer[0].pos;
+
             const getPosData = getXYdata;
             const addSignPos = getPosData.map((url) => {
               if (url.key === keyValue) {
@@ -610,22 +564,18 @@ const TemplatePlaceholder = () => {
               return obj;
             });
             const newUpdateSigner = updateSignPos.map((obj) => {
-              if (signId) {
-                if (obj.Id === signId) {
-                  return { ...obj, placeHolder: newUpdateSignPos };
-                }
-              } else {
-                if (obj.Role === "prefill") {
-                  return { ...obj, placeHolder: newUpdateSignPos };
-                }
+              if (obj.Id === signId) {
+                return { ...obj, placeHolder: newUpdateSignPos };
               }
               return obj;
             });
+
             setSignerPos(newUpdateSigner);
           }
         }
       }
     }
+    setIsMailSend(false);
     setTimeout(() => setIsDragging(false), 200);
   };
   //function for delete signature block
@@ -727,63 +677,26 @@ const TemplatePlaceholder = () => {
   };
   const alertSendEmail = async () => {
     const isPlaceholderExist = signerPos.every((data) => data.placeHolder);
-    const getPrefill = signerPos?.find((data) => data.Role === "prefill");
-    const prefillPlaceholder = getPrefill?.placeHolder;
-    let isLabel = false;
-    let unfilledTextWidgetId = "";
-    //condition is used to check text widget data is empty or have response
-    if (getPrefill) {
-      if (prefillPlaceholder) {
-        prefillPlaceholder.map((data) => {
-          if (!isLabel) {
-            const unfilledTextWidgets = data.pos.find(
-              (position) => !position.options.response
-            );
-            if (unfilledTextWidgets) {
-              isLabel = true;
-              unfilledTextWidgetId = unfilledTextWidgets.key;
-            }
-          }
-        });
-      }
-    }
-    if (getPrefill && isLabel) {
-      setUnSignedWidgetId(unfilledTextWidgetId);
-    } else if (isPlaceholderExist) {
+    if (isPlaceholderExist) {
       handleSaveTemplate();
     } else {
-      const signerList = signerPos.filter(
-        (data) => !data.placeHolder && data.Role !== "prefill"
-      );
-      const getSigner = signerList.map((x) => {
-        return signersdata.find((y) => y.Id === x.Id).Role;
-      });
-      const signersName = getSigner.join(", ");
-      setSignersName(signersName);
       setIsSendAlert(true);
     }
   };
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      autosavedetails();
+      if (signerPos?.length > 0) {
+        autosavedetails();
+      }
     }, 2000);
     return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [signerPos, signersdata, signatureType, pdfBase64Url]);
+  }, [signerPos, signatureType]);
 
   // `autosavedetails` is used to save template details after every 2 sec when changes are happern in placeholder like drag-drop widgets, remove signers
   const autosavedetails = async () => {
     let signers = [];
-    let pdfUrl;
-    if (isUploadPdf) {
-      const pdfName = generatePdfName(16);
-      pdfUrl = await convertBase64ToFile(
-        pdfName,
-        pdfBase64Url,
-        "",
-      );
-    }
     if (signersdata?.length > 0) {
       signersdata.forEach((x) => {
         if (x.objectId) {
@@ -799,92 +712,20 @@ const TemplatePlaceholder = () => {
     try {
       const templateCls = new Parse.Object("contracts_Template");
       templateCls.id = templateId;
-      if (signerPos?.length > 0) {
-        const removePrefill = signerPos.filter((x) => x.Role !== "prefill");
-        if (removePrefill.length > 0) {
-          templateCls.set("Placeholders", removePrefill);
-        }
-      }
+      templateCls.set("Placeholders", signerPos);
       templateCls.set("Signers", signers);
       templateCls.set("SignatureType", signatureType);
-      if (pdfUrl) {
-        templateCls.set("URL", pdfUrl);
-      }
-      templateCls.set(
-        "TimeToCompleteDays",
-        parseInt(pdfDetails?.[0]?.TimeToCompleteDays) || 15
-      );
-      if (pdfDetails[0]?.Bcc?.length) {
-        const Bcc = pdfDetails[0]?.Bcc.map((x) => ({
-          __type: "Pointer",
-          className: "contracts_Contactbook",
-          objectId: x.objectId
-        }));
-        templateCls.set("Bcc", Bcc);
-      }
-      const res = await templateCls.save();
-      if (res && pdfUrl) {
-        pdfDetails[0] = { ...pdfDetails[0], URL: pdfUrl };
-      }
+      await templateCls.save();
     } catch (err) {
       console.log("error in autosave template", err);
     }
   };
 
-  //embed prefill label widget data
-  const embedPrefilllData = async () => {
-    const prefillExist = signerPos.filter((data) => data.Role === "prefill");
-    if (prefillExist && prefillExist.length > 0) {
-      const placeholder = prefillExist[0].placeHolder;
-      const existingPdfBytes = pdfArrayBuffer;
-      const pdfDoc = await PDFDocument.load(existingPdfBytes, {
-        ignoreEncryption: true
-      });
-      const isSignYourSelfFlow = false;
-      try {
-        const pdfBase64 = await multiSignEmbed(
-          placeholder,
-          pdfDoc,
-          isSignYourSelfFlow,
-          scale
-        );
-        const pdfName = generatePdfName(16);
-        const pdfUrl = await convertBase64ToFile(
-          pdfName,
-          pdfBase64,
-          "",
-        );
-        const tenantId = localStorage.getItem("TenantId");
-        const buffer = atob(pdfBase64);
-        SaveFileSize(buffer.length, pdfUrl, tenantId);
-        return pdfUrl;
-      } catch (err) {
-        console.log("error to convertBase64ToFile in placeholder flow", err);
-        alert(err?.message);
-      }
-    } else if (pdfBase64Url) {
-      try {
-        const pdfName = generatePdfName(16);
-        const pdfUrl = await convertBase64ToFile(
-          pdfName,
-          pdfBase64Url,
-          "",
-        );
-        return pdfUrl;
-      } catch (err) {
-        console.log("error to convertBase64ToFile in placeholder flow", err);
-        alert(err?.message);
-      }
-    } else {
-      return pdfDetails[0].URL;
-    }
-  };
   const handleSaveTemplate = async () => {
     if (signersdata?.length) {
       setIsLoading({ isLoad: true, message: t("loading-mssg") });
       setIsSendAlert(false);
-      let signers = [],
-        pdfUrl;
+      let signers = [];
       if (signersdata?.length > 0) {
         signersdata.forEach((x) => {
           if (x.objectId) {
@@ -897,30 +738,20 @@ const TemplatePlaceholder = () => {
           }
         });
       }
-      if (pdfBase64Url) {
+      let pdfUrl = pdfDetails[0]?.URL;
+      if (pdfRotateBase64) {
         try {
-          pdfUrl = await embedPrefilllData();
-          setUpdatedPdfUrl(pdfUrl);
+          pdfUrl = await convertBase64ToFile(
+            pdfDetails[0].Name,
+            pdfRotateBase64
+          );
         } catch (e) {
           console.log("error to convertBase64ToFile in placeholder flow", e);
         }
       }
       try {
-        const Bcc = pdfDetails[0]?.Bcc?.length
-          ? {
-              Bcc: pdfDetails[0]?.Bcc?.map((x) => ({
-                __type: "Pointer",
-                className: "contracts_Contactbook",
-                objectId: x.objectId
-              }))
-            }
-          : {};
-        const RedirectUrl = pdfDetails[0]?.RedirectUrl
-          ? { RedirectUrl: pdfDetails[0]?.RedirectUrl }
-          : {};
-        const removePrefill = signerPos.filter((x) => x?.Role !== "prefill");
         const data = {
-          Placeholders: removePrefill,
+          Placeholders: signerPos,
           Signers: signers,
           Name: pdfDetails[0]?.Name || "",
           Note: pdfDetails[0]?.Note || "",
@@ -930,18 +761,13 @@ const TemplatePlaceholder = () => {
           RemindOnceInEvery: parseInt(pdfDetails[0]?.RemindOnceInEvery),
           NextReminderDate: pdfDetails[0]?.NextReminderDate,
           IsEnableOTP: pdfDetails[0]?.IsEnableOTP === true ? true : false,
-          AllowModifications: pdfDetails[0]?.AllowModifications || false,
           IsTourEnabled: pdfDetails[0]?.IsTourEnabled === true ? true : false,
           URL: pdfUrl,
           SignatureType: signatureType,
           NotifyOnSignatures:
             pdfDetails[0]?.NotifyOnSignatures !== undefined
               ? pdfDetails[0]?.NotifyOnSignatures
-              : false,
-          TimeToCompleteDays:
-            parseInt(pdfDetails?.[0]?.TimeToCompleteDays) || 15,
-          ...Bcc,
-          ...RedirectUrl
+              : false
         };
         const updateTemplate = new Parse.Object("contracts_Template");
         updateTemplate.id = templateId;
@@ -950,6 +776,7 @@ const TemplatePlaceholder = () => {
         }
         await updateTemplate.save();
         setIsCreateDocModal(true);
+        setIsMailSend(true);
         setIsLoading({ isLoad: false });
       } catch (e) {
         setIsLoading(false);
@@ -1072,13 +899,20 @@ const TemplatePlaceholder = () => {
   const handleCreateDocModal = async () => {
     setIsCreateDocModal(false);
     setIsCreateDoc(true);
-    const removePrefill = signerPos.filter((x) => x.Role !== "prefill");
+    let pdfUrl = pdfDetails[0]?.URL;
+    if (pdfRotateBase64) {
+      try {
+        pdfUrl = await convertBase64ToFile(pdfDetails[0].Name, pdfRotateBase64);
+      } catch (e) {
+        console.log("error to convertBase64ToFile in placeholder flow", e);
+      }
+    }
     // handle create document
     const res = await createDocument(
       pdfDetails,
-      removePrefill,
+      signerPos,
       signersdata,
-      updatedPdfUrl
+      pdfUrl
     );
     if (res.status === "success") {
       navigate(`/placeHolderSign/${res.id}`, {
@@ -1123,6 +957,7 @@ const TemplatePlaceholder = () => {
     setUniqueId(Id);
     setBlockColor(color[index]);
     setIsSelectId(index);
+    setIsMailSend(false);
   };
   // `handleDeleteUser` function is used to delete record and placeholder when user click on delete which is place next user name in recipients list
   const handleDeleteUser = (Id) => {
@@ -1143,32 +978,15 @@ const TemplatePlaceholder = () => {
       setIsSelectId(index);
       setBlockColor(color[index]);
     }
+
     setSignerPos(updatePlaceholderUser);
+    setIsMailSend(false);
   };
 
   // `handleLinkUser` is used to open Add/Choose Signer Modal when user can link existing or new User with placeholder
   // and update entry in signersList
   const handleLinkUser = (id) => {
     setIsAddUser({ [id]: true });
-  };
-  //function to use unlink signer from widgets
-  const handleUnlinkSigner = () => {
-    //remove existing signer's details from 'signerPos' array
-    const updatePlaceHolder = signerPos.map((x) => {
-      if (x.Id === uniqueId) {
-        return { ...x, signerPtr: {}, signerObjId: "" };
-      }
-      return { ...x };
-    });
-    setSignerPos(updatePlaceHolder);
-    //remove existing signer's details from 'signersdata' array and keep role and id
-    const updateSigner = signersdata.map((item) => {
-      if (item.Id == uniqueId) {
-        return { Role: item.Role, Id: item.Id, blockColor: item.blockColor };
-      }
-      return item;
-    });
-    setSignersData(updateSigner);
   };
   // `handleAddUser` is used to adduser
   const handleAddUser = (data) => {
@@ -1192,6 +1010,7 @@ const TemplatePlaceholder = () => {
       return { ...x };
     });
     setSignersData(updateSigner);
+    setIsMailSend(false);
     const index = signersdata.findIndex((x) => x.Id === uniqueId);
     setIsSelectId(index);
   };
@@ -1212,6 +1031,7 @@ const TemplatePlaceholder = () => {
       role.Id === roleId ? { ...role, Role: event.target.value } : role
     );
     setSignerPos(updatedPlaceholder);
+    setIsMailSend(false);
   };
 
   //  `handleOnBlur` function is call when user click outside input box
@@ -1233,52 +1053,13 @@ const TemplatePlaceholder = () => {
     setIsEditTemplate(!isEditTemplate);
   };
 
-  const handleEditTemplateForm = async (data) => {
+  const handleEditTemplateForm = (data) => {
     setIsEditTemplate(false);
     const updateTemplate = pdfDetails.map((x) => {
       return { ...x, ...data };
     });
     setPdfDetails(updateTemplate);
-    try {
-      const Bcc = updateTemplate?.[0]?.Bcc?.length
-        ? {
-            Bcc: updateTemplate?.[0]?.Bcc?.map((x) => ({
-              __type: "Pointer",
-              className: "contracts_Contactbook",
-              objectId: x.objectId
-            }))
-          }
-        : {};
-      const RedirectUrl = updateTemplate?.[0]?.RedirectUrl
-        ? { RedirectUrl: updateTemplate?.[0]?.RedirectUrl }
-        : {};
-      const data = {
-        Name: updateTemplate?.[0]?.Name || "",
-        Note: updateTemplate?.[0]?.Note || "",
-        Description: updateTemplate?.[0]?.Description || "",
-        SendinOrder: updateTemplate?.[0]?.SendinOrder || false,
-        AutomaticReminders: updateTemplate?.[0]?.AutomaticReminders,
-        IsEnableOTP: updateTemplate?.[0]?.IsEnableOTP === true ? true : false,
-        IsTourEnabled:
-          updateTemplate?.[0]?.IsTourEnabled === true ? true : false,
-        NotifyOnSignatures:
-          updateTemplate?.[0]?.NotifyOnSignatures !== undefined
-            ? updateTemplate?.[0]?.NotifyOnSignatures
-            : false,
-        TimeToCompleteDays:
-          parseInt(updateTemplate?.[0]?.TimeToCompleteDays) || 15,
-        ...Bcc,
-        ...RedirectUrl
-      };
-      const updateTemplateObj = new Parse.Object("contracts_Template");
-      updateTemplateObj.id = templateId;
-      for (const key in data) {
-        updateTemplateObj.set(key, data[key]);
-      }
-      await updateTemplateObj.save();
-    } catch (err) {
-      console.log("error in save template", err);
-    }
+    setIsMailSend(false);
   };
 
   const handleCloseRoleModal = () => {
@@ -1398,8 +1179,7 @@ const TemplatePlaceholder = () => {
                   fontColor:
                     fontColor ||
                     currWidgetsDetails?.options?.fontColor ||
-                    "black",
-                  ...(isReadOnly ? { isReadOnly: isReadOnly || false } : {})
+                    "black"
                 }
               };
             }
@@ -1439,6 +1219,14 @@ const TemplatePlaceholder = () => {
       setPdfDetails(updatedPdfDetails);
       setSignatureType(signtypes);
     }
+    const options = ["email", "number", "text"];
+    let inputype;
+    if (defaultdata.textvalidate) {
+      inputype = options.includes(defaultdata.textvalidate)
+        ? defaultdata.textvalidate
+        : "regex";
+    }
+
     const filterSignerPos = signerPos.filter((data) => data.Id === uniqueId);
     if (filterSignerPos.length > 0) {
       const getPlaceHolder = filterSignerPos[0].placeHolder;
@@ -1462,7 +1250,13 @@ const TemplatePlaceholder = () => {
                   hint: defaultdata?.hint || "",
                   defaultValue: defaultdata?.defaultValue || "",
                   validation:
-                        {},
+                    isSubscribe && inputype
+                      ? {
+                          type: inputype,
+                          pattern:
+                            inputype === "regex" ? defaultdata.textvalidate : ""
+                        }
+                      : {},
                   fontSize:
                     fontSize || currWidgetsDetails?.options?.fontSize || 12,
                   fontColor:
@@ -1519,13 +1313,6 @@ const TemplatePlaceholder = () => {
     setShowDropdown(false);
     setIsRadio(false);
     setIsCheckbox(false);
-    //condition for text widget type after set all values for text widget
-    //change setUniqueId which is set in tempsignerId
-    //because textwidget do not have signer user so for selected signers we have to do
-    if (currWidgetsDetails.type === textWidget) {
-      setUniqueId(tempSignerId);
-      setTempSignerId("");
-    }
   };
 
   const clickOnZoomIn = () => {
@@ -1536,51 +1323,30 @@ const TemplatePlaceholder = () => {
   };
   //`handleRotationFun` function is used to roatate pdf particular page
   const handleRotationFun = async (rotateDegree) => {
-    const rotatePlaceholderExist = handleRotateWarning(signerPos, pageNumber);
-    if (rotatePlaceholderExist) {
-      setShowRotateAlert({ status: true, degree: rotateDegree });
+    const isRotate = handleRotateWarning(signerPos, pageNumber);
+    if (isRotate) {
+      setIsRotate({ status: true, degree: rotateDegree });
     } else {
-      setIsUploadPdf(true);
       const urlDetails = await rotatePdfPage(
+        pdfDetails[0].URL,
         rotateDegree,
         pageNumber - 1,
-        pdfArrayBuffer
+        pdfRotateBase64
       );
-      setPdfArrayBuffer(urlDetails.arrayBuffer);
-      setPdfBase64Url(urlDetails.base64);
+      setPdfRotatese64(urlDetails.base64);
     }
   };
   const handleRemovePlaceholder = async () => {
-    handleRemoveWidgets(
-      setSignerPos,
-      signerPos,
-      pageNumber,
-      setShowRotateAlert
-    );
+    handleRemoveWidgets(setSignerPos, signerPos, pageNumber, setIsRotate);
     const urlDetails = await rotatePdfPage(
-      showRotateAlert.degree,
+      pdfDetails[0].URL,
+      isRotate.degree,
       pageNumber - 1,
-      pdfArrayBuffer
+      pdfRotateBase64
     );
-    setPdfArrayBuffer(urlDetails.arrayBuffer);
-    setPdfBase64Url(urlDetails.base64);
+    setPdfRotatese64(urlDetails.base64);
   };
-  const signatureWidgetTour = [
-    {
-      selector: '[data-tut="isSignatureWidget"]',
-      content: t("signature-field-widget", { signersName }),
-      position: "top",
-      style: { fontSize: "13px" }
-    }
-  ];
-  const textFieldTour = [
-    {
-      selector: '[data-tut="IsSigned"]',
-      content: t("text-field-tour"),
-      position: "top",
-      style: { fontSize: "13px" }
-    }
-  ];
+
   return (
     <>
       <Title title={"Template"} />
@@ -1615,39 +1381,14 @@ const TemplatePlaceholder = () => {
                   closeWithMask={false}
                 />
               )}
-              {isSendAlert && (
-                <Tour
-                  onRequestClose={() => setIsSendAlert(false)}
-                  steps={signatureWidgetTour}
-                  isOpen={true}
-                  rounded={5}
-                  closeWithMask={false}
-                /> // this is the tour for add signature widget for all role
-              )}
-              {unSignedWidgetId && (
-                <Tour
-                  onRequestClose={() => setUnSignedWidgetId("")}
-                  steps={textFieldTour}
-                  isOpen={true}
-                  rounded={5}
-                  closeWithMask={false}
-                />
-              )}
-
               {/* this component used to render all pdf pages in left side */}
               <RenderAllPdfPage
+                signPdfUrl={pdfDetails[0].URL}
                 allPages={allPages}
                 setAllPages={setAllPages}
                 setPageNumber={setPageNumber}
                 setSignBtnPosition={setSignBtnPosition}
                 pageNumber={pageNumber}
-                pdfBase64Url={pdfBase64Url}
-                signedUrl={pdfDetails?.[0]?.SignedUrl || ""}
-                setPdfArrayBuffer={setPdfArrayBuffer}
-                setPdfBase64Url={setPdfBase64Url}
-                setIsUploadPdf={setIsUploadPdf}
-                pdfArrayBuffer={pdfArrayBuffer}
-                isMergePdfBtn={true}
               />
 
               {/* pdf render view */}
@@ -1656,19 +1397,18 @@ const TemplatePlaceholder = () => {
                   clickOnZoomIn={clickOnZoomIn}
                   clickOnZoomOut={clickOnZoomOut}
                   handleRotationFun={handleRotationFun}
-                  pdfArrayBuffer={pdfArrayBuffer}
-                  pageNumber={pageNumber}
-                  setPdfBase64Url={setPdfBase64Url}
-                  setPdfArrayBuffer={setPdfArrayBuffer}
-                  setIsUploadPdf={setIsUploadPdf}
-                  setSignerPos={setSignerPos}
-                  signerPos={signerPos}
-                  userId={uniqueId}
-                  allPages={allPages}
-                  setAllPages={setAllPages}
-                  setPageNumber={setPageNumber}
                 />
                 <div className="w-full md:w-[95%]">
+                  {/* this modal is used show alert set placeholder for all signers before send mail */}
+                  <ModalUi
+                    isOpen={isSendAlert}
+                    title={t("fields-required")}
+                    handleClose={() => setIsSendAlert(false)}
+                  >
+                    <div className="h-full p-[20px]">
+                      <p>{t("template-signature-field")}</p>
+                    </div>
+                  </ModalUi>
                   <ModalUi
                     isOpen={!IsReceipent}
                     title={t("roles")}
@@ -1682,23 +1422,32 @@ const TemplatePlaceholder = () => {
                   <ModalUi
                     isOpen={isCreateDocModal}
                     title={t("create-document")}
-                    handleClose={() => {
-                      setIsCreateDocModal(false);
-                      navigate("/report/6TeaPr321t");
-                    }}
+                    handleClose={() => setIsCreateDocModal(false)}
                   >
-                    <div className="h-full p-[20px] mb-2">
+                    <div className="h-full p-[20px]">
                       <p>{t("template-created-alert")}</p>
                       <div className="h-[1px] w-full my-[15px] bg-[#9f9f9f]"></div>
-                      <div className="flex gap-1 flex-col md:flex-row">
-                        <button
-                          onClick={() => handleCreateDocModal()}
-                          type="button"
-                          className="op-btn op-btn-sm op-btn-primary"
-                        >
-                          {t("create-document")}
-                        </button>
-                      </div>
+                      {currentEmail.length > 0 && (
+                        <>
+                          <button
+                            onClick={() => handleCreateDocModal()}
+                            type="button"
+                            className="op-btn op-btn-primary"
+                          >
+                            {t("yes")}
+                          </button>
+                          <button
+                            onClick={() => {
+                              setIsCreateDocModal(false);
+                              navigate("/report/6TeaPr321t");
+                            }}
+                            type="button"
+                            className="op-btn op-btn-secondary ml-2"
+                          >
+                            {t("no")}
+                          </button>
+                        </>
+                      )}
                     </div>
                   </ModalUi>
                   {isCreateDoc && <LoaderWithMsg isLoading={isLoading} />}
@@ -1728,11 +1477,11 @@ const TemplatePlaceholder = () => {
                     currWidgetsDetails={currWidgetsDetails}
                     setCurrWidgetsDetails={setCurrWidgetsDetails}
                     handleClose={handleNameModal}
+                    isSubscribe={isSubscribe}
                     fontSize={fontSize}
                     setFontSize={setFontSize}
                     fontColor={fontColor}
                     setFontColor={setFontColor}
-                    isShowAdvanceFeature={true}
                   />
                   <DropdownWidgetOption
                     type="checkbox"
@@ -1743,11 +1492,11 @@ const TemplatePlaceholder = () => {
                     currWidgetsDetails={currWidgetsDetails}
                     setCurrWidgetsDetails={setCurrWidgetsDetails}
                     handleClose={handleNameModal}
+                    isSubscribe={isSubscribe}
                     fontSize={fontSize}
                     setFontSize={setFontSize}
                     fontColor={fontColor}
                     setFontColor={setFontColor}
-                    isShowAdvanceFeature={true}
                   />
                   <DropdownWidgetOption
                     type="dropdown"
@@ -1758,25 +1507,21 @@ const TemplatePlaceholder = () => {
                     currWidgetsDetails={currWidgetsDetails}
                     setCurrWidgetsDetails={setCurrWidgetsDetails}
                     handleClose={handleNameModal}
+                    isSubscribe={isSubscribe}
                     fontSize={fontSize}
                     setFontSize={setFontSize}
                     fontColor={fontColor}
                     setFontColor={setFontColor}
-                    isShowAdvanceFeature={true}
                   />
                   <PlaceholderCopy
                     isPageCopy={isPageCopy}
                     setIsPageCopy={setIsPageCopy}
-                    xyPosition={signerPos}
-                    setXyPosition={setSignerPos}
+                    xyPostion={signerPos}
+                    setXyPostion={setSignerPos}
                     allPages={allPages}
                     pageNumber={pageNumber}
                     signKey={signKey}
                     Id={uniqueId}
-                    widgetType={widgetType}
-                    setUniqueId={setUniqueId}
-                    tempSignerId={tempSignerId}
-                    setTempSignerId={setTempSignerId}
                   />
                   {/* pdf header which contain funish back button */}
                   <Header
@@ -1788,6 +1533,7 @@ const TemplatePlaceholder = () => {
                     pdfDetails={pdfDetails}
                     signerPos={signerPos}
                     signersdata={signersdata}
+                    isMailSend={isMailSend}
                     alertSendEmail={alertSendEmail}
                     isShowHeader={true}
                     currentSigner={true}
@@ -1796,13 +1542,6 @@ const TemplatePlaceholder = () => {
                     handleRotationFun={handleRotationFun}
                     clickOnZoomIn={clickOnZoomIn}
                     clickOnZoomOut={clickOnZoomOut}
-                    setSignerPos={setSignerPos}
-                    setIsUploadPdf={setIsUploadPdf}
-                    pdfArrayBuffer={pdfArrayBuffer}
-                    setPdfArrayBuffer={setPdfArrayBuffer}
-                    setPdfBase64Url={setPdfBase64Url}
-                    userId={uniqueId}
-                    pdfBase64={pdfBase64Url}
                   />
                   <div
                     ref={divRef}
@@ -1847,16 +1586,12 @@ const TemplatePlaceholder = () => {
                         setScale={setScale}
                         scale={scale}
                         setIsSelectId={setIsSelectId}
-                        pdfBase64Url={pdfBase64Url}
+                        pdfRotateBase64={pdfRotateBase64}
                         fontSize={fontSize}
                         setFontSize={setFontSize}
                         fontColor={fontColor}
                         setFontColor={setFontColor}
                         isResize={isResize}
-                        divRef={divRef}
-                        setTempSignerId={setTempSignerId}
-                        uniqueId={uniqueId}
-                        unSignedWidgetId={unSignedWidgetId}
                       />
                     )}
                   </div>
@@ -1867,8 +1602,15 @@ const TemplatePlaceholder = () => {
                 <div>
                   <WidgetComponent
                     dataTut2="reactourSecond"
+                    pdfUrl={isMailSend}
+                    dragSignature={dragSignature}
+                    signRef={signRef}
                     handleDivClick={handleDivClick}
                     handleMouseLeave={handleMouseLeave}
+                    isDragSign={isDragSign}
+                    dragStamp={dragStamp}
+                    dragRef={dragRef}
+                    isDragStamp={isDragStamp}
                     isSignYourself={false}
                     addPositionOfSignature={addPositionOfSignature}
                     signerPos={signerPos}
@@ -1877,6 +1619,7 @@ const TemplatePlaceholder = () => {
                     setIsSelectId={setIsSelectId}
                     isSigners={isSigners}
                     setIsShowEmail={setIsShowEmail}
+                    isMailSend={isMailSend}
                     setSelectedEmail={setSelectedEmail}
                     selectedEmail={selectedEmail}
                     handleAddSigner={handleAddSigner}
@@ -1887,20 +1630,18 @@ const TemplatePlaceholder = () => {
                     handleOnBlur={handleOnBlur}
                     title={t("roles")}
                     initial={true}
+                    isTemplateFlow={true}
                     sendInOrder={pdfDetails[0].SendinOrder}
                     setSignersData={setSignersData}
                     blockColor={blockColor}
                     setBlockColor={setBlockColor}
-                    setSignerPos={setSignerPos}
-                    uniqueId={uniqueId}
-                    setSelectWidgetId={setSelectWidgetId}
-                    isTemplateFlow={true}
                   />
                 </div>
               ) : (
                 <div className="w-[23%] bg-base-100 min-h-screen overflow-y-auto hide-scrollbar">
                   <div className="max-h-screen">
                     <SignerListPlace
+                      isMailSend={isMailSend}
                       signerPos={signerPos}
                       setSignerPos={setSignerPos}
                       signersdata={signersdata}
@@ -1921,8 +1662,15 @@ const TemplatePlaceholder = () => {
                     />
                     <div data-tut="addWidgets">
                       <WidgetComponent
+                        isMailSend={isMailSend}
+                        dragSignature={dragSignature}
+                        signRef={signRef}
                         handleDivClick={handleDivClick}
                         handleMouseLeave={handleMouseLeave}
+                        isDragSign={isDragSign}
+                        dragStamp={dragStamp}
+                        dragRef={dragRef}
+                        isDragStamp={isDragStamp}
                         isSignYourself={false}
                         addPositionOfSignature={addPositionOfSignature}
                         title={t("roles")}
@@ -1947,16 +1695,13 @@ const TemplatePlaceholder = () => {
           />
         </div>
         <div>
-          {isAddUser && isAddUser[uniqueId] && (
-            <LinkUserModal
-              handleAddUser={handleAddUser}
-              uniqueId={uniqueId}
-              closePopup={closePopup}
-              signersData={signersdata}
-              signerPos={signerPos}
-              handleUnlinkSigner={handleUnlinkSigner}
-            />
-          )}
+          <LinkUserModal
+            handleAddUser={handleAddUser}
+            isAddUser={isAddUser}
+            uniqueId={uniqueId}
+            closePopup={closePopup}
+            signersData={signersdata}
+          />
         </div>
         <ModalUi
           title={t("edit-template")}
@@ -1975,6 +1720,7 @@ const TemplatePlaceholder = () => {
           isOpen={isNameModal}
           handleClose={handleNameModal}
           handleData={handleWidgetdefaultdata}
+          isSubscribe={isSubscribe}
           isTextSetting={isTextSetting}
           setIsTextSetting={setIsTextSetting}
           fontSize={fontSize}
@@ -1983,8 +1729,8 @@ const TemplatePlaceholder = () => {
           setFontColor={setFontColor}
         />
         <RotateAlert
-          showRotateAlert={showRotateAlert.status}
-          setShowRotateAlert={setShowRotateAlert}
+          isRotate={isRotate.status}
+          setIsRotate={setIsRotate}
           handleRemoveWidgets={handleRemovePlaceholder}
         />
       </DndProvider>

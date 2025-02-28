@@ -52,7 +52,7 @@ function CustomModal(props) {
               )}
               {props.isDownloadBtn && (
                 <button
-                  className="op-btn op-btn-secondary ml-[10px] mb-3 mt-1"
+                  className="op-btn op-btn-primary ml-[10px] mb-3 mt-1"
                   onClick={() => props.handleDownloadBtn()}
                 >
                   Download

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Parse from "parse";
-import { Navigate } from "react-router";
+import { Navigate } from "react-router-dom";
 import Title from "../components/Title";
 import { useTranslation } from "react-i18next";
 

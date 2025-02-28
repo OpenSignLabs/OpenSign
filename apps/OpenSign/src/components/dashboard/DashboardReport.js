@@ -36,12 +36,12 @@ function DashboardReport(props) {
   // below useEffect call when isNextRecord state is true and fetch next record
   useEffect(() => {
     if (isNextRecord) {
-      getReportData(props.Record.reportId, List.length, 20);
+      getReportData(props.Record.reportId, List.length, 200);
     }
     // eslint-disable-next-line
   }, [isNextRecord]);
 
-  const getReportData = async (id, skipUserRecord = 0, limit = 20) => {
+  const getReportData = async (id, skipUserRecord = 0, limit = 200) => {
     setIsLoader(true);
     const json = reportJson(id);
     if (json) {
@@ -56,10 +56,8 @@ function DashboardReport(props) {
         sessiontoken: localStorage.getItem("accesstoken")
       };
       try {
-        const skipRecord = id === "5Go51Q7T8r" ? 0 : skipUserRecord;
-        const limitRecord = id === "5Go51Q7T8r" ? 200 : limit;
-        const params = { reportId: id, skip: skipRecord, limit: limitRecord };
-        const url = `${localStorage.getItem("baseUrl")}functions/getReport`;
+        const params = { reportId: id, skip: skipUserRecord, limit: limit };
+        const url = `${localStorage.getItem("baseUrl")}/functions/getReport`;
         const res = await axios.post(url, params, {
           headers: headers,
           signal: abortController.signal // is used to cancel fetch query
@@ -96,7 +94,7 @@ function DashboardReport(props) {
             prevRecord.length > 0 ? [...prevRecord, ...arr] : arr
           );
         } else {
-          if (res.data.result.length >= docPerPage) {
+          if (res.data.result.length === docPerPage) {
             setIsMoreDocs(true);
           } else {
             setIsMoreDocs(false);

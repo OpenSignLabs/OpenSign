@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from "react";
 import Parse from "parse";
 import { appInfo } from "../constant/appinfo";
-import { NavLink, useNavigate } from "react-router";
+import { NavLink, useNavigate } from "react-router-dom";
 import {
   getAppLogo,
   openInNewTab,
-  saveLanguageInLocal,
-  usertimezone
+  saveLanguageInLocal
 } from "../constant/Utils";
 import { useDispatch } from "react-redux";
 import { showTenant } from "../redux/reducers/ShowTenant";
@@ -16,8 +15,6 @@ import { useTranslation } from "react-i18next";
 import { emailRegex } from "../constant/const";
 
 const AddAdmin = () => {
-  const appName =
-    "OpenSign™";
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -50,7 +47,7 @@ const AddAdmin = () => {
     try {
       const app = await getAppLogo();
       if (app?.error === "invalid_json") {
-        setErrMsg(t("server-down", { appName: appName }));
+        setErrMsg(t("server-down"));
       } else if (app?.user === "exist") {
         setErrMsg(t("admin-exists"));
       }
@@ -119,8 +116,7 @@ const AddAdmin = () => {
                 name: name,
                 email: email,
                 phone: phone,
-                role: "contracts_Admin",
-                timezone: usertimezone
+                role: "contracts_Admin"
               }
             };
             try {
@@ -282,7 +278,7 @@ const AddAdmin = () => {
               <form onSubmit={handleSubmit}>
                 <div className="w-full my-4 op-card bg-base-100 shadow-md outline outline-1 outline-slate-300/50">
                   <h2 className="text-[30px] text-center mt-3 font-medium">
-                    {t("opensign-setup", { appName })}
+                    {t("opensign-setup")}
                   </h2>
                   <NavLink
                     to="https://discord.com/invite/xe9TDuyAyj"

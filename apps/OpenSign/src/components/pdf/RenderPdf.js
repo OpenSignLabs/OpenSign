@@ -1,80 +1,137 @@
-import React, { useState } from "react";
+import React from "react";
 import RSC from "react-scrollbars-custom";
 import { Document, Page } from "react-pdf";
 import {
   defaultWidthHeight,
   getContainerScale,
   handleImageResize,
-  handleSignYourselfImageResize,
-  isMobile
+  handleSignYourselfImageResize
 } from "../../constant/Utils";
 import Placeholder from "./Placeholder";
 import Alert from "../../primitives/Alert";
 import { useTranslation } from "react-i18next";
 
-function RenderPdf(props) {
+function RenderPdf({
+  pageNumber,
+  drop,
+  signerPos,
+  successEmail,
+  handleTabDrag,
+  handleStop,
+  isDragging,
+  setIsSignPad,
+  setIsStamp,
+  handleDeleteSign,
+  setSignKey,
+  pdfDetails,
+  xyPostion,
+  pageDetails,
+  pdfRequest,
+  signerObjectId,
+  signedSigners,
+  pdfLoad,
+  setPdfLoad,
+  placeholder,
+  setSignerPos,
+  setXyPostion,
+  index,
+  containerWH,
+  setIsResize,
+  handleLinkUser,
+  setUniqueId,
+  signersdata,
+  setIsPageCopy,
+  setShowDropdown,
+  setIsInitial,
+  setIsValidate,
+  setWidgetType,
+  setValidateAlert,
+  setIsRadio,
+  setCurrWidgetsDetails,
+  setSelectWidgetId,
+  selectWidgetId,
+  unSignedWidgetId,
+  setIsCheckbox,
+  handleNameModal,
+  handleTextSettingModal,
+  setTempSignerId,
+  uniqueId,
+  pdfOriginalWH,
+  scale,
+  setIsSelectId,
+  ispublicTemplate,
+  handleUserDetails,
+  pdfRotateBase64,
+  fontSize,
+  setFontSize,
+  fontColor,
+  setFontColor,
+  isResize
+}) {
   const { t } = useTranslation();
-  const [scaledHeight, setScaledHeight] = useState();
+  const isMobile = window.innerWidth < 767;
+
   //check isGuestSigner is present in local if yes than handle login flow header in mobile view
   const isGuestSigner = localStorage.getItem("isGuestSigner");
 
   // handle signature block width and height according to screen
   const posWidth = (pos, signYourself) => {
     const containerScale = getContainerScale(
-      props.pdfOriginalWH,
-      props.pageNumber,
-      props.containerWH
+      pdfOriginalWH,
+      pageNumber,
+      containerWH
     );
     const defaultWidth = defaultWidthHeight(pos.type).width;
     const posWidth = pos.Width ? pos.Width : defaultWidth;
     if (signYourself) {
-      return posWidth * props.scale * containerScale;
+      return posWidth * scale * containerScale;
     } else {
       if (pos.isMobile && pos.scale) {
         if (pos.IsResize) {
-          if (props.scale > 1) {
-            return posWidth * pos.scale * containerScale * props.scale;
+          if (scale > 1) {
+            return posWidth * pos.scale * containerScale * scale;
           } else {
             return posWidth * containerScale;
           }
         } else {
-          if (props.scale > 1) {
-            return posWidth * pos.scale * containerScale * props.scale;
+          if (scale > 1) {
+            return posWidth * pos.scale * containerScale * scale;
           } else {
             return posWidth * pos.scale * containerScale;
           }
         }
       } else {
-        return posWidth * props.scale * containerScale;
+        return posWidth * scale * containerScale;
       }
     }
   };
+
   const posHeight = (pos, signYourself) => {
     const containerScale = getContainerScale(
-      props.pdfOriginalWH,
-      props.pageNumber,
-      props.containerWH
+      pdfOriginalWH,
+      pageNumber,
+      containerWH
     );
     const posHeight = pos.Height || defaultWidthHeight(pos.type).height;
     if (signYourself) {
-      return posHeight * props.scale * containerScale;
+      return posHeight * scale * containerScale;
     } else {
       if (pos.isMobile && pos.scale) {
         if (pos.IsResize) {
-          if (props.scale > 1) {
-            return posHeight * pos.scale * containerScale * props.scale;
+          if (scale > 1) {
+            return posHeight * pos.scale * containerScale * scale;
           } else {
             return posHeight * containerScale;
           }
         } else {
-          if (props.scale > 1) {
-            return posHeight * pos.scale * containerScale * props.scale;
+          if (scale > 1) {
+            return posHeight * pos.scale * containerScale * scale;
           } else {
             return posHeight * pos.scale * containerScale;
           }
         }
       } else {
-        return posHeight * props.scale * containerScale;
+        return posHeight * scale * containerScale;
       }
     }
   };
@@ -83,35 +140,25 @@ function RenderPdf(props) {
   const checkSignedSigners = (data) => {
     let checkSign = [];
     //condition to handle quick send flow and using normal request sign flow
-    checkSign = props.signedSigners
-      ? props.signedSigners?.filter(
+    checkSign = signedSigners
+      ? signedSigners?.filter(
           (sign) =>
             sign?.Id === data?.Id || sign?.objectId === data?.signerObjId
         )
       : [];
-    const handleAllUserName = (Id, Role, type, pos) => {
+    const handleAllUserName = (Id, Role, type) => {
       return (
         <React.Fragment>
           <div className="text-black text-[8px] font-bold">
             {
-              props.pdfDetails[0].Signers?.find(
+              pdfDetails[0].Signers?.find(
                 (signer) => signer.objectId === data.signerObjId
               )?.Name
             }
           </div>
-          {type && (
-            <div
-              style={{ fontSize: pos ? calculateFontsize(pos) : "11px" }}
-              className="font-bold"
-            >
-              {type}
-            </div>
-          )}
+          {type && <div className="text-[11px] font-bold">{type}</div>}
           {Role && (
-            <div
-              style={{ fontSize: pos ? calculateFontsize(pos) : "8px" }}
-              className="text-black font-medium"
-            >
+            <div className="text-black text-[8px] font-medium">
               {`(${Role})`}
             </div>
           )}
@@ -120,71 +167,49 @@ function RenderPdf(props) {
     };
     return (
       checkSign.length === 0 &&
-      data?.placeHolder?.map((placeData, key) => {
+      data.placeHolder.map((placeData, key) => {
         return (
           <React.Fragment key={key}>
-            {placeData.pageNumber === props.pageNumber &&
+            {placeData.pageNumber === pageNumber &&
               placeData.pos.map((pos) => {
                 return (
                   pos && (
                     <React.Fragment key={pos.key}>
                       <Placeholder
                         pos={pos}
-                        setSignKey={props.setSignKey}
-                        setIsSignPad={props.setIsSignPad}
-                        setIsStamp={props.setIsStamp}
+                        setSignKey={setSignKey}
+                        setIsSignPad={setIsSignPad}
+                        setIsStamp={setIsStamp}
                         handleSignYourselfImageResize={handleImageResize}
-                        index={props.pageNumber}
-                        xyPosition={props.signerPos}
-                        setXyPosition={props.setSignerPos}
+                        index={pageNumber}
+                        xyPostion={signerPos}
+                        setXyPostion={setSignerPos}
                         data={data}
-                        setIsResize={props.setIsResize}
-                        isShowBorder={props.isSelfSign}
-                        isAlllowModify={props.isAlllowModify}
-                        signerObjId={props.signerObjectId}
+                        setIsResize={setIsResize}
+                        isShowBorder={false}
+                        signerObjId={signerObjectId}
                         isShowDropdown={true}
-                        isNeedSign={props.pdfRequest}
-                        isSelfSign={true}
+                        isNeedSign={true}
                         isSignYourself={false}
                         posWidth={posWidth}
                         posHeight={posHeight}
                         handleUserName={handleAllUserName}
-                        isDragging={props.isDragging}
-                        pdfDetails={props.pdfDetails}
-                        setIsInitial={props.setIsInitial}
-                        setValidateAlert={props.setValidateAlert}
-                        unSignedWidgetId={props.unSignedWidgetId}
-                        setSelectWidgetId={props.setSelectWidgetId}
-                        selectWidgetId={props.selectWidgetId}
-                        setCurrWidgetsDetails={props.setCurrWidgetsDetails}
-                        uniqueId={props.uniqueId}
-                        scale={props.scale}
-                        containerWH={props.containerWH}
-                        pdfOriginalWH={props.pdfOriginalWH}
-                        pageNumber={props.pageNumber}
-                        ispublicTemplate={props.ispublicTemplate}
-                        handleUserDetails={props.handleUserDetails}
-                        isResize={props.isResize}
-                        setIsAgreeTour={props.setIsAgreeTour}
-                        isAgree={props.isAgree}
-                        handleTabDrag={props.handleTabDrag}
-                        handleStop={props.handleStop}
-                        setWidgetType={props.setWidgetType}
-                        setUniqueId={props.setUniqueId}
-                        setIsSelectId={props.setIsSelectId}
-                        handleDeleteSign={props.handleDeleteSign}
-                        setIsPageCopy={props.setIsPageCopy}
-                        handleTextSettingModal={props.handleTextSettingModal}
-                        setIsCheckbox={props.setIsCheckbox}
-                        isFreeResize={false}
-                        isOpenSignPad={true}
-                        assignedWidgetId={props.assignedWidgetId}
-                        isApplyAll={true}
-                        setFontSize={props.setFontSize}
-                        fontSize={props.fontSize}
-                        fontColor={props.fontColor}
-                        setFontColor={props.setFontColor}
-                        setRequestSignTour={props.setRequestSignTour}
+                        isDragging={false}
+                        pdfDetails={pdfDetails}
+                        setIsInitial={setIsInitial}
+                        setValidateAlert={setValidateAlert}
+                        unSignedWidgetId={unSignedWidgetId}
+                        setSelectWidgetId={setSelectWidgetId}
+                        selectWidgetId={selectWidgetId}
+                        setCurrWidgetsDetails={setCurrWidgetsDetails}
+                        uniqueId={uniqueId}
+                        scale={scale}
+                        containerWH={containerWH}
+                        pdfOriginalWH={pdfOriginalWH}
+                        pageNumber={pageNumber}
+                        ispublicTemplate={ispublicTemplate}
+                        handleUserDetails={handleUserDetails}
+                        isResize={isResize}
                       />
                     </React.Fragment>
                   )
@@ -195,50 +220,20 @@ function RenderPdf(props) {
       })
     );
   };
-
-  const calculateFontsize = (pos) => {
-    const width = posWidth(pos);
-    const height = posHeight(pos);
-
-    if (height === width || height < width) {
-      return `${height / 5}px`;
-    } else if (width < height) {
-      return `${width / 10}px`;
-    }
-  };
   //function for render placeholder block over pdf document
 
-  const handleUserName = (Id, Role, type, pos) => {
+  const handleUserName = (Id, Role, type) => {
     if (Id) {
-      const checkSign = props.signersdata.find((sign) => sign.Id === Id);
+      const checkSign = signersdata.find((sign) => sign.Id === Id);
       if (checkSign?.Name) {
         return (
           <>
-            <div
-              style={{
-                fontSize: pos ? calculateFontsize(pos) : "8px"
-              }}
-              className="text-black font-medium"
-            >
+            <div className="text-black text-[8px] font-medium">
               {checkSign?.Name}
             </div>
-            {type && (
-              <div
-                style={{
-                  fontSize: pos ? calculateFontsize(pos) : "11px"
-                }}
-                className=" font-bold"
-              >
-                {type}
-              </div>
-            )}
+            {type && <div className="text-[11px] font-bold">{type}</div>}
             {Role && (
-              <div
-                style={{
-                  fontSize: pos ? calculateFontsize(pos) : "8px"
-                }}
-                className="text-black text-[8px] font-medium"
-              >
+              <div className="text-black text-[8px] font-medium">
                 {`(${Role})`}
               </div>
             )}
@@ -247,20 +242,8 @@ function RenderPdf(props) {
       } else {
         return (
           <>
-            {type && (
-              <div
-                style={{ fontSize: pos ? calculateFontsize(pos) : "11px" }}
-                className=" font-bold"
-              >
-                {type}
-              </div>
-            )}
-            <div
-              style={{ fontSize: pos ? calculateFontsize(pos) : "8px" }}
-              className="text-black font-medium"
-            >
-              {Role}
-            </div>
+            {type && <div className="text-[11px] font-bold">{type}</div>}
+            <div className="text-black text-[8px] font-medium">{Role}</div>
           </>
         );
       }
@@ -273,18 +256,11 @@ function RenderPdf(props) {
       );
     }
   };
-  const pdfDataBase64 = `data:application/pdf;base64,${props.pdfBase64Url}`;
-  //calculate render height of pdf in mobile view
-  const handlePageLoadSuccess = (page) => {
-    const containerWidth = props.divRef.current.offsetWidth; // Get container width
-    const viewport = page.getViewport({ scale: 1 });
-    const scale = containerWidth / viewport.width; // Scale to fit container width
-    const scaleHeight = viewport.height * scale;
-    setScaledHeight(scaleHeight);
-  };
+  const pdfDataBase64 = `data:application/pdf;base64,${pdfRotateBase64}`;
+
   return (
     <>
-      {props.successEmail && (
+      {successEmail && (
         <Alert type={"success"}>{t("success-email-alert")}</Alert>
       )}
       {isMobile ? (
@@ -292,12 +268,12 @@ function RenderPdf(props) {
           style={{
             position: "relative",
             boxShadow: "rgba(17, 12, 46, 0.15) 0px 48px 100px 0px",
-            //49 is height of header
-            height: isGuestSigner ? window.innerHeight - 49 : scaledHeight,
+            height: window.innerHeight - 200,
             zIndex: 0
           }}
-          noScrollY={props.scale === 1 ? true : false}
-          noScrollX={props.scale === 1 ? true : false}
+          className="h-full"
+          noScrollY={false}
+          noScrollX={scale === 1 ? true : false}
         >
           <div
             data-tut="reactourForth"
@@ -305,104 +281,87 @@ function RenderPdf(props) {
               isGuestSigner ? "30px" : ""
             } border-[0.1px] border-[#ebe8e8] overflow-x-auto`}
             style={{
-              width:
-                props.containerWH?.width &&
-                props.containerWH?.width * props.scale
+              width: containerWH?.width && containerWH?.width * scale
             }}
-            ref={props.drop}
+            ref={drop}
             id="container"
           >
-            {props.containerWH?.width &&
-              props.pdfOriginalWH.length > 0 &&
-              (props.pdfRequest || props.isSelfSign
-                ? props.signerPos?.map((data, key) => {
+            {containerWH?.width &&
+              pdfOriginalWH.length > 0 &&
+              (pdfRequest
+                ? signerPos.map((data, key) => {
                     return (
                       <React.Fragment key={key}>
                         {checkSignedSigners(data)}
                       </React.Fragment>
                     );
                   })
-                : props.placeholder // placeholder mobile
-                  ? props.signerPos?.map((data, ind) => {
+                : placeholder // placeholder mobile
+                  ? signerPos?.map((data, ind) => {
                       return (
                         <React.Fragment key={ind}>
                           {data?.placeHolder &&
                             data?.placeHolder.map((placeData, index) => {
                               return (
                                 <React.Fragment key={index}>
-                                  {placeData.pageNumber === props.pageNumber &&
+                                  {placeData.pageNumber === pageNumber &&
                                     placeData.pos.map((pos) => {
                                       return (
                                         <React.Fragment key={pos.key}>
                                           <Placeholder
                                             pos={pos}
-                                            setIsPageCopy={props.setIsPageCopy}
-                                            setSignKey={props.setSignKey}
-                                            handleDeleteSign={
-                                              props.handleDeleteSign
-                                            }
-                                            setIsStamp={props.setIsStamp}
-                                            handleTabDrag={props.handleTabDrag}
-                                            handleStop={props.handleStop}
+                                            setIsPageCopy={setIsPageCopy}
+                                            setSignKey={setSignKey}
+                                            handleDeleteSign={handleDeleteSign}
+                                            setIsStamp={setIsStamp}
+                                            handleTabDrag={handleTabDrag}
+                                            handleStop={handleStop}
                                             handleSignYourselfImageResize={
                                               handleImageResize
                                             }
-                                            index={props.pageNumber}
-                                            xyPosition={props.signerPos}
-                                            setXyPosition={props.setSignerPos}
+                                            index={pageNumber}
+                                            xyPostion={signerPos}
+                                            setXyPostion={setSignerPos}
                                             data={data}
-                                            setIsResize={props.setIsResize}
-                                            setShowDropdown={
-                                              props.setShowDropdown
-                                            }
+                                            setIsResize={setIsResize}
+                                            setShowDropdown={setShowDropdown}
                                             isShowBorder={true}
                                             isPlaceholder={true}
-                                            setUniqueId={props.setUniqueId}
-                                            handleLinkUser={
-                                              props.handleLinkUser
-                                            }
+                                            setUniqueId={setUniqueId}
+                                            handleLinkUser={handleLinkUser}
                                             handleUserName={handleUserName}
                                             isSignYourself={false}
                                             posWidth={posWidth}
                                             posHeight={posHeight}
-                                            isDragging={props.isDragging}
-                                            setIsValidate={props.setIsValidate}
-                                            setWidgetType={props.setWidgetType}
-                                            setIsRadio={props.setIsRadio}
-                                            setIsCheckbox={props.setIsCheckbox}
+                                            isDragging={isDragging}
+                                            setIsValidate={setIsValidate}
+                                            setWidgetType={setWidgetType}
+                                            setIsRadio={setIsRadio}
+                                            setIsCheckbox={setIsCheckbox}
                                             setCurrWidgetsDetails={
-                                              props.setCurrWidgetsDetails
+                                              setCurrWidgetsDetails
                                             }
                                             setSelectWidgetId={
-                                              props.setSelectWidgetId
+                                              setSelectWidgetId
                                             }
-                                            selectWidgetId={
-                                              props.selectWidgetId
-                                            }
-                                            handleNameModal={
-                                              props.handleNameModal
-                                            }
-                                            setTempSignerId={
-                                              props.setTempSignerId
-                                            }
-                                            uniqueId={props.uniqueId}
+                                            selectWidgetId={selectWidgetId}
+                                            handleNameModal={handleNameModal}
+                                            setTempSignerId={setTempSignerId}
+                                            uniqueId={uniqueId}
                                             handleTextSettingModal={
-                                              props.handleTextSettingModal
+                                              handleTextSettingModal
                                             }
-                                            scale={props.scale}
-                                            containerWH={props.containerWH}
-                                            pdfOriginalWH={props.pdfOriginalWH}
-                                            pageNumber={props.pageNumber}
-                                            setIsSelectId={props.setIsSelectId}
-                                            fontSize={props.fontSize}
-                                            setFontSize={props.setFontSize}
-                                            fontColor={props.fontColor}
-                                            setFontColor={props.setFontColor}
-                                            isResize={props.isResize}
-                                            unSignedWidgetId={
-                                              props.unSignedWidgetId
-                                            }
-                                            isFreeResize={true}
+                                            scale={scale}
+                                            containerWH={containerWH}
+                                            pdfOriginalWH={pdfOriginalWH}
+                                            pageNumber={pageNumber}
+                                            setIsSelectId={setIsSelectId}
+                                            fontSize={fontSize}
+                                            setFontSize={setFontSize}
+                                            fontColor={fontColor}
+                                            setFontColor={setFontColor}
+                                            isResize={isResize}
+                                            unSignedWidgetId={unSignedWidgetId}
                                           />
                                         </React.Fragment>
                                       );
@@ -413,61 +372,58 @@ function RenderPdf(props) {
                         </React.Fragment>
                       );
                     })
-                  : !props.pdfDetails?.[0]?.IsCompleted &&
-                    props.xyPosition?.map((data, ind) => {
+                  : !pdfDetails?.[0]?.IsCompleted &&
+                    xyPostion.map((data, ind) => {
                       return (
                         <React.Fragment key={ind}>
-                          {data.pageNumber === props.pageNumber &&
-                            data.pos.map((pos, id) => {
+                          {data.pageNumber === pageNumber &&
+                            data.pos.map((pos) => {
                               return (
                                 pos && (
                                   <Placeholder
-                                    key={id}
                                     pos={pos}
-                                    setIsPageCopy={props.setIsPageCopy}
-                                    setSignKey={props.setSignKey}
-                                    handleDeleteSign={props.handleDeleteSign}
-                                    setIsStamp={props.setIsStamp}
-                                    handleTabDrag={props.handleTabDrag}
-                                    handleStop={props.handleStop}
+                                    setIsPageCopy={setIsPageCopy}
+                                    setSignKey={setSignKey}
+                                    handleDeleteSign={handleDeleteSign}
+                                    setIsStamp={setIsStamp}
+                                    handleTabDrag={handleTabDrag}
+                                    handleStop={handleStop}
                                     handleSignYourselfImageResize={
                                       handleSignYourselfImageResize
                                     }
-                                    index={props.index}
-                                    xyPosition={props.xyPosition}
-                                    setXyPosition={props.setXyPosition}
-                                    containerWH={props.containerWH}
-                                    setIsSignPad={props.setIsSignPad}
+                                    index={index}
+                                    xyPostion={xyPostion}
+                                    setXyPostion={setXyPostion}
+                                    containerWH={containerWH}
+                                    setIsSignPad={setIsSignPad}
                                     isShowBorder={true}
                                     isSignYourself={true}
                                     posWidth={posWidth}
                                     posHeight={posHeight}
-                                    pdfDetails={props.pdfDetails[0]}
-                                    isDragging={props.isDragging}
-                                    setIsInitial={props.setIsInitial}
-                                    setWidgetType={props.setWidgetType}
-                                    setSelectWidgetId={props.setSelectWidgetId}
-                                    selectWidgetId={props.selectWidgetId}
+                                    pdfDetails={pdfDetails[0]}
+                                    isDragging={isDragging}
+                                    setIsInitial={setIsInitial}
+                                    setWidgetType={setWidgetType}
+                                    setSelectWidgetId={setSelectWidgetId}
+                                    selectWidgetId={selectWidgetId}
                                     handleUserName={handleUserName}
-                                    setIsCheckbox={props.setIsCheckbox}
-                                    setValidateAlert={props.setValidateAlert}
+                                    setIsCheckbox={setIsCheckbox}
+                                    setValidateAlert={setValidateAlert}
                                     setCurrWidgetsDetails={
-                                      props.setCurrWidgetsDetails
+                                      setCurrWidgetsDetails
                                     }
                                     handleTextSettingModal={
-                                      props.handleTextSettingModal
+                                      handleTextSettingModal
                                     }
-                                    scale={props.scale}
-                                    pdfOriginalWH={props.pdfOriginalWH}
-                                    pageNumber={props.pageNumber}
-                                    fontSize={props.fontSize}
-                                    setFontSize={props.setFontSize}
-                                    fontColor={props.fontColor}
-                                    setFontColor={props.setFontColor}
-                                    isResize={props.isResize}
-                                    setIsResize={props.setIsResize}
-                                    isFreeResize={false}
-                                    isOpenSignPad={true}
+                                    scale={scale}
+                                    pdfOriginalWH={pdfOriginalWH}
+                                    pageNumber={pageNumber}
+                                    fontSize={fontSize}
+                                    setFontSize={setFontSize}
+                                    fontColor={fontColor}
+                                    setFontColor={setFontColor}
+                                    isResize={isResize}
+                                    setIsResize={setIsResize}
                                   />
                                 )
                               );
@@ -477,23 +433,26 @@ function RenderPdf(props) {
                     }))}
 
             <Document
-              onLoadError={() => props.setPdfLoad(false)}
+              onLoadError={() => setPdfLoad(false)}
               loading={t("loading-doc")}
-              onLoadSuccess={props.pageDetails}
+              onLoadSuccess={pageDetails}
               // ref={pdfRef}'
               onClick={() => {
-                if (props.setSelectWidgetId) {
-                  props.setSelectWidgetId("");
+                if (setSelectWidgetId) {
+                  setSelectWidgetId("");
                 }
               }}
-              file={pdfDataBase64}
+              file={
+                (pdfRotateBase64 && pdfDataBase64) ||
+                pdfDetails[0]?.SignedUrl ||
+                pdfDetails[0].URL
+              }
             >
               <Page
-                onLoadSuccess={handlePageLoadSuccess}
-                scale={props.scale || 1}
-                key={props.index}
-                pageNumber={props.pageNumber}
-                width={props.containerWH.width}
+                scale={scale || 1}
+                key={index}
+                pageNumber={pageNumber}
+                width={containerWH.width}
                 renderAnnotationLayer={false}
                 renderTextLayer={false}
                 onGetAnnotationsError={(error) => {
@@ -512,109 +471,92 @@ function RenderPdf(props) {
             zIndex: 0
           }}
           noScrollY={false}
-          noScrollX={props.scale === 1 ? true : false}
+          noScrollX={scale === 1 ? true : false}
         >
           <div
             style={{
-              width:
-                props.containerWH?.width &&
-                props.containerWH?.width * props.scale
+              width: containerWH?.width && containerWH?.width * scale
             }}
-            ref={props.drop}
+            ref={drop}
             id="container"
           >
-            {props.pdfLoad &&
-              props.containerWH?.width &&
-              props.pdfOriginalWH.length > 0 &&
-              (props.pdfRequest || props.isSelfSign //pdf request sign flow
-                ? props.signerPos?.map((data, key) => {
+            {pdfLoad &&
+              containerWH?.width &&
+              pdfOriginalWH.length > 0 &&
+              (pdfRequest //pdf request sign flow
+                ? signerPos?.map((data, key) => {
                     return (
                       <React.Fragment key={key}>
                         {checkSignedSigners(data)}
                       </React.Fragment>
                     );
                   })
-                : props.placeholder //placeholder and template flow
-                  ? props.signerPos.map((data, ind) => {
+                : placeholder //placeholder and template flow
+                  ? signerPos.map((data, ind) => {
                       return (
                         <React.Fragment key={ind}>
                           {data?.placeHolder &&
                             data?.placeHolder.map((placeData, index) => {
                               return (
                                 <React.Fragment key={index}>
-                                  {placeData.pageNumber === props.pageNumber &&
+                                  {placeData.pageNumber === pageNumber &&
                                     placeData.pos.map((pos) => {
                                       return (
                                         <React.Fragment key={pos.key}>
                                           <Placeholder
                                             pos={pos}
-                                            setIsPageCopy={props.setIsPageCopy}
-                                            setSignKey={props.setSignKey}
-                                            handleDeleteSign={
-                                              props.handleDeleteSign
-                                            }
-                                            setIsStamp={props.setIsStamp}
-                                            handleTabDrag={props.handleTabDrag}
-                                            handleStop={props.handleStop}
+                                            setIsPageCopy={setIsPageCopy}
+                                            setSignKey={setSignKey}
+                                            handleDeleteSign={handleDeleteSign}
+                                            setIsStamp={setIsStamp}
+                                            handleTabDrag={handleTabDrag}
+                                            handleStop={handleStop}
                                             handleSignYourselfImageResize={
                                               handleImageResize
                                             }
-                                            index={props.pageNumber}
-                                            xyPosition={props.signerPos}
-                                            setXyPosition={props.setSignerPos}
+                                            index={pageNumber}
+                                            xyPostion={signerPos}
+                                            setXyPostion={setSignerPos}
                                             data={data}
-                                            setIsResize={props.setIsResize}
-                                            setShowDropdown={
-                                              props.setShowDropdown
-                                            }
+                                            setIsResize={setIsResize}
+                                            setShowDropdown={setShowDropdown}
                                             isShowBorder={true}
                                             isPlaceholder={true}
-                                            setUniqueId={props.setUniqueId}
-                                            handleLinkUser={
-                                              props.handleLinkUser
-                                            }
+                                            setUniqueId={setUniqueId}
+                                            handleLinkUser={handleLinkUser}
                                             handleUserName={handleUserName}
                                             isSignYourself={false}
                                             posWidth={posWidth}
                                             posHeight={posHeight}
-                                            isDragging={props.isDragging}
-                                            setIsValidate={props.setIsValidate}
-                                            setWidgetType={props.setWidgetType}
-                                            setIsRadio={props.setIsRadio}
-                                            setIsCheckbox={props.setIsCheckbox}
+                                            isDragging={isDragging}
+                                            setIsValidate={setIsValidate}
+                                            setWidgetType={setWidgetType}
+                                            setIsRadio={setIsRadio}
+                                            setIsCheckbox={setIsCheckbox}
                                             setCurrWidgetsDetails={
-                                              props.setCurrWidgetsDetails
+                                              setCurrWidgetsDetails
                                             }
                                             setSelectWidgetId={
-                                              props.setSelectWidgetId
+                                              setSelectWidgetId
                                             }
-                                            selectWidgetId={
-                                              props.selectWidgetId
-                                            }
-                                            handleNameModal={
-                                              props.handleNameModal
-                                            }
-                                            setTempSignerId={
-                                              props.setTempSignerId
-                                            }
-                                            uniqueId={props.uniqueId}
+                                            selectWidgetId={selectWidgetId}
+                                            handleNameModal={handleNameModal}
+                                            setTempSignerId={setTempSignerId}
+                                            uniqueId={uniqueId}
                                             handleTextSettingModal={
-                                              props.handleTextSettingModal
+                                              handleTextSettingModal
                                             }
-                                            scale={props.scale}
-                                            containerWH={props.containerWH}
-                                            pdfOriginalWH={props.pdfOriginalWH}
-                                            pageNumber={props.pageNumber}
-                                            setIsSelectId={props.setIsSelectId}
-                                            fontSize={props.fontSize}
-                                            setFontSize={props.setFontSize}
-                                            fontColor={props.fontColor}
-                                            setFontColor={props.setFontColor}
-                                            isResize={props.isResize}
-                                            unSignedWidgetId={
-                                              props.unSignedWidgetId
-                                            }
-                                            isFreeResize={true}
+                                            scale={scale}
+                                            containerWH={containerWH}
+                                            pdfOriginalWH={pdfOriginalWH}
+                                            pageNumber={pageNumber}
+                                            setIsSelectId={setIsSelectId}
+                                            fontSize={fontSize}
+                                            setFontSize={setFontSize}
+                                            fontColor={fontColor}
+                                            setFontColor={setFontColor}
+                                            isResize={isResize}
+                                            unSignedWidgetId={unSignedWidgetId}
                                           />
                                         </React.Fragment>
                                       );
@@ -625,67 +567,61 @@ function RenderPdf(props) {
                         </React.Fragment>
                       );
                     })
-                  : !props.pdfDetails?.[0]?.IsCompleted &&
-                    props.xyPosition?.map((data, ind) => {
+                  : !pdfDetails?.[0]?.IsCompleted &&
+                    xyPostion?.map((data, ind) => {
                       // signyourself flow
                       return (
                         <React.Fragment key={ind}>
-                          {data.pageNumber === props.pageNumber &&
+                          {data.pageNumber === pageNumber &&
                             data.pos.map((pos) => {
                               return (
                                 <React.Fragment key={pos.key}>
                                   <Placeholder
                                     pos={pos}
-                                    setIsPageCopy={props.setIsPageCopy}
-                                    setSignKey={props.setSignKey}
-                                    handleDeleteSign={props.handleDeleteSign}
-                                    setIsStamp={props.setIsStamp}
-                                    handleTabDrag={props.handleTabDrag}
+                                    setIsPageCopy={setIsPageCopy}
+                                    setSignKey={setSignKey}
+                                    handleDeleteSign={handleDeleteSign}
+                                    setIsStamp={setIsStamp}
+                                    handleTabDrag={handleTabDrag}
                                     handleStop={(event, dragElement) =>
-                                      props.handleStop(
-                                        event,
-                                        dragElement,
-                                        pos.type
-                                      )
+                                      handleStop(event, dragElement, pos.type)
                                     }
                                     handleSignYourselfImageResize={
                                       handleSignYourselfImageResize
                                     }
-                                    index={props.index}
-                                    xyPosition={props.xyPosition}
-                                    setXyPosition={props.setXyPosition}
-                                    setIsSignPad={props.setIsSignPad}
+                                    index={index}
+                                    xyPostion={xyPostion}
+                                    setXyPostion={setXyPostion}
+                                    setIsSignPad={setIsSignPad}
                                     isShowBorder={true}
                                     isSignYourself={true}
                                     posWidth={posWidth}
                                     posHeight={posHeight}
-                                    pdfDetails={props.pdfDetails[0]}
-                                    isDragging={props.isDragging}
-                                    setIsInitial={props.setIsInitial}
-                                    setWidgetType={props.setWidgetType}
-                                    setSelectWidgetId={props.setSelectWidgetId}
-                                    selectWidgetId={props.selectWidgetId}
+                                    pdfDetails={pdfDetails[0]}
+                                    isDragging={isDragging}
+                                    setIsInitial={setIsInitial}
+                                    setWidgetType={setWidgetType}
+                                    setSelectWidgetId={setSelectWidgetId}
+                                    selectWidgetId={selectWidgetId}
                                     handleUserName={handleUserName}
-                                    setIsCheckbox={props.setIsCheckbox}
-                                    setValidateAlert={props.setValidateAlert}
+                                    setIsCheckbox={setIsCheckbox}
+                                    setValidateAlert={setValidateAlert}
                                     setCurrWidgetsDetails={
-                                      props.setCurrWidgetsDetails
+                                      setCurrWidgetsDetails
                                     }
                                     handleTextSettingModal={
-                                      props.handleTextSettingModal
+                                      handleTextSettingModal
                                     }
-                                    scale={props.scale}
-                                    containerWH={props.containerWH}
-                                    pdfOriginalWH={props.pdfOriginalWH}
-                                    pageNumber={props.pageNumber}
-                                    fontSize={props.fontSize}
-                                    setFontSize={props.setFontSize}
-                                    fontColor={props.fontColor}
-                                    setFontColor={props.setFontColor}
-                                    isResize={props.isResize}
-                                    setIsResize={props.setIsResize}
-                                    isFreeResize={false}
-                                    isOpenSignPad={true}
+                                    scale={scale}
+                                    containerWH={containerWH}
+                                    pdfOriginalWH={pdfOriginalWH}
+                                    pageNumber={pageNumber}
+                                    fontSize={fontSize}
+                                    setFontSize={setFontSize}
+                                    fontColor={fontColor}
+                                    setFontColor={setFontColor}
+                                    isResize={isResize}
+                                    setIsResize={setIsResize}
                                   />
                                 </React.Fragment>
                               );
@@ -696,22 +632,27 @@ function RenderPdf(props) {
 
             {/* this component for render pdf document is in middle of the component */}
             <Document
-              onLoadError={() => props.setPdfLoad(false)}
+              onLoadError={() => setPdfLoad(false)}
               loading={t("loading-doc")}
-              onLoadSuccess={props.pageDetails}
+              onLoadSuccess={pageDetails}
               onClick={() => {
-                if (props.setSelectWidgetId) {
-                  props.setSelectWidgetId("");
+                if (setSelectWidgetId) {
+                  setSelectWidgetId("");
                 }
               }}
-              file={pdfDataBase64}
+              // ref={pdfRef}
+              file={
+                (pdfRotateBase64 && pdfDataBase64) ||
+                pdfDetails[0]?.SignedUrl ||
+                pdfDetails[0].URL
+              }
             >
               <Page
-                key={props.index}
-                width={props.containerWH.width}
-                scale={props.scale || 1}
+                key={index}
+                width={containerWH.width}
+                scale={scale || 1}
                 className={"-z-[1]"} // when user zoom-in in tablet widgets move backward that's why pass -z-[1]
-                pageNumber={props.pageNumber}
+                pageNumber={pageNumber}
                 renderAnnotationLayer={false}
                 renderTextLayer={false}
                 onGetAnnotationsError={(error) => {

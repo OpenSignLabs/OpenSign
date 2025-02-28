@@ -12,8 +12,6 @@ import JSZip from "jszip";
 import { saveAs } from "file-saver";
 
 function DownloadPdfZip(props) {
-  const appName =
-    "OpenSign™";
   const { t } = useTranslation();
   const [selectType, setSelectType] = useState(1);
   const [isDownloading, setIsDownloading] = useState(false);
@@ -24,30 +22,25 @@ function DownloadPdfZip(props) {
 
   const handleDownload = async () => {
     if (selectType === 1) {
-      await handleDownloadPdf(
-        props.pdfDetails,
-        setIsDownloading,
-        props?.pdfBase64
-      );
+      await handleDownloadPdf(props.pdfDetails, setIsDownloading);
       setSelectType(1);
       props.setIsDownloadModal(false);
     } else if (selectType === 2) {
       setIsDownloading("pdf");
       const zip = new JSZip();
       const pdfDetails = props.pdfDetails;
-      const pdfName =
-        pdfDetails?.[0]?.Name?.length > 100
-          ? pdfDetails?.[0]?.Name?.slice(0, 100)
-          : pdfDetails?.[0]?.Name || "Document";
+      const pdfName = pdfDetails?.[0]?.Name || "Document";
       const pdfUrl = pdfDetails?.[0]?.SignedUrl || "";
 
       try {
         // Fetch the first PDF (Signed Document)
         const docId = pdfDetails?.[0]?.objectId || "";
-        const signedUrl = await getSignedUrl(
-          pdfUrl,
-          docId,
-        );
+        const fileAdapterId = pdfDetails?.[0]?.FileAdapterId
+          ? pdfDetails?.[0]?.FileAdapterId
+          : "";
+        console.log("pdfDetails?.[0] ", pdfDetails?.[0]);
+        const signedUrl = await getSignedUrl(pdfUrl, docId, fileAdapterId);
+        console.log("signedUrl ", signedUrl);
         const pdf1Response = await fetch(signedUrl);
         if (!pdf1Response.ok) {
           throw new Error(`Failed to fetch PDF: ${signedUrl}`);
@@ -65,18 +58,19 @@ function DownloadPdfZip(props) {
           throw new Error(`Failed to fetch certificate PDF: ${certificateUrl}`);
         }
         const pdf2Blob = await pdf2Response.blob();
-          // Add files to ZIP
-          zip.file(
-            `${sanitizeFileName(pdfName)}_signed_by_${appName}.pdf`,
-            pdf1Blob
-          );
-          zip.file(`Certificate_signed_by_${appName}.pdf`, pdf2Blob);
-          // Generate the ZIP and trigger download
-          const zipBlob = await zip.generateAsync({ type: "blob" });
-          saveAs(
-            zipBlob,
-            `${sanitizeFileName(pdfName)}_signed_by_${appName}.zip`
-          );
+        // Add files to ZIP
+        zip.file(
+          `${sanitizeFileName(pdfName)}_signed_by_OpenSign™.pdf`,
+          pdf1Blob
+        );
+        zip.file("Certificate_signed_by_OpenSign™.pdf", pdf2Blob);
+
+        // Generate the ZIP and trigger download
+        const zipBlob = await zip.generateAsync({ type: "blob" });
+        saveAs(
+          zipBlob,
+          `${sanitizeFileName(pdfName)}_signed_by_OpenSign™.zip`
+        );
         setSelectType(1);
         props.setIsDownloadModal(false);
         setIsDownloading("");
@@ -124,22 +118,17 @@ function DownloadPdfZip(props) {
         </div>
       )}
       <ModalUi
-        isOpen={
-          isDownloading === "certificate" || isDownloading === "certificate_err"
-        }
+        isOpen={isDownloading === "certificate"}
         title={
-          isDownloading === "certificate" || isDownloading === "certificate_err"
+          isDownloading === "certificate"
             ? t("generating-certificate")
             : t("pdf-download")
         }
         handleClose={() => setIsDownloading("")}
       >
         <div className="p-3 md:p-5 text-[13px] md:text-base text-center text-base-content">
-          {isDownloading === "certificate" ? (
-            <p>{t("generate-certificate-alert")}</p>
-          ) : (
-            <p>{t("generate-certificate-err")}</p>
-          )}
+          {isDownloading === "certificate"}{" "}
+          <p>{t("generate-certificate-alert")}</p>
         </div>
       </ModalUi>
     </ModalUi>

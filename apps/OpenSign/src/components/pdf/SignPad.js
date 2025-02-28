@@ -1,15 +1,6 @@
 import React, { useRef, useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import SignatureCanvas from "react-signature-canvas";
-import Parse from "parse";
-import {
-  generateTitleFromFilename,
-  getBase64FromUrl,
-  getSecureUrl
-} from "../../constant/Utils";
-import sanitizeFileName from "../../primitives/sanitizeFileName";
-import { SaveFileSize } from "../../constant/saveFileSize";
-import Loader from "../../primitives/Loader";
 
 function SignPad(props) {
   const { t } = useTranslation();
@@ -19,11 +10,11 @@ function SignPad(props) {
   const [isDefaultSign, setIsDefaultSign] = useState(false);
   const [isTab, setIsTab] = useState("");
   const [isSignImg, setIsSignImg] = useState("");
+  const [signValue, setSignValue] = useState("");
   const [textWidth, setTextWidth] = useState(0);
   const [textHeight, setTextHeight] = useState(0);
   const [signatureType, setSignatureType] = useState("");
   const [isSignTypes, setIsSignTypes] = useState(true);
-  const [typedSignature, setTypedSignature] = useState("");
   const fontOptions = [
     { value: "Fasthand" },
     { value: "Dancing Script" },
@@ -32,36 +23,28 @@ function SignPad(props) {
     // Add more font options as needed
   ];
   const [fontSelect, setFontSelect] = useState(fontOptions[0].value);
-  const [isSavedSign, setIsSavedSign] = useState(false);
-  const [isLoader, setIsLoader] = useState(false);
-  const accesstoken = localStorage.getItem("accesstoken") || "";
-  const senderUser = localStorage.getItem(
-    `Parse/${localStorage.getItem("parseAppId")}/currentUser`
-  );
-  const jsonSender = senderUser && JSON.parse(senderUser);
+
+  const senderUser =
+    localStorage.getItem(
+      `Parse/${localStorage.getItem("parseAppId")}/currentUser`
+    ) &&
+    localStorage.getItem(
+      `Parse/${localStorage.getItem("parseAppId")}/currentUser`
+    );
+  const jsonSender = JSON.parse(senderUser);
   const currentUserName = jsonSender && jsonSender?.name;
+
   useEffect(() => {
     handleTab();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.signatureTypes]);
+
   function handleTab() {
     const signtypes = props?.signatureTypes || [];
-    const defaultIndex = signtypes?.findIndex(
-      (x) =>
-        x.name === "default" &&
-        x.enabled === true &&
-        props.defaultSign &&
-        (props?.currWidgetsDetails?.type || props.widgetType) !== "image" &&
-        (props?.currWidgetsDetails?.type || props.widgetType) !== "stamp"
-    );
-    const getIndex =
-      defaultIndex !== -1 // Check if the default index exists
-        ? defaultIndex // If found, use it
-        : signtypes?.findIndex((x) => x.enabled === true);
-
-    if (getIndex !== -1) {
+    const index = signtypes?.findIndex((x) => x.enabled === true);
+    if (index !== -1) {
       setIsSignTypes(true);
-      const tab = props?.signatureTypes[getIndex].name;
+      const tab = props?.signatureTypes[index].name;
       if (tab === "draw") {
         setIsTab("draw");
         setSignatureType("draw");
@@ -71,7 +54,6 @@ function SignPad(props) {
       } else if (tab === "typed") {
         setIsTab("type");
       } else if (tab === "default") {
-        setIsDefaultSign(true);
         setIsTab("mysignature");
       } else {
         setIsTab(true);
@@ -89,6 +71,7 @@ function SignPad(props) {
 
   //function for clear signature image
   const handleClear = () => {
+    props?.setCurrWidgetsDetails({});
     if (isTab === "draw") {
       if (canvasRef.current) {
         canvasRef.current.clear();
@@ -105,176 +88,6 @@ function SignPad(props) {
     props?.setSignature(data);
     setIsSignImg(data);
   };
-  function base64StringtoFile(base64String, filename) {
-    let arr = base64String.split(","),
-      // type of uploaded image
-      mime = arr[0].match(/:(.*?);/)[1],
-      // decode base64
-      bstr = atob(arr[1]),
-      n = bstr.length,
-      u8arr = new Uint8Array(n);
-    while (n--) {
-      u8arr[n] = bstr.charCodeAt(n);
-    }
-    const ext = mime.split("/").pop();
-    const name = `${filename}.${ext}`;
-    return new File([u8arr], name, { type: mime });
-  }
-
-  const uploadFile = async (file) => {
-    try {
-      const parseFile = new Parse.File(file.name, file);
-      const response = await parseFile.save();
-      if (response?.url()) {
-        const fileRes = await getSecureUrl(response.url());
-        if (fileRes.url) {
-          const tenantId = localStorage.getItem("TenantId");
-          SaveFileSize(file.size, fileRes.url, tenantId);
-          return fileRes?.url;
-        } else {
-          alert(`${t("something-went-wrong-mssg")}`);
-          return false;
-        }
-      } else {
-        alert(`${t("something-went-wrong-mssg")}`);
-        return false;
-      }
-    } catch (err) {
-      console.log("sign upload err", err);
-      alert(`${err.message}`);
-      return false;
-    }
-  };
-
-  // `handlesavesign` is used to save signaute, initials, stamp as a default
-  const handleSaveSign = async () => {
-    if (isSignImg || props?.image?.src) {
-      setIsLoader(true);
-      try {
-        const User = Parse?.User?.current();
-        const sanitizename = generateTitleFromFilename(User?.get("name"));
-        const replaceSpace = sanitizeFileName(sanitizename);
-        let file;
-        if (isSignImg) {
-          file = base64StringtoFile(isSignImg, `${replaceSpace}__sign`);
-        } else {
-          file = base64StringtoFile(props?.image?.src, `${replaceSpace}__sign`);
-        }
-        const imageUrl = await uploadFile(file);
-        const userId = {
-          __type: "Pointer",
-          className: "_User",
-          objectId: User?.id
-        };
-        if (imageUrl) {
-          //  below code is used to save or update default signaute, initials, stamp
-          try {
-            const signCls = new Parse.Object("contracts_Signature");
-            if (props?.saveSignCheckbox?.signId) {
-              signCls.id = props.saveSignCheckbox.signId;
-            }
-            if (
-              props.currWidgetsDetails?.type === "initials" ||
-              props?.widgetType === "initials"
-            ) {
-              signCls.set("Initials", imageUrl);
-            } else if (
-              props.currWidgetsDetails?.type === "signature" ||
-              props?.widgetType === "signature"
-            ) {
-              signCls.set("ImageURL", imageUrl);
-            }
-            signCls.set("UserId", userId);
-            const signRes = await signCls.save();
-            if (signRes) {
-              props.saveSignCheckbox.signId;
-              props.setSaveSignCheckbox((prev) => ({
-                ...prev,
-                signId: signRes?.id
-              }));
-              const _signRes = JSON.parse(JSON.stringify(signRes));
-              if (
-                props.currWidgetsDetails?.type === "signature" ||
-                props?.widgetType === "signature"
-              ) {
-                const defaultSign = await getBase64FromUrl(
-                  _signRes?.ImageURL,
-                  true
-                );
-                props.setDefaultSignImg(defaultSign);
-              } else if (
-                props.currWidgetsDetails?.type === "initials" ||
-                props?.widgetType === "initials"
-              ) {
-                const defaultInitials = await getBase64FromUrl(
-                  _signRes?.Initials,
-                  true
-                );
-                props.setMyInitial(defaultInitials);
-              }
-              alert(t("saved-successfully"));
-            }
-            return signRes;
-          } catch (err) {
-            console.log(err);
-            alert(`${err.message}`);
-          } finally {
-            setIsLoader(false);
-          }
-        }
-      } catch (err) {
-        console.log("Err while saving signature", err);
-      }
-    }
-  };
-
-  const handleSaveBtn = async () => {
-    if (accesstoken && isSavedSign) {
-      await handleSaveSign();
-      resetToDefault();
-    } else {
-      resetToDefault();
-    }
-  };
-  const resetToDefault = () => {
-    props?.setCurrWidgetsDetails({});
-    if (!props?.image) {
-      if (isTab === "mysignature") {
-        setIsSignImg("");
-        if (props?.isInitial) {
-          props?.onSaveSign(signatureType, "initials");
-        } else {
-          props?.onSaveSign(null, "default");
-        }
-      } else {
-        if (isTab === "type") {
-          setIsSignImg("");
-          props?.onSaveSign(
-            null,
-            false,
-            !props?.isInitial && textWidth > 150 ? 150 : textWidth,
-            !props?.isInitial && textHeight > 35 ? 35 : textHeight,
-            typedSignature
-          );
-        } else {
-          setIsSignImg("");
-          canvasRef.current.clear();
-          props?.onSaveSign(signatureType);
-        }
-      }
-      setPenColor("blue");
-    } else {
-      setIsSignImg("");
-      props?.onSaveImage(signatureType);
-    }
-    props?.setIsSignPad(false);
-    props?.setIsInitial && props?.setIsInitial(false);
-    props?.setIsImageSelect(false);
-    setIsDefaultSign(false);
-    props?.setImage();
-    handleTab();
-    props?.setIsStamp(false);
-  };
   //save button component
   const SaveBtn = () => {
     return (
@@ -289,14 +102,48 @@ function SignPad(props) {
           </button>
         )}
         <button
-          onClick={() => handleSaveBtn()}
+          onClick={() => {
+            props?.setCurrWidgetsDetails({});
+            if (!props?.image) {
+              if (isTab === "mysignature") {
+                setIsSignImg("");
+                if (props?.isInitial) {
+                  props?.onSaveSign(signatureType, "initials");
+                } else {
+                  props?.onSaveSign(null, "default");
+                }
+              } else {
+                if (isTab === "type") {
+                  setIsSignImg("");
+                  props?.onSaveSign(
+                    null,
+                    false,
+                    !props?.isInitial && textWidth > 150 ? 150 : textWidth,
+                    !props?.isInitial && textHeight > 35 ? 35 : textHeight
+                  );
+                } else {
+                  setIsSignImg("");
+                  canvasRef.current.clear();
+                  props?.onSaveSign(signatureType);
+                }
+              }
+              setPenColor("blue");
+            } else {
+              setIsSignImg("");
+              props?.onSaveImage(signatureType);
+            }
+            props?.setIsSignPad(false);
+            props?.setIsInitial(false);
+            props?.setIsImageSelect(false);
+            setIsDefaultSign(false);
+            props?.setImage();
+            handleTab();
+            setSignValue("");
+            props?.setIsStamp(false);
+          }}
           type="button"
           className={`${
-            isSignImg ||
-            props?.image ||
-            isDefaultSign ||
-            textWidth ||
-            props.isAutoSign
+            isSignImg || props?.image || isDefaultSign || textWidth
               ? ""
               : "pointer-events-none"
           } op-btn op-btn-primary shadow-lg`}
@@ -304,8 +151,7 @@ function SignPad(props) {
             (isTab === "draw" && isSignImg) ||
             (isTab === "image" && props?.image) ||
             (isTab === "mysignature" && isDefaultSign) ||
-            (isTab === "type" && typedSignature) ||
-            props.isAutoSign
+            (isTab === "type" && signValue)
               ? false
               : props?.image
                 ? false
@@ -317,24 +163,9 @@ function SignPad(props) {
       </div>
     );
   };
-  const autoSignAll = () => {
-    return (
-      <label className="cursor-pointer flex items-center mb-[6px] text-center text-[11px] md:text-base">
-        <input
-          className="mr-2 md:mr-3 op-checkbox op-checkbox-xs md:op-checkbox-sm"
-          type="checkbox"
-          value={props.isAutoSign}
-          onChange={(e) => {
-            props.setIsAutoSign(e.target.checked);
-          }}
-        />
-        {t("auto-sign-mssg")}
-      </label>
-    );
-  };
   //useEffect for set already draw or save signature url/text url of signature text type and draw type for initial type and signature type widgets
   useEffect(() => {
-    if (props?.currWidgetsDetails && canvasRef.current && props.isSignPad) {
+    if (props?.currWidgetsDetails && canvasRef.current) {
       const isWidgetType = props?.currWidgetsDetails?.type;
       const signatureType = props?.currWidgetsDetails?.signatureType;
       const url = props?.currWidgetsDetails?.SignUrl;
@@ -350,14 +181,13 @@ function SignPad(props) {
       ) {
         canvasRef.current.fromDataURL(url);
       }
-
-      const trimmedName = currentUserName && currentUserName?.trim();
-      const firstCharacter = trimmedName?.charAt(0);
-      const userName = props?.isInitial ? firstCharacter : currentUserName;
-      const signatureValue = props?.currWidgetsDetails?.typeSignature;
-      setTypedSignature(signatureValue || userName || "");
-      setFontSelect("Fasthand");
     }
+
+    const trimmedName = currentUserName && currentUserName?.trim();
+    const firstCharacter = trimmedName?.charAt(0);
+    const userName = props?.isInitial ? firstCharacter : currentUserName;
+    setSignValue(userName || "");
+    setFontSelect("Fasthand");
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.isSignPad]);
@@ -377,19 +207,19 @@ function SignPad(props) {
     loadFont();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fontSelect]);
+
   useEffect(() => {
     // Load the default signature after the component mounts
     if (canvasRef.current) {
       canvasRef.current.fromDataURL(isSignImg);
     }
     if (isTab === "type") {
-      const trimmedName = typedSignature
-        ? typedSignature?.trim()
+      const trimmedName = signValue
+        ? signValue?.trim()
         : currentUserName?.trim();
       const firstCharacter = trimmedName?.charAt(0);
-      const userName = props?.isInitial ? firstCharacter : typedSignature;
-      const signatureValue = props?.currWidgetsDetails?.typeSignature;
-      setTypedSignature(signatureValue || userName || "");
+      const userName = props?.isInitial ? firstCharacter : signValue;
+      setSignValue(userName);
       convertToImg(fontSelect, userName);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -441,19 +271,40 @@ function SignPad(props) {
     const dataUrl = canvasElement.toDataURL("image/png");
     props?.setSignature(dataUrl);
   };
+
   const PenColorComponent = (props) => {
     return (
-      <div className="flex flex-row items-center m-[5px] gap-2">
+      <div className="flex flex-row items-start">
         {allColor.map((data, key) => {
           return (
             <i
-              key={key}
+              style={{
+                margin: "5px",
+                color: data,
+                borderBottom:
+                  key === 0 && penColor === "blue"
+                    ? "2px solid blue"
+                    : key === 1 && penColor === "red"
+                      ? "2px solid red"
+                      : key === 2 && penColor === "black"
+                        ? "2px solid black"
+                        : "2px solid white"
+              }}
               onClick={() => {
                 props?.convertToImg &&
-                  props?.convertToImg(fontSelect, typedSignature, data);
-                setPenColor(allColor[key]);
+                  props?.convertToImg(fontSelect, signValue, data);
+                if (key === 0) {
+                  setPenColor("blue");
+                } else if (key === 1) {
+                  setPenColor("red");
+                } else if (key === 2) {
+                  setPenColor("black");
+                }
               }}
-              className={`border-b-[2px] ${key === 0 && penColor === "blue" ? "border-blue-600" : key === 1 && penColor === "red" ? "border-red-500" : key === 2 && penColor === "black" ? "border-black" : "border-white"} text-[${data}] text-[16px] fa-light fa-pen-nib`}
+              key={key}
+              className="fa-light fa-pen-nib"
+              width={20}
+              height={20}
             ></i>
           );
         })}
@@ -465,35 +316,19 @@ function SignPad(props) {
   const handleCancelBtn = () => {
     setPenColor("blue");
     props?.setIsSignPad(false);
-    props?.setIsInitial && props?.setIsInitial(false);
+    props?.setIsInitial(false);
     props?.setIsImageSelect(false);
     setIsDefaultSign(false);
     props?.setImage();
     handleTab();
+    setSignValue("");
     props?.setIsStamp(false);
   };
-
-  const savesigncheckbox = (
-    <label className="cursor-pointer flex items-center mb-0 text-center text-[11px] md:text-base">
-      <input
-        className="mr-2 md:mr-3 op-checkbox op-checkbox-xs md:op-checkbox-sm"
-        type="checkbox"
-        checked={isSavedSign}
-        onChange={(e) => setIsSavedSign(e.target.checked)}
-      />
-      Save {props?.currWidgetsDetails?.type || props?.widgetType}
-    </label>
-  );
   return (
     <div>
       {props?.isSignPad && (
         <div className="op-modal op-modal-open">
           <div className="op-modal-box px-[13px] pt-2 pb-0">
-            {isLoader && (
-              <div className="absolute w-full h-full inset-0 flex justify-center items-center bg-base-content/30 z-50">
-                <Loader />
-              </div>
-            )}
             {isSignTypes ? (
               <>
                 <div className="flex justify-between text-base-content items-center">
@@ -509,51 +344,6 @@ function SignPad(props) {
                           </span>
                         ) : (
                           <>
-                            {!props?.isInitial &&
-                            props?.defaultSign &&
-                            isTabEnabled("default") ? (
-                              <div>
-                                <span
-                                  onClick={() => {
-                                    setIsDefaultSign(true);
-                                    props?.setIsImageSelect(true);
-                                    setIsTab("mysignature");
-                                    setSignatureType("");
-                                    props?.setImage();
-                                  }}
-                                  className={`${
-                                    isTab === "mysignature"
-                                      ? "op-link-primary"
-                                      : "no-underline"
-                                  } op-link underline-offset-8 ml-[2px]`}
-                                >
-                                  {t("my-signature")}
-                                </span>
-                              </div>
-                            ) : (
-                              props?.isInitial &&
-                              props?.myInitial &&
-                              isTabEnabled("default") && (
-                                <div>
-                                  <span
-                                    onClick={() => {
-                                      setIsDefaultSign(true);
-                                      props?.setIsImageSelect(true);
-                                      setIsTab("mysignature");
-                                      setSignatureType("");
-                                      props?.setImage();
-                                    }}
-                                    className={`${
-                                      isTab === "mysignature"
-                                        ? "op-link-primary"
-                                        : "no-underline"
-                                    } op-link underline-offset-8 ml-[2px]`}
-                                  >
-                                    {t("my-initials")}
-                                  </span>
-                                </div>
-                              )
-                            )}
                             {isTabEnabled("draw") && (
                               <div>
                                 <span
@@ -615,6 +405,51 @@ function SignPad(props) {
                                 </span>
                               </div>
                             )}
+                            {!props?.isInitial &&
+                            props?.defaultSign &&
+                            isTabEnabled("default") ? (
+                              <div>
+                                <span
+                                  onClick={() => {
+                                    setIsDefaultSign(true);
+                                    props?.setIsImageSelect(true);
+                                    setIsTab("mysignature");
+                                    setSignatureType("");
+                                    props?.setImage();
+                                  }}
+                                  className={`${
+                                    isTab === "mysignature"
+                                      ? "op-link-primary"
+                                      : "no-underline"
+                                  } op-link underline-offset-8 ml-[2px]`}
+                                >
+                                  {t("my-signature")}
+                                </span>
+                              </div>
+                            ) : (
+                              props?.isInitial &&
+                              props?.myInitial &&
+                              isTabEnabled("default") && (
+                                <div>
+                                  <span
+                                    onClick={() => {
+                                      setIsDefaultSign(true);
+                                      props?.setIsImageSelect(true);
+                                      setIsTab("mysignature");
+                                      setSignatureType("");
+                                      props?.setImage();
+                                    }}
+                                    className={`${
+                                      isTab === "mysignature"
+                                        ? "op-link-primary"
+                                        : "no-underline"
+                                    } op-link underline-offset-8 ml-[2px]`}
+                                  >
+                                    {t("my-initials")}
+                                  </span>
+                                </div>
+                              )
+                            )}
                           </>
                         )}
                       </div>
@@ -632,7 +467,21 @@ function SignPad(props) {
                     <>
                       <div className="flex justify-center">
                         <div
-                          className={`${props?.isInitial ? "intialSignatureCanvas" : "signatureCanvas"} bg-white border-[1.3px] border-[#007bff] flex flex-col justify-center items-center mb-[6px] cursor-pointer`}
+                          style={{
+                            border: "1.3px solid #007bff",
+                            borderRadius: "2px",
+                            display: "flex",
+                            flexDirection: "column",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            marginBottom: 6,
+                            cursor: "pointer"
+                          }}
+                          className={
+                            props?.isInitial
+                              ? "intialSignatureCanvas"
+                              : "signatureCanvas"
+                          }
                         >
                           <img
                             alt="stamp img"
@@ -646,7 +495,6 @@ function SignPad(props) {
                           />
                         </div>
                       </div>
-                      {props.setIsAutoSign && autoSignAll()}
                       <div className="flex justify-end">
                         <SaveBtn />
                       </div>
@@ -655,7 +503,21 @@ function SignPad(props) {
                     !props?.image ? (
                       <div className="flex justify-center">
                         <div
-                          className={`${props?.isInitial ? "intialSignatureCanvas" : "signatureCanvas"} bg-white border-[1.3px] border-[#007bff] flex flex-col justify-center items-center mb-[6px] cursor-pointer`}
+                          style={{
+                            border: "1.3px solid #007bff",
+                            borderRadius: "2px",
+                            display: "flex",
+                            flexDirection: "column",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            marginBottom: 6,
+                            cursor: "pointer"
+                          }}
+                          className={
+                            props?.isInitial
+                              ? "intialSignatureCanvas"
+                              : "signatureCanvas"
+                          }
                           onClick={() => props?.imageRef.current.click()}
                         >
                           <input
@@ -674,18 +536,27 @@ function SignPad(props) {
                       <>
                         <div className="flex justify-center">
                           <div
-                            className={`${props?.isInitial ? "intialSignatureCanvas" : "signatureCanvas"} bg-white border-[1.3px] border-[#007bff] mb-[6px] overflow-hidden`}
+                            style={{
+                              border: "1.3px solid #007bff",
+                              borderRadius: "2px",
+                              marginBottom: 6,
+                              overflow: "hidden"
+                            }}
+                            className={
+                              props?.isInitial
+                                ? "intialSignatureCanvas"
+                                : "signatureCanvas"
+                            }
                           >
                             <img
                               alt="print img"
                               ref={props?.imageRef}
                               src={props?.image.src}
                               draggable="false"
-                              className="object-contain h-full w-full"
+                              className=" object-contain h-full w-full"
                             />
                           </div>
                         </div>
-                        {props.setIsAutoSign && autoSignAll()}
                         <div className="flex justify-end">
                           <SaveBtn />
                         </div>
@@ -705,14 +576,10 @@ function SignPad(props) {
                           style={{ fontFamily: fontSelect, color: penColor }}
                           type="text"
                           className="ml-1 op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-[20px]"
-                          placeholder={
-                            props?.isInitial
-                              ? t("initial-type")
-                              : t("signature-type")
-                          }
-                          value={typedSignature}
+                          placeholder="Your signature"
+                          value={signValue}
                           onChange={(e) => {
-                            setTypedSignature(e.target.value);
+                            setSignValue(e.target.value);
                             convertToImg(fontSelect, e.target.value);
                           }}
                         />
@@ -731,28 +598,26 @@ function SignPad(props) {
                               }}
                               onClick={() => {
                                 setFontSelect(font.value);
-                                convertToImg(font.value, typedSignature);
+                                convertToImg(font.value, signValue);
                               }}
                             >
                               <div
-                                className="py-[5px] px-[10px] text-[20px]"
-                                style={{ color: penColor }}
+                                style={{
+                                  padding: "5px 10px 5px 10px",
+                                  fontSize: "20px",
+                                  color: penColor
+                                }}
                               >
-                                {typedSignature
-                                  ? typedSignature
-                                  : "Your signature"}
+                                {signValue ? signValue : "Your signature"}
                               </div>
                             </div>
                           );
                         })}
                       </div>
 
-                      <div className="flex flex-col justify-between mt-[10px]">
-                        {props.setIsAutoSign && autoSignAll()}
-                        <div className="flex flex-row justify-between mt-[10px]">
-                          <PenColorComponent convertToImg={convertToImg} />
-                          <SaveBtn />
-                        </div>
+                      <div className="flex flex-row justify-between mt-[10px]">
+                        <PenColorComponent convertToImg={convertToImg} />
+                        <SaveBtn />
                       </div>
                     </div>
                   ) : (
@@ -762,8 +627,15 @@ function SignPad(props) {
                           ref={canvasRef}
                           penColor={penColor}
                           canvasProps={{
-                            className: `${props?.isInitial ? "intialSignatureCanvas" : "signatureCanvas"} border-[1.3px] border-[#007bff]`
+                            className: props?.isInitial
+                              ? "intialSignatureCanvas"
+                              : "signatureCanvas",
+                            style: {
+                              border: "1.6px solid #007bff",
+                              borderRadius: "2px"
+                            }
                           }}
+                          // backgroundColor="rgb(255, 255, 255)"
                           onEnd={() =>
                             handleSignatureChange(
                               canvasRef.current?.toDataURL()
@@ -772,22 +644,16 @@ function SignPad(props) {
                           dotSize={1}
                         />
                       </div>
-                      <div className="flex flex-col justify-between mt-[10px]">
-                        {props.setIsAutoSign && autoSignAll()}
-                        {accesstoken &&
-                          props?.saveSignCheckbox?.isVisible &&
-                          savesigncheckbox}
-                        <div className="flex flex-row justify-between mt-[10px]">
-                          <PenColorComponent />
-                          <SaveBtn />
-                        </div>
+                      <div className="flex flex-row justify-between mt-[10px]">
+                        <PenColorComponent />
+                        <SaveBtn />
                       </div>
                     </>
                   )}
                 </div>
               </>
             ) : (
-              <div>
+              <div className="">
                 <div className="relative flex flex-row items-center justify-between">
                   <div className="text-base-content font-bold text-lg">
                     Signature

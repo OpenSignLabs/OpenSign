@@ -16,29 +16,25 @@ export default async function getDrive(request) {
     });
     const userId = userRes.data && userRes.data.objectId;
     if (userId) {
+      let url;
+      if (docId) {
+        url = `${classUrl}?where={"Folder":{"__type":"Pointer","className":"contracts_Document","objectId":"${docId}"},"CreatedBy":{"__type":"Pointer","className":"_User","objectId":"${userId}"},"IsArchive":{"$ne":true}}&include=ExtUserPtr,ExtUserPtr.TenantId,Signers,Folder&order=-updatedAt&skip=${skip}&limit=${limit}`;
+      } else {
+        url = `${classUrl}?where={"Folder":{"$exists":false},"CreatedBy":{"__type":"Pointer","className":"_User","objectId":"${userId}"},"IsArchive":{"$ne":true}}&include=ExtUserPtr,ExtUserPtr.TenantId,Signers&order=-updatedAt&skip=${skip}&limit=${limit}`;
+      }
       try {
-        const query = new Parse.Query('contracts_Document');
-        if (docId) {
-          query.equalTo('Folder', {
-            __type: 'Pointer',
-            className: 'contracts_Document',
-            objectId: docId,
-          });
-          query.include('Folder');
+        const res = await axios.get(url, {
+          headers: {
+            'X-Parse-Application-Id': appId,
+            'X-Parse-Master-key': process.env.MASTER_KEY,
+          },
+        });
+        // console.log('res.data.results ', res.data.results);
+        if (res.data && res.data.results) {
+          return res.data.results;
         } else {
-          query.doesNotExist('Folder', true);
+          return [];
         }
-        query.equalTo('CreatedBy', { __type: 'Pointer', className: '_User', objectId: userId });
-        query.include('ExtUserPtr');
-        query.include('ExtUserPtr.TenantId');
-        query.include('Signers');
-        query.notEqualTo('IsArchive', true);
-        query.descending('updatedAt');
-        query.skip(skip);
-        query.limit(limit);
-        query.exclude('AuditTrail');
-        const res = await query.find({ useMasterKey: true });
-        return res;
       } catch (err) {
         console.log('err', err);
         return { error: "You don't have access to drive" };

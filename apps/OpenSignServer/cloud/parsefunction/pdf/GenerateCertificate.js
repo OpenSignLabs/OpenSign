@@ -1,12 +1,8 @@
-import { PDFDocument, rgb } from 'pdf-lib';
+import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
 import fs from 'node:fs';
 import fontkit from '@pdf-lib/fontkit';
-import {
-  formatTimeInTimezone,
-} from '../../../Utils.js';
 
 export default async function GenerateCertificate(docDetails) {
-  const timezone = docDetails?.ExtUserPtr?.Timezone || '';
   const pdfDoc = await PDFDocument.create();
   // `fontBytes` is used to embed custom font in pdf
   const fontBytes = fs.readFileSync('./font/times.ttf'); //
@@ -27,23 +23,19 @@ export default async function GenerateCertificate(docDetails) {
   const timeText = 11;
   const textKeyColor = rgb(0.12, 0.12, 0.12);
   const textValueColor = rgb(0.3, 0.3, 0.3);
-  const completedAt = docDetails?.completedAt ? new Date(docDetails?.completedAt) : new Date();
-  const completedAtperTimezone = formatTimeInTimezone(completedAt, timezone);
-  const completedUTCtime = completedAtperTimezone;
+  const completedAt = new Date();
+  const completedUTCtime = completedAt.toUTCString();
   const signersCount = docDetails?.Signers?.length || 1;
-  const generateAt = docDetails?.completedAt ? new Date(docDetails?.completedAt) : new Date();
-  const generatedAtperTimezone = formatTimeInTimezone(generateAt, timezone);
-  const generatedUTCTime = generatedAtperTimezone;
+  const generateAt = new Date();
+  const generatedUTCTime = generateAt.toUTCString();
   const generatedOn = 'Generated On ' + generatedUTCTime;
   const OriginIp = docDetails?.OriginIp || '';
   const company = docDetails?.ExtUserPtr?.Company || '';
   const createdAt = docDetails?.DocSentAt?.iso || docDetails.createdAt;
-  const createdAtperTimezone = formatTimeInTimezone(createdAt, timezone);
   const IsEnableOTP = docDetails?.IsEnableOTP || false;
-  const filteredaudit = docDetails?.AuditTrail?.filter(x => x?.UserPtr?.objectId);
   const auditTrail =
     docDetails?.Signers?.length > 0
-      ? filteredaudit?.map(x => {
+      ? docDetails.AuditTrail.map(x => {
           const data = docDetails.Signers.find(y => y.objectId === x.UserPtr.objectId);
           return {
             ...data,
@@ -56,15 +48,16 @@ export default async function GenerateCertificate(docDetails) {
       : [
           {
             ...docDetails.ExtUserPtr,
-            ipAddress: filteredaudit[0].ipAddress,
-            SignedOn: filteredaudit[0]?.SignedOn || generatedUTCTime,
-            ViewedOn: filteredaudit[0]?.ViewedOn || filteredaudit[0]?.SignedOn || generatedUTCTime,
-            Signature: filteredaudit[0]?.Signature || '',
+            ipAddress: docDetails?.AuditTrail[0].ipAddress,
+            SignedOn: docDetails?.AuditTrail[0]?.SignedOn || generatedUTCTime,
+            ViewedOn:
+              docDetails?.AuditTrail[0]?.ViewedOn ||
+              docDetails?.AuditTrail[0]?.SignedOn ||
+              generatedUTCTime,
+            Signature: docDetails?.AuditTrail[0]?.Signature || '',
           },
         ];
 
-  const ownerName = docDetails?.SenderName || docDetails.ExtUserPtr?.Name || 'n/a';
-  const ownerEmail = docDetails?.SenderMail || docDetails.ExtUserPtr?.Email || 'n/a';
   const half = width / 2;
   // Draw a border
   page.drawRectangle({
@@ -75,12 +68,12 @@ export default async function GenerateCertificate(docDetails) {
     borderColor: borderColor,
     borderWidth: 1,
   });
-    page.drawImage(pngImage, {
-      x: 30,
-      y: 790,
-      width: 100,
-      height: 25,
-    });
+  page.drawImage(pngImage, {
+    x: 30,
+    y: 790,
+    width: 100,
+    height: 25,
+  });
 
   page.drawText(generatedOn, {
     x: 320,
@@ -138,10 +131,10 @@ export default async function GenerateCertificate(docDetails) {
     color: textKeyColor,
   });
 
-  page.drawText(docDetails?.Name, {
+  page.drawText(docDetails.Name, {
     x: 140,
     y: 665,
-    size: docDetails?.Name?.length >= 78 ? 12 : text,
+    size: text,
     font: timesRomanFont,
     color: textValueColor,
   });
@@ -169,7 +162,7 @@ export default async function GenerateCertificate(docDetails) {
     color: textKeyColor,
   });
 
-  page.drawText(`${createdAtperTimezone}`, {
+  page.drawText(`${new Date(createdAt).toUTCString()}`, {
     x: 105,
     y: 625,
     size: text,
@@ -220,7 +213,7 @@ export default async function GenerateCertificate(docDetails) {
     font: timesRomanFont,
     color: textKeyColor,
   });
-  page.drawText(ownerName, {
+  page.drawText(`${docDetails.ExtUserPtr.Name}`, {
     x: 105,
     y: 545,
     size: text,
@@ -234,7 +227,7 @@ export default async function GenerateCertificate(docDetails) {
     font: timesRomanFont,
     color: textKeyColor,
   });
-  page.drawText(ownerEmail, {
+  page.drawText(`${docDetails.ExtUserPtr.Email}`, {
     x: 105,
     y: 525,
     size: text,
@@ -294,16 +287,15 @@ export default async function GenerateCertificate(docDetails) {
     });
 
     page.drawText('Viewed on :', {
-      x: half + 45,
+      x: half + 55,
       y: yPosition2,
       size: timeText,
       font: timesRomanFont,
       color: textKeyColor,
     });
 
-    //new Date(x.ViewedOn).toUTCString()
-    page.drawText(`${formatTimeInTimezone(x.ViewedOn, timezone)}`, {
-      x: half + 102,
+    page.drawText(`${new Date(x.ViewedOn).toUTCString()}`, {
+      x: half + 112,
       y: yPosition2,
       size: timeText,
       font: timesRomanFont,
@@ -327,16 +319,15 @@ export default async function GenerateCertificate(docDetails) {
     });
 
     page.drawText('Signed on :', {
-      x: half + 45,
+      x: half + 55,
       y: yPosition3 + 5,
       size: timeText,
       font: timesRomanFont,
       color: textKeyColor,
     });
 
-    // new Date(x.SignedOn).toUTCString()
-    page.drawText(`${formatTimeInTimezone(x.SignedOn, timezone)}`, {
-      x: half + 98,
+    page.drawText(`${new Date(x.SignedOn).toUTCString()}`, {
+      x: half + 108,
       y: yPosition3 + 5,
       size: timeText,
       font: timesRomanFont,
@@ -360,14 +351,14 @@ export default async function GenerateCertificate(docDetails) {
     });
     if (IsEnableOTP) {
       page.drawText('Security level :', {
-        x: half + 45,
+        x: half + 55,
         y: yPosition4 + 10,
         size: timeText,
         font: timesRomanFont,
         color: textKeyColor,
       });
       page.drawText('Email, OTP Auth', {
-        x: half + 115,
+        x: half + 125,
         y: yPosition4 + 10,
         size: timeText,
         font: timesRomanFont,
@@ -467,16 +458,15 @@ export default async function GenerateCertificate(docDetails) {
       });
 
       currentPage.drawText('Viewed on :', {
-        x: half + 45,
+        x: half + 55,
         y: yPosition2,
         size: timeText,
         font: timesRomanFont,
         color: textKeyColor,
       });
 
-      // new Date(x.ViewedOn).toUTCString()
-      currentPage.drawText(`${formatTimeInTimezone(x.ViewedOn, timezone)}`, {
-        x: half + 102,
+      currentPage.drawText(`${new Date(x.ViewedOn).toUTCString()}`, {
+        x: half + 112,
         y: yPosition2,
         size: timeText,
         font: timesRomanFont,
@@ -500,16 +490,15 @@ export default async function GenerateCertificate(docDetails) {
       });
 
       currentPage.drawText('Signed on :', {
-        x: half + 45,
+        x: half + 55,
         y: yPosition3 + 5,
         size: timeText,
         font: timesRomanFont,
         color: textKeyColor,
       });
 
-      // new Date(x.SignedOn).toUTCString()
-      currentPage.drawText(`${formatTimeInTimezone(x.SignedOn, timezone)}`, {
-        x: half + 98,
+      currentPage.drawText(`${new Date(x.SignedOn).toUTCString()}`, {
+        x: half + 108,
         y: yPosition3 + 5,
         size: timeText,
         font: timesRomanFont,
@@ -534,14 +523,14 @@ export default async function GenerateCertificate(docDetails) {
 
       if (IsEnableOTP) {
         currentPage.drawText('Security level :', {
-          x: half + 45,
+          x: half + 55,
           y: yPosition4 + 10,
           size: timeText,
           font: timesRomanFont,
           color: textKeyColor,
         });
         currentPage.drawText(`Email, OTP Auth`, {
-          x: half + 115,
+          x: half + 125,
           y: yPosition4 + 10,
           size: timeText,
           font: timesRomanFont,

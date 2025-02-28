@@ -14,15 +14,14 @@ RUN npm install
 COPY apps/OpenSign/ .
 COPY apps/OpenSign/.husky .
 
-# Define environment variables if needed
-ENV NODE_ENV=production
-ENV REACT_APP_DEPLOYMENT=free_selfhost
-
 # build
 RUN npm run build
 
 # Make port 3000 available to the world outside this container
 EXPOSE 3000
+
+# Define environment variables if needed
+# ENV NODE_ENV production
 
 # Run the application
 CMD ["npm", "start"]
