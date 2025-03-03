@@ -36,7 +36,7 @@
     "generate-api-key": "^1.0.2",
     "googleapis": "^144.0.0",
     "mailgun.js": "^11.1.0",
-    "mongodb": "^6.13.0",
+    "mongodb": "^6.14.0",
     "multer": "^1.4.5-lts.1",
     "multer-s3": "^3.0.1",
     "node-forge": "^1.3.1",
