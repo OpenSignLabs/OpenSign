@@ -29,7 +29,9 @@ async function sendMailProvider(req, plan, monthchange) {
       }
     }
     if (req.params.url) {
-      let Pdf = fs.createWriteStream('test.pdf');
+      const randomNumber = Math.floor(Math.random() * 5000);
+      const testPdf = `test_${randomNumber}.pdf`;
+      let Pdf = fs.createWriteStream(testPdf);
       const writeToLocalDisk = () => {
         return new Promise((resolve, reject) => {
           const isSecure =
@@ -129,6 +131,13 @@ async function sendMailProvider(req, plan, monthchange) {
                 console.log('Err in unlink certificate sendmailv3');
               }
             }
+            if (fs.existsSync(testPdf)) {
+              try {
+                fs.unlinkSync(testPdf);
+              } catch (err) {
+                console.log('Err in unlink pdf sendmailv3');
+              }
+            }
             return { status: 'success' };
           }
         } else {
@@ -146,6 +155,13 @@ async function sendMailProvider(req, plan, monthchange) {
                   console.log('Err in unlink certificate sendmailv3');
                 }
               }
+              if (fs.existsSync(testPdf)) {
+                try {
+                  fs.unlinkSync(testPdf);
+                } catch (err) {
+                  console.log('Err in unlink pdf sendmailv3');
+                }
+              }
               return { status: 'success' };
             }
           } else {
@@ -154,6 +170,13 @@ async function sendMailProvider(req, plan, monthchange) {
                 fs.unlinkSync(certificatePath);
               } catch (err) {
                 console.log('Err in unlink certificate sendmailv3');
+              }
+            }
+            if (fs.existsSync(testPdf)) {
+              try {
+                fs.unlinkSync(testPdf);
+              } catch (err) {
+                console.log('Err in unlink pdf sendmailv3');
               }
             }
             return { status: 'error' };

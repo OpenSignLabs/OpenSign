@@ -846,5 +846,6 @@
   "agreement-note": "Remarque : Accepter cela ne signifie pas que vous signez immédiatement le document. Cela vous permet uniquement de consulter le document électroniquement. Vous aurez l'opportunité de le lire entièrement et de décider ensuite si vous souhaitez le signer.",
   "draft-template-info-p1": "Pour rendre votre modèle public, il doit contenir un seul rôle ou, s'il inclut plusieurs rôles, tous les rôles supplémentaires doivent déjà être attribués aux signataires. Le rôle public non attribué doit rester vide et être placé en première position.",
   "visit-below-link": "Visitez le lien ci-dessous pour en savoir plus -",
-  "storage-help": "Activer BYOC vous permet de connecter votre propre stockage S3 afin que vos fichiers restent entièrement sous votre contrôle, sans copie externe conservée. Si l'autonomie des données est importante pour vous, envisagez de passer à l'offre Teams pour débloquer cette fonctionnalité."
+  "storage-help": "Activer BYOC vous permet de connecter votre propre stockage S3 afin que vos fichiers restent entièrement sous votre contrôle, sans copie externe conservée. Si l'autonomie des données est importante pour vous, envisagez de passer à l'offre Teams pour débloquer cette fonctionnalité.",
+  "daily-quota-reached": "You’ve reached your daily quota. For assistance, please contact quotas@opensignlabs.com."
 }

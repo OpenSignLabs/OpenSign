@@ -103,6 +103,15 @@ function EmailComponent({
         setEmailList([]);
       }, 1500);
       setIsLoading(false);
+    } else if (sendMail?.data?.result?.status === "daily-quota-reached") {
+      setIsLoading(false);
+      setIsEmail(false);
+      setIsAlert({
+        isShow: true,
+        alertMessage: t("daily-quota-reached")
+      });
+      setEmailValue("");
+      setEmailList([]);
     } else {
       setIsLoading(false);
       setIsEmail(false);

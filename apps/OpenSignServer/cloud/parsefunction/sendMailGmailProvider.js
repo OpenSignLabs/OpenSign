@@ -35,7 +35,8 @@ const makeEmail = async (
   bcc,
   filename,
   certificatePath,
-  replyto
+  replyto,
+  testPdf
 ) => {
   const publicUrl = new URL(process.env.SERVER_URL);
   const htmlContent = html;
@@ -46,7 +47,7 @@ const makeEmail = async (
   let str;
   if (url) {
     let attachments;
-    let Pdf = fs.createWriteStream('test.pdf');
+    let Pdf = fs.createWriteStream(testPdf);
     const writeToLocalDisk = () => {
       return new Promise((resolve, reject) => {
         const isSecure =
@@ -161,6 +162,8 @@ export default async function sendMailGmailProvider(_extRes, template) {
       // Construct email message
       const from = sender || _extRes.Email || 'me';
       const to = receiver;
+      const randomNumber = Math.floor(Math.random() * 5000);
+      const testPdf = `test_${randomNumber}.pdf`;
       const email = await makeEmail(
         to,
         from,
@@ -171,7 +174,8 @@ export default async function sendMailGmailProvider(_extRes, template) {
         bcc,
         filename,
         certificatePath,
-        replyto
+        replyto,
+        testPdf
       );
       // Update Gmail client with new access token
       const newGmail = createGmailClient(access_token);
@@ -187,6 +191,13 @@ export default async function sendMailGmailProvider(_extRes, template) {
           fs.unlinkSync(certificatepath);
         } catch (err) {
           console.log('Err in unlink certificate sendmailgmail provider');
+        }
+      }
+      if (fs.existsSync(testPdf)) {
+        try {
+          fs.unlinkSync(testPdf);
+        } catch (err) {
+          console.log('Err in unlink pdf sendmailv3');
         }
       }
       return { code: 200, message: 'Email sent successfully' };
