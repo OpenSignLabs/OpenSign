@@ -806,6 +806,12 @@ const ReportTable = (props) => {
         setIsAlert(true);
         setAlertMsg({ type: "success", message: t("mail-sent-alert") });
         setIsResendMail({});
+      } else if (res?.data?.result?.status === "daily-quota-reached") {
+        setIsAlert(true);
+        setAlertMsg({
+          type: "danger",
+          message: t("daily-quota-reached")
+        });
       } else {
         setIsAlert(true);
         setAlertMsg({

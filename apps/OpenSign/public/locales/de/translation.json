@@ -847,5 +847,6 @@
   "agreement-note": "Hinweis: Durch Ihre Zustimmung unterzeichnen Sie das Dokument nicht sofort. Sie können das Dokument nur elektronisch einsehen. Sie haben die Möglichkeit, es vollständig zu lesen und anschließend zu entscheiden, ob Sie es unterzeichnen möchten.",
   "draft-template-info-p1": "Um Ihre Vorlage öffentlich zu machen, muss sie entweder eine einzelne Rolle enthalten oder, wenn sie mehrere Rollen umfasst, müssen alle zusätzlichen Rollen bereits den Unterzeichnern zugewiesen sein. Die nicht zugewiesene öffentliche Rolle muss leer bleiben und an erster Stelle stehen.",
   "visit-below-link": "Besuchen Sie den untenstehenden Link, um mehr zu erfahren -",
-  "storage-help": "Durch die Aktivierung von BYOC können Sie Ihren eigenen S3-Speicher verbinden, sodass Ihre Dateien vollständig unter Ihrer Kontrolle bleiben und keine externen Kopien gespeichert werden. Wenn Ihnen Datenautonomie wichtig ist, erwägen Sie ein Upgrade auf Teams, um diese Funktion freizuschalten."
+  "storage-help": "Durch die Aktivierung von BYOC können Sie Ihren eigenen S3-Speicher verbinden, sodass Ihre Dateien vollständig unter Ihrer Kontrolle bleiben und keine externen Kopien gespeichert werden. Wenn Ihnen Datenautonomie wichtig ist, erwägen Sie ein Upgrade auf Teams, um diese Funktion freizuschalten.",
+  "daily-quota-reached": "You’ve reached your daily quota. For assistance, please contact quotas@opensignlabs.com."
 }
