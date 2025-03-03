@@ -849,5 +849,6 @@
   "draft-template-info-p1": "Para hacer que tu plantilla sea pública, debe contener un único rol o, si incluye múltiples roles, todos los roles adicionales deben estar ya asignados a firmantes. El rol público no asignado debe permanecer vacío y debe estar en la primera posición.",
   "visit-below-link": "Visita el siguiente enlace para saber más -",
   "upgrade-to-team-plan": "Actualizar a team plan",
-  "storage-help": "Habilitar BYOC te permite conectar tu propio almacenamiento S3 para que tus archivos permanezcan completamente bajo tu control, sin copias externas retenidas. Si la autonomía de los datos es importante para ti, considera actualizar a Teams para desbloquear esta función."
+  "storage-help": "Habilitar BYOC te permite conectar tu propio almacenamiento S3 para que tus archivos permanezcan completamente bajo tu control, sin copias externas retenidas. Si la autonomía de los datos es importante para ti, considera actualizar a Teams para desbloquear esta función.",
+  "daily-quota-reached": "You’ve reached your daily quota. For assistance, please contact quotas@opensignlabs.com."
 }
