@@ -17,8 +17,6 @@ async function getUserDetails(request) {
       userQuery.exclude('TenantId.FileAdapters');
       userQuery.exclude('google_refresh_token');
       userQuery.exclude('TenantId.PfxFile');
-      userQuery.exclude('DailyEmailReset');
-      userQuery.exclude('DailyEmailCount');
       if (userId) {
         userQuery.equalTo('CreatedBy', { __type: 'Pointer', className: '_User', objectId: userId });
       }
