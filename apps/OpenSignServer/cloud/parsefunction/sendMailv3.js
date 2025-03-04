@@ -230,7 +230,8 @@ async function sendMailProvider(req, plan, monthchange) {
 }
 
 async function sendmailv3(req) {
-    return { status: 'error' };
+    const nonCustomMail = await sendMailProvider(req);
+    return nonCustomMail;
 }
 
 export default sendmailv3;
