@@ -1311,12 +1311,8 @@ function PlaceHolderSign() {
       setIsMailSend(true);
       setIsLoading({ isLoad: false });
       setIsUiLoading(false);
-    } else if (sendMail?.data?.result?.status === "daily-quota-reached") {
-      setMailStatus("daily-quota-reached");
-      setIsSend(true);
-      setIsMailSend(true);
-      setIsUiLoading(false);
-    } else if (sendMail?.data?.result?.status === "quota-reached") {
+    }
+    else if (sendMail?.data?.result?.status === "quota-reached") {
       setMailStatus("quotareached");
       setIsSend(true);
       setIsMailSend(true);
