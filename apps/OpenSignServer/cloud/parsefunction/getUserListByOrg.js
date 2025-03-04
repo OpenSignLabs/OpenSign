@@ -13,8 +13,6 @@ export default async function getUserListByOrg(req) {
       extUser.equalTo('OrganizationId', orgPtr);
       extUser.include('TeamIds');
       extUser.descending('createdAt');
-      extUser.exclude('DailyEmailReset');
-      extUser.exclude('DailyEmailCount');
       const userRes = await extUser.find({ useMasterKey: true });
       if (userRes.length > 0) {
         const _userRes = JSON.parse(JSON.stringify(userRes));
