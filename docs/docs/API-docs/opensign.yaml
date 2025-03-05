@@ -348,7 +348,7 @@ paths:
         }
         ```
 
-        6. **iob Title**
+        6. **job Title**
         ```
         {
           "type": "job title",
@@ -620,7 +620,7 @@ paths:
         }
         ```
 
-        6. **iob Title**
+        6. **job Title**
         ```
         {
           "type": "job title",
@@ -940,7 +940,7 @@ paths:
         }
         ```
 
-        6. **iob Title**
+        6. **job Title**
         ```
         {
           "type": "job title",
@@ -1296,6 +1296,55 @@ paths:
                 $ref: '#/components/schemas/invalidtoken'
       security:
       - x-api-token: []
+    post:
+      tags:
+      - Documents
+      summary: Revoke Document
+      description: The Revoke document API allows you to revoke specific document from your documents.
+      operationId: revokedocument
+      parameters:
+      - name: document_id
+        in: path
+        description: Provide objectId of document to revoke
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          format: string
+          example: ph2bh2asd
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/revokedocument'
+      responses:
+        "200":
+          description: Document revoked successfully!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/revoke'
+        "400":
+          description: "Something went wrong, please try again later!"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_400_1'
+        "404":
+          description: Document not found!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_404_3'
+        "405":
+          description: Invalid API Token!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/invalidtoken'
+      security:
+      - x-api-token: []
     delete:
       tags:
       - Documents
@@ -1586,7 +1635,7 @@ paths:
         }
         ```
 
-        6. **iob Title**
+        6. **job Title**
         ```
         {
           "type": "job title",
@@ -1906,7 +1955,7 @@ paths:
         }
         ```
 
-        6. **iob Title**
+        6. **job Title**
         ```
         {
           "type": "job title",
@@ -3040,6 +3089,16 @@ components:
           $ref: '#/components/schemas/date'
       xml:
         name: delete
+    revoke:
+      type: object
+      properties:
+        objectId:
+          type: string
+          example: Bxh2aspHp3
+        revokedAt:
+          $ref: '#/components/schemas/date'
+      xml:
+        name: delete
     inline_response_404:
       type: object
       properties:
@@ -3425,6 +3484,12 @@ components:
           type: boolean
           description: "true - Permits signers to add elements such as signatures, initials, stamps, or text on top of existing widgets in the document. false - Restricts signers from adding any additional elements to the document. This is the default value."
           example: false
+    revokedocument:
+      type: object
+      properties:
+        reason:
+          type: string
+          example: ""
     resendmail_body:
       required:
       - document_id
