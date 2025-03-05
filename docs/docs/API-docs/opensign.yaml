@@ -2937,6 +2937,10 @@ components:
           type: string
           format: string
           example: https://exampleurl.com
+        certificate:
+          type: string
+          format: string
+          example: https://certificateurl.com  
         title:
           type: string
           format: string
