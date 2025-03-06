@@ -97,7 +97,7 @@ If you are the only signer, the signing process is finished, and you will have t
 
 ## Additional Information
 - All fields marked with an asterisk (*) must be completed before the document can be submitted.
-- Ensure that the document format is supported by OpenSign before uploading.
+- This feature is available on all paid plans.
 
 If you require more help, feel free to reach out to our customer support on support@opensignlabs.com.
 
