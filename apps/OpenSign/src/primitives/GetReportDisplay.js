@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import pad from "../assets/images/pad.svg";
 import { useLocation, useNavigate } from "react-router";
 import axios from "axios";
@@ -38,6 +38,7 @@ import * as XLSX from "xlsx";
 import EditContactForm from "../components/EditContactForm";
 
 const ReportTable = (props) => {
+  const copyUrlRef = useRef(null);
   const appName =
     "OpenSign™";
   const drivename = appName === "OpenSign™" ? "OpenSign™" : "";
@@ -527,6 +528,9 @@ const ReportTable = (props) => {
 
   const copytoclipboard = (share) => {
     copytoData(share.url);
+    if (copyUrlRef.current) {
+      copyUrlRef.current.textContent = share.url; // Update text safely
+    }
     setCopied({ ...copied, [share.email]: true });
   };
   //function to handle revoke/decline docment
@@ -2088,6 +2092,11 @@ const ReportTable = (props) => {
                                     </div>
                                   </div>
                                 ))}
+                                <p
+                                  id="copyUrl"
+                                  ref={copyUrlRef}
+                                  className="hidden"
+                                ></p>
                               </div>
                             </ModalUi>
                           )}

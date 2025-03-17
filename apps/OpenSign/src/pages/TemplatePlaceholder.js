@@ -881,6 +881,14 @@ const TemplatePlaceholder = () => {
   };
   const handleSaveTemplate = async () => {
     if (signersdata?.length) {
+      const remindOnceInEvery = parseInt(pdfDetails[0]?.RemindOnceInEvery);
+      const TimeToCompleteDays = parseInt(pdfDetails[0]?.TimeToCompleteDays);
+      const AutomaticReminders = pdfDetails[0]?.AutomaticReminders;
+      const reminderCount = TimeToCompleteDays / remindOnceInEvery;
+      if (AutomaticReminders && reminderCount > 15) {
+        alert(t("only-15-reminder-allowed"));
+        return;
+      }
       setIsLoading({ isLoad: true, message: t("loading-mssg") });
       setIsSendAlert(false);
       let signers = [],
@@ -1086,7 +1094,7 @@ const TemplatePlaceholder = () => {
       });
       setIsCreateDoc(false);
     } else {
-      setHandleError(t("something-went-wrong-mssg"));
+      setHandleError(t(res.id));
       setIsCreateDoc(false);
     }
   };
@@ -1471,6 +1479,15 @@ const TemplatePlaceholder = () => {
                     "black"
                 }
               };
+            } else if (["signature"].includes(position.type)) {
+              return {
+                ...position,
+                options: {
+                  ...position.options,
+                  name: defaultdata.name,
+                  hint: defaultdata?.hint || ""
+                }
+              };
             } else {
               return {
                 ...position,
@@ -1479,6 +1496,7 @@ const TemplatePlaceholder = () => {
                   name: defaultdata.name,
                   status: defaultdata.status,
                   defaultValue: defaultdata.defaultValue,
+                  hint: defaultdata?.hint || "",
                   fontSize:
                     fontSize || currWidgetsDetails?.options?.fontSize || 12,
                   fontColor:

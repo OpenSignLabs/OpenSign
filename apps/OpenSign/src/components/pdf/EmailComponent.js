@@ -1,25 +1,19 @@
 import React, { useState } from "react";
-import axios from "axios";
 import { handleToPrint } from "../../constant/Utils";
-import { themeColor, emailRegex } from "../../constant/const";
+import { emailRegex } from "../../constant/const";
 import Loader from "../../primitives/Loader";
 import ModalUi from "../../primitives/ModalUi";
 import { useTranslation } from "react-i18next";
-
+import Parse from "parse";
 function EmailComponent({
   isEmail,
-  pdfUrl,
   setIsEmail,
   setSuccessEmail,
   pdfDetails,
-  sender,
   setIsAlert,
-  extUserId,
   setIsDownloadModal
 }) {
   const { t } = useTranslation();
-  const appName =
-    "OpenSign™";
   const [emailList, setEmailList] = useState([]);
   const [emailValue, setEmailValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -28,73 +22,11 @@ function EmailComponent({
   const isAndroid = /Android/i.test(navigator.userAgent);
   //function for send email
   const sendEmail = async () => {
-    const pdfName = pdfDetails[0]?.Name;
     setIsLoading(true);
-    let sendMail;
-    const docId = pdfDetails?.[0]?.objectId || "";
-    let presignedUrl = pdfUrl;
-    try {
-      const axiosRes = await axios.post(
-        `${localStorage.getItem("baseUrl")}/functions/getsignedurl`,
-        {
-          url: pdfUrl,
-          docId: docId,
-        },
-        {
-          headers: {
-            "content-type": "Application/json",
-            "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
-            "X-Parse-Session-Token": localStorage.getItem("accesstoken")
-          }
-        }
-      );
-      presignedUrl = axiosRes.data.result;
-    } catch (err) {
-      console.log("err in getsignedurl", err);
-    }
-    for (let i = 0; i < emailList.length; i++) {
-      try {
-        let url = `${localStorage.getItem("baseUrl")}functions/sendmailv3`;
-        const headers = {
-          "Content-Type": "application/json",
-          "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
-          sessionToken: localStorage.getItem("accesstoken")
-        };
-        const logo =
-              `<img src='https://qikinnovation.ams3.digitaloceanspaces.com/logo.png' height='50' style='padding:20px'/>`;
-        const opurl =
-              ` <a href='www.opensignlabs.com' target=_blank>here</a>`;
-
-        let params = {
-          extUserId: extUserId,
-          pdfName: pdfName,
-          url: presignedUrl,
-          recipient: emailList[i],
-          subject: `${sender.name} has signed the doc - ${pdfName}`,
-          replyto:
-            pdfDetails?.[0]?.ExtUserPtr?.Email ||
-            "",
-          from:
-            sender.email,
-          html:
-            `<html><head><meta http-equiv='Content-Type' content='text/html; charset=UTF-8'/></head><body><div style='background-color:#f5f5f5;padding:20px'><div style='background-color:white'><div>` +
-            `${logo}</div><div style='padding:2px;font-family:system-ui;background-color:${themeColor}'><p style='font-size:20px;font-weight:400;color:white;padding-left:20px'>Document Copy</p></div><div>` +
-            `<p style='padding:20px;font-family:system-ui;font-size:14px'>A copy of the document <strong>${pdfName}</strong> is attached to this email. Kindly download the document from the attachment.</p>` +
-            `</div></div><div><p>This is an automated email from ${appName}. For any queries regarding this email, please contact the sender ${sender.email} directly. ` +
-            `If you think this email is inappropriate or spam, you may file a complaint with ${appName}${opurl}.</p></div></div></body></html>`
-        };
-        sendMail = await axios.post(url, params, { headers: headers });
-      } catch (error) {
-        console.log("error", error);
-        setIsLoading(false);
-        setIsEmail(false);
-        setIsAlert({
-          isShow: true,
-          alertMessage: t("something-went-wrong-mssg")
-        });
-      }
-    }
-    if (sendMail?.data?.result?.status === "success") {
+    const params = { docId: pdfDetails?.[0]?.objectId, recipients: emailList };
+    const sendmail = await Parse.Cloud.run("forwarddoc", params);
+    console.log("sendmail ", sendmail);
+    if (sendmail?.status === "success") {
       setSuccessEmail(true);
       setIsEmail(false);
       setTimeout(() => {

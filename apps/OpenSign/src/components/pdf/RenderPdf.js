@@ -89,35 +89,6 @@ function RenderPdf(props) {
             sign?.Id === data?.Id || sign?.objectId === data?.signerObjId
         )
       : [];
-    const handleAllUserName = (Id, Role, type, pos) => {
-      return (
-        <React.Fragment>
-          <div className="text-black text-[8px] font-bold">
-            {
-              props.pdfDetails[0].Signers?.find(
-                (signer) => signer.objectId === data.signerObjId
-              )?.Name
-            }
-          </div>
-          {type && (
-            <div
-              style={{ fontSize: pos ? calculateFontsize(pos) : "11px" }}
-              className="font-bold"
-            >
-              {type}
-            </div>
-          )}
-          {Role && (
-            <div
-              style={{ fontSize: pos ? calculateFontsize(pos) : "8px" }}
-              className="text-black font-medium"
-            >
-              {`(${Role})`}
-            </div>
-          )}
-        </React.Fragment>
-      );
-    };
     return (
       checkSign.length === 0 &&
       data?.placeHolder?.map((placeData, key) => {
@@ -148,7 +119,6 @@ function RenderPdf(props) {
                         isSignYourself={false}
                         posWidth={posWidth}
                         posHeight={posHeight}
-                        handleUserName={handleAllUserName}
                         isDragging={props.isDragging}
                         pdfDetails={props.pdfDetails}
                         setIsInitial={props.setIsInitial}
@@ -185,6 +155,7 @@ function RenderPdf(props) {
                         fontColor={props.fontColor}
                         setFontColor={props.setFontColor}
                         setRequestSignTour={props.setRequestSignTour}
+                        calculateFontsize={calculateFontsize}
                       />
                     </React.Fragment>
                   )
@@ -204,73 +175,6 @@ function RenderPdf(props) {
       return `${height / 5}px`;
     } else if (width < height) {
       return `${width / 10}px`;
-    }
-  };
-  //function for render placeholder block over pdf document
-
-  const handleUserName = (Id, Role, type, pos) => {
-    if (Id) {
-      const checkSign = props.signersdata.find((sign) => sign.Id === Id);
-      if (checkSign?.Name) {
-        return (
-          <>
-            <div
-              style={{
-                fontSize: pos ? calculateFontsize(pos) : "8px"
-              }}
-              className="text-black font-medium"
-            >
-              {checkSign?.Name}
-            </div>
-            {type && (
-              <div
-                style={{
-                  fontSize: pos ? calculateFontsize(pos) : "11px"
-                }}
-                className=" font-bold"
-              >
-                {type}
-              </div>
-            )}
-            {Role && (
-              <div
-                style={{
-                  fontSize: pos ? calculateFontsize(pos) : "8px"
-                }}
-                className="text-black text-[8px] font-medium"
-              >
-                {`(${Role})`}
-              </div>
-            )}
-          </>
-        );
-      } else {
-        return (
-          <>
-            {type && (
-              <div
-                style={{ fontSize: pos ? calculateFontsize(pos) : "11px" }}
-                className=" font-bold"
-              >
-                {type}
-              </div>
-            )}
-            <div
-              style={{ fontSize: pos ? calculateFontsize(pos) : "8px" }}
-              className="text-black font-medium"
-            >
-              {Role}
-            </div>
-          </>
-        );
-      }
-    } else {
-      return (
-        <>
-          {type && <div className="text-[11px] font-bold">{type}</div>}
-          <div className="text-black text-[8px] font-medium">{Role}</div>
-        </>
-      );
     }
   };
   const pdfDataBase64 = `data:application/pdf;base64,${props.pdfBase64Url}`;
@@ -361,7 +265,6 @@ function RenderPdf(props) {
                                             handleLinkUser={
                                               props.handleLinkUser
                                             }
-                                            handleUserName={handleUserName}
                                             isSignYourself={false}
                                             posWidth={posWidth}
                                             posHeight={posHeight}
@@ -403,6 +306,9 @@ function RenderPdf(props) {
                                               props.unSignedWidgetId
                                             }
                                             isFreeResize={true}
+                                            calculateFontsize={
+                                              calculateFontsize
+                                            }
                                           />
                                         </React.Fragment>
                                       );
@@ -448,7 +354,6 @@ function RenderPdf(props) {
                                     setWidgetType={props.setWidgetType}
                                     setSelectWidgetId={props.setSelectWidgetId}
                                     selectWidgetId={props.selectWidgetId}
-                                    handleUserName={handleUserName}
                                     setIsCheckbox={props.setIsCheckbox}
                                     setValidateAlert={props.setValidateAlert}
                                     setCurrWidgetsDetails={
@@ -468,6 +373,7 @@ function RenderPdf(props) {
                                     setIsResize={props.setIsResize}
                                     isFreeResize={false}
                                     isOpenSignPad={true}
+                                    calculateFontsize={calculateFontsize}
                                   />
                                 )
                               );
@@ -573,7 +479,6 @@ function RenderPdf(props) {
                                             handleLinkUser={
                                               props.handleLinkUser
                                             }
-                                            handleUserName={handleUserName}
                                             isSignYourself={false}
                                             posWidth={posWidth}
                                             posHeight={posHeight}
@@ -615,6 +520,9 @@ function RenderPdf(props) {
                                               props.unSignedWidgetId
                                             }
                                             isFreeResize={true}
+                                            calculateFontsize={
+                                              calculateFontsize
+                                            }
                                           />
                                         </React.Fragment>
                                       );
@@ -665,7 +573,6 @@ function RenderPdf(props) {
                                     setWidgetType={props.setWidgetType}
                                     setSelectWidgetId={props.setSelectWidgetId}
                                     selectWidgetId={props.selectWidgetId}
-                                    handleUserName={handleUserName}
                                     setIsCheckbox={props.setIsCheckbox}
                                     setValidateAlert={props.setValidateAlert}
                                     setCurrWidgetsDetails={
@@ -686,6 +593,7 @@ function RenderPdf(props) {
                                     setIsResize={props.setIsResize}
                                     isFreeResize={false}
                                     isOpenSignPad={true}
+                                    calculateFontsize={calculateFontsize}
                                   />
                                 </React.Fragment>
                               );

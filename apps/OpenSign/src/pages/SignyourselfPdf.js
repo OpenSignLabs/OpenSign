@@ -124,7 +124,6 @@ function SignYourSelf() {
   const [pdfLoad, setPdfLoad] = useState(false);
   const [isAlert, setIsAlert] = useState({ isShow: false, alertMessage: "" });
   const [isDontShow, setIsDontShow] = useState(false);
-  const [extUserId, setExtUserId] = useState("");
   const [isCompleted, setIsCompleted] = useState(false);
   const [isCelebration, setIsCelebration] = useState(false);
   const [pdfArrayBuffer, setPdfArrayBuffer] = useState("");
@@ -207,7 +206,6 @@ function SignYourSelf() {
 
       if (documentData && documentData.length > 0) {
         setPdfDetails(documentData);
-        setExtUserId(documentData[0]?.ExtUserPtr?.objectId);
         const placeholders =
           documentData[0]?.Placeholders?.length > 0
             ? documentData[0]?.Placeholders
@@ -1368,18 +1366,16 @@ function SignYourSelf() {
                     setCurrWidgetsDetails={setCurrWidgetsDetails}
                   />
                 )}
-                {/*render email component to send email after finish signature on document */}
+                {/*render email component to send email after finish signature on document 
                 <EmailComponent
                   isEmail={isEmail}
-                  pdfUrl={pdfUrl}
                   setIsEmail={setIsEmail}
-                  pdfDetails={pdfDetails}
                   setSuccessEmail={setSuccessEmail}
-                  sender={jsonSender}
+                  pdfDetails={pdfDetails}
                   setIsAlert={setIsAlert}
-                  extUserId={extUserId}
                   setIsDownloadModal={setIsDownloadModal}
                 />
+                */}
                 {/* pdf header which contain funish back button */}
                 <Header
                   pageNumber={pageNumber}

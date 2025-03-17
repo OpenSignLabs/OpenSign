@@ -26,7 +26,7 @@ async function uploadFile(
     return { imageUrl: fileUrl };
   } catch (err) {
     console.log('Err ', err);
-    // `unlinkCertificate` is used to remove exported signed pdf file from exports folder
+    // `unlinkCertificate` is used to remove exported certificate file from exports folder
     unlinkCertificate(filepath);
   }
 }

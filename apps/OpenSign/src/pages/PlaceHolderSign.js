@@ -68,6 +68,7 @@ import AddContact from "../primitives/AddContact";
 
 function PlaceHolderSign() {
   const { t } = useTranslation();
+  const copyUrlRef = useRef(null);
   const appName =
     "OpenSign™";
   const editorRef = useRef();
@@ -1091,6 +1092,9 @@ function PlaceHolderSign() {
 
   const copytoclipboard = (text) => {
     copytoData(text);
+    if (copyUrlRef.current) {
+      copyUrlRef.current.textContent = text; // Update text safely
+    }
     setCopied(true);
     setTimeout(() => setCopied(false), 1500); // Reset copied state after 1.5 seconds
   };
@@ -1311,13 +1315,13 @@ function PlaceHolderSign() {
       setIsMailSend(true);
       setIsLoading({ isLoad: false });
       setIsUiLoading(false);
-    }
-    else if (sendMail?.data?.result?.status === "quota-reached") {
+    } else if (sendMail?.data?.result?.status === "quota-reached") {
       setMailStatus("quotareached");
       setIsSend(true);
       setIsMailSend(true);
       setIsUiLoading(false);
-    } else {
+    }
+    else {
       setMailStatus("failed");
       setIsSend(true);
       setIsMailSend(true);
@@ -1569,6 +1573,15 @@ function PlaceHolderSign() {
                   isReadOnly: defaultdata?.isReadOnly || false
                 }
               };
+            } else if (["signature"].includes(position.type)) {
+              return {
+                ...position,
+                options: {
+                  ...position.options,
+                  name: defaultdata.name,
+                  hint: defaultdata?.hint || ""
+                }
+              };
             } else {
               return {
                 ...position,
@@ -1577,6 +1590,7 @@ function PlaceHolderSign() {
                   name: defaultdata.name,
                   status: defaultdata.status,
                   defaultValue: defaultdata.defaultValue,
+                  hint: defaultdata?.hint || "",
                   fontSize:
                     fontSize || currWidgetsDetails?.options?.fontSize || 12,
                   fontColor:
@@ -2086,6 +2100,11 @@ function PlaceHolderSign() {
                             <span className="h-[1px] w-[20%] bg-[#ccc]"></span>
                           </div>
                           <div className="my-3">{handleShareList()}</div>
+                          <p
+                            id="copyUrl"
+                            ref={copyUrlRef}
+                            className="hidden"
+                          ></p>
                         </>
                       )}
                     </div>
@@ -2127,7 +2146,11 @@ function PlaceHolderSign() {
                         </div>
                       ) : (
                         <div className="mb-[10px]">
-                          <p>{t("placeholder-alert-6")}</p>
+                          {mailStatus === "dailyquotareached" ? (
+                            <p>{t("daily-quota-reached")}</p>
+                          ) : (
+                            <p>{t("placeholder-alert-6")}</p>
+                          )}
                           {isCurrUser && (
                             <p className="mt-1">{t("placeholder-alert-5")}</p>
                           )}

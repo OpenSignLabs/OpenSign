@@ -642,7 +642,13 @@ export const createDocument = async (
       ...Bcc,
       ...RedirectUrl
     };
-
+    const remindOnceInEvery = Doc?.RemindOnceInEvery;
+    const TimeToCompleteDays = parseInt(Doc?.TimeToCompleteDays);
+    const reminderCount = TimeToCompleteDays / remindOnceInEvery;
+    const AutomaticReminders = Doc.autoreminder;
+    if (AutomaticReminders && reminderCount > 15) {
+      return { status: "error", id: "only-15-reminder-allowed" };
+    }
     try {
       const res = await axios.post(
         `${localStorage.getItem("baseUrl")}classes/contracts_Document`,
@@ -660,7 +666,7 @@ export const createDocument = async (
       }
     } catch (err) {
       console.log("axois err ", err);
-      return { status: "error", id: "Something Went Wrong!" };
+      return { status: "error", id: "something-went-wrong-mssg" };
     }
   }
 };
@@ -985,7 +991,7 @@ export const addInitialData = (signerPos, setXyPosition, value, userId) => {
           ...item,
           options: {
             ...item.options,
-            defaultValue: widgetData
+            defaultValue: item?.options?.defaultValue || widgetData
           }
           // Width:
           //   calculateInitialWidthHeight(item.type, widgetData).getWidth ||

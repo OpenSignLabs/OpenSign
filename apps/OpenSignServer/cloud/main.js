@@ -51,6 +51,7 @@ import generateCertificatebydocId from './parsefunction/generateCertificatebydoc
 import fileUpload from './parsefunction/fileUpload.js';
 import getUserListByOrg from './parsefunction/getUserListByOrg.js';
 import editContact from './parsefunction/editContact.js';
+import forwardDoc from './parsefunction/ForwardDoc.js';
 
 
 // This afterSave function triggers after an object is added or updated in the specified class, allowing for post-processing logic.
@@ -112,3 +113,4 @@ Parse.Cloud.define('generatecertificate', generateCertificatebydocId);
 Parse.Cloud.define('fileupload', fileUpload);
 Parse.Cloud.define('getuserlistbyorg', getUserListByOrg);
 Parse.Cloud.define('editcontact', editContact);
+Parse.Cloud.define('forwarddoc', forwardDoc);

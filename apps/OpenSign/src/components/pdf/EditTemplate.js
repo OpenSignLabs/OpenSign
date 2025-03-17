@@ -64,6 +64,13 @@ const EditTemplate = ({
     const IsEnableOTP = formData.IsEnableOTP === "true" ? true : false;
     const allowModify = formData?.AllowModifications || false;
     let reminderDate = {};
+    const remindOnceInEvery = formData?.RemindOnceInEvery;
+    const TimeToCompleteDays = parseInt(formData?.TimeToCompleteDays);
+    const reminderCount = TimeToCompleteDays / remindOnceInEvery;
+    if (AutoReminder && reminderCount > 15) {
+      alert(t("only-15-reminder-allowed"));
+      return;
+    }
     if (AutoReminder) {
       const RemindOnceInEvery = parseInt(formData?.RemindOnceInEvery);
       const ReminderDate = new Date(template?.createdAt);

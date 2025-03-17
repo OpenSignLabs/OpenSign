@@ -81,6 +81,15 @@ const Forms = (props) => {
   const extUserData =
     localStorage.getItem("Extand_Class") &&
     JSON.parse(localStorage.getItem("Extand_Class"))?.[0];
+  const sendinorder =
+    extUserData?.SendinOrder !== undefined && extUserData?.SendinOrder === false
+      ? "false"
+      : "true";
+  const istourenabled =
+    extUserData?.IsTourEnabled !== undefined &&
+    extUserData?.IsTourEnabled === false
+      ? "false"
+      : "true";
   useEffect(() => {
     handleReset();
     return () => abortController.abort();
@@ -92,7 +101,12 @@ const Forms = (props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const initializeValues = async () => {
-      setFormData((obj) => ({ ...obj, NotifyOnSignatures: true }));
+      setFormData((obj) => ({
+        ...obj,
+        NotifyOnSignatures: true,
+        SendinOrder: sendinorder,
+        IsTourEnabled: istourenabled
+      }));
   };
 
   function getFileAsArrayBuffer(file) {
@@ -374,14 +388,19 @@ const Forms = (props) => {
           const isChecked = formData.SendinOrder === "false" ? false : true;
           const isTourEnabled =
             formData?.IsTourEnabled === "false" ? false : true;
+          const remindOnceInEvery = parseInt(formData.remindOnceInEvery);
+          const TimeToCompleteDays = parseInt(formData?.TimeToCompleteDays);
+          const AutomaticReminders = formData.autoreminder;
+          const reminderCount = TimeToCompleteDays / remindOnceInEvery;
+          if (AutomaticReminders && reminderCount > 15) {
+            alert(t("only-15-reminder-allowed"));
+            return;
+          }
           object.set("SendinOrder", isChecked);
-          object.set("AutomaticReminders", formData.autoreminder);
-          object.set("RemindOnceInEvery", parseInt(formData.remindOnceInEvery));
+          object.set("AutomaticReminders", AutomaticReminders);
+          object.set("RemindOnceInEvery", remindOnceInEvery);
           object.set("IsTourEnabled", isTourEnabled);
-          object.set(
-            "TimeToCompleteDays",
-            parseInt(formData?.TimeToCompleteDays)
-          );
+          object.set("TimeToCompleteDays", TimeToCompleteDays);
             object.set("AllowModifications", false);
             object.set("IsEnableOTP", false);
             if (formData.NotifyOnSignatures !== undefined) {
@@ -437,14 +456,14 @@ const Forms = (props) => {
                 ? "Note to myself"
                 : "Please review and sign this document",
             TimeToCompleteDays: 15,
-            SendinOrder: "true",
+            SendinOrder: sendinorder,
             password: "",
             file: "",
             NotifyOnSignatures: notifySign,
             remindOnceInEvery: 5,
             autoreminder: false,
             IsEnableOTP: "false",
-            IsTourEnabled: "true",
+            IsTourEnabled: istourenabled,
             RedirectUrl: "",
             AllowModifications: false
           });
@@ -454,7 +473,17 @@ const Forms = (props) => {
         }
       } catch (err) {
         console.log("err ", err);
-        setIsAlert({ type: "danger", message: t("something-went-wrong-mssg") });
+        if (err.message === "only 15 reminder allowed") {
+          setIsAlert({
+            type: "danger",
+            message: t("only-15-reminder-allowed")
+          });
+        } else {
+          setIsAlert({
+            type: "danger",
+            message: t("something-went-wrong-mssg")
+          });
+        }
       } finally {
         setTimeout(() => setIsAlert({ type: "success", message: "" }), 1000);
         setIsSubmit(false);
@@ -506,13 +535,13 @@ const Forms = (props) => {
           ? "Note to myself"
           : "Please review and sign this document",
       TimeToCompleteDays: 15,
-      SendinOrder: "true",
+      SendinOrder: sendinorder,
       password: "",
       file: "",
       remindOnceInEvery: 5,
       autoreminder: false,
       IsEnableOTP: "false",
-      IsTourEnabled: "true",
+      IsTourEnabled: istourenabled,
       NotifyOnSignatures: notifySign,
       RedirectUrl: "",
       AllowModifications: false

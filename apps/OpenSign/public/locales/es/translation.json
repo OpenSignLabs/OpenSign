@@ -79,6 +79,7 @@
     "Storage": "Almacenamiento",
     "Signing certificate": "Certificado de firma",
     "Teams": "Equipos",
+    "General": "General",
     "Teams-Children": {
       "Organizations": "Organizaciones",
       "OrgAdmins": "OrgAdmins"
@@ -149,7 +150,8 @@
     "Copy Public URL": "Copiar URL pública",
     "extend-expiry-date": "Date d'expiration",
     "Duplicate Template": "Plantilla duplicada",
-    "Duplicate": "Duplicada"
+    "Duplicate": "Duplicada",
+    "daily-mail-quota": "Cuota diaria de correos electrónicos"
   },
   "report-heading": {
     "Sr.No": "Nº",
@@ -765,8 +767,6 @@
   "term-cond-p3": "Recibirá y firmará documentos electrónicamente a través de {{appName}}.",
   "term-cond-p4": "Su firma electrónica es jurídicamente vinculante y equivalente a una firma manuscrita.",
   "term-cond-h2": "2. Consentimiento para el uso de registros y firmas electrónicas",
-  "js-snippet-msg-2": "Administrar plantillas",
-  "js-snippet-msg-3": "página.",
   "term-cond-p5": "Al aceptar esta Divulgación:",
   "term-cond-p6": "Usted acepta realizar transacciones electrónicas con el Remitente utilizando {{appName}} y comprende que este consentimiento es válido hasta que se retire.",
   "term-cond-p7": "Usted acepta revisar, firmar y devolver documentos electrónicamente utilizando {{appName}}.",
@@ -802,6 +802,8 @@
   "term-cond-p30": " o correo electrónico",
   "js-snippet-msg": "Para integrar plantillas {{appName}} en sus sitios web HTML o páginas de destino, puede utilizar el siguiente código:",
   "js-snippet-msg-1": "Puede obtener el TemplateId en la página Administrar plantillas",
+  "js-snippet-msg-2": "Administrar plantillas",
+  "js-snippet-msg-3": "página.",
   "agrrement-alert": "Para continuar, debe consentir la divulgación de registros y firmas electrónicas.",
   "webhook-already-exists": "¡La URL ya existe! Pruebe con uno diferente.",
   "webhook-must-be-secure": "La URL del webhook debe ser segura y utilizar https://",
@@ -848,7 +850,11 @@
   "agreement-note": "Nota: Aceptar esto no significa que esté firmando el documento de inmediato. Esto solo le permite revisar el documento electrónicamente. Tendrá la oportunidad de leerlo en su totalidad y decidir si desea firmarlo después.",
   "draft-template-info-p1": "Para hacer que tu plantilla sea pública, debe contener un único rol o, si incluye múltiples roles, todos los roles adicionales deben estar ya asignados a firmantes. El rol público no asignado debe permanecer vacío y debe estar en la primera posición.",
   "visit-below-link": "Visita el siguiente enlace para saber más -",
-  "upgrade-to-team-plan": "Actualizar a team plan",
   "storage-help": "Habilitar BYOC te permite conectar tu propio almacenamiento S3 para que tus archivos permanezcan completamente bajo tu control, sin copias externas retenidas. Si la autonomía de los datos es importante para ti, considera actualizar a Teams para desbloquear esta función.",
-  "daily-quota-reached": "You’ve reached your daily quota. For assistance, please contact quotas@opensignlabs.com."
+  "daily-quota-reached": "Ha alcanzado su cuota diaria. Para obtener ayuda, comuníquese con quotas@opensignlabs.com.",
+  "enabled-signature-type": "Tipos de firma habilitados",
+  "enabled-signature-type-help": "La configuración de 'Tipos de firma habilitados' determina qué opciones de firma están disponibles en su organización. Por ejemplo, si desactiva la opción 'Dibujar', los miembros de su organización no la verán en el widget de firma, mientras que las otras tres opciones seguirán siendo accesibles.",
+  "indexing-public-profile": "Permitir la indexación del perfil público por los motores de búsqueda",
+  "user-created-successfully": "Usuario creado con éxito.",
+  "only-15-reminder-allowed": "Puede configurar hasta 15 recordatorios automáticos. Por ejemplo, si 'TimeToComplete' es de 15 días y 'RemindOnceInEvery' es de 1 día, alcanzará el límite máximo de 15 recordatorios. Ajuste su configuración en consecuencia."
 }

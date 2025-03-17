@@ -76,6 +76,7 @@ const changeDateToMomentFormat = (format) => {
 };
 //function to get default format
 const getDefaultFormat = (dateFormat) => dateFormat || "MM/dd/yyyy";
+
 //function to convert formated date to new Date() format
 const getDefaultDate = (dateStr, format) => {
   //get valid date format for moment to convert formated date to new Date() format
@@ -90,6 +91,7 @@ const getDefaultDate = (dateStr, format) => {
     return date;
   }
 };
+ 
 function Placeholder(props) {
   //'isTouchDevice' is used to detect whether a device has a touchscreen or is mouse-based
   const isTouchDevice = navigator.maxTouchPoints > 0;
@@ -437,7 +439,9 @@ function Placeholder(props) {
 
     //checking widget's type and open widget copy modal for required widgets
     if (
-      ["signature", textWidget, "stamp", "initials"].includes(props.pos.type)
+      ["signature", textInputWidget, textWidget, "stamp", "initials"].includes(
+        props.pos.type
+      )
     ) {
       props.setIsPageCopy(true);
       props.setSignKey(props.pos.key);
@@ -1083,7 +1087,7 @@ function Placeholder(props) {
               isSignYourself={props.isSignYourself}
               isSelfSign={props.isSelfSign}
               signerObjId={props.signerObjId}
-              handleUserName={props.handleUserName}
+              calculateFontsize={props.calculateFontsize}
               pdfDetails={props?.pdfDetails && props?.pdfDetails[0]}
               isNeedSign={props.isNeedSign}
               setSelectDate={setSelectDate}

@@ -31,7 +31,11 @@ const WidgetNameModal = (props) => {
         name: props.defaultdata?.options?.name || "",
         defaultValue: props.defaultdata?.options?.defaultValue || "",
         status: props.defaultdata?.options?.status || "required",
-        hint: props.defaultdata?.options?.hint || "",
+        hint:
+          props.defaultdata?.options?.hint ||
+          (props.defaultdata?.type === textInputWidget
+            ? "Enter text"
+            : `Enter ${props.defaultdata?.options?.name}`),
         textvalidate:
           props.defaultdata?.options?.validation?.type === "regex"
             ? props.defaultdata?.options?.validation?.pattern
@@ -272,12 +276,13 @@ const WidgetNameModal = (props) => {
             </div>
           </div>
         )}
-        {props.defaultdata?.type === textInputWidget && (
+        {props.defaultdata?.type !== textWidget && (
           <div className="mb-[0.75rem]">
             <label htmlFor="hint" className="text-[13px]">
               {t("hint")}
             </label>
             <input
+              maxLength={40}
               className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
               name="hint"
               value={formdata.hint}
@@ -295,7 +300,7 @@ const WidgetNameModal = (props) => {
         ].includes(props.defaultdata?.type) && (
           <div className="flex flex-col md:flex-row md:items-center gap-3 mb-3">
             <div className="flex items-center gap-2 ">
-              <span>{t("font-size")}:</span>
+              <span className="whitespace-nowrap">{t("font-size")}: </span>
               <select
                 className="ml-[7px] w-[60%] op-select op-select-bordered op-select-sm focus:outline-none hover:border-base-content text-xs"
                 value={

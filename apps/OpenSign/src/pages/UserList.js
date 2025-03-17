@@ -10,7 +10,6 @@ import AddUser from "../components/AddUser";
 import Title from "../components/Title";
 import { useTranslation } from "react-i18next";
 const heading = ["Sr.No", "Name", "Email", "Phone", "Role", "Team", "Active"];
-// const actions = [];
 const UserList = () => {
   const { t } = useTranslation();
   const [userList, setUserList] = useState([]);
@@ -114,9 +113,8 @@ const UserList = () => {
       setUserList(_userRes);
     } catch (err) {
       console.log("Err in fetch userlist", err);
-      setIsAlert({ type: "danger", msg: t("something-went-wrong-mssg") });
+      showAlert("danger", t("something-went-wrong-mssg"));
     } finally {
-      setTimeout(() => setIsAlert({ type: "success", msg: "" }), 1500);
       setIsLoader(false);
     }
   }
@@ -173,17 +171,15 @@ const UserList = () => {
         extUser.id = user.objectId;
         extUser.set("IsDisabled", !IsDisabled);
         await extUser.save();
-        setIsAlert({
-          type: !IsDisabled === true ? "danger" : "success",
-          msg:
-            !IsDisabled === true ? t("user-deactivated") : t("user-activated")
-        });
+        showAlert(
+          !IsDisabled === true ? "danger" : "success",
+          !IsDisabled === true ? t("user-deactivated") : t("user-activated")
+        );
       } catch (err) {
-        setIsAlert({ type: "danger", msg: t("something-went-wrong-mssg") });
+        showAlert("danger", t("something-went-wrong-mssg"));
         console.log("err in disable team", err);
       } finally {
         setIsActLoader({});
-        setTimeout(() => setIsAlert({ type: "success", msg: "" }), 1500);
       }
     }
   };
@@ -191,6 +187,11 @@ const UserList = () => {
     setIsActiveModal({ [user.objectId]: true });
   };
 
+  // `showAlert` handle show/hide alert
+  const showAlert = (type, msg) => {
+    setIsAlert({ type, msg });
+    setTimeout(() => setIsAlert({ type: "success", msg: "" }), 1500);
+  };
   return (
     <div className="relative">
       <Title title={isAdmin ? "Users" : "Page not found"} />
@@ -229,8 +230,8 @@ const UserList = () => {
                       </div>
                     </div>
                   </div>
-                  <div className="overflow-x-auto w-full">
-                    <table className="op-table border-collapse w-full">
+                  <div className="w-full overflow-x-auto">
+                    <table className="op-table border-collapse w-full mb-[50px]">
                       <thead className="text-[14px]">
                         <tr className="border-y-[1px]">
                           {heading?.map((item, index) => (
@@ -240,85 +241,85 @@ const UserList = () => {
                           ))}
                         </tr>
                       </thead>
-                      <tbody className="text-[12px]">
-                        {userList?.length > 0 && (
-                          <>
-                            {currentList.map((item, index) => (
-                              <tr className="border-y-[1px]" key={index}>
-                                {heading.includes("Sr.No") && (
-                                  <th className="px-4 py-2">
-                                    {startIndex + index + 1}
-                                  </th>
-                                )}
+                      {userList?.length > 0 && (
+                        <tbody className="text-[12px]">
+                          {currentList.map((item, index) => (
+                            <tr className="border-y-[1px]" key={index}>
+                              {heading.includes("Sr.No") && (
+                                <th className="px-4 py-2">
+                                  {startIndex + index + 1}
+                                </th>
+                              )}
+                              <td className="px-4 py-2 font-semibold">
+                                {item?.Name}{" "}
+                              </td>
+                              <td className="px-4 py-2 ">
+                                {item?.Email || "-"}
+                              </td>
+                              <td className="px-4 py-2">
+                                {item?.Phone || "-"}
+                              </td>
+                              <td className="px-4 py-2">
+                                {item?.UserRole?.split("_").pop() || "-"}
+                              </td>
+                              <td className="px-4 py-2">
+                                {formatRow(item.TeamIds)}
+                              </td>
+                              {item.UserRole !== "contracts_Admin" ? (
                                 <td className="px-4 py-2 font-semibold">
-                                  {item?.Name}{" "}
-                                </td>
-                                <td className="px-4 py-2 ">
-                                  {item?.Email || "-"}
-                                </td>
-                                <td className="px-4 py-2">
-                                  {item?.Phone || "-"}
-                                </td>
-                                <td className="px-4 py-2">
-                                  {item?.UserRole?.split("_").pop() || "-"}
-                                </td>
-                                <td className="px-4 py-2">
-                                  {formatRow(item.TeamIds)}
-                                </td>
-                                {item.UserRole !== "contracts_Admin" && (
-                                  <td className="px-4 py-2 font-semibold">
-                                    <label className="cursor-pointer relative block items-center mb-0">
-                                      <input
-                                        type="checkbox"
-                                        className="op-toggle transition-all op-toggle-secondary"
-                                        checked={item?.IsDisabled !== true}
-                                        onChange={() => handleToggleBtn(item)}
-                                      />
-                                    </label>
-                                    {isActiveModal[item.objectId] && (
-                                      <ModalUi
-                                        isOpen
-                                        title={t("user-status")}
-                                        handleClose={handleClose}
-                                      >
-                                        <div className="m-[20px]">
-                                          <div className="text-lg font-normal text-black">
-                                            {t("are-you-sure")}{" "}
-                                            {item?.IsDisabled
-                                              ? t("activate")
-                                              : t("deactivate")}{" "}
-                                            {t("this-user")}?
-                                          </div>
-                                          <hr className="bg-[#ccc] mt-4 " />
-                                          <div className="flex items-center mt-3 gap-2 text-white">
-                                            <button
-                                              onClick={() =>
-                                                handleToggleSubmit(item)
-                                              }
-                                              className="op-btn op-btn-primary"
-                                            >
-                                              {t("yes")}
-                                            </button>
-                                            <button
-                                              onClick={handleClose}
-                                              className="op-btn op-btn-secondary"
-                                            >
-                                              {t("no")}
-                                            </button>
-                                          </div>
+                                  <label className="cursor-pointer relative block items-center mb-0">
+                                    <input
+                                      type="checkbox"
+                                      className="op-toggle transition-all op-toggle-secondary"
+                                      checked={item?.IsDisabled !== true}
+                                      onChange={() => handleToggleBtn(item)}
+                                    />
+                                  </label>
+                                  {isActiveModal[item.objectId] && (
+                                    <ModalUi
+                                      isOpen
+                                      title={t("user-status")}
+                                      handleClose={handleClose}
+                                    >
+                                      <div className="m-[20px]">
+                                        <div className="text-lg font-normal text-black">
+                                          {t("are-you-sure")}{" "}
+                                          {item?.IsDisabled
+                                            ? t("activate")
+                                            : t("deactivate")}{" "}
+                                          {t("this-user")}?
                                         </div>
-                                      </ModalUi>
-                                    )}
-                                  </td>
-                                )}
-                              </tr>
-                            ))}
-                          </>
-                        )}
-                      </tbody>
+                                        <hr className="bg-[#ccc] mt-4 " />
+                                        <div className="flex items-center mt-3 gap-2 text-white">
+                                          <button
+                                            onClick={() =>
+                                              handleToggleSubmit(item)
+                                            }
+                                            className="op-btn op-btn-primary"
+                                          >
+                                            {t("yes")}
+                                          </button>
+                                          <button
+                                            onClick={handleClose}
+                                            className="op-btn op-btn-secondary"
+                                          >
+                                            {t("no")}
+                                          </button>
+                                        </div>
+                                      </div>
+                                    </ModalUi>
+                                  )}
+                                </td>
+                              ) : (
+                                <td className="px-4 py-2 font-semibold"></td>
+                              )}
+                            </tr>
+                          ))}
+                        </tbody>
+                      )}
                     </table>
                   </div>
-                  <div className="flex flex-row  justify-between items-center text-xs font-medium">
+                  <div className="flex flex-row justify-between items-center text-xs font-medium">
                     <div className="op-join flex flex-wrap items-center p-2">
                       {userList.length > recordperPage && (
                         <button
@@ -374,7 +375,7 @@ const UserList = () => {
                     handleClose={() => handleModal("form")}
                   >
                     <AddUser
-                      setIsAlert={setIsAlert}
+                      showAlert={showAlert}
                       handleUserData={handleUserData}
                       closePopup={() => handleModal("form")}
                       setFormHeader={setFormHeader}
