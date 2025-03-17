@@ -1089,7 +1089,7 @@ paths:
         - **default:** Provide the value that needs to be selected by default. Only one value is accepted. (Optional).
         - **readonly:** Set to true if you want to set the dropdown as readonly. By default, it's false.
 
-        12. **radio Button**
+        12. **radio button**
         ```
         {
           "type": "radio button",
@@ -1163,6 +1163,89 @@ paths:
       summary: Create Document from Template
       description: |
         The Create Document API allows you to generate new documents by just providing template_id instead of uploading a new file(in the form of base64 or binary) every time you need to create a document. Templates for repeatedly used files can be created from user interface at [**Debug UI**](https://app.opensignlabs.com/debugpdf) or using the Create Template API.
+
+        You can provide default value for all widgets based on their name all widgets support except signature, stamp, initials, image.
+        1. **email**
+        ```
+        {
+          "name": "email",
+          "readonly": false,
+          "default": "email@example.com"
+        }
+        ```
+
+        2. **name**
+        ```
+        {
+          "name": "name",
+          "readonly": false,
+          "default": "joe"
+        }
+        ```
+
+        3. **job Title**
+        ```
+        {
+          "name": "job title",
+          "readonly": false,
+          "default": "ceo"
+        }
+        ```
+
+        4. **company**
+        ```
+        {
+          "name": "company",
+          "readonly": false,
+          "default": "example pvt ltd"
+        }
+        ```
+
+        5. **date**
+        ```
+        {
+          "name": "date",
+          "readonly": false,
+          "default": "11-05-2025"
+        }
+        ```
+
+        6. **textbox**
+        ```
+        {
+          "name": "textbox",
+          "readonly": false,
+          "default": "my text"
+        }
+        ```
+
+        7. **checkbox**
+        ```
+        {
+          "name": "checkbox",
+          "readonly": false,
+          "default": ["option-2"]
+        }
+        ```
+        - **default:** You can one or more than one value that need to be selected by default.
+
+        8. **dropdown**
+        ```
+        {
+          "name": "dropdown",
+          "readonly": false,
+          "default": "option1"
+        }
+        ```
+
+        9. **dropdown**
+        ```
+        {
+          "name": "radio",
+          "readonly": false,
+          "default": "option1"
+        }
+        ```
       operationId: createdocumentwithtemplateid
       parameters:
       - name: template_id
@@ -1288,6 +1371,55 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/inline_response_404_4'
+        "405":
+          description: Invalid API Token!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/invalidtoken'
+      security:
+      - x-api-token: []
+    post:
+      tags:
+      - Documents
+      summary: Revoke Document
+      description: The Revoke document API allows you to revoke specific document from your documents.
+      operationId: revokedocument
+      parameters:
+      - name: document_id
+        in: path
+        description: Provide objectId of document to revoke
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          format: string
+          example: ph2bh2asd
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/revokedocument'
+      responses:
+        "200":
+          description: Document revoked successfully!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/revoke'
+        "400":
+          description: "Something went wrong, please try again later!"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_400_1'
+        "404":
+          description: Document not found!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_404_3'
         "405":
           description: Invalid API Token!
           content:
@@ -1735,7 +1867,7 @@ paths:
         - **default:** Provide the value that needs to be selected by default. Only one value is accepted. (Optional).
         - **readonly:** Set to true if you want to set the dropdown as readonly. By default, it's false.
 
-        12. **radio Button**
+        12. **radio button**
         ```
         {
           "type": "radio button",
@@ -2055,7 +2187,7 @@ paths:
         - **default:** Provide the value that needs to be selected by default. Only one value is accepted. (Optional).
         - **readonly:** Set to true if you want to set the dropdown as readonly. By default, it's false.
 
-        12. **radio Button**
+        12. **radio button**
         ```
         {
           "type": "radio button",
@@ -2940,7 +3072,7 @@ components:
         certificate:
           type: string
           format: string
-          example: https://certificateurl.com  
+          example: https://certificateurl.com
         title:
           type: string
           format: string
@@ -3044,6 +3176,16 @@ components:
           $ref: '#/components/schemas/date'
       xml:
         name: delete
+    revoke:
+      type: object
+      properties:
+        objectId:
+          type: string
+          example: Bxh2aspHp3
+        revokedAt:
+          $ref: '#/components/schemas/date'
+      xml:
+        name: revoke
     inline_response_404:
       type: object
       properties:
@@ -3375,6 +3517,10 @@ components:
         phone:
           type: string
           example: "123123131"
+        widgets:
+          type: array
+          items:
+            $ref: '#/components/schemas/createdocumenttemplate_id_Signers_widgets'
     createdocument_template_id_body:
       required:
       - signers
@@ -3429,6 +3575,12 @@ components:
           type: boolean
           description: "true - Permits signers to add elements such as signatures, initials, stamps, or text on top of existing widgets in the document. false - Restricts signers from adding any additional elements to the document. This is the default value."
           example: false
+    revokedocument:
+      type: object
+      properties:
+        reason:
+          type: string
+          example: ""
     resendmail_body:
       required:
       - document_id
@@ -3958,6 +4110,18 @@ components:
           type: string
           format: string
           example: https://url-to-sign-document.com
+    createdocumenttemplate_id_Signers_widgets:
+      type: object
+      properties:
+        name:
+          type: string
+          example: textbox_1
+        readonly:
+          type: boolean
+          example: false
+        default:
+          type: string
+          example: my textbox
   securitySchemes:
     x-api-token:
       type: apiKey
