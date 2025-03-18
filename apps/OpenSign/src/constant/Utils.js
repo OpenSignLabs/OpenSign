@@ -7,9 +7,7 @@ import { appInfo } from "./appinfo";
 import { saveAs } from "file-saver";
 import printModule from "print-js";
 import fontkit from "@pdf-lib/fontkit";
-import {
-  themeColor
-} from "./const";
+import { themeColor } from "./const";
 
 export const fontsizeArr = [2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28];
 export const fontColorArr = ["red", "black", "blue", "yellow"];
@@ -136,14 +134,12 @@ export const pdfNewWidthFun = (divRef) => {
 };
 
 //`contractUsers` function is used to get contract_User details
-export const contractUsers = async (
-) => {
+export const contractUsers = async () => {
   try {
     const url = `${localStorage.getItem("baseUrl")}functions/getUserDetails`;
     const parseAppId = localStorage.getItem("parseAppId");
     const accesstoken = localStorage.getItem("accesstoken");
-    const token =
-          { "X-Parse-Session-Token": accesstoken };
+    const token = { "X-Parse-Session-Token": accesstoken };
     const headers = {
       headers: {
         "Content-Type": "application/json",
@@ -495,7 +491,7 @@ export const signPdfFun = async (
   documentId,
   signerObjectId,
   objectId,
-  widgets,
+  widgets
 ) => {
   let isCustomCompletionMail = false;
   try {
@@ -504,10 +500,7 @@ export const signPdfFun = async (
     if (tenantDetails && tenantDetails === "user does not exist!") {
       return { status: "error", message: "User does not exist." };
     } else {
-      if (
-        tenantDetails?.CompletionBody &&
-        tenantDetails?.CompletionSubject
-      ) {
+      if (tenantDetails?.CompletionBody && tenantDetails?.CompletionSubject) {
         isCustomCompletionMail = true;
       }
     }
@@ -642,7 +635,13 @@ export const createDocument = async (
       ...Bcc,
       ...RedirectUrl
     };
-
+    const remindOnceInEvery = Doc?.RemindOnceInEvery;
+    const TimeToCompleteDays = parseInt(Doc?.TimeToCompleteDays);
+    const reminderCount = TimeToCompleteDays / remindOnceInEvery;
+    const AutomaticReminders = Doc.autoreminder;
+    if (AutomaticReminders && reminderCount > 15) {
+      return { status: "error", id: "only-15-reminder-allowed" };
+    }
     try {
       const res = await axios.post(
         `${localStorage.getItem("baseUrl")}classes/contracts_Document`,
@@ -660,7 +659,7 @@ export const createDocument = async (
       }
     } catch (err) {
       console.log("axois err ", err);
-      return { status: "error", id: "Something Went Wrong!" };
+      return { status: "error", id: "something-went-wrong-mssg" };
     }
   }
 };
@@ -985,7 +984,7 @@ export const addInitialData = (signerPos, setXyPosition, value, userId) => {
           ...item,
           options: {
             ...item.options,
-            defaultValue: widgetData
+            defaultValue: item?.options?.defaultValue || widgetData
           }
           // Width:
           //   calculateInitialWidthHeight(item.type, widgetData).getWidth ||
@@ -1005,8 +1004,7 @@ export const addInitialData = (signerPos, setXyPosition, value, userId) => {
 
 //function for embed document id
 export const embedDocId = async (pdfDoc, documentId, allPages) => {
-  const appName =
-    "OpenSign™";
+  const appName = "OpenSign™";
   // `fontBytes` is used to embed custom font in pdf
   const fontBytes = await fileasbytes(
     "https://cdn.opensignlabs.com/webfonts/times.ttf"
@@ -1868,12 +1866,9 @@ export const contactBook = async (objectId) => {
 };
 
 //function for getting document details from contract_Documents class
-export const contractDocument = async (
-  documentId,
-) => {
+export const contractDocument = async (documentId) => {
   const data = { docId: documentId };
-  const token =
-        { sessionToken: localStorage.getItem("accesstoken") };
+  const token = { sessionToken: localStorage.getItem("accesstoken") };
   const documentDeatils = await axios
     .post(`${localStorage.getItem("baseUrl")}functions/getDocument`, data, {
       headers: {
@@ -2057,36 +2052,31 @@ export const getFileName = (fileUrl) => {
 
 //fetch tenant app logo from `partners_Tenant` class by domain name
 export const getAppLogo = async () => {
-    const domain = window.location.host;
-    try {
-      const tenant = await Parse.Cloud.run("getlogobydomain", {
-        domain: domain
-      });
-      if (tenant) {
-          localStorage.setItem("appname", "OpenSign™");
-        return { logo: tenant?.logo, user: tenant?.user };
-      }
-    } catch (err) {
-      console.log("err in getlogo ", err);
-      if (err?.message?.includes("valid JSON")) {
-        return { logo: appInfo.applogo, user: "exist", error: "invalid_json" };
-      } else {
-        return { logo: appInfo.applogo, user: "exist" };
-      }
+  const domain = window.location.host;
+  try {
+    const tenant = await Parse.Cloud.run("getlogobydomain", {
+      domain: domain
+    });
+    if (tenant) {
+      localStorage.setItem("appname", "OpenSign™");
+      return { logo: tenant?.logo, user: tenant?.user };
     }
+  } catch (err) {
+    console.log("err in getlogo ", err);
+    if (err?.message?.includes("valid JSON")) {
+      return { logo: appInfo.applogo, user: "exist", error: "invalid_json" };
+    } else {
+      return { logo: appInfo.applogo, user: "exist" };
+    }
+  }
 };
-export const getTenantDetails = async (
-  objectId,
-  contactId
-) => {
+export const getTenantDetails = async (objectId, contactId) => {
   try {
     const url = `${localStorage.getItem("baseUrl")}functions/gettenant`;
     const parseAppId = localStorage.getItem("parseAppId");
     const accesstoken = localStorage.getItem("accesstoken");
-    const token =
-          { "X-Parse-Session-Token": accesstoken };
-    const data =
-          { userId: objectId, contactId: contactId };
+    const token = { "X-Parse-Session-Token": accesstoken };
+    const data = { userId: objectId, contactId: contactId };
     const res = await axios.post(url, data, {
       headers: {
         "Content-Type": "application/json",
@@ -2173,8 +2163,7 @@ export const handleSendOTP = async (email) => {
   }
 };
 export const fetchUrl = async (url, pdfName) => {
-  const appName =
-    "OpenSign™";
+  const appName = "OpenSign™";
   try {
     const response = await fetch(url);
     if (!response.ok) {
@@ -2188,11 +2177,7 @@ export const fetchUrl = async (url, pdfName) => {
     console.error("Error downloading the file:", error);
   }
 };
-export const getSignedUrl = async (
-  pdfUrl,
-  docId,
-  templateId
-) => {
+export const getSignedUrl = async (pdfUrl, docId, templateId) => {
   //use only axios here due to public template sign
   const axiosRes = await axios.post(
     `${localStorage.getItem("baseUrl")}/functions/getsignedurl`,
@@ -2253,10 +2238,7 @@ export const handleDownloadPdf = async (
     setIsDownloading && setIsDownloading("pdf");
     const docId = pdfDetails?.[0]?.objectId || "";
     try {
-      const url = await getSignedUrl(
-        pdfUrl,
-        docId,
-      );
+      const url = await getSignedUrl(pdfUrl, docId);
       await fetchUrl(url, pdfName);
       setIsDownloading && setIsDownloading("");
     } catch (err) {
@@ -2286,7 +2268,7 @@ export const handleToPrint = async (event, setIsDownloading, pdfDetails) => {
       `${localStorage.getItem("baseUrl")}/functions/getsignedurl`,
       {
         url: pdfUrl,
-        docId: docId,
+        docId: docId
       },
       {
         headers: {
@@ -2330,8 +2312,7 @@ export const handleDownloadCertificate = async (
   setIsDownloading,
   isZip
 ) => {
-  const appName =
-    "OpenSign™";
+  const appName = "OpenSign™";
   if (pdfDetails?.length > 0 && pdfDetails[0]?.CertificateUrl) {
     try {
       await fetch(pdfDetails[0] && pdfDetails[0]?.CertificateUrl);
@@ -2415,14 +2396,13 @@ export const handleDownloadCertificate = async (
 export function escapeRegExp(string) {
   return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); // Escape special characters
 }
-export async function findContact(
-  value,
-) {
+export async function findContact(value) {
   try {
     const baseURL = localStorage.getItem("baseUrl");
     const url = `${baseURL}functions/getsigners`;
-    const token =
-          { "X-Parse-Session-Token": localStorage.getItem("accesstoken") };
+    const token = {
+      "X-Parse-Session-Token": localStorage.getItem("accesstoken")
+    };
     const headers = {
       "Content-Type": "application/json",
       "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
@@ -2634,23 +2614,20 @@ export function base64ToArrayBuffer(base64) {
   return bytes.buffer;
 }
 
-export const convertBase64ToFile = async (
-  pdfName,
-  pdfBase64,
-) => {
+export const convertBase64ToFile = async (pdfName, pdfBase64) => {
   const fileName = sanitizeFileName(pdfName) + ".pdf";
-    try {
-        const pdfFile = new Parse.File(fileName, { base64: pdfBase64 });
-        // Save the Parse File if needed
-        const pdfData = await pdfFile.save();
-        const pdfUrl = pdfData.url();
-        const fileRes = await getSecureUrl(pdfUrl);
-        if (fileRes?.url) {
-          return fileRes.url;
-        }
-    } catch (e) {
-      console.log("error in convertbase64tofile", e);
+  try {
+    const pdfFile = new Parse.File(fileName, { base64: pdfBase64 });
+    // Save the Parse File if needed
+    const pdfData = await pdfFile.save();
+    const pdfUrl = pdfData.url();
+    const fileRes = await getSecureUrl(pdfUrl);
+    if (fileRes?.url) {
+      return fileRes.url;
     }
+  } catch (e) {
+    console.log("error in convertbase64tofile", e);
+  }
 };
 export const onClickZoomIn = (scale, zoomPercent, setScale, setZoomPercent) => {
   setScale(scale + 0.1 * scale);
@@ -2949,13 +2926,10 @@ export const flattenPdf = async (pdfFile) => {
 };
 
 export const mailTemplate = (param) => {
-  const appName =
-    "OpenSign™";
-  const logo =
-        `<div style='padding:10px'><img src='https://qikinnovation.ams3.digitaloceanspaces.com/logo.png' height='50' /></div>`;
+  const appName = "OpenSign™";
+  const logo = `<div style='padding:10px'><img src='https://qikinnovation.ams3.digitaloceanspaces.com/logo.png' height='50' /></div>`;
 
-  const opurl =
-        ` <a href='https://www.opensignlabs.com' target=_blank>here</a>.</p></div></div></body></html>`;
+  const opurl = ` <a href='https://www.opensignlabs.com' target=_blank>here</a>.</p></div></div></body></html>`;
 
   const subject = `${param.senderName} has requested you to sign "${param.title}"`;
   const body =

@@ -79,6 +79,7 @@
     "Storage": "Storage",
     "Signing certificate": "Signing certificate",
     "Teams": "Teams",
+    "General": "General",
     "Teams-Children": {
       "Organizations": "Organizations",
       "OrgAdmins": "OrgAdmins"
@@ -149,7 +150,8 @@
     "Copy Public URL": "Copy public URL",
     "extend-expiry-date": "Extend expiry date",
     "Duplicate Template": "Duplicate template",
-    "Duplicate": "Duplicate"
+    "Duplicate": "Duplicate",
+    "daily-mail-quota": "Daily Email Quota"
   },
   "report-heading": {
     "Sr.No": "Sr.No",
@@ -849,5 +851,10 @@
   "draft-template-info-p1": "To make your template public, it must either contain a  single role, or, if it includes multiple roles, all additional roles must already be assigned to signers. The unassigned public role should remain empty and must be placed in the first position.",
   "visit-below-link": "Visit below link to know more -",
   "storage-help": "Enabling BYOC lets you connect your own S3 storage so your files remain entirely under your control—no external copies retained. If data autonomy matters to you, consider upgrading to Teams to unlock this feature.",
-  "daily-quota-reached": "You’ve reached your daily quota. For assistance, please contact quotas@opensignlabs.com."
+  "daily-quota-reached": "You’ve reached your daily quota. For assistance, please contact quotas@opensignlabs.com.",
+  "enabled-signature-type": "Enabled Signature Types",
+  "enabled-signature-type-help": "The 'Enabled Signature Types' setting determines which signature options are available across your organization. For example, if you disable the 'Draw' option, members of your organization will not see it in the signature widget, while the other three options will remain accessible.",
+  "indexing-public-profile": "Allow indexing of public profile by search engines",
+  "user-created-successfully": "user created successfully.",
+  "only-15-reminder-allowed": "You can set up to 15 automatic reminders. For example, if 'TimeToComplete' is 15 days and 'RemindOnceInEvery' is 1 day, you'll reach the maximum limit of 15 reminders. Adjust your settings accordingly."
 }
