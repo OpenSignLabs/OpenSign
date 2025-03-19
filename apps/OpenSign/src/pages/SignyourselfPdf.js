@@ -66,8 +66,7 @@ import LoaderWithMsg from "../primitives/LoaderWithMsg";
 function SignYourSelf() {
   const { t } = useTranslation();
   const { docId } = useParams();
-  const appName =
-    "OpenSign™";
+  const appName = "OpenSign™";
   const divRef = useRef(null);
   const nodeRef = useRef(null);
   const imageRef = useRef(null);
@@ -124,7 +123,6 @@ function SignYourSelf() {
   const [pdfLoad, setPdfLoad] = useState(false);
   const [isAlert, setIsAlert] = useState({ isShow: false, alertMessage: "" });
   const [isDontShow, setIsDontShow] = useState(false);
-  const [extUserId, setExtUserId] = useState("");
   const [isCompleted, setIsCompleted] = useState(false);
   const [isCelebration, setIsCelebration] = useState(false);
   const [pdfArrayBuffer, setPdfArrayBuffer] = useState("");
@@ -207,7 +205,6 @@ function SignYourSelf() {
 
       if (documentData && documentData.length > 0) {
         setPdfDetails(documentData);
-        setExtUserId(documentData[0]?.ExtUserPtr?.objectId);
         const placeholders =
           documentData[0]?.Placeholders?.length > 0
             ? documentData[0]?.Placeholders
@@ -564,11 +561,7 @@ function SignYourSelf() {
     let pdfUrl;
     if (isUploadPdf) {
       const pdfName = generatePdfName(16);
-      pdfUrl = await convertBase64ToFile(
-        pdfName,
-        pdfBase64Url,
-        "",
-      );
+      pdfUrl = await convertBase64ToFile(pdfName, pdfBase64Url, "");
     }
     const widgetsType = ["signature", "stamp", "image", "initials"];
     let updatedXYPosition;
@@ -754,10 +747,7 @@ function SignYourSelf() {
     if (tenantDetails && tenantDetails === "user does not exist!") {
       alert(t("user-not-exist"));
     } else {
-      if (
-        tenantDetails?.CompletionBody &&
-        tenantDetails?.CompletionSubject
-      ) {
+      if (tenantDetails?.CompletionBody && tenantDetails?.CompletionSubject) {
         isCustomCompletionMail = true;
       }
     }
@@ -793,7 +783,7 @@ function SignYourSelf() {
       pdfFile: base64Url,
       docId: documentId,
       isCustomCompletionMail: isCustomCompletionMail,
-      signature: suffixbase64,
+      signature: suffixbase64
     };
     const resSignPdf = await Parse.Cloud.run("signPdf", params);
     if (resSignPdf) {
@@ -1371,13 +1361,10 @@ function SignYourSelf() {
                 {/*render email component to send email after finish signature on document */}
                 <EmailComponent
                   isEmail={isEmail}
-                  pdfUrl={pdfUrl}
                   setIsEmail={setIsEmail}
-                  pdfDetails={pdfDetails}
                   setSuccessEmail={setSuccessEmail}
-                  sender={jsonSender}
+                  pdfDetails={pdfDetails}
                   setIsAlert={setIsAlert}
-                  extUserId={extUserId}
                   setIsDownloadModal={setIsDownloadModal}
                 />
                 {/* pdf header which contain funish back button */}

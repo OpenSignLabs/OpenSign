@@ -1,4 +1,13 @@
 async function DocumentBeforesave(request) {
+  if (!request.original) {
+    const TimeToCompleteDays = request.object.get('TimeToCompleteDays') || 15;
+    const RemindOnceInEvery = request?.object?.get('RemindOnceInEvery') || 5;
+    const AutoReminder = request?.object?.get('AutomaticReminders') || false;
+    const reminderCount = TimeToCompleteDays / RemindOnceInEvery;
+    if (AutoReminder && reminderCount > 15) {
+      throw new Parse.Error(Parse.Error.INVALID_QUERY, 'only 15 reminder allowed');
+    }
+  }
   try {
     // below code is used to update document when user sent document or self signed
     const document = request.object;
