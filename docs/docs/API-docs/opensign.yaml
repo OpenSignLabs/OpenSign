@@ -1227,7 +1227,7 @@ paths:
           "default": ["option-2"]
         }
         ```
-        - **default:** You can one or more than one value that need to be selected by default.
+        - **default:** You can have one or more than one value that needs to be selected by default.
 
         8. **dropdown**
         ```
@@ -1238,7 +1238,7 @@ paths:
         }
         ```
 
-        9. **dropdown**
+        9. **radio button**
         ```
         {
           "name": "radio",
