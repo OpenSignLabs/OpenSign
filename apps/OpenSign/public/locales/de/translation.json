@@ -79,6 +79,7 @@
     "Storage": "Speicher",
     "Signing certificate": "Signierzertifikat",
     "Teams": "Teams",
+    "General": "Allgemein",
     "Teams-Children": {
       "Organizations": "Organisationen",
       "OrgAdmins": "OrgAdmins"
@@ -149,7 +150,8 @@
     "Copy Public URL": "Öffentliche URL kopieren",
     "extend-expiry-date": "Ablaufdatum verlängern",
     "Duplicate Template": "Vorlage duplizieren",
-    "Duplicate": "Duplikat"
+    "Duplicate": "Duplikat",
+    "daily-mail-quota": "Tägliches E-Mail-Kontingent"
   },
   "report-heading": {
     "Sr.No": "Nr.",
@@ -169,7 +171,7 @@
     "Name": "Name",
     "Status": "Status",
     "created-date": "Erstellungsdatum",
-    "Type": "Typ",
+    "Type": "Type",
     "Logs": "Protokolle",
     "Expiry-date": "Ablaufdatum"
   },
@@ -604,6 +606,7 @@
     "placeholder-sign-4": "Ziehen Sie ein Feld in das Dokument oder klicken Sie darauf, um es hinzuzufügen.",
     "placeholder-sign-5": "Der PDF-Inhaltsbereich zeigt bereits die vorhandenen Platzhalter der Vorlage an. Diese Platzhalter entsprechen der Farbe des Empfängernamens, um sie leicht erkennbar zu machen.",
     "placeholder-sign-6": "Mit einem Klick auf 'Weiter' wird das Dokument gespeichert. Im nächsten Schritt können Sie die E-Mails, die an die Empfänger versendet werden sollen, anpassen oder die Signaturlinks kopieren und diese selbst mit den Empfängern teilen.",
+    "report-1":"Klicken Sie auf die Schaltfläche „Hinzufügen“, um eine neue Vorlage zu erstellen. Vorlagen sind wiederverwendbare Dokumente, mit denen schnell neue Dokumente mit derselben Struktur und unterschiedlichen Unterzeichnern erstellt werden können. Eine HR-Vorlage für die Einarbeitung könnte beispielsweise vordefinierte Rollen wie „Personalleiter“ und „Neuer Mitarbeiter“ enthalten. Bei jeder Verwendung der Vorlage können Sie die Rolle „Neuer Mitarbeiter“ verschiedenen neuen Mitarbeitern zuweisen, während die Rolle „Personalleiter“ unverändert bleibt. So wird ein nahtloser Einarbeitungsprozess für jeden neuen Mitarbeiter ermöglicht.",
     "redirect": "Klicken Sie auf die Schaltfläche 'Verwenden', um ein neues Dokument aus einer bestehenden Vorlage zu erstellen.",
     "bulksend": "Um schnell mehrere Dokumente mithilfe einer vorhandenen Vorlage zu versenden, indem Sie einfach die E-Mail-Adressen der Empfänger erstellen, klicken Sie auf die Schaltfläche ‚Massenversand‘",
     "option": "Dieses Menü zeigt weitere Optionen wie Bearbeiten und Löschen. Verwenden Sie die Schaltfläche 'Bearbeiten', um Unterzeichnerrollen hinzuzufügen, Felder zu ändern und Ihre Vorlage zu aktualisieren. Änderungen gelten für alle zukünftigen Dokumente, die aus dieser Vorlage erstellt werden, wirken sich jedoch nicht auf vorhandene Dokumente aus. Verwenden Sie die Schaltfläche 'Löschen', um die Vorlage zu entfernen.",
@@ -848,5 +851,10 @@
   "draft-template-info-p1": "Um Ihre Vorlage öffentlich zu machen, muss sie entweder eine einzelne Rolle enthalten oder, wenn sie mehrere Rollen umfasst, müssen alle zusätzlichen Rollen bereits den Unterzeichnern zugewiesen sein. Die nicht zugewiesene öffentliche Rolle muss leer bleiben und an erster Stelle stehen.",
   "visit-below-link": "Besuchen Sie den untenstehenden Link, um mehr zu erfahren -",
   "storage-help": "Durch die Aktivierung von BYOC können Sie Ihren eigenen S3-Speicher verbinden, sodass Ihre Dateien vollständig unter Ihrer Kontrolle bleiben und keine externen Kopien gespeichert werden. Wenn Ihnen Datenautonomie wichtig ist, erwägen Sie ein Upgrade auf Teams, um diese Funktion freizuschalten.",
-  "daily-quota-reached": "You’ve reached your daily quota. For assistance, please contact quotas@opensignlabs.com."
+  "daily-quota-reached": "Sie haben Ihr tägliches Kontingent erreicht. Für Unterstützung kontaktieren Sie bitte quotas@opensignlabs.com.",
+  "enabled-signature-type": "Aktivierte Signaturtypen",
+  "enabled-signature-type-help": "Die Einstellung 'Aktivierte Signaturtypen' bestimmt, welche Signaturoptionen in Ihrer Organisation verfügbar sind. Wenn Sie beispielsweise die Option 'Zeichnen' deaktivieren, wird sie den Mitgliedern Ihrer Organisation im Signatur-Widget nicht angezeigt, während die anderen drei Optionen weiterhin zugänglich bleiben.",
+  "indexing-public-profile": "Erlaube die Indexierung des öffentlichen Profils durch Suchmaschinen",
+  "user-created-successfully": "Benutzer erfolgreich erstellt.",
+  "only-15-reminder-allowed": "Sie können bis zu 15 automatische Erinnerungen festlegen. Wenn zum Beispiel 'TimeToComplete' auf 15 Tage und 'RemindOnceInEvery' auf 1 Tag eingestellt ist, erreichen Sie das maximale Limit von 15 Erinnerungen. Passen Sie Ihre Einstellungen entsprechend an."
 }

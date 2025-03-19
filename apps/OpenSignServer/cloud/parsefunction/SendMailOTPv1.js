@@ -11,7 +11,7 @@ async function getDocument(docId) {
     query.include('Placeholders');
     query.notEqualTo('IsArchive', true);
     const res = await query.first({ useMasterKey: true });
-    const _res = res.toJSON();
+    const _res = res?.toJSON();
     return _res?.ExtUserPtr?.objectId;
   } catch (err) {
     console.log('err ', err);
