@@ -1,5 +1,5 @@
 # Use an official Node runtime as the base image
-FROM node:18
+FROM node:22.14.0
 
 # Set the working directory inside the container
 WORKDIR /usr/src/app
@@ -16,8 +16,7 @@ COPY apps/OpenSign/.husky .
 
 # Define environment variables if needed
 ENV NODE_ENV=production
-ENV REACT_APP_DEPLOYMENT=free_selfhost
-
+ENV GENERATE_SOURCEMAP=false
 # build
 RUN npm run build
 
