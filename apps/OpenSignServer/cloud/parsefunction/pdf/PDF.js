@@ -1,8 +1,5 @@
 import fs from 'node:fs';
 import axios from 'axios';
-import { SignPdf } from '@signpdf/signpdf';
-import { P12Signer } from '@signpdf/signer-p12';
-import { pdflibAddPlaceholder } from '@signpdf/placeholder-pdf-lib';
 import { PDFDocument } from 'pdf-lib';
 import {
   cloudServerUrl,
@@ -12,24 +9,29 @@ import {
   appName,
 } from '../../../Utils.js';
 import GenerateCertificate from './GenerateCertificate.js';
+import { pdflibAddPlaceholder } from '@signpdf/placeholder-pdf-lib';
 import { Placeholder } from './Placeholder.js';
+import { SignPdf } from '@signpdf/signpdf';
+import { P12Signer } from '@signpdf/signer-p12';
+
 const serverUrl = cloudServerUrl; // process.env.SERVER_URL;
 const APPID = process.env.APP_ID;
 const masterKEY = process.env.MASTER_KEY;
 const eSignName = 'OpenSign';
 const eSigncontact = 'hello@opensignlabs.com';
+const logo =
+  "<img src='https://qikinnovation.ams3.digitaloceanspaces.com/logo.png' height='50' style='padding:20px'/>";
+const opurl = ` <a href=www.opensignlabs.com target=_blank>here</a>`;
+
 // `updateDoc` is used to create url in from pdfFile
-async function uploadFile(
-  pdfName,
-  filepath,
-) {
+async function uploadFile(pdfName, filepath) {
   try {
     const filedata = fs.readFileSync(filepath);
     let fileUrl;
-      const file = new Parse.File(pdfName, [...filedata], 'application/pdf');
-      await file.save({ useMasterKey: true });
-      const fileRes = getSecureUrl(file.url());
-      fileUrl = fileRes.url;
+    const file = new Parse.File(pdfName, [...filedata], 'application/pdf');
+    await file.save({ useMasterKey: true });
+    const fileRes = getSecureUrl(file.url());
+    fileUrl = fileRes.url;
 
     return { imageUrl: fileUrl };
   } catch (err) {
@@ -104,14 +106,10 @@ async function sendNotifyMail(doc, signUser, mailProvider) {
       const signerName = signUser.Name;
       const signerEmail = signUser.Email;
       const viewDocUrl = `${process.env.PUBLIC_URL}/recipientSignPdf/${doc.objectId}`;
-      const logo =
-            `<div><img src='https://qikinnovation.ams3.digitaloceanspaces.com/logo.png' height='50' style='padding:20px' /></div>`;
-      const opurl =
-            ` <a href=www.opensignlabs.com target=_blank>here</a>`;
       const subject = `Document "${pdfName}" has been signed by ${signerName}`;
       const body =
         "<html><head><meta http-equiv='Content-Type' content='text/html; charset=UTF-8'/></head><body><div style='background-color:#f5f5f5;padding:20px'><div style='background-color:white'>" +
-        `${logo}<div style='padding:2px;font-family:system-ui;background-color:#47a3ad'><p style='font-size:20px;font-weight:400;color:white;padding-left:20px'>Document signed by ${signerName}</p>` +
+        `<div>${logo}</div><div style='padding:2px;font-family:system-ui;background-color:#47a3ad'><p style='font-size:20px;font-weight:400;color:white;padding-left:20px'>Document signed by ${signerName}</p>` +
         `</div><div style='padding:20px;font-family:system-ui;font-size:14px'><p>Dear ${creatorName},</p><p>${pdfName} has been signed by ${signerName} "${signerEmail}" successfully</p>` +
         `<p><a href=${viewDocUrl} target=_blank>View Document</a></p></div></div><div><p>This is an automated email from ${appName}. For any queries regarding this email, ` +
         `please contact the sender ${creatorEmail} directly. If you think this email is inappropriate or spam, you may file a complaint with ${appName}${opurl}.</p></div></div></body></html>`;
@@ -154,17 +152,13 @@ async function sendCompletedMail(obj) {
     signersMail = sender.Email;
   }
   const recipient = signersMail;
-  const logo =
-        `<div><img src='https://qikinnovation.ams3.digitaloceanspaces.com/logo.png' height='50' style='padding:20px'/></div>`;
-  const opurl =
-        ` <a href=www.opensignlabs.com target=_blank>here</a>.</p></div></div></body></html>`;
   let subject = `Document "${pdfName}" has been signed by all parties`;
   let body =
     "<html><head><meta http-equiv='Content-Type' content='text/html; charset=UTF-8' /></head><body><div style='background-color:#f5f5f5;padding:20px'><div style='background-color:white'>" +
-    `${logo}<div style='padding:2px;font-family:system-ui;background-color:#47a3ad'><p style='font-size:20px;font-weight:400;color:white;padding-left:20px'>Document signed successfully</p></div><div>` +
+    `<div>${logo}</div><div style='padding:2px;font-family:system-ui;background-color:#47a3ad'><p style='font-size:20px;font-weight:400;color:white;padding-left:20px'>Document signed successfully</p></div><div>` +
     `<p style='padding:20px;font-family:system-ui;font-size:14px'>All parties have successfully signed the document <b>"${pdfName}"</b>. Kindly download the document from the attachment.</p>` +
     `</div></div><div><p>This is an automated email from ${appName}. For any queries regarding this email, please contact the sender ${sender.Email} directly.` +
-    `If you think this email is inappropriate or spam, you may file a complaint with ${appName}${opurl}`;
+    `If you think this email is inappropriate or spam, you may file a complaint with ${appName}${opurl}.</p></div></div></body></html>`;
 
   if (obj?.isCustomMail) {
     const tenant = sender?.TenantId;
@@ -202,8 +196,7 @@ async function sendCompletedMail(obj) {
 
     const variables = {
       document_title: pdfName,
-      sender_name:
-        sender.Name,
+      sender_name: sender.Name,
       sender_mail: doc?.SenderMail || sender.Email,
       sender_phone: sender?.Phone || '',
       receiver_name: sender.Name,
@@ -220,45 +213,40 @@ async function sendCompletedMail(obj) {
   const params = {
     extUserId: sender.objectId,
     url: url,
-    from:
-      appName,
-    replyto:
-      doc?.ExtUserPtr?.Email ||
-      '',
+    from: appName,
+    replyto: doc?.ExtUserPtr?.Email || '',
     recipient: recipient,
     subject: subject,
     pdfName: pdfName,
     html: body,
     mailProvider: obj.mailProvider,
     bcc: Bcc,
-    certificatePath: `./exports/certificate_${doc.objectId}.pdf`,
+    certificatePath: `./exports/signed_certificate_${doc.objectId}.pdf`,
     filename: obj?.filename,
   };
-  const res = await axios.post(serverUrl + '/functions/sendmailv3', params, {
-    headers: {
-      'Content-Type': 'application/json',
-      'X-Parse-Application-Id': APPID,
-      'X-Parse-Master-Key': masterKEY,
-    },
-  });
+  try {
+    const res = await axios.post(serverUrl + '/functions/sendmailv3', params, {
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Parse-Application-Id': APPID,
+        'X-Parse-Master-Key': masterKEY,
+      },
+    });
+    // console.log('res', res.data.result);
+    if (res.data?.result?.status !== 'success') {
+      fs.unlinkSync(`./exports/signed_certificate_${doc.objectId}.pdf`);
+    }
+  } catch (err) {
+    fs.unlinkSync(`./exports/signed_certificate_${doc.objectId}.pdf`);
+  }
 }
 
-
 // `sendMailsaveCertifcate` is used send completion mail and update complete status of document
-async function sendMailsaveCertifcate(
-  doc,
-  P12Buffer,
-  isCustomMail,
-  mailProvider,
-  filename,
-) {
+async function sendMailsaveCertifcate(doc, pfx, isCustomMail, mailProvider, filename) {
   const certificate = await GenerateCertificate(doc);
   const certificatePdf = await PDFDocument.load(certificate);
-  let passphrase = process.env.PASS_PHRASE;
-  if (doc?.ExtUserPtr?.TenantId?.PfxFile?.password) {
-    passphrase = doc?.ExtUserPtr?.TenantId?.PfxFile?.password;
-  }
-  const p12 = new P12Signer(P12Buffer, { passphrase: passphrase || null });
+  const P12Buffer = fs.readFileSync(pfx.name);
+  const p12 = new P12Signer(P12Buffer, { passphrase: pfx.passphrase || null });
   //  `pdflibAddPlaceholder` is used to add code of only digitial sign in certificate
   pdflibAddPlaceholder({
     pdfDoc: certificatePdf,
@@ -274,13 +262,11 @@ async function sendMailsaveCertifcate(
   const certificateOBJ = new SignPdf();
   // `signedCertificate` is used to sign certificate digitally
   const signedCertificate = await certificateOBJ.sign(CertificateBuffer, p12);
-  const certificatePath = `./exports/certificate_${doc.objectId}.pdf`;
+  const certificatePath = `./exports/signed_certificate_${doc.objectId}.pdf`;
+
   //below is used to save signed certificate in exports folder
   fs.writeFileSync(certificatePath, signedCertificate);
-  const file = await uploadFile(
-    'certificate.pdf',
-    certificatePath,
-  );
+  const file = await uploadFile('certificate.pdf', certificatePath);
   const body = { CertificateUrl: file.imageUrl };
   await axios.put(serverUrl + '/classes/contracts_Document/' + doc.objectId, body, {
     headers: {
@@ -296,6 +282,7 @@ async function sendMailsaveCertifcate(
     sendCompletedMail({ isCustomMail, doc, mailProvider, filename });
   }
   saveFileUsage(CertificateBuffer.length, file.imageUrl, doc?.CreatedBy?.objectId);
+  fs.unlinkSync(pfx.name);
 }
 /**
  *
@@ -304,9 +291,11 @@ async function sendMailsaveCertifcate(
  * @returns if success {status, data} else {status, message}
  */
 async function PDF(req) {
+  const docId = req.params.docId;
+  const randomNumber = Math.floor(Math.random() * 5000);
+  const pfxname = `keystore_${randomNumber}.pfx`;
   try {
     const userIP = req.headers['x-real-ip']; // client IPaddress
-    const docId = req.params.docId;
     const reqUserId = req.params.userId;
     const isCustomMail = req.params.isCustomCompletionMail || false;
     const mailProvider = req.params.mailProvider || '';
@@ -354,9 +343,9 @@ async function PDF(req) {
         pfxFile = _resDoc?.ExtUserPtr?.TenantId?.PfxFile?.base64;
         passphrase = _resDoc?.ExtUserPtr?.TenantId?.PfxFile?.password;
       }
-      // const P12Buffer = fs.readFileSync();
+      const pfx = { name: pfxname, passphrase: passphrase };
       const P12Buffer = Buffer.from(pfxFile, 'base64');
-      const p12Cert = new P12Signer(P12Buffer, { passphrase: passphrase || null });
+      fs.writeFileSync(pfxname, P12Buffer);
       const UserPtr = { __type: 'Pointer', className: className, objectId: signUser.objectId };
       const obj = { UserPtr: UserPtr, SignedUrl: '', Activity: 'Signed', ipAddress: userIP };
       let updateAuditTrail;
@@ -375,12 +364,12 @@ async function PDF(req) {
       } else {
         isCompleted = true;
       }
-      const randomNumber = Math.floor(Math.random() * 5000);
       // below regex is used to replace all word with "_" except A to Z, a to z, numbers
       const docName = _resDoc?.Name?.replace(/[^a-zA-Z0-9._-]/g, '_')?.toLowerCase();
       const filename = docName?.length > 100 ? docName?.slice(0, 100) : docName;
-      const name = `signed_${filename}_${randomNumber}.pdf`;
-      const filePath = `./exports/${name}`;
+      const name = `${filename}_${randomNumber}.pdf`;
+      let filePath = `./exports/${name}`;
+      let signedFilePath = `./exports/signed_${name}`;
       let pdfSize = PdfBuffer.length;
       if (isCompleted) {
         const signersName = _resDoc.Signers?.map(x => x.Name + ' <' + x.Email + '>');
@@ -394,6 +383,8 @@ async function PDF(req) {
         form.updateFieldAppearances();
         // Flattens the form, converting all form fields into non-editable, static content
         form.flatten();
+        const p12Cert = new P12Signer(P12Buffer, { passphrase: passphrase || null });
+        signedFilePath = `./exports/signed_${name}`;
         Placeholder({
           pdfDoc: pdfDoc,
           reason: `Digitally signed by ${eSignName} for ${reason}`,
@@ -410,19 +401,18 @@ async function PDF(req) {
         const signedDocs = await OBJ.sign(PdfBuffer, p12Cert);
 
         //`saveUrl` is used to save signed pdf in exports folder
-        fs.writeFileSync(filePath, signedDocs);
+        fs.writeFileSync(signedFilePath, signedDocs);
         pdfSize = signedDocs.length;
+        console.log(`✅ PDF digitally signed created: ${signedFilePath} \n`);
       } else {
         //`saveUrl` is used to save signed pdf in exports folder
-        fs.writeFileSync(filePath, PdfBuffer);
+        fs.writeFileSync(signedFilePath, PdfBuffer);
         pdfSize = PdfBuffer.length;
+        console.log(`New Signed PDF created called: ${signedFilePath}`);
       }
 
       // `uploadFile` is used to upload pdf to aws s3 and get it's url
-      const data = await uploadFile(
-        name,
-        filePath,
-      );
+      const data = await uploadFile(`signed_${name}`, signedFilePath);
 
       if (data && data.imageUrl) {
         // `axios` is used to update signed pdf url in contracts_Document classes for given DocId
@@ -439,17 +429,13 @@ async function PDF(req) {
         saveFileUsage(pdfSize, data.imageUrl, _resDoc?.CreatedBy?.objectId);
         if (updatedDoc && updatedDoc.isCompleted) {
           const doc = { ..._resDoc, AuditTrail: updatedDoc.AuditTrail, SignedUrl: data.imageUrl };
-          sendMailsaveCertifcate(
-            doc,
-            P12Buffer,
-            isCustomMail,
-            mailProvider,
-            name,
-          );
+          sendMailsaveCertifcate(doc, pfx, isCustomMail, mailProvider, `signed_${name}`);
+        } else {
+          fs.unlinkSync(pfxname);
         }
         // `fs.unlinkSync` is used to remove exported signed pdf file from exports folder
-        fs.unlinkSync(filePath);
-        console.log(`New Signed PDF created called: ${filePath}`);
+        fs.unlinkSync(signedFilePath);
+        // console.log(`New Signed PDF created called: ${filePath}`);
         if (updatedDoc.message === 'success') {
           return { status: 'success', data: data.imageUrl };
         } else {
@@ -465,6 +451,15 @@ async function PDF(req) {
     }
   } catch (err) {
     console.log('Err in signpdf', err);
+    const body = { DebugginLog: err?.message };
+    try {
+      await axios.put(serverUrl + '/classes/contracts_Document/' + docId, body, {
+        headers: { 'X-Parse-Application-Id': APPID, 'X-Parse-Master-Key': masterKEY },
+      });
+    } catch (err) {
+      console.log('err in saving debugginglog', err);
+    }
+    fs.unlinkSync(pfxname);
     throw err;
   }
 }

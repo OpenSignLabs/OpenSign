@@ -165,7 +165,6 @@ const TemplatePlaceholder = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [divRef.current, isHeader]);
 
-
   //function to fetch tenant Details
   const fetchTenantDetails = async () => {
     const user = JSON.parse(
@@ -778,11 +777,7 @@ const TemplatePlaceholder = () => {
     let pdfUrl;
     if (isUploadPdf) {
       const pdfName = generatePdfName(16);
-      pdfUrl = await convertBase64ToFile(
-        pdfName,
-        pdfBase64Url,
-        "",
-      );
+      pdfUrl = await convertBase64ToFile(pdfName, pdfBase64Url, "");
     }
     if (signersdata?.length > 0) {
       signersdata.forEach((x) => {
@@ -849,11 +844,7 @@ const TemplatePlaceholder = () => {
           scale
         );
         const pdfName = generatePdfName(16);
-        const pdfUrl = await convertBase64ToFile(
-          pdfName,
-          pdfBase64,
-          "",
-        );
+        const pdfUrl = await convertBase64ToFile(pdfName, pdfBase64, "");
         const tenantId = localStorage.getItem("TenantId");
         const buffer = atob(pdfBase64);
         SaveFileSize(buffer.length, pdfUrl, tenantId);
@@ -865,11 +856,7 @@ const TemplatePlaceholder = () => {
     } else if (pdfBase64Url) {
       try {
         const pdfName = generatePdfName(16);
-        const pdfUrl = await convertBase64ToFile(
-          pdfName,
-          pdfBase64Url,
-          "",
-        );
+        const pdfUrl = await convertBase64ToFile(pdfName, pdfBase64Url, "");
         return pdfUrl;
       } catch (err) {
         console.log("error to convertBase64ToFile in placeholder flow", err);
@@ -881,6 +868,14 @@ const TemplatePlaceholder = () => {
   };
   const handleSaveTemplate = async () => {
     if (signersdata?.length) {
+      const remindOnceInEvery = parseInt(pdfDetails[0]?.RemindOnceInEvery);
+      const TimeToCompleteDays = parseInt(pdfDetails[0]?.TimeToCompleteDays);
+      const AutomaticReminders = pdfDetails[0]?.AutomaticReminders;
+      const reminderCount = TimeToCompleteDays / remindOnceInEvery;
+      if (AutomaticReminders && reminderCount > 15) {
+        alert(t("only-15-reminder-allowed"));
+        return;
+      }
       setIsLoading({ isLoad: true, message: t("loading-mssg") });
       setIsSendAlert(false);
       let signers = [],
@@ -1086,7 +1081,7 @@ const TemplatePlaceholder = () => {
       });
       setIsCreateDoc(false);
     } else {
-      setHandleError(t("something-went-wrong-mssg"));
+      setHandleError(t(res.id));
       setIsCreateDoc(false);
     }
   };
@@ -1461,14 +1456,22 @@ const TemplatePlaceholder = () => {
                   status: defaultdata?.status || "required",
                   hint: defaultdata?.hint || "",
                   defaultValue: defaultdata?.defaultValue || "",
-                  validation:
-                        {},
+                  validation: {},
                   fontSize:
                     fontSize || currWidgetsDetails?.options?.fontSize || 12,
                   fontColor:
                     fontColor ||
                     currWidgetsDetails?.options?.fontColor ||
                     "black"
+                }
+              };
+            } else if (["signature"].includes(position.type)) {
+              return {
+                ...position,
+                options: {
+                  ...position.options,
+                  name: defaultdata.name,
+                  hint: defaultdata?.hint || ""
                 }
               };
             } else {
@@ -1479,6 +1482,7 @@ const TemplatePlaceholder = () => {
                   name: defaultdata.name,
                   status: defaultdata.status,
                   defaultValue: defaultdata.defaultValue,
+                  hint: defaultdata?.hint || "",
                   fontSize:
                     fontSize || currWidgetsDetails?.options?.fontSize || 12,
                   fontColor:

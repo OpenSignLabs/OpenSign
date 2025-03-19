@@ -79,6 +79,7 @@
     "Storage": "Stockage",
     "Signing certificate": "Certificat de signature",
     "Teams": "Équipes",
+    "General": "Général",
     "Teams-Children": {
       "Organizations": "Organisations",
       "OrgAdmins": "OrgAdmins"
@@ -170,7 +171,8 @@
     "Copy Public URL": "Copier l'URL publique",
     "extend-expiry-date": "Prolonger la date d'expiration",
     "Duplicate Template": "dupliquer le modèle",
-    "Duplicate": "Double"
+    "Duplicate": "Double",
+    "daily-mail-quota": "Quota d'e-mails quotidien"
   },
   "report-help": {
     "Draft Documents": "Il s'agit de documents que vous avez commencés mais que vous n'avez pas finalisés pour envoi.",
@@ -450,6 +452,7 @@
   "add-recipients": "Ajouter des destinataires",
   "loading-mssg": "Cela pourrait prendre du temps",
   "send-mail": "Envoyer un mail",
+  "signature-field-widget": "Au moins un champ de signature doit être ajouté pour chaque utilisateur. Vous n'avez pas ajouté de champs de signature pour {{signersName}}",
   "placeholder-alert-1": "Veuillez vous assurer qu'au moins un widget de signature est ajouté pour tous les destinataires.",
   "placeholder-alert-2": "Veuillez confirmer que vous avez rempli le champ de texte.",
   "placeholder-alert-3": "Etes-vous sûr de vouloir envoyer ce document pour signature ? ",
@@ -557,7 +560,8 @@
   "do-not-access-contact-admin": "Vous n'y avez pas accès, veuillez contacter l'administrateur.",
   "filed-required-correctly": "Veuillez remplir correctement les informations requises.",
   "admin-created": "Administrateur créé",
-  "invalid-masterkey": "Clé principale invalide",  "master-key": "La clef maitresse",
+  "invalid-masterkey": "Clé principale invalide",
+  "master-key": "La clef maitresse",
   "profile-update-alert": "Mise à jour du profil réussie.",
   "date": "Date",
   "report-not-found": "Rapport introuvable",
@@ -847,5 +851,10 @@
   "draft-template-info-p1": "Pour rendre votre modèle public, il doit contenir un seul rôle ou, s'il inclut plusieurs rôles, tous les rôles supplémentaires doivent déjà être attribués aux signataires. Le rôle public non attribué doit rester vide et être placé en première position.",
   "visit-below-link": "Visitez le lien ci-dessous pour en savoir plus -",
   "storage-help": "Activer BYOC vous permet de connecter votre propre stockage S3 afin que vos fichiers restent entièrement sous votre contrôle, sans copie externe conservée. Si l'autonomie des données est importante pour vous, envisagez de passer à l'offre Teams pour débloquer cette fonctionnalité.",
-  "daily-quota-reached": "You’ve reached your daily quota. For assistance, please contact quotas@opensignlabs.com."
+  "daily-quota-reached": "Vous avez atteint votre quota quotidien. Pour obtenir de l'aide, veuillez contacter quotas@opensignlabs.com.",
+  "enabled-signature-type": "Types de signature activés",
+  "enabled-signature-type-help": "Le paramètre 'Types de signature activés' détermine quelles options de signature sont disponibles dans votre organisation. Par exemple, si vous désactivez l'option 'Dessiner', les membres de votre organisation ne la verront pas dans le widget de signature, tandis que les trois autres options resteront accessibles.",
+  "indexing-public-profile": "Autoriser l'indexation du profil public par les moteurs de recherche",
+  "user-created-successfully": "Utilisateur créé avec succès.",
+  "only-15-reminder-allowed": "Vous pouvez définir jusqu'à 15 rappels automatiques. Par exemple, si 'TimeToComplete' est de 15 jours et 'RemindOnceInEvery' est de 1 jour, vous atteindrez la limite maximale de 15 rappels. Ajustez vos paramètres en conséquence."
 }

@@ -4,7 +4,7 @@ export default async function Newsletter(request) {
   const email = request.params.email;
   const domain = request.params.domain;
   try {
-    const envAppId = process.env.REACT_APP_APPID || 'legadranaxn';
+    const envAppId = process.env.REACT_APP_APPID || 'opensign';
     const headers = { 'Content-Type': 'application/json', 'X-Parse-Application-Id': envAppId };
     const envProdServer = process.env.REACT_APP_SERVERURL || 'https://app.opensignlabs.com/api/app';
     const newsletter = await axios.post(

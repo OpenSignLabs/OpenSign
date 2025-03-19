@@ -12,21 +12,18 @@ const eSignName = 'OpenSign';
 const eSigncontact = 'hello@opensignlabs.com';
 
 // `uploadFile` is used to create url in from pdfFile
-async function uploadFile(
-  pdfName,
-  filepath,
-) {
+async function uploadFile(pdfName, filepath) {
   try {
     const filedata = fs.readFileSync(filepath);
     let fileUrl;
-      const file = new Parse.File(pdfName, [...filedata], 'application/pdf');
-      await file.save({ useMasterKey: true });
-      const fileRes = getSecureUrl(file.url());
-      fileUrl = fileRes.url;
+    const file = new Parse.File(pdfName, [...filedata], 'application/pdf');
+    await file.save({ useMasterKey: true });
+    const fileRes = getSecureUrl(file.url());
+    fileUrl = fileRes.url;
     return { imageUrl: fileUrl };
   } catch (err) {
     console.log('Err ', err);
-    // `unlinkCertificate` is used to remove exported signed pdf file from exports folder
+    // `unlinkCertificate` is used to remove exported certificate file from exports folder
     unlinkCertificate(filepath);
   }
 }
@@ -86,10 +83,7 @@ export default async function generateCertificatebydocId(req) {
 
       //below is used to save signed certificate in exports folder
       fs.writeFileSync(certificatePath, signedCertificate);
-      const file = await uploadFile(
-        'certificate.pdf',
-        certificatePath,
-      );
+      const file = await uploadFile('certificate.pdf', certificatePath);
       const updateDoc = new Parse.Object('contracts_Document');
       updateDoc.id = doc.objectId;
       updateDoc.set('CertificateUrl', file.imageUrl);

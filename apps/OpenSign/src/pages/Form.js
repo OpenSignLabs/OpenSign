@@ -36,8 +36,7 @@ function Form() {
 }
 
 const Forms = (props) => {
-  const appName =
-    "OpenSign™";
+  const appName = "OpenSign™";
   const { t } = useTranslation();
   const maxFileSize = 20;
   const abortController = new AbortController();
@@ -81,6 +80,15 @@ const Forms = (props) => {
   const extUserData =
     localStorage.getItem("Extand_Class") &&
     JSON.parse(localStorage.getItem("Extand_Class"))?.[0];
+  const sendinorder =
+    extUserData?.SendinOrder !== undefined && extUserData?.SendinOrder === false
+      ? "false"
+      : "true";
+  const istourenabled =
+    extUserData?.IsTourEnabled !== undefined &&
+    extUserData?.IsTourEnabled === false
+      ? "false"
+      : "true";
   useEffect(() => {
     handleReset();
     return () => abortController.abort();
@@ -92,7 +100,12 @@ const Forms = (props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const initializeValues = async () => {
-      setFormData((obj) => ({ ...obj, NotifyOnSignatures: true }));
+    setFormData((obj) => ({
+      ...obj,
+      NotifyOnSignatures: true,
+      SendinOrder: sendinorder,
+      IsTourEnabled: istourenabled
+    }));
   };
 
   function getFileAsArrayBuffer(file) {
@@ -130,17 +143,88 @@ const Forms = (props) => {
             const name = generatePdfName(16);
             const pdfName = `${name?.split(".")[0]}.pdf`;
             setfileload(true);
-              try {
-                const res = await getFileAsArrayBuffer(files[0]);
-                const flatPdf = await flattenPdf(res);
-                const parseFile = new Parse.File(
-                  pdfName,
-                  [...flatPdf],
-                  "application/pdf"
-                );
+            try {
+              const res = await getFileAsArrayBuffer(files[0]);
+              const flatPdf = await flattenPdf(res);
+              const parseFile = new Parse.File(
+                pdfName,
+                [...flatPdf],
+                "application/pdf"
+              );
 
+              try {
+                const response = await parseFile.save({
+                  progress: (progressValue, loaded, total, { type }) => {
+                    if (type === "upload" && progressValue !== null) {
+                      const percentCompleted = Math.round(
+                        (loaded * 100) / total
+                      );
+                      setpercentage(percentCompleted);
+                    }
+                  }
+                });
+                // The response object will contain information about the uploaded file
+                // You can access the URL of the uploaded file using response.url()
+                if (response.url()) {
+                  const fileRes = await getSecureUrl(response.url());
+                  if (fileRes.url) {
+                    setFileUpload(fileRes.url);
+                    setfileload(false);
+                    const tenantId = localStorage.getItem("TenantId");
+                    const title = generateTitleFromFilename(files?.[0]?.name);
+                    setFormData((obj) => ({ ...obj, Name: title }));
+                    SaveFileSize(size, fileRes.url, tenantId);
+                    return fileRes.url;
+                  } else {
+                    removeFile(e);
+                  }
+                } else {
+                  removeFile(e);
+                }
+              } catch (error) {
+                removeFile(e);
+                console.error("Error uploading file:", error);
+              }
+            } catch (err) {
+              if (err?.message?.includes("is encrypted")) {
                 try {
-                  const response = await parseFile.save({
+                  await Parse.Cloud.run("encryptedpdf", {
+                    email: Parse.User.current().getEmail()
+                  });
+                } catch (err) {
+                  console.log("err in sending posthog encryptedpdf", err);
+                }
+                try {
+                  setIsDecrypting(true);
+                  const size = files?.[0].size;
+                  const name = generatePdfName(16);
+                  const url = "https://ai.nxglabs.in/decryptpdf"; //
+                  let formData = new FormData();
+                  formData.append("file", files[0]);
+                  formData.append("password", "");
+                  const config = {
+                    headers: { "content-type": "multipart/form-data" },
+                    responseType: "blob"
+                  };
+                  const response = await axios.post(url, formData, config);
+                  const pdfBlob = new Blob([response.data], {
+                    type: "application/pdf"
+                  });
+                  const pdfFile = new File([pdfBlob], name, {
+                    type: "application/pdf"
+                  });
+                  setIsDecrypting(false);
+                  setfileload(true);
+                  const res = await getFileAsArrayBuffer(pdfFile);
+                  const flatPdf = await flattenPdf(res);
+                  // Upload the file to Parse Server
+                  const parseFile = new Parse.File(
+                    name,
+                    [...flatPdf],
+                    "application/pdf"
+                  );
+
+                  await parseFile.save({
                     progress: (progressValue, loaded, total, { type }) => {
                       if (type === "upload" && progressValue !== null) {
                         const percentCompleted = Math.round(
@@ -150,16 +234,16 @@ const Forms = (props) => {
                       }
                     }
                   });
-                  // The response object will contain information about the uploaded file
-                  // You can access the URL of the uploaded file using response.url()
-                  if (response.url()) {
-                    const fileRes = await getSecureUrl(response.url());
+
+                  // Retrieve the URL of the uploaded file
+                  if (parseFile.url()) {
+                    const fileRes = await getSecureUrl(parseFile.url());
                     if (fileRes.url) {
                       setFileUpload(fileRes.url);
-                      setfileload(false);
-                      const tenantId = localStorage.getItem("TenantId");
+                      removeFile();
                       const title = generateTitleFromFilename(files?.[0]?.name);
                       setFormData((obj) => ({ ...obj, Name: title }));
+                      const tenantId = localStorage.getItem("TenantId");
                       SaveFileSize(size, fileRes.url, tenantId);
                       return fileRes.url;
                     } else {
@@ -168,95 +252,22 @@ const Forms = (props) => {
                   } else {
                     removeFile(e);
                   }
-                } catch (error) {
-                  removeFile(e);
-                  console.error("Error uploading file:", error);
-                }
-              } catch (err) {
-                if (err?.message?.includes("is encrypted")) {
-                  try {
-                    await Parse.Cloud.run("encryptedpdf", {
-                      email: Parse.User.current().getEmail()
-                    });
-                  } catch (err) {
-                    console.log("err in sending posthog encryptedpdf", err);
-                  }
-                  try {
-                    setIsDecrypting(true);
-                    const size = files?.[0].size;
-                    const name = generatePdfName(16);
-                    const url = "https://ai.nxglabs.in/decryptpdf"; //
-                    let formData = new FormData();
-                    formData.append("file", files[0]);
-                    formData.append("password", "");
-                    const config = {
-                      headers: { "content-type": "multipart/form-data" },
-                      responseType: "blob"
-                    };
-                    const response = await axios.post(url, formData, config);
-                    const pdfBlob = new Blob([response.data], {
-                      type: "application/pdf"
-                    });
-                    const pdfFile = new File([pdfBlob], name, {
-                      type: "application/pdf"
-                    });
+                } catch (err) {
+                  removeFile();
+                  if (err?.response?.status === 401) {
+                    setIsPassword(true);
+                  } else {
+                    console.log("Error uploading file: ", err?.response);
                     setIsDecrypting(false);
-                    setfileload(true);
-                      const res = await getFileAsArrayBuffer(pdfFile);
-                      const flatPdf = await flattenPdf(res);
-                      // Upload the file to Parse Server
-                      const parseFile = new Parse.File(
-                        name,
-                        [...flatPdf],
-                        "application/pdf"
-                      );
-
-                      await parseFile.save({
-                        progress: (progressValue, loaded, total, { type }) => {
-                          if (type === "upload" && progressValue !== null) {
-                            const percentCompleted = Math.round(
-                              (loaded * 100) / total
-                            );
-                            setpercentage(percentCompleted);
-                          }
-                        }
-                      });
-
-                      // Retrieve the URL of the uploaded file
-                      if (parseFile.url()) {
-                        const fileRes = await getSecureUrl(parseFile.url());
-                        if (fileRes.url) {
-                          setFileUpload(fileRes.url);
-                          removeFile();
-                          const title = generateTitleFromFilename(
-                            files?.[0]?.name
-                          );
-                          setFormData((obj) => ({ ...obj, Name: title }));
-                          const tenantId = localStorage.getItem("TenantId");
-                          SaveFileSize(size, fileRes.url, tenantId);
-                          return fileRes.url;
-                        } else {
-                          removeFile(e);
-                        }
-                      } else {
-                        removeFile(e);
-                      }
-                  } catch (err) {
-                    removeFile();
-                    if (err?.response?.status === 401) {
-                      setIsPassword(true);
-                    } else {
-                      console.log("Error uploading file: ", err?.response);
-                      setIsDecrypting(false);
-                      e.target.value = "";
-                    }
+                    e.target.value = "";
                   }
-                } else {
-                  console.log("err ", err);
-                  setFileUpload("");
-                  removeFile(e);
                 }
+              } else {
+                console.log("err ", err);
+                setFileUpload("");
+                removeFile(e);
               }
+            }
           } else {
             const isImage = files?.[0]?.type.includes("image/");
             if (isImage) {
@@ -281,50 +292,50 @@ const Forms = (props) => {
               });
               const size = files?.[0]?.size;
               const name = generatePdfName(16);
-                const getFile = await pdfDoc.save({
-                  useObjectStreams: false
-                });
-                setfileload(true);
-                const pdfName = `${name?.split(".")[0]}.pdf`;
-                const parseFile = new Parse.File(
-                  pdfName,
-                  [...getFile],
-                  "application/pdf"
-                );
+              const getFile = await pdfDoc.save({
+                useObjectStreams: false
+              });
+              setfileload(true);
+              const pdfName = `${name?.split(".")[0]}.pdf`;
+              const parseFile = new Parse.File(
+                pdfName,
+                [...getFile],
+                "application/pdf"
+              );
 
-                try {
-                  const response = await parseFile.save({
-                    progress: (progressValue, loaded, total, { type }) => {
-                      if (type === "upload" && progressValue !== null) {
-                        const percentCompleted = Math.round(
-                          (loaded * 100) / total
-                        );
-                        setpercentage(percentCompleted);
-                      }
+              try {
+                const response = await parseFile.save({
+                  progress: (progressValue, loaded, total, { type }) => {
+                    if (type === "upload" && progressValue !== null) {
+                      const percentCompleted = Math.round(
+                        (loaded * 100) / total
+                      );
+                      setpercentage(percentCompleted);
                     }
-                  });
-                  // The response object will contain information about the uploaded file
-                  // You can access the URL of the uploaded file using response.url()
-                  if (response.url()) {
-                    const fileRes = await getSecureUrl(response.url());
-                    if (fileRes.url) {
-                      setFileUpload(fileRes.url);
-                      setfileload(false);
-                      const tenantId = localStorage.getItem("TenantId");
-                      const title = generateTitleFromFilename(files?.[0]?.name);
-                      setFormData((obj) => ({ ...obj, Name: title }));
-                      SaveFileSize(size, fileRes.url, tenantId);
-                      return fileRes.url;
-                    } else {
-                      removeFile(e);
-                    }
+                  }
+                });
+                // The response object will contain information about the uploaded file
+                // You can access the URL of the uploaded file using response.url()
+                if (response.url()) {
+                  const fileRes = await getSecureUrl(response.url());
+                  if (fileRes.url) {
+                    setFileUpload(fileRes.url);
+                    setfileload(false);
+                    const tenantId = localStorage.getItem("TenantId");
+                    const title = generateTitleFromFilename(files?.[0]?.name);
+                    setFormData((obj) => ({ ...obj, Name: title }));
+                    SaveFileSize(size, fileRes.url, tenantId);
+                    return fileRes.url;
                   } else {
                     removeFile(e);
                   }
-                } catch (error) {
+                } else {
                   removeFile(e);
-                  console.error("Error uploading file:", error);
                 }
+              } catch (error) {
+                removeFile(e);
+                console.error("Error uploading file:", error);
+              }
             }
           }
         }
@@ -374,19 +385,24 @@ const Forms = (props) => {
           const isChecked = formData.SendinOrder === "false" ? false : true;
           const isTourEnabled =
             formData?.IsTourEnabled === "false" ? false : true;
+          const remindOnceInEvery = parseInt(formData.remindOnceInEvery);
+          const TimeToCompleteDays = parseInt(formData?.TimeToCompleteDays);
+          const AutomaticReminders = formData.autoreminder;
+          const reminderCount = TimeToCompleteDays / remindOnceInEvery;
+          if (AutomaticReminders && reminderCount > 15) {
+            alert(t("only-15-reminder-allowed"));
+            return;
+          }
           object.set("SendinOrder", isChecked);
-          object.set("AutomaticReminders", formData.autoreminder);
-          object.set("RemindOnceInEvery", parseInt(formData.remindOnceInEvery));
+          object.set("AutomaticReminders", AutomaticReminders);
+          object.set("RemindOnceInEvery", remindOnceInEvery);
           object.set("IsTourEnabled", isTourEnabled);
-          object.set(
-            "TimeToCompleteDays",
-            parseInt(formData?.TimeToCompleteDays)
-          );
-            object.set("AllowModifications", false);
-            object.set("IsEnableOTP", false);
-            if (formData.NotifyOnSignatures !== undefined) {
-              object.set("NotifyOnSignatures", formData.NotifyOnSignatures);
-            }
+          object.set("TimeToCompleteDays", TimeToCompleteDays);
+          object.set("AllowModifications", false);
+          object.set("IsEnableOTP", false);
+          if (formData.NotifyOnSignatures !== undefined) {
+            object.set("NotifyOnSignatures", formData.NotifyOnSignatures);
+          }
           if (formData?.RedirectUrl) {
             object.set("RedirectUrl", formData.RedirectUrl);
           }
@@ -425,10 +441,9 @@ const Forms = (props) => {
           setSigners([]);
           setBcc([]);
           setFolder({ ObjectId: "", Name: "" });
-          const notifySign =
-                extUserData?.NotifyOnSignatures
-                ? extUserData?.NotifyOnSignatures
-                : true;
+          const notifySign = extUserData?.NotifyOnSignatures
+            ? extUserData?.NotifyOnSignatures
+            : true;
           setFormData({
             Name: "",
             Description: "",
@@ -437,14 +452,14 @@ const Forms = (props) => {
                 ? "Note to myself"
                 : "Please review and sign this document",
             TimeToCompleteDays: 15,
-            SendinOrder: "true",
+            SendinOrder: sendinorder,
             password: "",
             file: "",
             NotifyOnSignatures: notifySign,
             remindOnceInEvery: 5,
             autoreminder: false,
             IsEnableOTP: "false",
-            IsTourEnabled: "true",
+            IsTourEnabled: istourenabled,
             RedirectUrl: "",
             AllowModifications: false
           });
@@ -454,7 +469,17 @@ const Forms = (props) => {
         }
       } catch (err) {
         console.log("err ", err);
-        setIsAlert({ type: "danger", message: t("something-went-wrong-mssg") });
+        if (err.message === "only 15 reminder allowed") {
+          setIsAlert({
+            type: "danger",
+            message: t("only-15-reminder-allowed")
+          });
+        } else {
+          setIsAlert({
+            type: "danger",
+            message: t("something-went-wrong-mssg")
+          });
+        }
       } finally {
         setTimeout(() => setIsAlert({ type: "success", message: "" }), 1000);
         setIsSubmit(false);
@@ -494,10 +519,9 @@ const Forms = (props) => {
     setSigners([]);
     setBcc([]);
     setFolder({ ObjectId: "", Name: "" });
-    const notifySign =
-          extUserData?.NotifyOnSignatures
-          ? extUserData?.NotifyOnSignatures
-          : true;
+    const notifySign = extUserData?.NotifyOnSignatures
+      ? extUserData?.NotifyOnSignatures
+      : true;
     let obj = {
       Name: "",
       Description: "",
@@ -506,13 +530,13 @@ const Forms = (props) => {
           ? "Note to myself"
           : "Please review and sign this document",
       TimeToCompleteDays: 15,
-      SendinOrder: "true",
+      SendinOrder: sendinorder,
       password: "",
       file: "",
       remindOnceInEvery: 5,
       autoreminder: false,
       IsEnableOTP: "false",
-      IsTourEnabled: "true",
+      IsTourEnabled: istourenabled,
       NotifyOnSignatures: notifySign,
       RedirectUrl: "",
       AllowModifications: false
@@ -551,36 +575,28 @@ const Forms = (props) => {
         type: "application/pdf"
       });
       setIsDecrypting(false);
-        const res = await getFileAsArrayBuffer(pdfFile);
-        const flatPdf = await flattenPdf(res);
-        const parseFile = new Parse.File(name, [...flatPdf], "application/pdf");
-        await parseFile.save({
-          progress: (progressValue, loaded, total, { type }) => {
-            if (type === "upload" && progressValue !== null) {
-              const percentCompleted = Math.round((loaded * 100) / total);
-              setpercentage(percentCompleted);
-            }
+      const res = await getFileAsArrayBuffer(pdfFile);
+      const flatPdf = await flattenPdf(res);
+      const parseFile = new Parse.File(name, [...flatPdf], "application/pdf");
+      await parseFile.save({
+        progress: (progressValue, loaded, total, { type }) => {
+          if (type === "upload" && progressValue !== null) {
+            const percentCompleted = Math.round((loaded * 100) / total);
+            setpercentage(percentCompleted);
           }
-        });
-        // Retrieve the URL of the uploaded file
-        if (parseFile.url()) {
-          const fileRes = await getSecureUrl(parseFile.url());
-          if (fileRes.url) {
-            setFileUpload(fileRes.url);
-            removeFile();
-            const title = generateTitleFromFilename(formData?.file?.name);
-            setFormData((obj) => ({ ...obj, password: "", Name: title }));
-            const tenantId = localStorage.getItem("TenantId");
-            SaveFileSize(size, fileRes.url, tenantId);
-            return fileRes.url;
-          } else {
-            removeFile();
-            setFormData((prev) => ({ ...prev, password: "" }));
-            setIsDecrypting(false);
-            if (inputFileRef.current) {
-              inputFileRef.current.value = ""; // Set file input value to empty string
-            }
-          }
+        }
+      });
+      // Retrieve the URL of the uploaded file
+      if (parseFile.url()) {
+        const fileRes = await getSecureUrl(parseFile.url());
+        if (fileRes.url) {
+          setFileUpload(fileRes.url);
+          removeFile();
+          const title = generateTitleFromFilename(formData?.file?.name);
+          setFormData((obj) => ({ ...obj, password: "", Name: title }));
+          const tenantId = localStorage.getItem("TenantId");
+          SaveFileSize(size, fileRes.url, tenantId);
+          return fileRes.url;
         } else {
           removeFile();
           setFormData((prev) => ({ ...prev, password: "" }));
@@ -589,6 +605,14 @@ const Forms = (props) => {
             inputFileRef.current.value = ""; // Set file input value to empty string
           }
         }
+      } else {
+        removeFile();
+        setFormData((prev) => ({ ...prev, password: "" }));
+        setIsDecrypting(false);
+        if (inputFileRef.current) {
+          inputFileRef.current.value = ""; // Set file input value to empty string
+        }
+      }
     } catch (err) {
       removeFile();
       if (err?.response?.status === 401) {
@@ -710,9 +734,7 @@ const Forms = (props) => {
             )}
             <div className="text-xs">
               <label className="block">
-                {`${`${t("report-heading.File")} (${t("file-type")}`}${
-                      ")"
-                }`}
+                {`${`${t("report-heading.File")} (${t("file-type")}`}${")"}`}
                 <span className="text-red-500 text-[13px]">*</span>
               </label>
               {fileupload.length > 0 ? (
@@ -736,9 +758,7 @@ const Forms = (props) => {
                     className="op-file-input op-file-input-bordered op-file-input-sm focus:outline-none hover:border-base-content w-full text-xs"
                     onChange={(e) => handleFileInput(e)}
                     ref={inputFileRef}
-                    accept={
-                          "application/pdf,image/png,image/jpeg"
-                    }
+                    accept={"application/pdf,image/png,image/jpeg"}
                     onInvalid={(e) =>
                       e.target.setCustomValidity(t("input-required"))
                     }
@@ -1028,10 +1048,7 @@ const Forms = (props) => {
                 {isAdvanceOpt && (
                   <div
                     style={{
-                      height:
-                              props.title === "New Template"
-                            ? "100px"
-                            : "280px"
+                      height: props.title === "New Template" ? "100px" : "280px"
                     }}
                     className="w-[1px] bg-gray-300 m-auto hidden md:inline-block"
                   ></div>
@@ -1140,11 +1157,7 @@ const Forms = (props) => {
                         </Tooltip>
                       </label>
                       <div className="flex flex-col md:flex-row md:gap-4">
-                        <div
-                          className={
-                            `flex items-center gap-2 ml-2 mb-1`
-                          }
-                        >
+                        <div className={`flex items-center gap-2 ml-2 mb-1`}>
                           <input
                             className="mr-[2px] op-radio op-radio-xs"
                             type="radio"
@@ -1153,11 +1166,7 @@ const Forms = (props) => {
                           />
                           <div className="text-center">{t("yes")}</div>
                         </div>
-                        <div
-                          className={
-                            `flex items-center gap-2 ml-2 mb-1`
-                          }
-                        >
+                        <div className={`flex items-center gap-2 ml-2 mb-1`}>
                           <input
                             className="mr-[2px] op-radio op-radio-xs"
                             type="radio"
