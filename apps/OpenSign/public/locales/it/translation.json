@@ -79,6 +79,7 @@
     "Storage": "Archiviazione",
     "Signing certificate": "Certificato di firma",
     "Teams": "Squadre",
+    "General": "Generale",
     "Teams-Children": {
       "Organizations": "Organizzazioni",
       "OrgAdmins": "OrgAdmins"
@@ -149,7 +150,8 @@
     "Copy Public URL": "Copia URL pubblico",
     "extend-expiry-date": "Estendi data di scadenza",
     "Duplicate Template": "Duplica modello",
-    "Duplicate": "Duplica"
+    "Duplicate": "Duplica",
+    "daily-mail-quota": "Quota e-mail giornaliera"
   },
   "report-heading": {
     "Sr.No": "Nr.",
@@ -450,6 +452,7 @@
   "add-recipients": "Aggiungi destinatari",
   "loading-mssg": "Questo potrebbe richiedere del tempo",
   "send-mail": "Invia Mail",
+  "signature-field-widget":"È necessario aggiungere almeno un campo firma per ogni utente. Non hai aggiunto campi firma per {{signersName}}",
   "placeholder-alert-1": "Assicurati che sia stato aggiunto almeno un widget per la firma per tutti i destinatari.",
   "placeholder-alert-2": "Conferma di aver compilato il campo di testo.",
   "placeholder-alert-3": "Sei sicuro di voler inviare questo documento per le firme?",
@@ -848,5 +851,10 @@
   "draft-template-info-p1": "Per rendere il tuo modello pubblico, deve contenere un solo ruolo oppure, se include più ruoli, tutti i ruoli aggiuntivi devono essere già assegnati ai firmatari. Il ruolo pubblico non assegnato deve rimanere vuoto e deve essere posizionato per primo.",
   "visit-below-link": "Visita il link qui sotto per saperne di più -",
   "storage-help": "Abilitare BYOC ti consente di collegare il tuo archivio S3 in modo che i tuoi file rimangano completamente sotto il tuo controllo, senza copie esterne conservate. Se l'autonomia dei dati è importante per te, considera l'upgrade a Teams per sbloccare questa funzionalità.",
-  "daily-quota-reached": "You’ve reached your daily quota. For assistance, please contact quotas@opensignlabs.com."
+  "daily-quota-reached": "Hai raggiunto la tua quota giornaliera. Per assistenza, contatta quotas@opensignlabs.com.",
+  "enabled-signature-type": "Tipi di firma abilitati",
+  "enabled-signature-type-help": "L'impostazione 'Tipi di firma abilitati' determina quali opzioni di firma sono disponibili nella tua organizzazione. Ad esempio, se disabiliti l'opzione 'Disegna', i membri della tua organizzazione non la vedranno nel widget della firma, mentre le altre tre opzioni resteranno accessibili.",
+  "indexing-public-profile": "Consenti l'indicizzazione del profilo pubblico dai motori di ricerca",
+  "user-created-successfully": "Utente creato con successo.",
+  "only-15-reminder-allowed": "Puoi impostare fino a 15 promemoria automatici. Ad esempio, se 'TimeToComplete' è di 15 giorni e 'RemindOnceInEvery' è di 1 giorno, raggiungerai il limite massimo di 15 promemoria. Regola le tue impostazioni di conseguenza."
 }
