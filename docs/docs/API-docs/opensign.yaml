@@ -405,7 +405,7 @@ paths:
         ```
         - **default:**  Provide the date from which you want to start the date of the date widget. Must be provided in the specified format. By default, today's date provided.
         - **format:** Specify the date format of your choice from the options below.
-          - "dd/MM/yyyy",
+          - "mm/dd/yyyy"
           - "dd-mm-yyyy",
           - "yyyy-mm-dd",
           - "mm.dd.yyyy",
@@ -677,7 +677,7 @@ paths:
         ```
         - **default:**  Provide the date from which you want to start the date of the date widget. Must be provided in the specified format. By default, today's date provided.
         - **format:** Specify the date format of your choice from the options below.
-          - "dd/MM/yyyy",
+          - "mm/dd/yyyy"
           - "dd-mm-yyyy",
           - "yyyy-mm-dd",
           - "mm.dd.yyyy",
@@ -997,7 +997,7 @@ paths:
         ```
         - **default:**  Provide the date from which you want to start the date of the date widget. Must be provided in the specified format. By default, today's date provided.
         - **format:** Specify the date format of your choice from the options below.
-          - "dd/MM/yyyy",
+          - "mm/dd/yyyy"
           - "dd-mm-yyyy",
           - "yyyy-mm-dd",
           - "mm.dd.yyyy",
@@ -1775,7 +1775,7 @@ paths:
         ```
         - **default:**  Provide the date from which you want to start the date of the date widget. Must be provided in the specified format. By default, today's date provided.
         - **format:** Specify the date format of your choice from the options below.
-          - "dd/MM/yyyy",
+          - "mm/dd/yyyy"
           - "dd-mm-yyyy",
           - "yyyy-mm-dd",
           - "mm.dd.yyyy",
@@ -2095,7 +2095,7 @@ paths:
         ```
         - **default:**  Provide the date from which you want to start the date of the date widget. Must be provided in the specified format. By default, today's date provided.
         - **format:** Specify the date format of your choice from the options below.
-          - "dd/MM/yyyy",
+          - "mm/dd/yyyy",
           - "dd-mm-yyyy",
           - "yyyy-mm-dd",
           - "mm.dd.yyyy",
