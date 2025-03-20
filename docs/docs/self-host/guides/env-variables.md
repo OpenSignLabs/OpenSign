@@ -15,7 +15,6 @@ Environment Varaibles:
 | Environment Varibale | Value | Description |
 | ------------- | ------------- | ------------- |
 | PUBLIC_URL  | https://localhost:3001 | Set it to the URL form where the app home page will be accessed |
-| APP_ID  | opensign  | A 12 character long random app identifier. |
 | MASTER_KEY  | XnAadwKxxByMr  | A 12 character long random secret key that allows access to all the data. It is used in Parse dashboard config to view all the data in the database. |
 | MONGODB_URI  | mongodb://mongo-container:27017/OpenSignDB  | Mongodb URI to connect to |
 | PARSE_MOUNT  | /app  | Path on which APIs should be mounted. Do not change this. This variable shall be removed & value hardcoded in the source code in coming versions. |
@@ -38,6 +37,7 @@ Environment Varaibles:
 | SMTP_PASS | password | Provide smtp password |
 | PFX_BASE64  | - | Base64 encoded PFX or p12 document signing certificate file. You can generate base64 encoded self sign certificate using the passphrase. |
 | PASS_PHRASE | opensign | Pass phrase of PFX or p12 document signing certificate file. |
+| APP_ID  | opensign  | (DEPRECATED) This should not be changed if provided; it should be 'opensign'. |
 
 # Steps to generate self-signed document singing certificate
 ```
