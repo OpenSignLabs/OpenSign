@@ -1,12 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import pad from "../assets/images/pad.svg";
 import { useLocation, useNavigate } from "react-router";
 import axios from "axios";
 import ModalUi from "./ModalUi";
 import AddSigner from "../components/AddSigner";
-import {
-  emailRegex,
-} from "../constant/const";
+import { emailRegex } from "../constant/const";
 import Alert from "./Alert";
 import Tooltip from "./Tooltip";
 import { RWebShare } from "react-web-share";
@@ -38,8 +36,8 @@ import * as XLSX from "xlsx";
 import EditContactForm from "../components/EditContactForm";
 
 const ReportTable = (props) => {
-  const appName =
-    "OpenSign™";
+  const copyUrlRef = useRef(null);
+  const appName = "OpenSign™";
   const drivename = appName === "OpenSign™" ? "OpenSign™" : "";
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -156,14 +154,14 @@ const ReportTable = (props) => {
           const teamtRes = await Parse.Cloud.run("getteams", { active: true });
           if (teamtRes.length > 0) {
             const _teamRes = JSON.parse(JSON.stringify(teamtRes));
-              const selected = _teamRes.map(
-                (x) =>
-                  x.Name === "All Users" && {
-                    label: x.Name,
-                    value: x.objectId
-                  }
-              );
-              setSelectedTeam(selected);
+            const selected = _teamRes.map(
+              (x) =>
+                x.Name === "All Users" && {
+                  label: x.Name,
+                  value: x.objectId
+                }
+            );
+            setSelectedTeam(selected);
           }
         }
       } catch (err) {
@@ -224,7 +222,7 @@ const ReportTable = (props) => {
   const handleURL = async (item, act) => {
     if (props.ReportName === "Templates") {
       if (act.hoverLabel === "Edit") {
-          navigate(`/${act.redirectUrl}/${item.objectId}`);
+        navigate(`/${act.redirectUrl}/${item.objectId}`);
       } else {
         setActLoader({ [`${item.objectId}_${act.btnId}`]: true });
         try {
@@ -410,8 +408,7 @@ const ReportTable = (props) => {
         setSelectedTeam(formatedList);
       }
       setIsShareWith({ [item.objectId]: true });
-    }
-    else if (act.action === "duplicate") {
+    } else if (act.action === "duplicate") {
       setIsModal({ [`duplicate_${item.objectId}`]: true });
     } else if (act.action === "rename") {
       setIsModal({ [`rename_${item.objectId}`]: true });
@@ -495,8 +492,7 @@ const ReportTable = (props) => {
       setActLoader({});
     }
   };
-  const handleClose = (
-  ) => {
+  const handleClose = () => {
     setIsRevoke({});
     setIsDeleteModal({});
     setReason("");
@@ -527,6 +523,9 @@ const ReportTable = (props) => {
 
   const copytoclipboard = (share) => {
     copytoData(share.url);
+    if (copyUrlRef.current) {
+      copyUrlRef.current.textContent = share.url; // Update text safely
+    }
     setCopied({ ...copied, [share.email]: true });
   };
   //function to handle revoke/decline docment
@@ -652,11 +651,7 @@ const ReportTable = (props) => {
         if (isCompleted) {
           setIsDownloadModal({ [item.objectId]: true });
         } else {
-          const signedUrl = await getSignedUrl(
-            url,
-            docId,
-            templateId
-          );
+          const signedUrl = await getSignedUrl(url, docId, templateId);
           await fetchUrl(signedUrl, pdfName);
         }
         setActLoader({});
@@ -683,10 +678,8 @@ const ReportTable = (props) => {
     const signPdf = `${window.location.origin}/login/${encodeBase64}`;
     const variables = {
       document_title: doc.Name,
-      sender_name:
-        doc.ExtUserPtr.Name,
-      sender_mail:
-        doc.ExtUserPtr.Email,
+      sender_name: doc.ExtUserPtr.Name,
+      sender_mail: doc.ExtUserPtr.Email,
       sender_phone: doc.ExtUserPtr?.Phone || "",
       receiver_name: userDetails?.Name || "",
       receiver_email: userDetails?.Email,
@@ -714,10 +707,8 @@ const ReportTable = (props) => {
     const signPdf = `${window.location.origin}/login/${encodeBase64}`;
     const variables = {
       document_title: doc.Name,
-      sender_name:
-        doc.ExtUserPtr.Name,
-      sender_mail:
-        doc.ExtUserPtr.Email,
+      sender_name: doc.ExtUserPtr.Name,
+      sender_mail: doc.ExtUserPtr.Email,
       sender_phone: doc.ExtUserPtr?.Phone || "",
       receiver_name: userDetails?.Name || "",
       receiver_email: userDetails?.Email || "",
@@ -757,10 +748,8 @@ const ReportTable = (props) => {
     const signPdf = `${window.location.origin}/login/${encodeBase64}`;
     const variables = {
       document_title: doc.Name,
-      sender_name:
-        doc.ExtUserPtr.Name,
-      sender_mail:
-        doc.ExtUserPtr.Email,
+      sender_name: doc.ExtUserPtr.Name,
+      sender_mail: doc.ExtUserPtr.Email,
       sender_phone: doc.ExtUserPtr?.Phone || "",
       receiver_name: user?.signerPtr?.Name || "",
       receiver_email: user?.email ? user?.email : user?.signerPtr?.Email,
@@ -790,14 +779,11 @@ const ReportTable = (props) => {
       sessionToken: localStorage.getItem("accesstoken")
     };
     let params = {
-      replyto:
-        doc?.ExtUserPtr?.Email ||
-        "",
+      replyto: doc?.ExtUserPtr?.Email || "",
       extUserId: doc?.ExtUserPtr?.objectId,
       recipient: userDetails?.Email,
       subject: mail.subject,
-      from:
-        doc?.ExtUserPtr?.Email,
+      from: doc?.ExtUserPtr?.Email,
       html: mail.body
     };
     try {
@@ -1740,11 +1726,7 @@ const ReportTable = (props) => {
                                         <i className={act.btnIcon}></i>
                                         {act.btnLabel && (
                                           <span className="uppercase font-medium">
-                                            {
-                                                  `${t(
-                                                    `btnLabel.${act.btnLabel}`
-                                                  )}`
-                                            }
+                                            {`${t(`btnLabel.${act.btnLabel}`)}`}
                                           </span>
                                         )}
                                         {/* template report */}
@@ -1824,7 +1806,9 @@ const ReportTable = (props) => {
                                         title={t(`btnLabel.${act.hoverLabel}`)}
                                         className={
                                           act.action !== "option"
-                                            ? `${act?.btnColor || ""} op-btn op-btn-sm mr-1`
+                                            ? `${
+                                                act?.btnColor || ""
+                                              } op-btn op-btn-sm mr-1`
                                             : "text-base-content focus:outline-none text-lg mr-2 relative"
                                         }
                                       >
@@ -1911,28 +1895,26 @@ const ReportTable = (props) => {
                           {isShareWith[item.objectId] && (
                             <div className="op-modal op-modal-open">
                               <div className="max-h-90 bg-base-100 w-[95%] md:max-w-[500px] rounded-box relative">
-                                      <h3 className="text-base-content font-bold text-lg pt-[15px] px-[20px]">
-                                        {t("share-with")}
-                                      </h3>
-                                      <div
-                                        className="op-btn op-btn-sm op-btn-circle op-btn-ghost text-base-content absolute right-2 top-2 z-40"
-                                        onClick={() => setIsShareWith({})}
-                                      >
-                                        ✕
-                                      </div>
-                                      <div className="px-2 mt-3 w-full h-full">
-                                        <div className="op-input op-input-bordered op-input-sm w-full h-full text-[13px] break-all">
-                                          {selectedTeam?.[0]?.label}
-                                        </div>
-                                      </div>
-                                      <button
-                                        onClick={(e) =>
-                                          handleShareWith(e, item)
-                                        }
-                                        className="op-btn op-btn-primary ml-[10px] my-3"
-                                      >
-                                        {t("submit")}
-                                      </button>
+                                <h3 className="text-base-content font-bold text-lg pt-[15px] px-[20px]">
+                                  {t("share-with")}
+                                </h3>
+                                <div
+                                  className="op-btn op-btn-sm op-btn-circle op-btn-ghost text-base-content absolute right-2 top-2 z-40"
+                                  onClick={() => setIsShareWith({})}
+                                >
+                                  ✕
+                                </div>
+                                <div className="px-2 mt-3 w-full h-full">
+                                  <div className="op-input op-input-bordered op-input-sm w-full h-full text-[13px] break-all">
+                                    {selectedTeam?.[0]?.label}
+                                  </div>
+                                </div>
+                                <button
+                                  onClick={(e) => handleShareWith(e, item)}
+                                  className="op-btn op-btn-primary ml-[10px] my-3"
+                                >
+                                  {t("submit")}
+                                </button>
                               </div>
                             </div>
                           )}
@@ -2025,9 +2007,7 @@ const ReportTable = (props) => {
                           {isBulkSend[item.objectId] && (
                             <ModalUi
                               isOpen
-                              title={
-                                    t("quick-send")
-                              }
+                              title={t("quick-send")}
                               handleClose={() => setIsBulkSend({})}
                             >
                               {isLoader[item.objectId] ? (
@@ -2087,6 +2067,11 @@ const ReportTable = (props) => {
                                     </div>
                                   </div>
                                 ))}
+                                <p
+                                  id="copyUrl"
+                                  ref={copyUrlRef}
+                                  className="hidden"
+                                ></p>
                               </div>
                             </ModalUi>
                           )}

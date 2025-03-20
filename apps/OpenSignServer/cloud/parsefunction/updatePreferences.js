@@ -42,6 +42,12 @@ export default async function updatePreferences(request) {
             newOrg.set('SignatureType', SignatureType);
           }
         }
+        if (request.params.SendinOrder !== undefined) {
+          newOrg.set('SendinOrder', request.params.SendinOrder);
+        }
+        if (request.params.IsTourEnabled !== undefined) {
+          newOrg.set('IsTourEnabled', request.params.IsTourEnabled);
+        }
         const updateUserRes = await newOrg.save(null, { useMasterKey: true });
         if (updateUserRes) {
           const _updateUserRes = JSON.parse(JSON.stringify(updateUserRes));
