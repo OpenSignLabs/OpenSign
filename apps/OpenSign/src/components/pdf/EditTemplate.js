@@ -188,7 +188,7 @@ const EditTemplate = ({ template, onSuccess }) => {
               <Tooltip id="istourenabled-tooltip" className="z-50">
                 <div className="max-w-[200px] md:max-w-[450px]">
                   <p className="font-bold">{t("enable-tour")}</p>
-                  <p className="p-[5px]">
+                  <div className="p-[5px]">
                     <ol className="list-disc">
                       <li>
                         <span className="font-bold">{t("yes")}: </span>
@@ -199,7 +199,7 @@ const EditTemplate = ({ template, onSuccess }) => {
                         <span>{t("istourenabled-help.p2")}</span>
                       </li>
                     </ol>
-                  </p>
+                  </div>
                   <p>{t("istourenabled-help.p3", { appName: appName })}</p>
                 </div>
               </Tooltip>
