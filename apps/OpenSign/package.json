@@ -9,7 +9,7 @@
     "@radix-ui/themes": "^3.1.6",
     "@react-pdf/renderer": "^4.3.0",
     "@reduxjs/toolkit": "^2.5.1",
-    "axios": "^1.8.3",
+    "axios": "^1.8.4",
     "css-minimizer-webpack-plugin": "^7.0.2",
     "file-saver": "^2.0.5",
     "i18next": "^23.16.8",
