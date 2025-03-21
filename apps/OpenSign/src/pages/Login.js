@@ -7,9 +7,7 @@ import { NavLink, useNavigate, useLocation } from "react-router";
 import login_img from "../assets/images/login_img.svg";
 import { useWindowSize } from "../hook/useWindowSize";
 import ModalUi from "../primitives/ModalUi";
-import {
-  emailRegex,
-} from "../constant/const";
+import { emailRegex } from "../constant/const";
 import Alert from "../primitives/Alert";
 import { appInfo } from "../constant/appinfo";
 import { fetchAppInfo } from "../redux/reducers/infoReducer";
@@ -24,8 +22,7 @@ import { useTranslation } from "react-i18next";
 import SelectLanguage from "../components/pdf/SelectLanguage";
 
 function Login() {
-  const appName =
-    "OpenSign™";
+  const appName = "OpenSign™";
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
@@ -43,7 +40,7 @@ function Login() {
     baseUrl: localStorage.getItem("baseUrl"),
     parseAppId: localStorage.getItem("parseAppId"),
     loading: false,
-    thirdpartyLoader: false,
+    thirdpartyLoader: false
   });
   const [userDetails, setUserDetails] = useState({
     Company: "",
@@ -61,9 +58,7 @@ function Login() {
     const app = await getAppLogo();
     if (app?.error === "invalid_json") {
       setErrMsg(t("server-down", { appName: appName }));
-    } else if (
-      app?.user === "not_exist"
-    ) {
+    } else if (app?.user === "not_exist") {
       navigate("/addadmin");
     }
     if (app?.logo) {
@@ -153,9 +148,9 @@ function Login() {
                         localStorage.setItem("PageLanding", menu.pageId);
                         localStorage.setItem("defaultmenuid", menu.menuId);
                         localStorage.setItem("pageType", menu.pageType);
-                          setState({ ...state, loading: false });
-                          // Redirect to the appropriate URL after successful login
-                          navigate(redirectUrl);
+                        setState({ ...state, loading: false });
+                        // Redirect to the appropriate URL after successful login
+                        navigate(redirectUrl);
                       } else {
                         setState({ ...state, loading: false });
                         setIsModal(true);
@@ -171,14 +166,14 @@ function Login() {
                       logOutUser();
                     }
                   } else {
-                      setState({ ...state, loading: false });
-                      setState({
-                        ...state,
-                        loading: false,
-                        alertType: "danger",
-                        alertMsg: "User not found."
-                      });
-                      logOutUser();
+                    setState({ ...state, loading: false });
+                    setState({
+                      ...state,
+                      loading: false,
+                      alertType: "danger",
+                      alertMsg: "User not found."
+                    });
+                    logOutUser();
                   }
                 })
                 .catch((error) => {
@@ -186,7 +181,7 @@ function Login() {
                     ...state,
                     loading: false,
                     alertType: "danger",
-                    alertMsg: `Something went wrong.`
+                    alertMsg: t("something-went-wrong-mssg")
                   });
                   setTimeout(() => setState({ ...state, alertMsg: "" }), 2000);
                   console.error("Error while fetching Follow", error);
@@ -282,7 +277,7 @@ function Login() {
                   localStorage.setItem("PageLanding", menu.pageId);
                   localStorage.setItem("defaultmenuid", menu.menuId);
                   localStorage.setItem("pageType", menu.pageType);
-                    navigate(redirectUrl);
+                  navigate(redirectUrl);
                 } else {
                   setState({
                     ...state,
@@ -380,8 +375,8 @@ function Login() {
               localStorage.setItem("PageLanding", menu.pageId);
               localStorage.setItem("defaultmenuid", menu.menuId);
               localStorage.setItem("pageType", menu.pageType);
-                // Redirect to the appropriate URL after successful login
-                navigate(redirectUrl);
+              // Redirect to the appropriate URL after successful login
+              navigate(redirectUrl);
             } else {
               setState({ ...state, loading: false });
               logOutUser();
@@ -408,7 +403,7 @@ function Login() {
       setState({
         ...state,
         alertType: "danger",
-        alertMsg: "Something went wrong, please try again later."
+        alertMsg: t("something-went-wrong-mssg")
       });
       console.log("err", error);
     } finally {
@@ -501,7 +496,6 @@ function Login() {
     localStorage.setItem("parseAppId", appid);
   };
 
-
   return errMsg ? (
     <div className="h-screen flex justify-center text-center items-center p-4 text-gray-500 text-base">
       {errMsg}
@@ -561,39 +555,35 @@ function Login() {
                           onInput={(e) => e.target.setCustomValidity("")}
                         />
                         <hr className="my-1 border-none" />
-                            <label className="block text-xs" htmlFor="password">
-                              {t("password")}
-                            </label>
-                            <div className="relative">
-                              <input
-                                id="password"
-                                type={
-                                  state.passwordVisible ? "text" : "password"
-                                }
-                                className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
-                                name="password"
-                                value={state.password}
-                                autoComplete="current-password"
-                                onChange={handleChange}
-                                onInvalid={(e) =>
-                                  e.target.setCustomValidity(
-                                    t("input-required")
-                                  )
-                                }
-                                onInput={(e) => e.target.setCustomValidity("")}
-                                required
-                              />
-                              <span
-                                className="absolute cursor-pointer top-[50%] right-[10px] -translate-y-[50%] text-base-content"
-                                onClick={togglePasswordVisibility}
-                              >
-                                {state.passwordVisible ? (
-                                  <i className="fa-light fa-eye-slash text-xs pb-1" /> // Close eye icon
-                                ) : (
-                                  <i className="fa-light fa-eye text-xs pb-1 " /> // Open eye icon
-                                )}
-                              </span>
-                            </div>
+                        <label className="block text-xs" htmlFor="password">
+                          {t("password")}
+                        </label>
+                        <div className="relative">
+                          <input
+                            id="password"
+                            type={state.passwordVisible ? "text" : "password"}
+                            className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
+                            name="password"
+                            value={state.password}
+                            autoComplete="current-password"
+                            onChange={handleChange}
+                            onInvalid={(e) =>
+                              e.target.setCustomValidity(t("input-required"))
+                            }
+                            onInput={(e) => e.target.setCustomValidity("")}
+                            required
+                          />
+                          <span
+                            className="absolute cursor-pointer top-[50%] right-[10px] -translate-y-[50%] text-base-content"
+                            onClick={togglePasswordVisibility}
+                          >
+                            {state.passwordVisible ? (
+                              <i className="fa-light fa-eye-slash text-xs pb-1" /> // Close eye icon
+                            ) : (
+                              <i className="fa-light fa-eye text-xs pb-1 " /> // Open eye icon
+                            )}
+                          </span>
+                        </div>
 
                         <div className="relative mt-1">
                           <NavLink

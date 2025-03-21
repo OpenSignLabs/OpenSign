@@ -1,11 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import "../styles/opensigndrive.css";
-import {
-  iconColor,
-} from "../constant/const";
-import {
-  getDrive
-} from "../constant/Utils";
+import { iconColor } from "../constant/const";
+import { getDrive } from "../constant/Utils";
 import { useNavigate } from "react-router";
 import Title from "../components/Title";
 import Parse from "parse";
@@ -29,8 +25,7 @@ const AppLoader = () => {
   );
 };
 function Opensigndrive() {
-  const appName =
-    "OpenSign™";
+  const appName = "OpenSign™";
   const drivename = appName === "OpenSign™" ? "OpenSign™" : "";
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -130,7 +125,7 @@ function Opensigndrive() {
     }
   ];
   const getDetails = async () => {
-      getPdfDocumentList();
+    getPdfDocumentList();
   };
   //function for get all pdf document list
   const getPdfDocumentList = async (disbaleLoading) => {
@@ -144,7 +139,7 @@ function Opensigndrive() {
     try {
       const driveDetails = await getDrive(docId, skip, limit);
       if (driveDetails && driveDetails === "Error: Something went wrong!") {
-        setHandleError("Error: Something went wrong!");
+        setHandleError(t("something-went-wrong-mssg"));
       } else if (driveDetails && driveDetails.length > 0) {
         const addMoreTour = [
           {
@@ -635,7 +630,9 @@ function Opensigndrive() {
             <div className="flex flex-row items-center">
               <div
                 id="folder-menu"
-                className={`${isOptions ? "dropdown show dropDownStyle" : "dropdown"} hidden md:block`}
+                className={`${
+                  isOptions ? "dropdown show dropDownStyle" : "dropdown"
+                } hidden md:block`}
                 onClick={() => setIsOptions(!isOptions)}
               >
                 <div className="sort" data-tut="reactourSecond">
@@ -773,7 +770,9 @@ function Opensigndrive() {
               </div>
               <div
                 id="folder-menu"
-                className={`${isOptions ? "dropdown show dropDownStyle" : "dropdown"} md:hidden`}
+                className={`${
+                  isOptions ? "dropdown show dropDownStyle" : "dropdown"
+                } md:hidden`}
                 onClick={() => setIsOptions(!isOptions)}
               >
                 <div

@@ -20,6 +20,7 @@ import EditorToolbar, {
   module2,
   formats
 } from "../components/pdf/EditorToolbar";
+import DateFormatSelector from "../components/shared/fields/DateFormatSelector";
 
 const Preferences = () => {
   const appName = "OpenSign™";
@@ -47,6 +48,7 @@ const Preferences = () => {
   const [tab, setTab] = useState([generaltab]);
   const [sendinOrder, setSendinOrder] = useState(true);
   const [isTourEnabled, setIsTourEnabled] = useState(false);
+  const [dateFormat, setDateFormat] = useState("MM/DD/YYYY");
 
   useEffect(() => {
     fetchSignType();
@@ -99,10 +101,15 @@ const Preferences = () => {
             ? _getUser?.IsTourEnabled
             : true;
         setIsTourEnabled(istourenabled);
+        const DateFormat =
+          _getUser?.DateFormat !== undefined
+            ? _getUser?.DateFormat
+            : "MM/DD/YYYY";
+        setDateFormat(DateFormat);
       }
     } catch (err) {
       console.log("err while getting user details", err);
-      setErrMsg("Something went wrong");
+      setErrMsg(t("something-went-wrong-mssg"));
     } finally {
       setIsTopLoader(false);
     }
@@ -154,11 +161,12 @@ const Preferences = () => {
         params = {
           ...params,
           SendinOrder: sendinOrder,
-          IsTourEnabled: isTourEnabled
+          IsTourEnabled: isTourEnabled,
+          DateFormat: dateFormat
         };
         const updateRes = await Parse.Cloud.run("updatepreferences", params);
         if (updateRes) {
-          setIsAlert({ type: "success", msg: "Saved successfully." });
+          setIsAlert({ type: "success", msg: t("saved-successfully") });
           let extUser =
             localStorage.getItem("Extand_Class") &&
             JSON.parse(localStorage.getItem("Extand_Class"))?.[0];
@@ -166,6 +174,7 @@ const Preferences = () => {
             extUser.NotifyOnSignatures = isNotifyOnSignatures;
             extUser.SendinOrder = sendinOrder;
             extUser.IsTourEnabled = isTourEnabled;
+            extUser.DateFormat = dateFormat;
             const _extUser = JSON.parse(JSON.stringify(extUser));
             localStorage.setItem("Extand_Class", JSON.stringify([_extUser]));
           }
@@ -238,12 +247,12 @@ const Preferences = () => {
         const updateRes = JSON.parse(JSON.stringify(res));
         SetCompletionBody(updateRes?.CompletionBody);
         setCompletionSubject(updateRes?.CompletionSubject);
-        setIsAlert({ type: "success", msg: "Saved successfully." });
+        setIsAlert({ type: "success", msg: t("saved-successfully") });
         setTimeout(() => setIsAlert({ type: "", msg: "" }), 1500);
       }
     } catch (err) {
       console.log("Err", err);
-      setIsAlert({ type: "danger", msg: "Something went wrong." });
+      setIsAlert({ type: "danger", msg: t("something-went-wrong-mssg") });
       setTimeout(() => setIsAlert({ type: "", msg: "" }), 1500);
     } finally {
       setIsLoader(false);
@@ -265,12 +274,12 @@ const Preferences = () => {
         const updateRes = JSON.parse(JSON.stringify(res));
         setRequestBody(updateRes?.RequestBody);
         setRequestSubject(updateRes?.RequestSubject);
-        setIsAlert({ type: "success", msg: "Saved successfully." });
+        setIsAlert({ type: "success", msg: t("saved-successfully") });
         setTimeout(() => setIsAlert({ type: "", msg: "" }), 1500);
       }
     } catch (err) {
       console.log("Err", err);
-      setIsAlert({ type: "danger", msg: "Something went wrong." });
+      setIsAlert({ type: "danger", msg: t("something-went-wrong-mssg") });
       setTimeout(() => setIsAlert({ type: "", msg: "" }), 1500);
     } finally {
       setIsLoader(false);
@@ -376,7 +385,7 @@ const Preferences = () => {
                               {t("allowed-signature-types")}
                             </p>
                             <p>{t("allowed-signature-types-help.p1")}</p>
-                            <p className="p-[5px] ml-2">
+                            <div className="p-[5px] ml-2">
                               <ol className="list-disc">
                                 <li>
                                   <span className="font-bold">Draw: </span>
@@ -403,7 +412,7 @@ const Preferences = () => {
                                   </span>
                                 </li>
                               </ol>
-                            </p>
+                            </div>
                           </div>
                         </ReactTooltip>
                       </label>
@@ -481,6 +490,12 @@ const Preferences = () => {
                         setTimezone={setTimezone}
                       />
                     </div>
+                    <div className="mb-[0.75rem]">
+                      <DateFormatSelector
+                        dateFormat={dateFormat}
+                        setDateFormat={setDateFormat}
+                      />
+                    </div>
                     <div className="mb-[0.75rem] text-[12px]">
                       <label className="block mb-[0.7rem]">
                         <span className="text-[14px] font-medium">
@@ -501,7 +516,7 @@ const Preferences = () => {
                           <div className="max-w-[200px] md:max-w-[450px]">
                             <p className="font-bold">{t("send-in-order")}</p>
                             <p>{t("send-in-order-help.p1")}</p>
-                            <p className="p-[5px]">
+                            <div className="p-[5px]">
                               <ol className="list-disc">
                                 <li>
                                   <span className="font-bold">
@@ -514,7 +529,7 @@ const Preferences = () => {
                                   <span>{t("send-in-order-help.p3")}</span>
                                 </li>
                               </ol>
-                            </p>
+                            </div>
                             <p>{t("send-in-order-help.p4")}</p>
                           </div>
                         </ReactTooltip>
@@ -563,7 +578,7 @@ const Preferences = () => {
                         >
                           <div className="max-w-[200px] md:max-w-[450px]">
                             <p className="font-bold">{t("enable-tour")}</p>
-                            <p className="p-[5px]">
+                            <div className="p-[5px]">
                               <ol className="list-disc">
                                 <li>
                                   <span className="font-bold">
@@ -576,7 +591,7 @@ const Preferences = () => {
                                   <span>{t("istourenabled-help.p2")}</span>
                                 </li>
                               </ol>
-                            </p>
+                            </div>
                             <p>
                               {t("istourenabled-help.p3", {
                                 appName: appName
