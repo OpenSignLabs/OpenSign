@@ -48,6 +48,9 @@ export default async function updatePreferences(request) {
         if (request.params.IsTourEnabled !== undefined) {
           newOrg.set('IsTourEnabled', request.params.IsTourEnabled);
         }
+        if (request.params.DateFormat) {
+          newOrg.set('DateFormat', request.params.DateFormat);
+        }
         const updateUserRes = await newOrg.save(null, { useMasterKey: true });
         if (updateUserRes) {
           const _updateUserRes = JSON.parse(JSON.stringify(updateUserRes));

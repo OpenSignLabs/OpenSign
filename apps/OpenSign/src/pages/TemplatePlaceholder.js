@@ -139,6 +139,7 @@ const TemplatePlaceholder = () => {
   const [updatedPdfUrl, setUpdatedPdfUrl] = useState("");
   const [tempSignerId, setTempSignerId] = useState("");
   const [unSignedWidgetId, setUnSignedWidgetId] = useState("");
+  const [owner, setOwner] = useState({});
   useEffect(() => {
     fetchTemplate();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -214,6 +215,7 @@ const TemplatePlaceholder = () => {
           : [];
 
       if (documentData && documentData.length > 0) {
+        setOwner(documentData?.[0]?.ExtUserPtr);
         const url = documentData[0] && documentData[0]?.URL;
         if (url) {
           const arrayBuffer = await convertPdfArrayBuffer(url);
@@ -391,7 +393,7 @@ const TemplatePlaceholder = () => {
             scale: containerScale,
             zIndex: posZIndex,
             type: dragTypeValue,
-            options: addWidgetOptions(dragTypeValue),
+            options: addWidgetOptions(dragTypeValue, owner),
             Width: widgetWidth / (containerScale * scale),
             Height: widgetHeight / (containerScale * scale)
           };
@@ -421,7 +423,7 @@ const TemplatePlaceholder = () => {
             // isMobile: isMobile,
             zIndex: posZIndex,
             type: item.text,
-            options: addWidgetOptions(dragTypeValue),
+            options: addWidgetOptions(dragTypeValue, owner),
             Width: widgetWidth / (containerScale * scale),
             Height: widgetHeight / (containerScale * scale)
           };

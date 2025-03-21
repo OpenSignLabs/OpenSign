@@ -25,6 +25,8 @@ const selectFormat = (data) => {
   switch (data) {
     case "L":
       return "MM/dd/yyyy";
+    case "MM/DD/YYYY":
+      return "MM/dd/yyyy";
     case "DD-MM-YYYY":
       return "dd-MM-yyyy";
     case "DD/MM/YYYY":
@@ -41,6 +43,8 @@ const selectFormat = (data) => {
       return "MM.dd.yyyy";
     case "MMM DD, YYYY":
       return "MMM dd, yyyy";
+    case "MMMM DD, YYYY":
+      return "MMMM dd, yyyy";
     case "DD MMMM, YYYY":
       return "dd MMMM, yyyy";
     default:

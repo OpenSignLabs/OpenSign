@@ -232,17 +232,47 @@ export const widgets = [
   { type: "email", icon: "fa-light fa-envelope", iconSize: "20px" }
 ];
 
-export const getDate = () => {
+export const getDate = (dateformat) => {
+  const format = dateformat || "MM/DD/YYYY";
   const date = new Date();
   const milliseconds = date.getTime();
-  const newDate = moment(milliseconds).format("MM/DD/YYYY");
+  const newDate = moment(milliseconds).format(format);
   return newDate;
 };
-export const addWidgetOptions = (type) => {
-  const defaultOpt = {
-    name: type,
-    status: "required"
-  };
+
+export const selectFormat = (data) => {
+  switch (data) {
+    case "L":
+      return "MM/dd/yyyy";
+    case "MM/DD/YYYY":
+      return "MM/dd/yyyy";
+    case "DD-MM-YYYY":
+      return "dd-MM-yyyy";
+    case "DD/MM/YYYY":
+      return "dd/MM/yyyy";
+    case "LL":
+      return "MMMM dd, yyyy";
+    case "DD MMM, YYYY":
+      return "dd MMM, yyyy";
+    case "YYYY-MM-DD":
+      return "yyyy-MM-dd";
+    case "MM-DD-YYYY":
+      return "MM-dd-yyyy";
+    case "MM.DD.YYYY":
+      return "MM.dd.yyyy";
+    case "MMM DD, YYYY":
+      return "MMM dd, yyyy";
+    case "MMMM DD, YYYY":
+      return "MMMM dd, yyyy";
+    case "DD MMMM, YYYY":
+      return "dd MMMM, yyyy";
+    default:
+      return "MM/dd/yyyy";
+  }
+};
+
+export const addWidgetOptions = (type, signer) => {
+  const defaultOpt = { name: type, status: "required" };
   switch (type) {
     case "signature":
       return defaultOpt;
@@ -263,12 +293,16 @@ export const addWidgetOptions = (type) => {
       return { ...defaultOpt };
     case "job title":
       return { ...defaultOpt };
-    case "date":
+    case "date": {
+      const dateFormat = signer?.DateFormat
+        ? selectFormat(signer?.DateFormat)
+        : "MM/dd/yyyy";
       return {
         ...defaultOpt,
-        response: getDate(),
-        validation: { format: "MM/dd/yyyy", type: "date-format" }
+        response: getDate(signer?.DateFormat),
+        validation: { format: dateFormat, type: "date-format" }
       };
+    }
     case "image":
       return defaultOpt;
     case "email":
@@ -289,7 +323,7 @@ export const addWidgetOptions = (type) => {
   }
 };
 
-export const addWidgetSelfsignOptions = (type, getWidgetValue) => {
+export const addWidgetSelfsignOptions = (type, getWidgetValue, owner) => {
   switch (type) {
     case "signature":
       return { name: "signature" };
@@ -319,12 +353,16 @@ export const addWidgetSelfsignOptions = (type, getWidgetValue) => {
         defaultValue: getWidgetValue(type),
         validation: { type: "text", pattern: "" }
       };
-    case "date":
+    case "date": {
+      const dateFormat = owner?.DateFormat
+        ? selectFormat(owner?.DateFormat)
+        : "MM/dd/yyyy";
       return {
         name: "date",
-        response: getDate(),
-        validation: { format: "MM/dd/yyyy", type: "date-format" }
+        response: getDate(owner?.DateFormat),
+        validation: { format: dateFormat, type: "date-format" }
       };
+    }
     case "image":
       return { name: "image" };
     case "email":
@@ -932,10 +970,7 @@ export const calculateInitialWidthHeight = (widgetData) => {
   const height = span.offsetHeight;
 
   document.body.removeChild(span);
-  return {
-    getWidth: width,
-    getHeight: height
-  };
+  return { getWidth: width, getHeight: height };
 };
 export const addInitialData = (signerPos, setXyPosition, value, userId) => {
   function widgetDataValue(type) {
@@ -966,9 +1001,7 @@ export const addInitialData = (signerPos, setXyPosition, value, userId) => {
           )
         };
       } else {
-        return {
-          ...item
-        };
+        return item;
       }
     } else if (item.pos && item.pos.length > 0) {
       // If there is no nested array, add the new field
@@ -986,17 +1019,9 @@ export const addInitialData = (signerPos, setXyPosition, value, userId) => {
             ...item.options,
             defaultValue: item?.options?.defaultValue || widgetData
           }
-          // Width:
-          //   calculateInitialWidthHeight(item.type, widgetData).getWidth ||
-          //   item?.Width,
-          // Height:
-          //   calculateInitialWidthHeight(item.type, widgetData).getHeight ||
-          //   item?.Height
         };
       } else {
-        return {
-          ...item
-        };
+        return item;
       }
     }
   });
@@ -2167,13 +2192,13 @@ export const fetchUrl = async (url, pdfName) => {
   try {
     const response = await fetch(url);
     if (!response.ok) {
-      alert("something went wrong, please try again later.");
+      alert("something went wrong, refreshing this page may solve this issue.");
       throw new Error("Network response was not ok");
     }
     const blob = await response.blob();
     saveAs(blob, `${sanitizeFileName(pdfName)}_signed_by_${appName}.pdf`);
   } catch (error) {
-    alert("something went wrong, please try again later.");
+    alert("something went wrong, refreshing this page may solve this issue.");
     console.error("Error downloading the file:", error);
   }
 };
@@ -2244,7 +2269,7 @@ export const handleDownloadPdf = async (
     } catch (err) {
       console.log("err in getsignedurl", err);
       setIsDownloading("");
-      alert("something went wrong, please try again later.");
+      alert("something went wrong, refreshing this page may solve this issue.");
     }
   }
 };
@@ -2302,7 +2327,7 @@ export const handleToPrint = async (event, setIsDownloading, pdfDetails) => {
   } catch (err) {
     setIsDownloading("");
     console.log("err in getsignedurl", err);
-    alert("something went wrong, please try again later.");
+    alert("something went wrong, refreshing this page may solve this issue.");
   }
 };
 
@@ -2388,7 +2413,7 @@ export const handleDownloadCertificate = async (
     } catch (err) {
       setIsDownloading("certificate_err");
       console.log("err in download in certificate", err);
-      alert("something went wrong, please try again later.");
+      alert("something went wrong, refreshing this page may solve this issue.");
     }
   }
 };
