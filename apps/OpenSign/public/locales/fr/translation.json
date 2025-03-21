@@ -831,7 +831,7 @@
   "initial-type": "Vos initiales",
   "redirect-url": "URL de redirection",
   "bulk-send": "Envoi groupé",
-  "select-timezone": "Sélectionnez votre fuseau horaire",
+  "select-timezone": "Fuseau horaire",
   "current-time": "Heure actuelle",
   "email-help": "Vous n'êtes pas autorisé à changer d'adresse e-mail pour des raisons de sécurité. Veuillez créer un autre compte gratuit en utilisant la nouvelle adresse e-mail.",
   "doc-sent": "Document envoyé avec succès.",

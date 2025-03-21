@@ -40,7 +40,8 @@ import {
   convertBase64ToFile,
   generatePdfName,
   handleRemoveWidgets,
-  compressedFileSize
+  compressedFileSize,
+  addWidgetSelfsignOptions
 } from "../constant/Utils";
 import { useParams } from "react-router";
 import Tour from "reactour";
@@ -144,6 +145,7 @@ function SignYourSelf() {
     isVisible: false,
     signId: ""
   });
+  const [owner, setOwner] = useState({});
   const [, drop] = useDrop({
     accept: "BOX",
     drop: (item, monitor) => addPositionOfSignature(item, monitor),
@@ -204,6 +206,7 @@ function SignYourSelf() {
       const documentData = await contractDocument(documentId);
 
       if (documentData && documentData.length > 0) {
+        setOwner(documentData?.[0]?.ExtUserPtr);
         setPdfDetails(documentData);
         const placeholders =
           documentData[0]?.Placeholders?.length > 0
@@ -321,7 +324,7 @@ function SignYourSelf() {
       }
     } catch (err) {
       console.log("Error: error in getDocumentDetails", err);
-      setHandleError("Error: Something went wrong!");
+      setHandleError(t("something-went-wrong-mssg"));
       setIsLoading({ isLoad: false });
     }
   };
@@ -344,54 +347,6 @@ function SignYourSelf() {
     }
   };
 
-  const addWidgetOptions = (type) => {
-    switch (type) {
-      case "signature":
-        return { name: "signature" };
-      case "stamp":
-        return { name: "stamp" };
-      case "checkbox":
-        return { name: "checkbox" };
-      case textWidget:
-        return { name: "text" };
-      case "initials":
-        return { name: "initials" };
-      case "name":
-        return {
-          name: "name",
-          defaultValue: getWidgetValue(type),
-          validation: { type: "text", pattern: "" }
-        };
-      case "company":
-        return {
-          name: "company",
-          defaultValue: getWidgetValue(type),
-          validation: { type: "text", pattern: "" }
-        };
-      case "job title":
-        return {
-          name: "job title",
-          defaultValue: getWidgetValue(type),
-          validation: { type: "text", pattern: "" }
-        };
-      case "date":
-        return {
-          name: "date",
-          response: getDate(),
-          validation: { format: "MM/dd/yyyy", type: "date-format" }
-        };
-      case "image":
-        return { name: "image" };
-      case "email":
-        return {
-          name: "email",
-          defaultValue: getWidgetValue(type),
-          validation: { type: "email", pattern: "" }
-        };
-      default:
-        return {};
-    }
-  };
   //function for setting position after drop signature button over pdf
   const addPositionOfSignature = (item, monitor) => {
     setCurrWidgetsDetails({});
@@ -416,7 +371,7 @@ function SignYourSelf() {
       // `getBoundingClientRect()` is used to get accurate measurement height of the div
       const divHeight = divRef.current.getBoundingClientRect().height;
       const getWidth = widgetTypeExist
-        ? calculateInitialWidthHeight(dragTypeValue, widgetValue).getWidth
+        ? calculateInitialWidthHeight(widgetValue).getWidth
         : defaultWidthHeight(dragTypeValue).width;
       const getHeight = defaultWidthHeight(dragTypeValue).height;
 
@@ -430,7 +385,7 @@ function SignYourSelf() {
         scale: containerScale,
         Width: getWidth,
         Height: getHeight,
-        options: addWidgetOptions(dragTypeValue)
+        options: addWidgetSelfsignOptions(dragTypeValue, getWidgetValue, owner)
       };
       dropData.push(dropObj);
     } else {
@@ -459,7 +414,7 @@ function SignYourSelf() {
         type: dragTypeValue,
         Width: getWidth / (containerScale * scale),
         Height: getHeight / (containerScale * scale),
-        options: addWidgetOptions(dragTypeValue),
+        options: addWidgetSelfsignOptions(dragTypeValue, getWidgetValue, owner),
         scale: containerScale
       };
       dropData.push(dropObj);

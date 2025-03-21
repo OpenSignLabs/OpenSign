@@ -150,7 +150,6 @@ function PlaceHolderSign() {
     status: false,
     message: ""
   });
-  const [extUserId, setExtUserId] = useState("");
   const [isCustomize, setIsCustomize] = useState(false);
   const [zoomPercent, setZoomPercent] = useState(0);
   const [scale, setScale] = useState(1);
@@ -164,6 +163,7 @@ function PlaceHolderSign() {
   const [userList, setUserList] = useState([]);
   const [isAttchSignerModal, setIsAttchSignerModal] = useState(false);
   const [isNewContact, setIsNewContact] = useState({ status: false, id: "" });
+  const [owner, setOwner] = useState({});
   const isMobile = window.innerWidth < 767;
   const [, drop] = useDrop({
     accept: "BOX",
@@ -286,7 +286,7 @@ function PlaceHolderSign() {
         setPdfArrayBuffer(arrayBuffer);
         setPdfBase64Url(base64Pdf);
       }
-      setExtUserId(documentData[0]?.ExtUserPtr?.objectId);
+      setOwner(documentData?.[0]?.ExtUserPtr);
       const alreadyPlaceholder = documentData[0]?.SignedUrl;
       // Check if document is sent for signing
       if (alreadyPlaceholder) {
@@ -525,7 +525,7 @@ function PlaceHolderSign() {
           scale: containerScale,
           zIndex: posZIndex,
           type: dragTypeValue,
-          options: addWidgetOptions(dragTypeValue),
+          options: addWidgetOptions(dragTypeValue, owner),
           Width: widgetWidth / (containerScale * scale),
           Height: widgetHeight / (containerScale * scale)
         };
@@ -556,7 +556,7 @@ function PlaceHolderSign() {
           scale: containerScale,
           zIndex: posZIndex,
           type: dragTypeValue,
-          options: addWidgetOptions(dragTypeValue),
+          options: addWidgetOptions(dragTypeValue, owner),
           Width: widgetWidth / (containerScale * scale),
           Height: widgetHeight / (containerScale * scale)
         };
@@ -1225,7 +1225,7 @@ function PlaceHolderSign() {
           sigingUrl: signPdf
         };
         let params = {
-          extUserId: extUserId,
+          extUserId: owner?.objectId,
           recipient: signerMail[i].Email,
           subject: replaceVar?.subject
             ? replaceVar?.subject

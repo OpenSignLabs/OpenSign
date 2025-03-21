@@ -32,13 +32,10 @@ function DraftDocument() {
     ) {
       setIsLoading({
         isLoader: false,
-        message: "Error: Something went wrong!"
+        message: t("something-went-wrong-mssg")
       });
     } else {
-      setIsLoading({
-        isLoader: false,
-        message: "No data found!"
-      });
+      setIsLoading({ isLoader: false, message: t("no-data") });
     }
   };
 
