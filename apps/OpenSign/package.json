@@ -105,7 +105,7 @@
     "commitizen": "^4.3.1",
     "concurrently": "^9.1.2",
     "css-loader": "^7.1.2",
-    "daisyui": "^4.12.23",
+    "daisyui": "^5.0.9",
     "dotenv": "^16.4.7",
     "dotenv-webpack": "^8.1.0",
     "eslint": "^9.22.0",
