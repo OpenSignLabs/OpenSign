@@ -859,7 +859,7 @@ const Forms = (props) => {
                             <div className="max-w-[200px] md:max-w-[450px]">
                               <p className="font-bold">{t("send-in-order")}</p>
                               <p>{t("send-in-order-help.p1")}</p>
-                              <p className="p-[5px]">
+                              <div className="p-[5px]">
                                 <ol className="list-disc">
                                   <li>
                                     <span className="font-bold">
@@ -874,7 +874,7 @@ const Forms = (props) => {
                                     <span>{t("send-in-order-help.p3")}</span>
                                   </li>
                                 </ol>
-                              </p>
+                              </div>
                               <p>{t("send-in-order-help.p4")}</p>
                             </div>
                           </Tooltip>
@@ -956,7 +956,7 @@ const Forms = (props) => {
                                     {t("send-in-order")}
                                   </p>
                                   <p>{t("send-in-order-help.p1")}</p>
-                                  <p className="p-[5px]">
+                                  <div className="p-[5px]">
                                     <ol className="list-disc">
                                       <li>
                                         <span className="font-bold">
@@ -975,7 +975,7 @@ const Forms = (props) => {
                                         </span>
                                       </li>
                                     </ol>
-                                  </p>
+                                  </div>
                                   <p>{t("send-in-order-help.p4")}</p>
                                 </div>
                               </Tooltip>
@@ -1093,7 +1093,7 @@ const Forms = (props) => {
                         <Tooltip id="istourenabled-tooltip" className="z-[999]">
                           <div className="max-w-[200px] md:max-w-[450px]">
                             <p className="font-bold">{t("enable-tour")}</p>
-                            <p className="p-[5px]">
+                            <div className="p-[5px]">
                               <ol className="list-disc">
                                 <li>
                                   <span className="font-bold">
@@ -1106,7 +1106,7 @@ const Forms = (props) => {
                                   <span>{t("istourenabled-help.p2")}</span>
                                 </li>
                               </ol>
-                            </p>
+                            </div>
                             <p>
                               {t("istourenabled-help.p3", { appName: appName })}
                             </p>

@@ -24,7 +24,7 @@ const widgetCls =
 function PlaceholderType(props) {
   const { t } = useTranslation();
   const type = props?.pos?.type;
-  const widgetTypeTraslation = t(`widgets-name.${props?.pos?.type}`);
+  const widgetTypeTranslation = t(`widgets-name.${props?.pos?.type}`);
   const [selectOption, setSelectOption] = useState("");
   const [validatePlaceholder, setValidatePlaceholder] = useState("");
   const inputRef = useRef(null);
@@ -342,8 +342,8 @@ function PlaceholderType(props) {
               className="font-medium"
             >
               {props.isNeedSign
-                ? props.pos?.options?.hint || widgetTypeTraslation
-                : widgetTypeTraslation}
+                ? props.pos?.options?.hint || widgetTypeTranslation
+                : widgetTypeTranslation}
             </div>
           )}
         </div>
@@ -368,8 +368,8 @@ function PlaceholderType(props) {
               className="font-medium"
             >
               {props.isNeedSign
-                ? props.pos?.options?.hint || widgetTypeTraslation
-                : widgetTypeTraslation}
+                ? props.pos?.options?.hint || widgetTypeTranslation
+                : widgetTypeTranslation}
             </div>
           )}
         </div>
@@ -475,7 +475,7 @@ function PlaceholderType(props) {
         />
       ) : (
         <div style={textWidgetStyle} className="select-none-cls">
-          <span>{textValue || widgetTypeTraslation}</span>
+          <span>{textValue || widgetTypeTranslation}</span>
         </div>
       );
     case "dropdown":
@@ -538,7 +538,7 @@ function PlaceholderType(props) {
         >
           {props.pos?.options?.name
             ? props.pos.options.name
-            : widgetTypeTraslation}
+            : widgetTypeTranslation}
           <i className="fa-light fa-circle-chevron-down mr-1 "></i>
         </div>
       );
@@ -562,8 +562,8 @@ function PlaceholderType(props) {
               className="font-medium text-center"
             >
               {props.isNeedSign
-                ? props.pos?.options?.hint || widgetTypeTraslation
-                : widgetTypeTraslation}
+                ? props.pos?.options?.hint || widgetTypeTranslation
+                : widgetTypeTranslation}
             </div>
           )}
         </div>
@@ -574,7 +574,7 @@ function PlaceholderType(props) {
         (props.isNeedSign && props.data?.signerObjId === props.signerObjId) ? (
         <textarea
           ref={inputRef}
-          placeholder={hint}
+          placeholder={hint || widgetTypeTranslation}
           rows={1}
           onKeyDown={handleEnterPress}
           value={textValue}
@@ -597,7 +597,7 @@ function PlaceholderType(props) {
         />
       ) : (
         <div className="flex h-full select-none-cls" style={textWidgetStyle}>
-          <span>{widgetTypeTraslation}</span>
+          <span>{widgetTypeTranslation}</span>
         </div>
       );
     case "company":
@@ -606,7 +606,7 @@ function PlaceholderType(props) {
         (props.isNeedSign && props.data?.signerObjId === props.signerObjId) ? (
         <textarea
           ref={inputRef}
-          placeholder={hint}
+          placeholder={hint || widgetTypeTranslation}
           rows={1}
           onKeyDown={handleEnterPress}
           value={textValue}
@@ -628,7 +628,7 @@ function PlaceholderType(props) {
         />
       ) : (
         <div style={textWidgetStyle} className="select-none-cls">
-          <span>{widgetTypeTraslation}</span>
+          <span>{widgetTypeTranslation}</span>
         </div>
       );
     case "job title":
@@ -637,7 +637,7 @@ function PlaceholderType(props) {
         (props.isNeedSign && props.data?.signerObjId === props.signerObjId) ? (
         <textarea
           ref={inputRef}
-          placeholder={hint}
+          placeholder={hint || widgetTypeTranslation}
           rows={1}
           onKeyDown={handleEnterPress}
           value={textValue}
@@ -659,7 +659,7 @@ function PlaceholderType(props) {
         />
       ) : (
         <div style={textWidgetStyle} className="select-none-cls">
-          <span>{widgetTypeTraslation}</span>
+          <span>{widgetTypeTranslation}</span>
         </div>
       );
     case "date":
@@ -748,8 +748,8 @@ function PlaceholderType(props) {
               className="font-medium text-center"
             >
               {props.isNeedSign
-                ? props.pos?.options?.hint || widgetTypeTraslation
-                : widgetTypeTraslation}
+                ? props.pos?.options?.hint || widgetTypeTranslation
+                : widgetTypeTranslation}
             </div>
           )}
         </div>
@@ -760,7 +760,7 @@ function PlaceholderType(props) {
         (props.isNeedSign && props.data?.signerObjId === props.signerObjId) ? (
         <textarea
           ref={inputRef}
-          placeholder={hint}
+          placeholder={hint || widgetTypeTranslation}
           rows={1}
           onKeyDown={(e) => {
             // Prevent new line on Enter key press
@@ -792,7 +792,7 @@ function PlaceholderType(props) {
         />
       ) : (
         <div style={textWidgetStyle} className="select-none-cls">
-          <span>{widgetTypeTraslation}</span>
+          <span>{widgetTypeTranslation}</span>
         </div>
       );
     case radioButtonWidget:
@@ -891,8 +891,8 @@ function PlaceholderType(props) {
               className="font-medium"
             >
               {props.isNeedSign
-                ? props.pos?.options?.hint || widgetTypeTraslation
-                : widgetTypeTraslation}
+                ? props.pos?.options?.hint || widgetTypeTranslation
+                : widgetTypeTranslation}
             </div>
           )}
         </div>
