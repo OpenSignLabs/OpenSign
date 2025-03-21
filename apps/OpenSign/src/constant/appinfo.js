@@ -4,7 +4,7 @@ export function serverUrl_fn() {
   let baseUrl;
     baseUrl = process.env.REACT_APP_SERVERURL
       ? process.env.REACT_APP_SERVERURL
-      : window.location.origin + "/app";
+      : window.location.origin + "/api/app";
 
   return baseUrl;
 }
