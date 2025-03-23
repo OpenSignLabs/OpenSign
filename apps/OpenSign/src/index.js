@@ -14,7 +14,6 @@ import {
   Preview
 } from "react-dnd-multi-backend";
 import DragElement from "./components/pdf/DragElement";
-import TagManager from "react-gtm-module";
 import Parse from "parse";
 import "./polyfills";
 import { serverUrl_fn } from "./constant/appinfo";
@@ -55,13 +54,6 @@ const generatePreview = (props) => {
     </div>
   );
 };
-
-if (process.env.REACT_APP_GTM) {
-  const tagManagerArgs = {
-    gtmId: process.env.REACT_APP_GTM
-  };
-  TagManager.initialize(tagManagerArgs);
-}
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(

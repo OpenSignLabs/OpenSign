@@ -188,13 +188,6 @@ const Forms = (props) => {
             } catch (err) {
               if (err?.message?.includes("is encrypted")) {
                 try {
-                  await Parse.Cloud.run("encryptedpdf", {
-                    email: Parse.User.current().getEmail()
-                  });
-                } catch (err) {
-                  console.log("err in sending posthog encryptedpdf", err);
-                }
-                try {
                   setIsDecrypting(true);
                   const size = files?.[0].size;
                   const name = generatePdfName(16);
