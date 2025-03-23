@@ -15,7 +15,6 @@ import AWS from 'aws-sdk';
 import { app as customRoute } from './cloud/customRoute/customApp.js';
 import { exec } from 'child_process';
 import { createTransport } from 'nodemailer';
-import { PostHog } from 'posthog-node';
 import { appName, cloudServerUrl, smtpenable, smtpsecure, useLocal } from './Utils.js';
 import { SSOAuth } from './auth/authadapter.js';
 import createContactIndex from './migrationdb/createContactIndex.js';
@@ -175,16 +174,6 @@ function getUserIP(request) {
     return request.socket.remoteAddress;
   }
 }
-app.use(function (req, res, next) {
-  const ph_project_api_key = process.env.PH_PROJECT_API_KEY;
-  try {
-    req.posthog = new PostHog(ph_project_api_key);
-  } catch (err) {
-    // console.log('Err', err);
-    req.posthog = '';
-  }
-  next();
-});
 
 app.use(async function (req, res, next) {
   const isFilePath = req.path.includes('files') || false;
@@ -224,7 +213,6 @@ if (!process.env.TESTING) {
 }
 // Mount your custom express app
 app.use('/', customRoute);
-
 
 // Parse Server plays nicely with the rest of your web routes
 app.get('/', function (req, res) {
