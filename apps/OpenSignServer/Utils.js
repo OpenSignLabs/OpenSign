@@ -6,10 +6,6 @@ dotenv.config();
 
 export const cloudServerUrl = 'http://localhost:8080/app';
 export const appName = 'OpenSign™';
-export function customAPIurl() {
-  const url = new URL(cloudServerUrl);
-  return url.pathname === '/api/app' ? url.origin + '/api' : url.origin;
-}
 
 export const color = [
   '#93a3db',
