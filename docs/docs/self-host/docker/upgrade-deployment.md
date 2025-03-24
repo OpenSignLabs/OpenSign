@@ -37,8 +37,7 @@ set HOST_URL=https://opensign.yourdomain.com && curl -O https://raw.githubuserco
 ## Running locally
 **linux/MacOS**
 ```
-curl --remote-name-all https://raw.githubusercontent.com/OpenSignLabs/OpenSign/main/docker-compose.yml https://raw.githubusercontent.com/OpenSignLabs/OpenSign/main/Caddyfile 
-&& docker compose pull
+curl --remote-name-all https://raw.githubusercontent.com/OpenSignLabs/OpenSign/main/docker-compose.yml https://raw.githubusercontent.com/OpenSignLabs/OpenSign/main/Caddyfile && docker compose pull
 ```
 **Windows** (Powershell)
 ```
