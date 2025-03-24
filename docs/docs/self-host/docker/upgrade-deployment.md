@@ -21,15 +21,15 @@ Run the following command to pull the latest OpenSign Docker images:
 ## Running on a custom domain
 **linux/MacOS**
 ```
-export HOST_URL=https://opensign.yourdomain.com && curl --remote-name-all https://raw.githubusercontent.com/OpenSignLabs/OpenSign/main/docker-compose.yml && docker compose pull
+export HOST_URL=https://opensign.yourdomain.com && curl --remote-name-all https://raw.githubusercontent.com/OpenSignLabs/OpenSign/main/docker-compose.yml https://raw.githubusercontent.com/OpenSignLabs/OpenSign/main/Caddyfile && docker compose pull
 ```
 **Windows** (Powershell)
 ```
-$env:HOST_URL="https://opensign.yourdomain.com"; Invoke-WebRequest -Uri https://raw.githubusercontent.com/OpenSignLabs/OpenSign/main/docker-compose.yml -OutFile docker-compose.yml; docker compose pull
+$env:HOST_URL="https://opensign.yourdomain.com"; Invoke-WebRequest -Uri https://raw.githubusercontent.com/OpenSignLabs/OpenSign/main/docker-compose.yml -OutFile docker-compose.yml; Invoke-WebRequest -Uri https://raw.githubusercontent.com/OpenSignLabs/OpenSign/main/Caddyfile -OutFile Caddyfile; docker compose pull
 ```
 **Windows** (Command Prompt)
 ```
-set HOST_URL=https://opensign.yourdomain.com && curl -O https://raw.githubusercontent.com/OpenSignLabs/OpenSign/main/docker-compose.yml && docker compose pull
+set HOST_URL=https://opensign.yourdomain.com && curl -O https://raw.githubusercontent.com/OpenSignLabs/OpenSign/main/docker-compose.yml && curl -O https://raw.githubusercontent.com/OpenSignLabs/OpenSign/main/Caddyfile && docker compose pull
 ```
   - This command will fetch the most recent versions of the Docker images required by OpenSign.
   - Wait for the pulling process to complete. You should see messages indicating the progress and completion of the download.
@@ -37,15 +37,16 @@ set HOST_URL=https://opensign.yourdomain.com && curl -O https://raw.githubuserco
 ## Running locally
 **linux/MacOS**
 ```
-curl --remote-name-all https://raw.githubusercontent.com/OpenSignLabs/OpenSign/main/docker-compose.yml && docker compose pull
+curl --remote-name-all https://raw.githubusercontent.com/OpenSignLabs/OpenSign/main/docker-compose.yml https://raw.githubusercontent.com/OpenSignLabs/OpenSign/main/Caddyfile 
+&& docker compose pull
 ```
 **Windows** (Powershell)
 ```
-Invoke-WebRequest -Uri https://raw.githubusercontent.com/OpenSignLabs/OpenSign/main/docker-compose.yml -OutFile docker-compose.yml; docker compose pull
+Invoke-WebRequest -Uri https://raw.githubusercontent.com/OpenSignLabs/OpenSign/main/docker-compose.yml -OutFile docker-compose.yml; Invoke-WebRequest -Uri https://raw.githubusercontent.com/OpenSignLabs/OpenSign/main/Caddyfile -OutFile Caddyfile; docker compose pull
 ```
 **Windows** (Command Prompt)
 ```
-curl -O https://raw.githubusercontent.com/OpenSignLabs/OpenSign/main/docker-compose.yml && docker compose pull
+curl -O https://raw.githubusercontent.com/OpenSignLabs/OpenSign/main/docker-compose.yml && curl -O https://raw.githubusercontent.com/OpenSignLabs/OpenSign/main/Caddyfile && docker compose pull
 ```
   - This command will fetch the most recent versions of the Docker images required by OpenSign.
   - Wait for the pulling process to complete. You should see messages indicating the progress and completion of the download.
