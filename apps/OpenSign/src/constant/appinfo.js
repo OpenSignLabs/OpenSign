@@ -1,11 +1,9 @@
 import logo from "../assets/images/logo.png";
 
 export function serverUrl_fn() {
-  let baseUrl;
-    baseUrl = process.env.REACT_APP_SERVERURL
-      ? process.env.REACT_APP_SERVERURL
-      : window.location.origin + "/app";
-
+  let baseUrl = process.env.REACT_APP_SERVERURL
+    ? process.env.REACT_APP_SERVERURL
+    : window.location.origin + "/api/app";
   return baseUrl;
 }
 export const appInfo = {
