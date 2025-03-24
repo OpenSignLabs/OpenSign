@@ -11,7 +11,8 @@ services:
     env_file: .env.prod
     environment:
       - NODE_ENV=production
-      - SERVER_URL=${HOST_URL:-https://localhost:3001}/app
+      - SERVER_URL=${HOST_URL:-https://localhost:3001}/api/app
+      - PUBLIC_URL=${HOST_URL:-https://localhost:3001}
     networks:
       - app-network
   mongo:
