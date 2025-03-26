@@ -15,6 +15,7 @@ externalDocs:
 servers:
 - url: https://sandbox.opensignlabs.com/api/v1
 - url: https://app.opensignlabs.com/api/v1
+- url: https://eu-app.opensignlabs.com/api/v1
 - url: https://staging-app.opensignlabs.com/api/v1
 tags:
 - name: OpenSign
