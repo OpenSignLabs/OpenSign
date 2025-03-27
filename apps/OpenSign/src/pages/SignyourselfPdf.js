@@ -1313,7 +1313,7 @@ function SignYourSelf() {
                     setCurrWidgetsDetails={setCurrWidgetsDetails}
                   />
                 )}
-                {/*render email component to send email after finish signature on document */}
+                {/*render email component to send email after finish signature on document
                 <EmailComponent
                   isEmail={isEmail}
                   setIsEmail={setIsEmail}
@@ -1322,6 +1322,7 @@ function SignYourSelf() {
                   setIsAlert={setIsAlert}
                   setIsDownloadModal={setIsDownloadModal}
                 />
+                    */}
                 {/* pdf header which contain funish back button */}
                 <Header
                   pageNumber={pageNumber}
