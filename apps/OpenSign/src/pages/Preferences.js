@@ -49,6 +49,7 @@ const Preferences = () => {
   const [sendinOrder, setSendinOrder] = useState(true);
   const [isTourEnabled, setIsTourEnabled] = useState(false);
   const [dateFormat, setDateFormat] = useState("MM/DD/YYYY");
+  const [is12HourTime, setIs12HourTime] = useState(false);
 
   useEffect(() => {
     fetchSignType();
@@ -106,6 +107,9 @@ const Preferences = () => {
             ? _getUser?.DateFormat
             : "MM/DD/YYYY";
         setDateFormat(DateFormat);
+        const is12Hr =
+          _getUser?.Is12HourTime !== undefined ? _getUser?.Is12HourTime : false;
+        setIs12HourTime(is12Hr);
       }
     } catch (err) {
       console.log("err while getting user details", err);
@@ -162,7 +166,8 @@ const Preferences = () => {
           ...params,
           SendinOrder: sendinOrder,
           IsTourEnabled: isTourEnabled,
-          DateFormat: dateFormat
+          DateFormat: dateFormat,
+          Is12HourTime: is12HourTime
         };
         const updateRes = await Parse.Cloud.run("updatepreferences", params);
         if (updateRes) {
@@ -175,6 +180,7 @@ const Preferences = () => {
             extUser.SendinOrder = sendinOrder;
             extUser.IsTourEnabled = isTourEnabled;
             extUser.DateFormat = dateFormat;
+            extUser.Is12HourTime = is12HourTime;
             const _extUser = JSON.parse(JSON.stringify(extUser));
             localStorage.setItem("Extand_Class", JSON.stringify([_extUser]));
           }
@@ -492,7 +498,10 @@ const Preferences = () => {
                     </div>
                     <div className="mb-[0.75rem]">
                       <DateFormatSelector
+                        timezone={timezone}
                         dateFormat={dateFormat}
+                        is12HourTime={is12HourTime}
+                        setIs12HourTime={setIs12HourTime}
                         setDateFormat={setDateFormat}
                       />
                     </div>

@@ -458,6 +458,7 @@
   "placeholder-alert-3": "Etes-vous sûr de vouloir envoyer ce document pour signature ? ",
   "placeholder-alert-4": "Vous avez envoyé avec succès des mails à tous les",
   "placeholder-mail-alert": "Vous avez envoyé un e-mail avec succès à {{name}}. Les signataires suivants recevront un e-mail une fois que {{name}} aura signé le document.",
+  "placeholder-mail-alert-you": "Les signataires suivants recevront un e-mail dès que vous signez le document.",
   "placeholder-alert-5": "Voulez-vous signer des documents maintenant ?",
   "placeholder-alert-6": "Veuillez configurer l'adaptateur de messagerie pour envoyer du courrier !",
   "placeholder-alert-7": "Veuillez sélectionner le signataire pour ajouter un espace réservé !",
@@ -856,5 +857,11 @@
   "enabled-signature-type-help": "Le paramètre 'Types de signature activés' détermine quelles options de signature sont disponibles dans votre organisation. Par exemple, si vous désactivez l'option 'Dessiner', les membres de votre organisation ne la verront pas dans le widget de signature, tandis que les trois autres options resteront accessibles.",
   "indexing-public-profile": "Autoriser l'indexation du profil public par les moteurs de recherche",
   "user-created-successfully": "Utilisateur créé avec succès.",
-  "only-15-reminder-allowed": "Vous pouvez définir jusqu'à 15 rappels automatiques. Par exemple, si 'TimeToComplete' est de 15 jours et 'RemindOnceInEvery' est de 1 jour, vous atteindrez la limite maximale de 15 rappels. Ajustez vos paramètres en conséquence."
+  "only-15-reminder-allowed": "Vous pouvez définir jusqu'à 15 rappels automatiques. Par exemple, si 'TimeToComplete' est de 15 jours et 'RemindOnceInEvery' est de 1 jour, vous atteindrez la limite maximale de 15 rappels. Ajustez vos paramètres en conséquence.",
+  "rate-your-experience": "👋 Veuillez évaluer votre expérience avec Opensign",
+  "thanks-for-feedback": "Merci pour votre retour 🙏",
+  "share-your-feedback": "Partagez votre avis",
+  "share-your-review": "Partagez votre avis",
+  "date-format": "Format de date",
+  "document-deleted": "Le document a été supprimé ou vous n'y avez pas accès. Veuillez contacter l'expéditeur."
 }

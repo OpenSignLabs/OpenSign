@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import AsyncSelect from "react-select/async";
-import AddSigner from "../../AddSigner";
-import Parse from "parse";
+import AddContact from "../../../primitives/AddContact";
 import Tooltip from "../../../primitives/Tooltip";
 import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
+import { findContact } from "../../../constant/Utils";
 function arrayMove(array, from, to) {
   array = array.slice();
   array.splice(to < 0 ? array.length + to : to, 0, array.splice(from, 1)[0]);
@@ -103,17 +103,21 @@ const SignersInput = (props) => {
 
   // `handleNewDetails` is used to set just save from quick form to selected option in dropdown
   const handleNewDetails = (data) => {
-    setState([...state, data]);
+    const user = {
+      value: data["objectId"],
+      label: data["Name"],
+      email: data?.Email
+    };
+    setState([...state, user]);
     if (selected.length > 0) {
-      setSelected([...selected, data]);
+      setSelected([...selected, user]);
     } else {
-      setSelected([data]);
+      setSelected([user]);
     }
   };
   const loadOptions = async (inputValue) => {
     try {
-      const params = { search: inputValue };
-      const contactRes = await Parse.Cloud.run("getsigners", params);
+      const contactRes = await findContact(inputValue);
       if (contactRes) {
         const res = JSON.parse(JSON.stringify(contactRes));
         //compareArrays is a function where compare between two array (total signersList and dcument signers list)
@@ -148,7 +152,9 @@ const SignersInput = (props) => {
         {props.label ? props.label : t("signers")}
         {props.required && <span className="text-red-500 text-[13px]">*</span>}
         <span
-          className={`z-[${props?.helptextZindex ? props.helptextZindex : 30}] absolute ml-1 text-xs`}
+          className={`z-[${
+            props?.helptextZindex ? props.helptextZindex : 30
+          }] absolute ml-1 text-xs`}
         >
           <Tooltip
             id={`${props.label ? props.label : "signers"}-tooltip`}
@@ -209,9 +215,8 @@ const SignersInput = (props) => {
             ✕
           </button>
           {isModal && (
-            <AddSigner
-              valueKey={"objectId"}
-              displayKey={"Name"}
+            <AddContact
+              isDisableTitle
               details={handleNewDetails}
               closePopup={handleModalCloseClick}
             />

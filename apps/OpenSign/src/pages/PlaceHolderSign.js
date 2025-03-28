@@ -170,7 +170,6 @@ function PlaceHolderSign() {
     drop: (item, monitor) => addPositionOfSignature(item, monitor),
     collect: (monitor) => ({ isOver: !!monitor.isOver() })
   });
-
   const documentId = docId;
   useEffect(() => {
     if (documentId) {
@@ -457,7 +456,11 @@ function PlaceHolderSign() {
       documentData === "Error: Something went wrong!" ||
       (documentData.result && documentData.result.error)
     ) {
-      setHandleError(t("something-went-wrong-mssg"));
+      if (documentData?.result?.error?.includes("deleted")) {
+        setHandleError(t("document-deleted"));
+      } else {
+        setHandleError(t("something-went-wrong-mssg"));
+      }
       setIsLoading({ isLoad: false });
     } else {
       setHandleError(t("no-data-avaliable"));
@@ -2093,9 +2096,11 @@ function PlaceHolderSign() {
                           <LottieWithLoader />
                           {pdfDetails[0].SendinOrder ? (
                             <p>
-                              {t("placeholder-mail-alert", {
-                                name: signersdata[0]?.Name
-                              })}
+                              {isCurrUser
+                                ? t("placeholder-mail-alert-you")
+                                : t("placeholder-mail-alert", {
+                                    name: signersdata[0]?.Name
+                                  })}
                             </p>
                           ) : (
                             <p>{t("placeholder-alert-4")}</p>

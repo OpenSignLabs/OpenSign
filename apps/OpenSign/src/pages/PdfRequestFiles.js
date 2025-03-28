@@ -760,7 +760,11 @@ function PdfRequestFiles() {
               documentData === "Error: Something went wrong!" ||
               (documentData.result && documentData.result.error)
             ) {
-              setHandleError(t("something-went-wrong-mssg"));
+              if (documentData?.result?.error?.includes("deleted")) {
+                setHandleError(t("document-deleted"));
+              } else {
+                setHandleError(t("something-went-wrong-mssg"));
+              }
             } else {
               setHandleError("Document not Found!");
             }

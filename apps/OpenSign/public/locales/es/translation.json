@@ -458,6 +458,7 @@
   "placeholder-alert-3": " ¿En definitiva quieres enviar este documento para ser firmado?",
   "placeholder-alert-4": "¡Has enviado exitosamente correos a todos los destinatarios!",
   "placeholder-mail-alert": "Has enviado un correo electrónico con éxito a {{name}}. Los siguientes firmantes recibirán un correo electrónico una vez que {{name}} firme el documento.",
+  "placeholder-mail-alert-you": "Los firmantes posteriores recibirán correos electrónicos una vez que firme el documento.",
   "placeholder-alert-5": "¿Quieres firmar documentos ahora mismo?",
   "placeholder-alert-6": "¡Por favor, configura el adaptador de correo para enviar correos!",
   "placeholder-alert-7": "¡Por favor, selecciona un firmante para agregar un marcador de posición!",
@@ -856,5 +857,11 @@
   "enabled-signature-type-help": "La configuración de 'Tipos de firma habilitados' determina qué opciones de firma están disponibles en su organización. Por ejemplo, si desactiva la opción 'Dibujar', los miembros de su organización no la verán en el widget de firma, mientras que las otras tres opciones seguirán siendo accesibles.",
   "indexing-public-profile": "Permitir la indexación del perfil público por los motores de búsqueda",
   "user-created-successfully": "Usuario creado con éxito.",
-  "only-15-reminder-allowed": "Puede configurar hasta 15 recordatorios automáticos. Por ejemplo, si 'TimeToComplete' es de 15 días y 'RemindOnceInEvery' es de 1 día, alcanzará el límite máximo de 15 recordatorios. Ajuste su configuración en consecuencia."
+  "only-15-reminder-allowed": "Puede configurar hasta 15 recordatorios automáticos. Por ejemplo, si 'TimeToComplete' es de 15 días y 'RemindOnceInEvery' es de 1 día, alcanzará el límite máximo de 15 recordatorios. Ajuste su configuración en consecuencia.",
+  "rate-your-experience": "👋 Por favor, califique su experiencia con Opensign",
+  "thanks-for-feedback": "Gracias por su comentario 🙏",
+  "share-your-feedback": "Comparta sus comentarios",
+  "share-your-review": "Comparta su reseña",
+  "date-format": "Formato de fecha",
+  "document-deleted": "El documento ha sido eliminado o no tiene acceso. Por favor, contacte al remitente."
 }
