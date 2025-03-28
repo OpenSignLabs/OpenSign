@@ -63,19 +63,11 @@ docker compose up -d
 **Explanation:**
   - docker-compose up: This command starts the services defined in your docker-compose.yml file.
   - -d: The detached mode flag, which runs the containers in the background and frees up your terminal.
+  - If you want to view the logs, avoid using the -d flag.
     
 <img width="550" alt="Docker compose up" src="https://github.com/user-attachments/assets/c573baaf-f70d-468e-a531-75b85a275647" />
 
-### OR 
-If you have already run the above command, you do not need to execute this command.
-```
-docker compose up
-```
-  - This command will recreate and start all the necessary containers with the updated images.
-  - You should see logs indicating that the containers are being created or updated, and eventually, that they are up and running.
-
-## Note:
-   - The docker compose pull command ensures that you have the latest version of the Docker images, while the docker compose up command applies any updates and starts the containers.
+**Note**: The docker compose pull command ensures that you have the latest version of the Docker images, while the docker compose up command applies any updates and starts the containers.
 
 ## Troubleshooting:
    - If you encounter any errors, check Docker logs by running docker compose logs to get more details.
