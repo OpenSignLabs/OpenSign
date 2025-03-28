@@ -1,7 +1,5 @@
 import axios from 'axios';
-import {
-  cloudServerUrl,
-} from '../../Utils.js';
+import { cloudServerUrl } from '../../Utils.js';
 export default async function getDocument(request) {
   const serverUrl = cloudServerUrl; //process.env.SERVER_URL;
   const docId = request.params.docId;
@@ -47,13 +45,12 @@ export default async function getDocument(request) {
                 console.log('err user in not authenticated', err);
                 return { error: "You don't have access of this document!" };
               }
-            }
-            else {
+            } else {
               return { error: "You don't have access of this document!" };
             }
           }
         } else {
-          return { error: "You don't have access of this document!" };
+          return { error: "document deleted or you don't have access." };
         }
       } catch (err) {
         console.log('err', err);

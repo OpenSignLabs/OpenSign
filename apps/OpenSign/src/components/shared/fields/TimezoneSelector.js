@@ -7,25 +7,8 @@ const TimezoneSelector = (props) => {
   // Intl.DateTimeFormat().resolvedOptions().timeZone // Default to the user's local timezone
 
   const onChangeTimezone = (timezone) => {
-    setSelectedTimezone(timezone);
+    setSelectedTimezone(timezone?.value);
     props.setTimezone && props.setTimezone(timezone?.value);
-  };
-
-  // Format date and time for the selected timezone
-  const formatDate = (date, timezone) => {
-    return timezone
-      ? new Intl.DateTimeFormat("en-US", {
-          weekday: "short",
-          year: "numeric",
-          month: "short",
-          day: "numeric",
-          hour: "2-digit",
-          minute: "2-digit",
-          second: "2-digit",
-          timeZone: timezone,
-          hour12: false
-        }).format(date)
-      : new Date(date).toUTCString();
   };
 
   return (
@@ -53,11 +36,6 @@ const TimezoneSelector = (props) => {
             noOptionsMessage: () => "p-2 bg-base-200 rounded-lg m-1 p-2"
           }}
         />
-      </div>
-      <div className="mt-[12px] ml-[10px] text-[13px]">
-        <strong>
-          {formatDate(new Date(), selectedTimezone?.value || selectedTimezone)}
-        </strong>{" "}
       </div>
     </>
   );

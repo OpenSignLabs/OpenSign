@@ -209,7 +209,8 @@ async function sendCompletedMail(obj) {
     subject = replaceVar.subject;
     body = replaceVar.body;
   }
-  const Bcc = doc?.Bcc?.length > 0 ? doc.Bcc.map(x => x.Email) : '';
+  const Bcc = doc?.Bcc?.length > 0 ? doc.Bcc.map(x => x.Email) : [];
+  const updatedBcc = doc?.SenderMail ? [...Bcc, doc?.SenderMail] : Bcc;
   const params = {
     extUserId: sender.objectId,
     url: url,
@@ -220,7 +221,7 @@ async function sendCompletedMail(obj) {
     pdfName: pdfName,
     html: body,
     mailProvider: obj.mailProvider,
-    bcc: Bcc,
+    bcc: updatedBcc?.length > 0 ? updatedBcc : '',
     certificatePath: `./exports/signed_certificate_${doc.objectId}.pdf`,
     filename: obj?.filename,
   };
