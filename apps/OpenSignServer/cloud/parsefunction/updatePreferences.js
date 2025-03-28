@@ -51,6 +51,9 @@ export default async function updatePreferences(request) {
         if (request.params.DateFormat) {
           newOrg.set('DateFormat', request.params.DateFormat);
         }
+        if (request.params.Is12HourTime !== undefined) {
+          newOrg.set('Is12HourTime', request.params.Is12HourTime);
+        }
         const updateUserRes = await newOrg.save(null, { useMasterKey: true });
         if (updateUserRes) {
           const _updateUserRes = JSON.parse(JSON.stringify(updateUserRes));

@@ -458,6 +458,7 @@
   "placeholder-alert-3": " Are you sure you want to send out this document for signatures?",
   "placeholder-alert-4": "You have successfully sent mails to all recipients!",
   "placeholder-mail-alert": "You have successfully sent email to {{name}}. Subsequent signers will get email(s) once {{name}} signs the document",
+  "placeholder-mail-alert-you": "Subsequent signers will get email(s) once you signs the document.",
   "placeholder-alert-5": "Do you want to sign the document right now?",
   "placeholder-alert-6": "Please setup mail adapter to send mail!",
   "placeholder-alert-7": "Please select signer for add placeholder!",
@@ -856,5 +857,11 @@
   "enabled-signature-type-help": "The 'Enabled Signature Types' setting determines which signature options are available across your organization. For example, if you disable the 'Draw' option, members of your organization will not see it in the signature widget, while the other three options will remain accessible.",
   "indexing-public-profile": "Allow indexing of public profile by search engines",
   "user-created-successfully": "user created successfully.",
-  "only-15-reminder-allowed": "You can set up to 15 automatic reminders. For example, if 'TimeToComplete' is 15 days and 'RemindOnceInEvery' is 1 day, you'll reach the maximum limit of 15 reminders. Adjust your settings accordingly."
+  "only-15-reminder-allowed": "You can set up to 15 automatic reminders. For example, if 'TimeToComplete' is 15 days and 'RemindOnceInEvery' is 1 day, you'll reach the maximum limit of 15 reminders. Adjust your settings accordingly.",
+  "rate-your-experience": "👋 Please rate your experience with Opensign",
+  "thanks-for-feedback": "Thanks for your feedback 🙏",
+  "share-your-feedback": "Share your feedback",
+  "share-your-review": "Share your review",
+  "date-format": "Date format",
+  "document-deleted": "The document has been deleted or you don't have access. Please contact the sender."
 }

@@ -458,6 +458,7 @@
   "placeholder-alert-3": "Sind Sie sicher, dass Sie dieses Dokument zur Unterzeichnung senden möchten?",
   "placeholder-alert-4": "Sie haben erfolgreich E-Mails an alle Empfänger gesendet!",
   "placeholder-mail-alert": "Sie haben erfolgreich eine E-Mail an {{name}} gesendet. Die nachfolgenden Unterzeichner erhalten eine E-Mail, sobald {{name}} das Dokument unterzeichnet.",
+  "placeholder-mail-alert-you": "Nachfolgende Unterzeichner erhalten E-Mails, sobald Sie das Dokument unterschreiben.",
   "placeholder-alert-5": "Möchten Sie die Dokumente jetzt unterschreiben?",
   "placeholder-alert-6": "Bitte richten Sie den E-Mail-Adapter ein, um E-Mails zu senden!",
   "placeholder-alert-7": "Bitte wählen Sie einen Unterzeichner aus, um Platzhalter hinzuzufügen!",
@@ -856,5 +857,11 @@
   "enabled-signature-type-help": "Die Einstellung 'Aktivierte Signaturtypen' bestimmt, welche Signaturoptionen in Ihrer Organisation verfügbar sind. Wenn Sie beispielsweise die Option 'Zeichnen' deaktivieren, wird sie den Mitgliedern Ihrer Organisation im Signatur-Widget nicht angezeigt, während die anderen drei Optionen weiterhin zugänglich bleiben.",
   "indexing-public-profile": "Erlaube die Indexierung des öffentlichen Profils durch Suchmaschinen",
   "user-created-successfully": "Benutzer erfolgreich erstellt.",
-  "only-15-reminder-allowed": "Sie können bis zu 15 automatische Erinnerungen festlegen. Wenn zum Beispiel 'TimeToComplete' auf 15 Tage und 'RemindOnceInEvery' auf 1 Tag eingestellt ist, erreichen Sie das maximale Limit von 15 Erinnerungen. Passen Sie Ihre Einstellungen entsprechend an."
+  "only-15-reminder-allowed": "Sie können bis zu 15 automatische Erinnerungen festlegen. Wenn zum Beispiel 'TimeToComplete' auf 15 Tage und 'RemindOnceInEvery' auf 1 Tag eingestellt ist, erreichen Sie das maximale Limit von 15 Erinnerungen. Passen Sie Ihre Einstellungen entsprechend an.",
+  "rate-your-experience": "👋 Bitte bewerten Sie Ihre Erfahrung mit Opensign",
+  "thanks-for-feedback": "Danke für Ihr Feedback 🙏",
+  "share-your-feedback": "Teilen Sie Ihr Feedback",
+  "share-your-review": "Teilen Sie Ihre Bewertung",
+  "date-format": "Datumsformat",
+  "document-deleted": "Das Dokument wurde gelöscht oder Sie haben keinen Zugriff. Bitte kontaktieren Sie den Absender."
 }
