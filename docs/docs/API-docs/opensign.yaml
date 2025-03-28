@@ -3109,6 +3109,10 @@ components:
         allow_modifications:
           type: boolean
           example: false
+        audit_trail:
+          type: array
+          items:
+            $ref: '#/components/schemas/documentwithstatus_audit_trail'
       xml:
         name: documentwithstatus
     document:
@@ -4123,6 +4127,16 @@ components:
         default:
           type: string
           example: my textbox
+    documentwithstatus_audit_trail:
+      type: object
+      properties:
+        email:
+          type: string
+          example: joebee@example.com
+        viewed:
+          $ref: '#/components/schemas/date'
+        signed:
+          $ref: '#/components/schemas/date'
   securitySchemes:
     x-api-token:
       type: apiKey
