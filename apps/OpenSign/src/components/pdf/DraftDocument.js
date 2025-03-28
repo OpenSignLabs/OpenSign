@@ -30,10 +30,17 @@ function DraftDocument() {
       documentData === "Error: Something went wrong!" ||
       (documentData.result && documentData.result.error)
     ) {
-      setIsLoading({
-        isLoader: false,
-        message: t("something-went-wrong-mssg")
-      });
+      if (documentData?.result?.error?.includes("deleted")) {
+        setIsLoading({
+          isLoader: false,
+          message: t("document-deleted")
+        });
+      } else {
+        setIsLoading({
+          isLoader: false,
+          message: t("something-went-wrong-mssg")
+        });
+      }
     } else {
       setIsLoading({ isLoader: false, message: t("no-data") });
     }
