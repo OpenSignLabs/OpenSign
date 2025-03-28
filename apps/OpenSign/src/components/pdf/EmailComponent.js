@@ -5,6 +5,7 @@ import Loader from "../../primitives/Loader";
 import ModalUi from "../../primitives/ModalUi";
 import { useTranslation } from "react-i18next";
 import Parse from "parse";
+
 function EmailComponent({
   isEmail,
   setIsEmail,
@@ -20,6 +21,7 @@ function EmailComponent({
   const [emailErr, setEmailErr] = useState(false);
   const [isDownloading, setIsDownloading] = useState("");
   const isAndroid = /Android/i.test(navigator.userAgent);
+
   //function for send email
   const sendEmail = async () => {
     setIsLoading(true);
@@ -105,7 +107,7 @@ function EmailComponent({
             </div>
           )}
           <div className="flex justify-between items-center py-[10px] px-[20px] border-b-[1px] border-base-content">
-            <span className="text-base-content font-semibold">
+            <span className="text-base-content font-bold text-sm md:text-lg">
               {t("successfully-signed")}
             </span>
             <div className="flex flex-row">
@@ -114,14 +116,14 @@ function EmailComponent({
                   onClick={(e) =>
                     handleToPrint(e, setIsDownloading, pdfDetails)
                   }
-                  className="op-btn op-btn-neutral op-btn-sm text-[15px]"
+                  className="op-btn op-btn-neutral op-btn-sm text-xs md:text-[15px]"
                 >
                   <i className="fa-light fa-print" aria-hidden="true"></i>
                   {t("print")}
                 </button>
               )}
               <button
-                className="op-btn op-btn-primary op-btn-sm text-[15px] ml-2"
+                className="op-btn op-btn-primary op-btn-sm text-xs md:text-[15px] ml-2"
                 onClick={() => {
                   handleClose();
                   setIsDownloadModal(true);
@@ -137,12 +139,12 @@ function EmailComponent({
               {t("email-mssg")}
             </p>
             {emailList.length > 0 ? (
-              <div className="p-0 border-[1.5px] op-border-primary rounded w-full text-[15px]">
+              <div className="p-0 border-[1px] op-border-primary w-full rounded-md text-[15px] overflow-hidden">
                 <div className="flex flex-row flex-wrap">
                   {emailList.map((data, ind) => {
                     return (
                       <div
-                        className="flex flex-row items-center op-bg-primary m-[4px] rounded-md py-[5px] px-[10px]"
+                        className="flex flex-row items-center op-bg-primary mx-[2px] mt-[2px] rounded-md py-[5px] px-[10px]"
                         key={ind}
                       >
                         <span className="text-base-100 text-[13px]">
@@ -162,7 +164,7 @@ function EmailComponent({
                   <input
                     type="email"
                     value={emailValue}
-                    className="p-[10px] pb-[20px] rounded w-full text-[15px] bg-transparent outline-none"
+                    className="p-[10px] rounded-md w-full text-[15px] bg-transparent outline-none"
                     onChange={handleEmailValue}
                     onKeyDown={handleEnterPress}
                     onBlur={() => emailValue && handleEnterPress("add")}
@@ -179,7 +181,7 @@ function EmailComponent({
                 <input
                   type="email"
                   value={emailValue}
-                  className="p-[10px] pb-[20px] rounded w-full text-[15px] outline-none bg-transparent border-[1.5px] op-border-primary"
+                  className="p-[10px] pb-[20px] rounded-md w-full text-[15px] outline-none bg-transparent border-[1px] op-border-primary"
                   onChange={handleEmailValue}
                   onKeyDown={handleEnterPress}
                   placeholder={t("enter-email-plaholder")}
@@ -197,7 +199,7 @@ function EmailComponent({
                 {t("email-error-1")}
               </p>
             )}
-            <button
+            {/* <button
               className={`${
                 emailValue ? "cursor-pointer" : "cursor-default"
               } op-btn op-btn-primary op-btn-sm m-2 shadow-md`}
@@ -205,26 +207,27 @@ function EmailComponent({
             >
               <i className="fa-light fa-plus" aria-hidden="true"></i>
             </button>
-
             <div className="bg-[#e3e2e1] mt-[10px] p-[5px] rounded">
               <span className="font-bold">{t("report-heading.Note")}: </span>
               <span className="text-[15px]">{t("email-error-2")}</span>
             </div>
-            <hr className="w-full my-[15px] bg-base-content" />
-            <button
-              type="button"
-              className="op-btn op-btn-secondary"
-              onClick={() => emailList.length > 0 && sendEmail()}
-            >
-              {t("send")}
-            </button>
-            <button
-              type="button"
-              className="op-btn op-btn-ghost ml-2"
-              onClick={() => handleClose()}
-            >
-              {t("close")}
-            </button>
+            <hr className="w-full my-[15px] bg-base-content" /> */}
+            <div className="mt-2">
+              <button
+                type="button"
+                className="op-btn op-btn-secondary"
+                onClick={() => emailList.length > 0 && sendEmail()}
+              >
+                {t("send")}
+              </button>
+              <button
+                type="button"
+                className="op-btn op-btn-ghost ml-2"
+                onClick={() => handleClose()}
+              >
+                {t("close")}
+              </button>
+            </div>
           </div>
         </ModalUi>
       )}

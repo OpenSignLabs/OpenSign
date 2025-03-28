@@ -8,6 +8,7 @@ import { saveAs } from "file-saver";
 import printModule from "print-js";
 import fontkit from "@pdf-lib/fontkit";
 import { themeColor } from "./const";
+import { format, toZonedTime } from "date-fns-tz";
 
 export const fontsizeArr = [2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28];
 export const fontColorArr = ["red", "black", "blue", "yellow"];
@@ -2870,20 +2871,11 @@ export function generatePdfName(length) {
 
 // Format date and time for the selected timezone
 export const formatTimeInTimezone = (date, timezone) => {
-  return timezone
-    ? new Intl.DateTimeFormat("en-US", {
-        weekday: "short",
-        year: "numeric",
-        month: "short",
-        day: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-        timeZone: timezone,
-        timeZoneName: "short",
-        hour12: false
-      }).format(date)
+  const nyDate = timezone && toZonedTime(date, timezone);
+  const generatedDate = timezone
+    ? format(nyDate, "EEE, dd MMM yyyy HH:mm:ss zzz", { timeZone: timezone })
     : new Date(date).toUTCString();
+  return generatedDate;
 };
 
 // `usertimezone` is used to get timezone of current user
@@ -2982,3 +2974,15 @@ export const mailTemplate = (param) => {
 
   return { subject, body };
 };
+
+export function formatDateTime(date, dateFormat, timeZone, is12Hour) {
+  const zonedDate = toZonedTime(date, timeZone); // Convert date to the given timezone
+  const timeFormat = is12Hour ? "hh:mm:ss a" : "HH:mm:ss";
+  return dateFormat
+    ? format(
+        zonedDate,
+        `${selectFormat(dateFormat)}, ${timeFormat} 'GMT' XXX`,
+        { timeZone }
+      )
+    : formatTimeInTimezone(date, timeZone);
+}

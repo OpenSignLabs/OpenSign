@@ -14,7 +14,7 @@ import {
   copytoData,
   fetchUrl,
   formatDate,
-  formatTimeInTimezone,
+  formatDateTime,
   getSignedUrl,
   getTenantDetails,
   handleSignatureType,
@@ -1012,11 +1012,23 @@ const ReportTable = (props) => {
       );
       if (matchSigner) {
         const timezone = extClass?.[0]?.Timezone || "";
+        const DateFormat = extClass?.[0]?.DateFormat || "MM/DD/YYYY";
+        const Is12Hr = extClass?.[0]?.Is12HourTime || false;
         const signedon = matchSigner?.SignedOn
-          ? formatTimeInTimezone(new Date(matchSigner?.SignedOn), timezone)
+          ? formatDateTime(
+              new Date(matchSigner?.SignedOn),
+              DateFormat,
+              timezone,
+              Is12Hr
+            )
           : "-";
         const viewedon = matchSigner?.ViewedOn
-          ? formatTimeInTimezone(new Date(matchSigner?.ViewedOn), timezone)
+          ? formatDateTime(
+              new Date(matchSigner?.ViewedOn),
+              DateFormat,
+              timezone,
+              Is12Hr
+            )
           : "-";
         return {
           id: i,
