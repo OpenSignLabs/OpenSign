@@ -15,8 +15,7 @@ import { showHeader } from "../redux/reducers/showHeader";
 import { useTranslation } from "react-i18next";
 
 const HomeLayout = () => {
-  const appName =
-    "OpenSign™";
+  const appName = "OpenSign™";
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
@@ -54,8 +53,8 @@ const HomeLayout = () => {
           });
           if (user) {
             localStorage.setItem("profileImg", user.get("ProfilePic") || "");
-              setIsUserValid(true);
-              setIsLoader(false);
+            setIsUserValid(true);
+            setIsLoader(false);
           } else {
             setIsUserValid(false);
           }
@@ -72,7 +71,7 @@ const HomeLayout = () => {
   //function to use save data in cookies storage
   const saveCookies = () => {
     const main_Domain = window.location.origin;
-    const domainName = window.location.hostname; //app.opensignlabs.com
+    const domainName = window.location.hostname;
     // Find the index of the first dot in the string
     const indexOfFirstDot = domainName.indexOf(".");
     // Remove the first dot and get the substring starting from the next character

@@ -7,6 +7,7 @@ import {
 } from "../../constant/Utils";
 import ModalUi from "../../primitives/ModalUi";
 import { PDFDocument } from "pdf-lib";
+import { maxFileSize } from "../../constant/const";
 
 function PdfZoom(props) {
   const { t } = useTranslation();
@@ -41,6 +42,14 @@ function PdfZoom(props) {
       console.log("error in delete pdf page", e);
     }
   };
+
+  // `removeFile` is used to  remove file if exists
+  const removeFile = (e) => {
+    if (e) {
+      e.target.value = "";
+    }
+  };
+
   const handleFileUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) {
@@ -49,6 +58,12 @@ function PdfZoom(props) {
     }
     if (!file.type.includes("pdf")) {
       alert("Only PDF files are allowed.");
+      return;
+    }
+    const mb = Math.round(file?.size / Math.pow(1024, 2));
+    if (mb > maxFileSize) {
+      alert(`${t("file-alert-1")} ${maxFileSize} MB`);
+      removeFile(e);
       return;
     }
     try {

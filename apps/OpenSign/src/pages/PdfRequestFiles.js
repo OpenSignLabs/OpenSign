@@ -521,6 +521,14 @@ function PdfRequestFiles() {
                 }
               );
               const contact = resContact?.data?.result;
+              localStorage.setItem(
+                "signer",
+                JSON.stringify({
+                  Name: contact?.Name,
+                  Email: contact?.Email,
+                  UserId: contact?.UserId?.objectId
+                })
+              );
               setContractName("_Contactbook");
               setSignerUserId(contact?.objectId);
               const tourData = contact?.TourStatus && contact?.TourStatus;
@@ -877,6 +885,7 @@ function PdfRequestFiles() {
 
                           const variables = {
                             document_title: documentName,
+                            note: pdfDetails?.[0]?.Note,
                             sender_name: senderName,
                             sender_mail: senderEmail,
                             sender_phone: senderPhone,
@@ -894,6 +903,7 @@ function PdfRequestFiles() {
                           );
                         }
                         const mailparam = {
+                          note: pdfDetails?.[0]?.Note || "",
                           senderName: senderName,
                           senderMail: senderEmail,
                           title: documentName,

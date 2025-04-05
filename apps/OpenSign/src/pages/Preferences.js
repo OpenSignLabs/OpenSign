@@ -244,13 +244,15 @@ const Preferences = () => {
       setIsLoader(true);
       const replacedHtmlBody = completionBody.replace(/"/g, "'");
       const htmlBody = `<html><head><meta http-equiv='Content-Type' content='text/html; charset=UTF-8' /></head><body>${replacedHtmlBody}</body></html>`;
-      const tenantQuery = new Parse.Query("partners_Tenant");
-      const updateTenantObj = await tenantQuery.get(tenantId);
-      updateTenantObj.set("CompletionBody", htmlBody);
-      updateTenantObj.set("CompletionSubject", completionsubject);
-      const res = await updateTenantObj.save();
-      if (res) {
-        const updateRes = JSON.parse(JSON.stringify(res));
+      const updateTenant = await Parse.Cloud.run("updatetenant", {
+        tenantId: tenantId,
+        details: {
+          CompletionBody: htmlBody,
+          CompletionSubject: completionsubject
+        }
+      });
+      if (updateTenant) {
+        const updateRes = JSON.parse(JSON.stringify(updateTenant));
         SetCompletionBody(updateRes?.CompletionBody);
         setCompletionSubject(updateRes?.CompletionSubject);
         setIsAlert({ type: "success", msg: t("saved-successfully") });
@@ -271,13 +273,15 @@ const Preferences = () => {
       setIsLoader(true);
       const replacedHtmlBody = requestBody.replace(/"/g, "'");
       const htmlBody = `<html><head><meta http-equiv='Content-Type' content='text/html; charset=UTF-8' /></head><body>${replacedHtmlBody}</body></html>`;
-      const tenantQuery = new Parse.Query("partners_Tenant");
-      const updateTenantObj = await tenantQuery.get(tenantId);
-      updateTenantObj.set("RequestBody", htmlBody);
-      updateTenantObj.set("RequestSubject", requestSubject);
-      const res = await updateTenantObj.save();
-      if (res) {
-        const updateRes = JSON.parse(JSON.stringify(res));
+      const updateTenant = await Parse.Cloud.run("updatetenant", {
+        tenantId: tenantId,
+        details: {
+          RequestBody: htmlBody,
+          RequestSubject: requestSubject
+        }
+      });
+      if (updateTenant) {
+        const updateRes = JSON.parse(JSON.stringify(updateTenant));
         setRequestBody(updateRes?.RequestBody);
         setRequestSubject(updateRes?.RequestSubject);
         setIsAlert({ type: "success", msg: t("saved-successfully") });

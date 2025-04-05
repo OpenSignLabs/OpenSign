@@ -11,7 +11,7 @@ const Alert = ({ children, type, className }) => {
       case "danger":
         return "op-alert-error";
       case "warning":
-        return "op-alert-warning";
+        return "op-alert-warning text-black";
       default:
         return "";
     }

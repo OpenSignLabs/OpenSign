@@ -1212,7 +1212,7 @@ function SignYourSelf() {
               setPdfBase64Url={setPdfBase64Url}
               setIsUploadPdf={setIsUploadPdf}
               pdfArrayBuffer={pdfArrayBuffer}
-              isMergePdfBtn={true}
+              isMergePdfBtn={!pdfDetails?.[0]?.IsCompleted}
             />
             <div className=" w-full md:w-[57%] flex mr-4">
               <PdfZoom
