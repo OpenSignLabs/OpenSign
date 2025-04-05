@@ -15,7 +15,7 @@ export default async function editContact(request) {
       const query = new Parse.Query('contracts_Contactbook');
       query.equalTo('CreatedBy', createdBy);
       query.notEqualTo('IsDeleted', true);
-      query.equalTo('Email', email);
+      query.equalTo('Email', email?.toLowerCase()?.replace(/\s/g, ''));
       const isContactExist = await query.first({ useMasterKey: true });
       if (isContactExist) {
         throw new Parse.Error(Parse.Error.DUPLICATE_VALUE, 'Contact already exists.');
@@ -25,7 +25,7 @@ export default async function editContact(request) {
       if (phone) {
         contactQuery.set('Phone', phone);
       }
-      contactQuery.set('Email', email);
+      contactQuery.set('Email', email?.toLowerCase()?.replace(/\s/g, ''));
       contactQuery.set('UserRole', 'contracts_Guest');
       contactQuery.set('IsDeleted', false);
       contactQuery.set('TenantId', {
@@ -37,9 +37,9 @@ export default async function editContact(request) {
         const _users = Parse.Object.extend('User');
         const _user = new _users();
         _user.set('name', name);
-        _user.set('username', email);
-        _user.set('email', email);
-        _user.set('password', email);
+        _user.set('username', email?.toLowerCase()?.replace(/\s/g, ''));
+        _user.set('email', email?.toLowerCase()?.replace(/\s/g, ''));
+        _user.set('password', email?.toLowerCase()?.replace(/\s/g, ''));
         if (phone) {
           _user.set('phone', phone);
         }

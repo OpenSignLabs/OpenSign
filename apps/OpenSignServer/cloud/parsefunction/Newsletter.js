@@ -1,7 +1,7 @@
 import axios from 'axios';
 export default async function Newsletter(request) {
   const name = request.params.name;
-  const email = request.params.email;
+  const email = request.params?.email?.toLowerCase()?.replace(/\s/g, '');
   const domain = request.params.domain;
   try {
     const envAppId = process.env.REACT_APP_APPID || 'opensign';

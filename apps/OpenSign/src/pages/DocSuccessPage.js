@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import Confetti from "react-confetti"; // Import the confetti library
 import {
   getBase64FromUrl,
   handleDownloadCertificate,
@@ -10,19 +11,25 @@ import ModalUi from "../primitives/ModalUi";
 import Loader from "../primitives/Loader";
 import DownloadPdfZip from "../primitives/DownloadPdfZip";
 import Title from "../components/Title";
+import CheckCircle from "../primitives/CheckCircle";
 
 const DocSuccessPage = () => {
+  const { t } = useTranslation();
   const signed = window.location?.search?.includes("docid");
   const sent = window.location?.search?.includes("message");
   const [isDownloading, setIsDownloading] = useState(false);
   const [isDownloadModal, setIsDownloadModal] = useState(false);
   const [pdfDetails, setPdfDetails] = useState([]);
   const [pdfBase64Url, setPdfBase64Url] = useState("");
-  const { t } = useTranslation();
+  const [showConfetti, setShowConfetti] = useState(true); // State to control confetti
 
   useEffect(() => {
     initialsetup();
+    // Stop confetti after 5 seconds
+    const timer = setTimeout(() => setShowConfetti(false), 5000);
+    return () => clearTimeout(timer);
   }, []);
+
   const initialsetup = async () => {
     const search = window.location.search.split("?")[1];
     if (search) {
@@ -44,6 +51,7 @@ const DocSuccessPage = () => {
       }
     }
   };
+
   const handleDownload = () => {
     if (pdfDetails?.[0]?.IsCompleted) {
       setIsDownloadModal(true);
@@ -51,50 +59,79 @@ const DocSuccessPage = () => {
       handleDownloadPdf(pdfDetails, setIsDownloading, pdfBase64Url);
     }
   };
+
   return (
-    <div className="flex h-screen justify-center items-center text-sm md:text-base">
+    <>
       <Title title="Success" />
+      {/* Confetti Effect */}
+      {showConfetti && (
+        <Confetti width={window.innerWidth} height={window.innerHeight} />
+      )}
       {sent ? (
-        <div>{t("doc-sent")}</div>
+        <div className="min-h-screen flex flex-col items-center justify-center p-3 md:p-8 text-center">
+          <div className="max-w-lg md:max-w-2xl bg-white rounded-lg shadow-lg p-3 md:p-10">
+            {t("doc-sent")}
+          </div>
+        </div>
       ) : signed ? (
-        <div className="text-center">
-          <p>
-            {pdfDetails?.[0]?.IsCompleted
-              ? t("document-signed-alert-4")
-              : t("document-signed-alert")}
-          </p>
-          <div className="m-2">
-            <button
-              onClick={(e) => handleToPrint(e, setIsDownloading, pdfDetails)}
-              type="button"
-              className="font-[500] text-[13px] mr-[5px] op-btn op-btn-neutral"
-            >
-              <i className="fa-light fa-print" aria-hidden="true"></i>
-              <span className="hidden lg:block">{t("print")}</span>
-            </button>
-            {pdfDetails?.[0]?.IsCompleted && (
-              <button
-                type="button"
-                onClick={() =>
-                  handleDownloadCertificate(pdfDetails, setIsDownloading)
-                }
-                className="font-[500] text-[13px] mr-[5px] op-btn op-btn-secondary"
-              >
-                <i
-                  className="fa-light fa-award mx-[3px] lg:mx-0"
-                  aria-hidden="true"
-                ></i>
-                <span className="hidden lg:block">{t("certificate")}</span>
-              </button>
-            )}
-            <button
-              type="button"
-              className="font-[500] text-[13px] mr-[5px] op-btn op-btn-primary"
-              onClick={() => handleDownload()}
-            >
-              <i className="fa-light fa-download" aria-hidden="true"></i>
-              <span className="hidden lg:block">{t("download")}</span>
-            </button>
+        <>
+          <div className="min-h-screen flex flex-col items-center justify-center p-3 md:p-8 text-center">
+            <div className="max-w-lg md:max-w-2xl bg-white rounded-lg shadow-lg p-3 md:p-10">
+              <div className="flex flex-col items-center space-y-4 ">
+                <CheckCircle className="text-green-500 w-12 h-12 md:w-14 md:h-14" />
+                <h1 className="text-xl md:text-2xl font-semibold text-gray-800">
+                  {pdfDetails?.[0]?.IsCompleted
+                    ? t("document-has-been-signed")
+                    : t("document-has-been-signed-by-you")}
+                </h1>
+                {pdfDetails?.[0]?.IsCompleted && (
+                  <p className="text-sm md:text-base text-gray-600">
+                    {t("participant-completed-signing")}
+                  </p>
+                )}
+              </div>
+              {/* Action Buttons */}
+              <div className="mt-6 flex flex-wrap justify-center gap-2">
+                <button
+                  type="button"
+                  className="font-medium text-sm md:text-[13px] md:px-4 py-2 op-btn op-btn-primary"
+                  onClick={() => handleDownload()}
+                >
+                  <i className="fa-light fa-download" aria-hidden="true"></i>
+                  <span>{t("download")}</span>
+                </button>
+
+                {pdfDetails?.[0]?.IsCompleted && (
+                  <button
+                    type="button"
+                    onClick={() =>
+                      handleDownloadCertificate(pdfDetails, setIsDownloading)
+                    }
+                    className="font-medium text-sm md:text-[13px] md:px-4 py-2 op-btn op-btn-secondary"
+                  >
+                    <i
+                      className="fa-light fa-award mx-[3px] md:mx-0"
+                      aria-hidden="true"
+                    ></i>
+                    <span>{t("certificate")}</span>
+                  </button>
+                )}
+                <button
+                  onClick={(e) =>
+                    handleToPrint(e, setIsDownloading, pdfDetails)
+                  }
+                  type="button"
+                  className="font-medium text-sm md:text-[13px] px-4 py-2 op-btn op-btn-neutral"
+                >
+                  <i className="fa-light fa-print" aria-hidden="true"></i>
+                  <span>{t("print")}</span>
+                </button>
+              </div>
+              {/* Footer Message */}
+              <p className="mt-4 md:mt-6 text-xs md:text-sm text-gray-500">
+                {t("you-will-receive-email-shortly")}
+              </p>
+            </div>
           </div>
           {isDownloading === "pdf" && (
             <div className="fixed z-[1000] inset-0 flex justify-center items-center bg-black bg-opacity-30">
@@ -114,7 +151,7 @@ const DocSuccessPage = () => {
             }
             handleClose={() => setIsDownloading("")}
           >
-            <div className="p-3 md:p-5 text-[13px] md:text-base text-center text-base-content">
+            <div className="p-3 md:p-5 text-sm md:text-base text-center text-base-content">
               {isDownloading === "certificate" ? (
                 <p>{t("generate-certificate-alert")}</p>
               ) : (
@@ -129,11 +166,11 @@ const DocSuccessPage = () => {
             isDocId={true}
             pdfBase64={pdfBase64Url}
           />
-        </div>
+        </>
       ) : (
         <></>
       )}
-    </div>
+    </>
   );
 };
 

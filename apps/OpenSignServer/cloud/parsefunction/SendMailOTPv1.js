@@ -22,19 +22,20 @@ async function sendMailOTPv1(request) {
     //--for elearning app side
     let code = Math.floor(1000 + Math.random() * 9000);
     let email = request.params.email;
-    var TenantId = request.params.TenantId ? request.params.TenantId : undefined;
+    let TenantId = request.params.TenantId ? request.params.TenantId : undefined;
+    const AppName = appName;
 
     if (email) {
       const recipient = request.params.email;
       const mailsender = smtpenable ? process.env.SMTP_USER_EMAIL : process.env.MAILGUN_SENDER;
       try {
         await Parse.Cloud.sendEmail({
-          from: appName + ' <' + mailsender + '>',
+          from: AppName + ' <' + mailsender + '>',
           recipient: recipient,
-          subject: `Your ${appName} OTP`,
+          subject: `Your ${AppName} OTP`,
           text: 'This email is a test.',
           html:
-            `<html><head><meta http-equiv='Content-Type' content='text/html; charset=UTF-8' /></head><body><div style='background-color:#f5f5f5;padding:20px'><div style='box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;background-color:white;'><div style='background-color:red;padding:2px;font-family:system-ui; background-color:#47a3ad;'>    <p style='font-size:20px;font-weight:400;color:white;padding-left:20px',>OTP Verification</p></div><div style='padding:20px'><p style='font-family:system-ui;font-size:14px'>Your OTP for ${appName} verification is:</p><p style=' text-decoration: none; font-weight: bolder; color:blue;font-size:45px;margin:20px'>` +
+            `<html><head><meta http-equiv='Content-Type' content='text/html; charset=UTF-8' /></head><body><div style='background-color:#f5f5f5;padding:20px'><div style='box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;background-color:white;'><div style='background-color:red;padding:2px;font-family:system-ui; background-color:#47a3ad;'>    <p style='font-size:20px;font-weight:400;color:white;padding-left:20px',>OTP Verification</p></div><div style='padding:20px'><p style='font-family:system-ui;font-size:14px'>Your OTP for ${AppName} verification is:</p><p style=' text-decoration: none; font-weight: bolder; color:blue;font-size:45px;margin:20px'>` +
             code +
             '</p></div> </div> </div></body></html>',
         });

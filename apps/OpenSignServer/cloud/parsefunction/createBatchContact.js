@@ -21,7 +21,7 @@ export default async function createBatchContact(req) {
             TenantId: { __type: 'Pointer', className: 'partners_Tenant', objectId: x.TenantId },
             CreatedBy: { __type: 'Pointer', className: '_User', objectId: req.user.id },
             Name: x.Name,
-            Email: x.Email,
+            Email: x.Email?.toLowerCase()?.replace(/\s/g, ''),
             IsDeleted: false,
             IsImported: true,
             ...(x?.Phone ? { Phone: `${x?.Phone}` } : {}),

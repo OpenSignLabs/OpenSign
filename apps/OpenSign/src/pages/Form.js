@@ -18,6 +18,7 @@ import {
 } from "../constant/Utils";
 import { PDFDocument } from "pdf-lib";
 import axios from "axios";
+import { maxFileSize } from "../constant/const";
 import ModalUi from "../primitives/ModalUi";
 import { Tooltip } from "react-tooltip";
 import Loader from "../primitives/Loader";
@@ -38,7 +39,6 @@ function Form() {
 const Forms = (props) => {
   const appName = "OpenSign™";
   const { t } = useTranslation();
-  const maxFileSize = 20;
   const abortController = new AbortController();
   const inputFileRef = useRef(null);
   const navigate = useNavigate();
