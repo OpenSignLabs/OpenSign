@@ -4,6 +4,7 @@ import { Document, Page } from "react-pdf";
 import { useSelector } from "react-redux";
 import { PDFDocument } from "pdf-lib";
 import { base64ToArrayBuffer } from "../../constant/Utils";
+import { maxFileSize } from "../../constant/const";
 
 function RenderAllPdfPage(props) {
   const { t } = useTranslation();
@@ -62,6 +63,12 @@ function RenderAllPdfPage(props) {
   };
   const pdfDataBase64 = `data:application/pdf;base64,${props?.pdfBase64Url}`;
 
+  // `removeFile` is used to  remove file if exists
+  const removeFile = (e) => {
+    if (e) {
+      e.target.value = "";
+    }
+  };
   // `handleFileUpload` is trigger when user click on add pages btn and is used to merge multiple pdf
   const handleFileUpload = async (e) => {
     const file = e.target.files[0];
@@ -71,6 +78,12 @@ function RenderAllPdfPage(props) {
     }
     if (!file.type.includes("pdf")) {
       alert("Only PDF files are allowed.");
+      return;
+    }
+    const mb = Math.round(file?.size / Math.pow(1024, 2));
+    if (mb > maxFileSize) {
+      alert(`${t("file-alert-1")} ${maxFileSize} MB`);
+      removeFile(e);
       return;
     }
     try {
@@ -110,6 +123,7 @@ function RenderAllPdfPage(props) {
          autoSignScroll hide-scrollbar max-h-[100vh] `}
       >
         <Document
+          error=""
           loading={t("loading-doc")}
           onLoadSuccess={onDocumentLoad}
           file={pdfDataBase64}

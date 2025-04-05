@@ -52,7 +52,8 @@ const saveRoleContact = async contact => {
 // `linkContactToDoc` cloud function is used to create contact, add this contact in contracts_Guest role and
 // save contact pointer in placeholder, signers and ACL of Document
 export default async function linkContactToDoc(req) {
-  const email = req.params.email;
+  const requestemail = req.params?.email;
+  const email = requestemail?.toLowerCase()?.replace(/\s/g, '');
   const docId = req.params.docId;
   const name = req.params.name;
   const phone = req.params.phone;

@@ -172,7 +172,8 @@
     "extend-expiry-date": "Prolonger la date d'expiration",
     "Duplicate Template": "dupliquer le modèle",
     "Duplicate": "Double",
-    "daily-mail-quota": "Quota d'e-mails quotidien"
+    "daily-mail-quota": "Quota d'e-mails quotidien",
+    "Save as template": "Enregistrer comme modèle"
   },
   "report-help": {
     "Draft Documents": "Il s'agit de documents que vous avez commencés mais que vous n'avez pas finalisés pour envoi.",
@@ -308,7 +309,7 @@
   "revoke-document": "Révoquer le document",
   "revoke-document-alert": "Êtes-vous sûr de vouloir révoquer ce document ?",
   "resend-mail": "Renvoyer le courrier",
-  "resend-mail-help": "Vous pouvez utiliser les variables suivantes qui seront remplacées par leurs valeurs réelles : - {{document_title}}, {{sender_name}}, {{sender_mail}}, {{sender_phone}}, {{receiver_name}}, {{receiver_email} }, {{receiver_phone}}, {{expiry_date}}, {{company_name}}, {{signing_url}}.",
+  "resend-mail-help": "Vous pouvez utiliser les variables suivantes qui seront remplacées par leurs valeurs réelles : - {{document_title}}, {{sender_name}}, {{sender_mail}}, {{sender_phone}}, {{receiver_name}}, {{receiver_email} }, {{receiver_phone}}, {{expiry_date}}, {{company_name}}, {{signing_url}}, {{note}}.",
   "subject": "Sujet",
   "body": "Corps",
   "add-contact": "Ajouter le contact",
@@ -522,7 +523,7 @@
   "correct-password": "Veuillez fournir un mot de passe correct",
   "decrypting-pdf": "Décryptage du pdf, veuillez patienter...",
   "invalid-otp": "OTP invalide",
-  "user-not-found": "Utilisateur non trouvé!",
+  "user-not-found": "Utilisateur non trouvé",
   "enter-otp-alert": "Veuillez saisir OTP !",
   "get-verification-code": "Obtenir le code de vérification",
   "get-verification-code-2": "Vous recevrez un code de vérification par e-mail",
@@ -858,10 +859,19 @@
   "indexing-public-profile": "Autoriser l'indexation du profil public par les moteurs de recherche",
   "user-created-successfully": "Utilisateur créé avec succès.",
   "only-15-reminder-allowed": "Vous pouvez définir jusqu'à 15 rappels automatiques. Par exemple, si 'TimeToComplete' est de 15 jours et 'RemindOnceInEvery' est de 1 jour, vous atteindrez la limite maximale de 15 rappels. Ajustez vos paramètres en conséquence.",
-  "rate-your-experience": "👋 Veuillez évaluer votre expérience avec Opensign",
+  "rate-your-experience": "Comment s'est passée votre expérience avec {{appName}} ?",
   "thanks-for-feedback": "Merci pour votre retour 🙏",
   "share-your-feedback": "Partagez votre avis",
   "share-your-review": "Partagez votre avis",
   "date-format": "Format de date",
-  "document-deleted": "Le document a été supprimé ou vous n'y avez pas accès. Veuillez contacter l'expéditeur."
+  "document-deleted": "Le document a été supprimé ou vous n'y avez pas accès. Veuillez contacter l'expéditeur.",
+  "save-as-template-?": "Êtes-vous sûr de vouloir enregistrer ce document comme modèle ?",
+  "go-to-manage-templates": "Aller à 'Gérer les modèles'",
+  "template-created": "Modèle créé",
+  "how-would-you-like-to-proceed?": "Comment souhaitez-vous procéder ?",
+  "failed-to-load-refresh-page": "Échec du chargement du document. Veuillez essayer d'actualiser cette page.",
+  "document-has-been-signed": "Le document a été signé avec succès !",
+  "document-has-been-signed-by-you": "Le document a été signé avec succès par vous !",
+  "participant-completed-signing": "Tous les participants ont terminé le processus de signature.",
+  "you-will-receive-email-shortly": "✅ Voilà, c'est fait ! Vous recevrez un e-mail de confirmation sous peu."
 }

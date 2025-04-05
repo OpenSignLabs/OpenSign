@@ -17,8 +17,8 @@ const AddRoleModal = (props) => {
             onChange={(e) => props.setRoleName(e.target.value)}
             placeholder={
               props.signersdata.length > 0
-                ? "User " + (props.signersdata.length + 1)
-                : "User 1"
+                ? "Role " + (props.signersdata.length + 1)
+                : "Role 1"
             }
             className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs mt-1"
           />

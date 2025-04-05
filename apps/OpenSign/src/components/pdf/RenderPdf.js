@@ -381,17 +381,15 @@ function RenderPdf(props) {
                         </React.Fragment>
                       );
                     }))}
-
+            {/* Mobile */}
             <Document
+              error={<p className="mx-2">{t("failed-to-load-refresh-page")}</p>}
               onLoadError={() => props.setPdfLoad(false)}
               loading={t("loading-doc")}
               onLoadSuccess={props.pageDetails}
-              // ref={pdfRef}'
-              onClick={() => {
-                if (props.setSelectWidgetId) {
-                  props.setSelectWidgetId("");
-                }
-              }}
+              onClick={() =>
+                props.setSelectWidgetId && props.setSelectWidgetId("")
+              }
               file={pdfDataBase64}
             >
               <Page
@@ -601,17 +599,16 @@ function RenderPdf(props) {
                         </React.Fragment>
                       );
                     }))}
-
+            {/* large device */}
             {/* this component for render pdf document is in middle of the component */}
             <Document
+              error={<p className="mx-2">{t("failed-to-load-refresh-page")}</p>}
               onLoadError={() => props.setPdfLoad(false)}
               loading={t("loading-doc")}
               onLoadSuccess={props.pageDetails}
-              onClick={() => {
-                if (props.setSelectWidgetId) {
-                  props.setSelectWidgetId("");
-                }
-              }}
+              onClick={() =>
+                props.setSelectWidgetId && props.setSelectWidgetId("")
+              }
               file={pdfDataBase64}
             >
               <Page

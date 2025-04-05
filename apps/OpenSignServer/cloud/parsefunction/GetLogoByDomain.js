@@ -6,13 +6,17 @@ export default async function GetLogoByDomain(request) {
   try {
     const tenantCreditsQuery = new Parse.Query('partners_Tenant');
     tenantCreditsQuery.equalTo('Domain', domain);
-    const res = await tenantCreditsQuery.first();
+    const res = await tenantCreditsQuery.first({ useMasterKey: true });
     if (res) {
       const updateRes = JSON.parse(JSON.stringify(res));
-      return { logo: updateRes?.Logo, appname: appName, user: 'exist' };
+      return {
+        logo: updateRes?.Logo,
+        appname: appName,
+        user: 'exist',
+      };
     } else {
       const tenantCreditsQuery = new Parse.Query('partners_Tenant');
-      const tenantRes = await tenantCreditsQuery.first();
+      const tenantRes = await tenantCreditsQuery.first({ useMasterKey: true });
       if (tenantRes) {
         return { logo: '', appname: appName, user: 'exist' };
       } else {
