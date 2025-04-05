@@ -1182,6 +1182,7 @@ function PlaceHolderSign() {
 
           const variables = {
             document_title: documentName,
+            note: pdfDetails?.[0]?.Note,
             sender_name: senderName,
             sender_mail: senderEmail,
             sender_phone: senderPhone || "",
@@ -1207,6 +1208,7 @@ function PlaceHolderSign() {
             "</body> </html>";
           const variables = {
             document_title: documentName,
+            note: pdfDetails?.[0]?.Note,
             sender_name: senderName,
             sender_mail: senderEmail,
             sender_phone: senderPhone || "",
@@ -1221,6 +1223,7 @@ function PlaceHolderSign() {
         }
         const mailparam = {
           senderName: senderName,
+          note: pdfDetails?.[0]?.Note || "",
           senderMail: senderEmail,
           title: documentName,
           organization: orgName,

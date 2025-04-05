@@ -61,7 +61,7 @@ async function addTeamAndOrg(extUser) {
 
 async function saveUser(userDetails) {
   const userQuery = new Parse.Query(Parse.User);
-  userQuery.equalTo('username', userDetails.email);
+  userQuery.equalTo('username', userDetails.email?.toLowerCase()?.replace(/\s/g, ''));
   const userRes = await userQuery.first({ useMasterKey: true });
 
   if (userRes) {
@@ -83,9 +83,9 @@ async function saveUser(userDetails) {
     return { id: login.objectId, sessionToken: login.sessionToken };
   } else {
     const user = new Parse.User();
-    user.set('username', userDetails.email);
+    user.set('username', userDetails.email?.toLowerCase()?.replace(/\s/g, ''));
     user.set('password', userDetails.password);
-    user.set('email', userDetails.email);
+    user.set('email', userDetails.email?.toLowerCase()?.replace(/\s/g, ''));
     if (userDetails?.phone) {
       user.set('phone', userDetails.phone);
     }
@@ -111,7 +111,6 @@ export default async function AddAdmin(request) {
     if (extUser) {
       return { message: 'User already exist' };
     } else {
-      // console.log("role ", role);
       const partnerQuery = new Parse.Object('partners_Tenant');
       partnerQuery.set('UserId', {
         __type: 'Pointer',
@@ -123,7 +122,7 @@ export default async function AddAdmin(request) {
         partnerQuery.set('ContactNumber', userDetails.phone);
       }
       partnerQuery.set('TenantName', userDetails.company);
-      partnerQuery.set('EmailAddress', userDetails.email);
+      partnerQuery.set('EmailAddress', userDetails.email?.toLowerCase()?.replace(/\s/g, ''));
       partnerQuery.set('IsActive', true);
       partnerQuery.set('CreatedBy', {
         __type: 'Pointer',
@@ -154,7 +153,7 @@ export default async function AddAdmin(request) {
         objectId: user.id,
       });
       newObj.set('UserRole', userDetails.role);
-      newObj.set('Email', userDetails.email);
+      newObj.set('Email', userDetails.email?.toLowerCase()?.replace(/\s/g, ''));
       newObj.set('Name', userDetails.name);
       if (userDetails?.phone) {
         newObj.set('Phone', userDetails?.phone);
@@ -177,7 +176,7 @@ export default async function AddAdmin(request) {
       const extUser = {
         objectId: extRes.id,
         Name: userDetails.name,
-        Email: userDetails.email,
+        Email: userDetails.email?.toLowerCase()?.replace(/\s/g, ''),
         Phone: userDetails?.phone ? userDetails.phone : '',
         TenantId: { objectId: tenantRes.id },
         UserId: { objectId: user.id },

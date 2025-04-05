@@ -151,7 +151,8 @@
     "extend-expiry-date": "Ablaufdatum verlängern",
     "Duplicate Template": "Vorlage duplizieren",
     "Duplicate": "Duplikat",
-    "daily-mail-quota": "Tägliches E-Mail-Kontingent"
+    "daily-mail-quota": "Tägliches E-Mail-Kontingent",
+    "Save as template": "Als Vorlage speichern"
   },
   "report-heading": {
     "Sr.No": "Nr.",
@@ -308,7 +309,7 @@
   "revoke-document": "Dokument widerrufen",
   "revoke-document-alert": "Sind Sie sicher, dass Sie dieses Dokument widerrufen möchten?",
   "resend-mail": "E-Mail erneut senden",
-  "resend-mail-help": "Sie können folgende Variablen verwenden, die durch ihre tatsächlichen Werte ersetzt werden: {{document_title}}, {{sender_name}}, {{sender_mail}}, {{sender_phone}}, {{receiver_name}}, {{receiver_email}}, {{receiver_phone}}, {{expiry_date}}, {{company_name}}, {{signing_url}}.",
+  "resend-mail-help": "Sie können folgende Variablen verwenden, die durch ihre tatsächlichen Werte ersetzt werden: {{document_title}}, {{sender_name}}, {{sender_mail}}, {{sender_phone}}, {{receiver_name}}, {{receiver_email}}, {{receiver_phone}}, {{expiry_date}}, {{company_name}}, {{signing_url}}, {{note}}.",
   "subject": "Betreff",
   "body": "Inhalt",
   "add-contact": "Kontakt hinzufügen",
@@ -522,7 +523,7 @@
   "correct-password": "Bitte korrektes Passwort angeben",
   "decrypting-pdf": "PDF wird entschlüsselt, bitte warten...",
   "invalid-otp": "Ungültiger OTP",
-  "user-not-found": "Benutzer nicht gefunden!",
+  "user-not-found": "Benutzer nicht gefunden",
   "enter-otp-alert": "Bitte OTP eingeben!",
   "get-verification-code": "Verifizierungscode erhalten",
   "get-verification-code-2": "Sie erhalten einen Verifizierungscode per E-Mail",
@@ -858,10 +859,19 @@
   "indexing-public-profile": "Erlaube die Indexierung des öffentlichen Profils durch Suchmaschinen",
   "user-created-successfully": "Benutzer erfolgreich erstellt.",
   "only-15-reminder-allowed": "Sie können bis zu 15 automatische Erinnerungen festlegen. Wenn zum Beispiel 'TimeToComplete' auf 15 Tage und 'RemindOnceInEvery' auf 1 Tag eingestellt ist, erreichen Sie das maximale Limit von 15 Erinnerungen. Passen Sie Ihre Einstellungen entsprechend an.",
-  "rate-your-experience": "👋 Bitte bewerten Sie Ihre Erfahrung mit Opensign",
+  "rate-your-experience": "Wie war Ihre Erfahrung mit {{appName}}?",
   "thanks-for-feedback": "Danke für Ihr Feedback 🙏",
   "share-your-feedback": "Teilen Sie Ihr Feedback",
   "share-your-review": "Teilen Sie Ihre Bewertung",
   "date-format": "Datumsformat",
-  "document-deleted": "Das Dokument wurde gelöscht oder Sie haben keinen Zugriff. Bitte kontaktieren Sie den Absender."
+  "document-deleted": "Das Dokument wurde gelöscht oder Sie haben keinen Zugriff. Bitte kontaktieren Sie den Absender.",
+  "save-as-template-?": "Sind Sie sicher, dass Sie dieses Dokument als Vorlage speichern möchten?",
+  "go-to-manage-templates": "Zu 'Vorlagen verwalten' gehen",
+  "template-created": "Vorlage erstellt",
+  "how-would-you-like-to-proceed?": "Wie möchten Sie fortfahren?",
+  "failed-to-load-refresh-page": "Fehler beim Laden des Dokuments. Bitte versuchen Sie, diese Seite zu aktualisieren.",
+  "document-has-been-signed": "Das Dokument wurde erfolgreich unterschrieben!",
+  "document-has-been-signed-by-you": "Das Dokument wurde erfolgreich von Ihnen unterschrieben!",
+  "participant-completed-signing": "Alle Teilnehmer haben den Signaturprozess abgeschlossen.",
+  "you-will-receive-email-shortly": "✅ Das war's! Sie erhalten in Kürze eine Bestätigungs-E-Mail."
 }

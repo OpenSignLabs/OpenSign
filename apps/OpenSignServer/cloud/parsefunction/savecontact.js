@@ -1,7 +1,8 @@
 export default async function savecontact(request) {
   const name = request.params.name;
   const phone = request.params.phone;
-  const email = request.params.email;
+  const requestemail = request.params?.email;
+  const email = requestemail?.toLowerCase()?.replace(/\s/g, '');
   const tenantId = request.params.tenantId;
 
   if (request.user) {

@@ -160,6 +160,8 @@ app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 app.use(function (req, res, next) {
   req.headers['x-real-ip'] = getUserIP(req);
+  const publicUrl = req.protocol + '://' + req.get('host');
+  req.headers['public_url'] = publicUrl; // process.env.PUBLIC_URL
   next();
 });
 function getUserIP(request) {

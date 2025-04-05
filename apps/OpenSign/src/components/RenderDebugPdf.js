@@ -1,7 +1,9 @@
 import React from "react";
 import { Document, Page } from "react-pdf";
 import { Stage, Layer, Rect, Text } from "react-konva";
+import { useTranslation } from "react-i18next";
 const RenderDebugPdf = (props) => {
+  const { t } = useTranslation();
   return (
     <div>
       <div className="sticky top-0 p-[10px] z-10 bg-white border-[1px] border-[gray] my-[5px]">
@@ -12,10 +14,9 @@ const RenderDebugPdf = (props) => {
         onMouseMove={props.handleMouseMoveDiv}
       >
         <Document
-          onLoadError={() => {
-            props.setPdfLoadFail(false);
-          }}
-          loading={"Loading Document.."}
+          onLoadError={() => props.setPdfLoadFail(false)}
+          loading={t("loading-doc")}
+          error={<p className="mx-2">{t("failed-to-load-refresh-page")}</p>}
           onLoadSuccess={props.pageDetails}
           ref={props.pdfRef}
           file={props.pdfUrl}
