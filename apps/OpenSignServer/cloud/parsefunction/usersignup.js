@@ -1,7 +1,5 @@
 import axios from 'axios';
-import {
-  cloudServerUrl,
-} from '../../Utils.js';
+import { cloudServerUrl } from '../../Utils.js';
 const serverUrl = cloudServerUrl; //process.env.SERVER_URL;
 const APPID = process.env.APP_ID;
 const masterKEY = process.env.MASTER_KEY;
@@ -32,7 +30,7 @@ async function saveUser(userDetails) {
     const user = new Parse.User();
     user.set('username', userDetails.email);
     user.set('password', userDetails.password);
-    user.set('email', userDetails.email);
+    user.set('email', userDetails?.email?.toLowerCase()?.replace(/\s/g, ''));
     if (userDetails?.phone) {
       user.set('phone', userDetails.phone);
     }
@@ -73,7 +71,7 @@ export default async function usersignup(request) {
         partnerQuery.set('ContactNumber', userDetails.phone);
       }
       partnerQuery.set('TenantName', userDetails.company);
-      partnerQuery.set('EmailAddress', userDetails.email);
+      partnerQuery.set('EmailAddress', userDetails?.email?.toLowerCase()?.replace(/\s/g, ''));
       partnerQuery.set('IsActive', true);
       partnerQuery.set('CreatedBy', {
         __type: 'Pointer',
@@ -105,7 +103,7 @@ export default async function usersignup(request) {
         objectId: user.id,
       });
       newObj.set('UserRole', userDetails.role);
-      newObj.set('Email', userDetails.email);
+      newObj.set('Email', userDetails?.email?.toLowerCase()?.replace(/\s/g, ''));
       newObj.set('Name', userDetails.name);
       if (userDetails?.phone) {
         newObj.set('Phone', userDetails?.phone);
@@ -131,4 +129,3 @@ export default async function usersignup(request) {
     console.log('Err ', err);
   }
 }
-

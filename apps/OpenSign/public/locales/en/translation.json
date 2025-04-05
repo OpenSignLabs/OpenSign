@@ -151,7 +151,8 @@
     "extend-expiry-date": "Extend expiry date",
     "Duplicate Template": "Duplicate template",
     "Duplicate": "Duplicate",
-    "daily-mail-quota": "Daily Email Quota"
+    "daily-mail-quota": "Daily Email Quota",
+    "Save as template": "Save as template"
   },
   "report-heading": {
     "Sr.No": "Sr.No",
@@ -308,7 +309,7 @@
   "revoke-document": "Revoke document",
   "revoke-document-alert": "Are you sure you want to revoke this document?",
   "resend-mail": "Resend mail",
-  "resend-mail-help": "You can use following variables which will get replaced with their actual values:- {{document_title}}, {{sender_name}}, {{sender_mail}}, {{sender_phone}}, {{receiver_name}}, {{receiver_email}}, {{receiver_phone}}, {{expiry_date}}, {{company_name}}, {{signing_url}}.",
+  "resend-mail-help": "You can use following variables which will get replaced with their actual values:- {{document_title}}, {{sender_name}}, {{sender_mail}}, {{sender_phone}}, {{receiver_name}}, {{receiver_email}}, {{receiver_phone}}, {{expiry_date}}, {{company_name}}, {{signing_url}}, {{note}}.",
   "subject": "Subject",
   "body": "Body",
   "add-contact": "Add contact",
@@ -522,7 +523,7 @@
   "correct-password": "Please provide correct password",
   "decrypting-pdf": " Decrypting pdf please wait...",
   "invalid-otp": "Invalid otp",
-  "user-not-found": "User not found!",
+  "user-not-found": "User not found",
   "enter-otp-alert": "Please enter OTP!",
   "get-verification-code": "Get verification code",
   "get-verification-code-2": "You will get a verification code via Email",
@@ -858,10 +859,19 @@
   "indexing-public-profile": "Allow indexing of public profile by search engines",
   "user-created-successfully": "user created successfully.",
   "only-15-reminder-allowed": "You can set up to 15 automatic reminders. For example, if 'TimeToComplete' is 15 days and 'RemindOnceInEvery' is 1 day, you'll reach the maximum limit of 15 reminders. Adjust your settings accordingly.",
-  "rate-your-experience": "👋 Please rate your experience with Opensign",
+  "rate-your-experience": "How was your experience with {{appName}}?",
   "thanks-for-feedback": "Thanks for your feedback 🙏",
   "share-your-feedback": "Share your feedback",
   "share-your-review": "Share your review",
   "date-format": "Date format",
-  "document-deleted": "The document has been deleted or you don't have access. Please contact the sender."
+  "document-deleted": "The document has been deleted or you don't have access. Please contact the sender.",
+  "save-as-template-?": "Are you sure you want to save this document as template?",
+  "go-to-manage-templates": "go to 'Manage templates'",
+  "template-created": "Template Created",
+  "how-would-you-like-to-proceed?": "How would you like to proceed?",
+  "failed-to-load-refresh-page": "Failed to load the document. Please try refreshing this page.",
+  "document-has-been-signed": "The document has been signed successfully!",
+  "document-has-been-signed-by-you": "The document has been successfully signed by you!",
+  "participant-completed-signing": "All participants have completed the signing process.",
+  "you-will-receive-email-shortly": "✅ That's it! You'll receive a confirmation email shortly."
 }

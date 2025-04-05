@@ -1,14 +1,8 @@
 import axios from 'axios';
-import {
-  cloudServerUrl,
-  replaceMailVaribles,
-} from '../../Utils.js';
+import { cloudServerUrl, replaceMailVaribles } from '../../Utils.js';
 const serverUrl = cloudServerUrl; //process.env.SERVER_URL;
 const appId = process.env.APP_ID;
-async function deductcount(
-  docsCount,
-  extUserId,
-) {
+async function deductcount(docsCount, extUserId) {
   try {
     const extCls = new Parse.Object('contracts_Users');
     extCls.id = extUserId;
@@ -18,9 +12,9 @@ async function deductcount(
     console.log('Err in deduct in quick send', err);
   }
 }
-async function sendMail(document) {
+async function sendMail(document, publicUrl) {
   //sessionToken
-  const baseUrl = new URL(process.env.PUBLIC_URL);
+  const baseUrl = new URL(publicUrl); //process.env.PUBLIC_URL
 
   // console.log("pdfDetails", pdfDetails);
   const timeToCompleteDays = document?.TimeToCompleteDays || 15;
@@ -33,10 +27,8 @@ async function sendMail(document) {
     year: 'numeric',
   });
   let signerMail = document.Placeholders;
-  const senderName =
-    document.ExtUserPtr.Name;
-  const senderEmail =
-    document.ExtUserPtr.Email;
+  const senderName = document.ExtUserPtr.Name;
+  const senderEmail = document.ExtUserPtr.Email;
 
   if (document.SendinOrder) {
     signerMail = signerMail.slice();
@@ -70,6 +62,7 @@ async function sendMail(document) {
           '</body></html>';
         const variables = {
           document_title: document?.Name,
+          note: document?.Note || '',
           sender_name: senderName,
           sender_mail: senderEmail,
           sender_phone: senderObj?.Phone || '',
@@ -83,6 +76,7 @@ async function sendMail(document) {
         replaceVar = replaceMailVaribles(mailSubject, htmlReqBody, variables);
       }
       const mailparam = {
+        note: document?.Note || '',
         senderName: senderName,
         senderMail: senderEmail,
         title: document.Name,
@@ -94,8 +88,7 @@ async function sendMail(document) {
         extUserId: document.ExtUserPtr.objectId,
         recipient: objectId ? existSigner?.Email : signerMail[i].email,
         subject: replaceVar?.subject ? replaceVar?.subject : mailTemplate(mailparam).subject,
-        from:
-          document.ExtUserPtr.Email,
+        from: document.ExtUserPtr.Email,
         replyto: senderEmail || '',
         html: replaceVar?.body ? replaceVar?.body : mailTemplate(mailparam).body,
       };
@@ -108,13 +101,7 @@ async function sendMail(document) {
     }
   }
 }
-async function batchQuery(
-  userId,
-  Documents,
-  Ip,
-  parseConfig,
-  type
-) {
+async function batchQuery(userId, Documents, Ip, parseConfig, type, publicUrl) {
   const extCls = new Parse.Query('contracts_Users');
   extCls.equalTo('UserId', {
     __type: 'Pointer',
@@ -199,22 +186,22 @@ async function batchQuery(
         };
       });
       // console.log('requests ', requests);
-        if (requests?.length > 0) {
-          const newrequests = [requests?.[0]];
-          const response = await axios.post('batch', { requests: newrequests }, parseConfig);
-          // Handle the batch query response
-          // console.log('Batch query response:', response.data);
-          if (response.data && response.data.length > 0) {
-            const document = Documents?.[0];
-            const updateDocuments = {
-              ...document,
-              objectId: response.data[0]?.success?.objectId,
-              createdAt: response.data[0]?.success?.createdAt,
-            };
-            deductcount(response.data.length, resExt.id);
-            sendMail(updateDocuments); //sessionToken
-            return 'success';
-          }
+      if (requests?.length > 0) {
+        const newrequests = [requests?.[0]];
+        const response = await axios.post('batch', { requests: newrequests }, parseConfig);
+        // Handle the batch query response
+        // console.log('Batch query response:', response.data);
+        if (response.data && response.data.length > 0) {
+          const document = Documents?.[0];
+          const updateDocuments = {
+            ...document,
+            objectId: response.data[0]?.success?.objectId,
+            createdAt: response.data[0]?.success?.createdAt,
+          };
+          deductcount(response.data.length, resExt.id);
+          sendMail(updateDocuments, publicUrl); //sessionToken
+          return 'success';
+        }
       }
     } catch (error) {
       const code = error?.response?.data?.code || error?.response?.status || error?.code || 400;
@@ -236,6 +223,8 @@ export default async function createBatchDocs(request) {
   const type = request.headers?.type || 'quicksend';
   const Documents = JSON.parse(strDocuments);
   const Ip = request?.headers?.['x-real-ip'] || '';
+  // Access the host from the headers
+  const publicUrl = request.headers.public_url;
   const parseConfig = {
     baseURL: serverUrl,
     headers: {
@@ -246,9 +235,8 @@ export default async function createBatchDocs(request) {
   };
   try {
     if (request?.user) {
-      return await batchQuery(request.user.id, Documents, Ip, parseConfig, '', type);
-    }
-    else {
+      return await batchQuery(request.user.id, Documents, Ip, parseConfig, '', type, publicUrl);
+    } else {
       throw new Parse.Error(Parse.Error.INVALID_SESSION_TOKEN, 'User is not authenticated.');
     }
   } catch (err) {

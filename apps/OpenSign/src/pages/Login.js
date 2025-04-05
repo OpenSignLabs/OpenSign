@@ -54,6 +54,10 @@ function Login() {
     // eslint-disable-next-line
   }, []);
 
+  const showToast = (type, msg) => {
+    setState({ ...state, loading: false, alertType: type, alertMsg: msg });
+    setTimeout(() => setState({ ...state, alertMsg: "" }), 2000);
+  };
   const checkUserExt = async () => {
     const app = await getAppLogo();
     if (app?.error === "invalid_json") {
@@ -156,60 +160,25 @@ function Login() {
                         setIsModal(true);
                       }
                     } else {
-                      setState({
-                        ...state,
-                        loading: false,
-                        alertType: "danger",
-                        alertMsg:
-                          "You don't have access, please contact the admin."
-                      });
+                      showToast("danger", t("do-not-access-contact-admin"));
                       logOutUser();
                     }
                   } else {
-                    setState({ ...state, loading: false });
-                    setState({
-                      ...state,
-                      loading: false,
-                      alertType: "danger",
-                      alertMsg: "User not found."
-                    });
+                    showToast("danger", t("user-not-found"));
                     logOutUser();
                   }
                 })
                 .catch((error) => {
-                  setState({
-                    ...state,
-                    loading: false,
-                    alertType: "danger",
-                    alertMsg: t("something-went-wrong-mssg")
-                  });
-                  setTimeout(() => setState({ ...state, alertMsg: "" }), 2000);
+                  showToast("danger", t("something-went-wrong-mssg"));
                   console.error("Error while fetching Follow", error);
                 });
             } catch (error) {
-              setState({
-                ...state,
-                loading: false,
-                alertType: "danger",
-                alertMsg: `${error.message}`
-              });
-              console.log(error);
-              setTimeout(() => setState({ ...state, alertMsg: "" }), 2000);
+              showToast("danger", `${error.message}`);
             }
           }
         } catch (error) {
-          setState({
-            ...state,
-            loading: false,
-            alertType: "danger",
-            alertMsg: "Invalid username/password or region"
-          });
           console.error("Error while logging in user", error);
-        } finally {
-          setTimeout(
-            () => setState((prev) => ({ ...prev, alertMsg: "" })),
-            2000
-          );
+          showToast("danger", "Invalid username/password or region");
         }
       }
     }
@@ -279,53 +248,29 @@ function Login() {
                   localStorage.setItem("pageType", menu.pageType);
                   navigate(redirectUrl);
                 } else {
-                  setState({
-                    ...state,
-                    loading: false,
-                    alertType: "danger",
-                    alertMsg: "Role not found."
-                  });
+                  showToast("danger", t("role-not-found"));
                   logOutUser();
                 }
               } else {
-                setState({
-                  ...state,
-                  loading: false,
-                  alertType: "danger",
-                  alertMsg: "You don't have access, please contact the admin."
-                });
+                showToast("danger", t("do-not-access-contact-admin"));
                 logOutUser();
               }
             } else {
-              setState({
-                ...state,
-                alertType: "danger",
-                alertMsg: "User not found."
-              });
+              showToast("danger", t("user-not-found"));
               logOutUser();
             }
           })
           .catch((err) => {
             console.error("err in fetching extUser", err);
-            setState({
-              ...state,
-              alertType: "danger",
-              alertMsg: `${err.message}`
-            });
+            showToast("danger", `${err.message}`);
             const payload = { sessionToken: sessionToken };
             handleSubmitbtn(payload);
           });
       } catch (error) {
-        setState({
-          ...state,
-          alertType: "danger",
-          alertMsg: `${error.message}`
-        });
+        showToast("danger", `${error.message}`);
         console.log(error);
       } finally {
         setThirdpartyLoader(false);
-        setState({ ...state, loading: false });
-        setTimeout(() => setState({ ...state, alertMsg: "" }), 2000);
       }
     }
   };
@@ -382,33 +327,17 @@ function Login() {
               logOutUser();
             }
           } else {
-            setState({
-              ...state,
-              loading: false,
-              alertType: "danger",
-              alertMsg: "You don't have access, please contact the admin."
-            });
+            showToast("danger", t("do-not-access-contact-admin"));
             logOutUser();
           }
         } else {
-          setState({
-            ...state,
-            alertType: "danger",
-            alertMsg: "User not found."
-          });
+          showToast("danger", t("user-not-found"));
           logOutUser();
         }
       });
     } catch (error) {
-      setState({
-        ...state,
-        alertType: "danger",
-        alertMsg: t("something-went-wrong-mssg")
-      });
+      showToast("danger", t("something-went-wrong-mssg"));
       console.log("err", error);
-    } finally {
-      setState({ ...state, loading: false });
-      setTimeout(() => setState({ ...state, alertMsg: "" }), 2000);
     }
   };
 
@@ -420,8 +349,6 @@ function Login() {
     e.preventDefault();
     if (userDetails.Destination && userDetails.Company) {
       setThirdpartyLoader(true);
-      // console.log("handelSubmit", userDetails);
-      // const payload = await Parse.User.logIn(state.email, state.password);
       const payload = { sessionToken: localStorage.getItem("accesstoken") };
       const userInformation = JSON.parse(
         localStorage.getItem("UserInformation")
@@ -461,13 +388,7 @@ function Login() {
         alert(t("server-error"));
       }
     } else {
-      setState({
-        ...state,
-        loading: false,
-        alertType: "warning",
-        alertMsg: "Please fill required details."
-      });
-      setTimeout(() => setState((prev) => ({ ...prev, alertMsg: "" })), 2000);
+      showToast("warning", t("fill-required-details!"));
     }
   };
 
@@ -516,7 +437,7 @@ function Login() {
           <div
             aria-labelledby="loginHeading"
             role="region"
-            className="pb-1 md:pb-4 pt-10 md:px-10 lg:px-16"
+            className="pb-1 md:pb-4 pt-10 md:px-10 lg:px-16 h-screen"
           >
             <div className="md:p-4 lg:p-10 p-4 bg-base-100 text-base-content op-card">
               <div className="w-[250px] h-[66px] inline-block overflow-hidden">

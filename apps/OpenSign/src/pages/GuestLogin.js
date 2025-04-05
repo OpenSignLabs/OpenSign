@@ -1,13 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router";
 import axios from "axios";
-import {
-  emailRegex,
-} from "../constant/const";
-import {
-  contractUsers,
-  saveLanguageInLocal
-} from "../constant/Utils";
+import { emailRegex } from "../constant/const";
+import { contractUsers, saveLanguageInLocal } from "../constant/Utils";
 import logo from "../assets/images/logo.png";
 import { appInfo } from "../constant/appinfo";
 import Parse from "parse";
@@ -63,13 +58,10 @@ function GuestLogin() {
 
   //function generate serverUrl and parseAppId from url and save it in local storage
   const handleServerUrl = async () => {
-      setAppLogo(logo);
+    setAppLogo(logo);
 
     localStorage.clear(); // Clears everything
-    localStorage.setItem(
-      "appname",
-        "OpenSign™"
-    );
+    localStorage.setItem("appname", "OpenSign™");
     //save isGuestSigner true in local to handle login flow header in mobile view
     localStorage.setItem("isGuestSigner", true);
     saveLanguageInLocal(i18n);
@@ -113,7 +105,10 @@ function GuestLogin() {
     setLoading(true);
     setEmail(email);
     try {
-      const params = { email: email.toString(), docId: documentId };
+      const params = {
+        email: email.toString(),
+        docId: documentId
+      };
       const Otp = await Parse.Cloud.run("SendOTPMailV1", params);
       if (Otp) {
         setLoading(false);
@@ -216,7 +211,14 @@ function GuestLogin() {
     }
   };
   const handleInputChange = (e) => {
-    setContact((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    if (e.target.name === "email") {
+      setContact((prev) => ({
+        ...prev,
+        [e.target.name]: e.target.value?.toLowerCase()?.replace(/\s/g, "")
+      }));
+    } else {
+      setContact((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    }
   };
   return (
     <div>

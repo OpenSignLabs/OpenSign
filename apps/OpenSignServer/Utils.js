@@ -49,7 +49,7 @@ export const saveFileUsage = async (size, fileUrl, userId) => {
         className: '_User',
         objectId: userId,
       });
-      const tenant = await tenantQuery.first();
+      const tenant = await tenantQuery.first({ useMasterKey: true });
       if (tenant) {
         const tenantPtr = { __type: 'Pointer', className: 'partners_Tenant', objectId: tenant.id };
         try {
@@ -225,6 +225,7 @@ export const flattenPdf = async pdfFile => {
 export const mailTemplate = param => {
   const themeColor = '#47a3ad';
   const subject = `${param.senderName} has requested you to sign "${param.title}"`;
+  const AppName = appName;
   const logo = `<img src='https://qikinnovation.ams3.digitaloceanspaces.com/logo.png' height='50' />`;
 
   const opurl = ` <a href='www.opensignlabs.com' target=_blank>here</a>`;
@@ -240,15 +241,17 @@ export const mailTemplate = param => {
     param.senderMail +
     "</td></tr><tr><td style='font-weight:bold;font-family:sans-serif;font-size:15px'>Organization</td><td></td><td style='color:#626363;font-weight:bold'> " +
     param.organization +
-    "</td></tr><tr><td style='font-weight:bold;font-family:sans-serif;font-size:15px'>Expire on</td><td></td><td style='color:#626363;font-weight:bold'>" +
+    "</td></tr><tr><td style='font-weight:bold;font-family:sans-serif;font-size:15px'>Expires on</td><td></td><td style='color:#626363;font-weight:bold'>" +
     param.localExpireDate +
+    "</td></tr><tr><td style='font-weight:bold;font-family:sans-serif;font-size:15px'>Note</td><td></td><td style='color:#626363;font-weight:bold'>" +
+    param.note +
     "</td></tr><tr><td></td><td></td></tr></table></div> <div style='margin-left:70px'><a target=_blank href=" +
     param.sigingUrl +
     "><button style='padding:12px;background-color:#d46b0f;color:white;border:0px;font-weight:bold;margin-top:30px'>Sign here</button></a></div><div style='display:flex;justify-content:center;margin-top:10px'></div></div></div><div><p> This is an automated email from " +
-    appName +
+    AppName +
     '. For any queries regarding this email, please contact the sender ' +
     param.senderMail +
-    ` directly. If you think this email is inappropriate or spam, you may file a complaint with ${appName}${opurl}.</p></div></div></body></html>`;
+    ` directly. If you think this email is inappropriate or spam, you may file a complaint with ${AppName}${opurl}.</p></div></div></body></html>`;
 
   return { subject, body };
 };
