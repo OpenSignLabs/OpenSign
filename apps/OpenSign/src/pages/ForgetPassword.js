@@ -7,17 +7,17 @@ import Alert from "../primitives/Alert";
 import { appInfo } from "../constant/appinfo";
 import { useDispatch } from "react-redux";
 import { fetchAppInfo } from "../redux/reducers/infoReducer";
-import {
-  emailRegex,
-} from "../constant/const";
+import { emailRegex } from "../constant/const";
 import { useTranslation } from "react-i18next";
+import Loader from "../primitives/Loader";
 
 function ForgotPassword() {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [state, setState] = useState({ email: "", password: "", hideNav: "" });
-  const [sentStatus, setSentStatus] = useState("");
+  const [toast, setToast] = useState({ type: "", message: "" });
+  const [isLoading, setIsLoading] = useState(false);
   const [image, setImage] = useState();
 
   const handleChange = (event) => {
@@ -40,18 +40,23 @@ function ForgotPassword() {
     if (!emailRegex.test(state.email)) {
       alert("Please enter a valid email address.");
     } else {
+      setIsLoading(true);
       localStorage.setItem("appLogo", appInfo.applogo);
       localStorage.setItem("userSettings", JSON.stringify(appInfo.settings));
       if (state.email) {
         const username = state.email;
         try {
           await Parse.User.requestPasswordReset(username);
-          setSentStatus("success");
+          setToast({ type: "success", message: t("reset-password-alert-1") });
         } catch (err) {
           console.log("err ", err.code);
-          setSentStatus("failed");
+          setToast({
+            type: "danger",
+            message: err.message || t("reset-password-alert-2")
+          });
         } finally {
-          setTimeout(() => setSentStatus(""), 1000);
+          setIsLoading(false);
+          setTimeout(() => setToast({ type: "", message: "" }), 1000);
         }
       }
     }
@@ -71,17 +76,17 @@ function ForgotPassword() {
     } catch (err) {
       console.log("err while logging out ", err);
     }
-      setImage(appInfo?.applogo || undefined);
+    setImage(appInfo?.applogo || undefined);
   };
   return (
     <div>
+      {isLoading && (
+        <div className="fixed w-full h-full flex justify-center items-center bg-black bg-opacity-30 z-50">
+          <Loader />
+        </div>
+      )}
       <Title title="Forgot password" />
-      {sentStatus === "success" && (
-        <Alert type="success">{t("reset-password-alert-1")}</Alert>
-      )}
-      {sentStatus === "failed" && (
-        <Alert type={"danger"}>{t("reset-password-alert-2")}</Alert>
-      )}
+      {toast?.message && <Alert type={toast.type}>{toast.message}</Alert>}
       <div className="md:p-10 lg:p-16">
         <div className="md:p-4 lg:p-10 p-4 bg-base-100 text-base-content op-card">
           <div className="w-[250px] h-[66px] inline-block overflow-hidden">

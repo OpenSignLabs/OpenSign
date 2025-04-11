@@ -1,5 +1,10 @@
 import React, { useState } from "react";
 import { getFileName } from "../../constant/Utils";
+import {
+  maxDescriptionLength,
+  maxNoteLength,
+  maxTitleLength
+} from "../../constant/const";
 import { useTranslation } from "react-i18next";
 import { Tooltip } from "react-tooltip";
 import SignersInput from "../shared/fields/SignersInput";
@@ -48,6 +53,18 @@ const EditTemplate = ({ template, onSuccess }) => {
     e.stopPropagation();
     if (formData.RedirectUrl && !isValidURL(formData?.RedirectUrl)) {
       alert(t("invalid-redirect-url"));
+      return;
+    }
+    if (formData?.Name?.length > maxTitleLength) {
+      alert(t("title-length-alert"));
+      return;
+    }
+    if (formData?.Note?.length > maxNoteLength) {
+      alert(t("note-length-alert"));
+      return;
+    }
+    if (formData?.Description?.length > maxDescriptionLength) {
+      alert(t("description-length-alert"));
       return;
     }
     const isChecked = formData.SendinOrder === "true" ? true : false;
