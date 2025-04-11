@@ -15,7 +15,9 @@ function GuestLogin() {
   const { t, i18n } = useTranslation();
   const { id, userMail, contactBookId, base64url } = useParams();
   const navigate = useNavigate();
-  const [email, setEmail] = useState(userMail);
+  const [email, setEmail] = useState(
+    userMail?.toLowerCase()?.replace(/\s/g, "")
+  );
   const [OTP, setOTP] = useState("");
   const [EnterOTP, setEnterOtp] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -76,12 +78,18 @@ function GuestLogin() {
       //split url in array from '/'
       const checkSplit = decodebase64.split("/");
       setDocumentId(checkSplit[0]);
-      setContact((prev) => ({ ...prev, email: checkSplit[1] }));
-      setEmail(checkSplit[1]);
+      setContact((prev) => ({
+        ...prev,
+        email: checkSplit[1]?.toLowerCase()?.replace(/\s/g, "")
+      }));
+      setEmail(checkSplit[1]?.toLowerCase()?.replace(/\s/g, ""));
       const contactId = checkSplit?.[2];
       setSendmail(checkSplit[3]);
       if (!contactId) {
-        const params = { email: checkSplit[1], docId: checkSplit[0] };
+        const params = {
+          email: checkSplit[1]?.toLowerCase()?.replace(/\s/g, ""),
+          docId: checkSplit[0]
+        };
         try {
           const linkContactRes = await Parse.Cloud.run(
             "linkcontacttodoc",
@@ -103,10 +111,10 @@ function GuestLogin() {
   //send email OTP function
   const SendOtp = async () => {
     setLoading(true);
-    setEmail(email);
+    setEmail(email?.toLowerCase()?.replace(/\s/g, ""));
     try {
       const params = {
-        email: email.toString(),
+        email: email?.toLowerCase()?.replace(/\s/g, "")?.toString(),
         docId: documentId
       };
       const Otp = await Parse.Cloud.run("SendOTPMailV1", params);
@@ -139,7 +147,10 @@ function GuestLogin() {
           "Content-Type": "application/json",
           "X-Parse-Application-Id": parseId
         };
-        let body = { email: email, otp: OTP };
+        let body = {
+          email: email?.toLowerCase()?.replace(/\s/g, ""),
+          otp: OTP
+        };
         let user = await axios.post(url, body, { headers: headers });
         if (user.data.result === "Invalid Otp") {
           alert(t("invalid-otp"));
@@ -184,7 +195,7 @@ function GuestLogin() {
   };
   const handleUserData = async (e) => {
     e.preventDefault();
-    if (!emailRegex.test(contact.email)) {
+    if (!emailRegex.test(contact.email?.toLowerCase()?.replace(/\s/g, ""))) {
       alert("Please enter a valid email address.");
     } else {
       const params = { ...contact, docId: documentId };

@@ -3,9 +3,7 @@ import axios from "axios";
 import SuggestionInput from "./shared/fields/SuggestionInput";
 import Loader from "../primitives/Loader";
 import { useTranslation } from "react-i18next";
-import {
-  emailRegex,
-} from "../constant/const";
+import { emailRegex } from "../constant/const";
 const BulkSendUi = (props) => {
   const { t } = useTranslation();
   const [forms, setForms] = useState([]);
@@ -22,15 +20,15 @@ const BulkSendUi = (props) => {
 
   //function to check atleast one signature field exist
   const signatureExist = async () => {
-      setIsDisableBulkSend(false);
-      const getPlaceholder = props?.Placeholders;
-      const checkIsSignatureExistt = getPlaceholder?.every((placeholderObj) =>
-        placeholderObj?.placeHolder?.some((holder) =>
-          holder?.pos?.some((posItem) => posItem?.type === "signature")
-        )
-      );
-      setIsSignatureExist(checkIsSignatureExistt);
-      setIsLoader(false);
+    setIsDisableBulkSend(false);
+    const getPlaceholder = props?.Placeholders;
+    const checkIsSignatureExistt = getPlaceholder?.every((placeholderObj) =>
+      placeholderObj?.placeHolder?.some((holder) =>
+        holder?.pos?.some((posItem) => posItem?.type === "signature")
+      )
+    );
+    setIsSignatureExist(checkIsSignatureExistt);
+    setIsLoader(false);
   };
   useEffect(() => {
     if (scrollOnNextUpdate && formRef.current) {
@@ -74,7 +72,6 @@ const BulkSendUi = (props) => {
     setForms(newForms);
   };
 
-
   const handleRemoveForm = (index) => {
     const updatedForms = forms.filter((_, i) => i !== index);
     setForms(updatedForms);
@@ -95,82 +92,83 @@ const BulkSendUi = (props) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     e.stopPropagation();
-      setIsSubmit(true);
-      if (validateEmails(forms)) {
-        // Create a copy of Placeholders array from props.item
-        let Placeholders = [...props.Placeholders];
-        // Initialize an empty array to store updated documents
-        let Documents = [];
-        // Loop through each form
-        forms.forEach((form) => {
-          //checking if user enter email which already exist as a signer then add user in a signers array
-          let existSigner = [];
-          form.fields.map((data) => {
-            if (data.signer) {
-              existSigner.push(data.signer);
-            }
-          });
-          // Map through the copied Placeholders array to update email values
-          const updatedPlaceholders = Placeholders.map((placeholder) => {
-            // Find the field in the current form that matches the placeholder Id
-            const field = form.fields.find(
-              (element) => parseInt(element.fieldId) === placeholder.Id
-            );
-            // If a matching field is found, update the email value in the placeholder
-            const signer = field?.signer?.objectId ? field.signer : "";
-            if (field) {
-              if (signer) {
-                return {
-                  ...placeholder,
-                  signerObjId: field?.signer?.objectId || "",
-                  signerPtr: signer
-                };
-              } else {
-                return {
-                  ...placeholder,
-                  email: field.email,
-                  signerObjId: field?.signer?.objectId || "",
-                  signerPtr: signer
-                };
-              }
-            }
-            // If no matching field is found, keep the placeholder as is
-            return placeholder;
-          });
-
-          // Push a new document object with updated Placeholders into the Documents array
-          if (existSigner?.length > 0) {
-            Documents.push({
-              ...props.item,
-              Placeholders: updatedPlaceholders,
-              Signers: props.item.Signers
-                ? [...props.item.Signers, ...existSigner]
-                : [...existSigner]
-            });
-          } else {
-            Documents.push({
-              ...props.item,
-              Placeholders: updatedPlaceholders,
-              SignatureType: props.signatureType
-            });
+    setIsSubmit(true);
+    if (validateEmails(forms)) {
+      // Create a copy of Placeholders array from props.item
+      let Placeholders = [...props.Placeholders];
+      // Initialize an empty array to store updated documents
+      let Documents = [];
+      // Loop through each form
+      forms.forEach((form) => {
+        //checking if user enter email which already exist as a signer then add user in a signers array
+        let existSigner = [];
+        form.fields.map((data) => {
+          if (data.signer) {
+            existSigner.push(data.signer);
           }
         });
-        await batchQuery(Documents);
-      } else {
-        setIsSubmit(false);
-      }
+        // Map through the copied Placeholders array to update email values
+        const updatedPlaceholders = Placeholders.map((placeholder) => {
+          // Find the field in the current form that matches the placeholder Id
+          const field = form.fields.find(
+            (element) => parseInt(element.fieldId) === placeholder.Id
+          );
+          // If a matching field is found, update the email value in the placeholder
+          const signer = field?.signer?.objectId ? field.signer : "";
+          if (field) {
+            if (signer) {
+              return {
+                ...placeholder,
+                signerObjId: field?.signer?.objectId || "",
+                signerPtr: signer
+              };
+            } else {
+              return {
+                ...placeholder,
+                email: field.email,
+                signerObjId: field?.signer?.objectId || "",
+                signerPtr: signer
+              };
+            }
+          }
+          // If no matching field is found, keep the placeholder as is
+          return placeholder;
+        });
+
+        // Push a new document object with updated Placeholders into the Documents array
+        if (existSigner?.length > 0) {
+          Documents.push({
+            ...props.item,
+            Placeholders: updatedPlaceholders,
+            Signers: props.item.Signers
+              ? [...props.item.Signers, ...existSigner]
+              : [...existSigner]
+          });
+        } else {
+          Documents.push({
+            ...props.item,
+            Placeholders: updatedPlaceholders,
+            SignatureType: props.signatureType
+          });
+        }
+      });
+      await batchQuery(Documents);
+    } else {
+      setIsSubmit(false);
+    }
   };
 
   const batchQuery = async (Documents) => {
-    const token =
-          { "X-Parse-Session-Token": localStorage.getItem("accesstoken") };
+    const token = {
+      "X-Parse-Session-Token": localStorage.getItem("accesstoken")
+    };
     const functionsUrl = `${localStorage.getItem(
       "baseUrl"
     )}functions/batchdocuments`;
     const headers = {
       "Content-Type": "application/json",
       "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
-      ...token,
+      ...token
     };
     const params = { Documents: JSON.stringify(Documents) };
     try {
@@ -218,7 +216,9 @@ const BulkSendUi = (props) => {
                                     className="flex flex-col"
                                     key={field.fieldId}
                                   >
-                                    <label>{field.label}</label>
+                                    <label className="block text-xs font-semibold">
+                                      {field.label}
+                                    </label>
                                     <SuggestionInput
                                       required
                                       type="email"
@@ -275,8 +275,7 @@ const BulkSendUi = (props) => {
               )}
             </>
           ) : (
-            <>
-            </>
+            <></>
           )}
         </>
       )}

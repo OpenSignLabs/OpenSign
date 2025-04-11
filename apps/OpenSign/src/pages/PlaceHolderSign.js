@@ -3,6 +3,7 @@ import axios from "axios";
 import Parse from "parse";
 import "../styles/signature.css";
 import { PDFDocument } from "pdf-lib";
+import { maxTitleLength } from "../constant/const";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { useDrop } from "react-dnd";
@@ -164,6 +165,7 @@ function PlaceHolderSign() {
   const [isAttchSignerModal, setIsAttchSignerModal] = useState(false);
   const [isNewContact, setIsNewContact] = useState({ status: false, id: "" });
   const [owner, setOwner] = useState({});
+  const [docTitle, setDocTitle] = useState("");
   const isMobile = window.innerWidth < 767;
   const [, drop] = useDrop({
     accept: "BOX",
@@ -243,6 +245,7 @@ function PlaceHolderSign() {
     //getting document details
     const documentData = await contractDocument(documentId);
     if (documentData && documentData.length > 0) {
+      setDocTitle(documentData?.[0]?.Name);
       if (documentData[0]?.Placeholders?.length > 0) {
         const signerNotExist = documentData[0]?.Placeholders.some(
           (data) => !data.signerObjId && data.Role !== "prefill"
@@ -1010,6 +1013,7 @@ function PlaceHolderSign() {
   const saveDocumentDetails = async () => {
     setIsUiLoading(true);
     let signerMail = signersdata.slice();
+    // For "Send in order", only consider the first signer
     if (pdfDetails?.[0]?.SendinOrder && pdfDetails?.[0]?.SendinOrder === true) {
       signerMail.splice(1);
     }
@@ -1022,7 +1026,7 @@ function PlaceHolderSign() {
           objectId: x.objectId
         };
       });
-      const addExtraDays = pdfDetails[0]?.TimeToCompleteDays
+      const addExtraDays = pdfDetails?.[0]?.TimeToCompleteDays
         ? pdfDetails[0].TimeToCompleteDays
         : 15;
       const currentUser = signersdata.find((x) => x.Email === currentId);
@@ -1037,22 +1041,22 @@ function PlaceHolderSign() {
       } else {
         setIsCurrUser(currentUser?.objectId ? true : false);
       }
-      let updateExpiryDate, data;
-      updateExpiryDate = new Date();
+      // Compute expiry date with extra days
+      let updateExpiryDate = new Date();
       updateExpiryDate.setDate(updateExpiryDate.getDate() + addExtraDays);
-      //filter label widgets after add label widgets data on pdf
+
+      // Filter out prefill roles
       const filterPrefill = signerPos.filter((data) => data.Role !== "prefill");
       try {
-        data = {
+        const data = {
+          Name: docTitle || pdfDetails?.[0]?.Name,
           Placeholders: filterPrefill,
           SignedUrl: pdfUrl,
           Signers: signers,
           SentToOthers: true,
-          SignatureType: pdfDetails?.[0]?.SignatureType
+          SignatureType: pdfDetails?.[0]?.SignatureType,
+          ExpiryDate: { iso: updateExpiryDate, __type: "Date" }
         };
-        if (updateExpiryDate) {
-          data["ExpiryDate"] = { iso: updateExpiryDate, __type: "Date" };
-        }
         await axios.put(
           `${localStorage.getItem(
             "baseUrl"
@@ -1071,6 +1075,11 @@ function PlaceHolderSign() {
         setIsUiLoading(false);
         setSignerPos([]);
         setIsSendAlert({ mssg: "confirm", alert: true });
+        if (docTitle) {
+          const updatedPdfDetails = [...pdfDetails];
+          updatedPdfDetails[0].Name = docTitle;
+          setPdfDetails(updatedPdfDetails);
+        }
       } catch (e) {
         console.log("error", e);
         alert(t("something-went-wrong-mssg"));
@@ -1844,6 +1853,10 @@ function PlaceHolderSign() {
     setPdfBase64Url(urlDetails.base64);
   };
   const handleSendDoc = () => {
+    if (docTitle?.length > maxTitleLength) {
+      alert(t("title-length-alert"));
+      return;
+    }
     setIsAttchSignerModal(false);
     setCheckTourStatus(true);
     alertSendEmail();
@@ -1906,6 +1919,10 @@ function PlaceHolderSign() {
     return isAllSigner;
   };
   const handleCloseAttachSigner = () => {
+    if (docTitle?.length > maxTitleLength) {
+      alert(t("title-length-alert"));
+      return;
+    }
     setIsAttchSignerModal(false);
   };
   return (
@@ -2180,24 +2197,45 @@ function PlaceHolderSign() {
                   </ModalUi>
                   <ModalUi
                     isOpen={isAttchSignerModal}
-                    title={t("add-signer")}
+                    title={t("create-document")}
                     handleClose={() => handleCloseAttachSigner()}
                   >
-                    <div className="h-[100%] p-[20px]">
+                    <div className="h-[100%] px-[20px] py-[10px]">
+                      <div>
+                        <label
+                          htmlFor="doctitle"
+                          className="block text-xs font-semibold"
+                        >
+                          Title
+                        </label>
+                        <input
+                          type="text"
+                          name="doctitle"
+                          value={docTitle}
+                          onChange={(e) => setDocTitle(e.target.value)}
+                          required
+                          onInvalid={(e) =>
+                            e.target.setCustomValidity(t("input-required"))
+                          }
+                          onInput={(e) => e.target.setCustomValidity("")}
+                          className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-[11px] py-[18px]"
+                        />
+                      </div>
                       {pdfDetails[0].Placeholders?.some(
                         (x) => !x.signerObjId
                       ) && (
                         <>
-                          {/* grid grid-cols-1 md:grid-cols-2 */}
                           <div className="min-h-max max-h-[250px] overflow-y-auto">
-                            <div className="py-3 px-[10px] op-card border-[1px] border-gray-400 mt-3 md:mx-3  mb-4 bg-base-200 text-base-content flex flex-col gap-2 relative">
+                            <div className="py-2 text-base-content flex flex-col gap-2 relative">
                               {forms?.map((field, id) => {
                                 return (
                                   <div
                                     className="flex flex-col"
                                     key={field?.value}
                                   >
-                                    <label>{field?.role}</label>
+                                    <label className="block text-xs font-semibold">
+                                      {field?.role}
+                                    </label>
                                     <div className="flex justify-between items-center gap-1">
                                       <div className="flex-1">
                                         <AsyncSelect
@@ -2240,7 +2278,7 @@ function PlaceHolderSign() {
                                         onClick={(e) =>
                                           handleCreateNew(e, field.value)
                                         }
-                                        className="op-btn op-btn-accent  op-btn-outline op-btn-sm  "
+                                        className="op-btn op-btn-accent op-btn-outline op-btn-sm"
                                       >
                                         <i className="fa-light fa-plus"></i>
                                       </button>
@@ -2250,8 +2288,8 @@ function PlaceHolderSign() {
                               })}
                             </div>
                           </div>
-                          <div className="w-full h-[1px] bg-[#9f9f9f] my-[15px]"></div>
-                          <div className="flex  mx-4 mb-4 gap-3">
+                          <div className="w-full h-[0.5px] bg-[#9f9f9f] mt-[8px] mb-[15px]"></div>
+                          <div className="flex mx-2 mb-2 gap-3">
                             <button
                               disabled={handleDisable()}
                               onClick={() => handleSendDoc()}
