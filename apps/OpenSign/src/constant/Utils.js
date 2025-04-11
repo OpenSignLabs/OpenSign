@@ -643,6 +643,15 @@ export const createDocument = async (
     const RedirectUrl = Doc?.RedirectUrl
       ? { RedirectUrl: Doc?.RedirectUrl }
       : {};
+    const TemplateId = Doc?.objectId
+      ? {
+          TemplateId: {
+            __type: "Pointer",
+            className: "contracts_Template",
+            objectId: Doc?.objectId
+          }
+        }
+      : {};
     const data = {
       Name: Doc.Name,
       URL: pdfUrl,
@@ -672,7 +681,8 @@ export const createDocument = async (
       ...SignatureType,
       ...NotifyOnSignatures,
       ...Bcc,
-      ...RedirectUrl
+      ...RedirectUrl,
+      ...TemplateId
     };
     const remindOnceInEvery = Doc?.RemindOnceInEvery;
     const TimeToCompleteDays = parseInt(Doc?.TimeToCompleteDays);
