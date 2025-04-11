@@ -82,6 +82,7 @@ const ReportTable = (props) => {
   const [contact, setContact] = useState({ Name: "", Email: "", Phone: "" });
   const [isSuccess, setIsSuccess] = useState({});
   const [templateId, setTemplateId] = useState("");
+  const isTemplateReport = props.ReportName === "Templates";
   const recordsPerPage = 5;
   const startIndex = (currentPage - 1) * props.docPerPage;
   const { isMoreDocs, setIsNextRecord } = props;
@@ -152,7 +153,7 @@ const ReportTable = (props) => {
 
   // `fetchTeamList` is used to fetch team list for share with functionality
   const fetchTeamList = async () => {
-    if (props.ReportName === "Templates") {
+    if (isTemplateReport) {
       try {
         const extUser = JSON.parse(localStorage.getItem("Extand_Class"))?.[0];
         if (extUser?.OrganizationId?.objectId) {
@@ -225,7 +226,7 @@ const ReportTable = (props) => {
 
   // `handleURL` is used to open microapp
   const handleURL = async (item, act) => {
-    if (props.ReportName === "Templates") {
+    if (isTemplateReport) {
       if (act.hoverLabel === "Edit") {
         navigate(`/${act.redirectUrl}/${item.objectId}`);
       } else {
@@ -298,6 +299,15 @@ const ReportTable = (props) => {
         const RedirectUrl = Doc?.RedirectUrl
           ? { RedirectUrl: Doc?.RedirectUrl }
           : {};
+        const TemplateId = Doc?.objectId
+          ? {
+              TemplateId: {
+                __type: "Pointer",
+                className: "contracts_Template",
+                objectId: Doc?.objectId
+              }
+            }
+          : {};
         let placeholdersArr = [];
         if (Doc.Placeholders?.length > 0) {
           placeholdersArr = Doc.Placeholders;
@@ -329,7 +339,8 @@ const ReportTable = (props) => {
             ...SignatureType,
             ...NotifyOnSignatures,
             ...Bcc,
-            ...RedirectUrl
+            ...RedirectUrl,
+            ...TemplateId
           };
           try {
             const res = await axios.post(
@@ -656,7 +667,6 @@ const ReportTable = (props) => {
       signing_url: `<a href=${signPdf} target=_blank>Sign here</a>`
     };
     const res = replaceMailVaribles(subject, "", variables);
-
     setMail((prev) => ({ ...prev, subject: res.subject }));
   };
   // `handlebodyChange` is used to add or change body of resend mail
@@ -1235,10 +1245,9 @@ const ReportTable = (props) => {
   const handleRenameDoc = async (item) => {
     setActLoader({ [item.objectId]: true });
     setIsModal({});
-    const className =
-      props.ReportName === "Templates"
-        ? "contracts_Template"
-        : "contracts_Document";
+    const className = isTemplateReport
+      ? "contracts_Template"
+      : "contracts_Document";
     try {
       const query = new Parse.Query(className);
       const docObj = await query.get(item.objectId);
@@ -1336,6 +1345,13 @@ const ReportTable = (props) => {
       showAlert("danger", t("something-went-wrong-mssg"));
     }
   };
+
+  const handleResendClose = () => {
+    setIsResendMail({});
+    setIsNextStep({});
+    setUserDetails({});
+  };
+
   return (
     <div className="relative">
       {Object.keys(actLoader)?.length > 0 && (
@@ -1347,7 +1363,7 @@ const ReportTable = (props) => {
         {alertMsg.message && (
           <Alert type={alertMsg.type}>{alertMsg.message}</Alert>
         )}
-        {props.tourData && props.ReportName === "Templates" && (
+        {props.tourData && isTemplateReport && (
           <>
             <Tour
               onRequestClose={closeTour}
@@ -1384,7 +1400,7 @@ const ReportTable = (props) => {
                 <i className="fa-light fa-square-plus text-accent text-[30px] md:text-[35px]"></i>
               </div>
             )}
-            {props.ReportName === "Templates" && (
+            {isTemplateReport && (
               <i
                 data-tut="reactourFirst"
                 onClick={() => navigate("/form/template")}
@@ -1583,7 +1599,9 @@ const ReportTable = (props) => {
                           </th>
                         )}
                         <td className="p-2 min-w-56 max-w-56">
-                          <div className="font-semibold">{item?.Name}</div>
+                          <div className="font-semibold break-words">
+                            {item?.Name}
+                          </div>
                           {item?.ExpiryDate?.iso && (
                             <div className="text-gray-500">
                               Expires {formatDate(item?.ExpiryDate?.iso)}
@@ -1653,7 +1671,7 @@ const ReportTable = (props) => {
                           <div className="text-base-content min-w-max flex flex-row gap-x-2 gap-y-1 justify-start items-center">
                             {props.actions?.length > 0 &&
                               props.actions.map((act, index) =>
-                                props.ReportName === "Templates" ? (
+                                isTemplateReport ? (
                                   <React.Fragment key={index}>
                                     {(item.ExtUserPtr?.objectId ===
                                       extClass?.[0]?.objectId ||
@@ -1953,14 +1971,12 @@ const ReportTable = (props) => {
                           {isViewShare[item.objectId] && (
                             <ModalUi
                               isOpen
-                              showHeader={
-                                props.ReportName === "Templates" && true
-                              }
+                              showHeader={isTemplateReport}
                               title={t("signers")}
                               reduceWidth={"md:max-w-[450px]"}
                               handleClose={() => setIsViewShare({})}
                             >
-                              {props.ReportName !== "Templates" && (
+                              {!isTemplateReport && (
                                 <div
                                   className="op-btn op-btn-sm op-btn-circle op-btn-ghost text-base-content absolute right-2 top-1 z-40"
                                   onClick={() => setIsViewShare({})}
@@ -1971,13 +1987,13 @@ const ReportTable = (props) => {
                               <table className="op-table w-full overflow-auto">
                                 <thead className="h-[38px] sticky top-0 text-base-content text-sm pt-[15px] px-[20px]">
                                   <tr>
-                                    {props.ReportName === "Templates" && (
+                                    {isTemplateReport && (
                                       <th className="p-2 pl-3 w-[30%]">
                                         {t("roles")}
                                       </th>
                                     )}
                                     <th className="pl-3 py-2">
-                                      {props.ReportName === "Templates"
+                                      {isTemplateReport
                                         ? t("email")
                                         : t("signers")}
                                     </th>
@@ -1991,7 +2007,7 @@ const ReportTable = (props) => {
                                           key={i}
                                           className="text-sm font-medium"
                                         >
-                                          {props.ReportName === "Templates" && (
+                                          {isTemplateReport && (
                                             <td className="text-[12px] p-2 pl-3 w-[30%]">
                                               {x.Role && x.Role}
                                             </td>
@@ -2147,13 +2163,9 @@ const ReportTable = (props) => {
                             <ModalUi
                               isOpen
                               title={t("resend-mail")}
-                              handleClose={() => {
-                                setIsResendMail({});
-                                setIsNextStep({});
-                                setUserDetails({});
-                              }}
+                              handleClose={handleResendClose}
                             >
-                              <div className=" overflow-y-auto max-h-[340px] md:max-h-[400px]">
+                              <div className="overflow-y-auto max-h-[340px] md:max-h-[400px]">
                                 {item?.Placeholders?.map((user) => (
                                   <React.Fragment key={user.Id}>
                                     {isNextStep[user.Id] && (
@@ -2255,7 +2267,7 @@ const ReportTable = (props) => {
                             isOpen={isModal["rename_" + item.objectId]}
                             handleClose={handleCloseModal}
                           >
-                            <div className=" flex flex-col px-4 pb-3 pt-2 ">
+                            <div className="flex flex-col px-4 pb-3 pt-2">
                               <div className="flex flex-col gap-2">
                                 <input
                                   maxLength={200}

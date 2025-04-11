@@ -18,7 +18,12 @@ import {
 } from "../constant/Utils";
 import { PDFDocument } from "pdf-lib";
 import axios from "axios";
-import { maxFileSize } from "../constant/const";
+import {
+  maxFileSize,
+  maxDescriptionLength,
+  maxNoteLength,
+  maxTitleLength
+} from "../constant/const";
 import ModalUi from "../primitives/ModalUi";
 import { Tooltip } from "react-tooltip";
 import Loader from "../primitives/Loader";
@@ -354,6 +359,18 @@ const Forms = (props) => {
     e.preventDefault();
     e.stopPropagation();
     if (fileupload) {
+      if (formData?.Name?.length > maxTitleLength) {
+        alert(t("title-length-alert"));
+        return;
+      }
+      if (formData?.Note?.length > maxNoteLength) {
+        alert(t("note-length-alert"));
+        return;
+      }
+      if (formData?.Description?.length > maxDescriptionLength) {
+        alert(t("description-length-alert"));
+        return;
+      }
       if (formData.RedirectUrl && !isValidURL(formData?.RedirectUrl)) {
         alert(t("invalid-redirect-url"));
         return;
