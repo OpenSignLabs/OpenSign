@@ -285,6 +285,7 @@
   "make-template-public": "Convertir la plantilla en pública",
   "make-template-private": "Convertir la plantilla en privada",
   "make-template-public-alert": "¿En definitiva quieres convertir esta plantilla en pública?",
+  "make-template-private-alert-non": "¿Está seguro de que desea hacer este plantilla privado?",
   "make-template-private-alert": "¿En definitiva quieres convertir esta plantilla en privada? Esto lo removerá de tu perfil público.",
   "public-role": "Rol público",
   "public-url": "Perfil publico",
@@ -873,5 +874,12 @@
   "document-has-been-signed": "¡El documento ha sido firmado con éxito!",
   "document-has-been-signed-by-you": "¡El documento ha sido firmado con éxito por usted!",
   "participant-completed-signing": "Todos los participantes han completado el proceso de firma.",
-  "you-will-receive-email-shortly": "✅ ¡Eso es todo! Recibirá un correo de confirmación en breve."
+  "you-will-receive-email-shortly": "✅ ¡Eso es todo! Recibirá un correo de confirmación en breve.",
+  "please-provide-templateid": "Por favor, proporcione templateid",
+  "this-template-is-not-public": "Esta template no es pública",
+  "invalid-templateid": "templateid no válida",
+  "contact-billing-at-opensign": "Para agregar más asientos, comuníquese con OpenSign™ a <1>billing@opensignlabs.com</1> para obtener ayuda.",
+  "title-length-alert": "El título debe tener como máximo 250 caracteres.",
+  "note-length-alert": "La nota debe tener como máximo 200 caracteres.",
+  "description-length-alert": "La descripción debe tener como máximo 500 caracteres."
 }

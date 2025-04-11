@@ -1,7 +1,4 @@
-import React, {
-  useState,
-  useEffect,
-} from "react";
+import React, { useState, useEffect } from "react";
 import { Navigate, useNavigate } from "react-router";
 import Parse from "parse";
 import { SaveFileSize } from "../constant/saveFileSize";
@@ -10,10 +7,7 @@ import Title from "../components/Title";
 import sanitizeFileName from "../primitives/sanitizeFileName";
 import axios from "axios";
 import Tooltip from "../primitives/Tooltip";
-import {
-  getSecureUrl,
-  handleSendOTP,
-} from "../constant/Utils";
+import { getSecureUrl, handleSendOTP } from "../constant/Utils";
 import ModalUi from "../primitives/ModalUi";
 import Loader from "../primitives/Loader";
 import { useTranslation } from "react-i18next";
@@ -121,13 +115,13 @@ function UserProfile() {
   const updateExtUser = async (obj) => {
     try {
       const extData = JSON.parse(localStorage.getItem("Extand_Class"));
-      const ExtUserId = extData[0].objectId;
+      const ExtUserId = extData?.[0]?.objectId;
       const body = {
         Phone: obj?.Phone || "",
         Name: obj.Name,
         JobTitle: jobTitle,
         Company: company,
-        Language: obj?.language || "",
+        Language: obj?.language || ""
       };
 
       await axios.put(
@@ -235,7 +229,7 @@ function UserProfile() {
   const handleResend = async (e) => {
     e.preventDefault();
     setOtpLoader(true);
-    await handleSendOTP();
+    await handleSendOTP(Parse.User.current().getEmail());
     setOtpLoader(false);
     alert(t("otp-sent-alert"));
   };
@@ -412,7 +406,7 @@ function UserProfile() {
               <button
                 type="button"
                 onClick={(e) => {
-                    editmode ? handleSubmit(e) : setEditMode(true);
+                  editmode ? handleSubmit(e) : setEditMode(true);
                 }}
                 className="op-btn op-btn-primary w-[100px]"
               >

@@ -201,7 +201,7 @@
   "send-in-order-help": {
     "p1": "Choisissez la manière dont vous souhaitez que les demandes de signature soient envoyées aux signataires du document :",
     "p2": "La sélection de cette option enverra initialement la demande de signature au premier signataire. Une fois que le premier signataire a terminé sa partie, le prochain signataire de la séquence recevra la demande. Ce processus se poursuit jusqu'à ce que tous les signataires aient signé le document. Cette méthode garantit que le document est signé dans un ordre spécifique.",
-    "p3": "La sélection de cette option enverra les liens de signature à tous les signataires simultanément. Chaque signataire peut signer le document à sa convenance, que d'autres signataires aient ou non complété leur signature. Cette méthode est plus rapide mais n’impose aucun ordre de signature entre les participants.",
+    "p3": "La sélection de cette option enverra les liens de signature à tous les signataires simultanément. Chaque signataire peut signer le document à sa convenance, que d'autres signataires aient ou non complété leur signature. Cette méthode est plus rapide mais n'impose aucun ordre de signature entre les participants.",
     "p4": "Sélectionnez l'option qui correspond le mieux aux besoins de votre traitement de documents."
   },
   "no": "Non",
@@ -227,7 +227,7 @@
   "create": "Créer",
   "signers": "Signataires",
   "signers-help": "Commencez à saisir le nom d'un contact pour voir les signataires suggérés par vos contacts enregistrés ou en ajouter de nouveaux. Organisez l'ordre de signature en ajoutant des signataires dans l'ordre souhaité. Utilisez le bouton « + » pour inclure les signataires et le « x » pour les supprimer. Chaque signataire recevra un e-mail invité à signer le document dans l'ordre indiqué.",
-  "bcc-help": "Commencez à taper le nom d’un contact pour voir les suggestions parmi vos contacts enregistrés ou en ajouter de nouveaux. Utilisez le bouton '+' pour ajouter un utilisateur et le bouton 'x' pour le supprimer. L’adresse e-mail de l’utilisateur sélectionné sera ajoutée en Bcc (copie carbone invisible). Chaque utilisateur recevra une notification par e-mail une fois le document terminé.",
+  "bcc-help": "Commencez à taper le nom d'un contact pour voir les suggestions parmi vos contacts enregistrés ou en ajouter de nouveaux. Utilisez le bouton '+' pour ajouter un utilisateur et le bouton 'x' pour le supprimer. L'adresse e-mail de l'utilisateur sélectionné sera ajoutée en Bcc (copie carbone invisible). Chaque utilisateur recevra une notification par e-mail une fois le document terminé.",
   "add-signer": "Ajouter un signataire",
   "contact-not-found": "Contact introuvable",
   "add-yourself": "Ajoutez-vous",
@@ -284,6 +284,7 @@
   "make-template-public": "Rendre le modèle public",
   "make-template-private": "Rendre le modèle privé",
   "make-template-public-alert": "Êtes-vous sûr de vouloir rendre ce modèle public ?",
+  "make-template-private-alert-non": "Êtes-vous sûr de vouloir rendre ce modèle privé ?",
   "make-template-private-alert": "Êtes-vous sûr de vouloir rendre ce modèle privé ? Cela le supprimera de votre profil public.",
   "public-role": "Rôle public",
   "public-url": "Profil public",
@@ -659,7 +660,7 @@
   "bulk-send-subcription-alert": "Veuillez passer au forfait Professionnel ou Équipe pour utiliser Quicksend.",
   "generate-test-token": "Générer jeton de test",
   "regenerate-test-token": "Régénérer le jeton de test",
-  "help-test-token": "Ce jeton peut être utilisé pour tester les API au niveau du point de terminaison https://sandbox.opensignlabs.com/api/v1, vous permettant ainsi d'effectuer un nombre illimité de signatures de documents. Veuillez noter que l'API sandbox signera vos documents avec des certificats auto-signés, qui peuvent ne pas être reconnus comme valides par Adobe. Une fois vos tests terminés, vous pouvez passer à l’un de nos forfaits payants pour générer un jeton de production.",
+  "help-test-token": "Ce jeton peut être utilisé pour tester les API au niveau du point de terminaison https://sandbox.opensignlabs.com/api/v1, vous permettant ainsi d'effectuer un nombre illimité de signatures de documents. Veuillez noter que l'API sandbox signera vos documents avec des certificats auto-signés, qui peuvent ne pas être reconnus comme valides par Adobe. Une fois vos tests terminés, vous pouvez passer à l'un de nos forfaits payants pour générer un jeton de production.",
   "help-api-token": "Ce jeton peut être utilisé pour accéder aux API de production au point de terminaison {{origin}}/api/v1. Il ne peut être généré que sur l'un de nos forfaits payants.",
   "reason": "Raison",
   "decline-by": "Refusé/révoqué par",
@@ -873,5 +874,12 @@
   "document-has-been-signed": "Le document a été signé avec succès !",
   "document-has-been-signed-by-you": "Le document a été signé avec succès par vous !",
   "participant-completed-signing": "Tous les participants ont terminé le processus de signature.",
-  "you-will-receive-email-shortly": "✅ Voilà, c'est fait ! Vous recevrez un e-mail de confirmation sous peu."
+  "you-will-receive-email-shortly": "✅ Voilà, c'est fait ! Vous recevrez un e-mail de confirmation sous peu.",
+  "please-provide-templateid": "Veuillez fournir templateid",
+  "this-template-is-not-public": "Ce template n'est pas public",
+  "invalid-templateid": "templateid invalide",
+  "contact-billing-at-opensign": "Pour ajouter plus de places, veuillez contacter OpenSign™ à l'adresse <1>billing@opensignlabs.com</1> pour obtenir de l'aide.",
+  "title-length-alert": "Le titre doit comporter au maximum 250 caractères.",
+  "note-length-alert": "La note doit comporter au maximum 200 caractères.",
+  "description-length-alert": "La description doit comporter au maximum 500 caractères"
 }

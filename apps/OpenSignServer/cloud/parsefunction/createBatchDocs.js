@@ -182,6 +182,15 @@ async function batchQuery(userId, Documents, Ip, parseConfig, type, publicUrl) {
             ...(x?.RedirectUrl ? { RedirectUrl: x?.RedirectUrl } : {}),
             ...(mailBody ? { RequestBody: mailBody } : {}),
             ...(mailSubject ? { RequestSubject: mailSubject } : {}),
+            ...(x?.objectId
+              ? {
+                  TemplateId: {
+                    __type: 'Pointer',
+                    className: 'contracts_Template',
+                    objectId: x?.objectId,
+                  },
+                }
+              : {}),
           },
         };
       });

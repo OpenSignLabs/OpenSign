@@ -284,6 +284,7 @@
   "make-template-public": "Vorlage öffentlich machen",
   "make-template-private": "Vorlage privat machen",
   "make-template-public-alert": "Sind Sie sicher, dass Sie diese Vorlage öffentlich machen möchten?",
+  "make-template-private-alert-non": "Sind Sie sicher, dass Sie diese Vorlage privat machen möchten?",
   "make-template-private-alert": "Sind Sie sicher, dass Sie diese Vorlage privat machen möchten? Dadurch wird sie aus Ihrem öffentlichen Profil entfernt.",
   "public-role": "Öffentliche Rolle",
   "public-url": "Öffentliches Profil",
@@ -873,5 +874,12 @@
   "document-has-been-signed": "Das Dokument wurde erfolgreich unterschrieben!",
   "document-has-been-signed-by-you": "Das Dokument wurde erfolgreich von Ihnen unterschrieben!",
   "participant-completed-signing": "Alle Teilnehmer haben den Signaturprozess abgeschlossen.",
-  "you-will-receive-email-shortly": "✅ Das war's! Sie erhalten in Kürze eine Bestätigungs-E-Mail."
+  "you-will-receive-email-shortly": "✅ Das war's! Sie erhalten in Kürze eine Bestätigungs-E-Mail.",
+  "please-provide-templateid": "Bitte geben Sie templateid an",
+  "this-template-is-not-public": "Dieses template ist nicht öffentlich",
+  "invalid-templateid": "Ungültige templateid",
+  "contact-billing-at-opensign": "Um weitere Plätze hinzuzufügen, kontaktieren Sie bitte OpenSign™ unter <1>billing@opensignlabs.com</1> für Unterstützung.",
+  "title-length-alert": "Der Titel darf höchstens 250 Zeichen lang sein.",
+  "note-length-alert": "Die Notiz darf höchstens 200 Zeichen lang sein.",
+  "description-length-alert": "Die Beschreibung darf höchstens 500 Zeichen lang sein."
 }

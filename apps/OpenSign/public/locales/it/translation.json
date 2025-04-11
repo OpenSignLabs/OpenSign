@@ -284,6 +284,7 @@
   "make-template-public": "Rendi il modello pubblico",
   "make-template-private": "Rendi il modello privato",
   "make-template-public-alert": "Sei sicuro di voler rendere pubblico questo modello?",
+  "make-template-private-alert-non": "Sei sicuro di voler rendere privato questo modello?",
   "make-template-private-alert": "Sei sicuro di voler rendere privato questo modello? Questo lo rimuoverà dal tuo profilo pubblico.",
   "public-role": "Ruolo pubblico",
   "public-url": "Profilo pubblico",
@@ -314,7 +315,7 @@
   "body": "Corpo del messaggio",
   "add-contact": "Aggiungi contatto",
   "edit-contact": "Modifica contatto",
-  "add-signer-alert": "Il contatto esiste già! Selezionalo dal menu a tendina ‘Firmatari’.",
+  "add-signer-alert": "Il contatto esiste già! Selezionalo dal menu a tendina 'Firmatari'.",
   "record-delete-alert": "Record eliminato con successo!",
   "record-revoke-alert": "Record revocato con successo!",
   "mail-sent-alert": "Email inviata con successo.",
@@ -608,7 +609,7 @@
     "placeholder-sign-4": "Trascina o fai clic su un campo per aggiungerlo al documento.",
     "placeholder-sign-5": "L'area del contenuto PDF visualizza già i segnaposti esistenti del modello. Per tua comodità, questi segnaposti corrisponderanno al colore del nome del destinatario, rendendoli facilmente identificabili.",
     "placeholder-sign-6": "Facendo clic su 'Invia' il documento verrà salvato. Nel passaggio successivo potrai personalizzare le email da inviare ai destinatari o copiare i link di firma e condividerli direttamente con i destinatari.",
-    "report-1": "Fai clic sul pulsante 'Aggiungi' per creare un nuovo modello. I modelli sono documenti riutilizzabili progettati per generare rapidamente nuovi documenti con la stessa struttura e firmatari diversi. Ad esempio, un modello HR per l'onboarding potrebbe avere ruoli predefinita come ‘Responsabile HR’ e ‘Nuovo Dipendente’. Ogni volta che usi il modello, puoi assegnare il ruolo ‘Nuovo Dipendente’ a membri dello staff in arrivo, mentre il ruolo ‘Responsabile HR’ rimane costante, facilitando un processo di onboarding fluido per ogni nuovo assunto.",
+    "report-1": "Fai clic sul pulsante 'Aggiungi' per creare un nuovo modello. I modelli sono documenti riutilizzabili progettati per generare rapidamente nuovi documenti con la stessa struttura e firmatari diversi. Ad esempio, un modello HR per l'onboarding potrebbe avere ruoli predefinita come 'Responsabile HR' e 'Nuovo Dipendente'. Ogni volta che usi il modello, puoi assegnare il ruolo 'Nuovo Dipendente' a membri dello staff in arrivo, mentre il ruolo 'Responsabile HR' rimane costante, facilitando un processo di onboarding fluido per ogni nuovo assunto.",
     "redirect": "Fai clic sul pulsante 'Usa' per creare un nuovo documento da un modello esistente.",
     "bulksend": "Per inviare rapidamente più documenti utilizzando un modello esistente creando semplicemente gli indirizzi e-mail dei destinatari, fai clic sul pulsante 'Invio Multiplo'.",
     "option": "Questo menu rivela altre opzioni come Modifica ed Elimina. Usa il pulsante 'Modifica' per aggiungere ruoli di firmatari, modificare i campi e aggiornare il modello. Le modifiche si applicheranno a tutti i futuri documenti creati da questo modello ma non influiranno sui documenti esistenti. Usa il pulsante Elimina per eliminare il modello.",
@@ -625,7 +626,7 @@
     "Recent signature requests": "Questo è un elenco di documenti che aspettano la tua firma.",
     "Recently sent for signatures": "Questo è un elenco di documenti che hai inviato ad altre parti per la firma.",
     "Drafts": "Questi sono documenti che hai iniziato ma non hai finalizzato per l'invio.",
-    "public-template": "Questo video dimostra come configurare il tuo profilo pubblico personalizzato, come ‘https://opensign.me/tuo-username’. Imparerai anche come personalizzare il tuo slogan e rendere i tuoi modelli disponibili per la firma pubblica.",
+    "public-template": "Questo video dimostra come configurare il tuo profilo pubblico personalizzato, come 'https://opensign.me/tuo-username'. Imparerai anche come personalizzare il tuo slogan e rendere i tuoi modelli disponibili per la firma pubblica.",
     "allowModify-widgets": "È possibile trascinare e rilasciare uno qualsiasi di questi campi nel documento, oltre ai campi già designati dal creatore del documento."
   },
   "enter-email-plaholder": "Aggiungi un indirizzo email e premi invio",
@@ -873,5 +874,12 @@
   "document-has-been-signed": "Il documento è stato firmato con successo!",
   "document-has-been-signed-by-you": "Il documento è stato firmato con successo da lei!",
   "participant-completed-signing": "Tutti i partecipanti hanno completato il processo di firma.",
-  "you-will-receive-email-shortly": "✅ È tutto! Riceverà a breve un'e-mail di conferma."
+  "you-will-receive-email-shortly": "✅ È tutto! Riceverà a breve un'e-mail di conferma.",
+  "please-provide-templateid": "Si prega di fornire templateid",
+  "this-template-is-not-public": "Questo template non è pubblico",
+  "invalid-templateid": "templateid non valido",
+  "contact-billing-at-opensign": " Per aggiungere altri posti, contattare OpenSign™ all'indirizzo <1>billing@opensignlabs.com</1> per assistenza.",
+  "title-length-alert": "Il titolo può contenere al massimo 250 caratteri.",
+  "note-length-alert": "La nota può contenere al massimo 200 caratteri.",
+  "description-length-alert": " La descrizione può contenere al massimo 500 caratteri."
 }
