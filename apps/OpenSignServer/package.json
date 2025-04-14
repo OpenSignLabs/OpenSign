@@ -54,7 +54,7 @@
     "@babel/eslint-parser": "^7.27.0",
     "eslint": "^9.23.0",
     "jasmine": "^5.6.0",
-    "mongodb-runner": "^5.8.0",
+    "mongodb-runner": "^5.8.2",
     "nodemon": "^3.1.9",
     "nyc": "^17.1.0",
     "prettier": "^3.5.3"
