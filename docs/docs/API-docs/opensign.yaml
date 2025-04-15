@@ -3113,6 +3113,9 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/documentwithstatus_audit_trail'
+        template_id:
+          type: string
+          example: template_id is only available when the document is created from a template.
       xml:
         name: documentwithstatus
     document:
@@ -3161,6 +3164,9 @@ components:
         allow_modifications:
           type: boolean
           example: false
+        template_id:
+          type: string
+          example: template_id is only available when the document is created from a template.
       xml:
         name: document
     invalidtoken:
