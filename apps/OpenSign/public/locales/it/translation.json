@@ -152,7 +152,8 @@
     "Duplicate Template": "Duplica modello",
     "Duplicate": "Duplica",
     "daily-mail-quota": "Quota e-mail giornaliera",
-    "Save as template": "Salva come modello"
+    "Save as template": "Salva come modello",
+    "Fix & resend": "Correggi e reinvia"
   },
   "report-heading": {
     "Sr.No": "Nr.",
@@ -881,5 +882,10 @@
   "contact-billing-at-opensign": " Per aggiungere altri posti, contattare OpenSign™ all'indirizzo <1>billing@opensignlabs.com</1> per assistenza.",
   "title-length-alert": "Il titolo può contenere al massimo 250 caratteri.",
   "note-length-alert": "La nota può contenere al massimo 200 caratteri.",
-  "description-length-alert": " La descrizione può contenere al massimo 500 caratteri."
+  "description-length-alert": " La descrizione può contenere al massimo 500 caratteri.",
+  "fix-&-resend-document": "Correggi e reinvia il documento",
+  "do-you-want-recreate-document?": "Questo creerà una bozza da questo documento con tutti i campi intatti. Sei sicuro di voler ricreare questo documento?",  
+  "start-editing": "Inizia a modificare",
+  "unsaved-changes-discard-them?": "Hai modifiche non salvate. Vuoi scartarle?",
+  "yes-discard": "Sì, scarta"
 }

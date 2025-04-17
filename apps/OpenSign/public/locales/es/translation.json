@@ -152,7 +152,8 @@
     "Duplicate Template": "Plantilla duplicada",
     "Duplicate": "Duplicada",
     "daily-mail-quota": "Cuota diaria de correos electrónicos",
-    "Save as template": "Guardar como plantilla"
+    "Save as template": "Guardar como plantilla",
+    "Fix & resend": "Corregir y reenviar"
   },
   "report-heading": {
     "Sr.No": "Nº",
@@ -881,5 +882,10 @@
   "contact-billing-at-opensign": "Para agregar más asientos, comuníquese con OpenSign™ a <1>billing@opensignlabs.com</1> para obtener ayuda.",
   "title-length-alert": "El título debe tener como máximo 250 caracteres.",
   "note-length-alert": "La nota debe tener como máximo 200 caracteres.",
-  "description-length-alert": "La descripción debe tener como máximo 500 caracteres."
+  "description-length-alert": "La descripción debe tener como máximo 500 caracteres.",
+  "fix-&-resend-document": "Corregir y reenviar el documento",
+  "do-you-want-recreate-document?": "Esto creará un borrador a partir de este documento con todos los campos intactos. ¿Está seguro de que desea recrear este documento?",
+  "start-editing": "Comenzar a editar",
+  "unsaved-changes-discard-them?": "Tienes cambios sin guardar. ¿Deseas descartarlos?",
+  "yes-discard": "Sí, descartar"
 }

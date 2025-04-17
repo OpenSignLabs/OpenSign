@@ -173,7 +173,8 @@
     "Duplicate Template": "dupliquer le modèle",
     "Duplicate": "Double",
     "daily-mail-quota": "Quota d'e-mails quotidien",
-    "Save as template": "Enregistrer comme modèle"
+    "Save as template": "Enregistrer comme modèle",
+    "Fix & resend": "Corriger et renvoyer"
   },
   "report-help": {
     "Draft Documents": "Il s'agit de documents que vous avez commencés mais que vous n'avez pas finalisés pour envoi.",
@@ -881,5 +882,10 @@
   "contact-billing-at-opensign": "Pour ajouter plus de places, veuillez contacter OpenSign™ à l'adresse <1>billing@opensignlabs.com</1> pour obtenir de l'aide.",
   "title-length-alert": "Le titre doit comporter au maximum 250 caractères.",
   "note-length-alert": "La note doit comporter au maximum 200 caractères.",
-  "description-length-alert": "La description doit comporter au maximum 500 caractères"
+  "description-length-alert": "La description doit comporter au maximum 500 caractères",
+  "fix-&-resend-document": "Corriger et renvoyer le document",
+  "do-you-want-recreate-document?": "Cela créera un brouillon à partir de ce document avec tous les champs intacts. Êtes-vous sûr de vouloir recréer ce document ?",
+  "start-editing": "Commencer l'édition",
+  "unsaved-changes-discard-them?": "Vous avez des modifications non enregistrées. Les supprimer ?",
+  "yes-discard": "Oui, supprimer"
 }

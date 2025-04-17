@@ -20,6 +20,16 @@ const masterKEY = process.env.MASTER_KEY;
 const eSignName = 'OpenSign';
 const eSigncontact = 'hello@opensignlabs.com';
 
+async function unlinkFile(path) {
+  if (fs.existsSync(path)) {
+    try {
+      fs.unlinkSync(path);
+    } catch (err) {
+      console.log('Err in unlink file: ', path);
+    }
+  }
+}
+
 // `updateDoc` is used to create url in from pdfFile
 async function uploadFile(pdfName, filepath) {
   try {
@@ -33,8 +43,8 @@ async function uploadFile(pdfName, filepath) {
     return { imageUrl: fileUrl };
   } catch (err) {
     console.log('Err ', err);
-    // `fs.unlinkSync` is used to remove exported signed pdf file from exports folder
-    fs.unlinkSync(filepath);
+    // below line of code is used to remove exported signed pdf file from exports folder
+    unlinkFile(filepath);
   }
 }
 
@@ -240,10 +250,10 @@ async function sendCompletedMail(obj) {
     });
     // console.log('res', res.data.result);
     if (res.data?.result?.status !== 'success') {
-      fs.unlinkSync(`./exports/signed_certificate_${doc.objectId}.pdf`);
+      unlinkFile(`./exports/signed_certificate_${doc.objectId}.pdf`);
     }
   } catch (err) {
-    fs.unlinkSync(`./exports/signed_certificate_${doc.objectId}.pdf`);
+    unlinkFile(`./exports/signed_certificate_${doc.objectId}.pdf`);
   }
 }
 
@@ -288,7 +298,7 @@ async function sendMailsaveCertifcate(doc, pfx, isCustomMail, mailProvider, file
     sendCompletedMail({ isCustomMail, doc, mailProvider, filename });
   }
   saveFileUsage(CertificateBuffer.length, file.imageUrl, doc?.CreatedBy?.objectId);
-  fs.unlinkSync(pfx.name);
+  unlinkFile(pfx.name);
 }
 /**
  *
@@ -438,10 +448,10 @@ async function PDF(req) {
           const doc = { ..._resDoc, AuditTrail: updatedDoc.AuditTrail, SignedUrl: data.imageUrl };
           sendMailsaveCertifcate(doc, pfx, isCustomMail, mailProvider, `signed_${name}`);
         } else {
-          fs.unlinkSync(pfxname);
+          unlinkFile(pfxname);
         }
-        // `fs.unlinkSync` is used to remove exported signed pdf file from exports folder
-        fs.unlinkSync(signedFilePath);
+        // below code is used to remove exported signed pdf file from exports folder
+        unlinkFile(signedFilePath);
         // console.log(`New Signed PDF created called: ${filePath}`);
         if (updatedDoc.message === 'success') {
           return { status: 'success', data: data.imageUrl };
@@ -466,7 +476,7 @@ async function PDF(req) {
     } catch (err) {
       console.log('err in saving debugginglog', err);
     }
-    fs.unlinkSync(pfxname);
+    unlinkFile(pfxname);
     throw err;
   }
 }
