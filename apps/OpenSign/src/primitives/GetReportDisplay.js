@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import pad from "../assets/images/pad.svg";
+import recreatedoc from "../assets/images/recreatedoc.png";
 import { Link, useLocation, useNavigate } from "react-router";
 import axios from "axios";
 import ModalUi from "./ModalUi";
@@ -19,7 +20,8 @@ import {
   getTenantDetails,
   handleSignatureType,
   replaceMailVaribles,
-  signatureTypes
+  signatureTypes,
+  openInNewTab
 } from "../constant/Utils";
 import EditorToolbar, {
   module1,
@@ -412,6 +414,8 @@ const ReportTable = (props) => {
       setIsModal({ [`edit_${item.objectId}`]: true });
     } else if (act.action === "saveastemplate") {
       setIsModal({ [`saveastemplate_${item.objectId}`]: true });
+    } else if (act.action === "recreatedocument") {
+      setIsModal({ [`recreatedocument_${item.objectId}`]: true });
     } else if (act.action) {
       setIsModal({ [`extendexpiry_${item.objectId}`]: true });
     }
@@ -1352,6 +1356,24 @@ const ReportTable = (props) => {
     setUserDetails({});
   };
 
+  const handleRecreateDoc = async (item) => {
+    setActLoader({ [item.objectId]: true });
+    try {
+      const res = await Parse.Cloud.run("recreatedoc", {
+        docId: item.objectId
+      });
+      if (res) {
+        openInNewTab(`/placeHolderSign/${res.objectId}`, "_self");
+      }
+    } catch (err) {
+      handleCloseModal();
+      showAlert("danger", err.message);
+      // showAlert("danger", t("something-went-wrong-mssg"));
+      console.log("Err while create duplicate template", err);
+    } finally {
+      setActLoader({});
+    }
+  };
   return (
     <div className="relative">
       {Object.keys(actLoader)?.length > 0 && (
@@ -1826,6 +1848,45 @@ const ReportTable = (props) => {
                                 )
                               )}
                           </div>
+                          {isModal["recreatedocument_" + item.objectId] && (
+                            <ModalUi isOpen handleClose={handleCloseModal}>
+                              {actLoader[item.objectId] && (
+                                <div className="absolute h-full w-full flex justify-center items-center rounded-box bg-black/30">
+                                  <Loader />
+                                </div>
+                              )}
+                              <h3 className="text-base-content font-bold text-lg pt-[15px] px-[20px]">
+                                {t("fix-&-resend-document")}
+                              </h3>
+                              <div className="p-[15px] md:p-[20px]">
+                                <div className="text-lg font-normal text-center">
+                                  <img
+                                    src={recreatedoc}
+                                    alt="recreate-doc"
+                                    className="mx-auto w-[200px] h-auto"
+                                  />
+                                  <p className="text-sm md:text-base md:px-2 mt-2">
+                                    {t("do-you-want-recreate-document?")}
+                                  </p>
+                                </div>
+                                <hr className="bg-[#ccc] mt-2.5" />
+                                <div className="flex items-center justify-center mt-[14px] md:mt-[16px] gap-2 text-white">
+                                  <button
+                                    onClick={() => handleRecreateDoc(item)}
+                                    className="op-btn op-btn-primary focus:outline-none text-sm relative px-4"
+                                  >
+                                    {t("start-editing")}
+                                  </button>
+                                  <button
+                                    onClick={handleCloseModal}
+                                    className="op-btn op-btn-secondary focus:outline-none text-sm relative px-8"
+                                  >
+                                    {t("cancel")}
+                                  </button>
+                                </div>
+                              </div>
+                            </ModalUi>
+                          )}
                           {isModal["saveastemplate_" + item.objectId] && (
                             <ModalUi
                               isOpen

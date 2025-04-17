@@ -152,7 +152,8 @@
     "Duplicate Template": "Vorlage duplizieren",
     "Duplicate": "Duplikat",
     "daily-mail-quota": "Tägliches E-Mail-Kontingent",
-    "Save as template": "Als Vorlage speichern"
+    "Save as template": "Als Vorlage speichern",
+    "Fix & resend": "Korrigieren und erneut senden"
   },
   "report-heading": {
     "Sr.No": "Nr.",
@@ -881,5 +882,10 @@
   "contact-billing-at-opensign": "Um weitere Plätze hinzuzufügen, kontaktieren Sie bitte OpenSign™ unter <1>billing@opensignlabs.com</1> für Unterstützung.",
   "title-length-alert": "Der Titel darf höchstens 250 Zeichen lang sein.",
   "note-length-alert": "Die Notiz darf höchstens 200 Zeichen lang sein.",
-  "description-length-alert": "Die Beschreibung darf höchstens 500 Zeichen lang sein."
+  "description-length-alert": "Die Beschreibung darf höchstens 500 Zeichen lang sein.",
+  "fix-&-resend-document": "Dokument korrigieren und erneut senden",
+  "do-you-want-recreate-document?": "Dadurch wird ein Entwurf aus diesem Dokument mit allen vorhandenen Feldern erstellt. Sind Sie sicher, dass Sie dieses Dokument neu erstellen möchten?",
+  "start-editing": "Bearbeitung starten",
+  "unsaved-changes-discard-them?": "Sie haben ungespeicherte Änderungen. Verwerfen?",
+  "yes-discard": "Ja, verwerfen"
 }
