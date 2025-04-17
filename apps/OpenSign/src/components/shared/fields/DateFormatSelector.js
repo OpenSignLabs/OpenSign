@@ -45,7 +45,7 @@ const DateFormatSelector = (props) => {
           </option>
         ))}
       </select>
-      <div className="flex flex-col md:flex-row md:gap-4 mt-[0.75rem] text-[12px]">
+      <div className="flex flex-row gap-4 mt-[0.75rem] text-[12px]">
         <div className="flex items-center gap-2 ml-2">
           <input
             type="radio"
