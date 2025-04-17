@@ -152,7 +152,8 @@
     "Duplicate Template": "Duplicate template",
     "Duplicate": "Duplicate",
     "daily-mail-quota": "Daily Email Quota",
-    "Save as template": "Save as template"
+    "Save as template": "Save as template",
+    "Fix & resend": "Fix & Resend"
   },
   "report-heading": {
     "Sr.No": "Sr.No",
@@ -881,5 +882,10 @@
   "contact-billing-at-opensign": "To add more seats, please contact OpenSign™ at <1>billing@opensignlabs.com</1> for assistance",
   "title-length-alert": "Title must be at most 250 characters long.",
   "note-length-alert": "Note must be at most 200 characters long.",
-  "description-length-alert": "Description must be at most 500 characters long."
+  "description-length-alert": "Description must be at most 500 characters long.",
+  "fix-&-resend-document": "Fix & Resend Document",
+  "do-you-want-recreate-document?": "This will create a draft from this document with all fields intact. Are you sure you want to recreate this document?",
+  "start-editing": "Start Editing",
+  "unsaved-changes-discard-them?": "You have unsaved changes. Discard them?",
+  "yes-discard": "Yes, Discard"
 }

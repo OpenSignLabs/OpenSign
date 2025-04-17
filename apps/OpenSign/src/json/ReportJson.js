@@ -219,7 +219,6 @@ export default function reportJson(id) {
             btnId: "44534",
             hoverLabel: "option",
             btnColor: "",
-            restrictBtn: true,
             textColor: "black",
             btnIcon: "fa-light fa-ellipsis-vertical fa-lg",
             action: "option",
@@ -228,9 +227,18 @@ export default function reportJson(id) {
                 btnId: "0940",
                 btnLabel: "Save as template",
                 hoverLabel: "Save as template",
+                restrictBtn: true,
                 btnIcon: "fa-light fa-envelope",
                 redirectUrl: "",
                 action: "saveastemplate"
+              },
+              {
+                btnId: "8440",
+                btnLabel: "Fix & resend",
+                hoverLabel: "Fix & resend",
+                btnIcon: "fa-light fa-paper-plane",
+                redirectUrl: "",
+                action: "recreatedocument"
               }
             ]
           }

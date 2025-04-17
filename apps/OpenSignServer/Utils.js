@@ -2,6 +2,8 @@ import dotenv from 'dotenv';
 import { format, toZonedTime } from 'date-fns-tz';
 import { getSignedLocalUrl } from './cloud/parsefunction/getSignedUrl.js';
 import { PDFDocument } from 'pdf-lib';
+import crypto from 'node:crypto';
+import axios from 'axios';
 dotenv.config();
 
 export const cloudServerUrl = 'http://localhost:8080/app';
@@ -148,6 +150,7 @@ export const useLocal = process.env.USE_LOCAL ? process.env.USE_LOCAL.toLowerCas
 export const smtpsecure = process.env.SMTP_PORT && process.env.SMTP_PORT !== '465' ? false : true;
 export const smtpenable =
   process.env.SMTP_ENABLE && process.env.SMTP_ENABLE.toLowerCase() === 'true' ? true : false;
+export const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 // `generateId` is used to unique Id for fileAdapter
 export function generateId(length) {
@@ -297,3 +300,39 @@ export function formatDateTime(date, dateFormat, timeZone, is12Hour) {
     ? format(zonedDate, `${selectFormat(dateFormat)}, ${timeFormat} 'GMT' XXX`, { timeZone })
     : formatTimeInTimezone(date, timeZone);
 }
+
+// Utility: Convert base64 to buffer
+export const base64ToBuffer = base64 => Buffer.from(base64, 'base64');
+
+// Utility: Generate SHA-256 hash from PDF page metadata
+const getPdfMetadataHash = async pdfBytes => {
+  const pdfDoc = await PDFDocument.load(pdfBytes);
+  const metaString = pdfDoc
+    .getPages()
+    .map((page, index) => {
+      const { width, height } = page.getSize();
+      return `${index + 1}:${Math.round(width)}x${Math.round(height)}`;
+    })
+    .join('|');
+
+  return crypto.createHash('sha256').update(metaString).digest('hex');
+};
+// Utility: Validate if uploaded file matches original template PDF
+export const handleReplaceFileValidation = async (baseFileUrl, newFileBase64) => {
+  try {
+    const { data } = await axios.get(baseFileUrl, { responseType: 'arraybuffer' });
+    const basePdfBytes = Buffer.from(data);
+    const uploadedPdfBytes = base64ToBuffer(newFileBase64);
+
+    const baseHash = await getPdfMetadataHash(basePdfBytes);
+    const uploadedHash = await getPdfMetadataHash(uploadedPdfBytes);
+
+    if (baseHash === uploadedHash) {
+      return { base64: newFileBase64 };
+    }
+    return { error: 'PDFs do NOT match based on page number, width, and height' };
+  } catch (err) {
+    console.error('Validation Error:', err.message);
+    return { error: err.message };
+  }
+};

@@ -344,7 +344,7 @@ const Preferences = () => {
                   <Loader />
                 </div>
               )}
-              <h1 className="ml-4 mt-3 mb-2 font-semibold">
+              <h1 className="ml-4 mt-3 text-lg mb-2 font-semibold text-base-content">
                 {appName} {t("Preferences")}{" "}
                 <span>
                   <Tooltip message={`${appName} ${t("Preferences")}`} />
@@ -362,7 +362,9 @@ const Preferences = () => {
                       role="tab"
                       className={`${
                         activeTab === ind ? "op-tab-active" : ""
-                      } op-tab text-xs md:text-base pb-2 md:pb-0 }`}
+                      } op-tab text-xs md:text-base pb-2 md:pb-0 transition-all `}
+                      aria-selected={activeTab === ind}
+                      aria-controls={`panel-${tabData.title}`}
                     >
                       <i className={tabData.icon}></i>
                       <span className="ml-1 md:ml-2">{tabData.title}</span>
@@ -370,275 +372,330 @@ const Preferences = () => {
                   ))}
                 </div>
               </div>
-              <div className="flex justify-center md:justify-start mt-3 md:mt-4 break-all">
+              <div
+                id="panel-general"
+                className="px-6 pt-4 pb-6"
+                aria-labelledby="tab-general"
+                role="tabpanel"
+              >
                 {activeTab === 0 ? (
-                  <div className="ml-4 mt-1 mb-2 flex flex-col">
-                    <div className="mb-[0.75rem]">
-                      <label
-                        className="mb-[0.7rem] text-[12px]"
-                        htmlFor="signaturetype"
-                      >
-                        <span className="font-medium text-[14px]">
+                  <div className="grid grid-cols-1 md:grid-cols-12 md:gap-x-8">
+                    {/* Left Column - Signature Settings */}
+                    <div className="md:col-span-5 flex flex-col">
+                      {/* Signature Types Section */}
+                      <div className="mb-6">
+                        <label
+                          className="text-[14px] mb-[0.7rem] font-medium"
+                          htmlFor="signaturetype"
+                        >
                           {t("allowed-signature-types")}
-                        </span>
-                        <a data-tooltip-id="signtypes-tooltip" className="ml-1">
-                          <sup>
-                            <i className="fa-light fa-question rounded-full border-[#33bbff] text-[#33bbff] text-[13px] border-[1px] py-[1.5px] px-[4px]"></i>
-                          </sup>
-                        </a>
-                        <ReactTooltip
-                          id="signtypes-tooltip"
-                          className="z-[999]"
-                        >
-                          <div className="max-w-[200px] md:max-w-[450px]">
-                            <p className="font-bold">
-                              {t("allowed-signature-types")}
-                            </p>
-                            <p>{t("allowed-signature-types-help.p1")}</p>
-                            <div className="p-[5px] ml-2">
-                              <ol className="list-disc">
-                                <li>
-                                  <span className="font-bold">Draw: </span>
-                                  <span>
-                                    {t("allowed-signature-types-help.l1")}
-                                  </span>
-                                </li>
-                                <li>
-                                  <span className="font-bold">Type: </span>
-                                  <span>
-                                    {t("allowed-signature-types-help.l2")}
-                                  </span>
-                                </li>
-                                <li>
-                                  <span className="font-bold">Upload: </span>
-                                  <span>
-                                    {t("allowed-signature-types-help.l3")}
-                                  </span>
-                                </li>
-                                <li>
-                                  <span className="font-bold">Default: </span>
-                                  <span>
-                                    {t("allowed-signature-types-help.l4")}
-                                  </span>
-                                </li>
-                              </ol>
-                            </div>
-                          </div>
-                        </ReactTooltip>
-                      </label>
-                      <div className="ml-[7px] flex flex-col md:flex-row gap-[10px] mb-[0.7rem]">
-                        {signatureType.map((type, i) => (
-                          <div
-                            key={i}
-                            className="flex flex-row gap-[5px] items-center"
+                          <a
+                            data-tooltip-id="signtypes-tooltip"
+                            className="ml-1"
                           >
-                            <input
-                              className="mr-[2px] op-checkbox op-checkbox-xs"
-                              type="checkbox"
-                              name="signaturetype"
-                              onChange={() => handleCheckboxChange(i)}
-                              checked={type.enabled}
-                            />
+                            <sup>
+                              <i className="fa-light fa-question rounded-full border-[#33bbff] text-[#33bbff] text-[13px] border-[1px] py-[1.5px] px-[4px]"></i>
+                            </sup>
+                          </a>
+                          <ReactTooltip
+                            id="signtypes-tooltip"
+                            className="z-[999]"
+                          >
+                            <div className="max-w-[200px] md:max-w-[450px]">
+                              <p className="font-bold">
+                                {t("allowed-signature-types")}
+                              </p>
+                              <p>{t("allowed-signature-types-help.p1")}</p>
+                              <div className="p-[5px] ml-2">
+                                <ol className="list-disc">
+                                  <li>
+                                    <span className="font-bold">Draw: </span>
+                                    <span>
+                                      {t("allowed-signature-types-help.l1")}
+                                    </span>
+                                  </li>
+                                  <li>
+                                    <span className="font-bold">Type: </span>
+                                    <span>
+                                      {t("allowed-signature-types-help.l2")}
+                                    </span>
+                                  </li>
+                                  <li>
+                                    <span className="font-bold">Upload: </span>
+                                    <span>
+                                      {t("allowed-signature-types-help.l3")}
+                                    </span>
+                                  </li>
+                                  <li>
+                                    <span className="font-bold">Default: </span>
+                                    <span>
+                                      {t("allowed-signature-types-help.l4")}
+                                    </span>
+                                  </li>
+                                </ol>
+                              </div>
+                            </div>
+                          </ReactTooltip>
+                        </label>
+                        <div className="flex flex-col md:flex-row gap-3 mb-2">
+                          {signatureType.map((type, i) => (
                             <div
-                              className="text-[13px] font-medium hover:underline underline-offset-2 cursor-default capitalize"
-                              title={`Enabling this allow signers to ${type.name} signature`}
+                              key={i}
+                              className="flex flex-row gap-2 items-center"
                             >
-                              {type?.name === "typed" ? "type" : type?.name}
+                              <input
+                                className="op-checkbox op-checkbox-xs"
+                                type="checkbox"
+                                id={`signature-type-${type.name}`}
+                                name="signaturetype"
+                                onChange={() => handleCheckboxChange(i)}
+                                checked={type.enabled}
+                              />
+                              <label
+                                htmlFor={`signature-type-${type.name}`}
+                                className="text-sm font-medium text-base-content hover:underline underline-offset-2 cursor-pointer capitalize mb-0"
+                                title={`Enabling this allows signers to ${type.name} signature`}
+                              >
+                                {type?.name === "typed" ? "type" : type?.name}
+                              </label>
                             </div>
-                          </div>
-                        ))}
+                          ))}
+                        </div>
                       </div>
-                    </div>
-                    <div className="mb-[0.75rem]">
-                      <label className="mb-[0.7rem] text-[12px]">
-                        <span className="text-[14px] font-medium">
+
+                      {/* Notify on Signatures Section */}
+                      <div className="mb-6">
+                        <label className="text-[14px] mb-[0.7rem] font-medium">
                           {t("notify-on-signatures")}
-                        </span>
-                        <a data-tooltip-id="nos-tooltip" className="ml-1">
-                          <sup>
-                            <i className="fa-light fa-question rounded-full border-[#33bbff] text-[#33bbff] text-[13px] border-[1px] py-[1.5px] px-[4px]"></i>
-                          </sup>
-                        </a>
-                        <ReactTooltip id="nos-tooltip" className="z-[999]">
-                          <div className="max-w-[200px] md:max-w-[450px]">
-                            <p className="font-bold">
-                              {t("notify-on-signatures")}
-                            </p>
-                            <p>{t("notify-on-signatures-help.p1")}</p>
-                            <p>{t("notify-on-signatures-help.note")}</p>
+                          <a data-tooltip-id="nos-tooltip" className="ml-1">
+                            <sup>
+                              <i className="fa-light fa-question rounded-full border-[#33bbff] text-[#33bbff] text-[13px] border-[1px] py-[1.5px] px-[4px]"></i>
+                            </sup>
+                          </a>
+                          <ReactTooltip id="nos-tooltip" className="z-[999]">
+                            <div className="max-w-[200px] md:max-w-[450px]">
+                              <p className="font-bold">
+                                {t("notify-on-signatures")}
+                              </p>
+                              <p>{t("notify-on-signatures-help.p1")}</p>
+                              <p>{t("notify-on-signatures-help.note")}</p>
+                            </div>
+                          </ReactTooltip>
+                        </label>
+                        <div className="flex flex-row gap-6">
+                          <div className={"flex items-center gap-2"}>
+                            <input
+                              id="notify-yes"
+                              className="op-radio op-radio-xs"
+                              type="radio"
+                              onChange={() => handleNotifySignChange(true)}
+                              checked={isNotifyOnSignatures === true}
+                            />
+                            <label
+                              htmlFor="notify-yes"
+                              className="text-sm text-base-content cursor-pointer mb-0"
+                            >
+                              {t("yes")}
+                            </label>
                           </div>
-                        </ReactTooltip>
-                      </label>
-                      <div className="flex flex-col md:flex-row md:gap-4">
-                        <div className={"flex items-center gap-2 ml-2 mb-1"}>
-                          <input
-                            className="mr-[2px] op-radio op-radio-xs"
-                            type="radio"
-                            onChange={() => handleNotifySignChange(true)}
-                            checked={isNotifyOnSignatures === true}
-                          />
-                          <div className="text-[13px] cursor-default capitalize">
-                            {t("yes")}
-                          </div>
-                        </div>
-                        <div className={"flex items-center gap-2 ml-2 mb-1"}>
-                          <input
-                            className="mr-[2px] op-radio op-radio-xs"
-                            type="radio"
-                            onChange={() => handleNotifySignChange(false)}
-                            checked={isNotifyOnSignatures === false}
-                          />
-                          <div className="text-[13px] cursor-default capitalize">
-                            {t("no")}
+                          <div className={"flex items-center gap-2"}>
+                            <input
+                              id="notify-no"
+                              className="op-radio op-radio-xs"
+                              type="radio"
+                              onChange={() => handleNotifySignChange(false)}
+                              checked={isNotifyOnSignatures === false}
+                            />
+                            <label
+                              htmlFor="notify-no"
+                              className="text-sm text-base-content cursor-pointer mb-0"
+                            >
+                              {t("no")}
+                            </label>
                           </div>
                         </div>
                       </div>
-                    </div>
-                    <div className="mb-[0.75rem]">
-                      <TimezoneSelector
-                        timezone={timezone}
-                        setTimezone={setTimezone}
-                      />
-                    </div>
-                    <div className="mb-[0.75rem]">
-                      <DateFormatSelector
-                        timezone={timezone}
-                        dateFormat={dateFormat}
-                        is12HourTime={is12HourTime}
-                        setIs12HourTime={setIs12HourTime}
-                        setDateFormat={setDateFormat}
-                      />
-                    </div>
-                    <div className="mb-[0.75rem] text-[12px]">
-                      <label className="block mb-[0.7rem]">
-                        <span className="text-[14px] font-medium">
+
+                      {/* Send in Order Section */}
+                      <div className="mb-6">
+                        <label className="text-[14px] mb-[0.7rem] font-medium">
                           {t("send-in-order")}
-                        </span>
-                        <a
-                          data-tooltip-id="sendInOrder-tooltip"
-                          className="ml-1"
-                        >
-                          <sup>
-                            <i className="fa-light fa-question rounded-full border-[#33bbff] text-[#33bbff] text-[13px] border-[1px] py-[1.5px] px-[4px]"></i>
-                          </sup>
-                        </a>
-                        <ReactTooltip
-                          id="sendInOrder-tooltip"
-                          className="z-[999]"
-                        >
-                          <div className="max-w-[200px] md:max-w-[450px]">
-                            <p className="font-bold">{t("send-in-order")}</p>
-                            <p>{t("send-in-order-help.p1")}</p>
-                            <div className="p-[5px]">
-                              <ol className="list-disc">
-                                <li>
-                                  <span className="font-bold">
-                                    {t("yes")}:{" "}
-                                  </span>
-                                  <span>{t("send-in-order-help.p2")}</span>
-                                </li>
-                                <li>
-                                  <span className="font-bold">{t("no")}: </span>
-                                  <span>{t("send-in-order-help.p3")}</span>
-                                </li>
-                              </ol>
+                          <a
+                            data-tooltip-id="sendInOrder-tooltip"
+                            className="ml-1"
+                          >
+                            <sup>
+                              <i className="fa-light fa-question rounded-full border-[#33bbff] text-[#33bbff] text-[13px] border-[1px] py-[1.5px] px-[4px]"></i>
+                            </sup>
+                          </a>
+                          <ReactTooltip
+                            id="sendInOrder-tooltip"
+                            className="z-[999]"
+                          >
+                            <div className="max-w-[200px] md:max-w-[450px]">
+                              <p className="font-bold">{t("send-in-order")}</p>
+                              <p>{t("send-in-order-help.p1")}</p>
+                              <div className="p-[5px]">
+                                <ol className="list-disc">
+                                  <li>
+                                    <span className="font-bold">
+                                      {t("yes")}:{" "}
+                                    </span>
+                                    <span>{t("send-in-order-help.p2")}</span>
+                                  </li>
+                                  <li>
+                                    <span className="font-bold">
+                                      {t("no")}:{" "}
+                                    </span>
+                                    <span>{t("send-in-order-help.p3")}</span>
+                                  </li>
+                                </ol>
+                              </div>
+                              <p>{t("send-in-order-help.p4")}</p>
                             </div>
-                            <p>{t("send-in-order-help.p4")}</p>
+                          </ReactTooltip>
+                        </label>
+                        <div className="flex flex-row gap-6">
+                          <div className="flex items-center gap-2">
+                            <input
+                              id="order-yes"
+                              type="radio"
+                              value={true}
+                              className="op-radio op-radio-xs"
+                              name="SendinOrder"
+                              checked={sendinOrder}
+                              onChange={handleSendinOrderInput}
+                            />
+                            <label
+                              htmlFor="order-yes"
+                              className="text-sm text-base-content cursor-pointer mb-0"
+                            >
+                              {t("yes")}
+                            </label>
                           </div>
-                        </ReactTooltip>
-                      </label>
-                      <div className="flex flex-col md:flex-row md:gap-4">
-                        <div className="flex items-center gap-2 ml-2 mb-1">
-                          <input
-                            type="radio"
-                            value={true}
-                            className="op-radio op-radio-xs"
-                            name="SendinOrder"
-                            checked={sendinOrder}
-                            onChange={handleSendinOrderInput}
-                          />
-                          <div className="text-center">{t("yes")}</div>
-                        </div>
-                        <div className="flex items-center gap-2 ml-2 mb-1">
-                          <input
-                            type="radio"
-                            value={false}
-                            name="SendinOrder"
-                            className="op-radio op-radio-xs"
-                            checked={!sendinOrder}
-                            onChange={handleSendinOrderInput}
-                          />
-                          <div className="text-center">{t("no")}</div>
+                          <div className="flex items-center gap-2">
+                            <input
+                              id="order-no"
+                              type="radio"
+                              value={false}
+                              name="SendinOrder"
+                              className="op-radio op-radio-xs"
+                              checked={!sendinOrder}
+                              onChange={handleSendinOrderInput}
+                            />
+                            <label
+                              htmlFor="order-no"
+                              className="text-sm text-base-content cursor-pointer mb-0"
+                            >
+                              {t("no")}
+                            </label>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                    <div className="mb-[0.75rem] text-[12px]">
-                      <label className="block mb-[0.7rem]">
-                        <span className="text-[14px] font-medium">
+
+                      {/* Enable Tour Section */}
+                      <div className="mb-6">
+                        <label className="text-[14px] mb-[0.7rem] font-medium">
                           {t("enable-tour")}
-                        </span>
-                        <a
-                          data-tooltip-id="istourenabled-tooltip"
-                          className="ml-1"
-                        >
-                          <sup>
-                            <i className="fa-light fa-question rounded-full border-[#33bbff] text-[#33bbff] text-[13px] border-[1px] py-[1.5px] px-[4px]"></i>
-                          </sup>
-                        </a>
-                        <ReactTooltip
-                          id="istourenabled-tooltip"
-                          className="z-[999]"
-                        >
-                          <div className="max-w-[200px] md:max-w-[450px]">
-                            <p className="font-bold">{t("enable-tour")}</p>
-                            <div className="p-[5px]">
-                              <ol className="list-disc">
-                                <li>
-                                  <span className="font-bold">
-                                    {t("yes")}:{" "}
-                                  </span>
-                                  <span>{t("istourenabled-help.p1")}</span>
-                                </li>
-                                <li>
-                                  <span className="font-bold">{t("no")}: </span>
-                                  <span>{t("istourenabled-help.p2")}</span>
-                                </li>
-                              </ol>
+                          <a
+                            data-tooltip-id="istourenabled-tooltip"
+                            className="ml-1"
+                          >
+                            <sup>
+                              <i className="fa-light fa-question rounded-full border-[#33bbff] text-[#33bbff] text-[13px] border-[1px] py-[1.5px] px-[4px]"></i>
+                            </sup>
+                          </a>
+                          <ReactTooltip
+                            id="istourenabled-tooltip"
+                            className="z-[999]"
+                          >
+                            <div className="max-w-[200px] md:max-w-[450px]">
+                              <p className="font-bold">{t("enable-tour")}</p>
+                              <div className="p-[5px]">
+                                <ol className="list-disc">
+                                  <li>
+                                    <span className="font-bold">
+                                      {t("yes")}:{" "}
+                                    </span>
+                                    <span>{t("istourenabled-help.p1")}</span>
+                                  </li>
+                                  <li>
+                                    <span className="font-bold">
+                                      {t("no")}:{" "}
+                                    </span>
+                                    <span>{t("istourenabled-help.p2")}</span>
+                                  </li>
+                                </ol>
+                              </div>
+                              <p>
+                                {t("istourenabled-help.p3", {
+                                  appName: appName
+                                })}
+                              </p>
                             </div>
-                            <p>
-                              {t("istourenabled-help.p3", {
-                                appName: appName
-                              })}
-                            </p>
+                          </ReactTooltip>
+                        </label>
+                        <div className="flex flex-row gap-6">
+                          <div className="flex items-center gap-2">
+                            <input
+                              id="tour-yes"
+                              type="radio"
+                              value={true}
+                              className="op-radio op-radio-xs"
+                              name="IsTourEnabled"
+                              checked={isTourEnabled}
+                              onChange={handleTourInput}
+                            />
+                            <label
+                              htmlFor="tour-yes"
+                              className="text-sm text-base-content cursor-pointer mb-0"
+                            >
+                              {t("yes")}
+                            </label>
                           </div>
-                        </ReactTooltip>
-                      </label>
-                      <div className="flex flex-col md:flex-row md:gap-4">
-                        <div className="flex items-center gap-2 ml-2 mb-1">
-                          <input
-                            type="radio"
-                            value={true}
-                            className="op-radio op-radio-xs"
-                            name="IsTourEnabled"
-                            checked={isTourEnabled}
-                            onChange={handleTourInput}
-                          />
-                          <div className="text-center">{t("yes")}</div>
-                        </div>
-                        <div className="flex items-center gap-2 ml-2 mb-1">
-                          <input
-                            type="radio"
-                            value={false}
-                            name="IsTourEnabled"
-                            className="op-radio op-radio-xs"
-                            checked={!isTourEnabled}
-                            onChange={handleTourInput}
-                          />
-                          <div className="text-center">{t("no")}</div>
+                          <div className="flex items-center gap-2">
+                            <input
+                              id="tour-no"
+                              type="radio"
+                              value={false}
+                              name="IsTourEnabled"
+                              className="op-radio op-radio-xs"
+                              checked={!isTourEnabled}
+                              onChange={handleTourInput}
+                            />
+                            <label
+                              htmlFor="tour-no"
+                              className="text-sm text-base-content cursor-pointer mb-0"
+                            >
+                              {t("no")}
+                            </label>
+                          </div>
                         </div>
                       </div>
                     </div>
-                    <div className="mb-[0.75rem]">
+
+                    {/* Right Column - Timezone & Date Settings */}
+                    <div className="md:col-span-7 flex flex-col">
+                      <div className="mb-6">
+                        <TimezoneSelector
+                          timezone={timezone}
+                          setTimezone={setTimezone}
+                        />
+                      </div>
+
+                      <div className="mb-6">
+                        <DateFormatSelector
+                          timezone={timezone}
+                          dateFormat={dateFormat}
+                          is12HourTime={is12HourTime}
+                          setIs12HourTime={setIs12HourTime}
+                          setDateFormat={setDateFormat}
+                        />
+                      </div>
+                    </div>
+
+                    {/* Save Button - Full Width */}
+                    <div className="md:col-span-12 flex justify-start mt-2">
                       <button
                         className="op-btn op-btn-primary w-[110px]"
                         onClick={handleSave}
@@ -648,7 +705,7 @@ const Preferences = () => {
                     </div>
                   </div>
                 ) : (
-                  <div className="flex flex-col mx-4 mb-4">
+                  <div className="flex flex-col mb-4">
                     <div className="flex flex-col">
                       <h1 className="text-[14px] mb-[0.7rem] font-medium">
                         {t("request-email")}
@@ -660,7 +717,7 @@ const Preferences = () => {
                         >
                           <div className="text-lg font-normal">
                             <label className="text-sm">
-                              {t("subject")}
+                              {t("subject")}{" "}
                               <Tooltip
                                 id={"request-sub-tooltip"}
                                 message={`${t(
@@ -682,7 +739,7 @@ const Preferences = () => {
                           </div>
                           <div className="text-lg font-normal py-2">
                             <label className="text-sm mt-3">
-                              {t("body")}
+                              {t("body")}{" "}
                               <Tooltip
                                 id={"request-body-tooltip"}
                                 message={`${t(
@@ -730,7 +787,7 @@ const Preferences = () => {
                         >
                           <div className="text-lg font-normal">
                             <label className="text-sm">
-                              {t("subject")}
+                              {t("subject")}{" "}
                               <Tooltip
                                 id={"complete-sub-tooltip"}
                                 message={`${t(
@@ -752,7 +809,7 @@ const Preferences = () => {
                           </div>
                           <div className="text-lg font-normal py-2">
                             <label className="text-sm mt-3">
-                              {t("body")}
+                              {t("body")}{" "}
                               <Tooltip
                                 id={"complete-body-tooltip"}
                                 message={`${t(
