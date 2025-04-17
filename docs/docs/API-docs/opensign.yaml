@@ -3586,6 +3586,11 @@ components:
           type: boolean
           description: "true - Permits signers to add elements such as signatures, initials, stamps, or text on top of existing widgets in the document. false - Restricts signers from adding any additional elements to the document. This is the default value."
           example: false
+        file:
+          type: string
+          description: You may provide the base64 encoded PDF file to replace the existing one
+          format: base64
+          example: ""
     revokedocument:
       type: object
       properties:
@@ -3695,7 +3700,7 @@ components:
         file:
           type: string
           format: base64
-          example: base64 encoded file
+          example: base64 encoded pdf
         title:
           type: string
           format: string
@@ -3795,6 +3800,11 @@ components:
           type: boolean
           description: "true - Permits signers to add elements such as signatures, initials, stamps, or text on top of existing widgets in the document. false - Restricts signers from adding any additional elements to the document. This is the default value."
           example: false
+        file:
+          type: string
+          description: You may provide the base64 encoded PDF file to replace the existing one
+          format: base64
+          example: ""
     inline_response_404_7:
       type: object
       properties:
