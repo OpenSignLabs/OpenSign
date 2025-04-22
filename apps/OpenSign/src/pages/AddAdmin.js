@@ -16,8 +16,7 @@ import { useTranslation } from "react-i18next";
 import { emailRegex } from "../constant/const";
 
 const AddAdmin = () => {
-  const appName =
-    "OpenSign™";
+  const appName = "OpenSign™";
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -96,7 +95,7 @@ const AddAdmin = () => {
         setState({ loading: true });
         const userDetails = {
           name: name,
-          email: email,
+          email: email?.toLowerCase()?.replace(/\s/g, ""),
           phone: phone,
           company: company,
           jobTitle: jobTitle
@@ -106,10 +105,10 @@ const AddAdmin = () => {
           event.preventDefault();
           const user = new Parse.User();
           user.set("name", name);
-          user.set("email", email);
+          user.set("email", email?.toLowerCase()?.replace(/\s/g, ""));
           user.set("password", password);
           user.set("phone", phone);
-          user.set("username", email);
+          user.set("username", email?.toLowerCase()?.replace(/\s/g, ""));
           const userRes = await user.save();
           if (userRes) {
             const params = {
@@ -117,7 +116,7 @@ const AddAdmin = () => {
                 jobTitle: jobTitle,
                 company: company,
                 name: name,
-                email: email,
+                email: email?.toLowerCase()?.replace(/\s/g, ""),
                 phone: phone,
                 role: "contracts_Admin",
                 timezone: usertimezone
