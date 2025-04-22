@@ -24,7 +24,7 @@ const AddSigner = (props) => {
     if (savedUserDetails && addYourself) {
       setName(savedUserDetails.name);
       setPhone(savedUserDetails?.phone || "");
-      setEmail(savedUserDetails.email);
+      setEmail(savedUserDetails.email?.toLowerCase()?.replace(/\s/g, ""));
     }
   }, [addYourself]);
 
