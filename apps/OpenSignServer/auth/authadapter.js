@@ -11,7 +11,11 @@ export const SSOAuth = {
           Authorization: `Bearer ${authData.access_token}`,
         },
       });
-      if (response.data && response.data.id && response.data.email === authData.id) {
+      if (
+        response.data &&
+        response.data.id &&
+        response.data.email?.toLowerCase()?.replace(/\s/g, '') === authData.id
+      ) {
         return;
       }
       throw new Parse.Error(Parse.Error.OBJECT_NOT_FOUND, 'SSO auth is invalid for this user.');

@@ -75,156 +75,46 @@ const AddUser = (props) => {
         setIsFormLoader(false);
       } else {
         if (localStorage.getItem("TenantId")) {
+          const timezone = usertimezone;
           try {
-            const extUser = new Parse.Object("contracts_Users");
-            extUser.set("Name", formdata.name);
-            if (formdata.phone) {
-              extUser.set("Phone", formdata.phone);
-            }
-            extUser.set("Email", formdata.email);
-            extUser.set("UserRole", `contracts_${formdata.role}`);
-            if (formdata?.team) {
-              extUser.set("TeamIds", [
-                {
-                  __type: "Pointer",
-                  className: "contracts_Teams",
-                  objectId: formdata.team
-                }
-              ]);
-            }
-            if (localUser && localUser.OrganizationId) {
-              extUser.set("OrganizationId", {
-                __type: "Pointer",
-                className: "contracts_Organizations",
-                objectId: localUser.OrganizationId.objectId
-              });
-            }
-            if (localUser && localUser.Company) {
-              extUser.set("Company", localUser.Company);
-            }
-
-            if (localStorage.getItem("TenantId")) {
-              extUser.set("TenantId", {
-                __type: "Pointer",
-                className: "partners_Tenant",
-                objectId: localStorage.getItem("TenantId")
-              });
-            }
-            const timezone = usertimezone;
-            if (timezone) {
-              extUser.set("Timezone", timezone);
-            }
-            try {
-              const _users = Parse.Object.extend("User");
-              const _user = new _users();
-              _user.set("name", formdata.name);
-              _user.set("username", formdata.email);
-              _user.set("email", formdata.email);
-              _user.set("password", formdata.password);
-              if (formdata.phone) {
-                _user.set("phone", formdata.phone);
+            const params = {
+              name: formdata.name,
+              email: formdata.email,
+              phone: formdata.phone,
+              password: formdata.password,
+              role: formdata.role,
+              team: formdata.team,
+              timezone: timezone,
+              tenantId: localStorage.getItem("TenantId"),
+              organization: {
+                objectId: localUser?.OrganizationId?.objectId,
+                company: localUser?.Company
               }
-
-              const user = await _user.save();
-              if (user) {
-                const currentUser = Parse.User.current();
-                extUser.set(
-                  "CreatedBy",
-                  Parse.User.createWithoutData(currentUser.id)
+            };
+            const res = await Parse.Cloud.run("adduser", params);
+            const parseData = JSON.parse(JSON.stringify(res));
+            console.log("parseData ", parseData);
+            if (props.closePopup) {
+              props.closePopup();
+            }
+            if (props.handleUserData) {
+              if (formdata?.team) {
+                const team = teamList.find((x) => x.objectId === formdata.team);
+                parseData.TeamIds = parseData.TeamIds.map((y) =>
+                  y.objectId === team.objectId ? team : y
                 );
-
-                extUser.set("UserId", user);
-                const acl = new Parse.ACL();
-                acl.setPublicReadAccess(true);
-                acl.setPublicWriteAccess(true);
-                acl.setReadAccess(currentUser.id, true);
-                acl.setWriteAccess(currentUser.id, true);
-
-                extUser.setACL(acl);
-
-                const res = await extUser.save();
-
-                const parseData = JSON.parse(JSON.stringify(res));
-
-                if (props.closePopup) {
-                  props.closePopup();
-                }
-                if (props.handleUserData) {
-                  if (formdata?.team) {
-                    const team = teamList.find(
-                      (x) => x.objectId === formdata.team
-                    );
-                    parseData.TeamIds = parseData.TeamIds.map((y) =>
-                      y.objectId === team.objectId ? team : y
-                    );
-                  }
-                  props.handleUserData(parseData);
-                }
-
-                setIsFormLoader(false);
-                setFormdata({
-                  name: "",
-                  email: "",
-                  phone: "",
-                  team: "",
-                  role: ""
-                });
-                props.showAlert("success", t("user-created-successfully"));
               }
-            } catch (err) {
-              console.log("err ", err);
-              if (err.code === 202) {
-                const params = { email: formdata.email };
-                const userRes = await Parse.Cloud.run("getUserId", params);
-                const currentUser = Parse.User.current();
-                extUser.set(
-                  "CreatedBy",
-                  Parse.User.createWithoutData(currentUser.id)
-                );
-
-                extUser.set("UserId", {
-                  __type: "Pointer",
-                  className: "_User",
-                  objectId: userRes.id
-                });
-                const acl = new Parse.ACL();
-                acl.setPublicReadAccess(true);
-                acl.setPublicWriteAccess(true);
-                acl.setReadAccess(currentUser.id, true);
-                acl.setWriteAccess(currentUser.id, true);
-
-                extUser.setACL(acl);
-                const res = await extUser.save();
-
-                const parseData = JSON.parse(JSON.stringify(res));
-                if (props.closePopup) {
-                  props.closePopup();
-                }
-                if (props.handleUserData) {
-                  if (formdata?.team) {
-                    const team = teamList.find(
-                      (x) => x.objectId === formdata.team
-                    );
-                    parseData.TeamIds = parseData.TeamIds.map((y) =>
-                      y.objectId === team.objectId ? team : y
-                    );
-                  }
-                  props.handleUserData(parseData);
-                }
-                setIsFormLoader(false);
-                setFormdata({
-                  name: "",
-                  email: "",
-                  phone: "",
-                  team: "",
-                  role: ""
-                });
-                props.showAlert("success", t("user-created-successfully"));
-              } else {
-                setIsFormLoader(false);
-                props.showAlert("danger", t("something-went-wrong-mssg"));
-              }
+              props.handleUserData(parseData);
             }
+            setIsFormLoader(false);
+            setFormdata({
+              name: "",
+              email: "",
+              phone: "",
+              team: "",
+              role: ""
+            });
+            props.showAlert("success", t("user-created-successfully"));
           } catch (err) {
             console.log("err", err);
             setIsFormLoader(false);
