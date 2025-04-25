@@ -72,7 +72,7 @@ export default async function generateCertificatebydocId(req) {
         location: 'n/a',
         name: eSignName,
         contactInfo: eSigncontact,
-        signatureLength: 15000,
+        signatureLength: 16000,
       });
       const pdfWithPlaceholderBytes = await certificatePdf.save();
       const CertificateBuffer = Buffer.from(pdfWithPlaceholderBytes);

@@ -5,7 +5,6 @@ export default async function getDrive(request) {
   const appId = process.env.APP_ID;
   const limit = request.params.limit;
   const skip = request.params.skip;
-  const classUrl = serverUrl + '/classes/contracts_Document';
   const docId = request.params.docId;
   try {
     const userRes = await axios.get(serverUrl + '/users/me', {
