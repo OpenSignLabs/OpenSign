@@ -50,7 +50,7 @@ const Preferences = () => {
   const [isTourEnabled, setIsTourEnabled] = useState(false);
   const [dateFormat, setDateFormat] = useState("MM/DD/YYYY");
   const [is12HourTime, setIs12HourTime] = useState(false);
-
+  const [isLTVEnabled, setIsLTVEnabled] = useState(false);
   useEffect(() => {
     fetchSignType();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -110,6 +110,9 @@ const Preferences = () => {
         const is12Hr =
           _getUser?.Is12HourTime !== undefined ? _getUser?.Is12HourTime : false;
         setIs12HourTime(is12Hr);
+        const isLTVEnabled =
+          _getUser?.IsLTVEnabled !== undefined ? _getUser?.IsLTVEnabled : false;
+        setIsLTVEnabled(isLTVEnabled);
       }
     } catch (err) {
       console.log("err while getting user details", err);
@@ -167,7 +170,8 @@ const Preferences = () => {
           SendinOrder: sendinOrder,
           IsTourEnabled: isTourEnabled,
           DateFormat: dateFormat,
-          Is12HourTime: is12HourTime
+          Is12HourTime: is12HourTime,
+          IsLTVEnabled: isLTVEnabled
         };
         const updateRes = await Parse.Cloud.run("updatepreferences", params);
         if (updateRes) {
@@ -673,7 +677,6 @@ const Preferences = () => {
                         </div>
                       </div>
                     </div>
-
                     {/* Right Column - Timezone & Date Settings */}
                     <div className="md:col-span-7 flex flex-col">
                       <div className="mb-6">
@@ -693,7 +696,6 @@ const Preferences = () => {
                         />
                       </div>
                     </div>
-
                     {/* Save Button - Full Width */}
                     <div className="md:col-span-12 flex justify-start mt-2">
                       <button
@@ -704,7 +706,7 @@ const Preferences = () => {
                       </button>
                     </div>
                   </div>
-                ) : (
+                ) : activeTab === 1 ? (
                   <div className="flex flex-col mb-4">
                     <div className="flex flex-col">
                       <h1 className="text-[14px] mb-[0.7rem] font-medium">
@@ -849,6 +851,8 @@ const Preferences = () => {
                       </div>
                     </div>
                   </div>
+                ) : (
+                  <></>
                 )}
               </div>
             </div>
