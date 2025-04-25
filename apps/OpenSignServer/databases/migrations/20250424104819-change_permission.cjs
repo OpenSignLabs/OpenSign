@@ -3,17 +3,6 @@
  * @param {Parse} Parse
  */
 exports.up = async Parse => {
-  const defaultotp = new Parse.Schema('defaultdata_Otp');
-  defaultotp.setCLP({
-    get: {},
-    find: {},
-    count: {},
-    create: {},
-    update: {},
-    delete: {},
-    addField: {},
-  });
-  await defaultotp.update();
   const schema = new Parse.Schema('contracts_Signature');
   schema.setCLP({
     get: { '*': true },
@@ -120,17 +109,6 @@ exports.up = async Parse => {
  * @param {Parse} Parse
  */
 exports.down = async Parse => {
-  const defaultotp = new Parse.Schema('defaultdata_Otp');
-  defaultotp.setCLP({
-    get: { '*': true },
-    find: { '*': true },
-    count: { '*': true },
-    create: { '*': true },
-    update: { '*': true },
-    delete: { '*': true },
-    addField: { '*': true },
-  });
-  await defaultotp.update();
   const schema = new Parse.Schema('contracts_Signature');
   schema.setCLP({
     get: { '*': true },
