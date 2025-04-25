@@ -54,6 +54,9 @@ export default async function updatePreferences(request) {
         if (request.params.Is12HourTime !== undefined) {
           newOrg.set('Is12HourTime', request.params.Is12HourTime);
         }
+        if (request.params.IsLTVEnabled !== undefined) {
+          newOrg.set('IsLTVEnabled', request.params.IsLTVEnabled);
+        }
         const updateUserRes = await newOrg.save(null, { useMasterKey: true });
         if (updateUserRes) {
           const _updateUserRes = JSON.parse(JSON.stringify(updateUserRes));

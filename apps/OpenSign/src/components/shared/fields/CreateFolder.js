@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Parse from "parse";
 import Alert from "../../../primitives/Alert";
 import Loader from "../../../primitives/Loader";
 import { useTranslation } from "react-i18next";
 
-const CreateFolder = ({ parentFolderId, onSuccess, folderCls }) => {
+const CreateFolder = ({ parentFolderId, onSuccess, folderCls, onBack }) => {
   const folderPtr = {
     __type: "Pointer",
     className: folderCls,
@@ -12,41 +12,11 @@ const CreateFolder = ({ parentFolderId, onSuccess, folderCls }) => {
   };
   const { t } = useTranslation();
   const [name, setName] = useState("");
-  const [folderList, setFolderList] = useState([]);
-  const [isAlert, setIsAlert] = useState(false);
   const [isLoader, setIsLoader] = useState(false);
-  const [selectedParent, setSelectedParent] = useState();
   const [alert, setAlert] = useState({ type: "info", message: "" });
-  useEffect(() => {
-    fetchFolder();
-    // eslint-disable-next-line
-  }, []);
-
-  const fetchFolder = async () => {
-    try {
-      const FolderQuery = new Parse.Query(folderCls);
-      if (parentFolderId) {
-        FolderQuery.equalTo("Folder", folderPtr);
-        FolderQuery.equalTo("Type", "Folder");
-        FolderQuery.notEqualTo("IsArchive", true);
-        FolderQuery.equalTo("CreatedBy", Parse.User.current());
-      } else {
-        FolderQuery.doesNotExist("Folder");
-        FolderQuery.equalTo("Type", "Folder");
-        FolderQuery.notEqualTo("IsArchive", true);
-        FolderQuery.equalTo("CreatedBy", Parse.User.current());
-      }
-
-      const res = await FolderQuery.find();
-      if (res) {
-        const result = JSON.parse(JSON.stringify(res));
-        if (result) {
-          setFolderList(result);
-        }
-      }
-    } catch (error) {
-      console.log("Err ", error);
-    }
+  const showToast = (type, msg) => {
+    setAlert({ type: type, message: msg });
+    setTimeout(() => setAlert({ type: type, message: "" }), 1000);
   };
   const handleCreateFolder = async (event) => {
     event.preventDefault();
@@ -62,60 +32,32 @@ const CreateFolder = ({ parentFolderId, onSuccess, folderCls }) => {
       }
       const templExist = await exsitQuery.first();
       if (templExist) {
-        setAlert({ type: "danger", message: t("folder-already-exist") });
-        setIsAlert(true);
-        setTimeout(() => {
-          setIsAlert(false);
-        }, 1000);
+        showToast("danger", t("folder-already-exist"));
       } else {
         const template = new Parse.Object(folderCls);
         template.set("Name", name);
         template.set("Type", "Folder");
-
-        if (selectedParent) {
-          template.set("Folder", {
-            __type: "Pointer",
-            className: folderCls,
-            objectId: selectedParent
-          });
-        } else if (parentFolderId) {
+        if (parentFolderId) {
           template.set("Folder", folderPtr);
         }
         template.set("CreatedBy", Parse.User.createWithoutData(currentUser.id));
         const res = await template.save();
         if (res) {
           handleLoader(false);
-          setAlert({
-            type: "success",
-            message: t("folder-created-successfully")
-          });
-          setIsAlert(true);
-          setTimeout(() => {
-            setIsAlert(false);
-          }, 1000);
-          if (onSuccess) {
-            onSuccess(res);
-          }
+          showToast("success", t("folder-created-successfully"));
+          onSuccess && onSuccess(res?.toJSON());
         }
       }
     } else {
       handleLoader(false);
-      setAlert({ type: "info", message: t("fill-folder-name") });
-      setIsAlert(true);
-      setTimeout(() => {
-        setIsAlert(false);
-      }, 1000);
+      showToast("info", t("fill-folder-name"));
     }
   };
-  const handleOptions = (e) => {
-    setSelectedParent(e.target.value);
-  };
-  const handleLoader = (status) => {
-    setIsLoader(status);
-  };
+  const handleLoader = (status) => setIsLoader(status);
+
   return (
     <div>
-      {isAlert && <Alert type={alert.type}>{alert.message}</Alert>}
+      {alert.message && <Alert type={alert.type}>{alert.message}</Alert>}
       <div id="createFolder" className="relative">
         {isLoader && (
           <div className="absolute h-full w-full flex justify-center items-center">
@@ -139,31 +81,25 @@ const CreateFolder = ({ parentFolderId, onSuccess, folderCls }) => {
             required
           />
         </div>
-        <div className="text-xs mt-2">
-          <label className="block">{t("parent-folder")}</label>
-          <select
-            value={selectedParent}
-            onChange={handleOptions}
-            className="op-select op-select-bordered op-select-sm focus:outline-none hover:border-base-content w-full text-xs"
-          >
-            <option>select</option>
-            {folderList.length > 0 &&
-              folderList.map((x) => (
-                <option key={x.objectId} value={x.objectId}>
-                  {x.Name}
-                </option>
-              ))}
-          </select>
-        </div>
-        <div>
+        <div className="flex justify-between items-center py-[1rem] ">
           <button
             onClick={handleCreateFolder}
             disabled={isLoader}
-            className="op-btn op-btn-primary op-btn-sm mt-3"
+            className="op-btn op-btn-primary op-btn-sm"
           >
             <i className="fa-light fa-plus"></i>
             <span>{t("create")}</span>
           </button>
+          {onBack && (
+            <div
+              className="op-btn op-btn-seconday op-btn-sm"
+              title={t("back")}
+              onClick={() => onBack()}
+            >
+              <i className="fa-light fa-arrow-left" aria-hidden="true"></i>
+              <span className="text-xs">{t("back")}</span>
+            </div>
+          )}
         </div>
       </div>
     </div>
