@@ -270,7 +270,7 @@ async function sendMailsaveCertifcate(doc, pfx, isCustomMail, mailProvider, file
     location: 'n/a',
     name: eSignName,
     contactInfo: eSigncontact,
-    signatureLength: 15000,
+    signatureLength: 16000,
   });
   const pdfWithPlaceholderBytes = await certificatePdf.save();
   const CertificateBuffer = Buffer.from(pdfWithPlaceholderBytes);
@@ -408,7 +408,7 @@ async function PDF(req) {
           location: 'n/a',
           name: eSignName,
           contactInfo: eSigncontact,
-          signatureLength: 15000,
+          signatureLength: 16000,
         });
         const pdfWithPlaceholderBytes = await pdfDoc.save();
         PdfBuffer = Buffer.from(pdfWithPlaceholderBytes);

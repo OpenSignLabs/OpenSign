@@ -168,21 +168,6 @@
 }
 
 
-.sort {
-  padding: 8px 15px;
-  margin: 5px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-}
-
-.sort:hover {
-  box-shadow: 0 2px 4px rgba(168, 204, 206, 0.1);
-  background-color: var(--mauve-3);
-  border-radius: 2px;
-}
-
 .fileName {
   display: inline-block;
   width: 100px;
@@ -284,17 +269,5 @@ a {
   100% {
     opacity: 1;
     transform: translateX(0);
-  }
-}
-
-@media (min-width: 310px) and (max-width: 550px) {
-  .sort {
-    padding: 2px;
-  }
-}
-
-@media screen and (max-width: 309px) {
-  .sort {
-    padding: 2px;
   }
 }

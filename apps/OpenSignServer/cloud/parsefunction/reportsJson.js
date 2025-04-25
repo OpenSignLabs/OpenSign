@@ -96,6 +96,10 @@ export default function reportJson(id, userId) {
           'Placeholders',
           'SignedUrl',
           'TemplateId',
+          'RequestBody',
+          'RequestSubject',
+          'ExtUserPtr.TenantId.RequestBody',
+          'ExtUserPtr.TenantId.RequestSubject',
         ],
       };
     // completed documents report
@@ -227,6 +231,10 @@ export default function reportJson(id, userId) {
           'Placeholders',
           'SignedUrl',
           'TemplateId',
+          'RequestBody',
+          'RequestSubject',
+          'ExtUserPtr.TenantId.RequestBody',
+          'ExtUserPtr.TenantId.RequestSubject',
         ],
       };
     //  Recent signature requests report show on dashboard
