@@ -58,6 +58,9 @@ function Opensigndrive() {
   const [isDontShow, setIsDontShow] = useState(false);
   const [tourData, setTourData] = useState();
   const [showTourFirstTIme, setShowTourFirstTime] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
+  const debounceTimer = useRef(null);
   const orderName = {
     Ascending: "Ascending",
     Descending: "Descending",
@@ -209,9 +212,7 @@ function Opensigndrive() {
       });
     } finally {
       setLoading(false);
-      setIsLoading({
-        isLoad: false
-      });
+      setIsLoading({ isLoad: false });
     }
   };
 
@@ -219,15 +220,16 @@ function Opensigndrive() {
   const handleScroll = () => {
     //get document of render openSign-drive component using id
     const documentList = document.getElementById("renderList");
-    //documentList.clientHeight property returns the height of an element's content area, including padding but not including borders, margins, or scrollbars.
-    //documentList.scrollHeight property returns the entire height of an element,including the parts that are not visible due to overflow..
-    // documentList.scrollTop property show height of element, how much the content has been scrolled from the top.
+    const { scrollTop, clientHeight, scrollHeight } = documentList;
+    const scrolled = Math.ceil(scrollTop + clientHeight); // ceil return e.g 3.14 => 4
+    const totalHeight = Math.floor(scrollHeight); // floor return e.g 3.14 => 3
+
+    // clientHeight property returns the height of an element's content area, including padding but not including borders, margins, or scrollbars.
+    // scrollHeight property returns the entire height of an element,including the parts that are not visible due to overflow..
+    // scrollTop property show height of element, how much the content has been scrolled from the top.
     // When the sum of scrollTop and clientHeight is equal to scrollHeight, it means that the user has scrolled to the bottom of the div.
-    if (
-      documentList &&
-      documentList.scrollTop + documentList.clientHeight >=
-        documentList.scrollHeight
-    ) {
+
+    if (scrolled >= totalHeight) {
       //disableLoading is used disable initial loader
       const disableLoading = true;
       // If the fetched data length is less than the limit, it means there's no more data to fetch
@@ -252,11 +254,7 @@ function Opensigndrive() {
   const handleRoute = (index, folderData) => {
     setSkip(0);
     // after onclick on route filter route from that index
-    const updateFolderName = folderName.filter((x, i) => {
-      if (i <= index) {
-        return x;
-      }
-    });
+    const updateFolderName = folderName.filter((_, i) => i <= index);
     setFolderName(updateFolderName);
     //get route details after onclick path of folder name
     const getCurrentId = folderData[index];
@@ -517,6 +515,34 @@ function Opensigndrive() {
       setIsTour(true);
     }
   }
+
+  const handleSearchChange = async (e) => {
+    const name = e.target.value.toLowerCase();
+    setSearchTerm(name);
+    // Clear previous timer
+    if (debounceTimer.current) {
+      clearTimeout(debounceTimer.current);
+    }
+    // Start new debounce timer
+    debounceTimer.current = setTimeout(async () => {
+      try {
+        const res = await Parse.Cloud.run("filterdocs", { searchTerm: name });
+        setPdfData(JSON.parse(JSON.stringify(res)));
+      } catch (err) {
+        console.error("Search error:", err);
+        alert(`Error: ${err.message}`);
+      }
+    }, 300);
+  };
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (debounceTimer.current) {
+        clearTimeout(debounceTimer.current);
+      }
+    };
+  }, []);
+
   return (
     <div className="bg-base-100 text-base-content rounded-box w-full shadow-md">
       <Title title={`${drivename} Drive`} drive={true} />
@@ -524,22 +550,14 @@ function Opensigndrive() {
         isOpen={isAlert.isShow}
         title={t("alert")}
         handleClose={() => {
-          setIsAlert({
-            isShow: false,
-            alertMessage: ""
-          });
+          setIsAlert({ isShow: false, alertMessage: "" });
         }}
       >
         <div className="h-full p-[20px] pb-[15px]">
           <p>{isAlert.alertMessage}</p>
           <div className="h-[1px] bg-[#9f9f9f] w-full my-[15px]"></div>
           <button
-            onClick={() =>
-              setIsAlert({
-                isShow: false,
-                alertMessage: ""
-              })
-            }
+            onClick={() => setIsAlert({ isShow: false, alertMessage: "" })}
             type="button"
             className="op-btn op-btn-neutral op-btn-sm"
           >
@@ -608,7 +626,7 @@ function Opensigndrive() {
         </div>
       ) : (
         <>
-          <div className="flex flex-row justify-between items-center px-[15px] md:px-[25px] pt-[20px]">
+          <div className="flex flex-row justify-between items-center px-[15px] md:px-[25px] pt-2 md:pt-[20px]">
             {tourData && (
               <Tour
                 onRequestClose={closeTour}
@@ -627,24 +645,44 @@ function Opensigndrive() {
             >
               {handleFolderTab(folderName)}
             </div>
-            <div className="flex flex-row items-center">
+            <div className="flex flex-row items-center justify-center md:gap-1">
+              {/* Desktop search input */}
+              <div className="hidden md:block p-2">
+                <input
+                  type="search"
+                  value={searchTerm}
+                  onChange={handleSearchChange}
+                  placeholder="Search documents…"
+                  className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-64 text-xs"
+                />
+              </div>
+              {/* Mobile search toggle */}
+              <button
+                className="md:hidden p-2 flex justify-center items-center focus:outline-none rounded-md hover:bg-gray-200 text-[18px]"
+                aria-label="Search"
+                onClick={() => setMobileSearchOpen((open) => !open)}
+              >
+                <i
+                  style={{ color: `${iconColor}` }}
+                  className="fa-solid fa-magnifying-glass"
+                ></i>
+              </button>
               <div
                 id="folder-menu"
                 className={`${
                   isOptions ? "dropdown show dropDownStyle" : "dropdown"
-                } hidden md:block`}
+                } hidden md:block cursor-pointer hover:bg-gray-200 p-2 rounded-md`}
                 onClick={() => setIsOptions(!isOptions)}
               >
-                <div className="sort" data-tut="reactourSecond">
+                <div data-tut="reactourSecond">
                   <i
-                    className="fa-light fa-plus-square"
+                    className="fa-light fa-plus-square text-[24px]"
                     aria-hidden="true"
-                    style={{ fontSize: "25px", color: `${iconColor}` }}
+                    style={{ color: `${iconColor}` }}
                   ></i>
                 </div>
                 <div
                   className={`${isOptions ? "block" : "hidden"} ${dropdowncss}`}
-                  // className={isOptions ? "dropdown-menu show" : "dropdown-menu"}
                   aria-labelledby="dropdownMenuButton"
                   aria-expanded={isOptions ? "true" : "false"}
                 >
@@ -683,11 +721,11 @@ function Opensigndrive() {
               >
                 <div
                   data-tut="reactourThird"
-                  className="sort "
+                  className="cursor-pointer flex flex-row items-center justify-center p-2 hover:bg-gray-200 rounded-md"
                   data-toggle="dropdown"
                 >
                   <i
-                    className="fa-light fa-sort-amount-asc mr-[5px] text-[14px]"
+                    className="fa-light fa-sort-amount-asc mr-[5px] text-[19px]"
                     aria-hidden="true"
                     style={{ color: `${iconColor}` }}
                   ></i>
@@ -702,69 +740,59 @@ function Opensigndrive() {
                   aria-labelledby="dropdownMenuButton"
                   aria-expanded={isShowSort ? "true" : "false"}
                 >
-                  {sortingValue.map((value, ind) => {
-                    return (
-                      <span
-                        key={ind}
-                        onClick={() => {
-                          setSelectedSort(value);
-                          sortingData(value, null, pdfData);
-                        }}
-                        className="dropdown-item text-[10px] md:text-[13px]"
-                        style={{
-                          paddingLeft: selectedSort !== value && "31px"
-                        }}
-                      >
-                        {selectedSort === value && (
-                          <i
-                            className="fa-light fa-check"
-                            aria-hidden="true"
-                          ></i>
-                        )}
-                        <span className="ml-[5px]">
-                          {t(`sort-order.${value}`)}
-                        </span>
+                  {sortingValue.map((value, ind) => (
+                    <span
+                      key={ind}
+                      onClick={() => {
+                        setSelectedSort(value);
+                        sortingData(value, null, pdfData);
+                      }}
+                      className="dropdown-item text-[10px] md:text-[13px]"
+                      style={{
+                        paddingLeft: selectedSort !== value && "31px"
+                      }}
+                    >
+                      {selectedSort === value && (
+                        <i className="fa-light fa-check" aria-hidden="true"></i>
+                      )}
+                      <span className="ml-[5px]">
+                        {t(`sort-order.${value}`)}
                       </span>
-                    );
-                  })}
+                    </span>
+                  ))}
                   <hr className="hrStyle" />
-                  {sortOrder.map((order, ind) => {
-                    return (
-                      <span
-                        key={ind}
-                        onClick={() => {
-                          setSortingOrder(order);
-                          sortingData(null, order, pdfData);
-                        }}
-                        className="dropdown-item text-[10px] md:text-[13px]"
-                        style={{
-                          paddingLeft: sortingOrder !== order && "31px"
-                        }}
-                      >
-                        {sortingOrder === order && (
-                          <i
-                            className="fa-light fa-check"
-                            aria-hidden="true"
-                          ></i>
-                        )}
-                        <span className="ml-[5px]">
-                          {t(`sort-order.${order}`)}
-                        </span>
+                  {sortOrder.map((order, ind) => (
+                    <span
+                      key={ind}
+                      onClick={() => {
+                        setSortingOrder(order);
+                        sortingData(null, order, pdfData);
+                      }}
+                      className="dropdown-item text-[10px] md:text-[13px]"
+                      style={{
+                        paddingLeft: sortingOrder !== order && "31px"
+                      }}
+                    >
+                      {sortingOrder === order && (
+                        <i className="fa-light fa-check" aria-hidden="true"></i>
+                      )}
+                      <span className="ml-[5px]">
+                        {t(`sort-order.${order}`)}
                       </span>
-                    );
-                  })}
+                    </span>
+                  ))}
                 </div>
               </div>
               <div
+                className="cursor-pointer p-2 hover:bg-gray-200 rounded-md flex justify-center items-center"
                 data-tut="reactourForth"
-                className="sort"
                 onClick={() => setIsList(!isList)}
               >
                 <i
-                  className={
+                  className={`${
                     isList ? "fa-light fa-th-large" : "fa-light fa-list"
-                  }
-                  style={{ fontSize: "24px", color: `${iconColor}` }}
+                  } text-[20px]`}
+                  style={{ color: `${iconColor}` }}
                   aria-hidden="true"
                 ></i>
               </div>
@@ -776,7 +804,7 @@ function Opensigndrive() {
                 onClick={() => setIsOptions(!isOptions)}
               >
                 <div
-                  className="p-[19px] my-2 flex items-center justify-center cursor-pointer hover:bg-[var(--mauve-3)] rounded-[2px] shadow-[0_2px_4px_rgba(168,204,206,0.1)]"
+                  className="p-3 flex items-center justify-center cursor-pointer rounded-md hover:bg-gray-200"
                   data-tut="reactourSecond"
                 >
                   <i
@@ -820,7 +848,18 @@ function Opensigndrive() {
               </div>
             </div>
           </div>
-
+          {/* Mobile search overlay */}
+          {mobileSearchOpen && (
+            <div className="top-full left-0 w-full bg-white px-4 py-2 shadow-md md:hidden">
+              <input
+                type="search"
+                value={searchTerm}
+                onChange={handleSearchChange}
+                placeholder="Search documents…"
+                className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
+              />
+            </div>
+          )}
           {pdfData && pdfData.length === 0 ? (
             <div className="flex justify-center items-center w-full h-[50vh]">
               <span className="text-base-content font-bold">

@@ -10,6 +10,8 @@ import { useTranslation } from "react-i18next";
 import SelectLanguage from "../components/pdf/SelectLanguage";
 import LoaderWithMsg from "../primitives/LoaderWithMsg";
 import Title from "../components/Title";
+import ModalUi from "../primitives/ModalUi";
+import Loader from "../primitives/Loader";
 
 function GuestLogin() {
   const { t, i18n } = useTranslation();
@@ -30,6 +32,7 @@ function GuestLogin() {
   const [contactId, setContactId] = useState(contactBookId);
   const [sendmail, setSendmail] = useState();
   const [contact, setContact] = useState({ name: "", phone: "", email: "" });
+
   const navigateToDoc = async (docId, contactId) => {
     try {
       const docDetails = await Parse.Cloud.run("getDocument", {
@@ -53,6 +56,7 @@ function GuestLogin() {
       return false;
     }
   };
+
   useEffect(() => {
     handleServerUrl();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -124,6 +128,7 @@ function GuestLogin() {
       }
     } catch (error) {
       alert(t("something-went-wrong-mssg"));
+      setLoading(false);
     }
   };
 
@@ -188,11 +193,13 @@ function GuestLogin() {
         }
       } catch (error) {
         console.log("err ", error);
+        setLoading(false);
       }
     } else {
       alert(t("enter-otp-alert"));
     }
   };
+
   const handleUserData = async (e) => {
     e.preventDefault();
     if (!emailRegex.test(contact.email?.toLowerCase()?.replace(/\s/g, ""))) {
@@ -221,6 +228,7 @@ function GuestLogin() {
       }
     }
   };
+
   const handleInputChange = (e) => {
     if (e.target.name === "email") {
       setContact((prev) => ({
@@ -231,9 +239,56 @@ function GuestLogin() {
       setContact((prev) => ({ ...prev, [e.target.name]: e.target.value }));
     }
   };
+
   return (
     <div>
       <Title title="Request Sign" />
+
+      {/* OTP Verification Modal */}
+      {EnterOTP && (
+        <ModalUi
+          isOpen
+          title={t("otp-verification")}
+          handleClose={() => setEnterOtp(false)}
+        >
+          {loading ? (
+            <div className="h-[150px] flex justify-center items-center">
+              <Loader />
+            </div>
+          ) : (
+            <form onSubmit={(e) => VerifyOTP(e)}>
+              <div className="px-6 py-3 text-base-content">
+                <label className="mb-2">{t("enter-otp")}</label>
+                <input
+                  onInvalid={(e) =>
+                    e.target.setCustomValidity(t("input-required"))
+                  }
+                  onInput={(e) => e.target.setCustomValidity("")}
+                  required
+                  type="tel"
+                  pattern="[0-9]{4}"
+                  className="w-full op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content text-xs"
+                  placeholder={t("otp-placeholder")}
+                  value={OTP}
+                  onChange={(e) => setOTP(e.target.value)}
+                />
+              </div>
+              <div className="px-6 mb-3">
+                <button type="submit" className="op-btn op-btn-primary">
+                  {t("verify")}
+                </button>
+                <button
+                  className="op-btn op-btn-secondary ml-2"
+                  onClick={(e) => handleSendOTPBtn(e)}
+                >
+                  {t("resend")}
+                </button>
+              </div>
+            </form>
+          )}
+        </ModalUi>
+      )}
+
       {isLoading.isLoad ? (
         <LoaderWithMsg isLoading={isLoading} />
       ) : (
@@ -249,63 +304,34 @@ function GuestLogin() {
               )}
             </div>
             {contactId ? (
-              <>
-                {!EnterOTP ? (
-                  <div className="w-full md:w-[50%] text-base-content">
-                    <h1 className="text-2xl md:text-[30px]">{t("welcome")}</h1>
-                    <legend className="text-[12px] text-[#878787] mt-2 mb-1">
-                      {t("get-otp-alert")}
-                    </legend>
-                    <div className="p-[20px] outline outline-1 outline-slate-300/50 my-2 op-card shadow-md">
-                      <input
-                        type="email"
-                        name="email"
-                        value={email}
-                        className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full disabled:text-[#5c5c5c] text-xs"
-                        disabled
-                      />
-                    </div>
-                    <div className="mt-3">
-                      <button
-                        className="op-btn op-btn-primary"
-                        onClick={(e) => handleSendOTPBtn(e)}
-                        disabled={loading}
-                      >
-                        {loading ? t("loading") : t("get-verification-code")}
-                      </button>
-                    </div>
-                  </div>
-                ) : (
-                  <form
-                    className="w-full md:w-[50%] text-base-content"
-                    onSubmit={VerifyOTP}
+              <div className="w-full md:w-[50%] text-base-content">
+                <h1 className="text-2xl md:text-[30px]">{t("welcome")}</h1>
+                <legend className="text-[12px] text-[#878787] mt-2 mb-1">
+                  {t("get-otp-alert")}
+                </legend>
+                <div className="p-[20px] outline outline-1 outline-slate-300/50 my-2 op-card shadow-md">
+                  <input
+                    type="email"
+                    name="email"
+                    value={email}
+                    className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full disabled:text-[#5c5c5c] text-xs"
+                    disabled
+                  />
+                </div>
+                <div className="mt-3">
+                  <button
+                    className="op-btn op-btn-primary flex items-center"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      SendOtp();
+                    }}
+                    disabled={loading}
                   >
-                    <h1 className="text-2xl md:text-[30px]">{t("welcome")}</h1>
-                    <legend className="text-[12px] text-[#878787] mt-2">
-                      {t("guest-email-alert")}
-                    </legend>
-                    <div className="p-[20px] pt-[15px] outline outline-1 outline-slate-300/50 op-card my-2 shadow-md">
-                      <p className="text-sm">{t("enter-verification-code")}</p>
-                      <input
-                        type="number"
-                        className="mt-2 op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
-                        name="OTP"
-                        value={OTP}
-                        onChange={(e) => setOTP(e.target.value)}
-                      />
-                    </div>
-                    <div className="mt-2.5">
-                      <button
-                        className="op-btn op-btn-primary"
-                        type="submit"
-                        disabled={loading}
-                      >
-                        {loading ? t("loading") : t("verify")}
-                      </button>
-                    </div>
-                  </form>
-                )}
-              </>
+                    <i className="fa-light fa-message-sms mr-2"></i>
+                    {loading ? t("loading") : t("get-verification-code")}
+                  </button>
+                </div>
+              </div>
             ) : (
               <div className="w-full md:w-[50%] text-base-content">
                 <h1 className="text-2xl md:text-[30px]">{t("welcome")}</h1>

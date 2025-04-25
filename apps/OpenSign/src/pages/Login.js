@@ -87,100 +87,47 @@ function Login() {
   const handleSubmit = async (event) => {
     localStorage.removeItem("accesstoken");
     event.preventDefault();
+
     if (!emailRegex.test(state.email)) {
       alert("Please enter a valid email address.");
-    } else {
-      const { email, password } = state;
-      if (email && password) {
-        try {
-          setState({ ...state, loading: true });
-          localStorage.setItem("appLogo", appInfo.applogo);
-          // Pass the username and password to logIn function
-          const user = await Parse.User.logIn(email, password);
-          if (user) {
-            let _user = user.toJSON();
-            localStorage.setItem("UserInformation", JSON.stringify(_user));
-            localStorage.setItem("userEmail", email);
-            localStorage.setItem("accesstoken", _user.sessionToken);
-            localStorage.setItem("scriptId", true);
-            if (_user.ProfilePic) {
-              localStorage.setItem("profileImg", _user.ProfilePic);
-            } else {
-              localStorage.setItem("profileImg", "");
-            }
-            // Check extended class user role and tenentId
-            try {
-              const userSettings = appInfo.settings;
-              await Parse.Cloud.run("getUserDetails")
-                .then(async (extUser) => {
-                  if (extUser) {
-                    // console.log("extUser", extUser, extUser?.get("IsDisabled"));
-                    const IsDisabled = extUser?.get("IsDisabled") || false;
-                    if (!IsDisabled) {
-                      const userRole = extUser?.get("UserRole");
-                      const menu =
-                        userRole &&
-                        userSettings.find((menu) => menu.role === userRole);
-                      if (menu) {
-                        const _currentRole = userRole;
-                        const redirectUrl =
-                          location?.state?.from ||
-                          `/${menu.pageType}/${menu.pageId}`;
-                        let _role = _currentRole.replace("contracts_", "");
-                        localStorage.setItem("_user_role", _role);
-                        const checkLanguage = extUser?.get("Language");
-                        if (checkLanguage) {
-                          checkLanguage && i18n.changeLanguage(checkLanguage);
-                        }
+      return;
+    }
 
-                        const results = [extUser];
-                        const extUser_str = JSON.stringify(results);
+    const { email, password } = state;
+    if (!email || !password) {
+      return;
+    }
 
-                        localStorage.setItem("Extand_Class", extUser_str);
-                        const extInfo = JSON.parse(JSON.stringify(extUser));
-                        localStorage.setItem("userEmail", extInfo.Email);
-                        localStorage.setItem("username", extInfo.Name);
-                        if (extInfo?.TenantId) {
-                          const tenant = {
-                            Id: extInfo?.TenantId?.objectId || "",
-                            Name: extInfo?.TenantId?.TenantName || ""
-                          };
-                          localStorage.setItem("TenantId", tenant?.Id);
-                          dispatch(showTenant(tenant?.Name));
-                          localStorage.setItem("TenantName", tenant?.Name);
-                        }
-                        localStorage.setItem("PageLanding", menu.pageId);
-                        localStorage.setItem("defaultmenuid", menu.menuId);
-                        localStorage.setItem("pageType", menu.pageType);
-                        setState({ ...state, loading: false });
-                        // Redirect to the appropriate URL after successful login
-                        navigate(redirectUrl);
-                      } else {
-                        setState({ ...state, loading: false });
-                        setIsModal(true);
-                      }
-                    } else {
-                      showToast("danger", t("do-not-access-contact-admin"));
-                      logOutUser();
-                    }
-                  } else {
-                    showToast("danger", t("user-not-found"));
-                    logOutUser();
-                  }
-                })
-                .catch((error) => {
-                  showToast("danger", t("something-went-wrong-mssg"));
-                  console.error("Error while fetching Follow", error);
-                });
-            } catch (error) {
-              showToast("danger", `${error.message}`);
-            }
-          }
-        } catch (error) {
-          console.error("Error while logging in user", error);
-          showToast("danger", "Invalid username/password or region");
-        }
+    try {
+      setState({ ...state, loading: true });
+      localStorage.setItem("appLogo", appInfo.applogo);
+      const _user = await Parse.Cloud.run("loginuser", { email, password });
+      if (!_user) {
+        setState({ ...state, loading: false });
+        return;
       }
+      // Get extended user data (including 2FA status) using cloud function
+      try {
+        await Parse.User.become(_user.sessionToken);
+        // Store basic user info needed for further steps
+        localStorage.setItem("UserInformation", JSON.stringify(_user));
+        localStorage.setItem("userEmail", email);
+        localStorage.setItem("accesstoken", _user.sessionToken);
+        localStorage.setItem("scriptId", true);
+        if (_user.ProfilePic) {
+          localStorage.setItem("profileImg", _user.ProfilePic);
+        } else {
+          localStorage.setItem("profileImg", "");
+        }
+        await continueLoginFlow();
+      } catch (error) {
+        console.error("Error checking 2FA status:", error);
+        showToast("danger", t("something-went-wrong-mssg"));
+        setState({ ...state, loading: false });
+      }
+    } catch (error) {
+      console.error("Error while logging in user", error);
+      showToast("danger", "Invalid username/password or region");
     }
   };
 
@@ -289,52 +236,51 @@ function Login() {
         localStorage.setItem("profileImg", "");
       }
       const userSettings = appInfo.settings;
-      await Parse.Cloud.run("getUserDetails").then(async (extUser) => {
-        if (extUser) {
-          const IsDisabled = extUser?.get("IsDisabled") || false;
-          if (!IsDisabled) {
-            const userRole = extUser.get("UserRole");
-            const _currentRole = userRole;
-            const menu =
-              userRole && userSettings.find((menu) => menu.role === userRole);
-            if (menu) {
-              const _role = _currentRole.replace("contracts_", "");
-              localStorage.setItem("_user_role", _role);
-              const redirectUrl =
-                location?.state?.from || `/${menu.pageType}/${menu.pageId}`;
-              const results = [extUser];
-              const extendedInfo_stringify = JSON.stringify(results);
-              localStorage.setItem("Extand_Class", extendedInfo_stringify);
-              const extInfo = JSON.parse(JSON.stringify(extUser));
-              localStorage.setItem("userEmail", extInfo.Email);
-              localStorage.setItem("username", extInfo.Name);
-              if (extInfo?.TenantId) {
-                const tenant = {
-                  Id: extInfo?.TenantId?.objectId || "",
-                  Name: extInfo?.TenantId?.TenantName || ""
-                };
-                localStorage.setItem("TenantId", tenant?.Id);
-                dispatch(showTenant(tenant?.Name));
-                localStorage.setItem("TenantName", tenant?.Name);
-              }
-              localStorage.setItem("PageLanding", menu.pageId);
-              localStorage.setItem("defaultmenuid", menu.menuId);
-              localStorage.setItem("pageType", menu.pageType);
-              // Redirect to the appropriate URL after successful login
-              navigate(redirectUrl);
-            } else {
-              setState({ ...state, loading: false });
-              logOutUser();
+      const extUser = await Parse.Cloud.run("getUserDetails");
+      if (extUser) {
+        const IsDisabled = extUser?.get("IsDisabled") || false;
+        if (!IsDisabled) {
+          const userRole = extUser.get("UserRole");
+          const _currentRole = userRole;
+          const menu =
+            userRole && userSettings.find((menu) => menu.role === userRole);
+          if (menu) {
+            const _role = _currentRole.replace("contracts_", "");
+            localStorage.setItem("_user_role", _role);
+            const redirectUrl =
+              location?.state?.from || `/${menu.pageType}/${menu.pageId}`;
+            const results = [extUser];
+            const extendedInfo_stringify = JSON.stringify(results);
+            localStorage.setItem("Extand_Class", extendedInfo_stringify);
+            const extInfo = JSON.parse(JSON.stringify(extUser));
+            localStorage.setItem("userEmail", extInfo.Email);
+            localStorage.setItem("username", extInfo.Name);
+            if (extInfo?.TenantId) {
+              const tenant = {
+                Id: extInfo?.TenantId?.objectId || "",
+                Name: extInfo?.TenantId?.TenantName || ""
+              };
+              localStorage.setItem("TenantId", tenant?.Id);
+              dispatch(showTenant(tenant?.Name));
+              localStorage.setItem("TenantName", tenant?.Name);
             }
+            localStorage.setItem("PageLanding", menu.pageId);
+            localStorage.setItem("defaultmenuid", menu.menuId);
+            localStorage.setItem("pageType", menu.pageType);
+            // Redirect to the appropriate URL after successful login
+            navigate(redirectUrl);
           } else {
-            showToast("danger", t("do-not-access-contact-admin"));
+            setState({ ...state, loading: false });
             logOutUser();
           }
         } else {
-          showToast("danger", t("user-not-found"));
+          showToast("danger", t("do-not-access-contact-admin"));
           logOutUser();
         }
-      });
+      } else {
+        showToast("danger", t("user-not-found"));
+        logOutUser();
+      }
     } catch (error) {
       showToast("danger", t("something-went-wrong-mssg"));
       console.log("err", error);
@@ -417,6 +363,67 @@ function Login() {
     localStorage.setItem("parseAppId", appid);
   };
 
+  const continueLoginFlow = async () => {
+    try {
+      const userSettings = appInfo.settings;
+      const extUser = await Parse.Cloud.run("getUserDetails");
+      if (extUser) {
+        const IsDisabled = extUser?.get("IsDisabled") || false;
+        if (!IsDisabled) {
+          const userRole = extUser?.get("UserRole");
+          const menu =
+            userRole && userSettings?.find((menu) => menu.role === userRole);
+          if (menu) {
+            const _currentRole = userRole;
+            const redirectUrl =
+              location?.state?.from || `/${menu.pageType}/${menu.pageId}`;
+            let _role = _currentRole.replace("contracts_", "");
+            localStorage.setItem("_user_role", _role);
+            const checkLanguage = extUser?.get("Language");
+            if (checkLanguage) {
+              checkLanguage && i18n.changeLanguage(checkLanguage);
+            }
+
+            // Continue with storing user data and redirecting
+            const results = [extUser];
+            const extUser_str = JSON.stringify(results);
+            localStorage.setItem("Extand_Class", extUser_str);
+            const extInfo = JSON.parse(JSON.stringify(extUser));
+            localStorage.setItem("userEmail", extInfo.Email);
+            localStorage.setItem("username", extInfo.Name);
+            if (extInfo?.TenantId) {
+              const tenant = {
+                Id: extInfo?.TenantId?.objectId || "",
+                Name: extInfo?.TenantId?.TenantName || ""
+              };
+              localStorage.setItem("TenantId", tenant?.Id);
+              dispatch(showTenant(tenant?.Name));
+              localStorage.setItem("TenantName", tenant?.Name);
+            }
+            localStorage.setItem("PageLanding", menu.pageId);
+            localStorage.setItem("defaultmenuid", menu.menuId);
+            localStorage.setItem("pageType", menu.pageType);
+
+            setState({ ...state, loading: false });
+            navigate(redirectUrl);
+          } else {
+            setState({ ...state, loading: false });
+            setIsModal(true);
+          }
+        } else {
+          showToast("danger", t("do-not-access-contact-admin"));
+          logOutUser();
+        }
+      } else {
+        showToast("danger", t("user-not-found"));
+        logOutUser();
+      }
+    } catch (error) {
+      console.error("Error during login flow", error);
+      showToast("danger", error.message || t("something-went-wrong-mssg"));
+    }
+  };
+
   return errMsg ? (
     <div className="h-screen flex justify-center text-center items-center p-4 text-gray-500 text-base">
       {errMsg}
@@ -437,7 +444,7 @@ function Login() {
           <div
             aria-labelledby="loginHeading"
             role="region"
-            className="pb-1 md:pb-4 pt-10 md:px-10 lg:px-16 h-screen"
+            className="pb-1 md:pb-4 pt-10 md:px-10 lg:px-16 h-full"
           >
             <div className="md:p-4 lg:p-10 p-4 bg-base-100 text-base-content op-card">
               <div className="w-[250px] h-[66px] inline-block overflow-hidden">

@@ -67,7 +67,7 @@ async function uploadFile(req, res) {
           newFileName = sanitizeFileName(
             newFileName + '_' + new Date().toISOString() + '.' + extension
           );
-          console.log(newFileName);
+          // console.log(newFileName);
           cb(null, newFileName);
         },
       });
@@ -96,7 +96,7 @@ async function uploadFile(req, res) {
             newFileName = sanitizeFileName(
               newFileName + '_' + new Date().toISOString() + '.' + extension
             );
-            console.log(newFileName);
+            // console.log(newFileName);
             cb(null, newFileName);
           },
         });
@@ -115,7 +115,7 @@ async function uploadFile(req, res) {
             newFileName = sanitizeFileName(
               newFileName + '_' + new Date().toISOString() + '.' + extension
             );
-            console.log(newFileName);
+            // console.log(newFileName);
             cb(null, newFileName);
           },
         });
@@ -149,7 +149,7 @@ async function uploadFile(req, res) {
       //res.header("Access-Control-Allow-Headers", "Content-Type");
       //res.setHeader("Access-Control-Allow-Origin", "*");
       if (useLocal === 'true') {
-        console.log(req.file);
+        // console.log(req.file);
         var fileUrl = `${parseBaseUrl}/files/${parseAppId}/${req.file.filename}`;
       } else {
         var fileUrl = req.file.location;

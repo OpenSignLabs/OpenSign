@@ -31,14 +31,15 @@ const Header = ({ showSidebar, setIsMenu, isConsole }) => {
     initializeHead();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
   async function initializeHead() {
-      const applogo = await getAppLogo();
-      if (applogo?.logo) {
-        setAppLogo(applogo?.logo);
-      } else {
-        const logo = localStorage.getItem("appLogo") || appInfo.applogo;
-        setAppLogo(logo);
-      }
+    const applogo = await getAppLogo();
+    if (applogo?.logo) {
+      setAppLogo(applogo?.logo);
+    } else {
+      const logo = localStorage.getItem("appLogo") || appInfo.applogo;
+      setAppLogo(logo);
+    }
   }
 
   const closeDropdown = async () => {
@@ -151,15 +152,15 @@ const Header = ({ showSidebar, setIsMenu, isConsole }) => {
             >
               {!isConsole && (
                 <>
-                    <li
-                      onClick={() =>
-                        openInNewTab("https://docs.opensignlabs.com")
-                      }
-                    >
-                      <span>
-                        <i className="fa-light fa-book"></i> {t("docs")}
-                      </span>
-                    </li>
+                  <li
+                    onClick={() =>
+                      openInNewTab("https://docs.opensignlabs.com")
+                    }
+                  >
+                    <span>
+                      <i className="fa-light fa-book"></i> {t("docs")}
+                    </span>
+                  </li>
                   <li
                     onClick={() => {
                       setIsOpen(false);
