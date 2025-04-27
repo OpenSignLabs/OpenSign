@@ -231,6 +231,7 @@ if (!process.env.TESTING) {
     console.log('opensign-server running on port ' + port + '.');
     const isWindows = process.platform === 'win32';
     // console.log('isWindows', isWindows);
+    createContactIndex();
 
     const migrate = isWindows
       ? `set APPLICATION_ID=${process.env.APP_ID}&& set SERVER_URL=${cloudServerUrl}&& set MASTER_KEY=${process.env.MASTER_KEY}&& npx parse-dbtool migrate`
@@ -245,7 +246,6 @@ if (!process.env.TESTING) {
         console.error(`Error: ${stderr}`);
         return;
       }
-      createContactIndex();
       console.log(`Command output: ${stdout}`);
     });
   });
