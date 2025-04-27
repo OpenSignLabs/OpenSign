@@ -1,9 +1,6 @@
 # Use an official Node runtime as the base image
 FROM node:22.14.0
 
-# install java
-RUN wget https://downloads.opensign.me/jdk-23_linux-x64_bin.deb  \
- && dpkg -i jdk-23_linux-x64_bin.deb 
 
 # Set the working directory inside the container
 WORKDIR /usr/src/app
