@@ -10,11 +10,9 @@ async function ensureSchema(Parse, className, setupFn) {
   try {
     // If class exists, update it
     await schema.update();
-    console.log(`✅ Updated schema for ${className}`);
   } catch (e) {
     // Otherwise, create it
     await schema.save();
-    console.log(`✅ Created schema for ${className}`);
   }
 }
 
@@ -24,10 +22,7 @@ async function patchSchema(Parse, className, setupFn) {
   setupFn(schema);
   try {
     await schema.update();
-    console.log(`🔄 Reverted schema for ${className}`);
-  } catch (e) {
-    console.warn(`⚠️ Skipping ${className} in down (not found)`);
-  }
+  } catch (e) {}
 }
 
 exports.up = async Parse => {
