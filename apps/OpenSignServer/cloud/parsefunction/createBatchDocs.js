@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { cloudServerUrl, replaceMailVaribles } from '../../Utils.js';
+import { cloudServerUrl, mailTemplate, replaceMailVaribles } from '../../Utils.js';
 const serverUrl = cloudServerUrl; //process.env.SERVER_URL;
 const appId = process.env.APP_ID;
 async function deductcount(docsCount, extUserId) {
@@ -244,7 +244,7 @@ export default async function createBatchDocs(request) {
   };
   try {
     if (request?.user) {
-      return await batchQuery(request.user.id, Documents, Ip, parseConfig, '', type, publicUrl);
+      return await batchQuery(request.user.id, Documents, Ip, parseConfig, type, publicUrl);
     } else {
       throw new Parse.Error(Parse.Error.INVALID_SESSION_TOKEN, 'User is not authenticated.');
     }
