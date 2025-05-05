@@ -153,7 +153,8 @@
     "Duplicate": "Duplicate",
     "daily-mail-quota": "Daily Email Quota",
     "Save as template": "Save as template",
-    "Fix & resend": "Fix & Resend"
+    "Fix & resend": "Fix & Resend",
+    "Kiosk Mode": "Kiosk Mode"
   },
   "report-heading": {
     "Sr.No": "Sr.No",
@@ -304,7 +305,7 @@
   "send": "Send",
   "quick-send-alert-1": "All roles in this document are currently linked to contacts. To quick send copies of this template to multiple signers, please ensure that at least one role is not linked to any contact.",
   "quick-send-alert-2": "Please ensure there's at least one signature widget added for all recipients.",
-  "quick-send-alert-3": "Please add at least one role to this template in order to 'quick send' copies of it to multiple signers.",
+  "quick-send-alert-3": "Please add at least one role to this template.",
   "quick-send-alert-4": "Quick send reached limit.",
   "copy-link": "Copy link",
   "copy": "Copy",
@@ -965,5 +966,10 @@
     "p1":"Manage your account's security settings to keep your data safe. OpenSign supports advanced authentication methods to enhance account protection.",
     "2fa-auth-help":" Add an extra layer of security by enabling 2FA. This requires you to enter a verification code from an authenticator app after your password.",
     "passkey-auth-help":"Use passkeys for passwordless sign-in with biometric or device-based verification, providing both strong security and convenience."
-  }
+  },
+  "signer-already-present": "Signer already present",
+  "kiosk-sign": "Kiosk Sign",
+  "dont-have-access-to-template": "The template has been deleted or you don't have access. Please contact the sender.",
+  "kiosk-info": "Kiosk Mode lets you collect in-person signatures quickly and efficiently. Ideal for trade shows, events, or walk-in scenarios where all signers are physically present. ",
+  "learn-more": "Learn more"
 }

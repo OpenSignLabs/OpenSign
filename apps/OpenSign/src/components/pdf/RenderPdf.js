@@ -403,6 +403,7 @@ function RenderPdf(props) {
                 onGetAnnotationsError={(error) => {
                   console.log("annotation error", error);
                 }}
+                className="select-none touch-callout-none"
               />
             </Document>
           </div>

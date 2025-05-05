@@ -1578,6 +1578,7 @@ const TemplatePlaceholder = () => {
       style: { fontSize: "13px" }
     }
   ];
+
   const textFieldTour = [
     {
       selector: '[data-tut="IsSigned"]',

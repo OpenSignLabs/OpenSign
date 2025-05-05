@@ -153,7 +153,8 @@
     "Duplicate": "Duplicada",
     "daily-mail-quota": "Cuota diaria de correos electrónicos",
     "Save as template": "Guardar como plantilla",
-    "Fix & resend": "Corregir y reenviar"
+    "Fix & resend": "Corregir y reenviar",
+    "Kiosk Mode": "Modo Kiosco"
   },
   "report-heading": {
     "Sr.No": "Nº",
@@ -305,7 +306,7 @@
   "send": "Enviar",
   "quick-send-alert-1": "Todos los roles de este documento están actualmente vinculados a contactos. Para enviar rápidamente copias de esta plantilla a varios firmantes, por favor, asegúrate de que al menos un rol no esté vinculado a ningún contacto.",
   "quick-send-alert-2": "Por favor, asegúrate de que hay al menos un widget de firma añadido para cada destinatario.",
-  "quick-send-alert-3": "Por favor, añade al menos un rol a esta plantilla para poder hacer un «envío rápido» de copias a varios firmantes.",
+  "quick-send-alert-3": "Veuillez ajouter au moins un rôle à ce template.",
   "quick-send-alert-4": "El envío rápido ha alcanzado el límite.",
   "copy-link": "Copiar enlace",
   "copy": "Copiar",
@@ -965,5 +966,10 @@
     "p1": "Administre la configuración de seguridad de su cuenta para mantener sus datos seguros. OpenSign admite métodos de autenticación avanzados para mejorar la protección de la cuenta.",
     "2fa-auth-help": "Agregue una capa adicional de seguridad activando 2FA. Esto requiere ingresar un código de verificación desde una aplicación autenticadora después de su contraseña.",
     "passkey-auth-help": "Use claves de acceso para iniciar sesión sin contraseña con verificación biométrica o basada en el dispositivo, proporcionando una seguridad sólida y comodidad."
-  }
+  },
+  "signer-already-present": "Firmante ya presente",
+  "kiosk-sign": "Firma en quiosco",
+  "dont-have-access-to-template": "El template ha sido eliminado o no tiene acceso. Por favor, contacte al remitente.",
+  "kiosk-info": "El Modo Kiosco le permite recopilar firmas en persona de forma rápida y eficiente. Ideal para ferias, eventos o situaciones con personas que firman en el lugar. ",
+  "learn-more": "Más información"
 }

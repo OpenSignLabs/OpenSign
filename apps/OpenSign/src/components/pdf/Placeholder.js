@@ -199,7 +199,7 @@ function Placeholder(props) {
   }, [selectDate]);
 
   //`handleWidgetIdandPopup` is used to set current widget id and open relative popup
-  const handleWidgetIdandPopup = () => {
+  const handleWidgetIdandPopup = async () => {
     if (props.setSelectWidgetId) {
       props.setSelectWidgetId(props.pos.key);
     }
@@ -223,7 +223,7 @@ function Placeholder(props) {
         props.handleUserDetails();
       } else {
         if (props?.isNeedSign) {
-          //funcion is used to height widgets on top if two widgets on overlap
+          //funcion is used to heightlight widgets on top if two widgets on overlap
           const getCurrentSignerPos = props.xyPosition.find(
             (x) => x.Id === props.uniqueId
           );
@@ -367,6 +367,8 @@ function Placeholder(props) {
       } else {
         widgetClickHandler();
       }
+      // }
+      // }
     } else {
       //The else condition is used to handle the case when the user clicks on a widget and open signature pad to draw sign
       props.setCurrWidgetsDetails && props.setCurrWidgetsDetails(props.pos);
