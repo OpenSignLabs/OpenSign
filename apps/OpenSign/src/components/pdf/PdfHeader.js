@@ -28,8 +28,12 @@ function Header(props) {
   const enabledBackBtn = props?.disabledBackBtn === true ? false : true;
   //function for show decline alert
   const handleDeclinePdfAlert = async () => {
-    const currentDecline = { currnt: "Sure", isDeclined: true };
-    props?.setIsDecline(currentDecline);
+    if (props?.handleDecline) {
+      props.handleDecline();
+    } else {
+      const currentDecline = { currnt: "Sure", isDeclined: true };
+      props?.setIsDecline(currentDecline);
+    }
   };
   const handleDetelePage = async () => {
     props?.setIsUploadPdf && props?.setIsUploadPdf(true);
@@ -102,7 +106,6 @@ function Header(props) {
       console.error("Error merging PDF:", error);
     }
   };
-
   return (
     <div className="flex py-[5px]">
       {isMobile && props?.isShowHeader ? (
@@ -502,16 +505,6 @@ function Header(props) {
               </div>
             ) : (
               <div className="flex" data-tut="reactourFifth">
-                {(!props?.templateId && !props?.isSelfSign) ||
-                  (!props.isGuestSignFlow && (
-                    <button
-                      onClick={() => window.history.go(-2)}
-                      type="button"
-                      className="op-btn op-btn-ghost op-btn-sm mr-[3px]"
-                    >
-                      {t("back")}
-                    </button>
-                  ))}
                 {props?.currentSigner && (
                   <>
                     {props?.templateId && (

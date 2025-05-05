@@ -153,7 +153,8 @@
     "Duplicate": "Duplica",
     "daily-mail-quota": "Quota e-mail giornaliera",
     "Save as template": "Salva come modello",
-    "Fix & resend": "Correggi e reinvia"
+    "Fix & resend": "Correggi e reinvia",
+    "Kiosk Mode": "Modalità Kiosk"
   },
   "report-heading": {
     "Sr.No": "Nr.",
@@ -304,7 +305,7 @@
   "send": "Invia",
   "quick-send-alert-1": "Tutti i ruoli in questo documento sono attualmente collegati a contatti. Per inviare rapidamente copie di questo modello a più firmatari, assicurati che almeno un ruolo non sia collegato a nessun contatto.",
   "quick-send-alert-2": "Assicurati che ci sia almeno un widget firma aggiunto per tutti i destinatari.",
-  "quick-send-alert-3": "Aggiungi almeno un ruolo a questo modello per 'invio rapido' a più firmatari.",
+  "quick-send-alert-3": "Si prega di aggiungere almeno un ruolo a questo template.",
   "quick-send-alert-4": "Limite di invio rapido raggiunto.",
   "copy-link": "Copia link",
   "copy": "Copia",
@@ -965,5 +966,10 @@
     "p1": "Gestisci le impostazioni di sicurezza del tuo account per proteggere i tuoi dati. OpenSign supporta metodi di autenticazione avanzati per migliorare la protezione dell’account.",
     "2fa-auth-help": "Aggiungi un ulteriore livello di sicurezza abilitando 2FA. Ti verrà richiesto di inserire un codice di verifica da un'app di autenticazione dopo la password.",
     "passkey-auth-help": "Usa le passkey per accedere senza password con verifica biometrica o basata sul dispositivo, garantendo sicurezza elevata e praticità."
-  }  
+  },
+  "signer-already-present": "Firmatario già presente",
+  "kiosk-sign": "Firma su chiosco",
+  "dont-have-access-to-template": "Il template è stato eliminato o non hai accesso. Si prega di contattare il mittente.",
+  "kiosk-info": "La Modalità Kiosk consente di raccogliere firme in presenza in modo rapido ed efficiente. Ideale per fiere, eventi o situazioni con firmatari fisicamente presenti. ",
+  "learn-more": "Scopri di più"
 }

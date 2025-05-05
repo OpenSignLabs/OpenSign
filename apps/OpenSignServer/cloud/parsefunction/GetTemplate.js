@@ -20,6 +20,7 @@ export default async function GetTemplate(request) {
       try {
         let template = new Parse.Query('contracts_Template');
         template.equalTo('objectId', templateId);
+        template.notEqualTo('IsArchive', true);
         template.include('ExtUserPtr');
         template.include('Signers');
         template.include('CreatedBy');
@@ -47,6 +48,7 @@ export default async function GetTemplate(request) {
             });
             template = Parse.Query.or(sharedWithQuery, createdByQuery);
             template.equalTo('objectId', templateId);
+            template.notEqualTo('IsArchive', true);
             template.include('ExtUserPtr');
             template.include('Signers');
             template.include('CreatedBy');
@@ -62,21 +64,21 @@ export default async function GetTemplate(request) {
           delete templateRes?.ExtUserPtr?.TenantId?.PfxFile;
           return templateRes;
         } else {
-          return { error: "You don't have access of this template!" };
+          return { error: "template deleted or you don't have access." };
         }
       } catch (err) {
         console.log('err', err);
         return err;
       }
     } else {
-      return { error: "You don't have access of this template!" };
+      return { error: "template deleted or you don't have access." };
     }
   } catch (err) {
     console.log('err', err);
     if (err?.response?.data?.code === 209 || err.code == 209) {
       return { error: 'Invalid session token' };
     } else {
-      return { error: "You don't have access of this template!" };
+      return { error: "template deleted or you don't have access." };
     }
   }
 }
