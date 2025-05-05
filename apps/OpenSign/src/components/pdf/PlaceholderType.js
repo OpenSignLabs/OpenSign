@@ -176,7 +176,7 @@ function PlaceholderType(props) {
       ref={ref}
     >
       {value}
-      <i className="fa-light fa-calendar  ml-[5px]"></i>
+      <i className="fa-light fa-calendar ml-[5px]"></i>
     </div>
   ));
   ExampleCustomInput.displayName = "ExampleCustomInput";
@@ -188,7 +188,7 @@ function PlaceholderType(props) {
       props.data?.signerObjId === props.signerObjId
     ) {
       const isDefault = true;
-      const senderUser = localStorage.getItem(`Extand_Class`);
+      const senderUser = localStorage.getItem("Extand_Class");
       const jsonSender = JSON.parse(senderUser);
       onChangeInput(
         jsonSender && jsonSender[0],

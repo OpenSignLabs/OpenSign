@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import "../styles/signature.css";
 import { useTranslation } from "react-i18next";
+import Loader from "./Loader";
 
 function CustomModal(props) {
   const { t } = useTranslation();
@@ -32,6 +33,11 @@ function CustomModal(props) {
     props.show && (
       <dialog className="op-modal op-modal-open absolute z-[448]">
         <div className="w-[95%] md:w-[60%] lg:w-[40%] op-modal-box p-0 overflow-y-auto hide-scrollbar text-sm">
+          {props?.isLoader && (
+            <div className="absolute h-full w-full flex flex-col justify-center items-center z-[999] bg-[#e6f2f2] bg-opacity-80">
+              <Loader />
+            </div>
+          )}
           <h3 className="text-base-content font-bold text-lg pt-[15px] px-[20px]">
             {props?.headMsg && props?.headMsg}
           </h3>

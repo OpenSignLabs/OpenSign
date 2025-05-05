@@ -416,7 +416,7 @@ const ReportTable = (props) => {
       setIsModal({ [`saveastemplate_${item.objectId}`]: true });
     } else if (act.action === "recreatedocument") {
       setIsModal({ [`recreatedocument_${item.objectId}`]: true });
-    } else if (act.action) {
+    } else if (act.action === "extendexpiry") {
       setIsModal({ [`extendexpiry_${item.objectId}`]: true });
     }
   };
@@ -1724,7 +1724,7 @@ const ReportTable = (props) => {
                                         {/* template report */}
                                         {isOption[item.objectId] &&
                                           act.action === "option" && (
-                                            <ul className="absolute -right-1 top-auto z-[70] w-max op-dropdown-content op-menu shadow-black/20 shadow bg-base-100 text-base-content rounded-box">
+                                            <ul className="absolute -right-1 top-auto z-[70] w-52 op-dropdown-content op-menu shadow-black/20 shadow bg-base-100 text-base-content rounded-box">
                                               {act.subaction?.map((subact) => (
                                                 <li
                                                   key={subact.btnId}
@@ -1738,16 +1738,20 @@ const ReportTable = (props) => {
                                                     `btnLabel.${subact.btnLabel}`
                                                   )}
                                                 >
-                                                  <span>
-                                                    <i
-                                                      className={`${subact.btnIcon} mr-1.5`}
-                                                    ></i>
-                                                    {subact.btnLabel && (
-                                                      <span className="text-[13px] capitalize font-medium">
-                                                        {t(
+                                                  <span className="flex items-center justify-between">
+                                                    <span className="text-[13px] capitalize font-medium">
+                                                      <i
+                                                        className={`${subact.btnIcon} mr-2`}
+                                                      ></i>
+                                                      {subact.btnLabel &&
+                                                        t(
                                                           `btnLabel.${subact.btnLabel}`
                                                         )}
-                                                      </span>
+                                                    </span>
+                                                    {subact.secIcon && (
+                                                      <i
+                                                        className={`${subact.secIcon} ml-1.5`}
+                                                      ></i>
                                                     )}
                                                   </span>
                                                 </li>
