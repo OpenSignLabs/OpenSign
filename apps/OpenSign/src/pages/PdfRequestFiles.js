@@ -552,7 +552,11 @@ function PdfRequestFiles() {
         documentData === "Error: Something went wrong!" ||
         (documentData.result && documentData.result.error)
       ) {
-        setHandleError(t("something-went-wrong-mssg"));
+        if (documentData?.result?.error?.includes("deleted")) {
+          setHandleError(t("document-deleted"));
+        } else {
+          setHandleError(t("something-went-wrong-mssg"));
+        }
         setIsLoading({ isLoad: false });
         console.log("err in  getDocument cloud function ");
       } else {
@@ -1867,14 +1871,6 @@ function PdfRequestFiles() {
             closeWithMask={false}
           />
 
-          {isUiLoading && (
-            <div className="absolute h-[100vh] w-full flex flex-col justify-center items-center z-[999] bg-[#e6f2f2] bg-opacity-80">
-              <Loader />
-              <span className="text-[13px] text-base-content">
-                {t("loading-mssg")}
-              </span>
-            </div>
-          )}
           {isUiLoading && (
             <div className="absolute h-[100vh] w-full flex flex-col justify-center items-center z-[999] bg-[#e6f2f2] bg-opacity-80">
               <Loader />

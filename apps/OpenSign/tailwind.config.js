@@ -1,12 +1,20 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: [
-    "./src/**/*.{js,jsx,ts,tsx}",
-  ],
+  content: ["./src/**/*.{js,jsx,ts,tsx}"],
   theme: {
     extend: {}
   },
-  plugins: [require("daisyui")],
+  plugins: [
+    require("daisyui"),
+    function ({ addUtilities }) {
+      addUtilities({
+        // Prevent iOS long-press popup
+        ".touch-callout-none": {
+          "-webkit-touch-callout": "none"
+        }
+      });
+    }
+  ],
   daisyui: {
     // themes: true,
     themes: [

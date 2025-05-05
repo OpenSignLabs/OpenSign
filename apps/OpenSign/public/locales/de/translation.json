@@ -153,7 +153,8 @@
     "Duplicate": "Duplikat",
     "daily-mail-quota": "Tägliches E-Mail-Kontingent",
     "Save as template": "Als Vorlage speichern",
-    "Fix & resend": "Korrigieren und erneut senden"
+    "Fix & resend": "Korrigieren und erneut senden",
+    "Kiosk Mode": "Kiosk Modus"
   },
   "report-heading": {
     "Sr.No": "Nr.",
@@ -304,7 +305,7 @@
   "send": "Senden",
   "quick-send-alert-1": "Alle Rollen in diesem Dokument sind derzeit mit Kontakten verknüpft. Um Kopien dieser Vorlage schnell an mehrere Unterzeichner zu senden, stellen Sie sicher, dass mindestens eine Rolle keinem Kontakt zugeordnet ist.",
   "quick-send-alert-2": "Bitte stellen Sie sicher, dass für alle Empfänger mindestens ein Signatur-Widget hinzugefügt wurde.",
-  "quick-send-alert-3": "Bitte fügen Sie mindestens eine Rolle zu dieser Vorlage hinzu, um Kopien davon schnell an mehrere Unterzeichner zu senden.",
+  "quick-send-alert-3": "Bitte fügen Sie diesem template mindestens eine Rolle hinzu.",
   "quick-send-alert-4": "Das Limit für Schnellsendungen wurde erreicht.",
   "copy-link": "Link kopieren",
   "copy": "Kopieren",
@@ -965,5 +966,10 @@
     "p1": "Administre la configuración de seguridad de su cuenta para mantener sus datos seguros. OpenSign admite métodos de autenticación avanzados para mejorar la protección de la cuenta.",
     "2fa-auth-help": "Agregue una capa adicional de seguridad activando 2FA. Esto requiere ingresar un código de verificación desde una aplicación autenticadora después de su contraseña.",
     "passkey-auth-help": "Use claves de acceso para iniciar sesión sin contraseña con verificación biométrica o basada en el dispositivo, proporcionando una seguridad sólida y comodidad."
-  }  
+  },
+  "signer-already-present": "Unterzeichner bereits vorhanden",
+  "kiosk-sign": "Kiosk-Unterschrift",
+  "dont-have-access-to-template": "Das template wurde gelöscht oder Sie haben keinen Zugriff. Bitte kontaktieren Sie den Absender.",
+  "kiosk-info": "Kiosk Modus ermöglicht es Ihnen, persönliche Unterschriften schnell und effizient zu erfassen. Ideal für Messen, Veranstaltungen oder Laufkundschaft, bei denen alle Unterzeichner physisch anwesend sind. ",
+  "learn-more": "Mehr erfahren"
 }

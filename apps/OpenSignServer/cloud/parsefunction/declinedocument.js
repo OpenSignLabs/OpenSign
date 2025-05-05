@@ -7,6 +7,9 @@ export default async function declinedocument(request) {
     objectId: request.params?.userId,
   };
 
+  if (!docId) {
+    throw new Parse.Error(Parse.Error.SCRIPT_FAILED, 'missing parameter docId.');
+  }
   try {
     const docCls = new Parse.Query('contracts_Document');
     docCls.include('ExtUserPtr.TenantId');
