@@ -71,8 +71,15 @@ function SignPad(props) {
       } else if (tab === "typed") {
         setIsTab("type");
       } else if (tab === "default") {
-        setIsDefaultSign(true);
-        setIsTab("mysignature");
+        if (
+          (props?.isInitial && props?.myInitial) ||
+          (!props?.isInitial && props?.defaultSign)
+        ) {
+          setIsDefaultSign(true);
+          setIsTab("mysignature");
+        } else {
+          setIsTab("draw");
+        }
       } else {
         setIsTab(true);
       }
@@ -453,7 +460,15 @@ function SignPad(props) {
                   props?.convertToImg(fontSelect, typedSignature, data);
                 setPenColor(allColor[key]);
               }}
-              className={`border-b-[2px] ${key === 0 && penColor === "blue" ? "border-blue-600" : key === 1 && penColor === "red" ? "border-red-500" : key === 2 && penColor === "black" ? "border-black" : "border-white"} text-[${data}] text-[16px] fa-light fa-pen-nib`}
+              className={`border-b-[2px] ${
+                key === 0 && penColor === "blue"
+                  ? "border-blue-600"
+                  : key === 1 && penColor === "red"
+                    ? "border-red-500"
+                    : key === 2 && penColor === "black"
+                      ? "border-black"
+                      : "border-white"
+              } text-[${data}] text-[16px] fa-light fa-pen-nib`}
             ></i>
           );
         })}
@@ -630,32 +645,77 @@ function SignPad(props) {
                 <div className="p-[20px] h-full">
                   {isDefaultSign ? (
                     <>
-                      <div className="flex justify-center">
-                        <div
-                          className={`${props?.isInitial ? "intialSignatureCanvas" : "signatureCanvas"} bg-white border-[1.3px] border-[#007bff] flex flex-col justify-center items-center mb-[6px] cursor-pointer`}
-                        >
-                          <img
-                            alt="stamp img"
-                            className="w-full h-full object-contain bg-white"
-                            draggable="false"
-                            src={
-                              props?.isInitial
-                                ? props?.myInitial
-                                : props?.defaultSign
-                            }
-                          />
-                        </div>
-                      </div>
-                      {props.setIsAutoSign && autoSignAll()}
-                      <div className="flex justify-end">
-                        <SaveBtn />
-                      </div>
+                      {!props?.isInitial &&
+                        props?.defaultSign &&
+                        isTabEnabled("default") && (
+                          <>
+                            <div className="flex justify-center">
+                              <div
+                                className={`${
+                                  props?.isInitial
+                                    ? "intialSignatureCanvas"
+                                    : "signatureCanvas"
+                                } bg-white border-[1.3px] border-[#007bff] flex flex-col justify-center items-center mb-[6px] cursor-pointer`}
+                              >
+                                <img
+                                  alt="stamp img"
+                                  className="w-full h-full object-contain bg-white"
+                                  draggable="false"
+                                  src={
+                                    props?.isInitial
+                                      ? props?.myInitial
+                                      : props?.defaultSign
+                                  }
+                                />
+                              </div>
+                            </div>
+                            {props.setIsAutoSign && autoSignAll()}
+                            <div className="flex justify-end">
+                              <SaveBtn />
+                            </div>
+                          </>
+                        )}
+
+                      {props?.isInitial &&
+                        props?.myInitial &&
+                        isTabEnabled("default") && (
+                          <>
+                            <div className="flex justify-center">
+                              <div
+                                className={`${
+                                  props?.isInitial
+                                    ? "intialSignatureCanvas"
+                                    : "signatureCanvas"
+                                } bg-white border-[1.3px] border-[#007bff] flex flex-col justify-center items-center mb-[6px] cursor-pointer`}
+                              >
+                                <img
+                                  alt="stamp img"
+                                  className="w-full h-full object-contain bg-white"
+                                  draggable="false"
+                                  src={
+                                    props?.isInitial
+                                      ? props?.myInitial
+                                      : props?.defaultSign
+                                  }
+                                />
+                              </div>
+                            </div>
+                            {props.setIsAutoSign && autoSignAll()}
+                            <div className="flex justify-end">
+                              <SaveBtn />
+                            </div>
+                          </>
+                        )}
                     </>
                   ) : props?.isImageSelect || props?.isStamp ? (
                     !props?.image ? (
                       <div className="flex justify-center">
                         <div
-                          className={`${props?.isInitial ? "intialSignatureCanvas" : "signatureCanvas"} bg-white border-[1.3px] border-[#007bff] flex flex-col justify-center items-center mb-[6px] cursor-pointer`}
+                          className={`${
+                            props?.isInitial
+                              ? "intialSignatureCanvas"
+                              : "signatureCanvas"
+                          } bg-white border-[1.3px] border-[#007bff] flex flex-col justify-center items-center mb-[6px] cursor-pointer`}
                           onClick={() => props?.imageRef.current.click()}
                         >
                           <input
@@ -674,7 +734,11 @@ function SignPad(props) {
                       <>
                         <div className="flex justify-center">
                           <div
-                            className={`${props?.isInitial ? "intialSignatureCanvas" : "signatureCanvas"} bg-white border-[1.3px] border-[#007bff] mb-[6px] overflow-hidden`}
+                            className={`${
+                              props?.isInitial
+                                ? "intialSignatureCanvas"
+                                : "signatureCanvas"
+                            } bg-white border-[1.3px] border-[#007bff] mb-[6px] overflow-hidden`}
                           >
                             <img
                               alt="print img"
@@ -762,7 +826,11 @@ function SignPad(props) {
                           ref={canvasRef}
                           penColor={penColor}
                           canvasProps={{
-                            className: `${props?.isInitial ? "intialSignatureCanvas" : "signatureCanvas"} border-[1.3px] border-[#007bff]`
+                            className: `${
+                              props?.isInitial
+                                ? "intialSignatureCanvas"
+                                : "signatureCanvas"
+                            } border-[1.3px] border-[#007bff]`
                           }}
                           onEnd={() =>
                             handleSignatureChange(

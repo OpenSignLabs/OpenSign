@@ -174,7 +174,8 @@
     "Duplicate": "Double",
     "daily-mail-quota": "Quota d'e-mails quotidien",
     "Save as template": "Enregistrer comme modèle",
-    "Fix & resend": "Corriger et renvoyer"
+    "Fix & resend": "Corriger et renvoyer",
+    "Kiosk Mode": "Mode Kiosque"
   },
   "report-help": {
     "Draft Documents": "Il s'agit de documents que vous avez commencés mais que vous n'avez pas finalisés pour envoi.",
@@ -304,7 +305,7 @@
   "send": "envoyer",
   "quick-send-alert-1": "Tous les rôles dans ce document sont actuellement liés à des contacts. Pour envoyer rapidement des copies de ce modèle à plusieurs signataires, veuillez vous assurer qu'au moins un rôle n'est lié à aucun contact.",
   "quick-send-alert-2": "Veuillez vous assurer qu'au moins un widget de signature est ajouté pour tous les destinataires.",
-  "quick-send-alert-3": "Veuillez ajouter au moins un rôle à ce modèle afin d'en « envoyer rapidement » des copies à plusieurs signataires.",
+  "quick-send-alert-3": "Veuillez ajouter au moins un rôle à ce template.",
   "quick-send-alert-4": "L'envoi rapide a atteint la limite.",
   "copy-link": "Copier le lien",
   "copy": "Copier",
@@ -965,5 +966,10 @@
     "p1": "Gérez les paramètres de sécurité de votre compte pour protéger vos données. OpenSign prend en charge des méthodes d'authentification avancées pour renforcer la protection de votre compte.",
     "2fa-auth-help": "Ajoutez une couche de sécurité supplémentaire en activant 2FA. Cela vous demandera de saisir un code de vérification provenant d’une application d’authentification après votre mot de passe.",
     "passkey-auth-help": "Utilisez des passkeys pour une connexion sans mot de passe grâce à une vérification biométrique ou basée sur l’appareil, offrant à la fois une sécurité renforcée et une grande commodité."
-  }  
+  },
+  "signer-already-present": "Signataire déjà présent",
+  "kiosk-sign": "Signature sur kiosque",
+  "dont-have-access-to-template": "Le template a été supprimé ou vous n'y avez pas accès. Veuillez contacter l'expéditeur.",
+  "kiosk-info": "Le Mode Kiosque vous permet de recueillir des signatures en personne rapidement et efficacement. Idéal pour les salons, événements ou situations où tous les signataires sont physiquement présents. ",
+  "learn-more": "En savoir plus"
 }
