@@ -41,7 +41,8 @@ import {
   addWidgetOptions,
   textWidget,
   compressedFileSize,
-  mailTemplate
+  mailTemplate,
+  updateDateWidgetsRes
 } from "../constant/Utils";
 import Header from "../components/pdf/PdfHeader";
 import RenderPdf from "../components/pdf/RenderPdf";
@@ -403,7 +404,6 @@ function PdfRequestFiles() {
         //condition to check already signed document by someone
         if (audittrailData && audittrailData.length > 0) {
           setIsDocId(true);
-
           for (const item of placeholdersOrSigners) {
             const checkEmail = item?.email;
             //if email exist then compare user signed by using email else signers objectId
@@ -429,13 +429,14 @@ function PdfRequestFiles() {
           }
           setSignedSigners(signers);
           setUnSignedSigners(unSignedSigner);
-          setSignerPos(documentData[0].Placeholders);
         } else {
           //else condition is show there are no details in audit trail then direct push all signers details
           //in unsignedsigners array
           setUnSignedSigners(placeholdersOrSigners);
-          setSignerPos(documentData[0].Placeholders);
         }
+        setSignerPos(
+          updateDateWidgetsRes(documentData[0].Placeholders, currUserId)
+        );
         setPdfDetails(documentData);
         //checking if condition current user already sign or owner does not exist as a signer or document has been declined by someone or document has been expired
         //then stop to display tour message

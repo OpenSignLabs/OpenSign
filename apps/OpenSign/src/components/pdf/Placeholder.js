@@ -3,6 +3,7 @@ import BorderResize from "./BorderResize";
 import PlaceholderBorder from "./PlaceholderBorder";
 import { Rnd } from "react-rnd";
 import {
+  changeDateToMomentFormat,
   defaultWidthHeight,
   fontColorArr,
   fontsizeArr,
@@ -52,32 +53,6 @@ const selectFormat = (data) => {
   }
 };
 
-const changeDateToMomentFormat = (format) => {
-  switch (format) {
-    case "MM/dd/yyyy":
-      return "L";
-    case "dd-MM-yyyy":
-      return "DD-MM-YYYY";
-    case "dd/MM/yyyy":
-      return "DD/MM/YYYY";
-    case "MMMM dd, yyyy":
-      return "LL";
-    case "dd MMM, yyyy":
-      return "DD MMM, YYYY";
-    case "yyyy-MM-dd":
-      return "YYYY-MM-DD";
-    case "MM-dd-yyyy":
-      return "MM-DD-YYYY";
-    case "MM.dd.yyyy":
-      return "MM.DD.YYYY";
-    case "MMM dd, yyyy":
-      return "MMM DD, YYYY";
-    case "dd MMMM, yyyy":
-      return "DD MMMM, YYYY";
-    default:
-      return "L";
-  }
-};
 //function to get default format
 const getDefaultFormat = (dateFormat) => dateFormat || "MM/dd/yyyy";
 

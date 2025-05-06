@@ -272,6 +272,32 @@ export const selectFormat = (data) => {
   }
 };
 
+export const changeDateToMomentFormat = (format) => {
+  switch (format) {
+    case "MM/dd/yyyy":
+      return "L";
+    case "dd-MM-yyyy":
+      return "DD-MM-YYYY";
+    case "dd/MM/yyyy":
+      return "DD/MM/YYYY";
+    case "MMMM dd, yyyy":
+      return "LL";
+    case "dd MMM, yyyy":
+      return "DD MMM, YYYY";
+    case "yyyy-MM-dd":
+      return "YYYY-MM-DD";
+    case "MM-dd-yyyy":
+      return "MM-DD-YYYY";
+    case "MM.dd.yyyy":
+      return "MM.DD.YYYY";
+    case "MMM dd, yyyy":
+      return "MMM DD, YYYY";
+    case "dd MMMM, yyyy":
+      return "DD MMMM, YYYY";
+    default:
+      return "L";
+  }
+};
 export const addWidgetOptions = (type, signer) => {
   const defaultOpt = { name: type, status: "required" };
   switch (type) {
@@ -3000,3 +3026,33 @@ export function formatDateTime(date, dateFormat, timeZone, is12Hour) {
       )
     : formatTimeInTimezone(date, timeZone);
 }
+
+export const updateDateWidgetsRes = (placeHolders, signerId) => {
+  return placeHolders?.map((item) => {
+    if (item?.signerObjId === signerId) {
+      return {
+        ...item,
+        placeHolder: item.placeHolder.map((ph) => ({
+          ...ph,
+          pos: ph.pos.map((widget) => {
+            // only for date widgets *and* missing response
+            if (widget.type === "date" && !widget.options.response) {
+              return {
+                ...widget,
+                options: {
+                  ...widget.options,
+                  response: getDate(
+                    changeDateToMomentFormat(widget.options.validation.format)
+                  )
+                }
+              };
+            }
+            return widget;
+          })
+        }))
+      };
+    } else {
+      return item;
+    }
+  });
+};
