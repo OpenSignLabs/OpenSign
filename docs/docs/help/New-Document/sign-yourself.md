@@ -17,7 +17,7 @@ After login, you will be directed to the OpenSign dashboard. From the left-side 
 - **[1] Choose File**: Once the "Sign Yourself" page opens, click here to upload the document you want to sign from your computer.
 - **[2] Upload from Dropbox**: To upload a document directly from your Dropbox account, click the Dropbox icon. You may need to provide permissions to access the file when you do it for the first time.
   
-```The maximum document size allowed is 20MB.```
+```The maximum document size allowed is 10MB.```
 
 ### Step 2: Document Information
 
