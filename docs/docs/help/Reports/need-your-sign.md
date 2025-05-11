@@ -9,7 +9,7 @@ The "Need your sign" feature in OpenSign is designed to simplify the process of 
 ## Accessing the "Need your sign" report
 
 - **Login to OpenSign**: Start by logging into your OpenSign account.
-- **Navigate to "Need your sign"**: Once logged in, you will find a navigation panel on the left side of your screen. Under the "Reports" section, click on "Need your sign" to view all documents that require your signature.
+- **Navigate to "Need your sign"**: Once logged in, you will find a navigation panel on the left side of your screen. Under the "Documents" section, click on "Need your sign" to view all documents that require your signature.
 
 ## Understanding the "Need your sign" report
 
