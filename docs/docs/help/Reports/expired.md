@@ -13,7 +13,7 @@ To view your expired documents:
 
 1. Log in to your OpenSign account.
 2. Navigate to the left sidebar.
-3. Click on the `Expired` link under the Reports section.
+3. Click on the `Expired` link under the **Documents** section.
    
 <img width="828" alt="Expired document" src="https://github.com/user-attachments/assets/01f3626f-d694-4d3b-82da-2f2b77693b76" />
 
