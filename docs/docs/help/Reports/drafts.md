@@ -9,7 +9,7 @@ The Draft documents section in OpenSign helps you manage all your in-progress do
 ### Navigating to the Draft documents report
 
 1. Once logged into OpenSign, you'll see a navigation panel on the left side of your screen.
-2. Click on **"Reports"** to expand the available options.
+2. Click on **"Documents"** to expand the available options.
 3. Select **"Drafts"** under the Reports section. This will display all your saved draft documents.
 
 ### Understanding the Draft documents report
