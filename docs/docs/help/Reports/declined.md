@@ -9,7 +9,7 @@ The "Declined documents" report within OpenSign serves as a vital tool for manag
 ### Navigating to the Declined documents report
 
 1. Once logged into OpenSign, you'll see a navigation panel on the left side of your screen.
-2. Click on **"Reports"** to expand the available options.
+2. Click on **"Documents"** to expand the available options.
 3. Select **"Declined"** to view the list of documents that have been fully signed and processed.
 
 ### Understanding the Declined documents report
