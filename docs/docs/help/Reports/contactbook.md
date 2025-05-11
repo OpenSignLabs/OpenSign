@@ -13,7 +13,7 @@ To view your Contactbook:
 
 1. Log in to your OpenSign account.
 2. Navigate to the left sidebar.
-3. Click on the `Contactbook` link under the reports section.
+3. Click on the `Contactbook` link under the Documents section.
  
 <img width="828" alt="Add contact" src="https://github.com/user-attachments/assets/80308df4-33a8-41ee-a240-801f775dcec0" />
 
