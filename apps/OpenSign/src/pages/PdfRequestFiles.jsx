@@ -264,7 +264,6 @@ function PdfRequestFiles(
     docId,
     isNextUser,
     isSuccessPage = false,
-    publiccontactId
   ) => {
     try {
       let isUpdatedSubscribe;
@@ -274,7 +273,9 @@ function PdfRequestFiles(
       const jsonSender = JSON.parse(senderUser);
       const contactId = jsonSender?.objectId
         ? ""
-        : contactBookId || publiccontactId || signerObjectId || "";
+        : contactBookId ||
+          signerObjectId ||
+          "";
       const tenantSignTypes = await fetchTenantDetails(contactId);
       // `currUserId` will be contactId or extUserId
       let currUserId;
@@ -322,7 +323,9 @@ function PdfRequestFiles(
 
         currUserId = getCurrentSigner?.objectId
           ? getCurrentSigner.objectId
-          : contactBookId || publiccontactId || signerObjectId || ""; //signerObjectId is contactBookId refer from public template flow
+          : contactBookId ||
+            signerObjectId ||
+            ""; //signerObjectId is contactBookId refer from public template flow
         if (currUserId) {
           setSignerObjectId(currUserId);
         }
@@ -581,9 +584,12 @@ function PdfRequestFiles(
     }
   };
   //function for embed signature or image url in pdf
-  async function embedWidgetsData(publiccontactId, publicDocId) {
-    let contactId = publiccontactId || signerObjectId;
-    let docId = publicDocId || documentId;
+  async function embedWidgetsData(
+  ) {
+    let contactId =
+      signerObjectId;
+    let docId =
+      documentId;
     const addExtraDays = pdfDetails[0]?.TimeToCompleteDays
       ? pdfDetails[0].TimeToCompleteDays
       : 15;
@@ -1023,30 +1029,7 @@ function PdfRequestFiles(
   }
 
   const handleSignPdf = async () => {
-    if (props.templateId) {
-      const params = {
-        ...contact,
-        templateid: pdfDetails[0]?.objectId,
-        role: pdfDetails[0]?.PublicRole[0]
-      };
-      const linkRes = await axios.post(
-        `${localStorage.getItem(
-          "baseUrl"
-        )}/functions/publicuserlinkcontacttodoc`,
-        params,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            "X-Parse-Application-Id": localStorage.getItem("parseAppId")
-          }
-        }
-      );
-      const contactId = linkRes.data.result?.contactId;
-      const docId = linkRes.data?.result?.docId;
-      await embedWidgetsData(contactId, docId);
-    } else {
       await embedWidgetsData();
-    }
   };
   //function for save x and y position and show signature  tab on that position
   const handleTabDrag = (key) => {
