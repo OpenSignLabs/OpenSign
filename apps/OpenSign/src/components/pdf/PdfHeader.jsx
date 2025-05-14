@@ -276,6 +276,20 @@ function Header(props) {
                           className="bg-white shadow-md rounded-md px-3 py-2"
                           sideOffset={5}
                         >
+                          {props?.setIsEditTemplate && (
+                            <DropdownMenu.Item
+                              className="DropdownMenuItem"
+                              onClick={() => props?.setIsEditTemplate(true)}
+                            >
+                              <div className="flex flex-row">
+                                <i
+                                  className="fa-light fa-gear mr-[3px]"
+                                  aria-hidden="true"
+                                ></i>
+                                <span className="font-[500]">{t("Edit")}</span>
+                              </div>
+                            </DropdownMenu.Item>
+                          )}
                           <DropdownMenu.Item
                             className="DropdownMenuItem"
                             onClick={() =>
