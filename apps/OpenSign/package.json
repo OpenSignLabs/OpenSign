@@ -63,7 +63,7 @@
   "scripts": {
     "build-template-win": "vite build --config vite.public-template.config.js",
     "build-template": "NODE_OPTIONS=\"--max-old-space-size=8192\" vite build --config vite.public-template.config.js",
-    "build": "npm run version && react-scripts build",
+    "build": "npm run version && npm run build-template && NODE_OPTIONS=\"--max-old-space-size=8192\" vite build",
     "build-template-watch": "NODE_OPTIONS=\"--max-old-space-size=8192\" vite build --config vite.public-template.config.js --watch",
     "start-dev": "vite",
     "dev": "vite",
@@ -71,7 +71,7 @@
     "start": "serve -s build",
     "version": "curl -s https://api.github.com/repos/opensignlabs/opensign/releases/latest | grep '\"tag_name\":' | awk -F '\"' '{print $4}' > ./public/version.txt",
     "version-win": "powershell -Command \"Invoke-RestMethod -Uri 'https://api.github.com/repos/opensignlabs/opensign/releases/latest' | Select-Object -ExpandProperty tag_name | Out-File -FilePath ./public/version.txt\"",
-    "build-win": "npm run version-win && react-scripts build",
+    "build-win": "npm run version-win && npm run build-template-win && vite build",
     "test": "vitest run",
     "test:watch": "vitest",
     "release": "standard-version",
