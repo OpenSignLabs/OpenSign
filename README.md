@@ -73,8 +73,12 @@ Welcome to OpenSign, the premier open source docusign alternative - document e-s
 
 ---
 
-### Installation
+### Deploy
 
+#### DigitalOcean
+[![Deploy on DigitalOcean](https://www.deploytodo.com/do-btn-blue.svg)](https://cloud.digitalocean.com/apps/new?repo=https://github.com/OpenSignLabs/Deploy-OpenSign-to-Digital-Ocean/tree/main&refcode=30db1c901ab0)
+
+#### Docker
 The simplest way to install OpenSign on your own server is using official docker images by running the following command -
 ``` 
 export HOST_URL=https://opensign.yourdomain.com && curl --remote-name-all https://raw.githubusercontent.com/OpenSignLabs/OpenSign/main/docker-compose.yml https://raw.githubusercontent.com/OpenSignLabs/OpenSign/main/Caddyfile https://raw.githubusercontent.com/OpenSignLabs/OpenSign/main/.env.local_dev && mv .env.local_dev .env.prod && docker compose up --force-recreate
