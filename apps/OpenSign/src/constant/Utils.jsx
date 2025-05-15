@@ -3081,9 +3081,9 @@ export const updateDateWidgetsRes = (documentData, signerId, journey) => {
     if (item?.signerObjId === signerId) {
       return {
         ...item,
-        placeHolder: item.placeHolder.map((ph) => ({
+        placeHolder: item?.placeHolder?.map((ph) => ({
           ...ph,
-          pos: ph.pos.map((widget) => {
+          pos: ph?.pos?.map((widget) => {
             // only for date widgets *and* missing response
             if (widget.type === "date" && !widget.options.response) {
               return {
