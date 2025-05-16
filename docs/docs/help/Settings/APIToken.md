@@ -19,9 +19,9 @@ Follow the steps below to generate one.
 
 **Step 2:** Navigate to the **Settings** section and click on **API Token**.  
 
-**Step 3:** On the API Token page, click the **Generate Live API Token** button.
-
 <img width="436" alt="Navigate-to-Api-token" src="https://github.com/user-attachments/assets/8079ecb5-ad5b-4ce6-8d6c-14395130a654"></img>
+
+**Step 3:** On the API Token page, click the **Generate Live API Token** button.
 
 <img width="436" alt="Generate token" src="https://github.com/user-attachments/assets/6188ae46-0f40-4de6-9903-33ae0aa4e63f"></img>
 
