@@ -18,7 +18,7 @@ To access the user management panel:
 1. Log in to your OpenSign account.
 2. In the left-hand sidebar, navigate to **Settings → Users**.
 
-<img width="436" alt="Navigate-to-Api-token" src="https://github.com/user-attachments/assets/9f34201c-fda7-406b-9a78-49a5459269cd"></img>
+<img width="436" alt="Navigate-to-users" src="https://github.com/user-attachments/assets/9f34201c-fda7-406b-9a78-49a5459269cd"></img>
 
 A list of existing users will be displayed.
 
@@ -52,7 +52,7 @@ To add a new user:
 
 > 🔒 **Note:** Once a user is created, the password will not be visible again. If needed, you can use the **"Forgot Password"** option on the login page to reset it.
 
-<img width="436" alt="Password-reset-info" src="https://github.com/user-attachments/assets/647c40d8-061d-4e0a-b62c-302296e83493"></img>
+<img width="436" alt="new  user" src="https://github.com/user-attachments/assets/647c40d8-061d-4e0a-b62c-302296e83493"></img>
 
 ---
 
