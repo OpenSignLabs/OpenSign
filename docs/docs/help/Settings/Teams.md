@@ -47,7 +47,7 @@ To create a new team:
 - **Name** (Required): Enter a name for the new team.
 - **Parent Team**: Choose a parent group (default is **All Users**).
 
-<img width="436" alt="Navigate-add team" src="https://github.com/user-attachments/assets/74c042b1-2c31-4d00-81f4-0abeaf0c985c"></img> 
+<img width="436" alt="add team" src="https://github.com/user-attachments/assets/74c042b1-2c31-4d00-81f4-0abeaf0c985c"></img> 
 
 3. Click **Submit** to create the team or **Reset** to clear the form.
 
