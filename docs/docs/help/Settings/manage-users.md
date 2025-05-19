@@ -38,7 +38,7 @@ To add a new user:
    | **Email**    | ✅ Yes    | Enter a valid email address.                                                                                                                               |
    | **Password** | ✅ Yes    | The system auto-generates a password. **Copy it immediately** as it will be shown only once.                                                               |
    | **Phone**    | ❌ No     | (Optional) Enter the user’s phone number.                                                                                                                   |
-   | **Team**     | ✅ Yes    | Select the team the user belongs to from the dropdown.<br>_Note: Teams must be created beforehand under **Settings → Teams** (available in Teams & Enterprise plans)._ |
+   | **Team**     | ✅ Yes    | Select the team the user belongs to from the dropdown.<br />_Note: Teams must be created beforehand under **Settings → Teams** (available in Teams & Enterprise plans)._ |
    | **Role**     | ✅ Yes    | Choose one of the following roles:                                                                                                                          |
    |              |          | - **OrgAdmin**: Full access, including user and team management.                                                                                            |
    |              |          | - **Editor**: Can create and share templates but **cannot manage users**.                                                                                   |
