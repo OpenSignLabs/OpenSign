@@ -112,6 +112,14 @@ If the available seats count is **0**, you must **buy more seats** before adding
 
 ---
 
+## 📌 Frequently Asked Questions (FAQ)
+
+**Q: How do I pay for purchased add-on users?**  
+**A:** After purchasing additional users (seats), your saved card will be charged automatically, and an invoice will be emailed to your registered address.
+If no card is on saved, a payment link will be sent to your email to complete the transaction.
+
+---
+
 ## 📣 Need Help?
 
 If you need further assistance, feel free to reach out to our customer support at **support@opensignlabs.com**.
