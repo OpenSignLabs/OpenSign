@@ -1,5 +1,5 @@
 # Use an official Node runtime as the base image
-FROM node:16
+FROM node:18
 
 # Set the working directory inside the container
 WORKDIR /usr/src/app
@@ -21,5 +21,5 @@ EXPOSE 3000
 # ENV NODE_ENV production
 
 # Run the application
-ENTRYPOINT npm run start-dev
+ENTRYPOINT npm run start
 

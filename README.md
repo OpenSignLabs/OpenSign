@@ -11,7 +11,9 @@
 
 <a href="https://www.opensignlabs.com/">Website</a>
   <span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>
-  <a href="https://www.opensignlabs.com">Docs</a>
+  <a href="https://docs.opensignlabs.com">Help Docs</a>
+  <span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>
+    <a href="https://docs.opensignlabs.com/docs/API-docs/opensign-api-v-1">API Docs</a>
   <span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>
   <a href="https://www.opensignlabs.com/blog">Blog</a>
   <span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>
@@ -22,7 +24,7 @@
   <a href="https://www.linkedin.com/company/opensign%E2%84%A2/about/">LinkedIn</a>
 
 
-## The open-source document e-signing solution
+## The premier open source document signing solution(DocuSign alternative)
 
 ---
 </div>
@@ -38,44 +40,54 @@
 7. [Acknowledgments](#acknowledgments)
 
 ---
+Please star ⭐ the repo to support us! 😀
 
 ### Introduction
 
-Welcome to OpenSign, an open-source document e-signing solution designed to provide a secure, reliable, and free alternative to commercial platforms like DocuSign, PandaDoc, SignNow, Adobe Sign, Smartwaiver, SignRequest, HelloSign & Zoho sign. Developed under the OpenSignLabs organization, our mission is to democratize the e-signing process, making it accessible and straightforward for everyone.
+Welcome to OpenSign, the premier open source docusign alternative - document e-signing solution designed to provide a secure, reliable and free alternative to commercial esign platforms like DocuSign, PandaDoc, SignNow, Adobe Sign, Smartwaiver, SignRequest, HelloSign & Zoho sign. Our mission is to democratize the document signing process, making it accessible and straightforward for everyone.
 
 ---
 
 ### Features
 
-- **Secure PDF E-Signing:** With the help of Robust encryption algorithms, OpenSign™ ensures maximum security, privacy & compatibility.
-- **Annotate Documents:** OpenSign™ allows you to annotate PDF documents with an advanced signing pad that comes with hand drawn signatures support as well as uploaded images & saved signatures for the simplest signing experience.
-- **User-Friendly Interface:** OpenSign™ was built while keeping Intuitive design in mind for ease of use. Features like "Sign yourself", "One click signatures" and "OpenSign Drive" makes it stand out of the crowd and even makes it better than a lot of so-called industry leaders.
-- **Multi-signer Support:** OpenSign's ability to invite multiple signers for signing along with the ability to invite witnesses & being able to enforce signing in a sequence makes it the only open source solution that is fully loaded and allows it to compete head-to-head with established players.
+- **Secure PDF E-Signing:** With the help of robust encryption algorithms, OpenSign™ ensures maximum security, privacy & compatibility. Now sign unlimited documents even on the [cloud hosted free version of OpenSign](https://www.opensignlabs.com/).
+- **Annotate Documents:** OpenSign™ allows you to annotate PDF documents with an advanced signing pad that allows hand drawn signatures, uploaded images, typed signatures & saved signatures for the simplest open source document signing experience ever.
+- **User-Friendly Interface:** OpenSign™ was built while keeping Intuitive design in mind for ease of use. Features like "Sign yourself", "Templates", "One click signatures" and "OpenSign™ Drive" makes it stand out of the crowd and even makes it better than a lot of so-called industry leaders. OpenSign intends to provide the best document signing experience in the open source ecosystem.
+- **Multi-signer Support:** OpenSign's ability to invite multiple signers for signing along with the ability to invite by sharing signing links & being able to enforce signing in a sequence makes it the only open source solution that is fully loaded and allows it to compete head-to-head with established players in e-signature space.
 - **Email Unique Code(OTP) verification support for guest signers:** With OpenSign™, your documents are fully secure even when being signed by guest users. Guest signers can only sign the document after entering a unique code sent to their email address. 
-- **"Expiring Docs" & "Rejection":** You can set documents to expire after certain number of days after which nobody will be able to sign it. Not just this, OpenSign also allows signers to reject signing a document.
-- **Beautiful email templates:** All document signing invitations, completion notifications & reminders are formatted using great looking email templates.
-- **PDF Template Creation(coming soon):** OpenSign™ allows you to create and store PDF document templates for repeated use thereby saving you a lot of time.
-- **OpenSign™ Drive:** It is a centralised secure vault for your signed documents that makes storing, signing, organizing, sharing & achieving your docs a breeze.
+- **"Expiring Docs" & "Rejection":** You can set documents to expire after certain number of days after which nobody will be able to sign. Not just this, OpenSign™ also allows signers to reject signing a document with a reason that will be promptly shared with the sender.
+- **Beautiful email templates:** All document signing invitations, completion notifications & reminders are formatted using great looking email templates. Not just this, you are even allowed to customise the email templates making your free document signing invitations look the way you always wanted them to be.
+- **PDF Template Creation:** OpenSign™ allows you to create and store PDF document templates for repeated use thereby saving you a lot of time & collect e-signatures seamlessly.
+- **OpenSign™ Drive:** It is a centralised secure vault for your digital documents that makes storing, signing, organizing, sharing & archieving your docs a breeze.
 - **Audit Trails & completion certificate:** Being a security focused solution, OpenSign™ makes it a top priority to save detailed logs for tracking document activities along with time-stamps, IP addresses, email IDs & phone numbers. A completion certificate is generated as soon as document is completed which contains all the document related logs for added safety.
-- **API Support(coming soon):** OpenSign™ API allows seamless integration into existing systems and software. APIs will soon be available as a cloud hosted solution.
-- **Integrations:** Seamless integrations with various Cloud storage systems, CRMs & enterprise platforms is coming soon.
-
-<img src=https://github.com/OpenSignLabs/OpenSign/assets/5486116/b37ff443-7099-4273-9aeb-21c46d7154cf height='200'>
-<img src=https://github.com/OpenSignLabs/OpenSign/assets/5486116/86db91b7-6c2f-4885-a33c-58f4fd35ec89 height='200'>
-<img src=https://github.com/OpenSignLabs/OpenSign/assets/5486116/56835efd-c40e-42de-a206-20202c293876 height='200'>
-
+- **API Support:** OpenSign™ API allows seamless integration into existing systems and software. You can generate an API key from the app and refer the [official API docs](https://docs.opensignlabs.com/docs/API-docs/opensign-api-v-1) to start integrating it in your existing applications.
+- **Integrations:** The open source document signing experience becomes even more seamless because of integrations with various Cloud storage systems, CRMs & enterprise platforms. We also have a Zapier integration that allows you to integrate it with virtually any application.
+<img alt="Login page" src="https://github.com/OpenSignLabs/OpenSign/assets/171803164/8016edb6-7d6e-4185-ab72-82d2c4a16032" height='200' > 
+<img alt="Dash_board" src="https://github.com/OpenSignLabs/OpenSign/assets/171803164/6e7b96f7-3154-4c25-bc1e-caf33925cc47" height='200'>
+<img  alt="Widgets" src="https://github.com/OpenSignLabs/OpenSign/assets/171803164/7edb65bd-c265-4b3d-9758-38e79766c5c2" height='200'>
+<img  alt="Request Signature" src="https://github.com/OpenSignLabs/OpenSign/assets/171803164/1697ae46-dcac-41c9-a081-aded25693846" height='200'>
+<img  alt="Create template" src="https://github.com/OpenSignLabs/OpenSign/assets/171803164/c2060fda-50f1-4116-a532-51b94b48463a" height='200'>
+<img  alt="Manage_Template" src="https://github.com/OpenSignLabs/OpenSign/assets/171803164/90310c74-8271-49bd-8c5f-89daa5a623c4" height='200'>
+<img  alt="Folders" src="https://github.com/OpenSignLabs/OpenSign/assets/171803164/a52207e7-3b0e-497c-b5f6-747bc4e67918" height='200'>
+<img alt="OpenSign_Confetti" src="https://github.com/OpenSignLabs/OpenSign/assets/171803164/8f4c6a6e-4a73-439c-9f34-f426044d0a7f" height='200'>
 
 ---
 
 ### Installation
 
-Please refer to the [Installation Guide](INSTALLATION.md) for detailed instructions on how to install OpenSign on your system.
+The simplest way to install OpenSign on your own server is using official docker images by running the following command -
+``` 
+export HOST_URL=https://opensign.yourdomain.com && curl --remote-name-all https://raw.githubusercontent.com/OpenSignLabs/OpenSign/main/docker-compose.yml https://raw.githubusercontent.com/OpenSignLabs/OpenSign/main/Caddyfile https://raw.githubusercontent.com/OpenSignLabs/OpenSign/main/.env.local_dev && mv .env.local_dev .env.prod && docker compose up --force-recreate
+```
+Make sure that you have `Docker` and `git` installed before you run this command -
+
+Please refer to the [Installation Guide](https://docs.opensignlabs.com/docs/self-host/docker/run-locally/) for detailed instructions on how to install OpenSign on your system.
 
 ---
 
 ### Usage
 
-For comprehensive guidelines on how to use OpenSign, please consult our [User Manual](USAGE.md).
+For comprehensive guidelines on how to use OpenSign™, please consult our [User Manual](USAGE.md).
 
 ---
 
@@ -87,13 +99,13 @@ We welcome contributions from the open-source community. For more information on
 
 ### License
 
-OpenSign is licensed under the AGPL License. For more details, see the [LICENSE](LICENSE) file.
+OpenSign is licensed under the AGPL-3 License. For more details, see the [LICENSE](LICENSE) file.
 
 ---
 
 ### Acknowledgments
 
-We would like to thank all our contributors and users for their support and feedback. Special thanks to [OpenSignLabs](https://github.com/OpenSignLabs) for spearheading this initiative.
+We would like to thank all our contributors and users for their support and feedback. Special thanks to [OpenSignLabs](https://www.opensignlabs.com) for spearheading this initiative.
 
 ---
 
@@ -133,6 +145,10 @@ We would like to thank all our contributors and users for their support and feed
     </tr>
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/VikramNagwal"><img src="https://avatars.githubusercontent.com/u/123088024?v=4?s=100" width="100px;" alt="Vikram"/><br /><sub><b>Vikram</b></sub></a><br /><a href="#code-VikramNagwal" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/ugoconsonni"><img src="https://avatars.githubusercontent.com/u/13661702?v=4?s=100" width="100px;" alt="ugoconsonni"/><br /><sub><b>ugoconsonni</b></sub></a><br /><a href="#code-ugoconsonni" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/daniel-mutwiri"><img src="https://avatars.githubusercontent.com/u/8936960?v=4?s=100" width="100px;" alt="Daniel Mutwiri"/><br /><sub><b>Daniel Mutwiri</b></sub></a><br /><a href="#code-daniel-mutwiri" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/Zathiel"><img src="https://avatars.githubusercontent.com/u/26553418?v=4?s=100" width="100px;" alt="Zathiel"/><br /><sub><b>Zathiel</b></sub></a><br /><a href="#code-Zathiel" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/1024mb"><img src="https://avatars.githubusercontent.com/u/9301204?v=4?s=100" width="100px;" alt="1024mb"/><br /><sub><b>1024mb</b></sub></a><br /><a href="#translation-1024mb" title="Translation">🌍</a></td>
     </tr>
   </tbody>
 </table>
@@ -141,4 +157,6 @@ We would like to thank all our contributors and users for their support and feed
 <!-- prettier-ignore-end -->
 
 <!-- ALL-CONTRIBUTORS-LIST:END -->
+
+This project is tested with BrowserStack.
 

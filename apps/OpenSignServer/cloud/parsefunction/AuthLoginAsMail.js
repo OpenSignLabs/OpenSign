@@ -1,8 +1,9 @@
 import axios from 'axios';
+import { cloudServerUrl } from '../../Utils.js';
 async function AuthLoginAsMail(request) {
   try {
     //function for login user using user objectId without touching user's password
-    const serverUrl = process.env.SERVER_URL;
+    const serverUrl = cloudServerUrl; //process.env.SERVER_URL;
     const APPID = process.env.APP_ID;
     const masterKEY = process.env.MASTER_KEY;
 
@@ -21,7 +22,23 @@ async function AuthLoginAsMail(request) {
 
       if (resOtp === otp) {
         var result = await getToken(request);
-        return result;
+        if (result && !result?.emailVerified) {
+          const userQuery = new Parse.Query(Parse.User);
+          const user = await userQuery.get(result?.objectId, {
+            sessionToken: result.sessionToken,
+          });
+          // Update the emailVerified field to true
+          user.set('emailVerified', true);
+          // Save the user object
+          const res = await user.save(null, { useMasterKey: true });
+          if (res) {
+            return result;
+          } else {
+            reject('user not found!');
+          }
+        } else {
+          return result;
+        }
 
         async function getToken(request) {
           return new Promise(function (resolve, reject) {
@@ -56,6 +73,7 @@ async function AuthLoginAsMail(request) {
                   .catch(err => {
                     reject('user not found!');
                   });
+
                 // user couldn't find lets sign up!
               })
               .catch(() => {
