@@ -18,7 +18,7 @@ The **Allowed Signature Types** section defines which signature methods are avai
 - ✅ **Upload**: Upload a scanned or saved image of your signature.
 - ✅ **Default**: Use the default signature stored under *My Signature* in settings.
 
-⚙️ The options selected here will determine what appears in the signature widget during document creation and signing. You can also change these preferences while creating the document.
+⚙️ The options selected here determine what appears in the signature widget during document creation and signing. You can also change these preferences while creating the document.
 
 ---
 
@@ -30,33 +30,40 @@ The **Allowed Signature Types** section defines which signature methods are avai
 
 Admins can enforce company-wide signing policies by restricting signature methods platform-wide.
 
-> In the **Console Application > General**, admins can set allowed signature types at the organization level. Only the selected types will be shown on the **Preferences > Signature** page for users.
+In **Console Application > General**, admins can set allowed signature types at the organization level. Only the selected types will appear on the **Preferences > Signature** page for users.
+
+<img width="436" alt="Signature type setup console" src="https://github.com/user-attachments/assets/c8c3de19-e82e-464a-977b-cdf3fd12aed7" />
 
 ### 👤 User-Level
 
-> Navigate to **Settings > Preferences** to configure user-level signature types.  
-If a user sets preferred types here, only these will be shown when adding signature or initial widgets during document creation.
+Navigate to **Settings > Preferences** to configure user-level signature types.  
+
+If a user sets preferred types here, only these will appear when adding signature or initial widgets during document creation.
+
+<img width="436" alt="Signature type setup preferences" src="https://github.com/user-attachments/assets/ae413b24-fe53-4aa9-9242-624574f1d7b3" />
 
 ### 📄 Document-Level
 
-> While creating a document, users can set specific allowed signature types.  
+While creating a document, users can set specific allowed signature types.  
+
 Only these will be available to the signer—useful for legal or regulatory requirements.
+
+<img width="436" alt="Signature type setup signature widget" src="https://github.com/user-attachments/assets/d64510e1-df14-44fe-8020-45b17c612238" />
 
 ---
 
 ## 🔔 Notify on Signatures
 
-Enable or disable email or in-app notifications when a document is signed.
+The document owner will receive email notifications when a document is signed.
 
 - **Yes** – Receive alerts for each completed signature.  
 - **No** – Notifications are turned off.
 
-> User can change this option while creating the document or template.
-
-**Details**:
-The document creator will receive an email notification whenever a signer signs the document.
+> Users can change this option while creating the document or template.
 
 **Note**: Regardless of this setting, a **completion email** with the signed document and completion certificate is **always sent** to all signers and the document owner.
+
+<img width="436" alt="Preferences setup" src="https://github.com/user-attachments/assets/5adad567-6c01-4766-9b10-db3f95ad65d3" />
 
 ---
 
@@ -64,15 +71,10 @@ The document creator will receive an email notification whenever a signer signs 
 
 Decide whether the document should be signed **sequentially** or **simultaneously** by multiple signers.
 
-- **Yes** – Signers receive the document in a set order.
-- **No** – All signers receive the document at once.
+- **Yes** – Signers receive the document in a set order. The next signer gets access only after the previous one has completed signing.
+- **No** – All signers receive the document at once and can sign independently of one another.
 
-> User can change this option while creating the document or template.
-
-**Details**:
-
-- **Yes**: Signers are notified one after another. The next signer gets access only after the previous has completed signing.
-- **No**: All signers receive links at the same time. They can sign independently of one another.
+> Users can change this option while creating the document or template.
 
 ---
 
@@ -80,15 +82,10 @@ Decide whether the document should be signed **sequentially** or **simultaneousl
 
 The tour feature provides guidance for first-time users. You can turn this off for a cleaner, uninterrupted experience:
 
-- **Yes** – Show onboarding tips.
-- **No** – Disable tour prompts *(recommended for experienced users)*.
+- **Yes** – Show onboarding tips. Enables guided tooltips for the signer during the signing process.
+- **No** – Disable tour prompts *(recommended for experienced users)*. Speeds up the signing experience.
 
-> User can change this option while creating the document or template.
-
-**Details**:
-
-- **Yes**: Enables guided tooltips for the signer during the signing process.
-- **No**: Disables the tour, speeding up the signing experience.
+> Users can change this option while creating the document or template.
 
 💡 **Tip**: Disable if your users are already familiar with OpenSign™.
 
@@ -104,12 +101,16 @@ These settings are reflected in:
 - Webhooks
 
 ### 📅 Date Format
-- Used as the **default format** for date widgets when creating documents.
-- Applies in all flows including APIs.
+
+- The selected date format will be applied by default to the date widget if no specific format is chosen during document creation.
+- This default format applies in all flows including APIs.
 
 ### 🕒 Time Format
+
 - Supports **12-hour** and **24-hour** formats.
 - Affects timestamps in certificates, logs, and webhooks.
+
+<img width="436" alt="Preferences setup" src="https://github.com/user-attachments/assets/5bb9ad1a-f3c7-4b6e-9469-1bb003e1eec0" />
 
 ---
 
@@ -118,17 +119,20 @@ These settings are reflected in:
 **LTV (Long-Term Validation)** ensures that signatures remain valid and verifiable even after certificates expire or are revoked.
 
 ### 🔐 Key Features:
-- Embeds certificate chain
-- Includes CRLs and OCSP responses
-- Enables offline verification
+
+- Embeds certificate chain  
+- Includes CRLs and OCSP responses  
+- Enables offline verification  
 - Complies with PDF standards like **PAdES**
 
 ### 📌 Why It Matters:
+
 Even if a certificate becomes invalid in the future, the LTV-enabled signature stays verifiable.
 
 ### ✅ Use Cases:
-- Legal Contracts
-- Financial or Medical Records
+
+- Legal Contracts  
+- Financial or Medical Records  
 - Long-term archiving requirements
 
 ---
@@ -138,10 +142,12 @@ Even if a certificate becomes invalid in the future, the LTV-enabled signature s
 In the **Preferences > Email** tab, users can customize email templates for:
 
 ### ✉️ Request Signature Email
-Once set, all signers will receive the customized request email.
+
+All signers will receive the customized request email once it is set.
 
 ### 📩 Document Completion Email
-On completion, all signers receive the custom-formatted email with the signed document.
+
+All signers receive a custom-formatted email with the signed document upon completion.
 
 ---
 
@@ -151,17 +157,21 @@ On completion, all signers receive the custom-formatted email with the signed do
 
 Adds a second verification step when logging in.
 
-### Benefits:
-- Enhances account protection
-- Requires time-based code from an app like Google Authenticator
+#### Benefits:
 
-### How to Enable:
-1. Go to **Security > Setup 2FA**
-2. Scan the QR Code with an authenticator app
-3. Save Recovery Codes for backup
-4. Enter verification code to complete setup
+- Enhances account protection  
+- Requires a time-based code from an app like Google Authenticator
+
+#### How to Enable:
+
+1. Go to **Security > Setup 2FA**  
+2. Scan the QR Code with an authenticator app  
+3. Save recovery codes for backup  
+4. Enter the verification code to complete setup
 
 > If 2FA is enabled, you’ll be prompted for a verification code after entering your password.
+
+[![how to setup 2fa](https://img.youtube.com/vi/cgVBBetnbO8/0.jpg)](https://www.youtube.com/watch?v=cgVBBetnbO8)
 
 ---
 
@@ -170,27 +180,25 @@ Adds a second verification step when logging in.
 Passkeys offer **passwordless** and **phishing-resistant** sign-in.
 
 #### 🔐 Key Features:
-- Use fingerprint, face ID, or device PIN
-- Passwordless and secure
+
+- Use fingerprint, Face ID, or device PIN  
+- Passwordless and secure  
 - Reduces credential theft risks
 
-### 🛠 How to Register a Passkey:
-1. Click **Register another passkey**
-2. Your device prompts biometric or PIN-based authentication
+#### 🛠 How to Register a Passkey:
+
+1. Click **Register another passkey**  
+2. Your device prompts biometric or PIN-based authentication  
 3. On success, the passkey is saved and listed under **Your Passkeys**
-   
-### 🧾 Managing Your Passkeys
 
-Each passkey entry shows:
-- Name (e.g., "Windows Edge")
-- Created Date
-- Last Used Date
-- Credential ID
+#### 🧾 Managing Your Passkeys
 
-#### ✏️ Rename:
+##### ✏️ Rename:
+
 Click the **pencil icon** to rename a passkey.
 
-#### 🗑 Delete:
+##### 🗑 Delete:
+
 Click the **trash icon** to remove a passkey.  
 ⚠️ This revokes access via that method.
 
