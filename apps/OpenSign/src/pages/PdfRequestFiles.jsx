@@ -1144,7 +1144,6 @@ function PdfRequestFiles(
           return obj;
         });
         setSignerPos(newUpdateSigner);
-
         setFontSize();
         setFontColor();
         handleTextSettingModal(false);
