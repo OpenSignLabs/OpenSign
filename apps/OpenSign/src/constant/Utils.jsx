@@ -22,6 +22,35 @@ export const textInputWidget = "text input";
 export const textWidget = "text";
 export const radioButtonWidget = "radio button";
 
+
+//function for create list of year for date widget
+export const range = (start, end, step) => {
+  const range = [];
+  for (let i = start; i <= end; i += step) {
+    range.push(i);
+  }
+  return range;
+};
+//function for get year
+export const getYear = (date) => {
+  const newYear = new Date(date).getFullYear();
+  return newYear;
+};
+export const years = range(1950, getYear(new Date()) + 16, 1);
+export const months = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December"
+];
 export const fileasbytes = async (filepath) => {
   const response = await fetch(filepath); // Adjust the path accordingly
   const arrayBuffer = await response.arrayBuffer();
@@ -304,56 +333,73 @@ export const changeDateToMomentFormat = (format) => {
   }
 };
 export const addWidgetOptions = (type, signer, widgetValue) => {
-  const defaultOpt = { name: type, status: "required" };
+  const status = { status: "required" };
   switch (type) {
     case "signature":
-      return defaultOpt;
+      return { ...status, name: "Signature" };
     case "stamp":
-      return defaultOpt;
+      return { ...status, name: "Upload stamp" };
     case "checkbox":
       return {
-        ...defaultOpt,
-        options: { isReadOnly: false, isHideLabel: false }
+        ...status,
+        name: "Checkbox",
+        isReadOnly: false,
+        isHideLabel: false
       };
     case textInputWidget:
-      return { ...defaultOpt, isReadOnly: false };
+      return { ...status, name: "Text", isReadOnly: false };
     case "initials":
-      return defaultOpt;
+      return { ...status, name: "Initials" };
     case "name":
-      return { ...defaultOpt, defaultValue: widgetValue ? widgetValue : "" };
+      return {
+        ...status,
+        name: "Name",
+        defaultValue: widgetValue ? widgetValue : ""
+      };
     case "company":
-      return { ...defaultOpt, defaultValue: widgetValue ? widgetValue : "" };
+      return {
+        ...status,
+        name: "Company",
+        defaultValue: widgetValue ? widgetValue : ""
+      };
     case "job title":
-      return { ...defaultOpt, defaultValue: widgetValue ? widgetValue : "" };
+      return {
+        ...status,
+        name: "Job title",
+        defaultValue: widgetValue ? widgetValue : ""
+      };
     case "date": {
       const dateFormat = signer?.DateFormat
         ? selectFormat(signer?.DateFormat)
         : "MM/dd/yyyy";
       return {
-        ...defaultOpt,
+        ...status,
+        name: "Date",
         response: getDate(signer?.DateFormat),
         validation: { format: dateFormat, type: "date-format" }
       };
     }
     case "image":
-      return defaultOpt;
+      return { ...status, name: "Upload image" };
     case "email":
       return {
-        ...defaultOpt,
+        ...status,
+        name: "Email",
         validation: { type: "email", pattern: "" },
         defaultValue: widgetValue ? widgetValue : ""
       };
     case "dropdown":
-      return defaultOpt;
+      return { ...status, name: "Dropdown" };
     case radioButtonWidget:
       return {
-        ...defaultOpt,
+        ...status,
+        name: "Radio button",
         values: [],
         isReadOnly: false,
         isHideLabel: false
       };
     case textWidget:
-      return defaultOpt;
+      return { ...status, name: "Text" };
     default:
       return {};
   }
@@ -362,30 +408,30 @@ export const addWidgetOptions = (type, signer, widgetValue) => {
 export const addWidgetSelfsignOptions = (type, getWidgetValue, owner) => {
   switch (type) {
     case "signature":
-      return { name: "signature" };
+      return { name: "Signature" };
     case "stamp":
-      return { name: "stamp" };
+      return { name: "Upload stamp" };
     case "checkbox":
-      return { name: "checkbox" };
+      return { name: "Checkbox" };
     case textWidget:
-      return { name: "text" };
+      return { name: "Text" };
     case "initials":
-      return { name: "initials" };
+      return { name: "Initials" };
     case "name":
       return {
-        name: "name",
+        name: "Name",
         defaultValue: getWidgetValue(type),
         validation: { type: "text", pattern: "" }
       };
     case "company":
       return {
-        name: "company",
+        name: "Company",
         defaultValue: getWidgetValue(type),
         validation: { type: "text", pattern: "" }
       };
     case "job title":
       return {
-        name: "job title",
+        name: "Job title",
         defaultValue: getWidgetValue(type),
         validation: { type: "text", pattern: "" }
       };
@@ -394,16 +440,16 @@ export const addWidgetSelfsignOptions = (type, getWidgetValue, owner) => {
         ? selectFormat(owner?.DateFormat)
         : "MM/dd/yyyy";
       return {
-        name: "date",
+        name: "Date",
         response: getDate(owner?.DateFormat),
         validation: { format: dateFormat, type: "date-format" }
       };
     }
     case "image":
-      return { name: "image" };
+      return { name: "Upload image" };
     case "email":
       return {
-        name: "email",
+        name: "Email",
         defaultValue: getWidgetValue(type),
         validation: { type: "email", pattern: "" }
       };
@@ -815,8 +861,6 @@ export const onChangeInput = (
   userId,
   initial,
   dateFormat,
-  isDefaultEmpty,
-  isRadio,
   fontSize,
   fontColor
 ) => {
@@ -853,22 +897,13 @@ export const onChangeInput = (
                   }
                 }
               };
-            } else if (isDefaultEmpty) {
-              return {
-                ...position,
-                options: {
-                  ...position.options,
-                  response: value,
-                  defaultValue: isRadio ? "" : []
-                }
-              };
             } else {
               return {
                 ...position,
                 options: {
                   ...position.options,
                   response: value,
-                  defaultValue:""
+                  defaultValue: ""
                 }
               };
             }
@@ -915,7 +950,8 @@ export const onChangeInput = (
             ...positionData,
             options: {
               ...positionData.options,
-              response: value
+              response: value,
+              defaultValue: ""
             }
           };
         }
@@ -1196,7 +1232,6 @@ export function onSaveSign(
     return updatedArray;
   } //condition when user edit signature/initial then updated signature apply all existing drawn signatures
   else if (isApplyAll) {
-    // console.log("signatureImg",signatureImg)
     const updatedArray = updateXYposition.map((page) => ({
       ...page,
       pos: page.pos.map(
@@ -2040,24 +2075,10 @@ export const addDefaultSignatureImg = (xyPosition, defaultSignImg, type) => {
   return xyDefaultPos;
 };
 
-//function for create list of year for date widget
-export const range = (start, end, step) => {
-  const range = [];
-  for (let i = start; i <= end; i += step) {
-    range.push(i);
-  }
-  return range;
-};
 //function for get month
 export const getMonth = (date) => {
   const newMonth = new Date(date).getMonth();
   return newMonth;
-};
-
-//function for get year
-export const getYear = (date) => {
-  const newYear = new Date(date).getFullYear();
-  return newYear;
 };
 
 //function to create/copy widget next to already dropped widget
@@ -3116,4 +3137,27 @@ export const updateDateWidgetsRes = (documentData, signerId, journey) => {
       return item;
     }
   });
+};
+
+//function for show checked checkbox
+export const selectCheckbox = (ind, selectedCheckbox) => {
+  if (selectedCheckbox && selectedCheckbox?.length > 0) {
+    const isCheck = selectedCheckbox?.some((data) => data === ind);
+    return isCheck || false;
+  }
+};
+export const checkRegularExpress = (validateType, setValidatePlaceholder) => {
+  switch (validateType) {
+    case "email":
+      setValidatePlaceholder("demo@gmail.com");
+      break;
+    case "number":
+      setValidatePlaceholder("12345");
+      break;
+    case "text":
+      setValidatePlaceholder("please enter text");
+      break;
+    default:
+      setValidatePlaceholder("please enter value");
+  }
 };

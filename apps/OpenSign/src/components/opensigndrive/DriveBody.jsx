@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
 import "../../styles/opensigndrive.css";
 import axios from "axios";
-import * as ContextMenu from "@radix-ui/react-context-menu";
+import { ContextMenu } from "radix-ui";
 import { useNavigate } from "react-router";
 import Table from "react-bootstrap/Table";
-import * as HoverCard from "@radix-ui/react-hover-card";
+import { HoverCard } from "radix-ui";
 import ModalUi from "../../primitives/ModalUi";
 import FolderModal from "../shared/fields/FolderModal";
 import { useTranslation } from "react-i18next";

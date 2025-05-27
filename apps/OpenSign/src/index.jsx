@@ -4,7 +4,6 @@ import "./index.css";
 import App from "./App";
 import { Provider } from "react-redux";
 import { store } from "./redux/store";
-import { CookiesProvider } from "react-cookie";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { TouchBackend } from "react-dnd-touch-backend";
 import {
@@ -19,7 +18,8 @@ import "./polyfills";
 import { serverUrl_fn } from "./constant/appinfo";
 import "./i18n";
 
-const appId = import.meta.env.VITE_APPID || process.env.REACT_APP_APPID || "opensign";
+const appId =
+  import.meta.env.VITE_APPID || process.env.REACT_APP_APPID || "opensign";
 const serverUrl = serverUrl_fn();
 Parse.initialize(appId);
 Parse.serverURL = serverUrl;
@@ -56,12 +56,10 @@ const generatePreview = (props) => {
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
-  <CookiesProvider defaultSetOptions={{ path: "/" }}>
-    <Provider store={store}>
-      <DndProvider options={HTML5toTouch}>
-        <Preview>{generatePreview}</Preview>
-        <App />
-      </DndProvider>
-    </Provider>
-  </CookiesProvider>
+  <Provider store={store}>
+    <DndProvider options={HTML5toTouch}>
+      <Preview>{generatePreview}</Preview>
+      <App />
+    </DndProvider>
+  </Provider>
 );

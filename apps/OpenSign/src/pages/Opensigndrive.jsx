@@ -11,7 +11,7 @@ import Title from "../components/Title";
 import Parse from "parse";
 import ModalUi from "../primitives/ModalUi";
 import TourContentWithBtn from "../primitives/TourContentWithBtn";
-import Tour from "reactour";
+import Tour from "../primitives/Tour";
 import axios from "axios";
 import Loader from "../primitives/Loader";
 import { useTranslation } from "react-i18next";

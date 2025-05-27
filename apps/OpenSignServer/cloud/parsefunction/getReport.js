@@ -47,6 +47,13 @@ export default async function getReport(request) {
                       objectId: extUser.id,
                     },
                   },
+                  {
+                    SharedWithUsers: {
+                      __type: 'Pointer',
+                      className: 'contracts_Users',
+                      objectId: extUser.id,
+                    },
+                  },
                 ],
               });
             } else {
