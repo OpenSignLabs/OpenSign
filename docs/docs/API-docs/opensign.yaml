@@ -1,7 +1,18 @@
 openapi: 3.0.3
 info:
   title: OpenSign API v1
-  description: "Welcome to the OpenSign™ API documentation! Our powerful and flexible API allows you to seamlessly integrate digital signing capabilities into your applications. Whether you're a developer looking to automate document workflows, a business seeking to enhance security, or an enterprise aiming for efficient contract management, our API provides robust solutions to meet your needs. Dive into our detailed guides, code examples, and best practices to start leveraging the full potential of OpenSign™ and transform your digital document processes today. \n\nSome useful links:\n- [OpenSign Website](https://www.opensignlabs.com)\n- [OpenSign Github repo](https://github.com/opensignlabs/opensign)"
+  description: |
+    Welcome to the OpenSign™ API documentation!
+
+    Our powerful and flexible API empowers you to seamlessly integrate digital signing capabilities into your applications. Whether you're a developer automating document workflows, a business enhancing security, or an enterprise streamlining contract management, OpenSign™ delivers robust solutions tailored to your needs.
+
+    Explore our comprehensive guides, code samples, and best practices to unlock the full potential of OpenSign™ and transform your digital document processes.
+
+    **Useful Links:**
+    - [OpenSign Website](https://www.opensignlabs.com)
+    - [OpenSign GitHub Repository](https://github.com/opensignlabs/opensign)
+    - [Generate x-api-token](https://docs.opensignlabs.com/docs/help/Settings/APIToken) – Learn how to securely generate and manage your API token for authenticating requests.
+
   x-api-token: 
     description: "refer docs to generate api token [APIToken help](https://docs.opensignlabs.com/docs/help/Settings/APIToken)"
   contact:
@@ -2953,6 +2964,12 @@ components:
         allow_modifications:
           type: boolean
           example: false
+        auto_reminder:
+          type: boolean
+          example: false
+        remind_once_in_every:
+          type: number
+          example: 0          
       xml:
         name: template
     contact:
@@ -3118,6 +3135,12 @@ components:
         template_id:
           type: string
           example: template_id is only available when the document is created from a template.
+        auto_reminder:
+          type: boolean
+          example: false
+        remind_once_in_every:
+          type: number
+          example: 0  
       xml:
         name: documentwithstatus
     document:
@@ -3169,6 +3192,14 @@ components:
         template_id:
           type: string
           example: template_id is only available when the document is created from a template.
+        auto_reminder:
+          type: boolean
+          description: "Set to true to enable automatic reminders. Set to false to disable them (default behavior)."
+          example: false
+        remind_once_in_every:
+          type: number
+          description: "Number of days between reminders. This is only applicable when auto_reminder is set to true."  
+          example: 0          
       xml:
         name: document
     invalidtoken:
@@ -3402,6 +3433,14 @@ components:
           type: boolean
           description: "true - Permits signers to add elements such as signatures, initials, stamps, or text on top of existing widgets in the document. false - Restricts signers from adding any additional elements to the document. This is the default value."
           example: false
+        auto_reminder:
+          type: boolean
+          description: "Set to true to enable automatic reminders. Set to false to disable them (default behavior)."
+          example: false
+        remind_once_in_every:
+          type: number
+          description: "Number of days between reminders. This is only applicable when auto_reminder is set to true."
+          example: 5
     createdocument_body:
       required:
       - file
@@ -3477,6 +3516,14 @@ components:
           type: boolean
           description: "true - Permits signers to add elements such as signatures, initials, stamps, or text on top of existing widgets in the document. false - Restricts signers from adding any additional elements to the document. This is the default value."
           example: false
+        auto_reminder:
+          type: boolean
+          description: "Set to true to enable automatic reminders. Set to false to disable them (default behavior)."
+          example: false
+        remind_once_in_every:
+          type: number
+          description: "Number of days between reminders. This is only applicable when auto_reminder is set to true."
+          example: 5
     inline_response_200_1:
       type: object
       properties:
@@ -3593,6 +3640,14 @@ components:
           description: You may provide the base64 encoded PDF file to replace the existing one
           format: base64
           example: ""
+        auto_reminder:
+          type: boolean
+          description: "Set to true to enable automatic reminders. Set to false to disable them (default behavior)."
+          example: false
+        remind_once_in_every:
+          type: number
+          description: "Number of days between reminders. This is only applicable when auto_reminder is set to true."
+          example: 5        
     revokedocument:
       type: object
       properties:
@@ -3657,6 +3712,18 @@ components:
           type: boolean
           description: "true - Permits signers to add elements such as signatures, initials, stamps, or text on top of existing widgets in the document. false - Restricts signers from adding any additional elements to the document. This is the default value."
           example: false
+        redirect_url:
+          type: string
+          description: Specifies the URL where the signer will be redirected upon completing the document signing process. 
+          example: ""
+        auto_reminder:
+          type: boolean
+          description: "Set to true to enable automatic reminders. Set to false to disable them (default behavior)."
+          example: false
+        remind_once_in_every:
+          type: number
+          description: "Number of days between reminders. This is only applicable when auto_reminder is set to true."
+          example: 5
     inline_response_200_3:
       type: object
       properties:
@@ -3748,6 +3815,14 @@ components:
           type: boolean
           description: "true - Permits signers to add elements such as signatures, initials, stamps, or text on top of existing widgets in the document. false - Restricts signers from adding any additional elements to the document. This is the default value."
           example: false
+        auto_reminder:
+          type: boolean
+          description: "Set to true to enable automatic reminders. Set to false to disable them (default behavior)."
+          example: false
+        remind_once_in_every:
+          type: number
+          description: "Number of days between reminders. This is only applicable when auto_reminder is set to true."
+          example: 5          
     inline_response_draft_200:
       type: object
       properties:
@@ -3807,6 +3882,18 @@ components:
           description: You may provide the base64 encoded PDF file to replace the existing one
           format: base64
           example: ""
+        redirect_url:
+          type: string
+          description: Specifies the URL where the signer will be redirected upon completing the document signing process.
+          example: ""
+        auto_reminder:
+          type: boolean
+          description: "Set to true to enable automatic reminders. Set to false to disable them (default behavior)."
+          example: false
+        remind_once_in_every:
+          type: number
+          description: "Number of days between reminders. This is only applicable when auto_reminder is set to true."  
+          example: 5  
     inline_response_404_7:
       type: object
       properties:
