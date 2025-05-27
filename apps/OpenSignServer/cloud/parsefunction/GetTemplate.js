@@ -36,17 +36,24 @@ export default async function GetTemplate(request) {
             let teamsArr = [];
             _extUser?.TeamIds?.forEach(x => (teamsArr = [...teamsArr, ...x.Ancestors]));
             // Create the first query
-            const sharedWithQuery = new Parse.Query('contracts_Template');
-            sharedWithQuery.containedIn('SharedWith', teamsArr);
+            const sharedWithTeamQuery = new Parse.Query('contracts_Template');
+            sharedWithTeamQuery.containedIn('SharedWith', teamsArr);
 
             // Create the second query
+            const sharedWithJsersQuery = new Parse.Query('contracts_Template');
+            sharedWithJsersQuery.equalTo('SharedWithUsers', {
+              __type: 'Pointer',
+              className: 'contracts_Users',
+              objectId: extUser.id,
+            });
+            // Create the third query
             const createdByQuery = new Parse.Query('contracts_Template');
             createdByQuery.equalTo('ExtUserPtr', {
               __type: 'Pointer',
               className: 'contracts_Users',
               objectId: extUser.id,
             });
-            template = Parse.Query.or(sharedWithQuery, createdByQuery);
+            template = Parse.Query.or(sharedWithTeamQuery, sharedWithJsersQuery, createdByQuery);
             template.equalTo('objectId', templateId);
             template.notEqualTo('IsArchive', true);
             template.include('ExtUserPtr');

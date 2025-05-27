@@ -296,6 +296,15 @@ const Preferences = () => {
         const updateRes = JSON.parse(JSON.stringify(updateTenant));
         setRequestBody(updateRes?.RequestBody);
         setRequestSubject(updateRes?.RequestSubject);
+        let extUser =
+          localStorage.getItem("Extand_Class") &&
+          JSON.parse(localStorage.getItem("Extand_Class"))?.[0];
+        if (extUser && extUser?.objectId) {
+          extUser.TenantId.RequestBody = updateRes?.RequestBody;
+          extUser.TenantId.RequestBody = updateRes?.RequestSubject;
+          const _extUser = JSON.parse(JSON.stringify(extUser));
+          localStorage.setItem("Extand_Class", JSON.stringify([_extUser]));
+        }
         setIsAlert({ type: "success", msg: t("saved-successfully") });
         setTimeout(() => setIsAlert({ type: "", msg: "" }), 1500);
       }

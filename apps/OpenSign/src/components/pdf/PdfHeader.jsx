@@ -9,7 +9,7 @@ import {
   handleToPrint
 } from "../../constant/Utils";
 import "../../styles/signature.css";
-import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
+import { DropdownMenu } from "radix-ui";
 import ModalUi from "../../primitives/ModalUi";
 import Loader from "../../primitives/Loader";
 import { useTranslation } from "react-i18next";
