@@ -3,13 +3,12 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 import Sidebar from "../components/sidebar/Sidebar";
 import { useWindowSize } from "../hook/useWindowSize";
-import Tour from "reactour";
+import Tour from "../primitives/Tour";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import Parse from "parse";
 import ModalUi from "../primitives/ModalUi";
 import { useNavigate, useLocation, Outlet } from "react-router";
-import { useCookies } from "react-cookie";
 import Loader from "../primitives/Loader";
 import { showHeader } from "../redux/reducers/showHeader";
 import { useTranslation } from "react-i18next";
@@ -30,7 +29,6 @@ const HomeLayout = () => {
   const [isTour, setIsTour] = useState(false);
   const [tourStatusArr, setTourStatusArr] = useState([]);
   const [tourConfigs, setTourConfigs] = useState([]);
-  const [, setCookie] = useCookies(["accesstoken", "main_Domain"]);
 
   const tenantId = localStorage.getItem("TenantId");
 
@@ -64,38 +62,11 @@ const HomeLayout = () => {
           setIsUserValid(false);
         }
       })();
-      saveCookies();
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tenantId]);
-  //function to use save data in cookies storage
-  const saveCookies = () => {
-    const main_Domain = window.location.origin;
-    const domainName = window.location.hostname;
-    // Find the index of the first dot in the string
-    const indexOfFirstDot = domainName.indexOf(".");
-    // Remove the first dot and get the substring starting from the next character
-    const updateDomain = domainName.substring(indexOfFirstDot); //.opensignlabs.com
-    const serverUrl = localStorage.getItem("baseUrl");
-    const parseAppId = localStorage.getItem("parseAppId");
-    setCookie("accesstoken", localStorage.getItem("accesstoken"), {
-      secure: true,
-      domain: updateDomain
-    });
-    setCookie("main_Domain", main_Domain, {
-      secure: true,
-      domain: updateDomain
-    });
-    setCookie("server_url", serverUrl, {
-      secure: true,
-      domain: updateDomain
-    });
-    setCookie("parse_app_id", parseAppId, {
-      secure: true,
-      domain: updateDomain
-    });
-  };
+
   const showSidebar = () => {
     setIsOpen((value) => !value);
     dispatch(showHeader(!isOpen));
@@ -120,12 +91,7 @@ const HomeLayout = () => {
       // const resArr = arr;
       const resArr = arr.map((obj, index) => {
         if (arr.length - 1 === index) {
-          return {
-            ...obj
-            // actions: () => {
-            //   setIsCloseBtn(true);
-            // },
-          };
+          return { ...obj };
         } else {
           return {
             ...obj,
@@ -137,27 +103,23 @@ const HomeLayout = () => {
       });
       setTourConfigs([
         {
-          selector: '[data-tut="reactourFirst"]',
+          selector: '[data-tut="nonpresentmask"]',
           content: t("tour-mssg.home-layout-1"),
-          position: "top"
-          // style: { backgroundColor: "#abd4d2" },
+          position: "center",
         },
         {
           selector: '[data-tut="tourbutton"]',
           content: t("tour-mssg.home-layout-2"),
           position: "top"
-          // style: { backgroundColor: "#abd4d2" },
         },
         ...resArr,
         {
-          selector: '[data-tut="reactourLast"]',
+          selector: '[data-tut="nonpresentmask"]',
           content: t("tour-mssg.home-layout-3", { appName }),
-          position: "top"
-          // style: { backgroundColor: "#abd4d2" },
+          position: "center",
         }
       ]);
       checkTourStatus();
-      // console.log("resArr ", resArr);
     }
   };
   const closeTour = async () => {

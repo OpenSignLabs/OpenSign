@@ -95,15 +95,12 @@ function RenderPdf(props) {
         return (
           <React.Fragment key={key}>
             {placeData.pageNumber === props.pageNumber &&
-              placeData.pos.map((pos) => {
+              placeData.pos.map((pos, ind) => {
                 return (
                   pos && (
-                    <React.Fragment key={pos.key}>
+                    <React.Fragment key={ind}>
                       <Placeholder
                         pos={pos}
-                        setSignKey={props.setSignKey}
-                        setIsSignPad={props.setIsSignPad}
-                        setIsStamp={props.setIsStamp}
                         handleSignYourselfImageResize={handleImageResize}
                         index={props.pageNumber}
                         xyPosition={props.signerPos}
@@ -121,11 +118,7 @@ function RenderPdf(props) {
                         posHeight={posHeight}
                         isDragging={props.isDragging}
                         pdfDetails={props.pdfDetails}
-                        setIsInitial={props.setIsInitial}
-                        setValidateAlert={props.setValidateAlert}
                         unSignedWidgetId={props.unSignedWidgetId}
-                        setSelectWidgetId={props.setSelectWidgetId}
-                        selectWidgetId={props.selectWidgetId}
                         setCurrWidgetsDetails={props.setCurrWidgetsDetails}
                         uniqueId={props.uniqueId}
                         scale={props.scale}
@@ -139,7 +132,6 @@ function RenderPdf(props) {
                         isAgree={props.isAgree}
                         handleTabDrag={props.handleTabDrag}
                         handleStop={props.handleStop}
-                        setWidgetType={props.setWidgetType}
                         setUniqueId={props.setUniqueId}
                         setIsSelectId={props.setIsSelectId}
                         handleDeleteSign={props.handleDeleteSign}
@@ -156,6 +148,8 @@ function RenderPdf(props) {
                         setFontColor={props.setFontColor}
                         setRequestSignTour={props.setRequestSignTour}
                         calculateFontsize={calculateFontsize}
+                        currWidgetsDetails={props?.currWidgetsDetails}
+                        setTempSignerId={props.setTempSignerId}
                       />
                     </React.Fragment>
                   )
@@ -241,11 +235,9 @@ function RenderPdf(props) {
                                           <Placeholder
                                             pos={pos}
                                             setIsPageCopy={props.setIsPageCopy}
-                                            setSignKey={props.setSignKey}
                                             handleDeleteSign={
                                               props.handleDeleteSign
                                             }
-                                            setIsStamp={props.setIsStamp}
                                             handleTabDrag={props.handleTabDrag}
                                             handleStop={props.handleStop}
                                             handleSignYourselfImageResize={
@@ -270,17 +262,10 @@ function RenderPdf(props) {
                                             posHeight={posHeight}
                                             isDragging={props.isDragging}
                                             setIsValidate={props.setIsValidate}
-                                            setWidgetType={props.setWidgetType}
                                             setIsRadio={props.setIsRadio}
                                             setIsCheckbox={props.setIsCheckbox}
                                             setCurrWidgetsDetails={
                                               props.setCurrWidgetsDetails
-                                            }
-                                            setSelectWidgetId={
-                                              props.setSelectWidgetId
-                                            }
-                                            selectWidgetId={
-                                              props.selectWidgetId
                                             }
                                             handleNameModal={
                                               props.handleNameModal
@@ -309,6 +294,9 @@ function RenderPdf(props) {
                                             calculateFontsize={
                                               calculateFontsize
                                             }
+                                            currWidgetsDetails={
+                                              props?.currWidgetsDetails
+                                            }
                                           />
                                         </React.Fragment>
                                       );
@@ -331,9 +319,7 @@ function RenderPdf(props) {
                                     key={id}
                                     pos={pos}
                                     setIsPageCopy={props.setIsPageCopy}
-                                    setSignKey={props.setSignKey}
                                     handleDeleteSign={props.handleDeleteSign}
-                                    setIsStamp={props.setIsStamp}
                                     handleTabDrag={props.handleTabDrag}
                                     handleStop={props.handleStop}
                                     handleSignYourselfImageResize={
@@ -343,19 +329,13 @@ function RenderPdf(props) {
                                     xyPosition={props.xyPosition}
                                     setXyPosition={props.setXyPosition}
                                     containerWH={props.containerWH}
-                                    setIsSignPad={props.setIsSignPad}
                                     isShowBorder={true}
                                     isSignYourself={true}
                                     posWidth={posWidth}
                                     posHeight={posHeight}
                                     pdfDetails={props.pdfDetails[0]}
                                     isDragging={props.isDragging}
-                                    setIsInitial={props.setIsInitial}
-                                    setWidgetType={props.setWidgetType}
-                                    setSelectWidgetId={props.setSelectWidgetId}
-                                    selectWidgetId={props.selectWidgetId}
                                     setIsCheckbox={props.setIsCheckbox}
-                                    setValidateAlert={props.setValidateAlert}
                                     setCurrWidgetsDetails={
                                       props.setCurrWidgetsDetails
                                     }
@@ -374,6 +354,9 @@ function RenderPdf(props) {
                                     isFreeResize={false}
                                     isOpenSignPad={true}
                                     calculateFontsize={calculateFontsize}
+                                    currWidgetsDetails={
+                                      props?.currWidgetsDetails
+                                    }
                                   />
                                 )
                               );
@@ -388,7 +371,7 @@ function RenderPdf(props) {
               loading={t("loading-doc")}
               onLoadSuccess={props.pageDetails}
               onClick={() =>
-                props.setSelectWidgetId && props.setSelectWidgetId("")
+                props.setCurrWidgetsDetails && props.setCurrWidgetsDetails({})
               }
               file={pdfDataBase64}
             >
@@ -454,11 +437,9 @@ function RenderPdf(props) {
                                           <Placeholder
                                             pos={pos}
                                             setIsPageCopy={props.setIsPageCopy}
-                                            setSignKey={props.setSignKey}
                                             handleDeleteSign={
                                               props.handleDeleteSign
                                             }
-                                            setIsStamp={props.setIsStamp}
                                             handleTabDrag={props.handleTabDrag}
                                             handleStop={props.handleStop}
                                             handleSignYourselfImageResize={
@@ -483,17 +464,10 @@ function RenderPdf(props) {
                                             posHeight={posHeight}
                                             isDragging={props.isDragging}
                                             setIsValidate={props.setIsValidate}
-                                            setWidgetType={props.setWidgetType}
                                             setIsRadio={props.setIsRadio}
                                             setIsCheckbox={props.setIsCheckbox}
                                             setCurrWidgetsDetails={
                                               props.setCurrWidgetsDetails
-                                            }
-                                            setSelectWidgetId={
-                                              props.setSelectWidgetId
-                                            }
-                                            selectWidgetId={
-                                              props.selectWidgetId
                                             }
                                             handleNameModal={
                                               props.handleNameModal
@@ -522,6 +496,9 @@ function RenderPdf(props) {
                                             calculateFontsize={
                                               calculateFontsize
                                             }
+                                            currWidgetsDetails={
+                                              props?.currWidgetsDetails
+                                            }
                                           />
                                         </React.Fragment>
                                       );
@@ -544,9 +521,7 @@ function RenderPdf(props) {
                                   <Placeholder
                                     pos={pos}
                                     setIsPageCopy={props.setIsPageCopy}
-                                    setSignKey={props.setSignKey}
                                     handleDeleteSign={props.handleDeleteSign}
-                                    setIsStamp={props.setIsStamp}
                                     handleTabDrag={props.handleTabDrag}
                                     handleStop={(event, dragElement) =>
                                       props.handleStop(
@@ -561,19 +536,13 @@ function RenderPdf(props) {
                                     index={props.index}
                                     xyPosition={props.xyPosition}
                                     setXyPosition={props.setXyPosition}
-                                    setIsSignPad={props.setIsSignPad}
                                     isShowBorder={true}
                                     isSignYourself={true}
                                     posWidth={posWidth}
                                     posHeight={posHeight}
                                     pdfDetails={props.pdfDetails[0]}
                                     isDragging={props.isDragging}
-                                    setIsInitial={props.setIsInitial}
-                                    setWidgetType={props.setWidgetType}
-                                    setSelectWidgetId={props.setSelectWidgetId}
-                                    selectWidgetId={props.selectWidgetId}
                                     setIsCheckbox={props.setIsCheckbox}
-                                    setValidateAlert={props.setValidateAlert}
                                     setCurrWidgetsDetails={
                                       props.setCurrWidgetsDetails
                                     }
@@ -593,6 +562,9 @@ function RenderPdf(props) {
                                     isFreeResize={false}
                                     isOpenSignPad={true}
                                     calculateFontsize={calculateFontsize}
+                                    currWidgetsDetails={
+                                      props?.currWidgetsDetails
+                                    }
                                   />
                                 </React.Fragment>
                               );
@@ -608,7 +580,7 @@ function RenderPdf(props) {
               loading={t("loading-doc")}
               onLoadSuccess={props.pageDetails}
               onClick={() =>
-                props.setSelectWidgetId && props.setSelectWidgetId("")
+                props.setCurrWidgetsDetails && props.setCurrWidgetsDetails({})
               }
               file={pdfDataBase64}
             >

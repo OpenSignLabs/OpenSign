@@ -533,9 +533,9 @@ export default function reportJson(id) {
                 btnId: "1873",
                 btnLabel: "Share with team",
                 hoverLabel: "Share with team",
-                btnIcon: "fa-light fa-share-nodes",
+                btnIcon: "fa-light fa-user-group",
                 redirectUrl: "",
-                action: "sharewith"
+                action: "sharewithteam"
               });
               return newItem;
             }

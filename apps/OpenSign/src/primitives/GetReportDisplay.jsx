@@ -10,8 +10,8 @@ import {
 } from "../constant/const";
 import Alert from "./Alert";
 import Tooltip from "./Tooltip";
-import { RWebShare } from "react-web-share";
-import Tour from "reactour";
+import ShareButton from "./ShareButton";
+import Tour from "../primitives/Tour";
 import Parse from "parse";
 import {
   copytoData,
@@ -398,7 +398,7 @@ const ReportTable = (props) => {
       setIsResendMail({ [item.objectId]: true });
     } else if (act.action === "bulksend") {
       handleBulkSend(item);
-    } else if (act.action === "sharewith") {
+    } else if (act.action === "sharewithteam") {
       if (item?.SharedWith && item?.SharedWith.length > 0) {
         // below code is used to get existing sharewith teams and formated them as per react-select
         const formatedList = item?.SharedWith.map((x) => ({
@@ -1411,7 +1411,7 @@ const ReportTable = (props) => {
               onRequestClose={closeTour}
               steps={props.tourData}
               isOpen={isTour}
-              // rounded={5}
+              rounded={5}
               closeWithMask={false}
             />
           </>
@@ -2183,17 +2183,15 @@ const ReportTable = (props) => {
                                       {share.email}
                                     </span>
                                     <div className="flex items-center gap-2">
-                                      <RWebShare
-                                        data={{
-                                          url: share.url,
-                                          title: "Sign url"
-                                        }}
+                                      <ShareButton
+                                        title={t("sign-url")}
+                                        text={t("sign-url")}
+                                        url={share.url}
+                                        className="op-btn op-btn-primary op-btn-outline op-btn-xs md:op-btn-sm "
                                       >
-                                        <button className="op-btn op-btn-primary op-btn-outline op-btn-xs md:op-btn-sm ">
-                                          <i className="fa-light fa-share-from-square"></i>{" "}
-                                          {t("btnLabel.Share")}
-                                        </button>
-                                      </RWebShare>
+                                        <i className="fa-light fa-share-from-square"></i>
+                                        {t("btnLabel.Share")}
+                                      </ShareButton>
                                       <button
                                         className="op-btn op-btn-primary op-btn-outline op-btn-xs md:op-btn-sm"
                                         onClick={() => copytoclipboard(share)}

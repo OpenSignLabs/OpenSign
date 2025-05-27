@@ -17,6 +17,9 @@ body {
   scrollbar-width: none;
   /* Firefox */
 }
+.react-datepicker-popper {
+  z-index: 9999 !important;
+}
 
 @media screen and (max-width: 766px) {
   .reactour__close {
