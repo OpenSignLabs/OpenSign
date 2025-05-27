@@ -26,7 +26,7 @@
     "react": "^18.3.1",
     "react-bootstrap": "^2.10.10",
     "react-confetti": "^6.4.0",
-    "react-datepicker": "^8.3.0",
+    "react-datepicker": "^8.4.0",
     "react-dnd": "^16.0.1",
     "react-dnd-html5-backend": "^16.0.1",
     "react-dnd-multi-backend": "^9.0.0",
