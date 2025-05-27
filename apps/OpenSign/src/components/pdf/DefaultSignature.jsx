@@ -1,7 +1,10 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useSelector } from "react-redux";
 function DefaultSignature(props) {
   const { t } = useTranslation();
+   const defaultSignImg = useSelector((state) => state.widget.defaultSignImg);
+   const myInitial = useSelector((state) => state.widget.myInitial)
   const tabName = ["my-signature", "my-initials"];
   const [activeTab, setActiveTab] = useState(0);
   const confirmToaddDefaultSign = (type) => {
@@ -69,15 +72,15 @@ function DefaultSignature(props) {
             <img
               alt="signature"
               className="w-full h-full object-contain"
-              src={props?.defaultSignImg}
+              src={defaultSignImg}
             />
           ) : (
             activeTab === 1 &&
-            (props?.myInitial ? (
+            (myInitial ? (
               <img
                 alt="signature"
                 className="w-full h-full object-contain"
-                src={props?.myInitial}
+                src={myInitial}
               />
             ) : (
               <div className="flex justify-center items-center h-full">
@@ -97,7 +100,7 @@ function DefaultSignature(props) {
           disabled={
             activeTab === 0 && !props?.isDefault
               ? true
-              : activeTab === 1 && !props.myInitial
+              : activeTab === 1 && !myInitial
                 ? true
                 : false
           }

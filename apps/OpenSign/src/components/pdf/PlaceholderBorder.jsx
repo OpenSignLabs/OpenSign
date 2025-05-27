@@ -43,10 +43,6 @@ function PlaceholderBorder(props) {
   };
   return (
     <div
-      onMouseEnter={() => !isMobile && props?.setDraggingEnabled(false)}
-      onTouchEnd={() =>
-        props.pos.type === textWidget && props?.setDraggingEnabled(false)
-      }
       className="absolute inline-block w-[14px] h-[14px]  border-[0.2px] overflow-hidden border-dashed"
       style={{
         borderColor: themeColor,
