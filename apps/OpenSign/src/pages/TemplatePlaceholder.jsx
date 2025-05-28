@@ -7,7 +7,7 @@ import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { useDrop } from "react-dnd";
 import WidgetComponent from "../components/pdf/WidgetComponent";
-import Tour from "reactour";
+import Tour from "../primitives/Tour";
 import SignerListPlace from "../components/pdf/SignerListPlace";
 import Header from "../components/pdf/PdfHeader";
 import WidgetNameModal from "../components/pdf/WidgetNameModal";
@@ -100,10 +100,8 @@ const TemplatePlaceholder = () => {
   const [isSigners, setIsSigners] = useState(false);
   const [zIndex, setZIndex] = useState(1);
   const [showDropdown, setShowDropdown] = useState(false);
-  const [widgetType, setWidgetType] = useState("");
   const [isRadio, setIsRadio] = useState(false);
   const [blockColor, setBlockColor] = useState("");
-  const [selectWidgetId, setSelectWidgetId] = useState("");
   const [isNameModal, setIsNameModal] = useState(false);
   const [isTextSetting, setIsTextSetting] = useState(false);
   const [pdfLoad, setPdfLoad] = useState(false);
@@ -122,13 +120,11 @@ const TemplatePlaceholder = () => {
   const [isCreateDoc, setIsCreateDoc] = useState(false);
   const [isEditTemplate, setIsEditTemplate] = useState(false);
   const [isPageCopy, setIsPageCopy] = useState(false);
-  const [signKey, setSignKey] = useState();
   const [IsReceipent, setIsReceipent] = useState(true);
   const [isDontShow, setIsDontShow] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [currWidgetsDetails, setCurrWidgetsDetails] = useState([]);
   const [isCheckbox, setIsCheckbox] = useState(false);
-  const [widgetName, setWidgetName] = useState(false);
   const [isAddRole, setIsAddRole] = useState(false);
   const [fontSize, setFontSize] = useState();
   const [fontColor, setFontColor] = useState();
@@ -137,7 +133,6 @@ const TemplatePlaceholder = () => {
   const [signatureType, setSignatureType] = useState([]);
   const [pdfArrayBuffer, setPdfArrayBuffer] = useState("");
   const [updatedPdfUrl, setUpdatedPdfUrl] = useState("");
-  const [tempSignerId, setTempSignerId] = useState("");
   const [unSignedWidgetId, setUnSignedWidgetId] = useState("");
   const [owner, setOwner] = useState({});
   useEffect(() => {
@@ -353,9 +348,6 @@ const TemplatePlaceholder = () => {
 
   //function for setting position after drop signature button over pdf
   const addPositionOfSignature = (item, monitor) => {
-    if (item && item.text) {
-      setWidgetName(item.text);
-    }
     getSignerPos(item, monitor);
   };
 
@@ -378,13 +370,14 @@ const TemplatePlaceholder = () => {
         const widgetHeight =
           defaultWidthHeight(dragTypeValue).height * containerScale;
         let dropData = [],
+          dropObj,
           currentPagePosition,
           filterSignerPos;
         let placeHolder;
         if (item === "onclick") {
           // `getBoundingClientRect()` is used to get accurate measurement height of the div
           const divHeight = divRef.current.getBoundingClientRect().height;
-          const dropObj = {
+          dropObj = {
             //onclick put placeholder center on pdf
             xPosition: widgetWidth / 4 + containerWH.width / 2,
             yPosition: widgetHeight + divHeight / 2,
@@ -414,7 +407,7 @@ const TemplatePlaceholder = () => {
           const getYPosition = signBtnPosition[0]
             ? y - signBtnPosition[0].yPos
             : y;
-          const dropObj = {
+          dropObj = {
             xPosition: getXPosition / (containerScale * scale),
             yPosition: getYPosition / (containerScale * scale),
             isStamp:
@@ -521,10 +514,7 @@ const TemplatePlaceholder = () => {
           setFontSize(12);
           setFontColor("black");
         }
-        setCurrWidgetsDetails({});
-        setWidgetType(dragTypeValue);
-        setSignKey(key);
-        setSelectWidgetId(key);
+        setCurrWidgetsDetails(dropObj);
       } else {
         setIsReceipent(false);
       }
@@ -988,14 +978,14 @@ const TemplatePlaceholder = () => {
       style: { fontSize: "13px" }
     },
     {
-      selector: '[data-tut="reactourFirst"]',
+      selector: '[data-tut="nonpresentmask"]',
       content: () => (
         <TourContentWithBtn
           message={t("tour-mssg.template-placeholder-2")}
           isChecked={handleDontShow}
         />
       ),
-      position: "top",
+      position: "center",
       style: { fontSize: "13px" },
       action: () => handleCloseRoleModal()
     },
@@ -1318,21 +1308,21 @@ const TemplatePlaceholder = () => {
 
         const getPosData = getXYdata;
         const addSignPos = getPosData.map((position) => {
-          if (position.key === signKey) {
-            if (widgetType === radioButtonWidget) {
+          if (position.key === currWidgetsDetails?.key) {
+            if (currWidgetsDetails?.type === radioButtonWidget) {
               if (addOption) {
                 return {
                   ...position,
                   Height: position.Height
                     ? position.Height + 15
-                    : defaultWidthHeight(widgetType).height + 15
+                    : defaultWidthHeight(currWidgetsDetails?.type).height + 15
                 };
               } else if (deleteOption) {
                 return {
                   ...position,
                   Height: position.Height
                     ? position.Height - 15
-                    : defaultWidthHeight(widgetType).height - 15
+                    : defaultWidthHeight(currWidgetsDetails?.type).height - 15
                 };
               } else {
                 return {
@@ -1354,20 +1344,20 @@ const TemplatePlaceholder = () => {
                   }
                 };
               }
-            } else if (widgetType === "checkbox") {
+            } else if (currWidgetsDetails?.type === "checkbox") {
               if (addOption) {
                 return {
                   ...position,
                   Height: position.Height
                     ? position.Height + 15
-                    : defaultWidthHeight(widgetType).height + 15
+                    : defaultWidthHeight(currWidgetsDetails?.type).height + 15
                 };
               } else if (deleteOption) {
                 return {
                   ...position,
                   Height: position.Height
                     ? position.Height - 15
-                    : defaultWidthHeight(widgetType).height - 15
+                    : defaultWidthHeight(currWidgetsDetails?.type).height - 15
                 };
               } else {
                 return {
@@ -1459,7 +1449,7 @@ const TemplatePlaceholder = () => {
         const getXYdata = getPageNumer[0].pos;
         const getPosData = getXYdata;
         const addSignPos = getPosData.map((position) => {
-          if (position.key === signKey) {
+          if (position.key === currWidgetsDetails?.key) {
             if (position.type === textInputWidget) {
               return {
                 ...position,
@@ -1538,13 +1528,6 @@ const TemplatePlaceholder = () => {
     setShowDropdown(false);
     setIsRadio(false);
     setIsCheckbox(false);
-    //condition for text widget type after set all values for text widget
-    //change setUniqueId which is set in tempsignerId
-    //because textwidget do not have signer user so for selected signers we have to do
-    if (currWidgetsDetails.type === textWidget) {
-      setUniqueId(tempSignerId);
-      setTempSignerId("");
-    }
   };
 
   const clickOnZoomIn = () => {
@@ -1791,12 +1774,10 @@ const TemplatePlaceholder = () => {
                     setXyPosition={setSignerPos}
                     allPages={allPages}
                     pageNumber={pageNumber}
-                    signKey={signKey}
+                    signKey={currWidgetsDetails?.key}
                     Id={uniqueId}
-                    widgetType={widgetType}
+                    widgetType={currWidgetsDetails?.type}
                     setUniqueId={setUniqueId}
-                    tempSignerId={tempSignerId}
-                    setTempSignerId={setTempSignerId}
                   />
                   {/* pdf header which contain funish back button */}
                   <Header
@@ -1853,14 +1834,10 @@ const TemplatePlaceholder = () => {
                         setUniqueId={setUniqueId}
                         signersdata={signersdata}
                         setIsPageCopy={setIsPageCopy}
-                        setSignKey={setSignKey}
                         isDragging={isDragging}
                         setShowDropdown={setShowDropdown}
                         setCurrWidgetsDetails={setCurrWidgetsDetails}
-                        setWidgetType={setWidgetType}
                         setIsRadio={setIsRadio}
-                        setSelectWidgetId={setSelectWidgetId}
-                        selectWidgetId={selectWidgetId}
                         setIsCheckbox={setIsCheckbox}
                         handleNameModal={setIsNameModal}
                         pdfOriginalWH={pdfOriginalWH}
@@ -1874,9 +1851,9 @@ const TemplatePlaceholder = () => {
                         setFontColor={setFontColor}
                         isResize={isResize}
                         divRef={divRef}
-                        setTempSignerId={setTempSignerId}
                         uniqueId={uniqueId}
                         unSignedWidgetId={unSignedWidgetId}
+                        currWidgetsDetails={currWidgetsDetails}
                       />
                     )}
                   </div>
@@ -1913,7 +1890,6 @@ const TemplatePlaceholder = () => {
                     setBlockColor={setBlockColor}
                     setSignerPos={setSignerPos}
                     uniqueId={uniqueId}
-                    setSelectWidgetId={setSelectWidgetId}
                     isTemplateFlow={true}
                   />
                 </div>
@@ -1991,7 +1967,7 @@ const TemplatePlaceholder = () => {
         )}
         <WidgetNameModal
           signatureType={signatureType}
-          widgetName={widgetName}
+          widgetName={currWidgetsDetails?.options?.name}
           defaultdata={currWidgetsDetails}
           isOpen={isNameModal}
           handleClose={handleNameModal}

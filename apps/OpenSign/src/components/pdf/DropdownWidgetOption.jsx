@@ -12,7 +12,7 @@ function DropdownWidgetOption(props) {
   ]);
   const [minCount, setMinCount] = useState(0);
   const [maxCount, setMaxCount] = useState(0);
-  const [dropdownName, setDropdownName] = useState(props.type);
+  const [dropdownName, setDropdownName] = useState();
   const [isReadOnly, setIsReadOnly] = useState(false);
   const [isHideLabel, setIsHideLabel] = useState(false);
   const [status, setStatus] = useState("required");
@@ -22,7 +22,7 @@ function DropdownWidgetOption(props) {
 
   const resetState = () => {
     setDropdownOptionList(["option-1", "option-2"]);
-    setDropdownName(props.type);
+    setDropdownName( props.currWidgetsDetails?.options?.name || props.type);
     setIsReadOnly(false);
     setIsHideLabel(false);
     setMinCount(0);
@@ -30,11 +30,10 @@ function DropdownWidgetOption(props) {
     setDefaultCheckbox([]);
     setDefaultValue("");
   };
-
   useEffect(() => {
     if (
       props.currWidgetsDetails?.options?.name &&
-      props.currWidgetsDetails?.options?.values
+      props.currWidgetsDetails?.options?.values?.length > 0
     ) {
       setDropdownName(props.currWidgetsDetails?.options?.name);
       setDropdownOptionList(props.currWidgetsDetails?.options?.values);
@@ -116,16 +115,7 @@ function DropdownWidgetOption(props) {
       defaultData,
       isHideLabel
     );
-    //  props.setShowDropdown(false);
-    setDropdownOptionList(["option-1", "option-2"]);
-    setDropdownName(props.type);
-    //  props.setCurrWidgetsDetails({});
-    setIsReadOnly(false);
-    setIsHideLabel(false);
-    setMinCount(0);
-    setMaxCount(0);
-    setDefaultCheckbox([]);
-    setDefaultValue("");
+    resetState()
   };
 
 
@@ -137,7 +127,6 @@ function DropdownWidgetOption(props) {
       return false;
     }
   };
-
   return (
     <ModalUi isOpen={props.showDropdown} title={props.title} showClose={false}>
       <div className="h-full p-[15px] text-base-content">
@@ -156,7 +145,6 @@ function DropdownWidgetOption(props) {
               onInvalid={(e) => e.target.setCustomValidity(t("input-required"))}
               onInput={(e) => e.target.setCustomValidity("")}
               required
-              defaultValue={dropdownName}
               value={dropdownName}
               onChange={(e) => setDropdownName(e.target.value)}
               className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
@@ -166,7 +154,7 @@ function DropdownWidgetOption(props) {
               {t("options")}
             </label>
             <div className="flex flex-col">
-              {dropdownOptionList.map((option, index) => (
+              {dropdownOptionList?.map((option, index) => (
                 <div
                   key={index}
                   className="flex flex-row mb-[5px] items-center"

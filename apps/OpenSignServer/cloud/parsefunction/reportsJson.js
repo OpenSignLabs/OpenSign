@@ -1,6 +1,15 @@
 export default function reportJson(id, userId) {
   const currentUserId = userId;
-
+  const commanKeys = [
+    'URL',
+    'Name',
+    'ExtUserPtr.Name',
+    'Signers.Name',
+    'Signers.Email',
+    'Signers.Phone',
+    'Placeholders',
+    'TemplateId',
+  ];
   switch (id) {
     // draft documents report
     case 'ByHuevtCFY':
@@ -14,19 +23,7 @@ export default function reportJson(id, userId) {
           SignedUrl: { $exists: false },
           CreatedBy: { __type: 'Pointer', className: '_User', objectId: currentUserId },
         },
-        keys: [
-          'Name',
-          'Note',
-          'Folder.Name',
-          'URL',
-          'ExtUserPtr.Name',
-          'Signers.Name',
-          'Signers.Email',
-          'Signers.Phone',
-          'Placeholders',
-          'IsSignyourself',
-          'TemplateId',
-        ],
+        keys: [...commanKeys, 'Note', 'Folder.Name', 'IsSignyourself'],
       };
     // Need your sign report
     case '4Hhwbp482K':
@@ -48,20 +45,13 @@ export default function reportJson(id, userId) {
           },
         },
         keys: [
-          'Name',
+          ...commanKeys,
           'Note',
           'Folder.Name',
-          'URL',
-          'ExtUserPtr.Name',
           'ExtUserPtr.Email',
-          'Signers.Name',
-          'Signers.Email',
-          'Signers.Phone',
           'Signers.UserId',
           'AuditTrail',
-          'Placeholders',
           'SignedUrl',
-          'TemplateId',
           'ExpiryDate',
         ],
       };
@@ -80,22 +70,15 @@ export default function reportJson(id, userId) {
           ExpiryDate: { $gt: { __type: 'Date', iso: new Date().toISOString() } },
         },
         keys: [
-          'Name',
+          ...commanKeys,
           'Note',
           'Folder.Name',
-          'URL',
-          'ExtUserPtr.Name',
           'ExtUserPtr.Email',
-          'Signers.Name',
-          'Signers.Email',
-          'Signers.Phone',
           'AuditTrail',
           'AuditTrail.UserPtr',
           'ExpiryDate',
           'SendMail',
-          'Placeholders',
           'SignedUrl',
-          'TemplateId',
           'RequestBody',
           'RequestSubject',
           'ExtUserPtr.TenantId.RequestBody',
@@ -133,20 +116,13 @@ export default function reportJson(id, userId) {
           ],
         },
         keys: [
-          'Name',
+          ...commanKeys,
           'Note',
           'Folder.Name',
-          'URL',
           'SignedUrl',
-          'ExtUserPtr.Name',
-          'Signers.Name',
-          'Signers.Email',
-          'Signers.Phone',
           'TimeToCompleteDays',
-          'Placeholders',
           'IsSignyourself',
           'IsCompleted',
-          'TemplateId',
         ],
       };
     //  declined documents report
@@ -159,20 +135,7 @@ export default function reportJson(id, userId) {
           IsDeclined: true,
           CreatedBy: { __type: 'Pointer', className: '_User', objectId: currentUserId },
         },
-        keys: [
-          'Name',
-          'Note',
-          'Folder.Name',
-          'URL',
-          'ExtUserPtr.Name',
-          'Signers.Name',
-          'Signers.Email',
-          'Signers.Phone',
-          'Placeholders',
-          'DeclineReason',
-          'SignedUrl',
-          'TemplateId',
-        ],
+        keys: [...commanKeys, 'Note', 'Folder.Name', 'DeclineReason', 'SignedUrl'],
       };
     //  Expired Documents report
     case 'zNqBHXHsYH':
@@ -187,20 +150,7 @@ export default function reportJson(id, userId) {
           ExpiryDate: { $lt: { __type: 'Date', iso: new Date().toISOString() } },
           CreatedBy: { __type: 'Pointer', className: '_User', objectId: currentUserId },
         },
-        keys: [
-          'Name',
-          'Note',
-          'Folder.Name',
-          'URL',
-          'ExtUserPtr.Name',
-          'Signers.Name',
-          'Signers.Email',
-          'Signers.Phone',
-          'Placeholders',
-          'SignedUrl',
-          'TemplateId',
-          'ExpiryDate',
-        ],
+        keys: [...commanKeys, 'Note', 'Folder.Name', 'SignedUrl', 'ExpiryDate'],
       };
     //  Recently sent for signatures report show on dashboard
     case 'd9k3UfYHBc':
@@ -217,20 +167,13 @@ export default function reportJson(id, userId) {
           ExpiryDate: { $gt: { __type: 'Date', iso: new Date().toISOString() } },
         },
         keys: [
-          'Name',
+          ...commanKeys,
           'Folder.Name',
-          'URL',
-          'ExtUserPtr.Name',
           'ExtUserPtr.Email',
-          'Signers.Name',
-          'Signers.Email',
-          'Signers.Phone',
           'AuditTrail',
           'AuditTrail.UserPtr',
           'ExpiryDate',
-          'Placeholders',
           'SignedUrl',
-          'TemplateId',
           'RequestBody',
           'RequestSubject',
           'ExtUserPtr.TenantId.RequestBody',
@@ -257,18 +200,11 @@ export default function reportJson(id, userId) {
           },
         },
         keys: [
-          'Name',
-          'URL',
-          'ExtUserPtr.Name',
+          ...commanKeys,
           'ExtUserPtr.Email',
-          'Signers.Name',
           'Signers.UserId',
           'AuditTrail',
-          'Signers.Email',
-          'Signers.Phone',
-          'Placeholders',
           'SignedUrl',
-          'TemplateId',
           'ExpiryDate',
         ],
       };
@@ -284,18 +220,7 @@ export default function reportJson(id, userId) {
           SignedUrl: { $exists: false },
           CreatedBy: { __type: 'Pointer', className: '_User', objectId: currentUserId },
         },
-        keys: [
-          'Name',
-          'Note',
-          'Folder.Name',
-          'URL',
-          'ExtUserPtr.Name',
-          'Signers.Name',
-          'Signers.Email',
-          'Signers.Phone',
-          'Placeholders',
-          'TemplateId',
-        ],
+        keys: [...commanKeys, 'Note', 'Folder.Name'],
       };
     // contact book report
     case 'contacts':
@@ -315,15 +240,9 @@ export default function reportJson(id, userId) {
         reportClass: 'contracts_Template',
         params: { Type: { $ne: 'Folder' }, IsArchive: { $ne: true } },
         keys: [
-          'Name',
+          ...commanKeys,
           'Note',
           'Folder.Name',
-          'URL',
-          'ExtUserPtr.Name',
-          'Signers.Name',
-          'Signers.Email',
-          'Signers.Phone',
-          'Placeholders',
           'IsPublic',
           'SharedWith.Name',
           'SendinOrder',

@@ -5,19 +5,23 @@ import Parse from "parse";
 import axios from "axios";
 import { DndProvider, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
-import SignPad from "../components/pdf/SignPad";
+import { useDispatch, useSelector } from "react-redux";
 import RenderAllPdfPage from "../components/pdf/RenderAllPdfPage";
-import Tour from "reactour";
+import Tour from "../primitives/Tour";
 import Confetti from "react-confetti";
 import moment from "moment";
+import {
+  setSaveSignCheckbox,
+  setMyInitial,
+  setDefaultSignImg,
+  resetWidgetState
+} from "../redux/reducers/widgetSlice.js";
 import {
   contractDocument,
   multiSignEmbed,
   embedDocId,
   pdfNewWidthFun,
   signPdfFun,
-  onSaveSign,
-  onSaveImage,
   addDefaultSignatureImg,
   radioButtonWidget,
   replaceMailVaribles,
@@ -40,7 +44,6 @@ import {
   defaultWidthHeight,
   addWidgetOptions,
   textWidget,
-  compressedFileSize,
   mailTemplate,
   updateDateWidgetsRes,
   widgetDataValue
@@ -49,7 +52,6 @@ import Header from "../components/pdf/PdfHeader";
 import RenderPdf from "../components/pdf/RenderPdf";
 import Title from "../components/Title";
 import DefaultSignature from "../components/pdf/DefaultSignature";
-import { useSelector } from "react-redux";
 import SignerListComponent from "../components/pdf/SignerListComponent";
 import PdfZoom from "../components/pdf/PdfZoom";
 import { useTranslation } from "react-i18next";
@@ -65,29 +67,28 @@ import AgreementSign from "../components/pdf/AgreementSign";
 import WidgetComponent from "../components/pdf/WidgetComponent";
 import PlaceholderCopy from "../components/pdf/PlaceholderCopy";
 import TextFontSetting from "../components/pdf/TextFontSetting";
+import WidgetsValueModal from "../components/pdf/WidgetsValueModal.jsx";
 
 function PdfRequestFiles(
 ) {
   const { t } = useTranslation();
+  const dispatch = useDispatch();
+  const isShowModal = useSelector((state) => state.widget.isShowModal);
+  const saveSignCheckbox = useSelector(
+    (state) => state.widget.saveSignCheckbox
+  );
+  const defaultSignImg = useSelector((state) => state.widget.defaultSignImg);
+  const myInitial = useSelector((state) => state.widget.myInitial);
   const appName =
     "OpenSign™";
   const [pdfDetails, setPdfDetails] = useState([]);
   const [signedSigners, setSignedSigners] = useState([]);
   const [unsignedSigners, setUnSignedSigners] = useState([]);
-  const [isSignPad, setIsSignPad] = useState(false);
   const [pdfUrl, setPdfUrl] = useState();
   const [allPages, setAllPages] = useState(null);
   const numPages = 1;
   const [pageNumber, setPageNumber] = useState(1);
-  const [image, setImage] = useState(null);
-  const [isImageSelect, setIsImageSelect] = useState(false);
-  const [signature, setSignature] = useState();
-  const [isStamp, setIsStamp] = useState(false);
-  const [signKey, setSignKey] = useState();
-  const [imgWH, setImgWH] = useState({});
-  const imageRef = useRef(null);
   const [handleError, setHandleError] = useState();
-  const [selectWidgetId, setSelectWidgetId] = useState("");
   const [isCelebration, setIsCelebration] = useState(false);
   const [requestSignTour, setRequestSignTour] = useState(true);
   const [tourStatus, setTourStatus] = useState([]);
@@ -95,7 +96,6 @@ function PdfRequestFiles(
     isLoad: true,
     message: t("loading-mssg")
   });
-  const [defaultSignImg, setDefaultSignImg] = useState();
   const [isDocId, setIsDocId] = useState(false);
   const [pdfNewWidth, setPdfNewWidth] = useState();
   const [pdfOriginalWH, setPdfOriginalWH] = useState([]);
@@ -111,6 +111,9 @@ function PdfRequestFiles(
   const [signerUserId, setSignerUserId] = useState();
   const [isDontShow, setIsDontShow] = useState(false);
   const [isDownloading, setIsDownloading] = useState("");
+  // tempSignerId is used to temporarily store the currently selected signer's unique ID, When editing a text widget, it automatically attaches a prefill user, and since prefill users are not shown in the signer list, the selected signer from before editing would be lost. To handle this, we store the currently selected signer's unique ID in tempSignerId before entering the text widget edit mode. Once the text widget settings are completed,
+  // we restore the original selected signer by setting tempSignerId back to uniqueId.This ensures that the correct signer remains selected and visible in the UI even after interacting with a prefill-only widget like the text widget.
+  const [tempSignerId, setTempSignerId] = useState("");
   const [defaultSignAlert, setDefaultSignAlert] = useState({
     isShow: false,
     alertMessage: ""
@@ -119,14 +122,11 @@ function PdfRequestFiles(
     isCertificate: false,
     isModal: false
   });
-  const [myInitial, setMyInitial] = useState("");
-  const [isInitial, setIsInitial] = useState(false);
   const [pdfLoad, setPdfLoad] = useState(false);
   const [isSigned, setIsSigned] = useState(false);
   const [isExpired, setIsExpired] = useState(false);
   const [alreadySign, setAlreadySign] = useState(false);
   const [containerWH, setContainerWH] = useState({});
-  const [validateAlert, setValidateAlert] = useState(false);
   const [widgetsTour, setWidgetsTour] = useState(false);
   const [minRequiredCount, setminRequiredCount] = useState();
   const [sendInOrder, setSendInOrder] = useState(false);
@@ -148,20 +148,14 @@ function PdfRequestFiles(
   const [isredirectCanceled, setIsredirectCanceled] = useState(true);
   const [isDragging, setIsDragging] = useState(false);
   const [dragKey, setDragKey] = useState();
-  const [isAutoSign, setIsAutoSign] = useState(false);
   const [signBtnPosition, setSignBtnPosition] = useState([]);
   const [xySignature, setXYSignature] = useState({});
   const [zIndex, setZIndex] = useState(1);
   const [fontSize, setFontSize] = useState();
   const [fontColor, setFontColor] = useState();
-  const [widgetType, setWidgetType] = useState("");
   const [isTextSetting, setIsTextSetting] = useState(false);
   const [isPageCopy, setIsPageCopy] = useState(false);
   const [assignedWidgetId, setAssignedWidgetId] = useState([]);
-  const [saveSignCheckbox, setSaveSignCheckbox] = useState({
-    isVisible: false,
-    signId: ""
-  });
   const [showSignPagenumber, setShowSignPagenumber] = useState([]);
   const [owner, setOwner] = useState({});
   const [, drop] = useDrop({
@@ -195,6 +189,7 @@ function PdfRequestFiles(
   }
   let getDocumentId = getDocId || documentId;
   useEffect(() => {
+    dispatch(resetWidgetState([]));
     if (getDocumentId) {
       setDocumentId(getDocumentId);
       getDocumentDetails(getDocumentId);
@@ -480,21 +475,28 @@ function PdfRequestFiles(
               } else {
                 setRequestSignTour(false);
               }
-              setSaveSignCheckbox((prev) => ({ ...prev, isVisible: true }));
+              dispatch(
+                setSaveSignCheckbox({
+                  ...saveSignCheckbox,
+                  isVisible: true
+                })
+              );
               //function to get default signatur of current user from `contracts_Signature` class
               const defaultSignRes = await getDefaultSignature(
                 jsonSender?.objectId
               );
               if (defaultSignRes?.status === "success") {
-                setSaveSignCheckbox((prev) => ({
-                  ...prev,
-                  isVisible: true,
-                  signId: defaultSignRes?.res?.id
-                }));
+                dispatch(
+                  setSaveSignCheckbox({
+                    ...saveSignCheckbox,
+                    isVisible: true,
+                    signId: defaultSignRes?.res?.id
+                  })
+                );
                 const sign = defaultSignRes?.res?.defaultSignature || "";
                 const initials = defaultSignRes?.res?.defaultInitial || "";
-                setDefaultSignImg(sign);
-                setMyInitial(initials);
+                dispatch(setDefaultSignImg(sign));
+                dispatch(setMyInitial(initials));
               }
             } else if (res?.length === 0) {
               const res = await contactBook(currUserId);
@@ -1010,7 +1012,6 @@ function PdfRequestFiles(
               }
             }
           }
-          setIsSignPad(false);
         } else {
           setIsAlert({
             isShow: true,
@@ -1031,6 +1032,7 @@ function PdfRequestFiles(
   const handleSignPdf = async () => {
       await embedWidgetsData();
   };
+
   //function for save x and y position and show signature  tab on that position
   const handleTabDrag = (key) => {
     setDragKey(key);
@@ -1113,7 +1115,7 @@ function PdfRequestFiles(
         const getXYdata = getPageNumer[0].pos;
         const getPosData = getXYdata;
         const updateSignPos = getPosData.map((position) => {
-          if (position.key === signKey) {
+          if (position.key === currWidgetsDetails?.key) {
             return {
               ...position,
               options: {
@@ -1144,7 +1146,6 @@ function PdfRequestFiles(
           return obj;
         });
         setSignerPos(newUpdateSigner);
-
         setFontSize();
         setFontColor();
         handleTextSettingModal(false);
@@ -1183,127 +1184,6 @@ function PdfRequestFiles(
   function changePage(offset) {
     setPageNumber((prevPageNumber) => prevPageNumber + offset);
   }
-
-  //function for image upload or update
-  const onImageChange = (event) => {
-    if (event.target.files && event.target.files[0]) {
-      const file = event.target.files[0];
-      compressedFileSize(file, setImgWH, setImage);
-    }
-  };
-  //function for upload stamp image
-  const saveImage = () => {
-    const widgetsType = currWidgetsDetails?.type;
-    //get current signers placeholder position data
-    const currentSigner = signerPos.filter(
-      (data) => data.signerObjId === signerObjectId
-    );
-    //get current pagenumber placeholder index
-    const getIndex = currentSigner[0].placeHolder.findIndex((object) => {
-      return object.pageNumber === pageNumber;
-    });
-    //get current signer placeholder position data
-    const placeholderPosition = currentSigner[0].placeHolder;
-    //`isApplyAll` is used when user edit stamp then updated signature apply all existing drawn signatures
-    const isApplyAll = true;
-    //function of save image and get updated position with image url
-    const getUpdatePosition = onSaveImage(
-      placeholderPosition,
-      getIndex,
-      signKey,
-      imgWH,
-      image,
-      isAutoSign,
-      widgetsType,
-      isApplyAll
-    );
-
-    //replace updated placeholder position with old data
-    placeholderPosition.splice(
-      0,
-      placeholderPosition.length,
-      ...getUpdatePosition
-    );
-    //get current signers placeholder position data index number in array
-    const indexofSigner = signerPos.findIndex((object) => {
-      return object.signerObjId === signerObjectId;
-    });
-    //update current signers data with new placeholder position array data
-    setSignerPos((prevState) => {
-      const newState = [...prevState]; // Create a copy of the state
-      newState.splice(indexofSigner, 1, ...currentSigner); // Modify the copy
-      return newState; // Update the state with the modified copy
-    });
-    setIsAutoSign(false);
-  };
-  //function for save button to save signature or image url
-  const saveSign = (type, isDefaultSign, width, height, typedSignature) => {
-    const widgetsType = currWidgetsDetails?.type;
-    const isTypeText = width && height ? true : false;
-    const signatureImg = isDefaultSign
-      ? isDefaultSign === "initials"
-        ? myInitial
-        : defaultSignImg
-      : signature;
-    let imgWH = { width: width ? width : "", height: height ? height : "" };
-    setIsSignPad(false);
-    setIsImageSelect(false);
-    setImage();
-
-    //get current signers placeholder position data
-    const currentSigner = signerPos.filter(
-      (data) => data.signerObjId === signerObjectId
-    );
-    //get current pagenumber placeholder index
-    const getIndex = currentSigner[0].placeHolder.findIndex((object) => {
-      return object.pageNumber === pageNumber;
-    });
-
-    //set default signature image width and height
-    if (isDefaultSign) {
-      const img = new Image();
-      img.src = defaultSignImg;
-      if (img.complete) {
-        imgWH = { width: img.width, height: img.height };
-      }
-    }
-    //get current signer placeholder position data
-    const placeholderPosition = currentSigner[0].placeHolder;
-    //`isApplyAll` is used when user edit signature/initial then updated signature apply all existing drawn signatures
-    const isApplyAll = true;
-    //function of save signature image and get updated position with signature image url
-    const getUpdatePosition = onSaveSign(
-      type,
-      placeholderPosition,
-      getIndex,
-      signKey,
-      signatureImg,
-      imgWH,
-      isDefaultSign,
-      isTypeText,
-      typedSignature,
-      isAutoSign,
-      widgetsType,
-      isApplyAll
-    );
-    const updateSignerData = currentSigner.map((obj) => {
-      if (obj.signerObjId === signerObjectId) {
-        return { ...obj, placeHolder: getUpdatePosition };
-      }
-      return obj;
-    });
-
-    const index = signerPos.findIndex(
-      (data) => data.signerObjId === signerObjectId
-    );
-    setSignerPos((prevState) => {
-      const newState = [...prevState];
-      newState.splice(index, 1, ...updateSignerData);
-      return newState;
-    });
-
-    setIsAutoSign(false);
-  };
   //function for set decline true on press decline button
   const declineDoc = async (reason) => {
     const senderUser = localStorage.getItem(
@@ -1675,7 +1555,8 @@ function PdfRequestFiles(
       pageNumber,
       containerWH
     );
-    let dropData = [];
+    let dropData = [],
+      dropObj;
     let placeHolder;
     const dragTypeValue = item?.text ? item.text : monitor.type;
     const widgetWidth =
@@ -1689,7 +1570,7 @@ function PdfRequestFiles(
     if (item === "onclick") {
       const divHeight = divRef.current.getBoundingClientRect().height;
       // `getBoundingClientRect()` is used to get accurate measurement height of the div
-      const dropObj = {
+      dropObj = {
         //onclick put placeholder center on pdf
         xPosition: widgetWidth / 4 + containerWH.width / 2,
         yPosition: widgetHeight + divHeight / 2,
@@ -1717,7 +1598,7 @@ function PdfRequestFiles(
       const y = offset.y - containerRect.top;
       const getXPosition = signBtnPosition[0] ? x - signBtnPosition[0].xPos : x;
       const getYPosition = signBtnPosition[0] ? y - signBtnPosition[0].yPos : y;
-      const dropObj = {
+      dropObj = {
         xPosition: getXPosition / (containerScale * scale),
         yPosition: getYPosition / (containerScale * scale),
         isStamp:
@@ -1733,7 +1614,6 @@ function PdfRequestFiles(
       dropData.push(dropObj);
       placeHolder = { pageNumber: pageNumber, pos: dropData };
     }
-    setSelectWidgetId(key);
     if (uniqueId) {
       let filterSignerPos, currentPagePosition;
       filterSignerPos = signerPos.find((data) => data.Id === uniqueId);
@@ -1782,9 +1662,7 @@ function PdfRequestFiles(
         setFontSize(12);
         setFontColor("black");
       }
-      setWidgetType(dragTypeValue);
-      setSignKey(key);
-      setCurrWidgetsDetails({});
+      setCurrWidgetsDetails(dropObj);
     }
   };
 
@@ -1875,6 +1753,7 @@ function PdfRequestFiles(
       setShowSignPagenumber(sortedPagenumber);
     }
   };
+
   return (
     <DndProvider backend={HTML5Backend}>
       <Title
@@ -2057,10 +1936,12 @@ function PdfRequestFiles(
                     setXyPosition={setSignerPos}
                     allPages={allPages}
                     pageNumber={pageNumber}
-                    signKey={signKey}
+                    signKey={currWidgetsDetails?.key}
                     Id={uniqueId}
-                    widgetType={widgetType}
+                    widgetType={currWidgetsDetails?.type}
                     setUniqueId={setUniqueId}
+                    tempSignerId={tempSignerId}
+                    setTempSignerId={setTempSignerId}
                   />
                   <div className=" w-full md:w-[95%] ">
                     {/* this modal is used show this document is already sign */}
@@ -2197,37 +2078,6 @@ function PdfRequestFiles(
                         )}
                       </div>
                     </ModalUi>
-                    {/* this component is used for signature pad modal */}
-                    {currentSigner && isSignPad && (
-                      <SignPad
-                        saveSignCheckbox={saveSignCheckbox}
-                        setSaveSignCheckbox={setSaveSignCheckbox}
-                        signatureTypes={signatureType}
-                        isSignPad={isSignPad}
-                        isStamp={isStamp}
-                        setIsImageSelect={setIsImageSelect}
-                        setIsSignPad={setIsSignPad}
-                        setImage={setImage}
-                        isImageSelect={isImageSelect}
-                        imageRef={imageRef}
-                        onImageChange={onImageChange}
-                        setSignature={setSignature}
-                        image={image}
-                        onSaveImage={saveImage}
-                        onSaveSign={saveSign}
-                        defaultSign={defaultSignImg}
-                        myInitial={myInitial}
-                        setDefaultSignImg={setDefaultSignImg}
-                        setMyInitial={setMyInitial}
-                        isInitial={isInitial}
-                        setIsInitial={setIsInitial}
-                        setIsStamp={setIsStamp}
-                        currWidgetsDetails={currWidgetsDetails}
-                        setCurrWidgetsDetails={setCurrWidgetsDetails}
-                        setIsAutoSign={setIsAutoSign}
-                        isAutoSign={isAutoSign}
-                      />
-                    )}
                     {/* pdf header which contain funish back button */}
                     <Header
                       isPdfRequestFiles={
@@ -2269,9 +2119,6 @@ function PdfRequestFiles(
                           pageNumber={pageNumber}
                           pdfOriginalWH={pdfOriginalWH}
                           pdfNewWidth={pdfNewWidth}
-                          setIsSignPad={setIsSignPad}
-                          setIsStamp={setIsStamp}
-                          setSignKey={setSignKey}
                           pdfDetails={pdfDetails}
                           signerPos={signerPos}
                           successEmail={false}
@@ -2285,11 +2132,7 @@ function PdfRequestFiles(
                           pdfLoad={pdfLoad}
                           setSignerPos={setSignerPos}
                           containerWH={containerWH}
-                          setIsInitial={setIsInitial}
-                          setValidateAlert={setValidateAlert}
                           unSignedWidgetId={unSignedWidgetId}
-                          setSelectWidgetId={setSelectWidgetId}
-                          selectWidgetId={selectWidgetId}
                           setCurrWidgetsDetails={setCurrWidgetsDetails}
                           divRef={divRef}
                           setIsResize={setIsResize}
@@ -2307,9 +2150,10 @@ function PdfRequestFiles(
                           setUniqueId={setUniqueId}
                           handleDeleteSign={handleDeleteSign}
                           handleTextSettingModal={handleTextSettingModal}
-                          setWidgetType={setWidgetType}
                           assignedWidgetId={assignedWidgetId}
                           setRequestSignTour={setRequestSignTour}
+                          currWidgetsDetails={currWidgetsDetails}
+                          setTempSignerId={setTempSignerId}
                         />
                       )}
                     </div>
@@ -2372,8 +2216,6 @@ function PdfRequestFiles(
                         !alreadySign &&
                         currentSigner && (
                           <DefaultSignature
-                            defaultSignImg={defaultSignImg}
-                            myInitial={myInitial}
                             userObjectId={signerObjectId}
                             setIsLoading={setIsLoading}
                             xyPosition={signerPos}
@@ -2407,23 +2249,22 @@ function PdfRequestFiles(
               </div>
             </div>
           )}
-          <ModalUi
-            isOpen={validateAlert}
-            title={t("validation-alert")}
-            handleClose={() => setValidateAlert(false)}
-          >
-            <div className="h-[100%] p-[20px]">
-              <p>{t("validation-alert-1")}</p>
-              <div className="h-[1px] bg-[#9f9f9f] w-full my-[15px]"></div>
-              <button
-                onClick={() => setValidateAlert(false)}
-                type="button"
-                className="op-btn op-btn-ghost"
-              >
-                {t("close")}
-              </button>
-            </div>
-          </ModalUi>
+          {currentSigner && isShowModal[currWidgetsDetails?.key] && (
+            <WidgetsValueModal
+              key={currWidgetsDetails?.key}
+              xyPosition={signerPos}
+              pageNumber={pageNumber}
+              setXyPosition={setSignerPos}
+              uniqueId={uniqueId}
+              setPageNumber={setPageNumber}
+              finishDocument={handleSignPdf}
+              setCurrWidgetsDetails={setCurrWidgetsDetails}
+              currWidgetsDetails={currWidgetsDetails}
+              index={pageNumber}
+              setUniqueId={setUniqueId}
+              tempSignerId={tempSignerId}
+            />
+          )}
           <DownloadPdfZip
             setIsDownloadModal={setIsDownloadModal}
             isDownloadModal={isDownloadModal}
