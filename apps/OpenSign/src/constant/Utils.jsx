@@ -21,6 +21,9 @@ export const isTabAndMobile = window.innerWidth < 1023;
 export const textInputWidget = "text input";
 export const textWidget = "text";
 export const radioButtonWidget = "radio button";
+export function getEnv() {
+  return window?.RUNTIME_ENV || {};
+}
 
 
 //function for create list of year for date widget
