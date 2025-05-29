@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import { PDFDocument } from "pdf-lib";
 import "../styles/signature.css";
 import Parse from "parse";
@@ -916,7 +916,7 @@ function PdfRequestFiles(
                           const htmlReqBody =
                             "<html><head><meta http-equiv='Content-Type' content='text/html; charset=UTF-8' /></head><body>" +
                             replacedRequestBody +
-                            "</body> </html>";
+                            "</body></html>";
 
                           const variables = {
                             document_title: documentName,
@@ -929,7 +929,7 @@ function PdfRequestFiles(
                             receiver_phone: user?.Phone || "",
                             expiry_date: localExpireDate,
                             company_name: orgName,
-                            signing_url: `<a href=${signPdf} target=_blank>Sign here</a>`
+                            signing_url: signPdf
                           };
                           replaceVar = replaceMailVaribles(
                             requestSubject,
@@ -944,7 +944,7 @@ function PdfRequestFiles(
                           title: documentName,
                           organization: orgName,
                           localExpireDate: localExpireDate,
-                          sigingUrl: signPdf
+                          signingUrl: signPdf
                         };
                         let params = {
                           replyto: senderEmail || "",

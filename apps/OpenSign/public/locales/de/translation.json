@@ -1,6 +1,7 @@
 { 
   "header-news": "Neue Funktion: Benutzer des Teams-Plans können jetzt ihre eigenen AWS S3-Buckets für die Dateispeicherung integrieren",
   "header-news-btn": "Jetzt einrichten",
+  "sandbox-news": "Dies ist eine Sandbox-Umgebung. Bitte nicht für produktive Zwecke verwenden.",
   "create-account": "Konto erstellen",
   "login": "Anmelden",
   "language": "Sprache",
@@ -675,7 +676,7 @@
   "public-template-mssg-1": "Um OpenSign in Ihr React- oder Next.js-Projekt zu integrieren, führen Sie einfach den folgenden Befehl aus:",
   "public-template-mssg-2": "Stellen Sie sicher, dass npm oder yarn in Ihrem Projekt eingerichtet ist. Wenn Sie Yarn verwenden, können Sie npm install durch yarn add @opensign/react ersetzen.",
   "public-template-mssg-3": "Benötigen Sie weitere Details oder Beispiele?",
-  "public-template-mssg-4": "Besuchen Sie die",
+  "public-template-mssg-4": "Besuchen Sie die ",
   "public-template-mssg-5": " npm für die neuesten Updates, detaillierte Dokumentationen und Versionshistorie.",
   "public-template-mssg-6": "Bevor Sie diesen Code-Schnipsel verwenden können, müssen Sie diese Vorlage öffentlich machen.",
   "public-template-mssg-7": "Bevor Sie einen öffentlichen Link generieren können, müssen Sie diese Vorlage öffentlich machen.",

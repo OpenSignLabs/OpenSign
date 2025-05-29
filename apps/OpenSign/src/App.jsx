@@ -106,10 +106,10 @@ function App() {
               element={<LazyPage Page={GuestLogin} />}
             />
             <Route path="/debugpdf" element={<LazyPage Page={DebugPdf} />} />
-            <Route
-              path="/forgetpassword"
-              element={<LazyPage Page={ForgetPassword} />}
-            />
+              <Route
+                path="/forgetpassword"
+                element={<LazyPage Page={ForgetPassword} />}
+              />
             <Route
               element={
                 <ValidateSession>
@@ -165,7 +165,7 @@ function App() {
                 path="/recipientSignPdf/:docId"
                 element={<PdfRequestFiles />}
               />
-              <Route path="/users" element={<UserList />} />
+                <Route path="/users" element={<UserList />} />
               <Route
                 path="/preferences"
                 element={<LazyPage Page={Preferences} />}

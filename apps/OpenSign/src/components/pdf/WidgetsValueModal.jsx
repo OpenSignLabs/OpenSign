@@ -231,7 +231,9 @@ function WidgetsValueModal(props) {
       setXyPosition,
       uniqueId,
       false,
-      data?.format
+      data?.format,
+      currWidgetsDetails?.options?.fontSize || 12,
+      currWidgetsDetails?.options?.fontColor || "black"
     );
     setSelectDate({ date: date, format: data?.format });
   };
@@ -1327,47 +1329,42 @@ function WidgetsValueModal(props) {
           <div className="border-[1px] border-gray-300 rounded-[2px] p-1 px-3">
             {currWidgetsDetails?.options?.values?.map((data, ind) => {
               return (
-                <div
-                  key={ind}
-                  className=" select-none-cls flex items-center text-center gap-0.5"
-                >
-                  <input
-                    id={`checkbox-${currWidgetsDetails?.key + ind}`}
-                    className={`${
-                      ind === 0 ? "mt-0" : "mt-[5px]"
-                    }  op-checkbox op-checkbox-sm rounded-[1px] `}
-                    type="checkbox"
-                    checked={!!selectCheckbox(ind, selectedCheckbox)}
-                    onChange={(e) => {
-                      if (e.target.checked) {
-                        const maxRequired =
-                          currWidgetsDetails?.options?.validation
-                            ?.maxRequiredCount;
-                        const maxCountInt =
-                          maxRequired && parseInt(maxRequired);
-                        if (maxCountInt > 0) {
-                          if (
-                            selectedCheckbox &&
-                            selectedCheckbox?.length <= maxCountInt - 1
-                          ) {
+                <div key={ind} className=" select-none-cls">
+                  <label
+                    htmlFor={`checkbox-${currWidgetsDetails?.key + ind}`}
+                    className="text-xs flex items-center gap-1"
+                  >
+                    <input
+                      id={`checkbox-${currWidgetsDetails?.key + ind}`}
+                      className={`${
+                        ind === 0 ? "mt-0" : "mt-[5px]"
+                      }  op-checkbox op-checkbox-xs rounded-[1px] `}
+                      type="checkbox"
+                      checked={!!selectCheckbox(ind, selectedCheckbox)}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          const maxRequired =
+                            currWidgetsDetails?.options?.validation
+                              ?.maxRequiredCount;
+                          const maxCountInt =
+                            maxRequired && parseInt(maxRequired);
+                          if (maxCountInt > 0) {
+                            if (
+                              selectedCheckbox &&
+                              selectedCheckbox?.length <= maxCountInt - 1
+                            ) {
+                              handleCheckboxValue(e.target.checked, ind);
+                            }
+                          } else {
                             handleCheckboxValue(e.target.checked, ind);
                           }
                         } else {
                           handleCheckboxValue(e.target.checked, ind);
                         }
-                      } else {
-                        handleCheckboxValue(e.target.checked, ind);
-                      }
-                    }}
-                  />
-                  {!currWidgetsDetails?.options?.isHideLabel && (
-                    <label
-                      htmlFor={`checkbox-${currWidgetsDetails?.key + ind}`}
-                      className="text-xs mb-0 text-center"
-                    >
-                      {data}
-                    </label>
-                  )}
+                      }}
+                    />
+                    {data}
+                  </label>
                 </div>
               );
             })}
@@ -1515,32 +1512,23 @@ function WidgetsValueModal(props) {
           <div className="border-[1px] border-gray-300 rounded-[2px] p-1 px-3">
             {currWidgetsDetails?.options?.values.map((data, ind) => {
               return (
-                <div
-                  key={ind}
-                  className="select-none-cls flex items-center text-center gap-0.5"
-                >
-                  <input
-                    id={`radio-${currWidgetsDetails?.key + ind}`}
-                    style={{
-                      marginTop: ind > 0 ? "10px" : "0px"
-                    }}
-                    className={`flex justify-center op-radio`}
-                    type="radio"
-                    value={data}
-                    checked={handleRadioCheck(data)}
-                    onChange={(e) => {
-                      handleCheckRadio(e.target.value);
-                    }}
-                  />
-                  {!currWidgetsDetails?.options?.isHideLabel && (
-                    <label
-                      htmlFor={`radio-${currWidgetsDetails?.key + ind}`}
-                      // style={{ fontSize: fontSize, color: fontColor }}
-                      className="text-xs mb-0"
-                    >
-                      {data}
-                    </label>
-                  )}
+                <div key={ind} className="select-none-cls">
+                  <label
+                    htmlFor={`radio-${currWidgetsDetails?.key + ind}`}
+                    className="cursor-pointer flex items-center text-sm gap-1"
+                  >
+                    <input
+                      id={`radio-${currWidgetsDetails?.key + ind}`}
+                      className={`op-radio op-radio-xs`}
+                      type="radio"
+                      value={data}
+                      checked={handleRadioCheck(data)}
+                      onChange={(e) => {
+                        handleCheckRadio(e.target.value);
+                      }}
+                    />
+                    {data}
+                  </label>
                 </div>
               );
             })}
@@ -1652,7 +1640,7 @@ function WidgetsValueModal(props) {
   const validateExpression = (regexValidation) => {
     if (widgetValue && regexValidation) {
       let regexObject = regexValidation;
-      if (props.pos?.options?.validation?.type === "regex") {
+      if (currWidgetsDetails?.options?.validation?.type === "regex") {
         regexObject = RegexParser(regexValidation);
       }
       let isValidate = regexObject.test(widgetValue);
@@ -1675,7 +1663,8 @@ function WidgetsValueModal(props) {
         validateExpression(regexValidation);
         break;
       default:
-        regexValidation = props.pos?.options?.validation?.pattern || "";
+        regexValidation =
+          currWidgetsDetails?.options?.validation?.pattern || "";
         validateExpression(regexValidation);
         break;
     }

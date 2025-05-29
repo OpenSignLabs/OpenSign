@@ -168,34 +168,34 @@ function PlaceholderType(props) {
         <div style={{ zIndex: props.isSignYourself && "99" }}>
           {props.pos.options?.values?.map((data, ind) => {
             return (
-              <div
-                key={ind}
-                className="select-none-cls flex items-center text-center gap-0.5 pointer-events-none"
-              >
-                <input
-                  id={`checkbox-${props.pos.key + ind}`}
-                  style={{ width: fontSize, height: fontSize }}
-                  className={`${
-                    ind === 0 ? "mt-0" : "mt-[5px]"
-                  } flex justify-center op-checkbox rounded-[1px] `}
-                  disabled={
-                    props.isNeedSign &&
-                    (props.pos.options?.isReadOnly ||
-                      props.data?.signerObjId !== props.signerObjId)
-                  }
-                  type="checkbox"
-                  readOnly
-                  checked={!!selectCheckbox(ind, selectedCheckbox)}
-                />
-                {!props.pos.options?.isHideLabel && (
-                  <label
-                    htmlFor={`checkbox-${props.pos.key + ind}`}
-                    style={{ fontSize: fontSize, color: fontColor }}
-                    className="text-xs mb-0 text-center"
-                  >
-                    {data}
-                  </label>
-                )}
+              <div key={ind} className="select-none-cls pointer-events-none">
+                <label
+                  htmlFor={`checkbox-${props.pos.key + ind}`}
+                  style={{ fontSize: fontSize, color: fontColor }}
+                  className={`mb-0 flex items-center gap-1  ${
+                    ind > 0 ? "mt-[3px]" : "mt-[0px]"
+                  }`}
+                >
+                  <input
+                    id={`checkbox-${props.pos.key + ind}`}
+                    style={{
+                      width: fontSize,
+                      height: fontSize
+                    }}
+                    className="op-checkbox rounded-[1px]"
+                    disabled={
+                      props.isNeedSign &&
+                      (props.pos.options?.isReadOnly ||
+                        props.data?.signerObjId !== props.signerObjId)
+                    }
+                    type="checkbox"
+                    readOnly
+                    checked={!!selectCheckbox(ind, selectedCheckbox)}
+                  />
+                  {!props.pos.options?.isHideLabel && (
+                    <span className="leading-none">{data}</span>
+                  )}
+                </label>
               </div>
             );
           })}
@@ -243,7 +243,6 @@ function PlaceholderType(props) {
           <i className="fa-light fa-circle-chevron-down mr-1 "></i>
         </div>
       );
-
     case "initials":
       return props.pos.SignUrl ? (
         <img
@@ -444,36 +443,40 @@ function PlaceholderType(props) {
             return (
               <div
                 key={ind}
-                className="select-none-cls flex items-center text-center gap-0.5 pointer-events-none"
+                className="select-none-cls pointer-events-none"
               >
-                <input
-                  readOnly
-                  id={`radio-${props.pos.key + ind}`}
+                <label
+                  htmlFor={`radio-${props.pos.key + ind}`}
                   style={{
-                    width: fontSize,
-                    height: fontSize,
-                    marginTop: ind > 0 ? "10px" : "0px"
+                    fontSize: fontSize,
+                    color: fontColor,
+                    marginTop: ind > 0 ? "5px" : "0px"
                   }}
-                  className={`op-radio rounded-full border- border-black appearance-none bg-white inline-block align-middle relative ${
-                    handleRadioCheck(data) ? "checked-radio" : ""
-                  }`}
-                  type="radio"
-                  disabled={
-                    props.isNeedSign &&
-                    (props.pos.options?.isReadOnly ||
-                      props.data?.signerObjId !== props.signerObjId)
-                  }
-                  checked={handleRadioCheck(data)}
-                />
-                {!props.pos.options?.isHideLabel && (
-                  <label
-                    htmlFor={`radio-${props.pos.key + ind}`}
-                    style={{ fontSize: fontSize, color: fontColor }}
-                    className="text-xs mb-0"
-                  >
-                    {data}
-                  </label>
-                )}
+                  className="text-xs mb-0 flex items-center gap-1 "
+                >
+                  <input
+                    readOnly
+                    id={`radio-${props.pos.key + ind}`}
+                    style={{
+                      width: fontSize,
+                      height: fontSize,
+                      lineHeight: 2
+                    }}
+                    className={`op-radio rounded-full border- border-black appearance-none bg-white inline-block align-middle relative ${
+                      handleRadioCheck(data) ? "checked-radio" : ""
+                    }`}
+                    type="radio"
+                    disabled={
+                      props.isNeedSign &&
+                      (props.pos.options?.isReadOnly ||
+                        props.data?.signerObjId !== props.signerObjId)
+                    }
+                    checked={handleRadioCheck(data)}
+                  />
+                  {!props.pos.options?.isHideLabel && (
+                    <span className="leading-none">{data}</span>
+                  )}
+                </label>
               </div>
             );
           })}

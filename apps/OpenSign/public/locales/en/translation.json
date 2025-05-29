@@ -1,6 +1,7 @@
 {
   "header-news": "New feature: Protect your account with Two-Factor Authentication (2FA) and enjoy the future of login with Passkeys — no passwords needed.",
   "header-news-btn": "Setup now",
+  "sandbox-news": "This is a sandbox environment. Please do not use it for production purposes.",
   "create-account": "Create account",
   "login": "Login",
   "language": "Language",
@@ -675,7 +676,7 @@
   "public-template-mssg-1": "To integrate OpenSign into your React or Next.js project, simply run the following command:",
   "public-template-mssg-2": "Ensure you have npm or yarn set up in your project. If you're using Yarn, you can replace npm install with yarn add @opensign/react.",
   "public-template-mssg-3": "Need more details or examples?",
-  "public-template-mssg-4": "Visit the",
+  "public-template-mssg-4": "Visit the ",
   "public-template-mssg-5": " npm for the latest updates, detailed documentation, and version history.",
   "public-template-mssg-6": "Before you can use this code snippet, you must make this template public.",
   "public-template-mssg-7": "Before you can generate a public link you must make this template public.",

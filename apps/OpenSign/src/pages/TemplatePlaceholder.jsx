@@ -1149,25 +1149,6 @@ const TemplatePlaceholder = () => {
   const handleLinkUser = (id) => {
     setIsAddUser({ [id]: true });
   };
-  //function to use unlink signer from widgets
-  const handleUnlinkSigner = () => {
-    //remove existing signer's details from 'signerPos' array
-    const updatePlaceHolder = signerPos.map((x) => {
-      if (x.Id === uniqueId) {
-        return { ...x, signerPtr: {}, signerObjId: "" };
-      }
-      return { ...x };
-    });
-    setSignerPos(updatePlaceHolder);
-    //remove existing signer's details from 'signersdata' array and keep role and id
-    const updateSigner = signersdata.map((item) => {
-      if (item.Id == uniqueId) {
-        return { Role: item.Role, Id: item.Id, blockColor: item.blockColor };
-      }
-      return item;
-    });
-    setSignersData(updateSigner);
-  };
   // `handleAddUser` is used to adduser
   const handleAddUser = (data) => {
     const signerPtr = {
@@ -1950,7 +1931,9 @@ const TemplatePlaceholder = () => {
               closePopup={closePopup}
               signersData={signersdata}
               signerPos={signerPos}
-              handleUnlinkSigner={handleUnlinkSigner}
+              setSignerPos={setSignerPos}
+              setSignersData={setSignersData}
+              isRemove={true}
             />
           )}
         </div>

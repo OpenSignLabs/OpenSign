@@ -1220,7 +1220,7 @@ function PlaceHolderSign() {
             receiver_phone: signerMail[i]?.Phone || "",
             expiry_date: localExpireDate,
             company_name: orgName,
-            signing_url: `<a href=${signPdf} target=_blank>Sign here</a>`
+            signing_url: signPdf
           };
           replaceVar = replaceMailVaribles(
             requestSubject,
@@ -1249,7 +1249,7 @@ function PlaceHolderSign() {
             receiver_phone: signerMail[i]?.Phone || "",
             expiry_date: localExpireDate,
             company_name: orgName,
-            signing_url: `<a href=${signPdf} target=_blank>Sign here</a>`
+            signing_url: signPdf
           };
           replaceVar = replaceMailVaribles(mailSubject, htmlReqBody, variables);
         }
@@ -1260,7 +1260,7 @@ function PlaceHolderSign() {
           title: documentName,
           organization: orgName,
           localExpireDate: localExpireDate,
-          sigingUrl: signPdf
+          signingUrl: signPdf
         };
         let params = {
           extUserId: owner?.objectId,

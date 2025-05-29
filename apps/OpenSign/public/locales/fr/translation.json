@@ -1,6 +1,7 @@
 {
   "header-news": "Nouvelle fonctionnalité : les utilisateurs du forfait Teams peuvent désormais intégrer leurs propres compartiments AWS S3 pour le stockage de fichiers",
   "header-news-btn": "Configurer maintenant",
+  "sandbox-news": "Ceci est un environnement sandbox. Veuillez ne pas l'utiliser à des fins de production.",
   "create-account": "Créer un compte",
   "login": "Se Connecter",
   "language": "Langue",
@@ -675,7 +676,7 @@
   "public-template-mssg-1": "Pour intégrer OpenSign dans votre projet React ou Next.js, exécutez simplement la commande suivante :",
   "public-template-mssg-2": "Assurez-vous que npm ou Yarn est configuré dans votre projet. Si vous utilisez Yarn, vous pouvez remplacer npm install par Yarn Add @opensign/react.",
   "public-template-mssg-3": "Besoin de plus de détails ou d'exemples ?",
-  "public-template-mssg-4": "Visitez le",
+  "public-template-mssg-4": "Visitez le ",
   "public-template-mssg-5": "npm pour les dernières mises à jour, une documentation détaillée et l'historique des versions.",
   "public-template-mssg-6": "Avant de pouvoir utiliser cet extrait de code, vous devez rendre ce modèle public.",
   "public-template-mssg-7": "Avant de pouvoir générer un lien public, vous devez rendre ce modèle public.",
