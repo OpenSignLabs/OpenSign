@@ -929,7 +929,7 @@ function PdfRequestFiles(
                             receiver_phone: user?.Phone || "",
                             expiry_date: localExpireDate,
                             company_name: orgName,
-                            signing_url: `<a href=${signPdf} target=_blank>Sign here</a>`
+                            signing_url: signPdf
                           };
                           replaceVar = replaceMailVaribles(
                             requestSubject,
@@ -944,7 +944,7 @@ function PdfRequestFiles(
                           title: documentName,
                           organization: orgName,
                           localExpireDate: localExpireDate,
-                          sigingUrl: signPdf
+                          signingUrl: signPdf
                         };
                         let params = {
                           replyto: senderEmail || "",

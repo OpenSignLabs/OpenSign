@@ -675,7 +675,7 @@
   "public-template-mssg-1": "Para integrar OpenSign a tu proyecto React o Next.js, simplemente ejecuta los siguientes comandos:",
   "public-template-mssg-2": "Asegúrate de tener «npm» o «yarn» configurado en tu proyecto. Si estás usando «yarn», puedes reemplazar «npm install» con «yarn add @opensign/react».",
   "public-template-mssg-3": "¿Necesitas más detalles o ejemplos?",
-  "public-template-mssg-4": "Visita la",
+  "public-template-mssg-4": "Visita la ",
   "public-template-mssg-5": " «npm» para las últimas actualizaciones, documentación detallada e historial de versiones.",
   "public-template-mssg-6": "Antes de que puedas usar este fragmento de código, debes convertir esta plantilla en pública.",
   "public-template-mssg-7": "Antes de poder generar un enlace público, debes hacer que esta plantilla sea pública.",

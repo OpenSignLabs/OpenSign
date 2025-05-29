@@ -161,7 +161,7 @@ app.use(express.urlencoded({ limit: '50mb', extended: true }));
 app.use(function (req, res, next) {
   req.headers['x-real-ip'] = getUserIP(req);
   const publicUrl = 'https://' + req?.get('host');
-  req.headers['public_url'] = publicUrl; // process.env.PUBLIC_URL
+  req.headers['public_url'] = publicUrl;
   next();
 });
 function getUserIP(request) {
