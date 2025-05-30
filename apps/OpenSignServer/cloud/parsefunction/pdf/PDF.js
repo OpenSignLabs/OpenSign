@@ -116,7 +116,7 @@ async function sendNotifyMail(doc, signUser, mailProvider, publicUrl) {
       const creatorEmail = doc.ExtUserPtr.Email;
       const signerName = signUser.Name;
       const signerEmail = signUser.Email;
-      const viewDocUrl = `${publicUrl}/recipientSignPdf/${doc.objectId}`; // ` ${process.env.PUBLIC_URL}/recipientSignPdf/${doc.objectId}`;
+      const viewDocUrl = `${publicUrl}/recipientSignPdf/${doc.objectId}`;
       const subject = `Document "${pdfName}" has been signed by ${signerName}`;
       const body =
         "<html><head><meta http-equiv='Content-Type' content='text/html; charset=UTF-8'/></head><body><div style='background-color:#f5f5f5;padding:20px'><div style='background-color:white'>" +

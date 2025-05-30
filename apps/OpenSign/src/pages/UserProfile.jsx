@@ -423,9 +423,9 @@ function UserProfile() {
                 onClick={() =>
                   editmode ? handleCancel() : navigate("/changepassword")
                 }
-                className={`op-btn ${
-                  editmode ? "op-btn-ghost w-[100px]" : "op-btn-secondary"
-                }`}
+                className={
+                      `op-btn ${editmode ? "op-btn-ghost w-[100px]" : "op-btn-secondary"}`
+                }
               >
                 {editmode ? t("cancel") : t("change-password")}
               </button>

@@ -8,13 +8,18 @@ const ModalUi = ({
   handleClose,
   showHeader = true,
   showClose = true,
-  reduceWidth
+  reduceWidth,
+  position
 }) => {
   const width = reduceWidth;
+  const isBottom = position === "bottom" ? "items-end pb-2" : "";
   return (
     <>
       {isOpen && (
-        <dialog id="selectSignerModal" className="op-modal op-modal-open">
+        <dialog
+          id="selectSignerModal"
+          className={`${isBottom} op-modal op-modal-open`}
+        >
           <div
             className={`${
               width || "md:min-w-[500px]"

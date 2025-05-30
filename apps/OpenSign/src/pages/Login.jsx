@@ -68,6 +68,7 @@ function Login() {
     setState({ ...state, loading: false, alertType: type, alertMsg: msg });
     setTimeout(() => setState({ ...state, alertMsg: "" }), 2000);
   };
+
   const checkUserExt = async () => {
     const app = await getAppLogo();
     if (app?.error === "invalid_json") {
@@ -82,11 +83,11 @@ function Login() {
     } else {
       setImage(appInfo?.applogo || undefined);
     }
+    dispatch(fetchAppInfo());
     if (localStorage.getItem("accesstoken")) {
       setState({ ...state, loading: true });
       GetLoginData();
     }
-    dispatch(fetchAppInfo());
   };
   const handleChange = (event) => {
     let { name, value } = event.target;
@@ -96,20 +97,15 @@ function Login() {
     setState({ ...state, [name]: value });
   };
 
-  const handleSubmit = async (event) => {
-    localStorage.removeItem("accesstoken");
-    event.preventDefault();
+  const handleLogin = async (
+  ) => {
+    const email = state?.email
+    const password = state?.password
 
-    if (!emailRegex.test(state.email)) {
-      alert("Please enter a valid email address.");
-      return;
-    }
-
-    const { email, password } = state;
     if (!email || !password) {
       return;
     }
-
+    localStorage.removeItem("accesstoken");
     try {
       setState({ ...state, loading: true });
       localStorage.setItem("appLogo", appInfo.applogo);
@@ -131,6 +127,14 @@ function Login() {
       console.error("Error while logging in user", error);
       showToast("danger", "Invalid username/password or region");
     }
+  };
+  const handleLoginBtn = async (event) => {
+    event.preventDefault();
+    if (!emailRegex.test(state.email)) {
+      alert("Please enter a valid email address.");
+      return;
+    }
+    await handleLogin();
   };
 
   const setThirdpartyLoader = (value) => {
@@ -275,7 +279,6 @@ function Login() {
       const userInformation = JSON.parse(
         localStorage.getItem("UserInformation")
       );
-      // console.log("payload ", payload);
       if (payload && payload.sessionToken) {
         const params = {
           userDetails: {
@@ -289,7 +292,6 @@ function Login() {
           }
         };
         const userSignUp = await Parse.Cloud.run("usersignup", params);
-        // console.log("userSignUp ", userSignUp);
         if (userSignUp && userSignUp.sessionToken) {
           const LocalUserDetails = {
             name: userInformation.name,
@@ -430,7 +432,7 @@ function Login() {
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-x-2">
                 <div>
-                  <form onSubmit={handleSubmit} aria-label="Login Form">
+                  <form onSubmit={handleLoginBtn} aria-label="Login Form">
                     <h1 className="text-[30px] mt-6">{t("welcome")}</h1>
                     <fieldset>
                       <legend className="text-[12px] text-[#878787]">
@@ -488,15 +490,14 @@ function Login() {
                                 )}
                               </span>
                             </div>
-
-                        <div className="relative mt-1">
-                          <NavLink
-                            to="/forgetpassword"
-                            className="text-[13px] op-link op-link-primary underline-offset-1 focus:outline-none ml-1"
-                          >
-                            {t("forgot-password")}
-                          </NavLink>
-                        </div>
+                          <div className="relative mt-1">
+                            <NavLink
+                              to="/forgetpassword"
+                              className="text-[13px] op-link op-link-primary underline-offset-1 focus:outline-none ml-1"
+                            >
+                              {t("forgot-password")}
+                            </NavLink>
+                          </div>
                       </div>
                     </fieldset>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-center text-xs font-bold mt-2">

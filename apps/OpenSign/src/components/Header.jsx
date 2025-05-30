@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import dp from "../assets/images/dp.png";
 import FullScreenButton from "./FullScreenButton";
 import { useNavigate } from "react-router";
@@ -172,17 +172,17 @@ const Header = ({ showSidebar, setIsMenu, isConsole }) => {
                       <i className="fa-light fa-user"></i> {t("profile")}
                     </span>
                   </li>
-                  <li
-                    onClick={() => {
-                      setIsOpen(false);
-                      navigate("/changepassword");
-                    }}
-                  >
-                    <span>
-                      <i className="fa-light fa-lock"></i>{" "}
-                      {t("change-password")}
-                    </span>
-                  </li>
+                    <li
+                      onClick={() => {
+                        setIsOpen(false);
+                        navigate("/changepassword");
+                      }}
+                    >
+                      <span>
+                        <i className="fa-light fa-lock"></i>{" "}
+                        {t("change-password")}
+                      </span>
+                    </li>
                 </>
               )}
               <li onClick={closeDropdown}>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, lazy } from "react";
+import { useState, useEffect, lazy } from "react";
 import { Routes, Route, BrowserRouter } from "react-router";
 import { pdfjs } from "react-pdf";
 import Form from "./pages/Form";
@@ -106,10 +106,10 @@ function App() {
               element={<LazyPage Page={GuestLogin} />}
             />
             <Route path="/debugpdf" element={<LazyPage Page={DebugPdf} />} />
-            <Route
-              path="/forgetpassword"
-              element={<LazyPage Page={ForgetPassword} />}
-            />
+              <Route
+                path="/forgetpassword"
+                element={<LazyPage Page={ForgetPassword} />}
+              />
             <Route
               element={
                 <ValidateSession>
@@ -117,10 +117,10 @@ function App() {
                 </ValidateSession>
               }
             >
-              <Route
-                path="/changepassword"
-                element={<LazyPage Page={ChangePassword} />}
-              />
+                <Route
+                  path="/changepassword"
+                  element={<LazyPage Page={ChangePassword} />}
+                />
               <Route path="/form/:id" element={<Form />} />
               <Route path="/report/:id" element={<Report />} />
               <Route path="/dashboard/:id" element={<Dashboard />} />
@@ -165,7 +165,7 @@ function App() {
                 path="/recipientSignPdf/:docId"
                 element={<PdfRequestFiles />}
               />
-              <Route path="/users" element={<UserList />} />
+                <Route path="/users" element={<UserList />} />
               <Route
                 path="/preferences"
                 element={<LazyPage Page={Preferences} />}
