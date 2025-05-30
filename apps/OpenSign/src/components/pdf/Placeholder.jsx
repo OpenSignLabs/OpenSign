@@ -1,6 +1,5 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import BorderResize from "./BorderResize";
-import PlaceholderBorder from "./PlaceholderBorder";
 import { Rnd } from "react-rnd";
 import {
   changeDateToMomentFormat,
@@ -23,6 +22,7 @@ import ModalUi from "../../primitives/ModalUi";
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 import { setIsShowModal } from "../../redux/reducers/widgetSlice";
+import { themeColor } from "../../constant/const";
 
 const selectFormat = (data) => {
   switch (data) {
@@ -78,7 +78,6 @@ function Placeholder(props) {
   const dispatch = useDispatch();
   const widgetData =
     props.pos?.options?.defaultValue || props.pos?.options?.response;
-  const [placeholderBorder, setPlaceholderBorder] = useState({ w: 0, h: 0 });
   const [isDateModal, setIsDateModal] = useState(false);
   const [containerScale, setContainerScale] = useState();
   const holdTimeout = useRef(null);
@@ -93,10 +92,6 @@ function Placeholder(props) {
       )
     : new Date();
 
-  const [getCheckboxRenderWidth, setGetCheckboxRenderWidth] = useState({
-    width: null,
-    height: null
-  });
   useEffect(() => {
     const getPdfPageWidth = props.pdfOriginalWH.find(
       (data) => data.pageNumber === props.pageNumber
@@ -127,18 +122,6 @@ function Placeholder(props) {
     }
   }, [widgetData]);
 
-  const handleGetDaynamicWH = () => {
-    if (
-      props?.pos?.type === "checkbox" ||
-      props?.pos?.type === radioButtonWidget
-    ) {
-      const rndElement = document.getElementById(props.pos.key);
-      if (rndElement) {
-        const { width, height } = rndElement.getBoundingClientRect();
-        setGetCheckboxRenderWidth({ width: width, height: height });
-      }
-    }
-  };
   //function change format array list with selected date and format
   const changeDateFormat = () => {
     const updateDate = [];
@@ -309,7 +292,6 @@ function Placeholder(props) {
       //The else condition is used to handle the case when the user clicks on a widget and open signature pad to draw sign
       props.setCurrWidgetsDetails && props.setCurrWidgetsDetails(props.pos);
       handleWidgetIdandPopup();
-      handleGetDaynamicWH();
     }
   };
   //`handleOnClickSettingIcon` is used set current widget details and open setting of it
@@ -823,7 +805,6 @@ function Placeholder(props) {
             background: handleBackground()
           }}
           onDrag={() => {
-            handleGetDaynamicWH();
             props.handleTabDrag && props.handleTabDrag(props.pos.key);
           }}
           size={{
@@ -838,7 +819,10 @@ function Placeholder(props) {
                 ? "auto"
                 : props.posHeight(props.pos, props.isSignYourself)
           }}
-          minHeight={calculateFont(props.pos.options?.fontSize, true)}
+          minHeight={
+            props.pos.type !== "checkbox" &&
+            calculateFont(props.pos.options?.fontSize, true)
+          }
           maxHeight="auto"
           onResizeStart={() => {
             props.setIsResize && props.setIsResize(true);
@@ -873,12 +857,6 @@ function Placeholder(props) {
             x: xPos(props.pos, props.isSignYourself),
             y: yPos(props.pos, props.isSignYourself)
           }}
-          onResize={(e, direction, ref) => {
-            setPlaceholderBorder({
-              w: ref.offsetWidth / (props.scale * containerScale),
-              h: ref.offsetHeight / (props.scale * containerScale)
-            });
-          }}
           disableDragging={handleDragging()}
         >
           {props.pos.key === props?.currWidgetsDetails?.key &&
@@ -911,40 +889,27 @@ function Placeholder(props) {
             props.pos.key === props?.currWidgetsDetails?.key && <BorderResize />
           )}
 
-          {/* 1- Show a border if props.pos.key === props?.currWidgetsDetails?.key, indicating the current user's selected widget.
-            2- If props.isShowBorder is true, display borders for all widgets. 
-            3- Use the combination of props?.isAlllowModify and !props?.assignedWidgetId.includes(props.pos.key) to determine when to show borders:
-               1- When isAlllowModify is true, show borders.
-               2- Do not display border for widgets already assigned (props.assignedWidgetId.includes(props.pos.key) is true).
-    */}
-          {props.pos.key === props?.currWidgetsDetails?.key &&
-            (props.isShowBorder ||
-              (props?.isAlllowModify &&
-                !props?.assignedWidgetId.includes(props.pos.key))) && (
-              <PlaceholderBorder
-                pos={props.pos}
-                isPlaceholder={props.isPlaceholder}
-                getCheckboxRenderWidth={getCheckboxRenderWidth}
-                scale={props.scale}
-                containerScale={containerScale}
-                placeholderBorder={placeholderBorder}
-              />
-            )}
+          {/* 1- Show a ouline if props.pos.key === props?.currWidgetsDetails?.key, indicating the current user's selected widget.
+            2- If props.isShowBorder is true, display ouline for all widgets. 
+            3- Use the combination of props?.isAlllowModify and !props?.assignedWidgetId.includes(props.pos.key) to determine when to show ouline:
+              3.1- When isAlllowModify is true, show ouline.
+              3.2- Do not display ouline for widgets already assigned (props.assignedWidgetId.includes(props.pos.key) is true). 
+            */}
           <div
-            className="flex items-stretch justify-center"
+            className={`${
+              props.pos.key === props?.currWidgetsDetails?.key &&
+              (props.isShowBorder ||
+                (props?.isAlllowModify &&
+                  !props?.assignedWidgetId.includes(props.pos.key)))
+                ? "outline-[0.3px] outline-dashed outline-offset-[10px]"
+                : ""
+            } flex items-stretch justify-center`}
             style={{
+              outlineColor: themeColor,
               left: xPos(props.pos, props.isSignYourself),
               top: yPos(props.pos, props.isSignYourself),
-              width:
-                props.pos.type === radioButtonWidget ||
-                props.pos.type === "checkbox"
-                  ? "auto"
-                  : props.posWidth(props.pos, props.isSignYourself),
-              height:
-                props.pos.type === radioButtonWidget ||
-                props.pos.type === "checkbox"
-                  ? "auto"
-                  : props.posHeight(props.pos, props.isSignYourself),
+              width: "100%",
+              height: "100%",
               zIndex: "10"
             }}
             onTouchEnd={() => handleOnClickPlaceholder()}

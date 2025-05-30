@@ -44,7 +44,8 @@ import {
   handleSignatureType,
   getBase64FromUrl,
   generatePdfName,
-  mailTemplate
+  mailTemplate,
+  getOriginalWH
 } from "../constant/Utils";
 import RenderPdf from "../components/pdf/RenderPdf";
 import { useNavigate } from "react-router";
@@ -671,14 +672,7 @@ function PlaceHolderSign() {
 
   //function for get pdf page details
   const pageDetails = async (pdf) => {
-    let pdfWHObj = [];
-    const totalPages = pdf?.numPages;
-    for (let index = 0; index < totalPages; index++) {
-      const getPage = await pdf.getPage(index + 1);
-      const scale = 1;
-      const { width, height } = getPage.getViewport({ scale });
-      pdfWHObj.push({ pageNumber: index + 1, width, height });
-    }
+    const pdfWHObj = await getOriginalWH(pdf);
     setPdfOriginalWH(pdfWHObj);
     setPdfLoad(true);
   };
@@ -862,7 +856,9 @@ function PlaceHolderSign() {
       });
       const isSignYourSelfFlow = false;
       try {
+        //pdfOriginalWH contained all pdf's pages width,height & pagenumber in array format
         const pdfBase64 = await multiSignEmbed(
+          pdfOriginalWH,
           placeholder,
           pdfDoc,
           isSignYourSelfFlow,
@@ -1220,7 +1216,7 @@ function PlaceHolderSign() {
             receiver_phone: signerMail[i]?.Phone || "",
             expiry_date: localExpireDate,
             company_name: orgName,
-            signing_url: `<a href=${signPdf} target=_blank>Sign here</a>`
+            signing_url: signPdf
           };
           replaceVar = replaceMailVaribles(
             requestSubject,
@@ -1249,7 +1245,7 @@ function PlaceHolderSign() {
             receiver_phone: signerMail[i]?.Phone || "",
             expiry_date: localExpireDate,
             company_name: orgName,
-            signing_url: `<a href=${signPdf} target=_blank>Sign here</a>`
+            signing_url: signPdf
           };
           replaceVar = replaceMailVaribles(mailSubject, htmlReqBody, variables);
         }
@@ -1260,7 +1256,7 @@ function PlaceHolderSign() {
           title: documentName,
           organization: orgName,
           localExpireDate: localExpireDate,
-          sigingUrl: signPdf
+          signingUrl: signPdf
         };
         let params = {
           extUserId: owner?.objectId,

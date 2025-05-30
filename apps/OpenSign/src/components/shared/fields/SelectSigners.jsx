@@ -2,9 +2,19 @@ import React, { useEffect, useState } from "react";
 import AsyncSelect from "react-select/async";
 import { useTranslation } from "react-i18next";
 import axios from "axios";
+import { handleUnlinkSigner } from "../../../constant/Utils";
 
 const SelectSigners = (props) => {
   const { t } = useTranslation();
+  const {
+    signerPos,
+    setSignerPos,
+    signersData,
+    setSignersData,
+    uniqueId,
+    isRemove,
+    handleAddUser
+  } = props;
   const [userList, setUserList] = useState([]);
   const [selected, setSelected] = useState();
   const [userData, setUserData] = useState({});
@@ -30,7 +40,7 @@ const SelectSigners = (props) => {
     //checking if user select no signer option from dropdown
     if (item) {
       //checking selected signer is already assign to the document or not
-      const alreadyAssign = props.signersData.some(
+      const alreadyAssign = signersData.some(
         (item2) => item2.objectId === item.value
       );
       if (alreadyAssign) {
@@ -49,7 +59,7 @@ const SelectSigners = (props) => {
   };
   const handleAdd = () => {
     if (userData && userData.objectId) {
-      props.details(userData);
+      handleAddUser(userData);
       if (props.closePopup) {
         props.closePopup();
       }
@@ -60,7 +70,13 @@ const SelectSigners = (props) => {
   };
   //function to use remove signer from assigned widgets in create template flow
   const handleRemove = () => {
-    props.handleUnlinkSigner();
+    handleUnlinkSigner(
+      signerPos,
+      setSignerPos,
+      signersData,
+      setSignersData,
+      uniqueId
+    );
     if (props.closePopup) {
       props.closePopup();
     }
@@ -161,7 +177,7 @@ const SelectSigners = (props) => {
           <button className="op-btn op-btn-primary" onClick={() => handleAdd()}>
             {t("submit")}
           </button>
-          {props.isExistSigner && props.handleUnlinkSigner && (
+          {props.isExistSigner && isRemove && (
             <button
               className="op-btn op-btn-accent op-btn-outline"
               onClick={() => handleRemove()}

@@ -25,12 +25,10 @@ const LinkUserModal = (props) => {
       handleClose={props.closePopup}
     >
       <SelectSigners
-        details={props.handleAddUser}
+        {...props}
         closePopup={props.closePopup}
-        signersData={props?.signersData}
         isContact={isContact}
         setIsContact={setIsContact}
-        handleUnlinkSigner={props.handleUnlinkSigner}
         isExistSigner={isExistSigner}
       />
       {isContact && (
