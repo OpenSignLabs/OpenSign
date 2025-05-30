@@ -183,6 +183,17 @@ const Header = ({ showSidebar, setIsMenu, isConsole }) => {
                         {t("change-password")}
                       </span>
                     </li>
+                  <li
+                    onClick={() => {
+                      setIsOpen(false);
+                      navigate("/verify-document");
+                    }}
+                  >
+                    <span>
+                      <i className="fa-light fa-check-square"></i>{" "}
+                      {t("verify-document")}
+                    </span>
+                  </li>
                 </>
               )}
               <li onClick={closeDropdown}>
