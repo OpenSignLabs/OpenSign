@@ -38,7 +38,8 @@ import {
   convertPdfArrayBuffer,
   generatePdfName,
   textWidget,
-  multiSignEmbed
+  multiSignEmbed,
+  getOriginalWH
 } from "../constant/Utils";
 import RenderPdf from "../components/pdf/RenderPdf";
 import "../styles/AddUser.css";
@@ -534,14 +535,7 @@ const TemplatePlaceholder = () => {
 
   //function for get pdf page details
   const pageDetails = async (pdf) => {
-    let pdfWHObj = [];
-    const totalPages = pdf?.numPages;
-    for (let index = 0; index < totalPages; index++) {
-      const getPage = await pdf.getPage(index + 1);
-      const scale = 1;
-      const { width, height } = getPage.getViewport({ scale });
-      pdfWHObj.push({ pageNumber: index + 1, width, height });
-    }
+    const pdfWHObj = await getOriginalWH(pdf);
     setPdfOriginalWH(pdfWHObj);
     setPdfLoad(true);
   };
@@ -832,7 +826,9 @@ const TemplatePlaceholder = () => {
       });
       const isSignYourSelfFlow = false;
       try {
+        //pdfOriginalWH contained all pdf's pages width,height & pagenumber in array format
         const pdfBase64 = await multiSignEmbed(
+          pdfOriginalWH,
           placeholder,
           pdfDoc,
           isSignYourSelfFlow,
@@ -1148,25 +1144,6 @@ const TemplatePlaceholder = () => {
   // and update entry in signersList
   const handleLinkUser = (id) => {
     setIsAddUser({ [id]: true });
-  };
-  //function to use unlink signer from widgets
-  const handleUnlinkSigner = () => {
-    //remove existing signer's details from 'signerPos' array
-    const updatePlaceHolder = signerPos.map((x) => {
-      if (x.Id === uniqueId) {
-        return { ...x, signerPtr: {}, signerObjId: "" };
-      }
-      return { ...x };
-    });
-    setSignerPos(updatePlaceHolder);
-    //remove existing signer's details from 'signersdata' array and keep role and id
-    const updateSigner = signersdata.map((item) => {
-      if (item.Id == uniqueId) {
-        return { Role: item.Role, Id: item.Id, blockColor: item.blockColor };
-      }
-      return item;
-    });
-    setSignersData(updateSigner);
   };
   // `handleAddUser` is used to adduser
   const handleAddUser = (data) => {
@@ -1950,7 +1927,9 @@ const TemplatePlaceholder = () => {
               closePopup={closePopup}
               signersData={signersdata}
               signerPos={signerPos}
-              handleUnlinkSigner={handleUnlinkSigner}
+              setSignerPos={setSignerPos}
+              setSignersData={setSignersData}
+              isRemove={true}
             />
           )}
         </div>

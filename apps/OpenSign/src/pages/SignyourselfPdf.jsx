@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import { PDFDocument } from "pdf-lib";
 import "../styles/signature.css";
 import Parse from "parse";
@@ -32,12 +32,12 @@ import {
   onClickZoomIn,
   onClickZoomOut,
   rotatePdfPage,
-  signatureTypes,
   getBase64FromUrl,
   convertBase64ToFile,
   generatePdfName,
   handleRemoveWidgets,
-  addWidgetSelfsignOptions
+  addWidgetSelfsignOptions,
+  getOriginalWH
 } from "../constant/Utils";
 import { useParams } from "react-router";
 import Tour from "../primitives/Tour";
@@ -626,10 +626,12 @@ function SignYourSelf() {
             const HeaderDocId = extUserPtr?.HeaderDocId;
             //embed document's object id to all pages in pdf document
             if (!HeaderDocId) {
-              await embedDocId(pdfDoc, documentId, allPages);
+              //pdfOriginalWH contained all pdf's pages width,height & pagenumber in array format
+              await embedDocId(pdfOriginalWH, pdfDoc, documentId);
             }
-            //embed multi signature in pdf
+            //embed all widgets in document
             const pdfBytes = await multiSignEmbed(
+              pdfOriginalWH,
               xyPosition,
               pdfDoc,
               isSignYourSelfFlow,
@@ -738,7 +740,6 @@ function SignYourSelf() {
       getDocumentDetails(false);
     }
   };
-
   //function for save x and y position and show signature  tab on that position
   const handleTabDrag = (key) => {
     setDragKey(key);
@@ -789,14 +790,7 @@ function SignYourSelf() {
   };
   //function for get pdf page details
   const pageDetails = async (pdf) => {
-    let pdfWHObj = [];
-    const totalPages = pdf?.numPages;
-    for (let index = 0; index < totalPages; index++) {
-      const getPage = await pdf.getPage(index + 1);
-      const scale = 1;
-      const { width, height } = getPage.getViewport({ scale });
-      pdfWHObj.push({ pageNumber: index + 1, width, height });
-    }
+    const pdfWHObj = await getOriginalWH(pdf);
     setPdfOriginalWH(pdfWHObj);
     setPdfLoad(true);
   };

@@ -14,7 +14,7 @@ async function deductcount(docsCount, extUserId) {
 }
 async function sendMail(document, publicUrl) {
   //sessionToken
-  const baseUrl = new URL(publicUrl); //process.env.PUBLIC_URL
+  const baseUrl = new URL(publicUrl);
 
   // console.log("pdfDetails", pdfDetails);
   const timeToCompleteDays = document?.TimeToCompleteDays || 15;
@@ -71,7 +71,7 @@ async function sendMail(document, publicUrl) {
           receiver_phone: existSigner?.Phone || '',
           expiry_date: localExpireDate,
           company_name: orgName,
-          signing_url: `<a href=${signPdf} target=_blank>Sign here</a>`,
+          signing_url: signPdf,
         };
         replaceVar = replaceMailVaribles(mailSubject, htmlReqBody, variables);
       }
@@ -82,7 +82,7 @@ async function sendMail(document, publicUrl) {
         title: document.Name,
         organization: orgName,
         localExpireDate: localExpireDate,
-        sigingUrl: signPdf,
+        signingUrl: signPdf,
       };
       let params = {
         extUserId: document.ExtUserPtr.objectId,
