@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import { PDFDocument } from "pdf-lib";
 import "../styles/signature.css";
 import Parse from "parse";
@@ -46,7 +46,8 @@ import {
   textWidget,
   mailTemplate,
   updateDateWidgetsRes,
-  widgetDataValue
+  widgetDataValue,
+  getOriginalWH
 } from "../constant/Utils";
 import Header from "../components/pdf/PdfHeader";
 import RenderPdf from "../components/pdf/RenderPdf";
@@ -816,11 +817,13 @@ function PdfRequestFiles(
               //embed document's object id to all pages in pdf document
               if (!HeaderDocId) {
                 if (!isDocId) {
-                  await embedDocId(pdfDoc, docId, allPages);
+                  //pdfOriginalWH contained all pdf's pages width,height & pagenumber in array format
+                  await embedDocId(pdfOriginalWH, pdfDoc, docId);
                 }
               }
-              //embed multi signature in pdf
+              //embed all widgets in document 
               const pdfBytes = await multiSignEmbed(
+                pdfOriginalWH,
                 widgets,
                 pdfDoc,
                 isSignYourSelfFlow,
@@ -916,7 +919,7 @@ function PdfRequestFiles(
                           const htmlReqBody =
                             "<html><head><meta http-equiv='Content-Type' content='text/html; charset=UTF-8' /></head><body>" +
                             replacedRequestBody +
-                            "</body> </html>";
+                            "</body></html>";
 
                           const variables = {
                             document_title: documentName,
@@ -929,7 +932,7 @@ function PdfRequestFiles(
                             receiver_phone: user?.Phone || "",
                             expiry_date: localExpireDate,
                             company_name: orgName,
-                            signing_url: `<a href=${signPdf} target=_blank>Sign here</a>`
+                            signing_url: signPdf
                           };
                           replaceVar = replaceMailVaribles(
                             requestSubject,
@@ -944,7 +947,7 @@ function PdfRequestFiles(
                           title: documentName,
                           organization: orgName,
                           localExpireDate: localExpireDate,
-                          sigingUrl: signPdf
+                          signingUrl: signPdf
                         };
                         let params = {
                           replyto: senderEmail || "",
@@ -1169,14 +1172,7 @@ function PdfRequestFiles(
   ];
   //function for get pdf page details
   const pageDetails = async (pdf) => {
-    let pdfWHObj = [];
-    const totalPages = pdf.numPages; // Get the total number of pages
-    for (let index = 0; index < totalPages; index++) {
-      const getPage = await pdf.getPage(index + 1);
-      const scale = 1;
-      const { width, height } = getPage.getViewport({ scale });
-      pdfWHObj.push({ pageNumber: index + 1, width, height });
-    }
+    const pdfWHObj = await getOriginalWH(pdf);
     setPdfOriginalWH(pdfWHObj);
     setPdfLoad(true);
   };
