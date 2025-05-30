@@ -22,7 +22,7 @@ function DropdownWidgetOption(props) {
 
   const resetState = () => {
     setDropdownOptionList(["option-1", "option-2"]);
-    setDropdownName( props.currWidgetsDetails?.options?.name || props.type);
+    setDropdownName(props.currWidgetsDetails?.options?.name || props.type);
     setIsReadOnly(false);
     setIsHideLabel(false);
     setMinCount(0);
@@ -115,7 +115,7 @@ function DropdownWidgetOption(props) {
       defaultData,
       isHideLabel
     );
-    resetState()
+    resetState();
   };
 
 
