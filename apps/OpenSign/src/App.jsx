@@ -30,7 +30,7 @@ const AddAdmin = lazy(() => import("./pages/AddAdmin"));
 const UpdateExistUserAdmin = lazy(() => import("./pages/UpdateExistUserAdmin"));
 const Preferences = lazy(() => import("./pages/Preferences"));
 const Login = lazy(() => import("./pages/Login"));
-
+const VerifyDocument = lazy(() => import("./pages/VerifyDocument"));
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/legacy/build/pdf.worker.min.mjs`;
 const AppLoader = () => {
   return (
@@ -166,6 +166,10 @@ function App() {
                 element={<PdfRequestFiles />}
               />
                 <Route path="/users" element={<UserList />} />
+              <Route
+                path="/verify-document"
+                element={<LazyPage Page={VerifyDocument} />}
+              />
               <Route
                 path="/preferences"
                 element={<LazyPage Page={Preferences} />}
