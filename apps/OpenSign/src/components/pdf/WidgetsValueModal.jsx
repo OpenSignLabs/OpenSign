@@ -231,7 +231,9 @@ function WidgetsValueModal(props) {
       setXyPosition,
       uniqueId,
       false,
-      data?.format
+      data?.format,
+      currWidgetsDetails?.options?.fontSize || 12,
+      currWidgetsDetails?.options?.fontColor || "black"
     );
     setSelectDate({ date: date, format: data?.format });
   };
@@ -615,21 +617,19 @@ function WidgetsValueModal(props) {
     setImage();
     handleTab();
   };
-  const autoSignAll = () => {
-    return (
-      <label className="cursor-pointer flex items-center text-sm">
-        <input
-          className="mr-2 md:mr-3 op-checkbox op-checkbox-xs md:op-checkbox-sm"
-          type="checkbox"
-          value={isAutoSign}
-          onChange={(e) => {
-            setIsAutoSign(e.target.checked);
-          }}
-        />
-        {t("auto-sign-mssg")}
-      </label>
-    );
-  };
+  const autoSignAll = (
+    <label className="mb-0 cursor-pointer flex items-center text-sm">
+      <input
+        className="mr-2 md:mr-3 op-checkbox op-checkbox-xs md:op-checkbox-sm"
+        type="checkbox"
+        value={isAutoSign}
+        onChange={(e) => {
+          setIsAutoSign(e.target.checked);
+        }}
+      />
+      {t("auto-sign-mssg")}
+    </label>
+  );
 
   useEffect(() => {
     const loadFont = async () => {
@@ -857,7 +857,7 @@ function WidgetsValueModal(props) {
   ]);
 
   const savesigncheckbox = (
-    <label className="cursor-pointer flex items-center mb-0 text-center text-[11px] md:text-base">
+    <label className="cursor-pointer flex items-center mb-0 text-center text-sm">
       <input
         className="mr-2 md:mr-3 op-checkbox op-checkbox-xs md:op-checkbox-sm"
         type="checkbox"
@@ -1059,7 +1059,14 @@ function WidgetsValueModal(props) {
                       </div>
                     </div>
                   )}
-                <div className="mt-4 h-full">
+                <div
+                  className={`${
+                    currWidgetsDetails?.type === "stamp" ||
+                    currWidgetsDetails?.type === "image"
+                      ? ""
+                      : "mt-3"
+                  } h-full`}
+                >
                   {isDefaultSign ? (
                     <>
                       {currWidgetsDetails?.type !== "initials" &&
@@ -1085,7 +1092,7 @@ function WidgetsValueModal(props) {
                             {/* Standalone autoSignAll for "My Signature/Initials" (isDefaultSign) if conditions met */}
                             {setIsAutoSign && uniqueId && (
                               <div className="flex justify-center my-2">
-                                {autoSignAll()}
+                                {autoSignAll}
                               </div>
                             )}
                           </>
@@ -1114,7 +1121,7 @@ function WidgetsValueModal(props) {
                             {/* Standalone autoSignAll for "My Signature/Initials" (isDefaultSign) if conditions met */}
                             {setIsAutoSign && uniqueId && (
                               <div className="flex justify-center my-2">
-                                {autoSignAll()}
+                                {autoSignAll}
                               </div>
                             )}
                           </>
@@ -1163,9 +1170,8 @@ function WidgetsValueModal(props) {
                               ["image", "stamp"].includes(
                                 currWidgetsDetails?.type
                               )))) && (
-                          <div className="flex justify-center items-center space-x-4 my-2">
-                            {setIsAutoSign && uniqueId && autoSignAll()}
-
+                          <div className="flex justify-center items-center gap-x-2 my-2">
+                            {setIsAutoSign && uniqueId && autoSignAll}
                             {image &&
                               (isImageSelect ||
                                 ["image", "stamp"].includes(
@@ -1173,7 +1179,7 @@ function WidgetsValueModal(props) {
                                 )) && (
                                 <label
                                   htmlFor={`removeBgToggleModal-${currWidgetsDetails?.key}`}
-                                  className="cursor-pointer flex items-center text-sm"
+                                  className="mb-0 cursor-pointer flex items-center text-sm"
                                 >
                                   <input
                                     type="checkbox"
@@ -1253,16 +1259,18 @@ function WidgetsValueModal(props) {
                       <div className="flex flex-row justify-between mt-[10px]">
                         <PenColorComponent />
                       </div>
-                      <div className="flex flex-col mt-2">
+                      <div className="flex flex-row ml-1 mt-2 gap-x-3">
                         {/* Standalone autoSignAll for "Type" tab if conditions met */}
                         {setIsAutoSign && uniqueId && (
                           <div className="flex justify-start my-1">
-                            {autoSignAll()}
+                            {autoSignAll}
                           </div>
                         )}
-                        {accesstoken &&
-                          saveSignCheckbox?.isVisible &&
-                          savesigncheckbox}
+                        {accesstoken && (
+                          <div className="flex justify-start my-1">
+                            {saveSignCheckbox?.isVisible && savesigncheckbox}
+                          </div>
+                        )}
                       </div>
                     </>
                   ) : (
@@ -1287,16 +1295,18 @@ function WidgetsValueModal(props) {
                       <div className="flex flex-row justify-between mt-[10px]">
                         <PenColorComponent />
                       </div>
-                      <div className="flex flex-col mt-2">
+                      <div className="flex flex-row ml-1 mt-1 gap-x-3">
                         {/* Standalone autoSignAll for "Draw" tab if conditions met */}
                         {setIsAutoSign && uniqueId && (
                           <div className="flex justify-start my-1">
-                            {autoSignAll()}
+                            {autoSignAll}
                           </div>
                         )}
-                        {accesstoken &&
-                          saveSignCheckbox?.isVisible &&
-                          savesigncheckbox}
+                        {accesstoken && (
+                          <div className="flex justify-start my-1">
+                            {saveSignCheckbox?.isVisible && savesigncheckbox}
+                          </div>
+                        )}
                       </div>
                     </>
                   )}
@@ -1324,50 +1334,45 @@ function WidgetsValueModal(props) {
         );
       case "checkbox":
         return (
-          <div className="border-[1px] border-gray-300 rounded-[2px] p-1 px-3">
+          <div className="border-[1px] border-gray-300 rounded-[2px] pt-1 px-2.5">
             {currWidgetsDetails?.options?.values?.map((data, ind) => {
               return (
-                <div
-                  key={ind}
-                  className=" select-none-cls flex items-center text-center gap-0.5"
-                >
-                  <input
-                    id={`checkbox-${currWidgetsDetails?.key + ind}`}
-                    className={`${
-                      ind === 0 ? "mt-0" : "mt-[5px]"
-                    }  op-checkbox op-checkbox-sm rounded-[1px] `}
-                    type="checkbox"
-                    checked={!!selectCheckbox(ind, selectedCheckbox)}
-                    onChange={(e) => {
-                      if (e.target.checked) {
-                        const maxRequired =
-                          currWidgetsDetails?.options?.validation
-                            ?.maxRequiredCount;
-                        const maxCountInt =
-                          maxRequired && parseInt(maxRequired);
-                        if (maxCountInt > 0) {
-                          if (
-                            selectedCheckbox &&
-                            selectedCheckbox?.length <= maxCountInt - 1
-                          ) {
+                <div key={ind} className=" select-none-cls">
+                  <label
+                    htmlFor={`checkbox-${currWidgetsDetails?.key + ind}`}
+                    className="text-xs flex items-center gap-1"
+                  >
+                    <input
+                      id={`checkbox-${currWidgetsDetails?.key + ind}`}
+                      className={`${
+                        ind === 0 ? "mt-0" : "mt-[5px]"
+                      }  op-checkbox op-checkbox-xs rounded-[1px] mt-1`}
+                      type="checkbox"
+                      checked={!!selectCheckbox(ind, selectedCheckbox)}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          const maxRequired =
+                            currWidgetsDetails?.options?.validation
+                              ?.maxRequiredCount;
+                          const maxCountInt =
+                            maxRequired && parseInt(maxRequired);
+                          if (maxCountInt > 0) {
+                            if (
+                              selectedCheckbox &&
+                              selectedCheckbox?.length <= maxCountInt - 1
+                            ) {
+                              handleCheckboxValue(e.target.checked, ind);
+                            }
+                          } else {
                             handleCheckboxValue(e.target.checked, ind);
                           }
                         } else {
                           handleCheckboxValue(e.target.checked, ind);
                         }
-                      } else {
-                        handleCheckboxValue(e.target.checked, ind);
-                      }
-                    }}
-                  />
-                  {!currWidgetsDetails?.options?.isHideLabel && (
-                    <label
-                      htmlFor={`checkbox-${currWidgetsDetails?.key + ind}`}
-                      className="text-xs mb-0 text-center"
-                    >
-                      {data}
-                    </label>
-                  )}
+                      }}
+                    />
+                    {data}
+                  </label>
                 </div>
               );
             })}
@@ -1512,35 +1517,26 @@ function WidgetsValueModal(props) {
         );
       case radioButtonWidget:
         return (
-          <div className="border-[1px] border-gray-300 rounded-[2px] p-1 px-3">
+          <div className="border-[1px] border-gray-300 rounded-[2px] pt-1 px-2.5">
             {currWidgetsDetails?.options?.values.map((data, ind) => {
               return (
-                <div
-                  key={ind}
-                  className="select-none-cls flex items-center text-center gap-0.5"
-                >
-                  <input
-                    id={`radio-${currWidgetsDetails?.key + ind}`}
-                    style={{
-                      marginTop: ind > 0 ? "10px" : "0px"
-                    }}
-                    className={`flex justify-center op-radio`}
-                    type="radio"
-                    value={data}
-                    checked={handleRadioCheck(data)}
-                    onChange={(e) => {
-                      handleCheckRadio(e.target.value);
-                    }}
-                  />
-                  {!currWidgetsDetails?.options?.isHideLabel && (
-                    <label
-                      htmlFor={`radio-${currWidgetsDetails?.key + ind}`}
-                      // style={{ fontSize: fontSize, color: fontColor }}
-                      className="text-xs mb-0"
-                    >
-                      {data}
-                    </label>
-                  )}
+                <div key={ind} className="select-none-cls">
+                  <label
+                    htmlFor={`radio-${currWidgetsDetails?.key + ind}`}
+                    className="cursor-pointer flex items-center text-sm gap-1"
+                  >
+                    <input
+                      id={`radio-${currWidgetsDetails?.key + ind}`}
+                      className={`op-radio op-radio-xs mt-1`}
+                      type="radio"
+                      value={data}
+                      checked={handleRadioCheck(data)}
+                      onChange={(e) => {
+                        handleCheckRadio(e.target.value);
+                      }}
+                    />
+                    <span>{data}</span>
+                  </label>
                 </div>
               );
             })}
@@ -1652,7 +1648,7 @@ function WidgetsValueModal(props) {
   const validateExpression = (regexValidation) => {
     if (widgetValue && regexValidation) {
       let regexObject = regexValidation;
-      if (props.pos?.options?.validation?.type === "regex") {
+      if (currWidgetsDetails?.options?.validation?.type === "regex") {
         regexObject = RegexParser(regexValidation);
       }
       let isValidate = regexObject.test(widgetValue);
@@ -1675,7 +1671,8 @@ function WidgetsValueModal(props) {
         validateExpression(regexValidation);
         break;
       default:
-        regexValidation = props.pos?.options?.validation?.pattern || "";
+        regexValidation =
+          currWidgetsDetails?.options?.validation?.pattern || "";
         validateExpression(regexValidation);
         break;
     }
@@ -1795,11 +1792,11 @@ function WidgetsValueModal(props) {
       <ModalUi
         isOpen={true}
         handleClose={() => !isShowValidation && handleclose()}
+        position="bottom"
       >
-        <div className="h-[100%] p-[20px]">
+        <div className="h-[100%] p-[18px]">
           {isFinish ? (
             <>
-              {" "}
               <div className="p-1 mt-3">
                 <span className="text-base">{t("finish-mssg")}</span>
               </div>
@@ -1824,7 +1821,7 @@ function WidgetsValueModal(props) {
             </>
           ) : (
             <>
-              <div className="p-1 m-1">
+              <div>
                 <div className="relative inline-block">
                   <span className="text-base">
                     {currWidgetsDetails?.options?.name || widgetTypeTranslation}
@@ -1835,7 +1832,7 @@ function WidgetsValueModal(props) {
                     </span>
                   )}
                 </div>
-                <div className="flex flex-col justify-center m-2 mt-4">
+                <div className="flex flex-col justify-center m-2 mt-3">
                   <div className="flex justify-center">
                     {getWidgetType(currWidgetsDetails?.type)}
                   </div>
@@ -1852,15 +1849,18 @@ function WidgetsValueModal(props) {
                 ) ? (
                   <button
                     type="button"
-                    className="op-btn op-btn-ghost mr-1 mt-[2px]"
+                    className="op-btn op-btn-ghost op-btn-sm mr-1"
                     onClick={() => handleClear()}
                   >
                     {t("clear")}
                   </button>
                 ) : (
-                  <div className="w-[80px]"></div>
+                  <button
+                    type="button"
+                    className="op-btn op-btn-ghost op-btn-sm mr-1 cursor-default"
+                  ></button>
                 )}
-                <div className="flex  items-center gap-2">
+                <div className="flex items-center gap-2">
                   {!isSave && <HandleRequiredField />}
                   {isSave ? (
                     <button
@@ -1888,7 +1888,7 @@ function WidgetsValueModal(props) {
                   ) : (
                     <button
                       type="button"
-                      className="op-btn op-btn-primary op-btn-sm"
+                      className="op-btn op-btn-primary op-btn-sm text-xs md:text-sm"
                       onClick={() => {
                         handleClickOnNext();
                       }}

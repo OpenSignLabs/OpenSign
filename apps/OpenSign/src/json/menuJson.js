@@ -1,3 +1,13 @@
+const userssetting = [
+  {
+    icon: "fa-light fa-users fa-fw",
+    title: "Users",
+    target: "_self",
+    pageType: "",
+    description: "",
+    objectId: "users"
+  }
+];
 export const subSetting = [
   {
     icon: "fa-light fa-sliders",
@@ -7,14 +17,7 @@ export const subSetting = [
     description: "",
     objectId: "preferences"
   },
-  {
-    icon: "fa-light fa-users fa-fw",
-    title: "Users",
-    target: "_self",
-    pageType: "",
-    description: "",
-    objectId: "users"
-  }
+  ...userssetting
 ];
 
 const sidebarList = [
@@ -65,7 +68,7 @@ const sidebarList = [
         pageType: "report",
         description: "",
         objectId: "6TeaPr321t"
-      },
+      }
     ]
   },
   {
