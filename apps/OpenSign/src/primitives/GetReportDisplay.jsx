@@ -679,7 +679,7 @@ const ReportTable = (props) => {
       receiver_phone: userDetails?.Phone || "",
       expiry_date: localExpireDate,
       company_name: doc.ExtUserPtr.Company,
-      signing_url: `<a href=${signPdf} target=_blank>Sign here</a>`
+      signing_url: signPdf
     };
     const res = replaceMailVaribles(subject, "", variables);
     setMail((prev) => ({ ...prev, subject: res.subject }));
@@ -710,7 +710,7 @@ const ReportTable = (props) => {
       receiver_phone: userDetails?.Phone || "",
       expiry_date: localExpireDate,
       company_name: doc.ExtUserPtr.Company,
-      signing_url: `<a href=${signPdf} target=_blank>Sign here</a>`
+      signing_url: signPdf
     };
     const res = replaceMailVaribles("", body, variables);
 
@@ -754,7 +754,7 @@ const ReportTable = (props) => {
       receiver_phone: user?.signerPtr?.Phone || "",
       expiry_date: localExpireDate,
       company_name: doc?.ExtUserPtr?.Company || "",
-      signing_url: `<a href=${signPdf} target=_blank>Sign here</a>`
+      signing_url: signPdf
     };
     const subject =
       doc?.RequestSubject ||
