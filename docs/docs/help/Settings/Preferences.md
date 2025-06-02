@@ -9,6 +9,14 @@ The **Preferences** page in **OpenSign™** allows users and administrators to t
 
 ---
 
+## 🚀 Steps to Navigate to Preferences
+
+**Step 1:** Log in to your OpenSign account using valid credentials.
+
+**Step 2:** Navigate to the **Settings** section and click on **Preferences**.
+
+---
+
 ## 📌 Signature Types Control
 
 The **Allowed Signature Types** section defines which signature methods are available to signers:
@@ -18,7 +26,7 @@ The **Allowed Signature Types** section defines which signature methods are avai
 - ✅ **Upload**: Upload a scanned or saved image of your signature.
 - ✅ **Default**: Use the default signature stored under *My Signature* in settings.
 
-⚙️ The options selected here determine what appears in the signature widget during document creation and signing. You can also change these preferences while creating the document.
+⚙️ The options selected here determine what appears in the signature widget during document creation and signing. You can also change these preferences while creating a document.
 
 ---
 
@@ -28,23 +36,27 @@ The **Allowed Signature Types** section defines which signature methods are avai
 
 ### 🏢 Organization-Level
 
-Admins can enforce company-wide signing policies by restricting signature methods platform-wide.
+Admins can enforce company-wide signing policies by restricting available signature methods platform-wide.
 
-In **Console Application > General**, admins can set allowed signature types at the organization level. Only the selected types will appear on the **Preferences > Signature** page for users.
+Step 1: Open the profile menu and select Console Application to launch the console.
+
+Step 2: Once the Console Application loads, navigate to the General menu. Here, admins can configure the allowed signature types at the organization level.
+
+After the signature types are set, only those selected options will appear in the Preferences page and in the Signature, Initial Widgets during both document creation and signing.
 
 <img width="436" alt="Signature type setup console" src="https://github.com/user-attachments/assets/c8c3de19-e82e-464a-977b-cdf3fd12aed7" />
 
 ### 👤 User-Level
 
-Navigate to **Settings > Preferences** to configure user-level signature types.  
+Navigate to **Settings > Preferences** to configure user-level signature types.
 
-If a user sets preferred types here, only these will appear when adding signature or initial widgets during document creation.
+If a user sets preferred types here, only those will appear when adding signature or initial widgets during document creation.
 
 <img width="436" alt="Signature type setup preferences" src="https://github.com/user-attachments/assets/ae413b24-fe53-4aa9-9242-624574f1d7b3" />
 
 ### 📄 Document-Level
 
-While creating a document, users can set specific allowed signature types.  
+While creating a document, users can specify allowed signature types.
 
 Only these will be available to the signer—useful for legal or regulatory requirements.
 
@@ -59,7 +71,7 @@ The document owner will receive email notifications when a document is signed.
 - **Yes** – Receive alerts for each completed signature.  
 - **No** – Notifications are turned off.
 
-> Users can change this option while creating the document or template.
+> Users can change this option while creating the document or a template.
 
 **Note**: Regardless of this setting, a **completion email** with the signed document and completion certificate is **always sent** to all signers and the document owner.
 
@@ -71,10 +83,10 @@ The document owner will receive email notifications when a document is signed.
 
 Decide whether the document should be signed **sequentially** or **simultaneously** by multiple signers.
 
-- **Yes** – Signers receive the document in a set order. The next signer gets access only after the previous one has completed signing.
-- **No** – All signers receive the document at once and can sign independently of one another.
+- **Yes** – Signers receive the document in a set order. The next signer gains access only after the previous one completes signing.
+- **No** – All signers receive the document at once and can sign independently.
 
-> Users can change this option while creating the document or template.
+> Users can change this option while creating the document or a template.
 
 ---
 
@@ -85,7 +97,7 @@ The tour feature provides guidance for first-time users. You can turn this off f
 - **Yes** – Show onboarding tips. Enables guided tooltips for the signer during the signing process.
 - **No** – Disable tour prompts *(recommended for experienced users)*. Speeds up the signing experience.
 
-> Users can change this option while creating the document or template.
+> Users can change this option while creating the document or a template.
 
 💡 **Tip**: Disable if your users are already familiar with OpenSign™.
 
@@ -103,7 +115,7 @@ These settings are reflected in:
 ### 📅 Date Format
 
 - The selected date format will be applied by default to the date widget if no specific format is chosen during document creation.
-- This default format applies in all flows including APIs.
+- This default format also applies in all API flows.
 
 ### 🕒 Time Format
 
@@ -114,7 +126,7 @@ These settings are reflected in:
 
 ---
 
-## 🧪 LTV Enabled Signatures
+## 🧪 LTV-Enabled Signatures
 
 **LTV (Long-Term Validation)** ensures that signatures remain valid and verifiable even after certificates expire or are revoked.
 
@@ -127,7 +139,7 @@ These settings are reflected in:
 
 ### 📌 Why It Matters:
 
-Even if a certificate becomes invalid in the future, the LTV-enabled signature stays verifiable.
+Even if a certificate becomes invalid in the future, the LTV-enabled signature remains verifiable.
 
 ### ✅ Use Cases:
 
@@ -137,71 +149,10 @@ Even if a certificate becomes invalid in the future, the LTV-enabled signature s
 
 ---
 
-## 📧 Email Templates
+## 📧 Email Templates  
+For details, visit: [https://docs.opensignlabs.com/docs/help/Settings/Teams](https://docs.opensignlabs.com/docs/help/Settings/Teams)
 
-In the **Preferences > Email** tab, users can customize email templates for:
-
-### ✉️ Request Signature Email
-
-All signers will receive the customized request email once it is set.
-
-### 📩 Document Completion Email
-
-All signers receive a custom-formatted email with the signed document upon completion.
-
----
-
-## 🔒 Security
-
-### ✅ Two-Factor Authentication (2FA)
-
-Adds a second verification step when logging in.
-
-#### Benefits:
-
-- Enhances account protection  
-- Requires a time-based code from an app like Google Authenticator
-
-#### How to Enable:
-
-1. Go to **Security > Setup 2FA**  
-2. Scan the QR Code with an authenticator app  
-3. Save recovery codes for backup  
-4. Enter the verification code to complete setup
-
-> If 2FA is enabled, you’ll be prompted for a verification code after entering your password.
-
-[![how to setup 2fa](https://img.youtube.com/vi/cgVBBetnbO8/0.jpg)](https://www.youtube.com/watch?v=cgVBBetnbO8)
-
----
-
-### 🛡️ Passkey Authentication
-
-Passkeys offer **passwordless** and **phishing-resistant** sign-in.
-
-#### 🔐 Key Features:
-
-- Use fingerprint, Face ID, or device PIN  
-- Passwordless and secure  
-- Reduces credential theft risks
-
-#### 🛠 How to Register a Passkey:
-
-1. Click **Register another passkey**  
-2. Your device prompts biometric or PIN-based authentication  
-3. On success, the passkey is saved and listed under **Your Passkeys**
-
-#### 🧾 Managing Your Passkeys
-
-##### ✏️ Rename:
-
-Click the **pencil icon** to rename a passkey.
-
-##### 🗑 Delete:
-
-Click the **trash icon** to remove a passkey.  
-⚠️ This revokes access via that method.
-
----
+## 🔒 Security  
+For details, visit: [https://docs.opensignlabs.com/docs/help/Settings/Teams](https://docs.opensignlabs.com/docs/help/Settings/Teams)
 
 For more assistance with OpenSign™ features or APIs, contact our support team at **[support@opensignlabs.com](mailto:support@opensignlabs.com)**.
