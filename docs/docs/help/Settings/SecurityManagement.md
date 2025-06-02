@@ -1,7 +1,3 @@
----
-sidebar_position: 
-title: Security Management
----
 
 ## 🔒 Security
 
