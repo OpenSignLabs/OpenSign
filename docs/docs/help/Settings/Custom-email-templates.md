@@ -5,10 +5,6 @@ title: Custom Email Templates
 
 # 📧 Email Templates
 
-In the **Preferences > Email** tab, users can customize email templates to personalize the communication experience for signers and stakeholders. This feature helps maintain brand consistency and improve engagement throughout the signing workflow.
-
----
-
 ## 🚀 Steps to Set Up Custom Email Templates
 
 **Step 1:** Log in to your OpenSign account using valid credentials.  
