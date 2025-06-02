@@ -1,4 +1,3 @@
-
 # 📧 Email Templates
 
 ## 🚀 Steps to Set Up Custom Email Templates
