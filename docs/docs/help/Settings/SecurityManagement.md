@@ -2,8 +2,7 @@
 sidebar_position: 9
 title: Security
 ---
-
-## 🔒 Security
+import ReactPlayer from 'react-player';
 
 ### ✅ Two-Factor Authentication (2FA)
 
@@ -32,8 +31,10 @@ Two-Factor Authentication (2FA) adds a second layer of security to your account 
 
 #### 📹 Watch the Setup Tutorial:
 
-[![how to setup 2fa](https://img.youtube.com/vi/cgVBBetnbO8/0.jpg)](https://www.youtube.com/watch?v=cgVBBetnbO8)
-
+<div>
+    <ReactPlayer  playing controls url='https://www.youtube.com/watch?v=cgVBBetnbO8' />
+</div>
+      
 ### 🛡️ Passkey Authentication
 
 Passkeys offer **passwordless**, **phishing-resistant**, and **device-bound** sign-in using modern authentication standards.
@@ -64,7 +65,9 @@ Passkeys are cryptographic credentials tied to your device and identity, replaci
 
 #### 📹 Watch the Setup Tutorial:
 
-[![How to Setup Passkey](https://img.youtube.com/vi/lLfcu9oSbew/0.jpg)](https://www.youtube.com/embed/lLfcu9oSbew?si=yODZcEveYZSbQQXw)
+<div>
+    <ReactPlayer  playing controls url='https://www.youtube.com/watch?v=lLfcu9oSbew' />
+</div>
 
 #### 🧾 Managing Your Passkeys
 
