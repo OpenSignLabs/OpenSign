@@ -149,10 +149,29 @@ Even if a certificate becomes invalid in the future, the LTV-enabled signature r
 
 ---
 
-## 📧 Email Templates  
-For details, visit: [https://docs.opensignlabs.com/docs/help/Settings/Teams](https://docs.opensignlabs.com/docs/help/Settings/Teams)
+## 📧 Email Templates
 
-## 🔒 Security  
-For details, visit: [https://docs.opensignlabs.com/docs/help/Settings/Teams](https://docs.opensignlabs.com/docs/help/Settings/Teams)
+In the **Preferences > Email** tab, users can customize email templates to personalize communication with signers and stakeholders.  
+This feature helps maintain brand consistency and enhances engagement throughout the signing workflow.
+
+👉 For a step-by-step guide on setting up custom email templates:  [📄 View Email Template Guide](https://docs.opensignlabs.com/docs/help/Settings/Custom-email-templates)
+
+---
+
+## 🔒 Security
+
+The **Security** tab in OpenSign (found under **Settings > Preferences > Security**) allows users to manage key authentication methods to protect their account access.
+
+### 🧩 Features Available:
+
+#### ✅ Two-Factor Authentication (2FA)
+
+Enhance your account security by enabling 2FA. Once activated, you'll enter a time-based code from an authenticator app each time you log in.
+
+#### 🛡️ Passkey Authentication
+
+Passkeys offer a **passwordless**, **phishing-resistant** login experience using your device’s built-in security features such as fingerprint, Face ID, or PIN.
+
+👉 For full details on setting up **Two-Factor Authentication (2FA)** and **Passkey Authentication**:  [🔒 View Security Setup Guide](https://docs.opensignlabs.com/docs/help/Settings/SecurityManagement)
 
 For more assistance with OpenSign™ features or APIs, contact our support team at **[support@opensignlabs.com](mailto:support@opensignlabs.com)**.
