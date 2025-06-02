@@ -1,7 +1,3 @@
----
-sidebar_position: 
-title: Custom Email Templates
----
 
 # 📧 Email Templates
 
