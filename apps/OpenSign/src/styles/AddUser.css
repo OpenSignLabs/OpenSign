@@ -1,0 +1,82 @@
+.validationlist {
+  position: absolute;
+  left: 0;
+  z-index: 1;
+  appearance: none;
+  -moz-appearance: "none";
+  -webkit-appearance: "none";
+  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAADE6YVjAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAnUlEQVR4nO2QMQrCQBBFX51NbWMp2uox7Gw8h22uYEguIZNKyB0lMIElTNzdGBvdB8PC8Gces5DJ/Cxn4Aa4QM5pbsgncQF6rQYoZ3IFcPey11jByRsaqzYuctqfZo8xki3QBURuRtDpfBQ74GEsaYHN5It8wYFEhgExlj2NniwRhC7qP70gRSRrCN6JZE2BJZJvCEb2QKVvJvMvvAD2WzaK/35kGAAAAABJRU5ErkJggg==");
+  background-repeat: no-repeat;
+  background-position: right 0.7rem top 50%;
+  background-size: 1rem auto;
+}
+
+@media (max-width: 375px) {
+  .validationlist {
+    background-position: right 0.5rem top 50%;
+  }
+}
+
+@media (min-width:375px) and (max-width: 767px) {
+  .validationlist {
+    background-position: right 1rem top 50%;
+  }
+}
+
+.warning {
+  position: absolute;
+  padding: 5px;
+  border: 1px solid black;
+  background: white;
+  width: 250px;
+  border-radius: 5px;
+  animation: inAnimation 1s ease-in-out;
+  z-index: 1;
+}
+
+.defaultvalueWarning {
+  position: absolute;
+  left: 20px;
+}
+
+.defaultvalueWarning::before {
+  content: "";
+  width: 0px;
+  height: 0px;
+  border-style: outset;
+  border-width: 0px 10px 10px 10px;
+  border-color: transparent transparent black transparent;
+  display: inline-block;
+  position: absolute;
+  top: -29%;
+  left: 0;
+  right: 75%;
+  margin: 0 auto;
+}
+
+@keyframes inAnimation {
+  0% {
+    opacity: 0;
+    visibility: hidden;
+  }
+
+  25% {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  50% {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  75% {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  100% {
+    opacity: 1;
+    visibility: visible;
+  }
+}

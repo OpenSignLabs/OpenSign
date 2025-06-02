@@ -4,54 +4,67 @@ async function DocumentAftersave(request) {
       console.log('new entry is insert in contracts_Document');
       const createdAt = request.object.get('createdAt');
       const Folder = request.object.get('Type');
-      // console.log("createdAt")
-      // console.log(createdAt)
-      // console.log("Folder")
-      // console.log(Folder)
-      // console.log("before If condition")
+      const ip = request?.headers?.['x-real-ip'] || '';
+      const originIp = request?.object?.get('OriginIp') || '';
       if (createdAt && Folder === undefined) {
         // console.log("IN If condition")
-        const TimeToCompleteDays = request.object.get('TimeToCompleteDays');
+        const TimeToCompleteDays = request.object.get('TimeToCompleteDays') || 15;
         const ExpiryDate = new Date(createdAt);
-        // console.log("ExpiryDate")
-        // console.log(ExpiryDate)
         ExpiryDate.setDate(ExpiryDate.getDate() + TimeToCompleteDays);
-        // console.log("ExpiryDate date after update")
-        // console.log(ExpiryDate)
         const documentQuery = new Parse.Query('contracts_Document');
+        documentQuery.include('ExtUserPtr.TenantId');
         const updateQuery = await documentQuery.get(request.object.id, { useMasterKey: true });
         updateQuery.set('ExpiryDate', ExpiryDate);
+        if (!originIp) {
+          updateQuery.set('OriginIp', ip);
+        }
+        const AutoReminder = request?.object?.get('AutomaticReminders') || false;
+        if (AutoReminder) {
+          const RemindOnceInEvery = request?.object?.get('RemindOnceInEvery') || 5;
+          const ReminderDate = new Date(createdAt);
+          ReminderDate.setDate(ReminderDate.getDate() + RemindOnceInEvery);
+          updateQuery.set('NextReminderDate', ReminderDate);
+        }
         await updateQuery.save(null, { useMasterKey: true });
       } else if (createdAt && Folder === 'AIDoc') {
         const TimeToCompleteDays = request.object.get('TimeToCompleteDays');
         const ExpiryDate = new Date(createdAt);
-        // console.log("ExpiryDate")
-        // console.log(ExpiryDate)
         ExpiryDate.setDate(ExpiryDate.getDate() + TimeToCompleteDays);
-        // console.log("ExpiryDate date after update")
-        // console.log(ExpiryDate)
         const documentQuery = new Parse.Query('contracts_Document');
+        documentQuery.include('ExtUserPtr.TenantId');
         const updateQuery = await documentQuery.get(request.object.id, { useMasterKey: true });
         updateQuery.set('ExpiryDate', ExpiryDate);
+        if (!originIp) {
+          updateQuery.set('OriginIp', ip);
+        }
+        const AutoReminder = request?.object?.get('AutomaticReminders') || false;
+        if (AutoReminder) {
+          const RemindOnceInEvery = request?.object?.get('RemindOnceInEvery') || 5;
+          const ReminderDate = new Date(createdAt);
+          ReminderDate.setDate(ReminderDate.getDate() + RemindOnceInEvery);
+          updateQuery.set('NextReminderDate', ReminderDate);
+        }
         await updateQuery.save(null, { useMasterKey: true });
       }
 
       const signers = request.object.get('Signers');
-      // console.log("Signers")
-      // console.log(signers.length)
       // update acl of New Document If There are signers present in array
       if (signers && signers.length > 0) {
         await updateAclDoc(request.object.id);
       } else {
-        await updateSelfDoc(request.object.id);
+        if (request?.object?.id && request.user) {
+          await updateSelfDoc(request.object.id);
+        }
       }
     } else {
-      if (request.user) {
+      if (request?.user) {
         const signers = request.object.get('Signers');
         if (signers && signers.length > 0) {
           await updateAclDoc(request.object.id);
         } else {
-          await updateSelfDoc(request.object.id);
+          if (request?.object?.id) {
+            await updateSelfDoc(request.object.id);
+          }
         }
       }
     }
@@ -65,6 +78,8 @@ async function DocumentAftersave(request) {
     // console.log(objId)
     const Query = new Parse.Query('contracts_Document');
     Query.include('Signers');
+    Query.include('ExtUserPtr.TenantId');
+    Query.include('CreatedBy');
     const updateACL = await Query.get(objId, { useMasterKey: true });
     const res = JSON.parse(JSON.stringify(updateACL));
     // console.log("res");
@@ -87,9 +102,10 @@ async function DocumentAftersave(request) {
     const newACL = new Parse.ACL();
     newACL.setPublicReadAccess(false);
     newACL.setPublicWriteAccess(false);
-    newACL.setReadAccess(request.user, true);
-    newACL.setWriteAccess(request.user, true);
-
+    if (res?.CreatedBy) {
+      newACL.setReadAccess(res?.CreatedBy?.objectId, true);
+      newACL.setWriteAccess(res?.CreatedBy?.objectId, true);
+    }
     UsersPtr.forEach(x => {
       newACL.setReadAccess(x.objectId, true);
       newACL.setWriteAccess(x.objectId, true);
@@ -100,9 +116,10 @@ async function DocumentAftersave(request) {
   }
 
   async function updateSelfDoc(objId) {
-    // console.log("In side updateSelfDoc func")
     // console.log(objId)
     const Query = new Parse.Query('contracts_Document');
+    Query.include('CreatedBy');
+    Query.include('ExtUserPtr.TenantId');
     const updateACL = await Query.get(objId, { useMasterKey: true });
     const res = JSON.parse(JSON.stringify(updateACL));
     // console.log("res");
@@ -110,8 +127,10 @@ async function DocumentAftersave(request) {
     const newACL = new Parse.ACL();
     newACL.setPublicReadAccess(false);
     newACL.setPublicWriteAccess(false);
-    newACL.setReadAccess(request.user, true);
-    newACL.setWriteAccess(request.user, true);
+    if (res?.CreatedBy) {
+      newACL.setReadAccess(res?.CreatedBy?.objectId, true);
+      newACL.setWriteAccess(res?.CreatedBy?.objectId, true);
+    }
     updateACL.setACL(newACL);
     updateACL.save(null, { useMasterKey: true });
   }
