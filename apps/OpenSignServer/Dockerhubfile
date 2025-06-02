@@ -1,6 +1,8 @@
 # Use an official Node runtime as the base image
 FROM node:22.14.0
 
+RUN wget https://download.oracle.com/java/23/archive/jdk-23_linux-x64_bin.deb  \
+ && dpkg -i jdk-23_linux-x64_bin.deb 
 
 # Set the working directory inside the container
 WORKDIR /usr/src/app
