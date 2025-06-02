@@ -38,13 +38,22 @@ The **Allowed Signature Types** section defines which signature methods are avai
 
 Admins can enforce company-wide signing policies by restricting available signature methods platform-wide.
 
-Step 1: Open the profile menu and select Console Application to launch the console.
+**Step 1:** Open the profile menu and select **Console Application** to launch the console.
 
-Step 2: Once the Console Application loads, navigate to the General menu. Here, admins can configure the allowed signature types at the organization level.
+**Step 2:** Once the Console Application loads, navigate to the **General** menu. Here, admins can configure the allowed signature types at the organization level.
 
-After the signature types are set, only those selected options will appear in the Preferences page and in the Signature, Initial Widgets during both document creation and signing.
+All users created under your account will only see the signing methods you enable here in their **Preferences**. They will be restricted from using any methods you don't select.
 
-<img width="436" alt="Signature type setup console" src="https://github.com/user-attachments/assets/c8c3de19-e82e-464a-977b-cdf3fd12aed7" />
+**Example:**  
+Adam, the administrator of your company account, disables the **Typed** signature option in the **Manage Signature Types** settings. As a result, Ursula, a team member, will no longer see the **Typed** signature option in her preferences.
+
+Ursula can enable or disable any of the remaining three signature methods for each document she creates.
+
+When she sends a document to Sofia, a signer, Sofia will only see the signature methods that Ursula selected during the document creation process.
+
+**Note:** Managing **Signature Types** at the organization level is only available on the **Teams** plan. This feature is not included in the **Professional** or **Free** plans.
+
+![Signature type setup console](https://github.com/user-attachments/assets/c8c3de19-e82e-464a-977b-cdf3fd12aed7)
 
 ### 👤 User-Level
 
@@ -52,7 +61,7 @@ Navigate to **Settings > Preferences** to configure user-level signature types.
 
 If a user sets preferred types here, only those will appear when adding signature or initial widgets during document creation.
 
-<img width="436" alt="Signature type setup preferences" src="https://github.com/user-attachments/assets/ae413b24-fe53-4aa9-9242-624574f1d7b3" />
+![Signature type setup preferences](https://github.com/user-attachments/assets/ae413b24-fe53-4aa9-9242-624574f1d7b3)
 
 ### 📄 Document-Level
 
@@ -60,22 +69,24 @@ While creating a document, users can specify allowed signature types.
 
 Only these will be available to the signer—useful for legal or regulatory requirements.
 
-<img width="436" alt="Signature type setup signature widget" src="https://github.com/user-attachments/assets/d64510e1-df14-44fe-8020-45b17c612238" />
+![Signature type setup signature widget](https://github.com/user-attachments/assets/d64510e1-df14-44fe-8020-45b17c612238)
 
 ---
 
 ## 🔔 Notify on Signatures
 
-The document owner will receive email notifications when a document is signed.
+The document owner can choose to receive email notifications when a document is signed.
 
-- **Yes** – Receive alerts for each completed signature.  
-- **No** – Notifications are turned off.
+- **Yes** – Get notified each time a signer completes their part.  
+- **No** – Turn off real-time signature notifications.
 
-> Users can change this option while creating the document or a template.
+This setting can be adjusted while creating a document or template.
 
-**Note**: Regardless of this setting, a **completion email** with the signed document and completion certificate is **always sent** to all signers and the document owner.
+Regardless of this preference, a **final completion email**—including the signed document and completion certificate—is **always sent** to both the document owner and all signers.
 
-<img width="436" alt="Preferences setup" src="https://github.com/user-attachments/assets/5adad567-6c01-4766-9b10-db3f95ad65d3" />
+**Note:** Notify on Signatures feature is only available on the **Professional** and higher plans—it is not included in the **Free** plan.
+
+![Preferences setup](https://github.com/user-attachments/assets/5adad567-6c01-4766-9b10-db3f95ad65d3)
 
 ---
 
@@ -122,7 +133,7 @@ These settings are reflected in:
 - Supports **12-hour** and **24-hour** formats.
 - Affects timestamps in certificates, logs, and webhooks.
 
-<img width="436" alt="Preferences setup" src="https://github.com/user-attachments/assets/5bb9ad1a-f3c7-4b6e-9469-1bb003e1eec0" />
+![Preferences setup](https://github.com/user-attachments/assets/5bb9ad1a-f3c7-4b6e-9469-1bb003e1eec0)
 
 ---
 
@@ -154,7 +165,9 @@ Even if a certificate becomes invalid in the future, the LTV-enabled signature r
 In the **Preferences > Email** tab, users can customize email templates to personalize communication with signers and stakeholders.  
 This feature helps maintain brand consistency and enhances engagement throughout the signing workflow.
 
-👉 For a step-by-step guide on setting up custom email templates:  [📄 View Email Template Guide](https://docs.opensignlabs.com/docs/help/Settings/Custom-email-templates)
+👉 [📄 Step-by-step guide to setting up custom email templates](https://docs.opensignlabs.com/docs/help/Settings/Custom-email-templates)
+
+**Note:** The custom email templates feature is only available on the **Professional** and higher plans—it is not included in the **Free** plan.
 
 ---
 
@@ -172,6 +185,7 @@ Enhance your account security by enabling 2FA. Once activated, you'll enter a ti
 
 Passkeys offer a **passwordless**, **phishing-resistant** login experience using your device’s built-in security features such as fingerprint, Face ID, or PIN.
 
-👉 For full details on setting up **Two-Factor Authentication (2FA)** and **Passkey Authentication**:  [🔒 View Security Setup Guide](https://docs.opensignlabs.com/docs/help/Settings/SecurityManagement)
+👉 For full details on setting up **Two-Factor Authentication (2FA)** and **Passkey Authentication**:  
+[🔒 View Security Setup Guide](https://docs.opensignlabs.com/docs/help/Settings/SecurityManagement)
 
 For more assistance with OpenSign™ features or APIs, contact our support team at **[support@opensignlabs.com](mailto:support@opensignlabs.com)**.
