@@ -452,7 +452,7 @@ paths:
         ```
         - **default:** Provide a default value for the textbox (Optional).
         - **hint:** Provide a hint for the textbox (Optional).
-        - **regularexpression:** Provide regex for custom validation, such as allowing only numbers, only capital letters, etc. (Optional).
+        - **regularexpression:** A custom regex pattern for validation - for example, /^\d+$/ to permit only digits, /^[A-Z]+$/ to permit only uppercase letters, etc. [help](https://www.w3schools.com/jsref/jsref_obj_regexp.asp) (Optional).
         - **readonly:** Set to true if you want to set the textbox as readonly. By default, it's false.
 
         10. **checkbox**
@@ -724,7 +724,7 @@ paths:
         ```
         - **default:** Provide a default value for the textbox (Optional).
         - **hint:** Provide a hint for the textbox (Optional).
-        - **regularexpression:** Provide regex for custom validation, such as allowing only numbers, only capital letters, etc. (Optional).
+        - **regularexpression:** A custom regex pattern for validation - for example, /^\d+$/ to permit only digits, /^[A-Z]+$/ to permit only uppercase letters, etc. [help](https://www.w3schools.com/jsref/jsref_obj_regexp.asp) (Optional).
         - **readonly:** Set to true if you want to set the textbox as readonly. By default, it's false.
 
         10. **checkbox**
@@ -1044,7 +1044,7 @@ paths:
         ```
         - **default:** Provide a default value for the textbox (Optional).
         - **hint:** Provide a hint for the textbox (Optional).
-        - **regularexpression:** Provide regex for custom validation, such as allowing only numbers, only capital letters, etc. (Optional).
+        - **regularexpression:** A custom regex pattern for validation - for example, /^\d+$/ to permit only digits, /^[A-Z]+$/ to permit only uppercase letters, etc. [help](https://www.w3schools.com/jsref/jsref_obj_regexp.asp) (Optional).
         - **readonly:** Set to true if you want to set the textbox as readonly. By default, it's false.
 
         10. **checkbox**
@@ -1822,7 +1822,7 @@ paths:
         ```
         - **default:** Provide a default value for the textbox (Optional).
         - **hint:** Provide a hint for the textbox (Optional).
-        - **regularexpression:** Provide regex for custom validation, such as allowing only numbers, only capital letters, etc. (Optional).
+        - **regularexpression:** A custom regex pattern for validation - for example, /^\d+$/ to permit only digits, /^[A-Z]+$/ to permit only uppercase letters, etc. [help](https://www.w3schools.com/jsref/jsref_obj_regexp.asp) (Optional).
         - **readonly:** Set to true if you want to set the textbox as readonly. By default, it's false.
 
         10. **checkbox**
@@ -2142,7 +2142,7 @@ paths:
         ```
         - **default:** Provide a default value for the textbox (Optional).
         - **hint:** Provide a hint for the textbox (Optional).
-        - **regularexpression:** Provide regex for custom validation, such as allowing only numbers, only capital letters, etc. (Optional).
+        - **regularexpression:** A custom regex pattern for validation - for example, /^\d+$/ to permit only digits, /^[A-Z]+$/ to permit only uppercase letters, etc. [help](https://www.w3schools.com/jsref/jsref_obj_regexp.asp) (Optional).
         - **readonly:** Set to true if you want to set the textbox as readonly. By default, it's false.
 
         10. **checkbox**
