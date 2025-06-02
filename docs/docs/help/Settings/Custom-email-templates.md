@@ -15,15 +15,17 @@ In the **Preferences > Email** tab, users can customize email templates to perso
 **Step 2:** Navigate to the **Settings** section and click on **Preferences**.  
 **Step 3:** Click on the **Email** tab. Here, users can configure and edit custom email templates for different stages of the document lifecycle.
 
+<img width="800" alt="add team" src="https://github.com/user-attachments/assets/dc1efaab-c7f9-4f82-abc4-1cafd587f7ce"></img> 
+
 ---
 
 ## ✉️ Request Signature Email
 
-This email is sent to all signers when a document is shared with them for signing.
+This email is automatically sent to all signers when a document is shared with them for signing.
 
-- You can customize the subject line, greeting, message body, and footer.
-- Use dynamic placeholders (e.g., `{{document_title}}}`, `{{receiver_name}}`,`{{signing_url}}`) to personalize each message.
-- This improves open rates and helps recipients understand the context of the request.
+- Customize the subject line, greeting, message body, and footer to match your tone and branding.
+- Use dynamic placeholders like `{{document_title}}`, `{{receiver_name}}`, and `{{signing_url}}` to personalize each message.
+- Personalized messages improve open rates and help recipients understand the context of the request.
 
 ## 📩 Document Completion Email
 
@@ -32,6 +34,11 @@ This email is sent to all signers and the document owner once the signing proces
 - Includes a summary message along with the signed document and completion certificate as attachments.
 - Template customization allows teams to reinforce brand messaging post-signature.
 - Ideal for legal confirmations, audit trails, and archival communication.
+- 
+### 🔄 Reset Template Text
+
+Click the **Reset** button to restore the template content to its default version.  
+Don’t forget to click **Save** afterward to apply the changes.
 
 ---
 
