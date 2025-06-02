@@ -1,3 +1,7 @@
+---
+sidebar_position: 8
+title: Custom email templates
+---
 
 # 📧 Email Templates
 
@@ -26,7 +30,7 @@ This email is sent to all signers and the document owner once the signing proces
 - Includes a summary message along with the signed document and completion certificate as attachments.
 - Template customization allows teams to reinforce brand messaging post-signature.
 - Ideal for legal confirmations, audit trails, and archival communication.
-- 
+  
 ### 🔄 Reset Template Text
 
 Click the **Reset** button to restore the template content to its default version.  
