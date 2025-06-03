@@ -12,19 +12,32 @@ function AgreementSign(props) {
       <div className="op-modal op-modal-open absolute z-[448]">
         <div className="w-[95%] md:w-[60%] lg:w-[40%] op-modal-box overflow-y-auto hide-scrollbar text-sm p-4">
           <div className="flex flex-row items-center">
-            <input
-              data-tut="IsAgree"
-              className="mr-3 op-checkbox op-checkbox-m"
-              type="checkbox"
-              value={isChecked}
-              onChange={(e) => {
-                setIsChecked(e.target.checked);
-                if (e.target.checked) {
-                  props.setIsAgreeTour(false);
-                }
-                props.showFirstWidget();
-              }}
-            />
+            <label className="inline-flex justify-center items-center cursor-pointer mb-0">
+              {/* 1) This div becomes the “fake” checkbox */}
+              <div
+                data-tut="IsAgree"
+                className={`w-6 h-6 border-2 mr-3 rounded-full flex text-center items-center justify-center ${isChecked ? "op-border-primary" : "border-red-500"}`}
+              >
+                {isChecked ? (
+                  <span className="op-text-primary text-sm font-bold">✓</span>
+                ) : (
+                  <span className="text-red-500 text-sm font-bold">X</span>
+                )}
+              </div>
+              {/* 2) Visually hide the native checkbox but keep it in the DOM */}
+              <input
+                className="sr-only"
+                type="checkbox"
+                checked={isChecked}
+                onChange={(e) => {
+                  setIsChecked(e.target.checked);
+                  if (e.target.checked) {
+                    props.setIsAgreeTour(false);
+                  }
+                  props.showFirstWidget();
+                }}
+              />
+            </label>
             <div className="text-[11px] md:text-base">
               <span>{t("agree-p1")}</span>
               <span

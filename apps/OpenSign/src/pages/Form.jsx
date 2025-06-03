@@ -455,7 +455,7 @@ const Forms = (props) => {
           setBcc([]);
           setFolder({ ObjectId: "", Name: "" });
           const notifySign =
-                extUserData?.NotifyOnSignatures
+                extUserData?.NotifyOnSignatures !== undefined
                 ? extUserData?.NotifyOnSignatures
                 : true;
           setFormData({
@@ -534,7 +534,7 @@ const Forms = (props) => {
     setBcc([]);
     setFolder({ ObjectId: "", Name: "" });
     const notifySign =
-          extUserData?.NotifyOnSignatures
+          extUserData?.NotifyOnSignatures !== undefined
           ? extUserData?.NotifyOnSignatures
           : true;
     let obj = {
