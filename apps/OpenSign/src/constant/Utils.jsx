@@ -683,10 +683,14 @@ export const signPdfFun = async (
 };
 
 export const randomId = () => {
-  const randomBytes = crypto.getRandomValues(new Uint16Array(1));
-  const randomValue = randomBytes[0];
-  const randomDigit = 1000 + (randomValue % 9000);
-  return randomDigit;
+  // 1. Grab a cryptographically-secure 32-bit random value
+  const randomBytes = crypto.getRandomValues(new Uint32Array(1));
+  const raw = randomBytes[0];          // 0 … 4 294 967 295
+
+  // 2. Collapse into a 90 000 000-wide band (0…89 999 999), then shift to 10 000 000…99 999 999
+  const eightDigit = 10_000_000 + (raw % 90_000_000);
+
+  return eightDigit;
 };
 
 export const createDocument = async (
@@ -1552,7 +1556,7 @@ export const multiSignEmbed = async (
   let hasError = false;
   for (let item of widgets) {
     //pdfOriginalWH contained all pdf's pages width and height
-    //'getSize' is used to get particular pdf's page width and height 
+    //'getSize' is used to get particular pdf's page width and height
     const getSize = pdfOriginalWH.find(
       (page) => page?.pageNumber === item?.pageNumber
     );

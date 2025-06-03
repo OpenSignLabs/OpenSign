@@ -14,7 +14,6 @@ import {
   onSaveSign,
   radioButtonWidget,
   selectCheckbox,
-  signatureTypes,
   textInputWidget,
   textWidget,
   years
@@ -85,7 +84,8 @@ function WidgetsValueModal(props) {
     setXyPosition,
     isSave,
     setUniqueId,
-    tempSignerId
+    tempSignerId,
+    signatureTypes
   } = props;
   const [penColor, setPenColor] = useState("blue");
   const [isOptional, setIsOptional] = useState(true);
@@ -400,7 +400,7 @@ function WidgetsValueModal(props) {
 
     if (getIndex !== -1) {
       setIsSignTypes(true);
-      const tab = signatureTypes[getIndex].name;
+      const tab = signatureTypes?.[getIndex].name;
       if (tab === "draw") {
         setIsTab("draw");
         setSignatureType("draw");
@@ -427,7 +427,7 @@ function WidgetsValueModal(props) {
     }
   }
   function isTabEnabled(tabName) {
-    const isEnabled = signatureTypes.find((x) => x.name === tabName)?.enabled;
+    const isEnabled = signatureTypes?.find((x) => x.name === tabName)?.enabled;
     return isEnabled;
   }
 
@@ -683,51 +683,64 @@ function WidgetsValueModal(props) {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isTab]);
-  //function for convert input text value in image
+  // function for convert input text value in image
   const convertToImg = async (fontStyle, text, color) => {
-    //get text content to convert in image
-    const textContent = text;
-    const fontfamily = fontStyle
-      ? fontStyle
-      : fontSelect
-        ? fontSelect
-        : "Fasthand";
-    const fontSizeValue = "40px";
-    //creating span for getting text content width
+    // 1) Read the max widget dimensions:
+    const maxWidth = currWidgetsDetails.Width; // e.g. 150 px
+    const maxHeight = currWidgetsDetails.Height; // e.g.  40 px
+
+    // 2) Pick a “baseline” font size for measurement:
+    const baselineFontSizePx = 40;
+    const chosenFontFamily = fontStyle || fontSelect || "Fasthand";
+    const fillColor = color || penColor;
+
+    // 3) Create a temporary <span> (hidden) to measure the text at 40px:
     const span = document.createElement("span");
-    span.textContent = textContent;
-    span.style.font = `${fontSizeValue} ${fontfamily}`; // here put your text size and font family
-    span.style.color = color ? color : penColor;
-    span.style.display = "hidden";
-    document.body.appendChild(span); // Replace 'container' with the ID of the container element
+    span.textContent = text;
+    span.style.font = `${baselineFontSizePx}px ${chosenFontFamily}`;
+    span.style.visibility = "hidden"; // keep it in the DOM so offsetWidth/Height works
+    span.style.whiteSpace = "nowrap"; // so we measure a single line
+    document.body.appendChild(span);
 
-    //create canvas to render text in canvas and convert in image
-    const canvasElement = document.createElement("canvas");
-    // Draw the text content on the canvas
-    const ctx = canvasElement.getContext("2d");
+    // Measured size at 40px:
+    const measuredWidth = span.offsetWidth;
+    const measuredHeight = span.offsetHeight;
+    document.body.removeChild(span);
+
+    // 4) Compute uniform scale so that 40px‐sized text fits inside (maxWidth × maxHeight):
+    const scaleX = maxWidth / measuredWidth;
+    const scaleY = maxHeight / measuredHeight;
+    const scale = Math.min(scaleX, scaleY, 1); // never scale up beyond 1
+
+    // 5) Final text size in **CSS px**:
+    const finalFontSizePx = baselineFontSizePx * scale;
+
+    // 6) Create a <canvas> that is ALWAYS maxWidth × maxHeight in **CSS px**,
+    //    but use devicePixelRatio for sharpness.
     const pixelRatio = window.devicePixelRatio || 1;
-    const addExtraWidth = currWidgetsDetails?.type === "initials" ? 10 : 50;
-    const width = span.offsetWidth + addExtraWidth;
-    const height = span.offsetHeight;
-    setTextWidth(width);
-    setTextHeight(height);
-    const font = span.style["font"];
-    // Set the canvas dimensions to match the span
-    canvasElement.width = width * pixelRatio;
-    canvasElement.height = height * pixelRatio;
+    const canvas = document.createElement("canvas");
 
-    // You can customize text styles if needed
-    ctx.font = font;
-    ctx.fillStyle = color ? color : penColor; // Set the text color
+    // ★ Instead of using `finalTextWidth/Height`, force it to be the max box:
+    canvas.width = Math.ceil(maxWidth * pixelRatio);
+    canvas.height = Math.ceil(maxHeight * pixelRatio);
+
+    const ctx = canvas.getContext("2d");
+    ctx.scale(pixelRatio, pixelRatio);
+
+    // 7) Draw the text **centered** inside the full maxWidth×maxHeight box:
+    ctx.font = `${finalFontSizePx}px ${chosenFontFamily}`;
+    ctx.fillStyle = fillColor;
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.scale(pixelRatio, pixelRatio);
-    // Draw the content of the span onto the canvas
-    ctx.fillText(span.textContent, width / 2, height / 2); // Adjust the x,y-coordinate as needed
-    //remove span tag
-    document.body.removeChild(span);
-    // Convert the canvas to image data
-    const dataUrl = canvasElement.toDataURL("image/png");
+
+    // ★ Center = (maxWidth/2, maxHeight/2):
+    const centerX = maxWidth / 2;
+    const centerY = maxHeight / 2;
+
+    ctx.fillText(text, centerX, centerY);
+
+    // 8) Export to a PNG data-URL:
+    const dataUrl = canvas.toDataURL("image/png");
     setSignature(dataUrl);
   };
   const PenColorComponent = (props) => {
