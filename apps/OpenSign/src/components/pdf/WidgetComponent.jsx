@@ -241,6 +241,7 @@ function WidgetComponent(props) {
               handleDivClick={props.handleDivClick}
               handleMouseLeave={props.handleMouseLeave}
               signRef={signRef}
+              addPositionOfSignature={props.addPositionOfSignature}
             />
           </div>
         </div>

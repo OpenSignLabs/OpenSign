@@ -37,7 +37,8 @@ import {
   generatePdfName,
   handleRemoveWidgets,
   addWidgetSelfsignOptions,
-  getOriginalWH
+  getOriginalWH,
+  signatureTypes
 } from "../constant/Utils";
 import { useParams } from "react-router";
 import Tour from "../primitives/Tour";
@@ -365,15 +366,19 @@ function SignYourSelf() {
     );
     //adding and updating drop position in array when user drop signature button in div
     if (item === "onclick") {
-      // `getBoundingClientRect()` is used to get accurate measurement height of the div
+      // `getBoundingClientRect()` is used to get accurate measurement width, height of the Pdf div
       const divHeight = divRef.current.getBoundingClientRect().height;
+      const divWidth = divRef.current.getBoundingClientRect().width;
       const getWidth = widgetTypeExist
         ? calculateInitialWidthHeight(widgetValue).getWidth
         : defaultWidthHeight(dragTypeValue).width;
       const getHeight = defaultWidthHeight(dragTypeValue).height;
 
+      //  Compute the pixel‐space center within the PDF viewport:
+      const centerX_Pixels = divWidth / 2 - getWidth / 2;
+      const xPosition_Final = centerX_Pixels / (containerScale * scale);
       dropObj = {
-        xPosition: getWidth / 2 + containerWH.width / 2,
+        xPosition: xPosition_Final,
         yPosition: getHeight + divHeight / 2,
         isStamp:
           (dragTypeValue === "stamp" || dragTypeValue === "image") && true,
@@ -1330,6 +1335,7 @@ function SignYourSelf() {
           currWidgetsDetails={currWidgetsDetails}
           index={index}
           isSave={true}
+          signatureTypes={signatureTypes}
         />
       )}
       <RotateAlert

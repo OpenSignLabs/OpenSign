@@ -376,11 +376,15 @@ const TemplatePlaceholder = () => {
           filterSignerPos;
         let placeHolder;
         if (item === "onclick") {
-          // `getBoundingClientRect()` is used to get accurate measurement height of the div
+          // `getBoundingClientRect()` is used to get accurate measurement width, height of the Pdf div
+          const divWidth = divRef.current.getBoundingClientRect().width;
           const divHeight = divRef.current.getBoundingClientRect().height;
+          //  Compute the pixel‐space center within the PDF viewport:
+          const centerX_Pixels = divWidth / 2 - widgetWidth / 2;
+          const xPosition_Final = centerX_Pixels / (containerScale * scale);
           dropObj = {
             //onclick put placeholder center on pdf
-            xPosition: widgetWidth / 4 + containerWH.width / 2,
+            xPosition: xPosition_Final,
             yPosition: widgetHeight + divHeight / 2,
             isStamp:
               (dragTypeValue === "stamp" || dragTypeValue === "image") && true,
