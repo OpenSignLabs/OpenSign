@@ -1684,8 +1684,12 @@ function WidgetsValueModal(props) {
         validateExpression(regexValidation);
         break;
       default:
-        regexValidation =
-          currWidgetsDetails?.options?.validation?.pattern || "";
+        // Grab the current pattern (if it exists)
+        const pattern = currWidgetsDetails?.options?.validation?.pattern;
+        // Removed `backwordSupportPattern` (/^[a-zA-Z0-9s]+$/) — it blocked spaces and special characters.
+        const backwordSupportPattern =
+          pattern && pattern === "/^[a-zA-Z0-9s]+$/" ? "" : pattern; // If it matches exactly '/^[a-zA-Z0-9s]+$/', clear it
+        regexValidation = backwordSupportPattern || "";
         validateExpression(regexValidation);
         break;
     }
