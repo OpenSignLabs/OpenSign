@@ -4122,6 +4122,13 @@ components:
           type: number
           format: number
           example: 1
+        options:
+          type: object
+          properties:
+            name:
+              type: string
+              format: string
+              example: "textbox"
     inline_response_200_10:
       type: object
       properties:
