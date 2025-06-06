@@ -821,7 +821,7 @@ function PdfRequestFiles(
                   await embedDocId(pdfOriginalWH, pdfDoc, docId);
                 }
               }
-              //embed all widgets in document 
+              //embed all widgets in document
               const pdfBytes = await multiSignEmbed(
                 pdfOriginalWH,
                 widgets,
@@ -865,7 +865,10 @@ function PdfRequestFiles(
                   const user = usermail?.Email
                     ? usermail
                     : pdfDetails?.[0]?.Signers[newIndex];
-                  if (sendmail !== "false" && sendInOrder) {
+                  if (
+                    sendmail !== "false" &&
+                    sendInOrder
+                  ) {
                     const requestBody =
                       updatedDoc.updatedPdfDetails?.[0]?.RequestBody;
                     const requestSubject =
@@ -1564,11 +1567,15 @@ function PdfRequestFiles(
     const widgetValue = widgetDataValue(dragTypeValue, parseUser);
     //adding and updating drop position in array when user drop signature button in div
     if (item === "onclick") {
+      // `getBoundingClientRect()` is used to get accurate measurement width, height of the Pdf div
+      const divWidth = divRef.current.getBoundingClientRect().width;
       const divHeight = divRef.current.getBoundingClientRect().height;
-      // `getBoundingClientRect()` is used to get accurate measurement height of the div
+      //  Compute the pixel‐space center within the PDF viewport:
+      const centerX_Pixels = divWidth / 2 - widgetWidth / 2;
+      const xPosition_Final = centerX_Pixels / (containerScale * scale);
       dropObj = {
         //onclick put placeholder center on pdf
-        xPosition: widgetWidth / 4 + containerWH.width / 2,
+        xPosition: xPosition_Final,
         yPosition: widgetHeight + divHeight / 2,
         isStamp:
           (dragTypeValue === "stamp" || dragTypeValue === "image") && true,
@@ -2259,6 +2266,7 @@ function PdfRequestFiles(
               index={pageNumber}
               setUniqueId={setUniqueId}
               tempSignerId={tempSignerId}
+              signatureTypes={signatureType}
             />
           )}
           <DownloadPdfZip
