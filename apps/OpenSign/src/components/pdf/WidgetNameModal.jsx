@@ -83,6 +83,19 @@ const WidgetNameModal = (props) => {
           props.handleData(data, props.defaultdata?.type);
         }
       } else {
+        const isTextInput = props.defaultdata?.type === textInputWidget;
+        const { isReadOnly, defaultValue, status } = formdata;
+        // If it’s a text‐input widget, enforce that read-only fields have
+        // either a defaultValue or an "optional" status.
+        if (isTextInput) {
+          const readOnlyWithoutValue =
+            isReadOnly && !defaultValue && status !== "optional";
+
+          if (readOnlyWithoutValue) {
+            alert(t("readonly-textinput-error"));
+            return;
+          }
+        }
         props.handleData(formdata);
       }
       setFormdata({

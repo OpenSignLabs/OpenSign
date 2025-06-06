@@ -1022,5 +1022,8 @@
   "no-signer-info-in-pkcs7": "Keine Signaturinformationen in PKCS#7",
   "could-not-parse-signer-info": "Signaturinformationen konnten nicht analysiert werden",
   "not-calculated": "Nicht berechnet",
-  "not-found-in-signature": "Nicht in Signatur gefunden"
+  "not-found-in-signature": "Nicht in Signatur gefunden",
+  "readonly-textinput-error": "Schreibgeschütztes Text-Widget muss einen Standardwert haben oder optional sein.",
+  "readonly-dropdown-error": "Schreibgeschütztes Dropdown-Widget muss einen Standardwert haben oder optional sein.",
+  "readonly-radiobtn-error": "Schreibgeschütztes Optionsfeld-Widget muss einen Standardwert haben oder optional sein."
 }
