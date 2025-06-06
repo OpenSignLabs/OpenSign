@@ -4099,14 +4099,17 @@ components:
       properties:
         type:
           type: string
-          description: "Allowed values - signature, stamp."
           format: string
-          example: signature
+          example: textbox
+        page:
+          type: number
+          format: number
+          example: 1          
         x:
           type: number
           format: number
           example: 244
-        "y":
+        y:
           type: number
           format: number
           example: 71
@@ -4118,10 +4121,6 @@ components:
           type: number
           format: number
           example: 46
-        page:
-          type: number
-          format: number
-          example: 1
         options:
           type: object
           properties:
