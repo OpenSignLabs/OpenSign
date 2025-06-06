@@ -1022,5 +1022,8 @@
   "no-signer-info-in-pkcs7": "No hay información del firmante en PKCS#7",
   "could-not-parse-signer-info": "No se pudo analizar la información del firmante",
   "not-calculated": "No calculado",
-  "not-found-in-signature": "No encontrado en la firma"
+  "not-found-in-signature": "No encontrado en la firma",
+  "readonly-textinput-error": "El widget de texto de solo lectura debe tener un valor predeterminado o puede hacerse opcional.",
+  "readonly-dropdown-error": "El widget desplegable de solo lectura debe tener un valor predeterminado o puede hacerse opcional.",
+  "readonly-radiobtn-error": "El widget de botón de opción de solo lectura debe tener un valor predeterminado o puede hacerse opcional."
 }

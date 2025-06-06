@@ -1022,5 +1022,8 @@
   "no-signer-info-in-pkcs7": "No signer info in PKCS#7",
   "could-not-parse-signer-info": "Could not parse signer info",
   "not-calculated": "Not calculated",
-  "not-found-in-signature": "Not found in signature"
+  "not-found-in-signature": "Not found in signature",
+  "readonly-textinput-error": "Read-only text widget must have a default value or you can make it optional.",
+  "readonly-dropdown-error": "Read-only dropdown widget must have a default value or you can make it optional.",
+  "readonly-radiobtn-error": "Read-only radio button widget must have a default value or you can make it optional."
 }

@@ -1022,5 +1022,8 @@
   "no-signer-info-in-pkcs7": "Aucune information sur le signataire dans PKCS#7",
   "could-not-parse-signer-info": "Impossible d'analyser les informations sur le signataire",
   "not-calculated": "Non calculé",
-  "not-found-in-signature": "Introuvable dans la signature"
+  "not-found-in-signature": "Introuvable dans la signature",
+  "readonly-textinput-error": "Le widget de texte en lecture seule doit avoir une valeur par défaut ou être rendu optionnel.",
+  "readonly-dropdown-error": "Le widget déroulant en lecture seule doit avoir une valeur par défaut ou être rendu optionnel.",
+  "readonly-radiobtn-error": "Le widget bouton radio en lecture seule doit avoir une valeur par défaut ou être rendu optionnel."
 }

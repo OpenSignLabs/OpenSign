@@ -103,6 +103,22 @@ function DropdownWidgetOption(props) {
         ? defaultCheckbox
         : defaultValue;
 
+    const isDropdownOrRadio =
+      props?.type === "dropdown" || props?.type === radioButtonWidget;
+    const readOnlyWithoutValue =
+      isReadOnly && !defaultValue && status !== "optional";
+
+    // If it’s a dropdown and it’s read-only without a value (nor marked optional), stop here.
+    if (isDropdownOrRadio && readOnlyWithoutValue) {
+      alert(
+        props?.type === "dropdown"
+          ? t("readonly-dropdown-error")
+          : t("readonly-radiobtn-error")
+      );
+      return;
+    }
+
+    // Otherwise (either not a dropdown, or a valid dropdown), do the save + reset exactly once.
     props.handleSaveWidgetsOptions(
       dropdownName,
       dropdownOptionList,
@@ -228,7 +244,7 @@ function DropdownWidgetOption(props) {
                 </select>
               </>
             )}
-            {props.type !== "checkbox" && props.type !== radioButtonWidget && (
+            {props.type !== "checkbox" && (
               <>
                 <div className="flex flex-row gap-[10px] mt-[0.5rem]">
                   {statusArr.map((data, ind) => {
