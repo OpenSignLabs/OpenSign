@@ -34,7 +34,7 @@
     "express": "^5.1.0",
     "form-data": "^4.0.2",
     "generate-api-key": "^1.0.2",
-    "googleapis": "^149.0.0",
+    "googleapis": "^150.0.1",
     "mailgun.js": "^12.0.2",
     "mongodb": "^6.17.0",
     "multer": "^2.0.1",
