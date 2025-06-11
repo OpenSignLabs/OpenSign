@@ -7,6 +7,7 @@ import ModalUi from "./ModalUi";
 import AddSigner from "../components/AddSigner";
 import {
   emailRegex,
+  iconColor,
 } from "../constant/const";
 import Alert from "./Alert";
 import Tooltip from "./Tooltip";
@@ -907,7 +908,6 @@ const ReportTable = (props) => {
       setActLoader({});
     }
   };
-
   const handleUpdateExpiry = async (e, item) => {
     e.preventDefault();
     e.stopPropagation();
@@ -1314,7 +1314,6 @@ const ReportTable = (props) => {
     try {
       const params = { docId: doc?.objectId };
       const templateRes = await Parse.Cloud.run("saveastemplate", params);
-      // console.log("templateRes ", templateRes);
       setTemplateId(templateRes?.id);
       setIsSuccess({ [doc.objectId]: true });
     } catch (err) {
@@ -1394,6 +1393,12 @@ const ReportTable = (props) => {
       setActLoader({});
     }
   };
+
+  const restrictBtn = (item, act) => {
+    return item.IsSignyourself && act.action === "recreatedocument"
+      ? true
+      : false;
+  };
   return (
     <div className="relative">
       {Object.keys(actLoader)?.length > 0 && (
@@ -1449,6 +1454,23 @@ const ReportTable = (props) => {
                 className="cursor-pointer fa-light fa-square-plus text-accent text-[30px] md:text-[35px]"
               ></i>
             )}
+            {/* Search input */}
+            <div className="hidden md:block p-2">
+              <input
+                type="search"
+                value={props.searchTerm}
+                onChange={props.handleSearchChange}
+                placeholder={t('search.documents')}
+                className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-64 text-xs"
+              />
+            </div>
+            <button
+              className="md:hidden p-2 flex justify-center items-center focus:outline-none rounded-md hover:bg-gray-200 text-[18px]"
+              aria-label="Search"
+              onClick={() => props.setMobileSearchOpen(!props.mobileSearchOpen)}
+            >
+              <i style={{ color: `${iconColor}` }} className="fa-solid fa-magnifying-glass"></i>
+            </button>
             <ModalUi
               isOpen={isModal?.export}
               title={t("bulk-import")}
@@ -1536,6 +1558,17 @@ const ReportTable = (props) => {
             </ModalUi>
           </div>
         </div>
+        {props.mobileSearchOpen && (
+          <div className="top-full left-0 w-full bg-white px-4 py-2 shadow-md md:hidden">
+            <input
+              type="search"
+              value={props.searchTerm}
+              onChange={props.handleSearchChange}
+              placeholder="Search documents…"
+              className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
+            />
+          </div>
+        )}
         <div
           className={`overflow-auto w-full border-b ${
             props.List?.length > 0
@@ -1837,33 +1870,39 @@ const ReportTable = (props) => {
                                         {isOption[item.objectId] &&
                                           act.action === "option" && (
                                             <ul className="absolute -right-1 top-auto z-[70] w-max op-dropdown-content op-menu shadow-black/20 shadow bg-base-100 text-base-content rounded-box">
-                                              {act.subaction?.map((subact) => (
-                                                <li
-                                                  key={subact.btnId}
-                                                  onClick={() =>
-                                                    handleActionBtn(
-                                                      subact,
-                                                      item
-                                                    )
-                                                  }
-                                                  title={t(
-                                                    `btnLabel.${subact.hoverLabel}`
-                                                  )}
-                                                >
-                                                  <span>
-                                                    <i
-                                                      className={`${subact.btnIcon} mr-1.5`}
-                                                    ></i>
-                                                    {subact.btnLabel && (
-                                                      <span className="text-[13px] capitalize font-medium">
-                                                        {t(
-                                                          `btnLabel.${subact.btnLabel}`
+                                              {act.subaction?.map(
+                                                (subact) =>
+                                                  !restrictBtn(
+                                                    item,
+                                                    subact
+                                                  ) && (
+                                                    <li
+                                                      key={subact.btnId}
+                                                      onClick={() =>
+                                                        handleActionBtn(
+                                                          subact,
+                                                          item
+                                                        )
+                                                      }
+                                                      title={t(
+                                                        `btnLabel.${subact.hoverLabel}`
+                                                      )}
+                                                    >
+                                                      <span>
+                                                        <i
+                                                          className={`${subact.btnIcon} mr-1.5`}
+                                                        ></i>
+                                                        {subact.btnLabel && (
+                                                          <span className="text-[13px] capitalize font-medium">
+                                                            {t(
+                                                              `btnLabel.${subact.btnLabel}`
+                                                            )}
+                                                          </span>
                                                         )}
                                                       </span>
-                                                    )}
-                                                  </span>
-                                                </li>
-                                              ))}
+                                                    </li>
+                                                  )
+                                              )}
                                             </ul>
                                           )}
                                       </div>

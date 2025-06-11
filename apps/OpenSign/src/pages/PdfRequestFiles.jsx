@@ -47,7 +47,7 @@ import {
   mailTemplate,
   updateDateWidgetsRes,
   widgetDataValue,
-  getOriginalWH
+  getOriginalWH,
 } from "../constant/Utils";
 import Header from "../components/pdf/PdfHeader";
 import RenderPdf from "../components/pdf/RenderPdf";
@@ -159,6 +159,9 @@ function PdfRequestFiles(
   const [assignedWidgetId, setAssignedWidgetId] = useState([]);
   const [showSignPagenumber, setShowSignPagenumber] = useState([]);
   const [owner, setOwner] = useState({});
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [formData, setFormData] = useState([]);
+  const [vacantRole, setVacantRole] = useState();
   const [, drop] = useDrop({
     accept: "BOX",
     drop: (item, monitor) => addPositionOfSignature(item, monitor),
@@ -624,6 +627,7 @@ function PdfRequestFiles(
       } catch (err) {
         console.log("err in get email verification ", err);
         setHandleError(t("something-went-wrong-mssg"));
+        setIsUiLoading(false);
       }
     }
     //check if isEmailVerified then go on next step
@@ -634,7 +638,6 @@ function PdfRequestFiles(
         );
         if (checkUser && checkUser.length > 0) {
           let checkboxExist,
-            requiredRadio,
             showAlert = false,
             widgetKey,
             radioExist,
@@ -705,39 +708,12 @@ function PdfRequestFiles(
                   }
                 }
               }
-              //condition to check radio widget exist or not
-              else if (radioExist) {
-                //get all required type radio button
-                requiredRadio = checkUser[0].placeHolder[i].pos.filter(
-                  (position) =>
-                    !position.options?.isReadOnly &&
-                    position.type === radioButtonWidget
-                );
-                //if required type radio data exit then check user checked all radio button or some radio remain to check
-                if (requiredRadio && requiredRadio?.length > 0) {
-                  let checkSigned;
-                  for (let i = 0; i < requiredRadio?.length; i++) {
-                    checkSigned = requiredRadio[i]?.options?.response;
-                    if (!checkSigned) {
-                      let checkDefaultSigned =
-                        requiredRadio[i]?.options?.defaultValue;
-                      if (!checkDefaultSigned && !showAlert) {
-                        showAlert = true;
-                        widgetKey = requiredRadio[i].key;
-                        TourPageNumber = updatePage;
-                        setminRequiredCount(null);
-                      }
-                    }
-                  }
-                }
-              }
-              //else condition to check all type widget data fill or not except checkbox and radio button
+              //else condition to check all type widget data fill or not except checkbox
               else {
                 //get all required type widgets except checkbox and radio
                 const requiredWidgets = checkUser[0].placeHolder[i].pos.filter(
                   (position) =>
                     position.options?.status === "required" &&
-                    position.type !== radioButtonWidget &&
                     position.type !== "checkbox"
                 );
                 if (requiredWidgets && requiredWidgets?.length > 0) {
@@ -745,16 +721,13 @@ function PdfRequestFiles(
                   for (let i = 0; i < requiredWidgets?.length; i++) {
                     checkSigned = requiredWidgets[i]?.options?.response;
                     if (!checkSigned) {
-                      const checkSignUrl = requiredWidgets[i]?.pos?.SignUrl;
-                      if (!checkSignUrl) {
-                        let checkDefaultSigned =
-                          requiredWidgets[i]?.options?.defaultValue;
-                        if (!checkDefaultSigned && !showAlert) {
-                          showAlert = true;
-                          widgetKey = requiredWidgets[i].key;
-                          TourPageNumber = updatePage;
-                          setminRequiredCount(null);
-                        }
+                      let checkDefaultSigned =
+                        requiredWidgets[i]?.options?.defaultValue;
+                      if (!checkDefaultSigned && !showAlert) {
+                        showAlert = true;
+                        widgetKey = requiredWidgets[i].key;
+                        TourPageNumber = updatePage;
+                        setminRequiredCount(null);
                       }
                     }
                   }
@@ -766,20 +739,12 @@ function PdfRequestFiles(
               break;
             }
           }
-          if (checkboxExist && requiredCheckbox && showAlert) {
+          if (showAlert) {
             setUnSignedWidgetId(widgetKey);
             setPageNumber(TourPageNumber);
             setWidgetsTour(true);
-          } else if (radioExist && showAlert) {
-            setUnSignedWidgetId(widgetKey);
-            setPageNumber(TourPageNumber);
-            setWidgetsTour(true);
-          } else if (showAlert) {
-            setUnSignedWidgetId(widgetKey);
-            setPageNumber(TourPageNumber);
-            setWidgetsTour(true);
+            setIsUiLoading(false);
           } else {
-            setIsUiLoading(true);
             // `widgets` is Used to return widgets details with page number of current user
             const widgets = checkUser?.[0]?.placeHolder;
             let pdfArrBuffer;
@@ -855,16 +820,19 @@ function PdfRequestFiles(
                     isSuccessRoute,
                     contactId
                   );
-                  const index = pdfDetails?.[0]?.Signers.findIndex(
-                    (x) => x.objectId === signerObjectId
-                  );
+                  const index =
+                    updatedDoc.updatedPdfDetails?.[0]?.Signers.findIndex(
+                      (x) => x.objectId === contactId
+                    );
                   const newIndex = index + 1;
                   const usermail = {
-                    Email: pdfDetails?.[0]?.Placeholders[newIndex]?.email || ""
+                    Email:
+                      updatedDoc.updatedPdfDetails?.[0]?.Placeholders[newIndex]
+                        ?.email || ""
                   };
                   const user = usermail?.Email
                     ? usermail
-                    : pdfDetails?.[0]?.Signers[newIndex];
+                    : updatedDoc.updatedPdfDetails?.[0]?.Signers[newIndex];
                   if (
                     sendmail !== "false" &&
                     sendInOrder
@@ -1023,6 +991,7 @@ function PdfRequestFiles(
             isShow: true,
             alertMessage: t("something-went-wrong-mssg")
           });
+          setIsUiLoading(false);
         }
       } catch (err) {
         console.log("err in embedsign", err);
@@ -1036,6 +1005,7 @@ function PdfRequestFiles(
   }
 
   const handleSignPdf = async () => {
+    setIsUiLoading(true);
       await embedWidgetsData();
   };
 
@@ -1254,7 +1224,8 @@ function PdfRequestFiles(
     setRequestSignTour(true);
     if (isDontShow) {
       const isEnableOTP = pdfDetails?.[0]?.IsEnableOTP || false;
-      if (!isEnableOTP) {
+      const sessionToken = localStorage.getItem("accesstoken");
+      if (!isEnableOTP && !sessionToken) {
         try {
           await axios.post(
             `${localStorage.getItem("baseUrl")}functions/updatecontacttour`,
@@ -1651,12 +1622,6 @@ function PdfRequestFiles(
         );
         setSignerPos(updatesignerPos);
       }
-
-      // if (dragTypeValue === "dropdown") {
-      //   setShowDropdown(true);
-      // } else if (dragTypeValue === "checkbox") {
-      //   setIsCheckbox(true);
-      // } else
       if (
         [textWidget, "name", "company", "job title", "email"].includes(
           dragTypeValue
@@ -1756,7 +1721,6 @@ function PdfRequestFiles(
       setShowSignPagenumber(sortedPagenumber);
     }
   };
-
   return (
     <DndProvider backend={HTML5Backend}>
       <Title
@@ -1828,6 +1792,7 @@ function PdfRequestFiles(
                 {!requestSignTour &&
                   isAgree &&
                   signerObjectId &&
+                  !alreadySign &&
                   requestSignTourFunction()}
                 <Tour
                   showNumber={false}

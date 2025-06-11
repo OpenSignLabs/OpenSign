@@ -15,9 +15,11 @@ import {
   radioButtonWidget,
   selectCheckbox,
   textInputWidget,
+  cellsWidget,
   textWidget,
   years
 } from "../../constant/Utils";
+import CellsWidget from "./CellsWidget";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import SignatureCanvas from "react-signature-canvas";
@@ -93,7 +95,6 @@ function WidgetsValueModal(props) {
   const [isTab, setIsTab] = useState("");
   const [textWidth, setTextWidth] = useState(0);
   const [textHeight, setTextHeight] = useState(0);
-  const [signatureType, setSignatureType] = useState("");
   const [isSignTypes, setIsSignTypes] = useState(true);
   const [typedSignature, setTypedSignature] = useState("");
   const [selectDate, setSelectDate] = useState({});
@@ -119,13 +120,33 @@ function WidgetsValueModal(props) {
   const currentUserName = jsonSender && jsonSender?.name;
   const widgetTypeTranslation = t(`widgets-name.${currWidgetsDetails?.type}`);
   const [widgetValue, setWidgetValue] = useState(
-    currWidgetsDetails?.options?.response ||
-      currWidgetsDetails?.options?.defaultValue
+    currWidgetsDetails.type !== "checkbox" &&
+      (currWidgetsDetails?.options?.response ||
+        currWidgetsDetails?.options?.defaultValue)
   );
-  const [selectedCheckbox, setSelectedCheckbox] = useState(
-    currWidgetsDetails?.options?.response ||
+  const [cellsValue, setCellsValue] = useState(() => {
+    const count = currWidgetsDetails?.options?.cellCount || 5;
+    const val =
+      currWidgetsDetails?.options?.response ||
       currWidgetsDetails?.options?.defaultValue ||
-      []
+      "";
+    return Array.from({ length: count }, (_, i) => val[i] || "");
+  });
+  const cellRefs = useRef([]);
+
+  useEffect(() => {
+    const count = currWidgetsDetails?.options?.cellCount || 5;
+    const val =
+      currWidgetsDetails?.options?.response ||
+      currWidgetsDetails?.options?.defaultValue ||
+      "";
+    setCellsValue(Array.from({ length: count }, (_, i) => val[i] || ""));
+  }, [currWidgetsDetails?.key]);
+  const [selectedCheckbox, setSelectedCheckbox] = useState(
+    currWidgetsDetails.type === "checkbox" &&
+      (currWidgetsDetails?.options?.response ||
+        currWidgetsDetails?.options?.defaultValue ||
+        [])
   );
   const [startDate, setStartDate] = useState(
     currWidgetsDetails?.options?.response
@@ -155,34 +176,6 @@ function WidgetsValueModal(props) {
       } else {
         setHint(currWidgetsDetails?.type);
       }
-    }
-    //set already draw or save signature url/text url of signature text type and draw type for initial type and signature type widgets
-    if (currWidgetsDetails && canvasRef.current) {
-      const isWidgetType = currWidgetsDetails?.type;
-      const signatureType = currWidgetsDetails?.signatureType;
-      const url = currWidgetsDetails?.SignUrl;
-      //checking widget type and draw type signature url
-      if (currWidgetsDetails?.type === "initials") {
-        if (isWidgetType === "initials" && signatureType === "draw" && url) {
-          canvasRef.current.fromDataURL(url);
-        }
-      } else if (
-        isWidgetType === "signature" &&
-        signatureType === "draw" &&
-        url
-      ) {
-        canvasRef.current.fromDataURL(url);
-      }
-
-      const trimmedName = currentUserName && currentUserName?.trim();
-      const firstCharacter = trimmedName?.charAt(0);
-      const userName =
-        currWidgetsDetails?.type === "initials"
-          ? firstCharacter
-          : currentUserName;
-      const signatureValue = currWidgetsDetails?.typeSignature;
-      setTypedSignature(signatureValue || userName || "");
-      setFontSelect("Fasthand");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currWidgetsDetails]); // Added currWidgetsDetails to dependency array for reset logic
@@ -403,7 +396,6 @@ function WidgetsValueModal(props) {
       const tab = signatureTypes?.[getIndex].name;
       if (tab === "draw") {
         setIsTab("draw");
-        setSignatureType("draw");
       } else if (tab === "upload") {
         setIsImageSelect(true);
         setIsTab("uploadImage");
@@ -449,7 +441,32 @@ function WidgetsValueModal(props) {
         setTypedSignature("");
       }
     } else {
-      setWidgetValue("");
+      if (currWidgetsDetails?.type === cellsWidget) {
+        const count =
+          currWidgetsDetails?.options?.cellCount || cellsValue.length || 1;
+        const cleared = Array.from({ length: count }, () => "");
+        setCellsValue(cleared);
+        const combined = cleared.join("");
+        setWidgetValue(combined);
+        onChangeInput(
+          combined,
+          currWidgetsDetails?.key,
+          xyPosition,
+          props.index,
+          setXyPosition,
+          uniqueId
+        );
+      } else {
+        setWidgetValue("");
+        onChangeInput(
+          "",
+          currWidgetsDetails?.key,
+          xyPosition,
+          props.index,
+          setXyPosition,
+          uniqueId
+        );
+      }
     }
   };
   //function for set signature url
@@ -583,7 +600,7 @@ function WidgetsValueModal(props) {
       if (isTab === "mysignature") {
         setSignature("");
         if (currWidgetsDetails?.type === "initials") {
-          handleSaveSignature(signatureType, "initials");
+          handleSaveSignature(isTab, "initials");
         } else {
           handleSaveSignature(null, "default");
         }
@@ -604,13 +621,13 @@ function WidgetsValueModal(props) {
         } else {
           setSignature("");
           canvasRef?.current?.clear();
-          handleSaveSignature(signatureType);
+          handleSaveSignature(isTab);
         }
       }
       setPenColor("blue");
     } else {
       setSignature("");
-      handleSaveImage(signatureType);
+      handleSaveImage();
     }
     setIsImageSelect(false);
     setIsDefaultSign(false);
@@ -649,24 +666,21 @@ function WidgetsValueModal(props) {
   }, [fontSelect]);
 
   useEffect(() => {
-    if (
-      ["signature", "initials"].includes(currWidgetsDetails?.type) &&
-      widgetValue
-    ) {
-      if (isTab === "draw" && currWidgetsDetails?.signatureType === "draw") {
-        setSignature(widgetValue);
-      } else if (isTab === "uploadImage" && currWidgetsDetails?.ImageType) {
-        setImage({ imgType: currWidgetsDetails?.ImageType, src: widgetValue });
+    if (currWidgetsDetails?.options?.response) {
+      const url = currWidgetsDetails?.options?.response;
+      if (["signature", "initials"].includes(currWidgetsDetails?.type)) {
+        if (isTab === "draw" && currWidgetsDetails?.signatureType === "draw") {
+          setSignature(url);
+          // Load the default signature after the component mounts
+          if (canvasRef.current) {
+            canvasRef.current.fromDataURL(url);
+          }
+        } else if (isTab === "uploadImage" && currWidgetsDetails?.ImageType) {
+          setImage({ imgType: currWidgetsDetails?.ImageType, src: url });
+        }
+      } else if (["image", "stamp"].includes(currWidgetsDetails?.type)) {
+        setImage({ imgType: currWidgetsDetails?.ImageType, src: url });
       }
-    } else if (
-      ["image", "stamp"].includes(currWidgetsDetails?.type) &&
-      widgetValue
-    ) {
-      setImage({ imgType: currWidgetsDetails?.ImageType, src: widgetValue });
-    }
-    // Load the default signature after the component mounts
-    if (canvasRef.current) {
-      canvasRef.current.fromDataURL(signature);
     }
     if (isTab === "type") {
       const trimmedName = typedSignature
@@ -953,6 +967,65 @@ function WidgetsValueModal(props) {
       uniqueId
     );
   };
+  const handleCellsInput = (e, idx) => {
+    const val = e.target.value.slice(0, 1);
+    const updated = [...cellsValue];
+    updated[idx] = val;
+    setCellsValue(updated);
+    const combined = updated.join("");
+    setWidgetValue(combined);
+    onChangeInput(
+      combined,
+      currWidgetsDetails?.key,
+      xyPosition,
+      props.index,
+      setXyPosition,
+      uniqueId
+    );
+    if (val) {
+      if (idx < cellRefs.current.length - 1) {
+        cellRefs.current[idx + 1]?.focus();
+      }
+    } else if (idx > 0) {
+      // move focus back when a cell becomes empty
+      cellRefs.current[idx - 1]?.focus();
+    }
+  };
+  const handleCellsKeyDown = (e, idx) => {
+    if (e.key === "Backspace" && !cellsValue[idx] && idx > 0) {
+      e.preventDefault();
+      const updated = [...cellsValue];
+      updated[idx - 1] = "";
+      const combined = updated.join("");
+      setCellsValue(updated);
+      setWidgetValue(combined);
+      onChangeInput(
+        combined,
+        currWidgetsDetails?.key,
+        xyPosition,
+        props.index,
+        setXyPosition,
+        uniqueId
+      );
+      cellRefs.current[idx - 1]?.focus();
+    }
+    if (e.key === "Delete") {
+      e.preventDefault();
+      const updated = [...cellsValue];
+      updated[idx] = "";
+      const combined = updated.join("");
+      setCellsValue(updated);
+      setWidgetValue(combined);
+      onChangeInput(
+        combined,
+        currWidgetsDetails?.key,
+        xyPosition,
+        props.index,
+        setXyPosition,
+        uniqueId
+      );
+    }
+  };
   //function is used to show widgets on modal according to selected widget type checkbox/date/radio/drodown/textbox/signature/image
   const getWidgetType = (type) => {
     switch (type) {
@@ -983,7 +1056,6 @@ function WidgetsValueModal(props) {
                                   setIsDefaultSign(true);
                                   setIsImageSelect(true);
                                   setIsTab("mysignature");
-                                  setSignatureType("");
                                   setImage();
                                 }}
                                 className={`${
@@ -1003,7 +1075,6 @@ function WidgetsValueModal(props) {
                                     setIsDefaultSign(true);
                                     setIsImageSelect(true);
                                     setIsTab("mysignature");
-                                    setSignatureType("");
                                     setImage();
                                   }}
                                   className={`${
@@ -1040,7 +1111,6 @@ function WidgetsValueModal(props) {
                                   setIsDefaultSign(false);
                                   setIsImageSelect(true);
                                   setIsTab("uploadImage");
-                                  setSignatureType("");
                                 }}
                                 className={`${
                                   isTab === "uploadImage" && `${isTabCls}`
@@ -1057,7 +1127,6 @@ function WidgetsValueModal(props) {
                                   setIsDefaultSign(false);
                                   setIsImageSelect(false);
                                   setIsTab("type");
-                                  setSignatureType("");
                                   setImage();
                                 }}
                                 className={`${
@@ -1326,69 +1395,66 @@ function WidgetsValueModal(props) {
                 </div>
               </>
             ) : (
-              <div>
-                <div className="relative flex flex-row items-center justify-between">
-                  <div className="text-base-content font-bold text-lg">
-                    {t("signature")}
-                  </div>
-                  <div
-                    className="text-[1.5rem] cursor-pointer"
-                    onClick={handleCancelBtn}
-                  >
-                    &times;
-                  </div>
-                </div>
-                <div className="mx-3 mb-6 mt-3">
-                  <p>{t("at-least-one-signature-type")}</p>
-                </div>
+              <div className="mx-3 mb-6 mt-3">
+                <p>{t("at-least-one-signature-type")}</p>
               </div>
             )}
           </div>
         );
       case "checkbox":
+        const checkBoxLayout =
+          currWidgetsDetails?.options?.layout || "vertical";
+        const isMultipleCheckbox =
+          currWidgetsDetails?.options?.values?.length > 0 ? true : false;
+        const checkBoxWrapperClass = `flex items-start ${
+          checkBoxLayout === "horizontal"
+            ? `flex-row flex-wrap ${isMultipleCheckbox ? "gap-x-2" : ""}`
+            : `flex-col ${isMultipleCheckbox ? "gap-y-[5px]" : ""}`
+        }`; // Using gap-y-1 for consistency, adjust if needed
+
         return (
-          <div className="border-[1px] border-gray-300 rounded-[2px] pt-1 px-2.5">
-            {currWidgetsDetails?.options?.values?.map((data, ind) => {
-              return (
-                <div key={ind} className=" select-none-cls">
-                  <label
-                    htmlFor={`checkbox-${currWidgetsDetails?.key + ind}`}
-                    className="text-xs flex items-center gap-1"
-                  >
-                    <input
-                      id={`checkbox-${currWidgetsDetails?.key + ind}`}
-                      className={`${
-                        ind === 0 ? "mt-0" : "mt-[5px]"
-                      }  op-checkbox op-checkbox-xs rounded-[1px] mt-1`}
-                      type="checkbox"
-                      checked={!!selectCheckbox(ind, selectedCheckbox)}
-                      onChange={(e) => {
-                        if (e.target.checked) {
-                          const maxRequired =
-                            currWidgetsDetails?.options?.validation
-                              ?.maxRequiredCount;
-                          const maxCountInt =
-                            maxRequired && parseInt(maxRequired);
-                          if (maxCountInt > 0) {
-                            if (
-                              selectedCheckbox &&
-                              selectedCheckbox?.length <= maxCountInt - 1
-                            ) {
-                              handleCheckboxValue(e.target.checked, ind);
-                            }
-                          } else {
+          <div
+            className={`border-[1px] border-gray-300 rounded-[2px] pt-1 px-2.5 ${checkBoxWrapperClass}`}
+          >
+            {currWidgetsDetails?.options?.values?.map((data, ind) => (
+              <div key={ind} className=" select-none-cls">
+                <label
+                  htmlFor={`checkbox-${currWidgetsDetails?.key + ind}`}
+                  className="text-xs flex items-center gap-1"
+                >
+                  <input
+                    id={`checkbox-${currWidgetsDetails?.key + ind}`}
+                    className={`${
+                      ind === 0 ? "mt-0" : "mt-[5px]"
+                    }  op-checkbox op-checkbox-xs rounded-[1px] mt-1`}
+                    type="checkbox"
+                    checked={!!selectCheckbox(ind, selectedCheckbox)}
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        const maxRequired =
+                          currWidgetsDetails?.options?.validation
+                            ?.maxRequiredCount;
+                        const maxCountInt =
+                          maxRequired && parseInt(maxRequired);
+                        if (maxCountInt > 0) {
+                          if (
+                            selectedCheckbox &&
+                            selectedCheckbox?.length <= maxCountInt - 1
+                          ) {
                             handleCheckboxValue(e.target.checked, ind);
                           }
                         } else {
                           handleCheckboxValue(e.target.checked, ind);
                         }
-                      }}
-                    />
-                    {data}
-                  </label>
-                </div>
-              );
-            })}
+                      } else {
+                        handleCheckboxValue(e.target.checked, ind);
+                      }
+                    }}
+                  />
+                  {data}
+                </label>
+              </div>
+            ))}
           </div>
         );
       case textInputWidget:
@@ -1399,6 +1465,19 @@ function WidgetsValueModal(props) {
             onBlur={handleInputBlur}
             onChange={(e) => handleOnchangeTextBox(e)}
             className={textInputcls}
+          />
+        );
+      case cellsWidget:
+        return (
+          <CellsWidget
+            count={cellsValue.length}
+            height="100%"
+            value={cellsValue.join("")}
+            editable={true}
+            resizable={false}
+            onChange={handleCellsInput}
+            onKeyDown={handleCellsKeyDown}
+            inputRefs={cellRefs}
           />
         );
       case "dropdown":
@@ -1418,18 +1497,11 @@ function WidgetsValueModal(props) {
             >
               {currWidgetsDetails?.options?.name}
             </option>
-
-            {currWidgetsDetails?.options?.values?.map((data, ind) => {
-              return (
-                <option
-                  // style={{ fontSize: fontSize, color: fontColor }}
-                  key={ind}
-                  value={data}
-                >
-                  {data}
-                </option>
-              );
-            })}
+            {currWidgetsDetails?.options?.values?.map((data, ind) => (
+              <option key={ind} value={data}>
+                {data}
+              </option>
+            ))}
           </select>
         );
       case "name":
@@ -1529,30 +1601,38 @@ function WidgetsValueModal(props) {
           </>
         );
       case radioButtonWidget:
+        const radioLayout = currWidgetsDetails.options?.layout || "vertical";
+        const isOnlyOneBtn =
+          currWidgetsDetails.options?.values?.length > 0 ? true : false;
+        const radioWrapperClass = `flex items-start ${
+          radioLayout === "horizontal"
+            ? `flex-row flex-wrap ${isOnlyOneBtn ? "gap-x-2" : ""}`
+            : `flex-col ${isOnlyOneBtn ? "gap-y-[5px]" : ""}`
+        }`; // Using gap-y-1 for consistency, adjust if needed
         return (
-          <div className="border-[1px] border-gray-300 rounded-[2px] pt-1 px-2.5">
-            {currWidgetsDetails?.options?.values.map((data, ind) => {
-              return (
-                <div key={ind} className="select-none-cls">
-                  <label
-                    htmlFor={`radio-${currWidgetsDetails?.key + ind}`}
-                    className="cursor-pointer flex items-center text-sm gap-1"
-                  >
-                    <input
-                      id={`radio-${currWidgetsDetails?.key + ind}`}
-                      className={`op-radio op-radio-xs mt-1`}
-                      type="radio"
-                      value={data}
-                      checked={handleRadioCheck(data)}
-                      onChange={(e) => {
-                        handleCheckRadio(e.target.value);
-                      }}
-                    />
-                    <span>{data}</span>
-                  </label>
-                </div>
-              );
-            })}
+          <div
+            className={`border-[1px] border-gray-300 rounded-[2px] pt-1 px-2.5 ${radioWrapperClass}`}
+          >
+            {currWidgetsDetails?.options?.values.map((data, ind) => (
+              <div key={ind} className="select-none-cls">
+                <label
+                  htmlFor={`radio-${currWidgetsDetails?.key + ind}`}
+                  className="cursor-pointer flex items-center text-sm gap-1"
+                >
+                  <input
+                    id={`radio-${currWidgetsDetails?.key + ind}`}
+                    className={`op-radio op-radio-xs mt-1`}
+                    type="radio"
+                    value={data}
+                    checked={handleRadioCheck(data)}
+                    onChange={(e) => {
+                      handleCheckRadio(e.target.value);
+                    }}
+                  />
+                  <span>{data}</span>
+                </label>
+              </div>
+            ))}
           </div>
         );
       case textWidget:
@@ -1590,15 +1670,9 @@ function WidgetsValueModal(props) {
       const minCount =
         currWidgetsDetails?.options?.validation?.minRequiredCount;
       const parseMin = minCount && parseInt(minCount);
-      //get maximum required count if  exist
-      const maxCount =
-        currWidgetsDetails?.options?.validation?.maxRequiredCount;
-      const parseMax = maxCount && parseInt(maxCount);
-      if (parseMin > 0 && parseMax > 0) {
+      if (parseMin > 0) {
         isRequired = true;
       }
-    } else if (isRadio) {
-      isRequired = true;
     } else {
       isRequired = currWidgetsDetails.options?.status === "required";
     }
@@ -1799,11 +1873,60 @@ function WidgetsValueModal(props) {
       setUniqueId(tempSignerId);
     }
   };
+  //function is used to excecute on click finish button functionality
   const handleFinish = () => {
     props?.finishDocument();
     dispatch(setIsShowModal({}));
   };
 
+  useEffect(() => {
+    if (!isSave) {
+      handleFinishButton();
+    }
+  }, [isSave]);
+  //'handleFinishButton' function is used to show finish button click on any widge if all required widgtes have response
+  const handleFinishButton = () => {
+    const widgetsPosition = xyPosition?.find((data) => data.Id === uniqueId);
+    //using 'flatMap' create all nested array in one level
+    const editableWidgets = widgetsPosition?.placeHolder?.flatMap((page) =>
+      page.pos
+        .filter((widget) => !widget.options?.isReadOnly)
+        .map((widget) => widget)
+    );
+    const getcurrentwidget = editableWidgets?.find(
+      (data) => data?.key === currWidgetsDetails?.key
+    );
+    if (getcurrentwidget?.options?.response) {
+      props?.setCurrWidgetsDetails(getcurrentwidget);
+    }
+    let isResponse = true;
+    //condition to check all required widgets have response or not then show finish buutton
+    for (const data of editableWidgets) {
+      if (data?.type === "checkbox") {
+        const minCount = data.options?.validation?.minRequiredCount;
+        const parseMin = minCount && parseInt(minCount);
+        const hasNoResponse =
+          (!Array.isArray(data?.options?.response) ||
+            data.options.response.length === 0) &&
+          (!Array.isArray(data?.options?.defaultValue) ||
+            data.options.defaultValue.length === 0);
+        if (parseMin > 0 && hasNoResponse) {
+          isResponse = false;
+          break;
+        }
+      } else if (
+        !data.options.response &&
+        !data?.options?.defaultValue &&
+        data.options?.status === "required"
+      ) {
+        isResponse = false;
+        break;
+      }
+    }
+    if (isResponse) {
+      setIsLastWidget(true);
+    }
+  };
   return (
     <>
       <ModalUi

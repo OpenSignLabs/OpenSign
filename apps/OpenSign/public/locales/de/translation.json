@@ -361,6 +361,7 @@
     "date": "Datum",
     "text": "Text",
     "text input": "Texteingabe",
+    "cells": "Zellen",
     "checkbox": "Checkbox",
     "dropdown": "Dropdown",
     "radio button": "Radiobutton",
@@ -415,10 +416,12 @@
   "options": "Optionen",
   "minimun-check": "Minimale Anzahl",
   "maximum-check": "Maximale Anzahl",
+  "cell-count": "Zellzahl",
   "default-value": "Standardwert",
   "select": "Auswählen",
-  "read-only": "Nur lesen",
+  "read-only": "Ist schreibgeschützt",
   "hide-labels": "Labels ausblenden",
+  "layout": "Layout",
   "checkbox": "Checkbox",
   "alert": "Warnung",
   "zoom-in": "Vergrößern",
@@ -1025,5 +1028,6 @@
   "not-found-in-signature": "Nicht in Signatur gefunden",
   "readonly-textinput-error": "Schreibgeschütztes Text-Widget muss einen Standardwert haben oder optional sein.",
   "readonly-dropdown-error": "Schreibgeschütztes Dropdown-Widget muss einen Standardwert haben oder optional sein.",
-  "readonly-radiobtn-error": "Schreibgeschütztes Optionsfeld-Widget muss einen Standardwert haben oder optional sein."
+  "readonly-radiobtn-error": "Schreibgeschütztes Optionsfeld-Widget muss einen Standardwert haben oder optional sein.",
+  "choose-one":"Wählen Sie eine aus"
 }

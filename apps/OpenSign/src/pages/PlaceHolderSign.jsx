@@ -27,6 +27,7 @@ import {
   multiSignEmbed,
   addWidgetOptions,
   textInputWidget,
+  cellsWidget,
   textWidget,
   radioButtonWidget,
   color,
@@ -1417,7 +1418,8 @@ function PlaceHolderSign() {
     deleteOption,
     status,
     defaultValue,
-    isHideLabel
+    isHideLabel,
+    layout
   ) => {
     const filterSignerPos = signerPos.filter((data) => data.Id === uniqueId);
     if (filterSignerPos.length > 0) {
@@ -1453,6 +1455,7 @@ function PlaceHolderSign() {
                     name: dropdownName,
                     values: dropdownOptions,
                     status: status,
+                    layout: layout,
                     isReadOnly: isReadOnly || false,
                     isHideLabel: isHideLabel || false,
                     defaultValue: defaultValue,
@@ -1492,6 +1495,7 @@ function PlaceHolderSign() {
                       maxRequiredCount: maxCount
                     },
                     defaultValue: defaultValue,
+                    layout: layout,
                     isReadOnly: isReadOnly || false,
                     isHideLabel: isHideLabel || false,
                     fontSize:
@@ -1581,6 +1585,36 @@ function PlaceHolderSign() {
                   defaultValue: defaultdata?.defaultValue || "",
                   validation:
                         {},
+                  fontSize:
+                    fontSize || currWidgetsDetails?.options?.fontSize || 12,
+                  fontColor:
+                    fontColor ||
+                    currWidgetsDetails?.options?.fontColor ||
+                    "black",
+                  isReadOnly: defaultdata?.isReadOnly || false
+                }
+              };
+            } else if (position.type === cellsWidget) {
+              return {
+                ...position,
+                options: {
+                  ...position.options,
+                  name: defaultdata?.name || "Cells",
+                  status: defaultdata?.status || "required",
+                  hint: defaultdata?.hint || "",
+                  cellCount: parseInt(defaultdata?.cellCount || 5),
+                  defaultValue: (defaultdata?.defaultValue || "").slice(
+                    0,
+                    parseInt(defaultdata?.cellCount || 5)
+                  ),
+                  validation:
+                    isSubscribe && inputype
+                      ? {
+                          type: inputype,
+                          pattern:
+                            inputype === "regex" ? defaultdata.textvalidate : ""
+                        }
+                      : {},
                   fontSize:
                     fontSize || currWidgetsDetails?.options?.fontSize || 12,
                   fontColor:

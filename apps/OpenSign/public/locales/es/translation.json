@@ -362,6 +362,7 @@
     "date": "fecha",
     "text": "texto",
     "text input": "entrada de texto",
+    "cells": "células",
     "checkbox": "casilla",
     "dropdown": "desplegable",
     "radio button": "botón de radio",
@@ -416,10 +417,12 @@
   "options": "Opciones",
   "minimun-check": "Chequeo mínimo",
   "maximum-check": "Chequeo máximo",
+  "cell-count": "recuento de células",
   "default-value": "Valor por defecto",
   "select": "Seleccionar",
   "read-only": "Es de solo lectura",
   "hide-labels": "Esconder etiquetas",
+  "layout": "Diseño",
   "checkbox": "Casilla",
   "alert": "Alerta",
   "zoom-in": "Acercar",
@@ -1025,5 +1028,6 @@
   "not-found-in-signature": "No encontrado en la firma",
   "readonly-textinput-error": "El widget de texto de solo lectura debe tener un valor predeterminado o puede hacerse opcional.",
   "readonly-dropdown-error": "El widget desplegable de solo lectura debe tener un valor predeterminado o puede hacerse opcional.",
-  "readonly-radiobtn-error": "El widget de botón de opción de solo lectura debe tener un valor predeterminado o puede hacerse opcional."
+  "readonly-radiobtn-error": "El widget de botón de opción de solo lectura debe tener un valor predeterminado o puede hacerse opcional.",
+  "choose-one":"Elige uno"
 }

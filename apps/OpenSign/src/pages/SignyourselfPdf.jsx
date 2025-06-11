@@ -22,6 +22,7 @@ import {
   randomId,
   getDate,
   textWidget,
+  cellsWidget,
   convertPdfArrayBuffer,
   textInputWidget,
   fetchImageBase64,
@@ -356,9 +357,13 @@ function SignYourSelf() {
     );
     const dragTypeValue = item?.text ? item.text : monitor.type;
     const widgetValue = getWidgetValue(dragTypeValue);
-    const widgetTypeExist = ["name", "company", "job title", "email"].includes(
-      dragTypeValue
-    );
+    const widgetTypeExist = [
+      "name",
+      "company",
+      "job title",
+      "email",
+      cellsWidget
+    ].includes(dragTypeValue);
     const containerScale = getContainerScale(
       pdfOriginalWH,
       pageNumber,
@@ -439,6 +444,7 @@ function SignYourSelf() {
       [
         textInputWidget,
         textWidget,
+        cellsWidget,
         "name",
         "company",
         "job title",
@@ -931,7 +937,8 @@ function SignYourSelf() {
     deleteOption,
     status,
     defaultValue,
-    isHideLabel
+    isHideLabel,
+    layout
   ) => {
     const getPageNumer = xyPosition.filter(
       (data) => data.pageNumber === pageNumber
@@ -939,6 +946,8 @@ function SignYourSelf() {
     if (getPageNumer.length > 0) {
       const getXYdata = getPageNumer[0].pos;
       const getPosData = getXYdata;
+      const widgetLayout =
+        currWidgetsDetails?.type === "checkbox" ? { layout: layout } : {};
       const addSignPos = getPosData.map((position) => {
         if (position.key === currWidgetsDetails?.key) {
           if (addOption) {
@@ -962,6 +971,7 @@ function SignYourSelf() {
                 ...position.options,
                 name: dropdownName,
                 values: dropdownOptions,
+                ...widgetLayout,
                 isReadOnly: isReadOnly,
                 isHideLabel: isHideLabel || false,
                 fontSize:
@@ -1026,6 +1036,19 @@ function SignYourSelf() {
       setFontSize();
       setFontColor();
       handleTextSettingModal(false);
+    }
+  };
+
+  const setCellCount = (key, newCount) => {
+    const getPageNumer = xyPosition.filter((data) => data.pageNumber === pageNumber);
+    if (getPageNumer.length > 0) {
+      const updatePos = getPageNumer[0].pos.map((p) =>
+        p.key === key ? { ...p, options: { ...p.options, cellCount: newCount } } : p
+      );
+      const updateXYposition = xyPosition.map((obj, ind) =>
+        ind === index ? { ...obj, pos: updatePos } : obj
+      );
+      setXyPosition(updateXYposition);
     }
   };
   const clickOnZoomIn = () => {
@@ -1289,6 +1312,7 @@ function SignYourSelf() {
                       pdfBase64Url={pdfBase64Url}
                       fontSize={fontSize}
                       setFontSize={setFontSize}
+                      setCellCount={setCellCount}
                       fontColor={fontColor}
                       setFontColor={setFontColor}
                       isResize={isResize}

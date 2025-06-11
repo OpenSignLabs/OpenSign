@@ -361,6 +361,7 @@
     "date": "date",
     "text": "text",
     "text input": "text input",
+    "cells": "cells",
     "checkbox": "checkbox",
     "dropdown": "dropdown",
     "radio button": "radio button",
@@ -415,10 +416,12 @@
   "options": "Options",
   "minimun-check": "Minimun check",
   "maximum-check": "Maximum check",
+  "cell-count": "Cell count",
   "default-value": "Default value",
   "select": "Select",
-  "read-only": "Is read only",
+  "read-only": "read only",
   "hide-labels": "Hide labels",
+  "layout": "Layout",
   "checkbox": "Checkbox",
   "alert": "Alert",
   "zoom-in": "Zoom in",
@@ -1025,5 +1028,6 @@
   "not-found-in-signature": "Not found in signature",
   "readonly-textinput-error": "Read-only text widget must have a default value or you can make it optional.",
   "readonly-dropdown-error": "Read-only dropdown widget must have a default value or you can make it optional.",
-  "readonly-radiobtn-error": "Read-only radio button widget must have a default value or you can make it optional."
+  "readonly-radiobtn-error": "Read-only radio button widget must have a default value or you can make it optional.",
+  "choose-one":"Choose One"
 }

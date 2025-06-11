@@ -361,6 +361,7 @@
     "date": "date",
     "text": "texte",
     "text input": "saisie de texte",
+    "cells": "cellules",
     "checkbox": "case à cocher",
     "dropdown": "dérouler",
     "radio button": "bouton radio",
@@ -415,10 +416,12 @@
   "options": "Possibilités",
   "minimun-check": "Vérification minimale",
   "maximum-check": "Contrôle maximum",
+  "cell-count": "numération cellulaire",
   "default-value": "Valeur par défaut",
   "select": "Sélectionner",
   "read-only": "Est en lecture seule",
   "hide-labels": "Masquer les étiquettes",
+  "layout": "Disposition",
   "checkbox": "Case à cocher",
   "alert": "Alerte",
   "zoom-in": "Agrandir",
@@ -1025,5 +1028,6 @@
   "not-found-in-signature": "Introuvable dans la signature",
   "readonly-textinput-error": "Le widget de texte en lecture seule doit avoir une valeur par défaut ou être rendu optionnel.",
   "readonly-dropdown-error": "Le widget déroulant en lecture seule doit avoir une valeur par défaut ou être rendu optionnel.",
-  "readonly-radiobtn-error": "Le widget bouton radio en lecture seule doit avoir une valeur par défaut ou être rendu optionnel."
+  "readonly-radiobtn-error": "Le widget bouton radio en lecture seule doit avoir une valeur par défaut ou être rendu optionnel.",
+  "choose-one":"Choisissez-en un"
 }
