@@ -28,7 +28,7 @@ title: Quickly Send the Document for Signature Using Template
   - **Yes**: Selecting this option will send the signing request to the first signer initially. Once the first signer completes their part, the next signer in the sequence will receive the request. This process continues until all signers have signed the document. This method ensures that the document is signed in a specific order.
   - **No**: Selecting this option will send the signing links to all signers simultaneously. Every signer can sign the document at their convenience, regardless of whether other signers have completed their signatures. This method is faster but does not enforce any signing order among the participants.
 Select the option that best suits the needs of your document processing.
-### Step 5: Auto reminder (feature only avilable for the subscribed user)
+### Step 5: Auto reminder (feature only available for the subscribed user)
 - **[7]** Once you enable the auto reminder, a text field will appear allowing you to set the reminder for a specific number of days.
 - **Remind once in every (Days)**: Here, you can set the number of days for the reminder.
   
