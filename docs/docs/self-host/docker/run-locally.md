@@ -69,9 +69,9 @@ Once the deployment is successful, the application will be accessible at [https:
 ## Information About ENV variables which are used to setup OpenSign™ with Docker on Localhost
 To set up OpenSign™ locally using Docker, the following prerequisites are required: 
 
-Add below Environment Varaibles to the ".env.prod" file that is automatically created in order to personalize your installation:
+Add below Environment Variables to the ".env.prod" file that is automatically created in order to personalize your installation:
 
-| Environment Varibale  | Value | Description |
+| Environment Variable  | Value | Description |
 | ------------- | ------------- | ------------- |
 | PUBLIC_URL  | https://localhost:3001 or https://opensign.yourdomain.com  | Set it to the URL form where the app home page will be accessed |
 | MASTER_KEY  | XnAadwKxxByMr  | A 12 character long random secret key that allows access to all the data. It is used in Parse dashboard config to view all the data in the database. |

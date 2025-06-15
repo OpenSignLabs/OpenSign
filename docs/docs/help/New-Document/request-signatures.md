@@ -42,7 +42,7 @@ The OpenSign™ Request signatures interface is designed to streamline the proce
   - **Yes**: Selecting this option will send the signing request to the first signer initially. Once the first signer completes their part, the next signer in the sequence will receive the request. This process continues until all signers have signed the document. This method ensures that the document is signed in a specific order.
   - **No**: Selecting this option will send the signing links to all signers simultaneously. Every signer can sign the document at their convenience, regardless of whether other signers have completed their signatures. This method is faster but does not enforce any signing order among the participants.
 Select the option that best suits the needs of your document processing.
-### Step 7: Auto reminder (feature only avilable for the subscribed user)
+### Step 7: Auto reminder (feature only available for the subscribed user)
 - **[10]** Once you enable the auto reminder, a text field will appear allowing you to set the reminder for a specific number of days.
 - **Remind once in every (Days)**: Here, you can set the number of days for the reminder.
   
@@ -81,41 +81,41 @@ Use the option on the right side to add recipients if you need to include additi
  - **Name**: After placing the name widget, you will see the options on the widget such as:
     - Setting icon: By clicking on the option, you can set the color and font.
     - Add Signer/Change Signer: Clicking the first icon on the Name widget allows you to change the signer. You can choose from existing signers in the dropdown or add a new signer.
-    - Copy : Clicking on this you can ducplicate the name widget.
+    - Copy : Clicking on this you can duplicate the name widget.
  - **Job title**: After placing the job title widget, you will see the options on the widget such as:
     - Setting icon: By clicking on the option, you can set the color and font.
     - Add Signer/Change Signer: Clicking the first icon on the Job title widget allows you to change the signer. You can choose from existing signers in the dropdown or add a new signer.
-    - Copy : Clicking on this you can ducplicate the job title widget.
+    - Copy : Clicking on this you can duplicate the job title widget.
   
  - **Company**: After placing the company widget, you will see the options on the widget such as:
      - Setting icon: By clicking on the option, you can set the color and font.
      - Add Signer/Change Signer: Clicking the first icon on the Company widget allows you to change the signer. You can choose from existing signers in the dropdown or add a new signer.
-     - Copy : Clicking on this you can ducplicate the Company widget.
+     - Copy : Clicking on this you can duplicate the Company widget.
  - **Date**: After placing the date widget, you will see the options on the widget such as:
      - Setting icon: By clicking on the option, you can choose from various date formats.
      - Add Signer/Change Signer: Clicking the first icon on the Date widget allows you to change the signer. You can choose from existing signers in the dropdown or add a new signer.
-     - Copy : Clicking on this you can ducplicate the date widget. 
+     - Copy : Clicking on this you can duplicate the date widget. 
  - **Text**: After placing the Text widget, you will see the options on the widget such as:
     - Setting icon: By clicking on the option, you can set the color and font.
-    - Copy : Clicking on this you can ducplicate the Text widget.
+    - Copy : Clicking on this you can duplicate the Text widget.
   
  - **Text Input**: After placing the Text Input widget, you will see the options on the widget such as:
     - Setting icon: By clicking on the option, you can set the color and font.
     - Add Signer/Change Signer: Clicking the first icon on the Text Input widget allows you to change the signer. You can choose from existing signers in the dropdown or add a new signer.
-    - Copy : Clicking on this you can ducplicate the Text Input widget.
- - **Checkbox**: Once you drop the checkbox widget, a popup will open where you can set the checkbox name and options. Additionally, there is few optiona available like you can set Minimum check, maximum check also whether this check box is readonly also hide label option.
+    - Copy : Clicking on this you can duplicate the Text Input widget.
+ - **Checkbox**: Once you drop the checkbox widget, a popup will open where you can set the checkbox name and options. Additionally, there are a few options available such as setting the minimum and maximum checks, making the checkbox read-only, and hiding the label.
      - Add Signer/Change Signer: Clicking the first icon on the CheckBox widget allows you to change the signer. You can choose from existing signers in the dropdown or add a new signer.
-     - Copy : Clicking on this you can ducplicate the image widget.
-- **Dropdown**: Once you drop the dropdown widget, a popup will open where you can set the dropdown name and options. Additionally, there is few option available like you can set default value, also whether this dropdown is required or optional.
+     - Copy : Clicking on this you can duplicate the image widget.
+- **Dropdown**: Once you drop the dropdown widget, a popup will open where you can set the dropdown name and options. Additionally, there are a few options available such as setting a default value and marking the dropdown as required or optional.
      - Add Signer/Change Signer: Clicking the first icon on the Dropdown widget allows you to change the signer. You can choose from existing signers in the dropdown or add a new signer.
-     - Copy : Clicking on this you can ducplicate the image widget.
- - **Radio button**: Once you drop the radio button widget, a popup will open where you can set the radio button name and options. Additionally, there is few option available like you can set default value, also whether this radio button is readonly also hide label option.
+     - Copy : Clicking on this you can duplicate the image widget.
+ - **Radio button**: Once you drop the radio button widget, a popup will open where you can set the radio button name and options. Additionally, there are a few options available such as setting a default value, making the radio button read-only, and hiding the label.
      - Add Signer/Change Signer: Clicking the first icon on the Radio button widget allows you to change the signer. You can choose from existing signers in the dropdown or add a new signer.
-     - Copy : Clicking on this you can ducplicate the image widget.
+     - Copy : Clicking on this you can duplicate the image widget.
  - **Image**: After placing the Image widget, you will see the options on the widget such as:
     - Setting icon: By clicking on the option, you can specify whether this widget is mandatory or optional during the document signing.
     - Add Signer/Change Signer: Clicking the first icon on the Image widget allows you to change the signer. You can choose from existing signers in the dropdown or add a new signer.
-    - Copy : Clicking on this you can ducplicate the image widget.
+    - Copy : Clicking on this you can duplicate the image widget.
  - **Email**: After placing the email widget, you will see the options on the widget such as:
     - Setting icon: By clicking on the option, you can set the color and font.
     - Add Signer/Change Signer: Clicking the first icon on the Email widget allows you to change the signer. You can choose from existing signers in the dropdown or add a new signer.

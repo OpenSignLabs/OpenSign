@@ -5,14 +5,14 @@ title: ENV variables which are used to setup OpenSign™ with Docker on Localhos
 ## Information About ENV variables which are used to setup OpenSign™ with Docker on Localhost
 To set up OpenSign™ locally using Docker, the following prerequisites are required: 
 
-Environment Varaibles:
+Environment Variables:
 
 [//]: # "| appName  | open_sign_server  | Name of the app. It will be visible in the verification emails sent out. |"
 [//]: # "| GENERATE_SOURCEMAP  | false | Set it to true if you want to generate the Sourcemap for debugging |"
 [//]: # "| REACT_APP_SERVERURL  | http://localhost:8080/app  | Set it to the URL from where APIs will be accessible, for local development it should be localhost:8080/app (use your local port number instead) |"
 [//]: # "| REACT_APP_APPID  | opensignstgn  | A 12 character long random app identifier. The value of this should be same as APP_ID which is a variable used by backend API. |"
 
-| Environment Varibale | Value | Description |
+| Environment Variable | Value | Description |
 | ------------- | ------------- | ------------- |
 | PUBLIC_URL  | https://localhost:3001 | Set it to the URL form where the app home page will be accessed |
 | MASTER_KEY  | XnAadwKxxByMr  | A 12 character long random secret key that allows access to all the data. It is used in Parse dashboard config to view all the data in the database. |

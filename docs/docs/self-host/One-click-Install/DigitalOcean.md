@@ -3,7 +3,7 @@ title: Digital Ocean
 ---
 # Digital Ocean
 
-OpenSign application consistes of 3 components -
+OpenSign application consists of 3 components -
 - ReactJS frontend
 - NodeJS API
 - MongoDB database
