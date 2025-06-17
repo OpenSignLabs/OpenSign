@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import RenderAllPdfPage from "../components/pdf/RenderAllPdfPage";
 import { useParams, useNavigate } from "react-router";
 import axios from "axios";
@@ -22,6 +22,7 @@ import {
   defaultWidthHeight,
   addWidgetOptions,
   textInputWidget,
+  cellsWidget,
   radioButtonWidget,
   getContainerScale,
   convertBase64ToFile,
@@ -1274,7 +1275,8 @@ const TemplatePlaceholder = () => {
     deleteOption,
     status,
     defaultValue,
-    isHideLabel
+    isHideLabel,
+    layout
   ) => {
     const filterSignerPos = signerPos.filter((data) => data.Id === uniqueId);
     if (filterSignerPos.length > 0) {
@@ -1313,6 +1315,7 @@ const TemplatePlaceholder = () => {
                     name: dropdownName,
                     values: dropdownOptions,
                     status: status,
+                    layout: layout,
                     defaultValue: defaultValue,
                     isReadOnly: isReadOnly || false,
                     isHideLabel: isHideLabel || false,
@@ -1351,6 +1354,7 @@ const TemplatePlaceholder = () => {
                       minRequiredCount: minCount,
                       maxRequiredCount: maxCount
                     },
+                    layout: layout,
                     isReadOnly: isReadOnly || false,
                     defaultValue: defaultValue,
                     isHideLabel: isHideLabel || false,
@@ -1451,6 +1455,36 @@ const TemplatePlaceholder = () => {
                     "black"
                 }
               };
+            } else if (position.type === cellsWidget) {
+              return {
+                ...position,
+                options: {
+                  ...position.options,
+                  name: defaultdata?.name || "Cells",
+                  status: defaultdata?.status || "required",
+                  hint: defaultdata?.hint || "",
+                  cellCount: parseInt(defaultdata?.cellCount || 5),
+                  defaultValue: (defaultdata?.defaultValue || "").slice(
+                    0,
+                    parseInt(defaultdata?.cellCount || 5)
+                  ),
+                  validation:
+                    isSubscribe && inputype
+                      ? {
+                          type: inputype,
+                          pattern:
+                            inputype === "regex" ? defaultdata.textvalidate : ""
+                        }
+                      : {},
+                  isReadOnly: defaultdata?.isReadOnly || false,
+                  fontSize:
+                    fontSize || currWidgetsDetails?.options?.fontSize || 12,
+                  fontColor:
+                    fontColor ||
+                    currWidgetsDetails?.options?.fontColor ||
+                    "black"
+                }
+              };
             } else if (["signature"].includes(position.type)) {
               return {
                 ...position,
@@ -1509,6 +1543,22 @@ const TemplatePlaceholder = () => {
     setShowDropdown(false);
     setIsRadio(false);
     setIsCheckbox(false);
+  };
+  const setCellCount = (key, newCount) => {
+    const updated = signerPos.map((signer) => {
+      if (signer.Id !== uniqueId) return signer;
+      const placeHolder = signer.placeHolder.map((ph) => {
+        if (ph.pageNumber !== pageNumber) return ph;
+        const pos = ph.pos.map((p) =>
+          p.key === key
+            ? { ...p, options: { ...p.options, cellCount: newCount } }
+            : p
+        );
+        return { ...ph, pos };
+      });
+      return { ...signer, placeHolder };
+    });
+    setSignerPos(updated);
   };
 
   const clickOnZoomIn = () => {
@@ -1671,7 +1721,7 @@ const TemplatePlaceholder = () => {
                       navigate("/report/6TeaPr321t");
                     }}
                   >
-                    <div className="h-full p-[20px] mb-2">
+                    <div className="h-full p-[20px] mb-2 text-base-content">
                       <p>{t("template-created-alert")}</p>
                       <div className="h-[1px] w-full my-[15px] bg-[#9f9f9f]"></div>
                       <div className="flex gap-1 flex-col md:flex-row">
@@ -1828,6 +1878,7 @@ const TemplatePlaceholder = () => {
                         pdfBase64Url={pdfBase64Url}
                         fontSize={fontSize}
                         setFontSize={setFontSize}
+                        setCellCount={setCellCount}
                         fontColor={fontColor}
                         setFontColor={setFontColor}
                         isResize={isResize}

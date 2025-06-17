@@ -186,7 +186,7 @@ function EmailComponent({
                 <input
                   type="email"
                   value={emailValue}
-                  className="p-[10px] pb-[20px] rounded-md w-full text-[15px] outline-none bg-transparent border-[1px] op-border-primary"
+                  className="p-[10px] pb-[20px] text-base-content rounded-md w-full text-[15px] outline-none bg-transparent border-[1px] op-border-primary"
                   onChange={handleEmailValue}
                   onKeyDown={handleEnterPress}
                   placeholder={t("enter-email-plaholder")}
@@ -204,19 +204,6 @@ function EmailComponent({
                 {t("email-error-1")}
               </p>
             )}
-            {/* <button
-              className={`${
-                emailValue ? "cursor-pointer" : "cursor-default"
-              } op-btn op-btn-primary op-btn-sm m-2 shadow-md`}
-              onClick={() => emailValue && handleEnterPress("add")}
-            >
-              <i className="fa-light fa-plus" aria-hidden="true"></i>
-            </button>
-            <div className="bg-[#e3e2e1] mt-[10px] p-[5px] rounded">
-              <span className="font-bold">{t("report-heading.Note")}: </span>
-              <span className="text-[15px]">{t("email-error-2")}</span>
-            </div>
-            <hr className="w-full my-[15px] bg-base-content" /> */}
             <div className="mt-2">
               <button
                 type="button"
@@ -227,7 +214,7 @@ function EmailComponent({
               </button>
               <button
                 type="button"
-                className="op-btn op-btn-ghost ml-2"
+                className="op-btn op-btn-ghost text-base-content ml-2"
                 onClick={() => handleClose()}
               >
                 {t("close")}

@@ -3,16 +3,19 @@ import { useTranslation } from "react-i18next";
 import {
   base64ToArrayBuffer,
   deletePdfPage,
-  handleRemoveWidgets
+  handleRemoveWidgets,
+  reorderPdfPages
 } from "../../constant/Utils";
 import ModalUi from "../../primitives/ModalUi";
 import { PDFDocument } from "pdf-lib";
 import { maxFileSize } from "../../constant/const";
+import PageReorderModal from "./PageReorderModal";
 
 function PdfZoom(props) {
   const { t } = useTranslation();
   const mergePdfInputRef = useRef(null);
   const [isDeletePage, setIsDeletePage] = useState(false);
+  const [isReorderModal, setIsReorderModal] = useState(false);
   const handleDetelePage = async () => {
     props.setIsUploadPdf && props.setIsUploadPdf(true);
     try {
@@ -94,6 +97,21 @@ function PdfZoom(props) {
     }
   };
 
+  const handleReorderSave = async (order) => {
+    try {
+      const pdfupdatedData = await reorderPdfPages(props.pdfArrayBuffer, order);
+      if (pdfupdatedData) {
+        props.setPdfArrayBuffer(pdfupdatedData.arrayBuffer);
+        props.setPdfBase64Url(pdfupdatedData.base64);
+        props.setAllPages(pdfupdatedData.totalPages);
+        props.setPageNumber(1);
+      }
+    } catch (e) {
+      console.log("error in reorder pdf pages", e);
+    }
+    setIsReorderModal(false);
+  };
+
   return (
     <>
       <span className="hidden md:flex flex-col gap-1 text-center md:w-[5%] mt-[42px]">
@@ -119,6 +137,13 @@ function PdfZoom(props) {
               title={t("delete-page")}
             >
               <i className="fa-light fa-trash text-gray-500 2xl:text-[25px]"></i>
+            </span>
+            <span
+              className="bg-gray-50 px-[4px]  2xl:py-[10px] cursor-pointer"
+              onClick={() => setIsReorderModal(true)}
+              title={t("reorder-pages")}
+            >
+              <i className="fa-light fa-list-ol text-gray-500 2xl:text-[25px]"></i>
             </span>
           </>
         )}
@@ -185,6 +210,12 @@ function PdfZoom(props) {
           </button>
         </div>
       </ModalUi>
+      <PageReorderModal
+        isOpen={isReorderModal}
+        handleClose={() => setIsReorderModal(false)}
+        totalPages={props.allPages}
+        onSave={handleReorderSave}
+      />
     </>
   );
 }

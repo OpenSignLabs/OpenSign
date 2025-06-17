@@ -204,6 +204,15 @@ a {
   align-items: center;
 }
 
+/* Dark mode support for HoverCard */
+[data-theme="opensigndark"] .HoverCardContent {
+  background-color: #1F2937;
+  color: #E5E7EB;
+  box-shadow:
+    hsl(0 0% 0% / 50%) 0px 10px 38px -10px,
+    hsl(0 0% 0% / 30%) 0px 10px 20px -15px;
+}
+
 .HoverCardContent[data-side="top"] {
   animation-name: slideDownAndFade;
 }
@@ -222,6 +231,11 @@ a {
 
 .HoverCardArrow {
   fill: white;
+}
+
+/* Dark mode support for HoverCard arrow */
+[data-theme="opensigndark"] .HoverCardArrow {
+  fill: #1F2937;
 }
 
 @keyframes slideUpAndFade {

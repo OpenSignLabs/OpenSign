@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import BorderResize from "./BorderResize";
 import { Rnd } from "react-rnd";
 import {
@@ -13,6 +13,7 @@ import {
   onChangeInput,
   radioButtonWidget,
   textInputWidget,
+  cellsWidget,
   textWidget
 } from "../../constant/Utils";
 import PlaceholderType from "./PlaceholderType";
@@ -80,11 +81,12 @@ function Placeholder(props) {
     props.pos?.options?.defaultValue || props.pos?.options?.response;
   const [isDateModal, setIsDateModal] = useState(false);
   const [containerScale, setContainerScale] = useState();
-  const holdTimeout = useRef(null);
-  const startTime = useRef(null); // Track when the user starts holdings
   const [selectDate, setSelectDate] = useState({});
   const [dateFormat, setDateFormat] = useState([]);
   const [clickonWidget, setClickonWidget] = useState({});
+  const [isDateReadOnly, setIsDateReadOnly] = useState(
+    props?.pos?.options?.isReadOnly || false
+  );
   const startDate = props?.pos?.options?.response
     ? getDefaultDate(
         props?.pos?.options?.response,
@@ -303,6 +305,13 @@ function Placeholder(props) {
     } else if (props.pos.type === "checkbox") {
       props?.setIsCheckbox(true);
     }
+    // cells widget settings in sign yourself flow
+    else if (
+      props.pos.type === cellsWidget &&
+      (props.isSignYourself || props.isSelfSign)
+    ) {
+      props.handleCellSettingModal && props.handleCellSettingModal();
+    }
     //condition to handle setting icon for signyour-self flow for all type text widgets
     else if (
       [
@@ -406,11 +415,54 @@ function Placeholder(props) {
       false,
       data?.format,
       props.fontSize || props.pos?.options?.fontSize || 12,
-      props.fontColor || props.pos?.options?.fontColor || "black"
+      props.fontColor || props.pos?.options?.fontColor || "black",
+      isDateReadOnly || false
     );
     setSelectDate({ date: date, format: data?.format });
   };
+
+  const setCellCount = (key, newCount) => {
+    props.setXyPosition((prev) => {
+      const isSignerList = prev.some((d) => d.signerPtr);
+      if (isSignerList) {
+        const signerId = props.data?.Id || props.uniqueId;
+        const filterSignerPos = prev.filter((d) => d.Id === signerId);
+        if (filterSignerPos.length > 0) {
+          const getPlaceHolder = filterSignerPos[0].placeHolder;
+          const updatedPlaceHolder = getPlaceHolder.map((ph) => {
+            if (ph.pageNumber !== props.pageNumber) return ph;
+            const newPos = ph.pos.map((p) =>
+              p.key === key
+                ? { ...p, options: { ...p.options, cellCount: newCount } }
+                : p
+            );
+            return { ...ph, pos: newPos };
+          });
+          return prev.map((obj) =>
+            obj.Id === signerId
+              ? { ...obj, placeHolder: updatedPlaceHolder }
+              : obj
+          );
+        }
+      } else {
+        const updatePos = prev[props.index].pos.map((p) =>
+          p.key === key
+            ? { ...p, options: { ...p.options, cellCount: newCount } }
+            : p
+        );
+        return prev.map((obj, ind) =>
+          ind === props.index ? { ...obj, pos: updatePos } : obj
+        );
+      }
+      return prev;
+    });
+  };
   const PlaceholderIcon = () => {
+    const isSettingForCells =
+      props?.isAlllowModify && !props?.assignedWidgetId.includes(props.pos.key)
+        ? []
+        : [cellsWidget];
+
     // 1- If props.isShowBorder is true, display border's icon for all widgets. OR
     // 2- Use the combination of props?.isAlllowModify and !props?.assignedWidgetId.includes(props.pos.key) to determine when to show border's icon:
     //    1- When isAlllowModify is true, show border's icon.
@@ -434,10 +486,15 @@ function Placeholder(props) {
                 "name",
                 "company",
                 "job title",
-                "email"
+                "email",
+                ...isSettingForCells
               ].includes(props.pos.type) &&
               (props.isSignYourself || props.isSelfSign) ? (
                 <i
+                  onPointerDown={(e) => {
+                    e.stopPropagation();
+                    handleOnClickSettingIcon();
+                  }}
                   onClick={(e) => {
                     e.stopPropagation();
                     handleOnClickSettingIcon();
@@ -447,7 +504,14 @@ function Placeholder(props) {
                     handleOnClickSettingIcon();
                   }}
                   className="fa-light fa-gear icon"
-                  style={{ color: "#188ae2", right: "29px", top: "-19px" }}
+                  style={{
+                    color: "#188ae2",
+                    right: "29px",
+                    top: "-19px",
+                    cursor: "pointer",
+                    zIndex: 99,
+                    pointerEvents: "auto"
+                  }}
                 ></i>
               ) : (
                 /* condition to add setting icon for placeholder & template flow for all widgets except signature and date */
@@ -457,6 +521,10 @@ function Placeholder(props) {
                     !props.isSignYourself &&
                     !props.isSelfSign)) && (
                   <i
+                    onPointerDown={(e) => {
+                      e.stopPropagation();
+                      handleOnClickSettingIcon();
+                    }}
                     onClick={(e) => {
                       e.stopPropagation();
                       handleOnClickSettingIcon();
@@ -469,7 +537,10 @@ function Placeholder(props) {
                     style={{
                       color: "#188ae2",
                       right: props?.pos?.type === textWidget ? "32px" : "51px",
-                      top: "-19px"
+                      top: "-19px",
+                      cursor: "pointer",
+                      zIndex: 99,
+                      pointerEvents: "auto"
                     }}
                   ></i>
                 )
@@ -507,6 +578,7 @@ function Placeholder(props) {
           {/* setting icon only for date widgets */}
           {props.pos.type === "date" && selectDate && (
             <i
+              onPointerDown={(e) => e.stopPropagation()}
               onClick={(e) => {
                 props.setCurrWidgetsDetails(props.pos);
                 setIsDateModal(!isDateModal);
@@ -539,7 +611,9 @@ function Placeholder(props) {
                 top: "-18px",
                 right: props.isPlaceholder ? "50px" : "30px",
                 color: "#188ae2",
-                fontSize: "14px"
+                fontSize: "14px",
+                cursor: "pointer",
+                pointerEvents: "auto"
               }}
               className="fa-light fa-gear icon"
             ></i>
@@ -686,21 +760,6 @@ function Placeholder(props) {
       return "rgba(203, 233, 237, 0.69)";
     }
   };
-  const handleTouchEnd = () => {
-    if (!props.isNeedSign || props.isAlllowModify) {
-      const holdDuration = Date.now() - startTime.current; // Calculate hold time
-      clearTimeout(holdTimeout.current); // Cancel timeout if touch ended early
-
-      if (holdDuration < 1000) {
-        try {
-          navigator.vibrate([]); // Cancel any ongoing vibration
-        } catch (e) {
-          console.log("error in  navigator.vibrate", e);
-        }
-      }
-    }
-    if (!props.isNeedSign || props.isAlllowModify) handleOnClickPlaceholder();
-  };
 
   const fontSize = calculateFont(props.pos.options?.fontSize);
   const fontColor = props.pos.options?.fontColor || "black";
@@ -751,20 +810,16 @@ function Placeholder(props) {
           id={props.pos.key}
           data-tut={props.pos.key === props.unSignedWidgetId ? "IsSigned" : ""}
           key={props.pos.key}
+          cancel=".cell-size-handle, .icon"
           lockAspectRatio={
-            !props.isFreeResize &&
-            ![
-              textWidget,
-              "email",
-              "name",
-              "company",
-              "job title",
-              textInputWidget
-            ].includes(props.pos.type) &&
-            (props.pos.Width
-              ? props.pos.Width / props.pos.Height
-              : defaultWidthHeight(props.pos.type).width /
-                defaultWidthHeight(props.pos.type).height)
+            props?.isAlllowModify &&
+            !props?.assignedWidgetId.includes(props.pos.key)
+              ? false
+              : !props.isFreeResize &&
+                (props.pos.Width
+                  ? props.pos.Width / props.pos.Height
+                  : defaultWidthHeight(props.pos.type).width /
+                    defaultWidthHeight(props.pos.type).height)
           }
           enableResizing={{
             top: false,
@@ -820,8 +875,10 @@ function Placeholder(props) {
                 : props.posHeight(props.pos, props.isSignYourself)
           }}
           minHeight={
-            props.pos.type !== "checkbox" &&
-            calculateFont(props.pos.options?.fontSize, true)
+            props.pos.type === cellsWidget
+              ? calculateFont(props.pos.options?.fontSize, true)
+              : props.pos.type !== "checkbox" &&
+                calculateFont(props.pos.options?.fontSize, true)
           }
           maxHeight="auto"
           onResizeStart={() => {
@@ -938,18 +995,19 @@ function Placeholder(props) {
               handleSaveDate={handleSaveDate}
               xPos={props.xPos}
               calculateFont={calculateFont}
+              setCellCount={setCellCount}
             />
           </div>
         </Rnd>
       )}
 
       <ModalUi isOpen={isDateModal} title={t("widget-info")} showClose={false}>
-        <div className="h-[100%] p-[20px]">
-          <div className="flex flex-row items-center">
-            <span>{t("format")} : </span>
-            <div className="flex">
+        <div className="text-base-content h-[100%] p-[20px]">
+          <div className="flex flex-col md:flex-row md:items-center gap-y-3">
+            <div className="flex flex-row items-center gap-x-1">
+              <span className="capitalize">{t("format")} :</span>
               <select
-                className="ml-[7px] op-select op-select-bordered op-select-sm focus:outline-none hover:border-base-content text-xs"
+                className="op-select op-select-bordered op-select-sm focus:outline-none hover:border-base-content text-xs"
                 defaultValue={""}
                 onChange={(e) => {
                   const selectedIndex = e.target.value;
@@ -973,23 +1031,23 @@ function Placeholder(props) {
               {selectDate.format}
             </span>
           </div>
-          <div className="flex items-center mt-4 md:mt-2">
-            <span>{t("font-size")} :</span>
-            <select
-              className="ml-[3px] md:ml:[7px] op-select op-select-bordered op-select-sm focus:outline-none hover:border-base-content text-xs"
-              value={props.fontSize || clickonWidget.options?.fontSize || 12}
-              onChange={(e) => props.setFontSize(parseInt(e.target.value))}
-            >
-              {fontsizeArr.map((size, ind) => {
-                return (
+          <div className="flex flex-col md:flex-row gap-y-2 md:gap-y-0 gap-x-2 mt-3">
+            <div className="flex flex-row items-center">
+              <span className="capitalize">{t("font-size")} :</span>
+              <select
+                className="ml-[3px] md:ml:[7px] op-select op-select-bordered op-select-sm focus:outline-none hover:border-base-content text-xs"
+                value={props.fontSize || clickonWidget.options?.fontSize || 12}
+                onChange={(e) => props.setFontSize(parseInt(e.target.value))}
+              >
+                {fontsizeArr.map((size, ind) => (
                   <option className="text-[13px]" value={size} key={ind}>
                     {size}
                   </option>
-                );
-              })}
-            </select>
-            <div className="flex flex-row gap-1 items-center ml-2 md:ml-4 ">
-              <span>{t("color")}: </span>
+                ))}
+              </select>
+            </div>
+            <div className="flex flex-row gap-1 items-center">
+              <span className="capitalize">{t("color")} :</span>
               <select
                 value={
                   props.fontColor || clickonWidget.options?.fontColor || "black"
@@ -997,13 +1055,11 @@ function Placeholder(props) {
                 onChange={(e) => props.setFontColor(e.target.value)}
                 className="ml-[4px] md:ml[7px] op-select op-select-bordered op-select-sm focus:outline-none hover:border-base-content text-xs"
               >
-                {fontColorArr.map((color, ind) => {
-                  return (
-                    <option value={color} key={ind}>
-                      {t(`color-type.${color}`)}
-                    </option>
-                  );
-                })}
+                {fontColorArr.map((color, ind) => (
+                  <option value={color} key={ind}>
+                    {t(`color-type.${color}`)}
+                  </option>
+                ))}
               </select>
               <span
                 style={{
@@ -1014,7 +1070,26 @@ function Placeholder(props) {
               ></span>
             </div>
           </div>
-
+          {props?.isPlaceholder && (
+            <div className="flex items-center mt-3">
+              <input
+                id="isReadOnly"
+                name="isReadOnly"
+                type="checkbox"
+                checked={
+                  isDateReadOnly || props.pos.options?.isReadOnly || false
+                }
+                className="op-checkbox op-checkbox-xs"
+                onChange={() => setIsDateReadOnly(!isDateReadOnly)}
+              />
+              <label
+                className="ml-1.5 mb-0 capitalize text-[13px]"
+                htmlFor="isreadonly"
+              >
+                {t("read-only")}
+              </label>
+            </div>
+          )}
           <div className="h-[1px] w-full my-[15px] bg-[#9f9f9f]"></div>
           <button
             type="button"

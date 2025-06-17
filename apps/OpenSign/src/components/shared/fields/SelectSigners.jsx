@@ -97,7 +97,7 @@ const SelectSigners = (props) => {
       const contactRes = axiosRes?.data?.result || [];
       if (contactRes) {
         const res = JSON.parse(JSON.stringify(contactRes));
-        //compareArrays is a function where compare between two array (total signersList and dcument signers list)
+        //compareArrays is a function where compare between two array (total signersList and document signers list)
         //and filter signers from total signer's list which already present in document's signers list
         // const compareArrays = (res, signerObj) => {
         //   return res.filter(

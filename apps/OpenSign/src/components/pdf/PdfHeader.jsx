@@ -6,12 +6,14 @@ import {
   handleDownloadCertificate,
   handleDownloadPdf,
   handleRemoveWidgets,
-  handleToPrint
+  handleToPrint,
+  reorderPdfPages
 } from "../../constant/Utils";
 import "../../styles/signature.css";
 import { DropdownMenu } from "radix-ui";
 import ModalUi from "../../primitives/ModalUi";
 import Loader from "../../primitives/Loader";
+import PageReorderModal from "./PageReorderModal";
 import { useTranslation } from "react-i18next";
 import { PDFDocument } from "pdf-lib";
 import { maxFileSize } from "../../constant/const";
@@ -24,6 +26,7 @@ function Header(props) {
   const isMobile = window.innerWidth < 767;
   const [isDownloading, setIsDownloading] = useState("");
   const [isDeletePage, setIsDeletePage] = useState(false);
+  const [isReorderModal, setIsReorderModal] = useState(false);
   const mergePdfInputRef = useRef(null);
   const enabledBackBtn = props?.disabledBackBtn === true ? false : true;
   //function for show decline alert
@@ -105,6 +108,21 @@ function Header(props) {
       mergePdfInputRef.current.value = "";
       console.error("Error merging PDF:", error);
     }
+  };
+
+  const handleReorderSave = async (order) => {
+    try {
+      const pdfupdatedData = await reorderPdfPages(props.pdfArrayBuffer, order);
+      if (pdfupdatedData) {
+        props.setPdfArrayBuffer(pdfupdatedData.arrayBuffer);
+        props.setPdfBase64Url(pdfupdatedData.base64);
+        props.setAllPages(pdfupdatedData.totalPages);
+        props.setPageNumber(1);
+      }
+    } catch (e) {
+      console.log("error in reorder pdf pages", e);
+    }
+    setIsReorderModal(false);
   };
   return (
     <div className="flex py-[5px]">
@@ -323,17 +341,28 @@ function Header(props) {
                                   </span>
                                 </div>
                               </DropdownMenu.Item>
-                              <DropdownMenu.Item
-                                className="DropdownMenuItem"
-                                onClick={() => setIsDeletePage(true)}
-                              >
-                                <div className="flex flex-row">
-                                  <i className="fa-light fa-trash text-gray-500 2xl:text-[30px] mr-[3px]"></i>
-                                  <span className="font-[500]">
-                                    {t("delete-page")}
-                                  </span>
-                                </div>
-                              </DropdownMenu.Item>
+                            <DropdownMenu.Item
+                              className="DropdownMenuItem"
+                              onClick={() => setIsDeletePage(true)}
+                            >
+                              <div className="flex flex-row">
+                                <i className="fa-light fa-trash text-gray-500 2xl:text-[30px] mr-[3px]"></i>
+                                <span className="font-[500]">
+                                  {t("delete-page")}
+                                </span>
+                              </div>
+                            </DropdownMenu.Item>
+                            <DropdownMenu.Item
+                              className="DropdownMenuItem"
+                              onClick={() => setIsReorderModal(true)}
+                            >
+                              <div className="flex flex-row">
+                                <i className="fa-light fa-list-ol text-gray-500 2xl:text-[30px] mr-[3px]"></i>
+                                <span className="font-[500]">
+                                  {t("reorder-pages")}
+                                </span>
+                              </div>
+                            </DropdownMenu.Item>
 
                               <DropdownMenu.Item
                                 className="DropdownMenuItem"
@@ -696,6 +725,12 @@ function Header(props) {
           </button>
         </div>
       </ModalUi>
+      <PageReorderModal
+        isOpen={isReorderModal}
+        handleClose={() => setIsReorderModal(false)}
+        totalPages={props.allPages}
+        onSave={handleReorderSave}
+      />
     </div>
   );
 }

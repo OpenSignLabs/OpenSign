@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { formJson } from "../json/FormJson";
 import Parse from "parse";
@@ -68,6 +68,7 @@ const Forms = (props) => {
     AllowModifications: false
   });
   const [fileupload, setFileUpload] = useState("");
+  const [selectedFiles, setSelectedFiles] = useState([]);
   const [fileload, setfileload] = useState(false);
   const [percentage, setpercentage] = useState(0);
   const [isReset, setIsReset] = useState(false);
@@ -134,219 +135,154 @@ const Forms = (props) => {
   const handleFileInput = async (e) => {
     setpercentage(0);
     try {
-      let files = e.target.files;
-      setFormData((prev) => ({ ...prev, file: e.target.files[0] }));
-      if (typeof files[0] !== "undefined") {
-        const mb = Math.round(files[0].size / Math.pow(1024, 2));
-        if (mb > maxFileSize) {
-          alert(`${t("file-alert-1")} ${maxFileSize} MB`);
-          setFileUpload("");
-          removeFile(e);
-          return;
-        } else {
-          if (files?.[0]?.type === "application/pdf") {
-            const size = files?.[0]?.size;
-            const name = generatePdfName(16);
-            const pdfName = `${name?.split(".")[0]}.pdf`;
+      const files = Array.from(e.target.files);
+      setSelectedFiles(files.map((f) => f.name));
+      if (!files.length) {
+        alert(t("file-alert-2"));
+        return;
+      }
+      setFormData((prev) => ({ ...prev, file: files[0] }));
+      const totalMb = Math.round(
+        files.reduce((sum, f) => sum + f.size, 0) / Math.pow(1024, 2)
+      );
+      if (totalMb > maxFileSize) {
+        alert(`${t("file-alert-1")} ${maxFileSize} MB`);
+        setFileUpload("");
+        setSelectedFiles([]);
+        removeFile(e);
+        return;
+      }
+
+      const pdfBuffers = [];
+      for (const file of files) {
+        if (file.type === "application/pdf") {
+          const buffer = await getFileAsArrayBuffer(file);
+          const flat = await flattenPdf(buffer);
+          pdfBuffers.push(flat);
+        } else if (file.type.includes("image/")) {
+          const image = await toDataUrl(file);
+          const pdfDoc = await PDFDocument.create();
+          const embed =
+            file.type === "image/png"
+              ? await pdfDoc.embedPng(image)
+              : await pdfDoc.embedJpg(image);
+          const page = pdfDoc.addPage([embed.width, embed.height]);
+          page.drawImage(embed, {
+            x: 0,
+            y: 0,
+            width: embed.width,
+            height: embed.height
+          });
+          const bytes = await pdfDoc.save({ useObjectStreams: false });
+          pdfBuffers.push(bytes);
+        } else if (
+          file.type ===
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
+          file.name.toLowerCase().endsWith(".docx")
+        ) {
+          try {
+            const baseApi = localStorage.getItem("baseUrl") || "";
+            const url = baseApi.replace("/app", "") + "docxtopdf";
+            let fd = new FormData();
+            fd.append("file", file);
             setfileload(true);
-              try {
-                const res = await getFileAsArrayBuffer(files[0]);
-                const flatPdf = await flattenPdf(res);
-                const parseFile = new Parse.File(
-                  pdfName,
-                  [...flatPdf],
-                  "application/pdf"
-                );
-
-                try {
-                  const response = await parseFile.save({
-                    progress: (progressValue, loaded, total, { type }) => {
-                      if (type === "upload" && progressValue !== null) {
-                        const percentCompleted = Math.round(
-                          (loaded * 100) / total
-                        );
-                        setpercentage(percentCompleted);
-                      }
-                    }
-                  });
-                  // The response object will contain information about the uploaded file
-                  // You can access the URL of the uploaded file using response.url()
-                  if (response.url()) {
-                    const fileRes = await getSecureUrl(response.url());
-                    if (fileRes.url) {
-                      setFileUpload(fileRes.url);
-                      setfileload(false);
-                      const tenantId = localStorage.getItem("TenantId");
-                      const title = generateTitleFromFilename(files?.[0]?.name);
-                      setFormData((obj) => ({ ...obj, Name: title }));
-                      SaveFileSize(size, fileRes.url, tenantId);
-                      return fileRes.url;
-                    } else {
-                      removeFile(e);
-                    }
-                  } else {
-                    removeFile(e);
-                  }
-                } catch (error) {
-                  removeFile(e);
-                  console.error("Error uploading file:", error);
-                }
-              } catch (err) {
-                if (err?.message?.includes("is encrypted")) {
-                  try {
-                    setIsDecrypting(true);
-                    const size = files?.[0].size;
-                    const name = generatePdfName(16);
-                    const url = "https://ai.nxglabs.in/decryptpdf"; //
-                    let formData = new FormData();
-                    formData.append("file", files[0]);
-                    formData.append("password", "");
-                    const config = {
-                      headers: { "content-type": "multipart/form-data" },
-                      responseType: "blob"
-                    };
-                    const response = await axios.post(url, formData, config);
-                    const pdfBlob = new Blob([response.data], {
-                      type: "application/pdf"
-                    });
-                    const pdfFile = new File([pdfBlob], name, {
-                      type: "application/pdf"
-                    });
-                    setIsDecrypting(false);
-                    setfileload(true);
-                      const res = await getFileAsArrayBuffer(pdfFile);
-                      const flatPdf = await flattenPdf(res);
-                      // Upload the file to Parse Server
-                      const parseFile = new Parse.File(
-                        name,
-                        [...flatPdf],
-                        "application/pdf"
-                      );
-
-                      await parseFile.save({
-                        progress: (progressValue, loaded, total, { type }) => {
-                          if (type === "upload" && progressValue !== null) {
-                            const percentCompleted = Math.round(
-                              (loaded * 100) / total
-                            );
-                            setpercentage(percentCompleted);
-                          }
-                        }
-                      });
-
-                      // Retrieve the URL of the uploaded file
-                      if (parseFile.url()) {
-                        const fileRes = await getSecureUrl(parseFile.url());
-                        if (fileRes.url) {
-                          setFileUpload(fileRes.url);
-                          removeFile();
-                          const title = generateTitleFromFilename(
-                            files?.[0]?.name
-                          );
-                          setFormData((obj) => ({ ...obj, Name: title }));
-                          const tenantId = localStorage.getItem("TenantId");
-                          SaveFileSize(size, fileRes.url, tenantId);
-                          return fileRes.url;
-                        } else {
-                          removeFile(e);
-                        }
-                      } else {
-                        removeFile(e);
-                      }
-                  } catch (err) {
-                    removeFile();
-                    if (err?.response?.status === 401) {
-                      setIsPassword(true);
-                    } else {
-                      console.log("Error uploading file: ", err?.response);
-                      setIsDecrypting(false);
-                      e.target.value = "";
-                    }
-                  }
-                } else {
-                  console.log("err ", err);
-                  setFileUpload("");
-                  removeFile(e);
+            setpercentage(0);
+            const config = {
+              headers: {
+                "content-type": "multipart/form-data",
+                sessiontoken: Parse.User.current().getSessionToken()
+              },
+              signal: abortController.signal,
+              onUploadProgress: (progressEvent) => {
+                if (progressEvent.total) {
+                  const percentCompleted = Math.round(
+                    (progressEvent.loaded * 100) / progressEvent.total
+                  );
+                  setpercentage(percentCompleted);
                 }
               }
-          } else {
-            const isImage = files?.[0]?.type.includes("image/");
-            if (isImage) {
-              const image = await toDataUrl(files[0]);
-              const pdfDoc = await PDFDocument.create();
-              let embedImg;
-              if (files?.[0]?.type === "image/png") {
-                embedImg = await pdfDoc.embedPng(image);
-              } else {
-                embedImg = await pdfDoc.embedJpg(image);
-              }
-
-              // Get image dimensions
-              const imageWidth = embedImg.width;
-              const imageHeight = embedImg.height;
-              const page = pdfDoc.addPage([imageWidth, imageHeight]);
-              page.drawImage(embedImg, {
-                x: 0,
-                y: 0,
-                width: imageWidth,
-                height: imageHeight
+            };
+            const res = await axios.post(url, fd, config);
+            if (res.data?.url) {
+              const pdfRes = await axios.get(res.data.url, {
+                responseType: "arraybuffer"
               });
-              const size = files?.[0]?.size;
-              const name = generatePdfName(16);
-                const getFile = await pdfDoc.save({
-                  useObjectStreams: false
-                });
-                setfileload(true);
-                const pdfName = `${name?.split(".")[0]}.pdf`;
-                const parseFile = new Parse.File(
-                  pdfName,
-                  [...getFile],
-                  "application/pdf"
-                );
-
-                try {
-                  const response = await parseFile.save({
-                    progress: (progressValue, loaded, total, { type }) => {
-                      if (type === "upload" && progressValue !== null) {
-                        const percentCompleted = Math.round(
-                          (loaded * 100) / total
-                        );
-                        setpercentage(percentCompleted);
-                      }
-                    }
-                  });
-                  // The response object will contain information about the uploaded file
-                  // You can access the URL of the uploaded file using response.url()
-                  if (response.url()) {
-                    const fileRes = await getSecureUrl(response.url());
-                    if (fileRes.url) {
-                      setFileUpload(fileRes.url);
-                      setfileload(false);
-                      const tenantId = localStorage.getItem("TenantId");
-                      const title = generateTitleFromFilename(files?.[0]?.name);
-                      setFormData((obj) => ({ ...obj, Name: title }));
-                      SaveFileSize(size, fileRes.url, tenantId);
-                      return fileRes.url;
-                    } else {
-                      removeFile(e);
-                    }
-                  } else {
-                    removeFile(e);
-                  }
-                } catch (error) {
-                  removeFile(e);
-                  console.error("Error uploading file:", error);
-                }
+              pdfBuffers.push(pdfRes.data);
             }
+            setfileload(false);
+          } catch (err) {
+            setfileload(false);
+            removeFile(e);
+            console.log("err in docx to pdf ", err);
+            const error = isOpenSignDomain
+              ? `${t("docx-error")} ${t("docx-error-contact")}`
+              : t("docx-error");
+            alert(error);
+            return;
           }
         }
-      } else {
+      }
+
+      if (!pdfBuffers.length) {
         alert(t("file-alert-2"));
-        return false;
+        setSelectedFiles([]);
+        return;
+      }
+
+      setfileload(true);
+      const merged = await PDFDocument.create();
+      for (const bytes of pdfBuffers) {
+        const doc = await PDFDocument.load(bytes, { ignoreEncryption: true });
+        const pages = await merged.copyPages(doc, doc.getPageIndices());
+        pages.forEach((p) => merged.addPage(p));
+      }
+
+      const pdfBytes = await merged.save({ useObjectStreams: false });
+      const name = generatePdfName(16);
+      const pdfName = `${name}.pdf`;
+      const fileAdapterId = extUserData?.TenantId?.ActiveFileAdapter || "";
+      let uploadedUrl = "";
+      if (fileAdapterId) {
+        const base64 = await merged.saveAsBase64({ useObjectStreams: false });
+        const fileBase64 = base64.split(",").pop();
+        const fileRes = await saveToCustomFile(fileBase64, pdfName, fileAdapterId);
+        if (fileRes.url) {
+          uploadedUrl = fileRes.url;
+        }
+      } else {
+        const parseFile = new Parse.File(pdfName, [...pdfBytes], "application/pdf");
+        const response = await parseFile.save({
+          progress: (progressValue, loaded, total, { type }) => {
+            if (type === "upload" && progressValue !== null) {
+              const percentCompleted = Math.round((loaded * 100) / total);
+              setpercentage(percentCompleted);
+            }
+          }
+        });
+        if (response.url()) {
+          const fileRes = await getSecureUrl(response.url());
+          if (fileRes.url) {
+            uploadedUrl = fileRes.url;
+          }
+        }
+      }
+
+      if (uploadedUrl) {
+        const tenantId = localStorage.getItem("TenantId");
+        SaveFileSize(pdfBytes.byteLength, uploadedUrl, tenantId);
+        setFileUpload(uploadedUrl);
+        setfileload(false);
+        const title = generateTitleFromFilename(files[0].name);
+        setFormData((obj) => ({ ...obj, Name: title }));
+        removeFile(e);
+      } else {
+        setfileload(false);
+        removeFile(e);
+        setSelectedFiles([]);
       }
     } catch (error) {
       alert(error.message);
-      return false;
+      setSelectedFiles([]);
     }
   };
   // `isValidURL` is used to check valid webhook url
@@ -478,6 +414,7 @@ const Forms = (props) => {
             AllowModifications: false
           });
           setFileUpload("");
+          setSelectedFiles([]);
           setpercentage(0);
           navigate(`/${props?.redirectRoute}/${res.id}`);
         }
@@ -559,6 +496,7 @@ const Forms = (props) => {
     setFormData(obj);
     removeFile();
     setFileUpload("");
+    setSelectedFiles([]);
     setTimeout(() => setIsReset(false), 50);
   };
   const handleCancel = () => {
@@ -571,7 +509,8 @@ const Forms = (props) => {
     try {
       const size = formData?.file?.size;
       const name = generatePdfName(16);
-      const url = "https://ai.nxglabs.in/decryptpdf"; //
+      const baseApi = localStorage.getItem("baseUrl") || "";
+      const url = baseApi.replace("/app", "") + "decryptpdf";
       let Data = new FormData();
       Data.append("file", formData?.file);
       Data.append("password", formData.password);
@@ -749,19 +688,20 @@ const Forms = (props) => {
             )}
             <div className="text-xs">
               <label className="block">
-                {`${`${t("report-heading.File")} (${t("file-type")}`}${
-                      ")"
-                }`}
+                {`${`${t("report-heading.File")} (${t("file-type")}`}${", docx)"}`}
                 <span className="text-red-500 text-[13px]">*</span>
               </label>
               {fileupload.length > 0 ? (
                 <div className="flex gap-1 justify-center items-center">
                   <div className="flex justify-between items-center op-input op-input-bordered op-input-sm w-full h-full text-[13px]">
                     <div className="break-all cursor-default">
-                      {t("file-selected")}: {getFileName(fileupload)}
+                      {t("file-selected")}: {selectedFiles.join(", ")}
                     </div>
                     <div
-                      onClick={() => setFileUpload("")}
+                      onClick={() => {
+                        setFileUpload("");
+                        setSelectedFiles([]);
+                      }}
                       className="cursor-pointer px-[10px] text-[20px] font-bold text-red-500"
                     >
                       <i className="fa-light fa-xmark"></i>
@@ -772,12 +712,11 @@ const Forms = (props) => {
                 <div className="flex gap-1 justify-center items-center">
                   <input
                     type="file"
+                    multiple
                     className="op-file-input op-file-input-bordered op-file-input-sm focus:outline-none hover:border-base-content w-full text-xs"
                     onChange={(e) => handleFileInput(e)}
                     ref={inputFileRef}
-                    accept={
-                          "application/pdf,image/png,image/jpeg"
-                    }
+                    accept="application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,image/png,image/jpeg"
                     onInvalid={(e) =>
                       e.target.setCustomValidity(t("input-required"))
                     }

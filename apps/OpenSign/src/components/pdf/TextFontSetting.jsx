@@ -13,7 +13,7 @@ function TextFontSetting(props) {
       title={t("text-field")}
       handleClose={() => props.setIsTextSetting(false)}
     >
-      <div className="h-full p-[20px]">
+      <div className="h-full p-[20px] text-base-content">
         <div className="flex flex-col md:flex-row md:items-center gap-3">
           {/* Font Size Selector */}
           <div className="flex items-center gap-2">

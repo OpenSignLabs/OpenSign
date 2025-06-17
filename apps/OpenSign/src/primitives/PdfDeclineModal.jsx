@@ -43,7 +43,7 @@ function CustomModal(props) {
           </h3>
           {!isExtendExpiry && (
             <div className="p-[10px] px-[20px]">
-              <p className="text-[15px]">{props.bodyMssg && props.bodyMssg}</p>
+              <p className="text-[15px] text-base-content">{props.bodyMssg && props.bodyMssg}</p>
             </div>
           )}
           {!isExtendExpiry && (
@@ -68,7 +68,7 @@ function CustomModal(props) {
           )}
           {props.footerMessage && (
             <>
-              <div className="mx-3">
+              <div className="mx-3  text-base-content">
                 <textarea
                   rows={3}
                   placeholder="Reason (optional)"
@@ -108,7 +108,7 @@ function CustomModal(props) {
               </label>
               <input
                 type="date"
-                className="rounded-full bg-base-300 w-full px-4 py-2 text-black border-2 hover:border-spacing-2"
+                className="rounded-full bg-base-300 w-full px-4 py-2 text-base-content border-2 hover:border-spacing-2"
                 defaultValue={props?.doc?.ExpiryDate?.iso?.split("T")?.[0]}
                 onChange={(e) => setExpiryDate(e.target.value)}
               />
