@@ -324,63 +324,65 @@ const ManageSign = () => {
                 hidden
               />
               <div className="relative">
-                <div>
-                  {image ? (
-                    <div className="signatureCanvas relative border-[2px] border-[#888] rounded-box overflow-hidden">
-                      <img
-                        alt="signature"
-                        src={image}
-                        className="w-full h-full object-contain"
-                      />
-                    </div>
-                  ) : (
-                    <SignatureCanvas
-                      ref={canvasRef}
-                      penColor={penColor}
-                      canvasProps={{
-                        width: "456px",
-                        height: "180px",
-                        className:
-                          "signatureCanvas border-[2px] border-[#888] rounded-box"
-                      }}
-                      // backgroundColor="rgb(255, 255, 255)"
-                      onEnd={() =>
-                        handleSignatureChange(canvasRef.current.toDataURL())
-                      }
-                      dotSize={1}
+                {isLoader && (
+                  <div className="absolute bg-black bg-opacity-30 z-50 w-full h-full flex justify-center items-center">
+                    <Loader />
+                  </div>
+                )}
+                {image ? (
+                  <div className="signatureCanvas relative border-[2px] border-[#888] rounded-box overflow-hidden">
+                    <img
+                      alt="signature"
+                      src={image}
+                      className="w-full h-full object-contain"
                     />
-                  )}
-                  <div className="penContainerDefault flex flex-row justify-between">
-                    <div>
-                      {!image && (
-                        <div className="flex flex-row gap-1.5 m-[5px]">
-                          {allColor.map((data, key) => {
-                            return (
-                              <i
-                                key={key}
-                                onClick={() => setPenColor(allColor[key])}
-                                className={`border-b-[2px] ${key === 0 && penColor === "blue" ? "border-blue-600" : key === 1 && penColor === "red" ? "border-red-500" : key === 2 && penColor === "black" ? "border-black" : "border-white"} text-[${data}] text-[16px] fa-light fa-pen-nib`}
-                              ></i>
-                            );
-                          })}
-                        </div>
-                      )}
+                  </div>
+                ) : (
+                  <SignatureCanvas
+                    ref={canvasRef}
+                    penColor={penColor}
+                    canvasProps={{
+                      width: "456px",
+                      height: "180px",
+                      className:
+                        "signatureCanvas border-[2px] border-[#888] rounded-box"
+                    }}
+                    onEnd={() =>
+                      handleSignatureChange(canvasRef.current.toDataURL())
+                    }
+                    dotSize={1}
+                  />
+                )}
+                <div className="penContainerDefault flex flex-row justify-between">
+                  <div>
+                    {!image && (
+                      <div className="flex flex-row gap-1.5 m-[5px]">
+                        {allColor.map((data, key) => {
+                          return (
+                            <i
+                              key={key}
+                              onClick={() => setPenColor(allColor[key])}
+                              className={`border-b-[2px] ${key === 0 && penColor === "blue" ? "border-blue-600" : key === 1 && penColor === "red" ? "border-red-500" : key === 2 && penColor === "black" ? "border-black" : "border-white"} text-[${data}] text-[16px] fa-light fa-pen-nib`}
+                            ></i>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex flex-row gap-2 text-sm md:text-base mr-1">
+                    <div
+                      type="button"
+                      className="op-link"
+                      onClick={() => handleUploadBtn()}
+                    >
+                      {t("upload")}
                     </div>
-                    <div className="flex flex-row gap-2 text-sm md:text-base mr-1">
-                      <div
-                        type="button"
-                        className="op-link"
-                        onClick={() => handleUploadBtn()}
-                      >
-                        {t("upload")}
-                      </div>
-                      <div
-                        type="button"
-                        className="op-link"
-                        onClick={() => handleClear()}
-                      >
-                        {t("clear")}
-                      </div>
+                    <div
+                      type="button"
+                      className="op-link"
+                      onClick={() => handleClear()}
+                    >
+                      {t("clear")}
                     </div>
                   </div>
                 </div>
@@ -420,7 +422,6 @@ const ManageSign = () => {
                     canvasProps={{
                       className: "intialSignature rounded-box"
                     }}
-                    // backgroundColor="rgb(255, 255, 255)"
                     onEnd={() => handleInitialsChange()}
                     dotSize={1}
                   />

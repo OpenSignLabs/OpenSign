@@ -15,8 +15,6 @@ async function deductcount(docsCount, extUserId) {
 async function sendMail(document, publicUrl) {
   //sessionToken
   const baseUrl = new URL(publicUrl);
-
-  // console.log("pdfDetails", pdfDetails);
   const timeToCompleteDays = document?.TimeToCompleteDays || 15;
   const ExpireDate = new Date(document.createdAt);
   ExpireDate.setDate(ExpireDate.getDate() + timeToCompleteDays);
@@ -168,9 +166,9 @@ async function batchQuery(userId, Documents, Ip, parseConfig, type, publicUrl) {
             })),
             ACL: Acl,
             SentToOthers: true,
-            RemindOnceInEvery: x.RemindOnceInEvery || 5,
+            RemindOnceInEvery: x.RemindOnceInEvery ? parseInt(x.RemindOnceInEvery) : 5,
             AutomaticReminders: x.AutomaticReminders || false,
-            TimeToCompleteDays: x.TimeToCompleteDays || 15,
+            TimeToCompleteDays: x.TimeToCompleteDays ? parseInt(x.TimeToCompleteDays) : 15,
             OriginIp: Ip,
             DocSentAt: { __type: 'Date', iso: isoDate },
             IsEnableOTP: x?.IsEnableOTP || false,
@@ -231,6 +229,7 @@ export default async function createBatchDocs(request) {
   const sessionToken = request.headers?.sessiontoken;
   const type = request.headers?.type || 'quicksend';
   const Documents = JSON.parse(strDocuments);
+
   const Ip = request?.headers?.['x-real-ip'] || '';
   // Access the host from the headers
   const publicUrl = request.headers.public_url;

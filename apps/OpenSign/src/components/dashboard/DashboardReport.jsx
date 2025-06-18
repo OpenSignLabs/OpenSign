@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import Parse from "parse";
 import ReportTable from "../../primitives/GetReportDisplay";
 import reportJson from "../../json/ReportJson";
@@ -17,10 +17,16 @@ function DashboardReport(props) {
   const [isMoreDocs, setIsMoreDocs] = useState(true);
   const abortController = new AbortController();
   const docPerPage = 5;
+  const [searchTerm, setSearchTerm] = useState("");
+  const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
+  const [isSearchResult, setIsSearchResult] = useState(false);
+  const debounceTimer = useRef(null);
 
   useEffect(() => {
     setReportName("");
-    getReportData(props.Record.reportId);
+    setSearchTerm("");
+    setMobileSearchOpen(false);
+    getReportData(props.Record.reportId, 0, 20, "");
 
     // Function returned from useEffect is called on unmount
     return () => {
@@ -36,12 +42,69 @@ function DashboardReport(props) {
   // below useEffect call when isNextRecord state is true and fetch next record
   useEffect(() => {
     if (isNextRecord) {
-      getReportData(props.Record.reportId, List.length, 20);
+      getReportData(props.Record.reportId, List.length, 20, searchTerm);
     }
     // eslint-disable-next-line
   }, [isNextRecord]);
 
-  const getReportData = async (id, skipUserRecord = 0, limit = 20) => {
+  const handleSearchChange = async (e) => {
+    const term = e.target.value.toLowerCase();
+    setSearchTerm(term);
+    if (debounceTimer.current) {
+      clearTimeout(debounceTimer.current);
+    }
+    debounceTimer.current = setTimeout(async () => {
+      try {
+        const headers = {
+          "Content-Type": "application/json",
+          "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
+          sessiontoken: localStorage.getItem("accesstoken")
+        };
+        const url = `${localStorage.getItem("baseUrl")}functions/getReport`;
+        const res = await axios.post(
+          url,
+          {
+            reportId: props.Record.reportId,
+            searchTerm: term,
+            skip: 0,
+            limit: docPerPage
+          },
+          { headers }
+        );
+        const data = res.data?.result || [];
+        if (!data.error) {
+          setList(data);
+          setIsMoreDocs(data.length >= docPerPage);
+          setIsNextRecord(false);
+          setIsSearchResult(true);
+        }
+      } catch (err) {
+        console.error("Search error:", err);
+      }
+    }, 300);
+    setIsSearchResult(false);
+  };
+
+  const handleSearchPaste = (e) => {
+    setTimeout(() => {
+      handleSearchChange({ target: { value: e.target.value } });
+    }, 0);
+  };
+
+  useEffect(() => {
+    return () => {
+      if (debounceTimer.current) {
+        clearTimeout(debounceTimer.current);
+      }
+    };
+  }, []);
+
+  const getReportData = async (
+    id,
+    skipUserRecord = 0,
+    limit = 20,
+    term = searchTerm
+  ) => {
     setIsLoader(true);
     const json = reportJson(id);
     if (json) {
@@ -59,6 +122,9 @@ function DashboardReport(props) {
         const skipRecord = id === "5Go51Q7T8r" ? 0 : skipUserRecord;
         const limitRecord = id === "5Go51Q7T8r" ? 200 : limit;
         const params = { reportId: id, skip: skipRecord, limit: limitRecord };
+        if (term) {
+          params.searchTerm = term;
+        }
         const url = `${localStorage.getItem("baseUrl")}functions/getReport`;
         const res = await axios.post(url, params, {
           headers: headers,
@@ -141,11 +207,17 @@ function DashboardReport(props) {
               setIsNextRecord={setIsNextRecord}
               isMoreDocs={isMoreDocs}
               docPerPage={docPerPage}
+              mobileSearchOpen={mobileSearchOpen}
+              setMobileSearchOpen={setMobileSearchOpen}
+              searchTerm={searchTerm}
+              handleSearchChange={handleSearchChange}
+              handleSearchPaste={handleSearchPaste}
+              isSearchResult={isSearchResult}
             />
           ) : (
             <div className="flex items-center justify-center h-[100px] w-full bg-white rounded">
               <div className="text-center">
-                <p className="text-xl text-black">{t("report-not-found")}</p>
+                <p className="text-xl text-base-content">{t("report-not-found")}</p>
               </div>
             </div>
           )}

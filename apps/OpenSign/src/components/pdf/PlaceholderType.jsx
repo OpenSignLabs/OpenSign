@@ -4,6 +4,7 @@ import {
   getYear,
   radioButtonWidget,
   textInputWidget,
+  cellsWidget,
   textWidget,
   months,
   years,
@@ -14,8 +15,9 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import "../../styles/signature.css";
 import { useTranslation } from "react-i18next";
+import CellsWidget from "./CellsWidget";
 const textWidgetCls =
-  "w-full h-full md:min-w-full md:min-h-full z-[999] text-[12px] rounded-[2px] border-[1px] border-[#007bff] overflow-hidden resize-none outline-none text-base-content item-center whitespace-pre-wrap bg-white";
+  "w-full h-full md:min-w-full md:min-h-full z-[999] text-[12px] rounded-[2px] border-[1px] border-[#007bff] overflow-hidden resize-none outline-none text-base-content item-center whitespace-pre-wrap";
 const selectWidgetCls =
   "w-full h-full absolute left-0 top-0 border-[1px] border-[#007bff] rounded-[2px] focus:outline-none text-base-content";
 const widgetCls =
@@ -27,8 +29,12 @@ function PlaceholderType(props) {
     props.isSignYourself ||
     ((props.isSelfSign || props.isNeedSign) &&
       props.data?.signerObjId === props.signerObjId);
+  const isReadOnly =
+    props.pos.options?.isReadOnly ||
+    props.data?.signerObjId !== props.signerObjId;
+  // prefer the latest response value over any default value
   const widgetData =
-    props.pos?.options?.defaultValue || props.pos?.options?.response;
+    props.pos?.options?.response ?? props.pos?.options?.defaultValue ?? "";
   const widgetTypeTranslation = t(`widgets-name.${props?.pos?.type}`);
   const inputRef = useRef(null);
   const [widgetValue, setwidgetValue] = useState();
@@ -56,16 +62,13 @@ function PlaceholderType(props) {
             []
         );
       } else {
-        if (widgetData) {
-          setwidgetValue(widgetData);
-        }
+        // keep displayed value in sync with the stored response
+        setwidgetValue(widgetData);
       }
       if (props.pos?.options?.hint) {
         setHint(props.pos?.options.hint);
       } else if (props.pos?.options?.validation?.type) {
         checkRegularExpress(props.pos?.options?.validation?.type, setHint);
-      } else {
-        setHint(props.pos?.type);
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -77,7 +80,8 @@ function PlaceholderType(props) {
         color: fontColor,
         fontFamily: "Arial, sans-serif"
       }}
-      className={`${selectWidgetCls} overflow-hidden`}
+      className={`${isReadOnly ? `select-none` : ``} ${selectWidgetCls} overflow-hidden`}
+      disabled={isReadOnly}
       onClick={onClick}
       ref={ref}
     >
@@ -148,41 +152,42 @@ function PlaceholderType(props) {
         </div>
       );
     case "checkbox":
+      const checkBoxLayout = props.pos.options?.layout || "vertical";
+      const isMultipleCheckbox =
+        props.pos.options?.values?.length > 0 ? true : false;
+      const checkBoxWrapperClass = `flex items-start ${
+        checkBoxLayout === "horizontal"
+          ? `flex-row flex-wrap ${isMultipleCheckbox ? "gap-x-2" : ""}`
+          : `flex-col ${isMultipleCheckbox ? "gap-y-[5px]" : ""}`
+      }`; // Using gap-y-1 for consistency, adjust if needed
+
       return (
-        <div style={{ zIndex: props.isSignYourself && "99" }}>
-          {props.pos.options?.values?.map((data, ind) => {
-            return (
-              <div key={ind} className="select-none-cls pointer-events-none">
-                <label
-                  htmlFor={`checkbox-${props.pos.key + ind}`}
-                  style={{ fontSize: fontSize, color: fontColor }}
-                  className={`mb-0 flex items-center gap-1 ${
-                    ind > 0 ? "mt-[3px]" : "mt-[0px]"
-                  }`}
-                >
-                  <input
-                    id={`checkbox-${props.pos.key + ind}`}
-                    style={{
-                      width: fontSize,
-                      height: fontSize
-                    }}
-                    className="op-checkbox rounded-[1px]"
-                    disabled={
-                      props.isNeedSign &&
-                      (props.pos.options?.isReadOnly ||
-                        props.data?.signerObjId !== props.signerObjId)
-                    }
-                    type="checkbox"
-                    readOnly
-                    checked={!!selectCheckbox(ind, selectedCheckbox)}
-                  />
-                  {!props.pos.options?.isHideLabel && (
-                    <span className="leading-none">{data}</span>
-                  )}
-                </label>
-              </div>
-            );
-          })}
+        <div
+          className={checkBoxWrapperClass}
+          style={{ zIndex: props.isSignYourself && "99" }}
+        >
+          {props.pos.options?.values?.map((data, ind) => (
+            <div key={ind} className="select-none-cls pointer-events-none">
+              <label
+                htmlFor={`checkbox-${props.pos.key + ind}`}
+                style={{ fontSize: fontSize, color: fontColor }}
+                className={`mb-0 flex items-center gap-1`}
+              >
+                <input
+                  id={`checkbox-${props.pos.key + ind}`}
+                  style={{ width: fontSize, height: fontSize }}
+                  className="op-checkbox rounded-[1px]"
+                  disabled={props.isNeedSign && isReadOnly}
+                  type="checkbox"
+                  readOnly
+                  checked={!!selectCheckbox(ind, selectedCheckbox)}
+                />
+                {!props.pos.options?.isHideLabel && (
+                  <span className="leading-none">{data}</span>
+                )}
+              </label>
+            </div>
+          ))}
         </div>
       );
     case textInputWidget:
@@ -192,24 +197,15 @@ function PlaceholderType(props) {
           placeholder={hint || t("widgets-name.text")}
           rows={1}
           value={widgetValue}
-          className={`${
-            props.pos.options?.isReadOnly ||
-            props.data?.signerObjId !== props.signerObjId
-              ? "select-none"
-              : textWidgetCls
-          }`}
+          className={`${textWidgetCls} ${isReadOnly ? "select-none" : ""}`}
           style={{
             fontSize: fontSize,
             color: fontColor,
-            background: props.data?.blockColor,
+            background: isReadOnly ? props.data?.blockColor : "white",
             pointerEvents: "none"
           }}
           readOnly
-          disabled={
-            props.isNeedSign &&
-            (props.pos.options?.isReadOnly ||
-              props.data?.signerObjId !== props.signerObjId)
-          }
+          disabled={props.isNeedSign && isReadOnly}
           cols="50"
         />
       ) : (
@@ -217,13 +213,38 @@ function PlaceholderType(props) {
           <span>{hint || widgetTypeTranslation}</span>
         </div>
       );
+    case cellsWidget: {
+      const count = props.pos.options?.cellCount || 5;
+      const cells = (widgetValue || "").split("");
+      const height = "100%";
+      const fontSize = props.calculateFont(props.pos.options?.fontSize);
+      const fontColor = props.pos.options?.fontColor || "black";
+      const handleCellResize = (newCount) => {
+        if (props.setCellCount) props.setCellCount(props.pos.key, newCount);
+      };
+      const isEditable =
+        props.isPlaceholder || props.isSignYourself || props.isSelfSign;
+      return (
+        <CellsWidget
+          count={count}
+          height={height}
+          value={cells.join("")}
+          editable={isEditable}
+          resizable={isEditable}
+          fontSize={fontSize}
+          fontColor={fontColor}
+          hint={hint}
+          onCellCountChange={handleCellResize}
+        />
+      );
+    }
     case "dropdown":
       return (
         <div
           style={textWidgetStyle}
           className="select-none-cls flex justify-between items-center"
         >
-          {widgetData || hint || widgetTypeTranslation}
+          {widgetData || t("choose-one")}
           <i className="fa-light fa-circle-chevron-down mr-1 "></i>
         </div>
       );
@@ -259,13 +280,15 @@ function PlaceholderType(props) {
           placeholder={hint || widgetTypeTranslation}
           rows={1}
           value={widgetValue}
-          className={textWidgetCls}
+          className={`${textWidgetCls} ${isReadOnly ? "select-none" : ""}`}
           style={{
             fontSize: fontSize,
             color: fontColor,
+            background: isReadOnly ? props.data?.blockColor : "white",
             pointerEvents: "none"
           }}
           cols="50"
+          disabled={props.isNeedSign && isReadOnly}
         />
       ) : (
         <div className="flex h-full select-none-cls" style={textWidgetStyle}>
@@ -280,13 +303,15 @@ function PlaceholderType(props) {
           placeholder={hint || widgetTypeTranslation}
           rows={1}
           value={widgetValue}
-          className={textWidgetCls}
+          className={`${textWidgetCls} ${isReadOnly ? "select-none" : ""}`}
           style={{
             fontSize: fontSize,
             color: fontColor,
+            background: isReadOnly ? props.data?.blockColor : "white",
             pointerEvents: "none"
           }}
           cols="50"
+          disabled={props.isNeedSign && isReadOnly}
         />
       ) : (
         <div style={textWidgetStyle} className="select-none-cls">
@@ -301,13 +326,15 @@ function PlaceholderType(props) {
           placeholder={hint || widgetTypeTranslation}
           rows={1}
           value={widgetValue}
-          className={textWidgetCls}
+          className={`${textWidgetCls} ${isReadOnly ? "select-none" : ""}`}
           style={{
             fontSize: fontSize,
             color: fontColor,
+            background: isReadOnly ? props.data?.blockColor : "white",
             pointerEvents: "none"
           }}
           cols="50"
+          disabled={props.isNeedSign && isReadOnly}
         />
       ) : (
         <div style={textWidgetStyle} className="select-none-cls">
@@ -405,15 +432,15 @@ function PlaceholderType(props) {
           placeholder={hint || widgetTypeTranslation}
           rows={1}
           value={widgetValue}
-          className={textWidgetCls}
+          className={`${textWidgetCls} ${isReadOnly ? "select-none" : ""}`}
           style={{
             fontSize: fontSize,
             color: fontColor,
-            fontFamily: "Arial, sans-serif",
+            background: isReadOnly ? props.data?.blockColor : "white",
             pointerEvents: "none"
           }}
-          disabled
           cols="1"
+          disabled={props.isNeedSign && isReadOnly}
         />
       ) : (
         <div style={textWidgetStyle} className="select-none-cls">
@@ -421,46 +448,39 @@ function PlaceholderType(props) {
         </div>
       );
     case radioButtonWidget:
+      const radioLayout = props.pos.options?.layout || "vertical";
+      const isOnlyOneBtn = props.pos.options?.values?.length > 0 ? true : false;
+      const radioWrapperClass = `flex items-start ${
+        radioLayout === "horizontal"
+          ? `flex-row flex-wrap ${isOnlyOneBtn ? "gap-x-2" : ""}`
+          : `flex-col ${isOnlyOneBtn ? "gap-y-[5px]" : ""}`
+      }`; // Using gap-y-1 for consistency, adjust if needed
       return (
-        <div>
-          {props.pos.options?.values.map((data, ind) => {
-            return (
-              <div key={ind} className="select-none-cls pointer-events-none">
-                <label
-                  htmlFor={`radio-${props.pos.key + ind}`}
-                  style={{
-                    fontSize: fontSize,
-                    color: fontColor,
-                    marginTop: ind > 0 ? "5px" : "0px"
-                  }}
-                  className="text-xs mb-0 flex items-center gap-1 "
-                >
-                  <input
-                    readOnly
-                    id={`radio-${props.pos.key + ind}`}
-                    style={{
-                      width: fontSize,
-                      height: fontSize,
-                      lineHeight: 2
-                    }}
-                    className={`op-radio rounded-full border- border-black appearance-none bg-white inline-block align-middle relative ${
-                      handleRadioCheck(data) ? "checked-radio" : ""
-                    }`}
-                    type="radio"
-                    disabled={
-                      props.isNeedSign &&
-                      (props.pos.options?.isReadOnly ||
-                        props.data?.signerObjId !== props.signerObjId)
-                    }
-                    checked={handleRadioCheck(data)}
-                  />
-                  {!props.pos.options?.isHideLabel && (
-                    <span className="leading-none">{data}</span>
-                  )}
-                </label>
-              </div>
-            );
-          })}
+        <div className={radioWrapperClass}>
+          {props.pos.options?.values.map((data, ind) => (
+            <div key={ind} className="select-none-cls pointer-events-none">
+              <label
+                htmlFor={`radio-${props.pos.key + ind}`}
+                style={{ fontSize: fontSize, color: fontColor }}
+                className="text-xs mb-0 flex items-center gap-1"
+              >
+                <input
+                  readOnly
+                  id={`radio-${props.pos.key + ind}`}
+                  style={{ width: fontSize, height: fontSize, lineHeight: 2 }}
+                  className={`op-radio rounded-full border-black appearance-none bg-white inline-block align-middle relative ${
+                    handleRadioCheck(data) ? "checked-radio" : ""
+                  }`}
+                  type="radio"
+                  disabled={props.isNeedSign && isReadOnly}
+                  checked={handleRadioCheck(data)}
+                />
+                {!props.pos.options?.isHideLabel && (
+                  <span className="leading-none">{data}</span>
+                )}
+              </label>
+            </div>
+          ))}
         </div>
       );
     case textWidget:
@@ -474,7 +494,8 @@ function PlaceholderType(props) {
           style={{
             fontFamily: "Arial, sans-serif",
             fontSize: fontSize,
-            color: fontColor
+            color: fontColor,
+            background: "white"
           }}
           cols="50"
         />

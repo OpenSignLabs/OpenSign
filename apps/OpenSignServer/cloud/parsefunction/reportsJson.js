@@ -55,7 +55,7 @@ export default function reportJson(id, userId) {
           'ExpiryDate',
         ],
       };
-    // In progess report
+    // In progress report
     case '1MwEuxLEkF':
       return {
         reportName: 'In-progress documents',
@@ -123,6 +123,8 @@ export default function reportJson(id, userId) {
           'TimeToCompleteDays',
           'IsSignyourself',
           'IsCompleted',
+          'ExpiryDate',
+          'IsSignyourself',
         ],
       };
     //  declined documents report

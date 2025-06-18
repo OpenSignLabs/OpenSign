@@ -38,7 +38,7 @@ function AgreementSign(props) {
                 }}
               />
             </label>
-            <div className="text-[11px] md:text-base">
+            <div className="text-[11px] md:text-base text-base-content">
               <span>{t("agree-p1")}</span>
               <span
                 className="font-bold text-blue-600 cursor-pointer"
@@ -67,7 +67,7 @@ function AgreementSign(props) {
               {t("agrre-button")}
             </button>
           </div>
-          <div className="mt-2">
+          <div className="mt-2  text-base-content">
             <span className="text-[11px]">{t("agreement-note")}</span>
           </div>
         </div>

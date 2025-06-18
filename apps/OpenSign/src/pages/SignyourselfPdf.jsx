@@ -22,6 +22,7 @@ import {
   randomId,
   getDate,
   textWidget,
+  cellsWidget,
   convertPdfArrayBuffer,
   textInputWidget,
   fetchImageBase64,
@@ -68,6 +69,8 @@ import {
   resetWidgetState
 } from "../redux/reducers/widgetSlice.js";
 import WidgetsValueModal from "../components/pdf/WidgetsValueModal";
+import WidgetNameModal from "../components/pdf/WidgetNameModal";
+import CellsSettingModal from "../components/pdf/CellsSettingModal";
 //For signYourself inProgress section signer can add sign and complete doc sign.
 function SignYourSelf() {
   const { t } = useTranslation();
@@ -118,6 +121,10 @@ function SignYourSelf() {
   const [isTextSetting, setIsTextSetting] = useState(false);
   const [currWidgetsDetails, setCurrWidgetsDetails] = useState({});
   const [isCheckbox, setIsCheckbox] = useState(false);
+  const [isNameModal, setIsNameModal] = useState(false);
+  const [isCellsSetting, setIsCellsSetting] = useState(false);
+  const openNameModal = () => setIsNameModal(true);
+  const openCellsSettingModal = () => setIsCellsSetting(true);
   const [pdfLoad, setPdfLoad] = useState(false);
   const [isAlert, setIsAlert] = useState({ isShow: false, alertMessage: "" });
   const [isDontShow, setIsDontShow] = useState(false);
@@ -356,9 +363,13 @@ function SignYourSelf() {
     );
     const dragTypeValue = item?.text ? item.text : monitor.type;
     const widgetValue = getWidgetValue(dragTypeValue);
-    const widgetTypeExist = ["name", "company", "job title", "email"].includes(
-      dragTypeValue
-    );
+    const widgetTypeExist = [
+      "name",
+      "company",
+      "job title",
+      "email",
+      cellsWidget
+    ].includes(dragTypeValue);
     const containerScale = getContainerScale(
       pdfOriginalWH,
       pageNumber,
@@ -439,6 +450,7 @@ function SignYourSelf() {
       [
         textInputWidget,
         textWidget,
+        cellsWidget,
         "name",
         "company",
         "job title",
@@ -931,7 +943,8 @@ function SignYourSelf() {
     deleteOption,
     status,
     defaultValue,
-    isHideLabel
+    isHideLabel,
+    layout
   ) => {
     const getPageNumer = xyPosition.filter(
       (data) => data.pageNumber === pageNumber
@@ -939,6 +952,8 @@ function SignYourSelf() {
     if (getPageNumer.length > 0) {
       const getXYdata = getPageNumer[0].pos;
       const getPosData = getXYdata;
+      const widgetLayout =
+        currWidgetsDetails?.type === "checkbox" ? { layout: layout } : {};
       const addSignPos = getPosData.map((position) => {
         if (position.key === currWidgetsDetails?.key) {
           if (addOption) {
@@ -962,6 +977,7 @@ function SignYourSelf() {
                 ...position.options,
                 name: dropdownName,
                 values: dropdownOptions,
+                ...widgetLayout,
                 isReadOnly: isReadOnly,
                 isHideLabel: isHideLabel || false,
                 fontSize:
@@ -1027,6 +1043,92 @@ function SignYourSelf() {
       setFontColor();
       handleTextSettingModal(false);
     }
+  };
+
+  const setCellCount = (key, newCount) => {
+    setXyPosition((prev) => {
+      const getPageNumer = prev.filter((data) => data.pageNumber === pageNumber);
+      if (getPageNumer.length > 0) {
+        const updatePos = getPageNumer[0].pos.map((p) =>
+          p.key === key ? { ...p, options: { ...p.options, cellCount: newCount } } : p
+        );
+        return prev.map((obj, ind) => (ind === index ? { ...obj, pos: updatePos } : obj));
+      }
+      return prev;
+    });
+  };
+
+  const handleWidgetdefaultdata = (defaultdata) => {
+    const newFontSize =
+      defaultdata?.fontSize !== undefined ? defaultdata.fontSize : fontSize;
+    const newFontColor =
+      defaultdata?.fontColor !== undefined ? defaultdata.fontColor : fontColor;
+
+    const getPageNumer = xyPosition.filter(
+      (data) => data.pageNumber === pageNumber
+    );
+    if (getPageNumer.length > 0) {
+      const updatePos = getPageNumer[0].pos.map((position) => {
+        if (position.key === currWidgetsDetails?.key) {
+          if (position.type === cellsWidget) {
+            const count = parseInt(
+              defaultdata?.cellCount ?? position.options?.cellCount ?? 5,
+              10
+            );
+            return {
+              ...position,
+              options: {
+                ...position.options,
+                name: defaultdata?.name || position.options?.name || "Cells",
+                cellCount: count,
+                defaultValue: (defaultdata?.defaultValue || "").slice(0, count),
+                fontSize: newFontSize || position.options?.fontSize || 12,
+                fontColor: newFontColor || position.options?.fontColor || "black"
+              }
+            };
+          } else {
+            return {
+              ...position,
+              options: {
+                ...position.options,
+                name: defaultdata?.name || position.options?.name,
+                fontSize: newFontSize || position.options?.fontSize || 12,
+                fontColor:
+                  newFontColor || position.options?.fontColor || "black"
+              }
+            };
+          }
+        }
+        return position;
+      });
+      const updateXYposition = xyPosition.map((obj, ind) =>
+        ind === index ? { ...obj, pos: updatePos } : obj
+      );
+      setXyPosition(updateXYposition);
+    }
+    setFontSize();
+    setFontColor();
+    setCurrWidgetsDetails({});
+    setIsNameModal(false);
+  };
+
+  const handleNameModal = () => {
+    setIsNameModal(false);
+    setCurrWidgetsDetails({});
+    setIsCheckbox(false);
+  };
+
+  const handleCellsSettingSave = (data) => {
+    // ensure font and color are updated before applying widget changes
+    if (data?.fontSize !== undefined) setFontSize(data.fontSize);
+    if (data?.fontColor !== undefined) setFontColor(data.fontColor);
+    handleWidgetdefaultdata(data);
+    setIsCellsSetting(false);
+  };
+
+  const handleCellsSettingClose = () => {
+    setIsCellsSetting(false);
+    setCurrWidgetsDetails({});
   };
   const clickOnZoomIn = () => {
     onClickZoomIn(scale, zoomPercent, setScale, setZoomPercent);
@@ -1183,9 +1285,8 @@ function SignYourSelf() {
                   title={t("document-signed")}
                   handleClose={() => setShowAlreadySignDoc({ status: false })}
                 >
-                  <div className="p-[20px] h-full">
+                  <div className="p-[20px] h-full text-base-content">
                     <p>{showAlreadySignDoc.mssg}</p>
-
                     <div className="h-[1px] w-full my-[15px] bg-[#9f9f9f]"></div>
                     <button
                       className="op-btn op-btn-ghost shadow-md"
@@ -1283,12 +1384,15 @@ function SignYourSelf() {
                       setIsPageCopy={setIsPageCopy}
                       setIsCheckbox={setIsCheckbox}
                       setCurrWidgetsDetails={setCurrWidgetsDetails}
+                      handleNameModal={openNameModal}
+                      handleCellSettingModal={openCellsSettingModal}
                       handleTextSettingModal={handleTextSettingModal}
                       setScale={setScale}
                       scale={scale}
                       pdfBase64Url={pdfBase64Url}
                       fontSize={fontSize}
                       setFontSize={setFontSize}
+                      setCellCount={setCellCount}
                       fontColor={fontColor}
                       setFontColor={setFontColor}
                       isResize={isResize}
@@ -1330,6 +1434,7 @@ function SignYourSelf() {
           xyPosition={xyPosition} //placeholder details
           pageNumber={pageNumber} //current page number
           setXyPosition={setXyPosition} //placeholder details state
+          setCellCount={setCellCount}
           setPageNumber={setPageNumber}
           setCurrWidgetsDetails={setCurrWidgetsDetails}
           currWidgetsDetails={currWidgetsDetails}
@@ -1338,6 +1443,23 @@ function SignYourSelf() {
           signatureTypes={signatureTypes}
         />
       )}
+      <WidgetNameModal
+        widgetName={currWidgetsDetails?.options?.name}
+        defaultdata={currWidgetsDetails}
+        isOpen={isNameModal}
+        handleClose={handleNameModal}
+        handleData={handleWidgetdefaultdata}
+        fontSize={fontSize}
+        setFontSize={setFontSize}
+        fontColor={fontColor}
+        setFontColor={setFontColor}
+      />
+      <CellsSettingModal
+        isOpen={isCellsSetting}
+        defaultData={currWidgetsDetails}
+        handleClose={handleCellsSettingClose}
+        handleSave={handleCellsSettingSave}
+      />
       <RotateAlert
         showRotateAlert={showRotateAlert.status}
         setShowRotateAlert={setShowRotateAlert}
