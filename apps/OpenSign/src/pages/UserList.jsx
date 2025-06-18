@@ -284,7 +284,7 @@ const UserList = () => {
                                       handleClose={handleClose}
                                     >
                                       <div className="m-[20px]">
-                                        <div className="text-lg font-normal text-black">
+                                        <div className="text-lg font-normal text-base-content">
                                           {t("are-you-sure")}{" "}
                                           {item?.IsDisabled
                                             ? t("activate")

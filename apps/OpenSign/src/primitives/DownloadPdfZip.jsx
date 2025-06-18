@@ -91,7 +91,7 @@ function DownloadPdfZip(props) {
       title={t("download-files")}
       handleClose={() => props.setIsDownloadModal(false)}
     >
-      <div className="p-[20px] h-full">
+      <div className="p-[20px] h-full text-base-content">
         {downloadType.map((data, ind) => {
           return (
             <label

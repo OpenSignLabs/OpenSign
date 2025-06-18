@@ -65,7 +65,7 @@ export default async function generateCertificatebydocId(req) {
       const certificate = await GenerateCertificate(doc);
       const certificatePdf = await PDFDocument.load(certificate);
       const p12 = new P12Signer(P12Buffer, { passphrase: process.env.PASS_PHRASE || null });
-      //  `pdflibAddPlaceholder` is used to add code of only digitial sign in certificate
+      //  `pdflibAddPlaceholder` is used to add code of only digital sign in certificate
       pdflibAddPlaceholder({
         pdfDoc: certificatePdf,
         reason: `Digitally signed by ${eSignName}.`,

@@ -142,7 +142,7 @@ function App() {
               />
               {/* signyouself route with no rowlevel data using docId from url */}
               <Route path="/signaturePdf/:docId" element={<SignYourSelf />} />
-              {/* draft document route to handle and navigate route page accordiing to document status */}
+              {/* draft document route to handle and navigate route page according to document status */}
               <Route path="/draftDocument" element={<DraftDocument />} />
               {/* recipient placeholder set route with no rowlevel data using docId from url*/}
               <Route

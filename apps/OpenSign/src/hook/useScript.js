@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 
-/**`useScript` hook is generated scripte for google sign in button */
+/**`useScript` hook is generated script for google sign in button */
 export const useScript = (url, onload) => {
   useEffect(() => {
     const script = document.createElement("script");
@@ -15,4 +15,3 @@ export const useScript = (url, onload) => {
     };
   }, [url, onload]);
 };
-

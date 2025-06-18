@@ -3,7 +3,12 @@ import { useTranslation } from "react-i18next";
 import { Document, Page } from "react-pdf";
 import { useSelector } from "react-redux";
 import { PDFDocument } from "pdf-lib";
-import { base64ToArrayBuffer } from "../../constant/Utils";
+import {
+  base64ToArrayBuffer,
+  decryptPdf,
+  flattenPdf,
+  getFileAsArrayBuffer
+} from "../../constant/Utils";
 import { maxFileSize } from "../../constant/const";
 
 function RenderAllPdfPage(props) {
@@ -87,7 +92,42 @@ function RenderAllPdfPage(props) {
       return;
     }
     try {
-      const uploadedPdfBytes = await file.arrayBuffer();
+      let uploadedPdfBytes = await file.arrayBuffer();
+      try {
+        uploadedPdfBytes = await flattenPdf(uploadedPdfBytes);
+      } catch (err) {
+        if (err?.message?.includes("is encrypted")) {
+          try {
+            const pdfFile = await decryptPdf(file, "");
+            const pdfArrayBuffer = await getFileAsArrayBuffer(pdfFile);
+            uploadedPdfBytes = await flattenPdf(pdfArrayBuffer);
+          } catch (err) {
+            if (err?.response?.status === 401) {
+              const password = prompt(
+                `PDF "${file.name}" is password-protected. Enter password:`
+              );
+              if (password) {
+                try {
+                  const pdfFile = await decryptPdf(file, password);
+                  const pdfArrayBuffer = await getFileAsArrayBuffer(pdfFile);
+                  uploadedPdfBytes = await flattenPdf(pdfArrayBuffer);
+                  // Upload the file to Parse Server
+                } catch (err) {
+                  console.error("Incorrect password or decryption failed", err);
+                  alert("Incorrect password or decryption failed.");
+                }
+              } else {
+                alert("Please provided Password.");
+              }
+            } else {
+              console.log("Err ", err);
+              alert("error while uploading pdf.");
+            }
+          }
+        } else {
+          alert("error while uploading pdf.");
+        }
+      }
       const uploadedPdfDoc = await PDFDocument.load(uploadedPdfBytes, {
         ignoreEncryption: true
       });

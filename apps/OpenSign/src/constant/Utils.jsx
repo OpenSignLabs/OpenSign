@@ -20,6 +20,7 @@ export const isTabAndMobile = window.innerWidth < 1023;
 export const textInputWidget = "text input";
 export const textWidget = "text";
 export const radioButtonWidget = "radio button";
+export const cellsWidget = "cells";
 export function getEnv() {
   return window?.RUNTIME_ENV || {};
 }
@@ -63,6 +64,17 @@ export const openInNewTab = (url, target) => {
     window.open(url, target, "noopener,noreferrer");
   } else {
     window.open(url, "_blank", "noopener,noreferrer");
+  }
+};
+
+export const getUserCountry = async () => {
+  try {
+    const res = await fetch("https://ipapi.co/json/");
+    const data = await res.json();
+    return data?.country_code;
+  } catch (err) {
+    console.log("Error fetching country", err);
+    return "";
   }
 };
 
@@ -257,6 +269,7 @@ export const widgets = [
   { type: "date", icon: "fa-light fa-calendar-days", iconSize: "20px" },
   { type: textWidget, icon: "fa-light fa-text-width", iconSize: "20px" },
   { type: textInputWidget, icon: "fa-light fa-font", iconSize: "21px" },
+  { type: cellsWidget, icon: "fa-light fa-table-cells", iconSize: "20px" },
   { type: "checkbox", icon: "fa-light fa-square-check", iconSize: "22px" },
   {
     type: "dropdown",
@@ -349,6 +362,15 @@ export const addWidgetOptions = (type, signer, widgetValue) => {
       };
     case textInputWidget:
       return { ...status, name: "Text", isReadOnly: false };
+    case cellsWidget:
+      return {
+        ...status,
+        name: "Cells",
+        cellCount: 5,
+        defaultValue: "",
+        validation: { type: "", pattern: "" },
+        isReadOnly: false
+      };
     case "initials":
       return { ...status, name: "Initials" };
     case "name":
@@ -390,7 +412,7 @@ export const addWidgetOptions = (type, signer, widgetValue) => {
         defaultValue: widgetValue ? widgetValue : ""
       };
     case "dropdown":
-      return { ...status, name: "Dropdown" };
+      return { ...status, name: "Choose one" };
     case radioButtonWidget:
       return {
         ...status,
@@ -416,6 +438,14 @@ export const addWidgetSelfsignOptions = (type, getWidgetValue, owner) => {
       return { name: "Checkbox" };
     case textWidget:
       return { name: "Text" };
+    case cellsWidget:
+      return {
+        name: "Cells",
+        cellCount: 5,
+        defaultValue: "",
+        validation: { type: "", pattern: "" },
+        isReadOnly: false
+      };
     case "initials":
       return { name: "Initials" };
     case "name":
@@ -486,6 +516,8 @@ export const defaultWidthHeight = (type) => {
       return { width: 15, height: 19 };
     case textInputWidget:
       return { width: 150, height: 19 };
+    case cellsWidget:
+      return { width: 112, height: 22 };
     case "dropdown":
       return { width: 120, height: 22 };
     case "initials":
@@ -685,7 +717,7 @@ export const signPdfFun = async (
 export const randomId = () => {
   // 1. Grab a cryptographically-secure 32-bit random value
   const randomBytes = crypto.getRandomValues(new Uint32Array(1));
-  const raw = randomBytes[0];          // 0 … 4 294 967 295
+  const raw = randomBytes[0]; // 0 … 4 294 967 295
 
   // 2. Collapse into a 90 000 000-wide band (0…89 999 999), then shift to 10 000 000…99 999 999
   const eightDigit = 10_000_000 + (raw % 90_000_000);
@@ -863,7 +895,8 @@ export const onChangeInput = (
   initial,
   dateFormat,
   fontSize,
-  fontColor
+  fontColor,
+  isDateReadOnly
 ) => {
   const isSigners = xyPosition.some((data) => data.signerPtr);
   let filterSignerPos;
@@ -892,6 +925,7 @@ export const onChangeInput = (
                   response: value,
                   fontSize: fontSize,
                   fontColor: fontColor,
+                  isReadOnly: isDateReadOnly || false,
                   validation: {
                     type: "date-format",
                     format: dateFormat // This indicates the required date format explicitly.
@@ -969,7 +1003,6 @@ export const onChangeInput = (
     setXyPosition(updatePlaceholder);
   }
 };
-
 //function to increase height of text area on press enter
 export const onChangeHeightOfTextArea = (
   height,
@@ -1213,33 +1246,13 @@ export function onSaveSign(
     }
     return obj;
   });
-  //condition  when user click on apply(signature,image,typed signature or defaullt signature) all widgets on signature pad for same widgets
-  if (isAutoSign) {
+  //condition  when draw/upload signature/initials then apply it all related to widgets (signature,image,typed signature or default signature)
+  if (isApplyAll || isAutoSign) {
     const updatedArray = updateXYposition.map((page) => ({
       ...page,
       pos: page.pos.map(
         (item) =>
           item.type === widgetsType
-            ? {
-                ...item,
-                Width: posWidth,
-                Height: posHeight,
-                SignUrl: signatureImg,
-                ...(type && { signatureType: type }),
-                options: { ...item.options, response: signatureImg },
-                ...(typedSignature && { typeSignature: typedSignature })
-              }
-            : item // Otherwise, keep it unchanged
-      )
-    }));
-    return updatedArray;
-  } //condition when user edit signature/initial then updated signature apply all existing drawn signatures
-  else if (isApplyAll) {
-    const updatedArray = updateXYposition.map((page) => ({
-      ...page,
-      pos: page.pos.map(
-        (item) =>
-          item.SignUrl && item.type === widgetsType
             ? {
                 ...item,
                 Width: posWidth,
@@ -1361,35 +1374,13 @@ export function onSaveImage(
     }
     return obj;
   });
-  //condition  when user click on apply(stamp) all widgets on signature pad for same widgets
-  if (isAutoSign) {
+  //condition  when user upload(stamp) then apply it all related to widgets
+  if (isApplyAll || isAutoSign) {
     const updatedArray = updateXYposition.map((page) => ({
       ...page,
       pos: page.pos.map(
         (item) =>
-          item.type === widgetsType
-            ? {
-                ...item,
-                Width: getIMGWH.newWidth,
-                Height: getIMGWH.newHeight,
-                SignUrl: image.src,
-                ImageType: image.imgType,
-                options: {
-                  ...item.options,
-                  response: image.src
-                }
-              }
-            : item // Otherwise, keep it unchanged
-      )
-    }));
-    return updatedArray;
-  } //condition when user edit stamp then updated signature apply all existing drawn signatures
-  else if (isApplyAll) {
-    const updatedArray = updateXYposition.map((page) => ({
-      ...page,
-      pos: page.pos.map(
-        (item) =>
-          item.SignUrl && item.type === widgetsType && item.type !== "image"
+          item.type === widgetsType && item.type !== "image"
             ? {
                 ...item,
                 Width: getIMGWH.newWidth,
@@ -1655,6 +1646,7 @@ export const multiSignEmbed = async (
             const WidgetsTypeTextExist = [
               textWidget,
               textInputWidget,
+              cellsWidget,
               "name",
               "company",
               "job title",
@@ -1668,9 +1660,10 @@ export const multiSignEmbed = async (
         const color = position?.options?.fontColor;
         const updateColorInRgb = getWidgetsFontColor(color);
         const fontSize = parseInt(position?.options?.fontSize || 12);
-        const widgetTypeExist = [
+        const isTextTypeWidget = [
           textWidget,
           textInputWidget,
+          cellsWidget,
           "name",
           "company",
           "job title",
@@ -1678,36 +1671,48 @@ export const multiSignEmbed = async (
           "email"
         ].includes(position.type);
         if (position.type === "checkbox") {
-          let checkboxGapFromTop, isCheck;
-          let y = yPos(position) + 2;
-          //calculate checkbox size to draw on pdf
-          const checkboxSize = fontSize - 1;
-          //calculate gap between checkbox and options
-          const checkboxTextGapFromLeft = fontSize + 5;
+          // Determine layout mode: 'vertical' (default) or 'horizontal'
+          // const isHorizontal = position.layout === "horizontal";
+          const isHorizontal =
+            position?.options?.layout === "horizontal" ? true : false;
+          // Initial “cursor” positions
+          let currentX = xPos(position);
+          let currentY = yPos(position) + 2;
+          // Size and spacing settings
+          const checkboxSize = fontSize - 1; // checkbox diameter
+          const checkboxTextGapFromLeft = fontSize + 5; // gap between box and its label
+          const verticalGap = fontSize + 3.2; // gap between two rows (vertical layout)
+          let horizontalGap = 0; // will compute after drawing each label
           if (position?.options?.values.length > 0) {
-            position?.options?.values.forEach((item, ind) => {
-              const checkboxRandomId = "checkbox" + randomId();
-              if (
-                position?.options?.response &&
-                position?.options?.response?.length > 0
-              ) {
-                isCheck = position?.options?.response?.includes(ind);
-              } else if (position?.options?.defaultValue) {
-                isCheck = position?.options?.defaultValue?.includes(ind);
-              }
-              const checkbox = form.createCheckBox(checkboxRandomId);
+            position.options.values.forEach((item, ind) => {
+              // 1. Advance the “cursor” on second+ iteration
               if (ind > 0) {
-                y = y + checkboxGapFromTop;
-              } else {
-                checkboxGapFromTop = fontSize + 3.2;
+                if (isHorizontal) {
+                  currentX += horizontalGap;
+                } else {
+                  currentY += verticalGap;
+                }
+              }
+              // 2. Determine whether this checkbox should be checked
+              let isCheck = false;
+              if (
+                position.options.response &&
+                position.options.response.length > 0
+              ) {
+                isCheck = position.options.response.includes(ind);
+              } else if (position.options.defaultValue) {
+                isCheck = position.options.defaultValue.includes(ind);
               }
 
-              if (!position?.options?.isHideLabel) {
-                // below line of code is used to embed label with radio button in pdf
+              // 3. Draw the label (if labels are not hidden)
+              if (!position.options.isHideLabel) {
+                const labelX = currentX + checkboxTextGapFromLeft;
+                const labelY = currentY - 3;
+
                 const optionsPosition = compensateRotation(
                   page.getRotation().angle,
-                  xPos(position) + checkboxTextGapFromLeft,
-                  y - 3,
+                  labelX,
+                  labelY,
                   1,
                   getSize,
                   fontSize,
@@ -1717,98 +1722,134 @@ export const multiSignEmbed = async (
                 );
                 page.drawText(item, optionsPosition);
               }
+              // 4. Create and place the actual checkbox
+              const checkboxRandomId = "checkbox" + randomId();
+              const checkbox = form.createCheckBox(checkboxRandomId);
               let checkboxObj = {
-                x: xPos(position),
-                y: y,
+                x: currentX,
+                y: currentY,
                 width: checkboxSize,
                 height: checkboxSize
               };
               checkboxObj = getWidgetPosition(page, checkboxObj, 1, getSize);
               checkbox.addToPage(page, checkboxObj);
-
-              //applied which checkbox should be checked
+              // 5. Check or uncheck as needed, then make read‐only
               if (isCheck) {
                 checkbox.check();
               } else {
                 checkbox.uncheck();
               }
               checkbox.enableReadOnly();
+              // 6. If horizontal layout, compute how far to shift next checkbox‐circle
+              if (isHorizontal) {
+                // Measure the width of this label text at `fontSize`
+                const textWidth = font.widthOfTextAtSize(item, fontSize);
+                // Next checkbox should come after: [box] + gap + [label text] + extra 10pt padding
+                horizontalGap =
+                  checkboxSize + checkboxTextGapFromLeft + textWidth;
+              }
             });
           }
-        } else if (widgetTypeExist) {
-          let textContent;
+        } else if (isTextTypeWidget) {
+          let textContent = "";
           if (position?.options?.response) {
             textContent = position.options?.response;
           } else if (position?.options?.defaultValue) {
             textContent = position?.options?.defaultValue;
           }
-          const fixedWidth = widgetWidth; // Set your fixed width
-          const isNewOnEnterLineExist = textContent.includes("\n");
-
-          // Function to break text into lines based on the fixed width
-          const NewbreakTextIntoLines = (textContent, width) => {
-            const lines = [];
-            let currentLine = "";
-
-            for (const word of textContent.split(" ")) {
-              //get text line width
-              const lineWidth = font.widthOfTextAtSize(
-                `${currentLine} ${word}`,
-                fontSize
+          if (position.type === cellsWidget) {
+            const cellCount =
+              position?.options?.cellCount || textContent.length || 1;
+            const charWidth = widgetWidth / cellCount;
+            const y = yPos(position) - 4;
+            for (let i = 0; i < cellCount; i++) {
+              const ch = textContent[i] || "";
+              const charX =
+                xPos(position) +
+                charWidth * i +
+                (charWidth - font.widthOfTextAtSize(ch, fontSize)) / 2;
+              const textPosition = compensateRotation(
+                page.getRotation().angle,
+                charX,
+                y,
+                1,
+                getSize,
+                fontSize,
+                updateColorInRgb,
+                font,
+                page
               );
-              //check text content line width is less or equal to container width
-              if (lineWidth <= width) {
-                currentLine += ` ${word}`;
-              } else {
-                lines.push(currentLine.trim());
-                currentLine = `${word}`;
-              }
+              if (ch) page.drawText(ch, textPosition);
             }
-            lines.push(currentLine.trim());
-            return lines;
-          };
-          // Function to break text into lines based on when user go next line on press enter button
-          const breakTextIntoLines = (textContent, width) => {
-            const lines = [];
-            for (const word of textContent.split("\n")) {
-              const lineWidth = font.widthOfTextAtSize(`${word}`, fontSize);
-              //checking string length to container width
-              //if string length is less then container width it means user press enter button
-              if (lineWidth <= width) {
-                lines.push(word);
-              }
-              //else adjust text content according to width and send it in new line
-              else {
-                const newLine = NewbreakTextIntoLines(word, width);
-                lines.push(...newLine);
-              }
-            }
+          } else {
+            const fixedWidth = widgetWidth; // Set your fixed width
+            const isNewOnEnterLineExist = textContent.includes("\n");
 
-            return lines;
-          };
-          //check if text content have `\n` string it means user press enter to go next line and handle condition
-          //else auto adjust text content according to container width
-          const lines = isNewOnEnterLineExist
-            ? breakTextIntoLines(textContent, fixedWidth)
-            : NewbreakTextIntoLines(textContent, fixedWidth);
-          // Set initial y-coordinate for the first line
-          let x = xPos(position);
-          let y = yPos(position) - 4;
-          // Embed each line on the page
-          for (const line of lines) {
-            const textPosition = compensateRotation(
-              page.getRotation().angle,
-              x,
-              y,
-              1,
-              getSize,
-              fontSize,
-              updateColorInRgb,
-              font,
-              page
-            );
-            page.drawText(line, textPosition);
-            y += 18; // Adjust the line height as needed
+            // Function to break text into lines based on the fixed width
+            const NewbreakTextIntoLines = (textContent, width) => {
+              const lines = [];
+              let currentLine = "";
+
+              for (const word of textContent.split(" ")) {
+                //get text line width
+                const lineWidth = font.widthOfTextAtSize(
+                  `${currentLine} ${word}`,
+                  fontSize
+                );
+                //check text content line width is less or equal to container width
+                if (lineWidth <= width) {
+                  currentLine += ` ${word}`;
+                } else {
+                  lines.push(currentLine.trim());
+                  currentLine = `${word}`;
+                }
+              }
+              lines.push(currentLine.trim());
+              return lines;
+            };
+            // Function to break text into lines based on when user go next line on press enter button
+            const breakTextIntoLines = (textContent, width) => {
+              const lines = [];
+              for (const word of textContent.split("\n")) {
+                const lineWidth = font.widthOfTextAtSize(`${word}`, fontSize);
+                //checking string length to container width
+                //if string length is less then container width it means user press enter button
+                if (lineWidth <= width) {
+                  lines.push(word);
+                }
+                //else adjust text content according to width and send it in new line
+                else {
+                  const newLine = NewbreakTextIntoLines(word, width);
+                  lines.push(...newLine);
+                }
+              }
+
+              return lines;
+            };
+            //check if text content have `\n` string it means user press enter to go next line and handle condition
+            //else auto adjust text content according to container width
+            const lines = isNewOnEnterLineExist
+              ? breakTextIntoLines(textContent, fixedWidth)
+              : NewbreakTextIntoLines(textContent, fixedWidth);
+            // Set initial y-coordinate for the first line
+            let x = xPos(position);
+            let y = yPos(position) - 4;
+            // Embed each line on the page
+            for (const line of lines) {
+              const textPosition = compensateRotation(
+                page.getRotation().angle,
+                x,
+                y,
+                1,
+                getSize,
+                fontSize,
+                updateColorInRgb,
+                font,
+                page
+              );
+              page.drawText(line, textPosition);
+              y += 18; // Adjust the line height as needed
+            }
           }
         } else if (position.type === "dropdown") {
           const dropdownRandomId = "dropdown" + randomId();
@@ -1848,33 +1889,47 @@ export const multiSignEmbed = async (
         } else if (position.type === radioButtonWidget) {
           const radioRandomId = "radio" + randomId();
           const radioGroup = form.createRadioGroup(radioRandomId);
-          //draw radio button on document and options if hide label is enable
-          let radioButtonFromTop;
           //getting radio buttons options text font size
-          const optionsFontSize = fontSize;
-          //calculate value of gap between radio button and options
-          const radioTextGapFromLeft = fontSize + 6;
-          //getting radio button font size
-          const radioSize = fontSize;
-          //getting position of radio widget in y direction
-          let y = yPos(position);
-          //on the basic of option's length create radio button and message
+          const optionsFontSize = fontSize; // font size for option text
+          const radioTextGapFromLeft = fontSize + 6; // gap between circle and its label
+          const radioSize = fontSize; // circle diameter (square of width×height)
+          // Initial “cursor” positions (from your existing helpers)
+          let currentX = xPos(position) + 2;
+          let currentY = yPos(position);
+          // Vertical gap between two radio‐rows
+          const verticalGap = fontSize + 6;
+          // We’ll compute horizontalGap on the fly—after drawing each label
+          // Initialize to zero (will be set after first option is placed)
+          let horizontalGap = 0;
+          // Determine layout mode: 'vertical' or 'horizontal'.
+          // (You mentioned “add one variable called layout” – here we read it from position.layout.)
+          const isHorizontal =
+            position?.options?.layout === "horizontal" ? true : false;
+          // Loop through each option in the group
           if (position?.options?.values.length > 0) {
-            position?.options?.values.forEach((item, ind) => {
+            position.options.values.forEach((item, ind) => {
+              // 1. Advance cursor on second+ iteration
               if (ind > 0) {
-                y = y + radioButtonFromTop;
-              } else {
-                radioButtonFromTop = fontSize + 6;
+                if (isHorizontal) {
+                  // Move to the right by horizontalGap
+                  currentX += horizontalGap;
+                } else {
+                  // Move down by verticalGap (vertical stacking)
+                  currentY += verticalGap;
+                }
               }
+              // 2. Draw the label text (if not hidden)
               if (!position?.options?.isHideLabel) {
-                // below line of code is used to embed label with radio button in pdf
+                // Compute where to draw the text (just to the right of the circle)
+                const labelX = currentX + radioTextGapFromLeft;
+                const labelY = currentY - 2;
                 const optionsPosition = compensateRotation(
                   page.getRotation().angle,
-                  xPos(position) + radioTextGapFromLeft,
-                  y - 2,
+                  labelX,
+                  labelY,
                   1,
                   getSize,
-                  fontSize,
+                  optionsFontSize,
                   updateColorInRgb,
                   font,
                   page
@@ -1882,22 +1937,33 @@ export const multiSignEmbed = async (
 
                 page.drawText(item, optionsPosition);
               }
+              // 3. Place the radio‐circle itself at (currentX, currentY)
               let radioObj = {
-                x: xPos(position) + 2,
-                y: y,
+                x: currentX,
+                y: currentY,
                 width: radioSize,
                 height: radioSize
               };
 
               radioObj = getWidgetPosition(page, radioObj, 1, getSize);
               radioGroup.addOptionToPage(item, page, radioObj);
+              // 4. If horizontal layout, re-compute horizontalGap for next iteration:
+              if (isHorizontal) {
+                // Measure how wide the label text is, so we know how far to shift next circle
+                const textWidth = font.widthOfTextAtSize(item, optionsFontSize);
+                // radioSize = the circle.  radioTextGapFromLeft = gap between circle and label.
+                // Add a small extra padding (e.g. 10pt) before placing next circle.
+                horizontalGap = radioSize + radioTextGapFromLeft + textWidth;
+              }
             });
           }
+          // 5. Pre‐select a value if provided
           if (position?.options?.response) {
             radioGroup.select(position.options?.response);
           } else if (position?.options?.defaultValue) {
             radioGroup.select(position?.options?.defaultValue);
           }
+          // 6. Set to read‐only (if required)
           radioGroup.enableReadOnly();
         } else {
           const signature = {
@@ -2977,6 +3043,23 @@ export const deletePdfPage = async (pdfArrayBuffer, pageNumber) => {
   }
 };
 
+export const reorderPdfPages = async (pdfArrayBuffer, orderArr) => {
+  try {
+    const pdfDoc = await PDFDocument.load(pdfArrayBuffer);
+    const newPdf = await PDFDocument.create();
+    const pages = await newPdf.copyPages(
+      pdfDoc,
+      orderArr.map((n) => n - 1)
+    );
+    pages.forEach((p) => newPdf.addPage(p));
+    const pdfBase64 = await newPdf.saveAsBase64({ useObjectStreams: false });
+    const arrayBuffer = base64ToArrayBuffer(pdfBase64);
+    return { arrayBuffer, base64: pdfBase64, totalPages: orderArr.length };
+  } catch (err) {
+    console.log("Err while reordering pages", err);
+  }
+};
+
 // `generatePdfName` is used to generate file name
 export function generatePdfName(length) {
   const characters =
@@ -3180,6 +3263,9 @@ export const checkRegularExpress = (validateType, setValidatePlaceholder) => {
     case "text":
       setValidatePlaceholder("please enter text");
       break;
+    case "ssn":
+      setValidatePlaceholder("123-45-6789");
+      break;
     default:
       setValidatePlaceholder("please enter value");
   }
@@ -3227,3 +3313,166 @@ export const getOriginalWH = async (pdf) => {
   }
   return pdfWHObj;
 };
+
+//function is used to check required and optional widgets and ensure required widget should be response
+export const handleCheckResponse = (checkUser, setminRequiredCount) => {
+  let checkboxExist,
+    showAlert = false,
+    widgetKey,
+    requiredCheckbox,
+    tourPageNumber; // `pageNumber` is used to check on which page user did not fill widget's data then change current pageNumber and show tour message on that page
+  for (let i = 0; i < checkUser[0].placeHolder.length; i++) {
+    for (let j = 0; j < checkUser[0].placeHolder[i].pos.length; j++) {
+      //get current page
+      const updatePage = checkUser[0].placeHolder[i]?.pageNumber;
+      //checking checbox type widget
+      checkboxExist = checkUser[0].placeHolder[i].pos[j].type === "checkbox";
+      //condition to check checkbox widget exist or not
+      if (checkboxExist) {
+        //get all required type checkbox
+        requiredCheckbox = checkUser[0].placeHolder[i].pos.filter(
+          (position) =>
+            !position.options?.isReadOnly && position.type === "checkbox"
+        );
+        //if required type checkbox data exit then check user checked all checkbox or some checkbox remain to check
+        //also validate to minimum and maximum required checkbox
+        if (requiredCheckbox && requiredCheckbox.length > 0) {
+          for (let i = 0; i < requiredCheckbox.length; i++) {
+            //get minimum required count if  exit
+            const minCount =
+              requiredCheckbox[i].options?.validation?.minRequiredCount;
+            const parseMin = minCount && parseInt(minCount);
+            //get maximum required count if  exit
+            const maxCount =
+              requiredCheckbox[i].options?.validation?.maxRequiredCount;
+            const parseMax = maxCount && parseInt(maxCount);
+            //in `response` variable is used to get how many checkbox checked by user
+            const response = requiredCheckbox[i].options?.response?.length;
+            //in `defaultValue` variable is used to get how many checkbox checked by default
+            const defaultValue =
+              requiredCheckbox[i].options?.defaultValue?.length;
+            //condition to check  parseMin  and parseMax greater than 0  then consider it as a required check box
+            if (
+              parseMin > 0 &&
+              parseMax > 0 &&
+              !response &&
+              !defaultValue &&
+              !showAlert
+            ) {
+              showAlert = true;
+              widgetKey = requiredCheckbox[i].key;
+              tourPageNumber = updatePage;
+              setminRequiredCount(parseMin);
+            }
+            //else condition to validate minimum required checkbox
+            else if (parseMin > 0 && (parseMin > response || !response)) {
+              if (!showAlert) {
+                showAlert = true;
+                widgetKey = requiredCheckbox[i].key;
+                tourPageNumber = updatePage;
+                setminRequiredCount(parseMin);
+              }
+            }
+          }
+        }
+      }
+      //else condition to check all type widget data fill or not except checkbox
+      else {
+        //get all required type widgets except checkbox and radio
+        const requiredWidgets = checkUser[0].placeHolder[i].pos.filter(
+          (position) =>
+            position.type === "signature" ||
+            (position.options?.status === "required" &&
+              position.type !== "checkbox")
+        );
+        if (requiredWidgets && requiredWidgets?.length > 0) {
+          let checkSigned;
+          for (let i = 0; i < requiredWidgets?.length; i++) {
+            checkSigned = requiredWidgets[i]?.options?.response;
+            if (!checkSigned) {
+              let checkDefaultSigned =
+                requiredWidgets[i]?.options?.defaultValue;
+              if (!checkDefaultSigned && !showAlert) {
+                showAlert = true;
+                widgetKey = requiredWidgets[i].key;
+                tourPageNumber = updatePage;
+                setminRequiredCount(null);
+              }
+            }
+          }
+        }
+      }
+    }
+    //when showAlert is true then break the loop and show alert to fill required data in widgets
+    if (showAlert) {
+      break;
+    }
+  }
+  return {
+    tourPageNumber,
+    widgetKey,
+    showAlert
+  };
+};
+
+/**
+ * decryptPdf
+ * @param {File} file - The password-protected PDF file to decrypt.
+ * @param {string | undefined} password - The password used to unlock the PDF.
+ * @returns {Promise<File>} - A Promise that resolves to a decrypted PDF as a File object.
+ *
+ */
+export const decryptPdf = async (file, password) => {
+  const name = generatePdfName(16);
+  const baseApi = localStorage.getItem("baseUrl") || "";
+  const url = baseApi.replace("/app", "") + "decryptpdf?ts=" + Date.now();
+  let formData = new FormData();
+  formData.append("file", file);
+  formData.append("password", password);
+  const config = {
+    headers: { "content-type": "multipart/form-data" },
+    responseType: "blob"
+  };
+  const response = await axios.post(url, formData, config);
+  const pdfBlob = new Blob([response.data], { type: "application/pdf" });
+  return new File([pdfBlob], name, { type: "application/pdf" });
+};
+
+/**
+ * Convert a Base64 string to a File object.
+ *
+ * @param {string} base64String - The Base64 string, with or without the data URI prefix.
+ *                                e.g. "data:image/png;base64,iVBORw0KGgoAAAANS…" or "iVBORw0KGgoAAAANS…"
+ * @param {string} filename     - Desired filename for the File object, e.g. "photo.png"
+ * @returns {File}              - The resulting File object
+ */
+export function base64ToFile(base64String, filename) {
+  // Separate out the mime-type and the actual Base64 payload
+  const [header, payload] = base64String.includes(",")
+    ? base64String.split(",")
+    : [null, base64String];
+  // Determine the MIME type (fallback to application/octet-stream)
+  const mimeMatch = header?.match(/data:(.*?);base64/);
+  const mime = mimeMatch ? mimeMatch[1] : "application/octet-stream";
+
+  // Decode Base64 to raw binary data held in a string
+  const binaryString = atob(payload);
+  // Create an ArrayBuffer and a view (as unsigned 8-bit)
+  const len = binaryString.length;
+  const u8arr = new Uint8Array(len);
+  for (let i = 0; i < len; i++) {
+    u8arr[i] = binaryString.charCodeAt(i);
+  }
+
+  // Create a File object (Blob subclass) with the binary data
+  return new File([u8arr], filename, { type: mime });
+}
+
+export function getFileAsArrayBuffer(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (e) => resolve(e.target.result);
+    reader.onerror = (e) => reject(e.target.error);
+    reader.readAsArrayBuffer(file);
+  });
+}

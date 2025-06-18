@@ -301,7 +301,7 @@ const Preferences = () => {
           JSON.parse(localStorage.getItem("Extand_Class"))?.[0];
         if (extUser && extUser?.objectId) {
           extUser.TenantId.RequestBody = updateRes?.RequestBody;
-          extUser.TenantId.RequestBody = updateRes?.RequestSubject;
+          extUser.TenantId.RequestSubject = updateRes?.RequestSubject;
           const _extUser = JSON.parse(JSON.stringify(extUser));
           localStorage.setItem("Extand_Class", JSON.stringify([_extUser]));
         }
