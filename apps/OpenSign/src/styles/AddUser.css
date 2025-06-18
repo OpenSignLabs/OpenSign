@@ -10,6 +10,10 @@
   background-position: right 0.7rem top 50%;
   background-size: 1rem auto;
 }
+[data-theme="opensigndark"] .validationlist{
+  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAADE6YVjAAAAAXNSR0IArs4c6QAAAQ1JREFUSEvtlDtKBTEARc/Fys8OXumndhl2ggt4jTuwsVJQK92DtY1Yuw3bp2jlDvxUcn2BDIQ4k2Sa1ziBNMmdHO4JGbGCoRUwmCCjLP8DXbYPgD3gVtLnkB/bm8AxsJD02Jfr1WX7EJjHD16BC0kf+QG2N4BzYDfu3Um6z3N/ILb3gbMs+AJcpo1igwDYybIh95Su9UFmwPVyrg+BCoBv4FTSexESNm1vRw1bGegNuAFOEkVdJABCi0VVVxewHS49aAve0/EDrGVrX8u1qz5AyBXfSaFRyhhs0IWqj7ECKjZohhTuqAlQ1ZU6yRo1A0ZBYqPw6I6AB0nPrX/J6p20HlTKTZBRFiddo3T9ArZOWBrGcf52AAAAAElFTkSuQmCC");
+}
+
 
 @media (max-width: 375px) {
   .validationlist {
@@ -17,7 +21,7 @@
   }
 }
 
-@media (min-width:375px) and (max-width: 767px) {
+@media (min-width: 375px) and (max-width: 767px) {
   .validationlist {
     background-position: right 1rem top 50%;
   }

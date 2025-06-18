@@ -1,6 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
+import "./styles/dark-theme-improvements.css";
 import App from "./App";
 import { Provider } from "react-redux";
 import { store } from "./redux/store";
@@ -23,6 +24,11 @@ const appId =
 const serverUrl = serverUrl_fn();
 Parse.initialize(appId);
 Parse.serverURL = serverUrl;
+
+const savedTheme = localStorage.getItem("theme");
+if (savedTheme === "dark") {
+  document.documentElement.setAttribute("data-theme", "opensigndark");
+}
 
 const HTML5toTouch = {
   backends: [

@@ -23,7 +23,6 @@ import {
   pdfNewWidthFun,
   signPdfFun,
   addDefaultSignatureImg,
-  radioButtonWidget,
   replaceMailVaribles,
   convertPdfArrayBuffer,
   contractUsers,
@@ -47,7 +46,8 @@ import {
   mailTemplate,
   updateDateWidgetsRes,
   widgetDataValue,
-  getOriginalWH
+  getOriginalWH,
+  handleCheckResponse,
 } from "../constant/Utils";
 import Header from "../components/pdf/PdfHeader";
 import RenderPdf from "../components/pdf/RenderPdf";
@@ -277,6 +277,15 @@ function PdfRequestFiles(
       let currUserId;
       //getting document details
       const documentData = await contractDocument(docId);
+      // Filter out 'prefill' roles from the Placeholder array
+      const filteredPlaceholder = documentData[0].Placeholders.filter(
+        (data) => data.Role !== "prefill"
+      );
+      // Reassign the updated Placeholder back to the documentData array
+      documentData[0] = {
+        ...documentData[0],
+        Placeholders: filteredPlaceholder
+      };
       if (documentData && documentData.length > 0) {
         const userSignatureType =
           documentData[0]?.ExtUserPtr?.SignatureType || signatureTypes;
@@ -624,6 +633,7 @@ function PdfRequestFiles(
       } catch (err) {
         console.log("err in get email verification ", err);
         setHandleError(t("something-went-wrong-mssg"));
+        setIsUiLoading(false);
       }
     }
     //check if isEmailVerified then go on next step
@@ -633,153 +643,13 @@ function PdfRequestFiles(
           (data) => data.signerObjId === signerObjectId
         );
         if (checkUser && checkUser.length > 0) {
-          let checkboxExist,
-            requiredRadio,
-            showAlert = false,
-            widgetKey,
-            radioExist,
-            requiredCheckbox,
-            TourPageNumber; // `pageNumber` is used to check on which page user did not fill widget's data then change current pageNumber and show tour message on that page
-
-          for (let i = 0; i < checkUser[0].placeHolder.length; i++) {
-            for (let j = 0; j < checkUser[0].placeHolder[i].pos.length; j++) {
-              //get current page
-              const updatePage = checkUser[0].placeHolder[i]?.pageNumber;
-              //checking checbox type widget
-              checkboxExist =
-                checkUser[0].placeHolder[i].pos[j].type === "checkbox";
-              //checking radio button type widget
-              radioExist =
-                checkUser[0].placeHolder[i].pos[j].type === radioButtonWidget;
-              //condition to check checkbox widget exist or not
-              if (checkboxExist) {
-                //get all required type checkbox
-                requiredCheckbox = checkUser[0].placeHolder[i].pos.filter(
-                  (position) =>
-                    !position.options?.isReadOnly &&
-                    position.type === "checkbox"
-                );
-                //if required type checkbox data exit then check user checked all checkbox or some checkbox remain to check
-                //also validate to minimum and maximum required checkbox
-                if (requiredCheckbox && requiredCheckbox.length > 0) {
-                  for (let i = 0; i < requiredCheckbox.length; i++) {
-                    //get minimum required count if  exit
-                    const minCount =
-                      requiredCheckbox[i].options?.validation?.minRequiredCount;
-                    const parseMin = minCount && parseInt(minCount);
-                    //get maximum required count if  exit
-                    const maxCount =
-                      requiredCheckbox[i].options?.validation?.maxRequiredCount;
-                    const parseMax = maxCount && parseInt(maxCount);
-                    //in `response` variable is used to get how many checkbox checked by user
-                    const response =
-                      requiredCheckbox[i].options?.response?.length;
-                    //in `defaultValue` variable is used to get how many checkbox checked by default
-                    const defaultValue =
-                      requiredCheckbox[i].options?.defaultValue?.length;
-                    //condition to check  parseMin  and parseMax greater than 0  then consider it as a required check box
-                    if (
-                      parseMin > 0 &&
-                      parseMax > 0 &&
-                      !response &&
-                      !defaultValue &&
-                      !showAlert
-                    ) {
-                      showAlert = true;
-                      widgetKey = requiredCheckbox[i].key;
-                      TourPageNumber = updatePage;
-                      setminRequiredCount(parseMin);
-                    }
-                    //else condition to validate minimum required checkbox
-                    else if (
-                      parseMin > 0 &&
-                      (parseMin > response || !response)
-                    ) {
-                      if (!showAlert) {
-                        showAlert = true;
-                        widgetKey = requiredCheckbox[i].key;
-                        TourPageNumber = updatePage;
-                        setminRequiredCount(parseMin);
-                      }
-                    }
-                  }
-                }
-              }
-              //condition to check radio widget exist or not
-              else if (radioExist) {
-                //get all required type radio button
-                requiredRadio = checkUser[0].placeHolder[i].pos.filter(
-                  (position) =>
-                    !position.options?.isReadOnly &&
-                    position.type === radioButtonWidget
-                );
-                //if required type radio data exit then check user checked all radio button or some radio remain to check
-                if (requiredRadio && requiredRadio?.length > 0) {
-                  let checkSigned;
-                  for (let i = 0; i < requiredRadio?.length; i++) {
-                    checkSigned = requiredRadio[i]?.options?.response;
-                    if (!checkSigned) {
-                      let checkDefaultSigned =
-                        requiredRadio[i]?.options?.defaultValue;
-                      if (!checkDefaultSigned && !showAlert) {
-                        showAlert = true;
-                        widgetKey = requiredRadio[i].key;
-                        TourPageNumber = updatePage;
-                        setminRequiredCount(null);
-                      }
-                    }
-                  }
-                }
-              }
-              //else condition to check all type widget data fill or not except checkbox and radio button
-              else {
-                //get all required type widgets except checkbox and radio
-                const requiredWidgets = checkUser[0].placeHolder[i].pos.filter(
-                  (position) =>
-                    position.options?.status === "required" &&
-                    position.type !== radioButtonWidget &&
-                    position.type !== "checkbox"
-                );
-                if (requiredWidgets && requiredWidgets?.length > 0) {
-                  let checkSigned;
-                  for (let i = 0; i < requiredWidgets?.length; i++) {
-                    checkSigned = requiredWidgets[i]?.options?.response;
-                    if (!checkSigned) {
-                      const checkSignUrl = requiredWidgets[i]?.pos?.SignUrl;
-                      if (!checkSignUrl) {
-                        let checkDefaultSigned =
-                          requiredWidgets[i]?.options?.defaultValue;
-                        if (!checkDefaultSigned && !showAlert) {
-                          showAlert = true;
-                          widgetKey = requiredWidgets[i].key;
-                          TourPageNumber = updatePage;
-                          setminRequiredCount(null);
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-            //when showAlert is true then break the loop and show alert to fill required data in widgets
-            if (showAlert) {
-              break;
-            }
-          }
-          if (checkboxExist && requiredCheckbox && showAlert) {
-            setUnSignedWidgetId(widgetKey);
-            setPageNumber(TourPageNumber);
+          const status = handleCheckResponse(checkUser,setminRequiredCount)      
+          if (status?.showAlert) {
+            setUnSignedWidgetId(status?.widgetKey);
+            setPageNumber(status?.tourPageNumber);
             setWidgetsTour(true);
-          } else if (radioExist && showAlert) {
-            setUnSignedWidgetId(widgetKey);
-            setPageNumber(TourPageNumber);
-            setWidgetsTour(true);
-          } else if (showAlert) {
-            setUnSignedWidgetId(widgetKey);
-            setPageNumber(TourPageNumber);
-            setWidgetsTour(true);
+            setIsUiLoading(false);
           } else {
-            setIsUiLoading(true);
             // `widgets` is Used to return widgets details with page number of current user
             const widgets = checkUser?.[0]?.placeHolder;
             let pdfArrBuffer;
@@ -829,7 +699,6 @@ function PdfRequestFiles(
                 isSignYourSelfFlow,
                 scale
               );
-              // console.log("pdfte", pdfBytes);
               //get ExistUserPtr object id of user class to get tenantDetails
               if (!pdfBytes?.error) {
                 const objectId = pdfDetails?.[0]?.ExtUserPtr?.UserId?.objectId;
@@ -855,16 +724,19 @@ function PdfRequestFiles(
                     isSuccessRoute,
                     contactId
                   );
-                  const index = pdfDetails?.[0]?.Signers.findIndex(
-                    (x) => x.objectId === signerObjectId
-                  );
+                  const index =
+                    updatedDoc.updatedPdfDetails?.[0]?.Signers.findIndex(
+                      (x) => x.objectId === contactId
+                    );
                   const newIndex = index + 1;
                   const usermail = {
-                    Email: pdfDetails?.[0]?.Placeholders[newIndex]?.email || ""
+                    Email:
+                      updatedDoc.updatedPdfDetails?.[0]?.Placeholders[newIndex]
+                        ?.email || ""
                   };
                   const user = usermail?.Email
                     ? usermail
-                    : pdfDetails?.[0]?.Signers[newIndex];
+                    : updatedDoc.updatedPdfDetails?.[0]?.Signers[newIndex];
                   if (
                     sendmail !== "false" &&
                     sendInOrder
@@ -1023,6 +895,7 @@ function PdfRequestFiles(
             isShow: true,
             alertMessage: t("something-went-wrong-mssg")
           });
+          setIsUiLoading(false);
         }
       } catch (err) {
         console.log("err in embedsign", err);
@@ -1034,8 +907,8 @@ function PdfRequestFiles(
       }
     }
   }
-
   const handleSignPdf = async () => {
+    setIsUiLoading(true);
       await embedWidgetsData();
   };
 
@@ -1059,15 +932,15 @@ function PdfRequestFiles(
         let filterSignerPos = [];
         if (signerObjId) {
           //get current signerObjId placeholder details
-          filterSignerPos = updateSignPos.filter(
+          filterSignerPos = updateSignPos?.filter(
             (data) => data.Id === signerObjId
           );
         }
 
         if (filterSignerPos.length > 0) {
-          const getPlaceHolder = filterSignerPos[0].placeHolder;
+          const getPlaceHolder = filterSignerPos[0]?.placeHolder;
           //get position of current pagenumber
-          const getPageNumer = getPlaceHolder.filter(
+          const getPageNumer = getPlaceHolder?.filter(
             (data) => data.pageNumber === pageNumber
           );
           if (getPageNumer.length > 0) {
@@ -1111,9 +984,9 @@ function PdfRequestFiles(
     setIsTextSetting(value);
   };
   const handleSaveFontSize = () => {
-    const filterSignerPos = signerPos.filter((data) => data.Id === uniqueId);
+    const filterSignerPos = signerPos?.filter((data) => data.Id === uniqueId);
     if (filterSignerPos) {
-      const placehoder = filterSignerPos[0].placeHolder;
+      const placehoder = filterSignerPos[0]?.placeHolder;
       const getPageNumer = placehoder.filter(
         (data) => data.pageNumber === pageNumber
       );
@@ -1229,7 +1102,7 @@ function PdfRequestFiles(
   const addDefaultSignature = () => {
     const type = defaultSignAlert?.type;
     //get current signers placeholder position data
-    const currentSignerPosition = signerPos.filter(
+    const currentSignerPosition = signerPos?.filter(
       (data) => data.signerObjId === signerObjectId
     );
     const defaultSign = type === "signature" ? defaultSignImg : myInitial;
@@ -1254,7 +1127,8 @@ function PdfRequestFiles(
     setRequestSignTour(true);
     if (isDontShow) {
       const isEnableOTP = pdfDetails?.[0]?.IsEnableOTP || false;
-      if (!isEnableOTP) {
+      const sessionToken = localStorage.getItem("accesstoken");
+      if (!isEnableOTP && !sessionToken) {
         try {
           await axios.post(
             `${localStorage.getItem("baseUrl")}functions/updatecontacttour`,
@@ -1619,11 +1493,11 @@ function PdfRequestFiles(
     }
     if (uniqueId) {
       let filterSignerPos, currentPagePosition;
-      filterSignerPos = signerPos.find((data) => data.Id === uniqueId);
+      filterSignerPos = signerPos?.find((data) => data.Id === uniqueId);
       const getPlaceHolder = filterSignerPos?.placeHolder;
       if (getPlaceHolder) {
         //checking exist placeholder on same page
-        currentPagePosition = getPlaceHolder.find(
+        currentPagePosition = getPlaceHolder?.find(
           (data) => data.pageNumber === pageNumber
         );
       }
@@ -1651,12 +1525,6 @@ function PdfRequestFiles(
         );
         setSignerPos(updatesignerPos);
       }
-
-      // if (dragTypeValue === "dropdown") {
-      //   setShowDropdown(true);
-      // } else if (dragTypeValue === "checkbox") {
-      //   setIsCheckbox(true);
-      // } else
       if (
         [textWidget, "name", "company", "job title", "email"].includes(
           dragTypeValue
@@ -1672,7 +1540,7 @@ function PdfRequestFiles(
   //function for delete signature block
   const handleDeleteSign = (key, Id) => {
     const updateData = [];
-    const filterSignerPos = signerPos.filter((data) => data.Id === Id);
+    const filterSignerPos = signerPos?.filter((data) => data.Id === Id);
     if (filterSignerPos.length > 0) {
       const getPlaceHolder = filterSignerPos[0].placeHolder;
       const getPageNumer = getPlaceHolder.filter(
@@ -1700,7 +1568,7 @@ function PdfRequestFiles(
           });
           setSignerPos(newUpdateSigner);
         } else {
-          const getRemainPage = filterSignerPos[0].placeHolder.filter(
+          const getRemainPage = filterSignerPos[0]?.placeHolder?.filter(
             (data) => data.pageNumber !== pageNumber
           );
           //condition to check placeholder length is greater than 1 do not need to remove whole placeholder
@@ -1713,11 +1581,11 @@ function PdfRequestFiles(
               return obj;
             });
             let signerupdate = [];
-            signerupdate = signerPos.filter((data) => data.Id !== Id);
+            signerupdate = signerPos?.filter((data) => data.Id !== Id);
             signerupdate.push(newUpdatePos[0]);
             setSignerPos(signerupdate);
           } else {
-            const updatedData = signerPos.map((item) => {
+            const updatedData = signerPos?.map((item) => {
               if (item.Id === Id) {
                 // Create a copy of the item object and delete the placeHolder field
                 const updatedItem = { ...item };
@@ -1735,7 +1603,7 @@ function PdfRequestFiles(
   //function to get first widget and page number to assign currect signer and tour message
   const showFirstWidget = () => {
     if (!requestSignTour) {
-      const getCurrentUserPlaceholder = signerPos.find(
+      const getCurrentUserPlaceholder = signerPos?.find(
         (x) => x.Id === uniqueId
       );
       const placeholder = getCurrentUserPlaceholder.placeHolder;
@@ -1756,7 +1624,6 @@ function PdfRequestFiles(
       setShowSignPagenumber(sortedPagenumber);
     }
   };
-
   return (
     <DndProvider backend={HTML5Backend}>
       <Title
@@ -1828,6 +1695,7 @@ function PdfRequestFiles(
                 {!requestSignTour &&
                   isAgree &&
                   signerObjectId &&
+                  !alreadySign &&
                   requestSignTourFunction()}
                 <Tour
                   showNumber={false}
@@ -2267,6 +2135,7 @@ function PdfRequestFiles(
               setUniqueId={setUniqueId}
               tempSignerId={tempSignerId}
               signatureTypes={signatureType}
+              allowCellResize={pdfDetails[0]?.AllowModifications ?? false}
             />
           )}
           <DownloadPdfZip

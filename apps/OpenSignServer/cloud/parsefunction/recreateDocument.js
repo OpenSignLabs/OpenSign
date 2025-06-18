@@ -14,11 +14,14 @@ export default async function recreateDocument(request) {
     if (!doc) {
       throw new Parse.Error(Parse.Error.OBJECT_NOT_FOUND, 'Document not found');
     }
+    if (doc?.get('IsSignyourself')) {
+      throw new Parse.Error(Parse.Error.INVALID_SESSION_TOKEN, 'Signyourself Document not allowed');
+    }
     const _docRes = doc?.toJSON();
     const { objectId, SignedUrl, AuditTrail, ACL, DeclineBy, DeclineReason, ...docRes } = _docRes;
     const createDoc = new Parse.Object('contracts_Document');
     Object.entries(docRes).forEach(([key, value]) => {
-      if (key === 'IsDeclined') {
+      if (key === 'IsDeclined' || key === 'IsCompleted') {
         createDoc.set(key, false);
       } else {
         createDoc.set(key, value);

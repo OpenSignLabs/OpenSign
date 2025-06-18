@@ -53,10 +53,16 @@ const makeEmail = async (
         const isSecure =
           new URL(url)?.protocol === 'https:' && new URL(url)?.hostname !== 'localhost';
         if (isSecure) {
-          https.get(url, async function (response) {
-            response.pipe(Pdf);
-            response.on('end', () => resolve('success'));
-          });
+          https
+            .get(url, async function (response) {
+              response.pipe(Pdf);
+              Pdf.on('finish', () => resolve('success'));
+              Pdf.on('error', () => resolve('error'));
+            })
+            .on('error', e => {
+              console.error(`error: ${e.message}`);
+              resolve('error');
+            });
         } else {
           const httpsAgent = new https.Agent({ rejectUnauthorized: false }); // Disable SSL validation
           axios

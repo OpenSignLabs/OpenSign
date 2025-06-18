@@ -7,8 +7,8 @@ import { fontColorArr, fontsizeArr } from "../../constant/Utils";
 function DropdownWidgetOption(props) {
   const { t } = useTranslation();
   const [dropdownOptionList, setDropdownOptionList] = useState([
-    "option-1",
-    "option-2"
+    "Option-1",
+    "Option-2"
   ]);
   const [minCount, setMinCount] = useState(0);
   const [maxCount, setMaxCount] = useState(0);
@@ -17,11 +17,13 @@ function DropdownWidgetOption(props) {
   const [isHideLabel, setIsHideLabel] = useState(false);
   const [status, setStatus] = useState("required");
   const [defaultValue, setDefaultValue] = useState("");
-  const statusArr = ["required", "optional"];
   const [defaultCheckbox, setDefaultCheckbox] = useState([]);
+  const [layout, setLayout] = useState("vertical");
+  const statusArr = ["required", "optional"];
+  const layoutArr = ["vertical", "horizontal"];
 
   const resetState = () => {
-    setDropdownOptionList(["option-1", "option-2"]);
+    setDropdownOptionList(["Option-1", "Option-2"]);
     setDropdownName(props.currWidgetsDetails?.options?.name || props.type);
     setIsReadOnly(false);
     setIsHideLabel(false);
@@ -29,6 +31,7 @@ function DropdownWidgetOption(props) {
     setMaxCount(0);
     setDefaultCheckbox([]);
     setDefaultValue("");
+    setLayout("vertical");
   };
   useEffect(() => {
     if (
@@ -48,6 +51,7 @@ function DropdownWidgetOption(props) {
       setStatus(props.currWidgetsDetails?.options?.status || "required");
       setDefaultValue(props.currWidgetsDetails?.options?.defaultValue || "");
       setDefaultCheckbox(props.currWidgetsDetails?.options?.defaultValue || []);
+      setLayout(props.currWidgetsDetails?.options?.layout || "vertical");
     } else {
       setStatus("required");
       resetState();
@@ -107,14 +111,22 @@ function DropdownWidgetOption(props) {
       props?.type === "dropdown" || props?.type === radioButtonWidget;
     const readOnlyWithoutValue =
       isReadOnly && !defaultValue && status !== "optional";
+    const isCheckbox = props?.type === "checkbox";
+    const WidgetLayout = ["checkbox", radioButtonWidget].includes(props.type)
+      ? layout
+      : null;
 
     // If it’s a dropdown and it’s read-only without a value (nor marked optional), stop here.
     if (isDropdownOrRadio && readOnlyWithoutValue) {
-      alert(
-        props?.type === "dropdown"
-          ? t("readonly-dropdown-error")
-          : t("readonly-radiobtn-error")
-      );
+      alert(t("readonly-error", { widgetName: props?.type }));
+      return;
+    } else if (
+      isCheckbox &&
+      isReadOnly &&
+      minCount > 0 &&
+      defaultCheckbox?.length === 0
+    ) {
+      alert(t("readonly-error", { widgetName: props?.type }));
       return;
     }
 
@@ -129,7 +141,8 @@ function DropdownWidgetOption(props) {
       null,
       status,
       defaultData,
-      isHideLabel
+      isHideLabel,
+      WidgetLayout
     );
     resetState();
   };
@@ -153,17 +166,18 @@ function DropdownWidgetOption(props) {
           }}
         >
           <div>
-            <label className="text-[13px] font-semibold">
+            <label htmlFor="title" className="text-[13px] font-semibold">
               {t("name")}
               <span className="text-[red] text-[13px]"> *</span>
             </label>
             <input
+              id="title"
               onInvalid={(e) => e.target.setCustomValidity(t("input-required"))}
               onInput={(e) => e.target.setCustomValidity("")}
-              required
               value={dropdownName}
               onChange={(e) => setDropdownName(e.target.value)}
               className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
+              required
             />
 
             <label className="text-[13px] font-semibold mt-[5px]">
@@ -245,27 +259,25 @@ function DropdownWidgetOption(props) {
               </>
             )}
             {props.type !== "checkbox" && (
-              <>
-                <div className="flex flex-row gap-[10px] mt-[0.5rem]">
-                  {statusArr.map((data, ind) => {
-                    return (
-                      <div
-                        key={ind}
-                        className="flex flex-row gap-[5px] items-center"
-                      >
-                        <input
-                          className="op-radio op-radio-xs my-1"
-                          type="radio"
-                          name="status"
-                          onChange={() => setStatus(data.toLowerCase())}
-                          checked={status.toLowerCase() === data.toLowerCase()}
-                        />
-                        <div className="text-[13px] font-500">{data}</div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </>
+              <div className="flex flex-row gap-[10px] mt-[0.5rem]">
+                {statusArr.map((data, ind) => (
+                  <div
+                    key={ind}
+                    className="flex flex-row gap-[5px] items-center"
+                  >
+                    <input
+                      className="op-radio op-radio-xs my-1"
+                      type="radio"
+                      name="status"
+                      onChange={() => setStatus(data.toLowerCase())}
+                      checked={status.toLowerCase() === data.toLowerCase()}
+                    />
+                    <div className="text-[13px] font-500 capitalize">
+                      {data}
+                    </div>
+                  </div>
+                ))}
+              </div>
             )}
             <div className="flex items-center mt-3 mb-3">
               <span>{t("font-size")} :</span>
@@ -286,8 +298,8 @@ function DropdownWidgetOption(props) {
                   );
                 })}
               </select>
-              <div className="flex flex-row gap-1 items-center ml-4  ">
-                <span>{t("color")} : </span>
+              <div className="flex flex-row gap-1 items-center ml-4">
+                <span className="capitalize">{t("color")} : </span>
                 <select
                   value={
                     props.fontColor ||
@@ -329,7 +341,10 @@ function DropdownWidgetOption(props) {
                       className="op-checkbox op-checkbox-sm"
                       onChange={(e) => setIsReadOnly(e.target.checked)}
                     />
-                    <label className="ml-1 mb-0" htmlFor="isreadonly">
+                    <label
+                      className="ml-2 mb-0 capitalize"
+                      htmlFor="isreadonly"
+                    >
                       {t("read-only")}
                     </label>
                   </div>
@@ -344,15 +359,45 @@ function DropdownWidgetOption(props) {
                       onChange={(e) => setIsHideLabel(e.target.checked)}
                     />
 
-                    <label className="ml-1 mb-0" htmlFor="ishidelabel">
+                    <label
+                      className="ml-2 mb-0 capitalize"
+                      htmlFor="ishidelabel"
+                    >
                       {t("hide-labels")}
                     </label>
                   </div>
                 )}
               </div>
             )}
+            {["checkbox", radioButtonWidget].includes(props.type) && (
+              <>
+                <div className="text-[13px] font-semibold mt-[5px] capitalize">
+                  {t("layout")}
+                </div>
+                <div
+                  className={`${props.type === "checkbox" ? "mb-[10px]" : ""} flex flex-row gap-[10px] mt-[0.5rem]`}
+                >
+                  {layoutArr.map((data, ind) => (
+                    <div
+                      key={ind}
+                      className="flex flex-row gap-[5px] items-center"
+                    >
+                      <input
+                        className="op-radio op-radio-xs my-1"
+                        type="radio"
+                        name="layout"
+                        checked={layout.toLowerCase() === data.toLowerCase()}
+                        onChange={() => setLayout(data.toLowerCase())}
+                      />
+                      <label className="text-[13px] font-500 mb-0 capitalize">
+                        {data}
+                      </label>
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
           </div>
-
           <div
             className={`${
               props.type === "checkbox" && props.isShowAdvanceFeature
