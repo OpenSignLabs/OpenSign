@@ -51,6 +51,17 @@ export default async function saveAsTemplate(request) {
 
       if (_docRes?.Placeholders?.length > 0) {
         if (_docRes?.IsSignyourself) {
+          //add required option for all widget when save as template using signyour-self draft document
+          const updatedPlaceholder = _docRes?.Placeholders.map(pageItem => ({
+            ...pageItem,
+            pos: pageItem.pos.map(p => ({
+              ...p,
+              options: {
+                ...p.options,
+                status: 'required',
+              },
+            })),
+          }));
           const placeHolders = {
             signerObjId: '',
             signerPtr: {},
@@ -58,7 +69,7 @@ export default async function saveAsTemplate(request) {
             blockColor: '#93a3db',
             Role: 'Role 1',
             email: '',
-            placeHolder: _docRes?.Placeholders,
+            placeHolder: updatedPlaceholder,
           };
           templateCls.set('Placeholders', [placeHolders]);
         } else {

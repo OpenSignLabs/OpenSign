@@ -186,6 +186,14 @@ export default function reportJson(id) {
                 btnIcon: "fa-light fa-envelope",
                 redirectUrl: "",
                 action: "saveastemplate"
+              },
+              {
+                btnId: "8440",
+                btnLabel: "Fix & resend",
+                hoverLabel: "Fix & resend",
+                btnIcon: "fa-light fa-paper-plane",
+                redirectUrl: "",
+                action: "recreatedocument"
               }
             ]
           }

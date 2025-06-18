@@ -1,0 +1,143 @@
+/* VS Code Dark Theme Improvements for OpenSign */
+
+/* Better disabled button styling for dark mode */
+[data-theme="opensigndark"] {
+  /* Primary button disabled state */
+  .op-btn-primary:disabled {
+    background-color: #3C3C3C !important;
+    color: #CCCCCC !important;
+    border-color: #565656 !important;
+    opacity: 1 !important;
+    cursor: not-allowed !important;
+  }
+
+  .op-btn-primary:disabled:hover {
+    background-color: #3C3C3C !important;
+    color: #CCCCCC !important;
+    border-color: #565656 !important;
+    transform: none !important;
+    box-shadow: none !important;
+  }
+
+  /* Secondary button disabled state */
+  .op-btn-secondary:disabled {
+    background-color: #2A2A2A !important;
+    color: #999999 !important;
+    border-color: #444444 !important;
+    opacity: 1 !important;
+    cursor: not-allowed !important;
+  }
+
+  /* Ghost button disabled state */
+  .op-btn-ghost:disabled {
+    background-color: transparent !important;
+    color: #666666 !important;
+    border-color: #444444 !important;
+    opacity: 1 !important;
+    cursor: not-allowed !important;
+  }
+
+  /* Better icon visibility for various states */
+  .icon-disabled,
+  .fa-light.text-gray-400,
+  .fa-light.text-gray-500 {
+    color: #858585 !important;
+  }
+
+  .icon-visible,
+  .nav-icon,
+  .folder-icon {
+    color: #CCCCCC !important;
+  }
+
+  /* Muted/inactive icons with better visibility */
+  .muted-icon,
+  .inactive-icon {
+    color: #999999 !important;
+  }
+
+  /* Hover states for better interactivity */
+  .hover\\:bg-gray-200:hover {
+    background-color: #2A2A2A !important;
+  }
+
+  .hover\\:text-gray-600:hover {
+    color: #E5E7EB !important;
+  }
+
+  /* Form elements in disabled state */
+  .op-input:disabled,
+  .op-select:disabled,
+  .op-textarea:disabled {
+    background-color: #2A2A2A !important;
+    color: #999999 !important;
+    border-color: #444444 !important;
+    cursor: not-allowed !important;
+  }
+
+  /* Dropdown menu items */
+  .dropdown-item {
+    color: #E5E7EB !important;
+  }
+
+  .dropdown-item:hover {
+    background-color: #2A2A2A !important;
+    color: #FFFFFF !important;
+  }
+
+  /* Better text contrast for various elements */
+  .text-gray-600 {
+    color: #CCCCCC !important;
+  }
+
+  .text-gray-500 {
+    color: #999999 !important;
+  }
+
+  .text-gray-400 {
+    color: #858585 !important;
+  }
+
+  /* Status indicators with better visibility */
+  .status-badge {
+    box-shadow: 0 2px 4px rgba(255, 255, 255, 0.1) !important;
+  }
+
+  /* Tooltip improvements */
+  .op-tooltip {
+    background-color: #1F2937 !important;
+    color: #E5E7EB !important;
+    border-color: #4B5563 !important;
+  }
+
+  /* Card and panel borders */
+  .op-card,
+  .border-gray-300 {
+    border-color: #2C2C2C !important;
+  }
+
+  /* Loading states */
+  .opacity-50 {
+    opacity: 0.7 !important;
+  }
+
+  /* Focus states for better accessibility */
+  .op-btn:focus-visible,
+  .op-input:focus-visible,
+  .op-select:focus-visible {
+    outline: 2px solid #007ACC !important;
+    outline-offset: 2px !important;
+  }
+}
+
+/* Ensure these styles don't affect light mode */
+[data-theme="opensigncss"] {
+  /* Keep original colors for light mode */
+  .icon-disabled {
+    color: #9CA3AF;
+  }
+  
+  .icon-visible {
+    color: #6B7280;
+  }
+}

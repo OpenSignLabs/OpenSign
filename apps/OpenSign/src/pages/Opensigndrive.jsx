@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import "../styles/opensigndrive.css";
 import {
-  iconColor,
+  getThemeIconColor,
 } from "../constant/const";
 import {
   getDrive
@@ -539,6 +539,12 @@ function Opensigndrive() {
       }
     }, 300);
   };
+
+  const handleSearchPaste = (e) => {
+    setTimeout(() => {
+      handleSearchChange({ target: { value: e.target.value } });
+    }, 0);
+  };
   // Cleanup on unmount
   useEffect(() => {
     return () => {
@@ -657,7 +663,8 @@ function Opensigndrive() {
                   type="search"
                   value={searchTerm}
                   onChange={handleSearchChange}
-                  placeholder="Search documents…"
+                  placeholder={t("search-documents")}
+                  onPaste={handleSearchPaste}
                   className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-64 text-xs"
                 />
               </div>
@@ -668,7 +675,7 @@ function Opensigndrive() {
                 onClick={() => setMobileSearchOpen((open) => !open)}
               >
                 <i
-                  style={{ color: `${iconColor}` }}
+                  style={{ color: `${getThemeIconColor()}` }}
                   className="fa-solid fa-magnifying-glass"
                 ></i>
               </button>
@@ -681,7 +688,7 @@ function Opensigndrive() {
                   <i
                     className="fa-light fa-plus-square text-[24px]"
                     aria-hidden="true"
-                    style={{ color: `${iconColor}` }}
+                    style={{ color: `${getThemeIconColor()}` }}
                   ></i>
                 </div>
                 <div
@@ -730,9 +737,9 @@ function Opensigndrive() {
                   <i
                     className="fa-light fa-sort-amount-asc mr-[5px] text-[19px]"
                     aria-hidden="true"
-                    style={{ color: `${iconColor}` }}
+                    style={{ color: `${getThemeIconColor()}` }}
                   ></i>
-                  <span style={{ fontSize: "15px", color: `${iconColor}` }}>
+                  <span style={{ fontSize: "15px", color: `${getThemeIconColor()}` }}>
                     {selectedSort}
                   </span>
                 </div>
@@ -793,7 +800,7 @@ function Opensigndrive() {
               >
                 <i
                   className={`${isList ? "fa-light fa-th-large" : "fa-light fa-list"} text-[20px]`}
-                  style={{ color: `${iconColor}` }}
+                  style={{ color: `${getThemeIconColor()}` }}
                   aria-hidden="true"
                 ></i>
               </div>
@@ -809,7 +816,7 @@ function Opensigndrive() {
                   <i
                     className="fa-light fa-ellipsis-vertical fa-lg"
                     aria-hidden="true"
-                    style={{ color: `${iconColor}` }}
+                    style={{ color: `${getThemeIconColor()}` }}
                   ></i>
                 </div>
                 <div
@@ -854,7 +861,8 @@ function Opensigndrive() {
                 type="search"
                 value={searchTerm}
                 onChange={handleSearchChange}
-                placeholder="Search documents…"
+                placeholder={t("search-documents")}
+                onPaste={handleSearchPaste}
                 className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
               />
             </div>

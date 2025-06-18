@@ -29,7 +29,7 @@ const DashboardButton = (props) => {
           : "cursor-default"
       } w-full shadow-md px-3 py-2 op-card bg-base-100`}
     >
-      <div className="flex flex-row items-center">
+      <div className="flex flex-row items-center text-base-content">
         <div className="flex flex-row items-center">
           <span className="rounded-full bg-base-content bg-opacity-20 w-[60px] h-[60px] self-start flex justify-center items-center">
             <i
@@ -39,7 +39,7 @@ const DashboardButton = (props) => {
             ></i>
           </span>
         </div>
-        <div className="text-lg ml-3 text-base-content">
+        <div className="text-lg ml-3">
           {t(`sidebar.${props.Label}`)}
           {props.Label === "Sign yourself" && (
             <div className="text-gray-500 text-xs mt-1">

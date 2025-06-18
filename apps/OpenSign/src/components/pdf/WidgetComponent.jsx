@@ -8,6 +8,7 @@ import {
   isMobile,
   radioButtonWidget,
   textInputWidget,
+  cellsWidget,
   textWidget,
   widgets
 } from "../../constant/Utils";
@@ -36,6 +37,10 @@ function WidgetComponent(props) {
   const [, textInput] = useDrag({
     type: "BOX",
     item: { type: "BOX", id: 7, text: textInputWidget }
+  });
+  const [, cells] = useDrag({
+    type: "BOX",
+    item: { type: "BOX", id: 17, text: cellsWidget }
   });
   const [, initials] = useDrag({
     type: "BOX",
@@ -89,6 +94,7 @@ function WidgetComponent(props) {
       date,
       text,
       textInput,
+      cells,
       checkbox,
       dropdown,
       radioButton,
@@ -132,7 +138,9 @@ function WidgetComponent(props) {
   );
   const filterWidgets = widget.filter(
     (data) =>
-      !["dropdown", radioButtonWidget, textInputWidget].includes(data.type)
+      !["dropdown", radioButtonWidget, textInputWidget].includes(
+        data.type
+      )
   );
   const textWidgetData = widget.filter((data) => data.type !== textWidget);
   const updateWidgets = props.isSignYourself

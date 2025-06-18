@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import ReportTable from "../primitives/GetReportDisplay";
 import Parse from "parse";
 import axios from "axios";
@@ -27,12 +27,18 @@ const Report = () => {
   const [isImport, setIsImport] = useState(false);
   const abortController = new AbortController();
   const docPerPage = 10;
+  const [searchTerm, setSearchTerm] = useState("");
+  const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
+  const [isSearchResult, setIsSearchResult] = useState(false);
+  const debounceTimer = useRef(null);
 
   // below useEffect is call when id param change
   useEffect(() => {
     setReportName("");
     setList([]);
-    getReportData();
+    setSearchTerm("");
+    setMobileSearchOpen(false);
+    getReportData(0, docPerPage, "");
 
     // Function returned from useEffect is called on unmount
     return () => {
@@ -48,7 +54,7 @@ const Report = () => {
   // below useEffect call when isNextRecord state is true and fetch next record
   useEffect(() => {
     if (isNextRecord) {
-      getReportData(List.length, 20);
+      getReportData(List.length, 20, searchTerm);
     }
     // eslint-disable-next-line
   }, [isNextRecord]);
@@ -56,7 +62,58 @@ const Report = () => {
   const handleDontShow = (isChecked) => {
     setIsDontShow(isChecked);
   };
-  const getReportData = async (skipUserRecord = 0, limit = 20) => {
+
+  const handleSearchChange = async (e) => {
+    const term = e.target.value.toLowerCase();
+    setSearchTerm(term);
+    if (debounceTimer.current) {
+      clearTimeout(debounceTimer.current);
+    }
+    debounceTimer.current = setTimeout(async () => {
+      try {
+        const headers = {
+          "Content-Type": "application/json",
+          "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
+          sessiontoken: localStorage.getItem("accesstoken")
+        };
+        const url = `${localStorage.getItem("baseUrl")}functions/getReport`;
+        const res = await axios.post(
+          url,
+          { reportId: id, searchTerm: term, skip: 0, limit: docPerPage },
+          { headers }
+        );
+        const data = res.data?.result || [];
+        if (!data.error) {
+          setList(data);
+          setIsMoreDocs(data.length >= docPerPage);
+          setIsNextRecord(false);
+          setIsSearchResult(true);
+        }
+      } catch (err) {
+        console.error("Search error:", err);
+      }
+    }, 300);
+    setIsSearchResult(false);
+  };
+
+  const handleSearchPaste = (e) => {
+    setTimeout(() => {
+      handleSearchChange({ target: { value: e.target.value } });
+    }, 0);
+  };
+
+  useEffect(() => {
+    return () => {
+      if (debounceTimer.current) {
+        clearTimeout(debounceTimer.current);
+      }
+    };
+  }, []);
+  const getReportData = async (
+    skipUserRecord = 0,
+    limit = 20,
+    term = searchTerm
+  ) => {
     // setIsLoader(true);
     const json = reportJson(id);
     if (json) {
@@ -77,6 +134,9 @@ const Report = () => {
         const skipRecord = id === "4Hhwbp482K" ? 0 : skipUserRecord;
         const limitRecord = id === "4Hhwbp482K" ? 200 : limit;
         const params = { reportId: id, skip: skipRecord, limit: limitRecord };
+        if (term) {
+          params.searchTerm = term;
+        }
         const url = `${localStorage.getItem("baseUrl")}functions/getReport`;
         const res = await axios.post(url, params, {
           headers: headers,
@@ -197,6 +257,12 @@ const Report = () => {
               report_help={reporthelp}
               tourData={tourData}
               isDontShow={isDontShow}
+              mobileSearchOpen={mobileSearchOpen}
+              setMobileSearchOpen={setMobileSearchOpen}
+              searchTerm={searchTerm}
+              handleSearchChange={handleSearchChange}
+              handleSearchPaste={handleSearchPaste}
+              isSearchResult={isSearchResult}
               isImport={isImport}
             />
           ) : (

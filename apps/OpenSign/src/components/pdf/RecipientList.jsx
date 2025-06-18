@@ -31,7 +31,7 @@ const RecipientList = (props) => {
     e.preventDefault();
   };
 
-  //handle draggable element drop and also used in mobile view on up and down key to chnage sequence of recipient's list
+  //handle draggable element drop and also used in mobile view on up and down key to change sequence of recipient's list
   const handleChangeSequence = (e, ind, isUp, isDown, obj) => {
     e.preventDefault();
     let draggedItemId;

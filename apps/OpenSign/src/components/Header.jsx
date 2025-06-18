@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import dp from "../assets/images/dp.png";
 import FullScreenButton from "./FullScreenButton";
+import ThemeToggle from "./ThemeToggle";
 import { useNavigate } from "react-router";
 import Parse from "parse";
 import { useWindowSize } from "../hook/useWindowSize";
@@ -85,6 +86,34 @@ const Header = ({ showSidebar, setIsMenu, isConsole }) => {
     };
   }, [isOpen]);
 
+
+  useEffect(() => {
+    const updateLogoForTheme = () => {
+      const isDarkMode =
+        document.documentElement.getAttribute("data-theme") === "opensigndark";
+      const logo = isDarkMode
+        ? "/static/js/assets/images/logo-dark.png" // Path to the dark mode logo
+        : appInfo.applogo; // Use current logo for light mode
+      if (applogo !== logo) {
+        setAppLogo(logo);
+      }
+    };
+
+    // Set the logo immediately based on the current theme
+    updateLogoForTheme();
+
+    const observer = new MutationObserver(() => {
+      updateLogoForTheme();
+    });
+
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["data-theme"]
+    });
+
+    return () => observer.disconnect();
+  }, [applogo]);
+
   return (
     <div>
       <div className="op-navbar bg-base-100 shadow">
@@ -147,7 +176,7 @@ const Header = ({ showSidebar, setIsMenu, isConsole }) => {
             </div>
             <ul
               tabIndex={0}
-              className={`mt-3 z-[1] p-2 shadow op-dropdown-open op-menu op-menu-sm op-dropdown-content text-base-content bg-base-100 rounded-box w-52 ${
+              className={`mt-3 z-[1] p-2 shadow op-dropdown-open op-menu op-menu-sm op-dropdown-content text-base-content bg-base-100 rounded-box w-56 ${
                 isOpen ? "" : "hidden"
               }`}
             >
@@ -192,6 +221,16 @@ const Header = ({ showSidebar, setIsMenu, isConsole }) => {
                     <span>
                       <i className="fa-light fa-check-square"></i>{" "}
                       {t("verify-document")}
+                    </span>
+                  </li>
+                  <li>
+                    <span>
+                      <i className="fa-light fa-moon"></i>
+                      {t("dark-mode")}
+                      <span className="text-[10px] font-semibold bg-base-300 text-base-content px-1 rounded-md">
+                        BETA
+                      </span>
+                      <ThemeToggle />
                     </span>
                   </li>
                 </>
