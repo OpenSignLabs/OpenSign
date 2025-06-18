@@ -16,7 +16,8 @@ import {
   toDataUrl,
   decryptPdf,
   base64ToFile,
-  getFileAsArrayBuffer
+  getFileAsArrayBuffer,
+  removeTrailingSegment
 } from "../constant/Utils";
 import { PDFDocument } from "pdf-lib";
 import axios from "axios";
@@ -240,7 +241,7 @@ const Forms = (props) => {
         ) {
           try {
             const baseApi = localStorage.getItem("baseUrl") || "";
-            const url = baseApi.replace("/app", "") + "docxtopdf";
+            const url = removeTrailingSegment(baseApi) + "/docxtopdf";
             let fd = new FormData();
             fd.append("file", file);
             setfileload(true);
