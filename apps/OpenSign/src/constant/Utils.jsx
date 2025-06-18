@@ -98,6 +98,27 @@ export const getSecureUrl = async (url) => {
   }
 };
 
+/**
+ * Removes a trailing path segment from a URL string, if present.
+ *
+ * @param {string} url     - The original URL.
+ * @param {string} segment - The segment to strip off (default: "app").
+ * @returns {string}       - The URL with the trailing segment removed, or unmodified if it didn’t match.
+ */
+export function removeTrailingSegment(url, segment = "app") {
+  // Normalize a trailing slash (e.g. “/app/” → “/app”)
+  const normalized = url.endsWith("/") ? url.slice(0, -1) : url;
+
+  const lastSlash = normalized.lastIndexOf("/");
+  const lastPart = normalized.slice(lastSlash + 1);
+
+  if (lastPart === segment) {
+    return normalized.slice(0, lastSlash);
+  }
+
+  return normalized;
+}
+
 export const color = [
   "#93a3db",
   "#e6c3db",
@@ -3425,7 +3446,7 @@ export const handleCheckResponse = (checkUser, setminRequiredCount) => {
 export const decryptPdf = async (file, password) => {
   const name = generatePdfName(16);
   const baseApi = localStorage.getItem("baseUrl") || "";
-  const url = baseApi.replace("/app", "") + "decryptpdf?ts=" + Date.now();
+  const url = removeTrailingSegment(baseApi) + "/decryptpdf?ts=" + Date.now();
   let formData = new FormData();
   formData.append("file", file);
   formData.append("password", password);
@@ -3468,6 +3489,15 @@ export function base64ToFile(base64String, filename) {
   return new File([u8arr], filename, { type: mime });
 }
 
+/**
+ * Reads the given File object and returns its contents as an ArrayBuffer.
+ *
+ * @param {File} file
+ *   The File instance to be read.
+ * @returns {Promise<ArrayBuffer>}
+ *   A promise that resolves with the file’s binary data as an ArrayBuffer,
+ *   or rejects with an error if the read fails.
+ */
 export function getFileAsArrayBuffer(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
