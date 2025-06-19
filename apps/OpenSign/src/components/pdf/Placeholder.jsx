@@ -740,7 +740,7 @@ function Placeholder(props) {
         return "not-allowed";
       }
     } else {
-      return "all-scroll";
+      return "move";
     }
   };
 
@@ -946,23 +946,24 @@ function Placeholder(props) {
             props.pos.key === props?.currWidgetsDetails?.key && <BorderResize />
           )}
 
-          {/* 1- Show a ouline if props.pos.key === props?.currWidgetsDetails?.key, indicating the current user's selected widget.
-            2- If props.isShowBorder is true, display ouline for all widgets. 
-            3- Use the combination of props?.isAlllowModify and !props?.assignedWidgetId.includes(props.pos.key) to determine when to show ouline:
-              3.1- When isAlllowModify is true, show ouline.
-              3.2- Do not display ouline for widgets already assigned (props.assignedWidgetId.includes(props.pos.key) is true). 
+          {/* 1- Show a border if props.pos.key === props?.currWidgetsDetails?.key, indicating the current user's selected widget.
+              2- If props.isShowBorder is true, display border for all widgets. 
+              3- Use the combination of props?.isAlllowModify and !props?.assignedWidgetId.includes(props.pos.key) to determine when to show border:
+                3.1- When isAlllowModify is true, show border.
+                3.2- Do not display border for widgets already assigned (props.assignedWidgetId.includes(props.pos.key) is true). 
             */}
+          {props.pos.key === props?.currWidgetsDetails?.key &&
+            (props.isShowBorder ||
+              (props?.isAlllowModify &&
+                !props?.assignedWidgetId.includes(props.pos.key))) && (
+              <div
+                style={{ borderColor: themeColor }}
+                className="w-[calc(100%+21px)] h-[calc(100%+21px)] cursor-move absolute inline-block border-[1px] border-dashed"
+              ></div>
+            )}
           <div
-            className={`${
-              props.pos.key === props?.currWidgetsDetails?.key &&
-              (props.isShowBorder ||
-                (props?.isAlllowModify &&
-                  !props?.assignedWidgetId.includes(props.pos.key)))
-                ? "outline-[0.3px] outline-dashed outline-offset-[10px]"
-                : ""
-            } flex items-stretch justify-center`}
+            className="flex items-stretch justify-center"
             style={{
-              outlineColor: themeColor,
               left: xPos(props.pos, props.isSignYourself),
               top: yPos(props.pos, props.isSignYourself),
               width: "100%",

@@ -1472,6 +1472,7 @@ function WidgetsValueModal(props) {
       case cellsWidget:
         return (
           <CellsWidget
+            isEnabled={true}
             count={cellsValue.length}
             height="100%"
             value={cellsValue.join("")}
@@ -1762,6 +1763,10 @@ function WidgetsValueModal(props) {
         regexValidation = /^[0-9\s]*$/;
         validateExpression(regexValidation);
         break;
+      case "ssn":
+        regexValidation = /^(?!000|666|9\d{2})\d{3}-(?!00)\d{2}-(?!0000)\d{4}$/;
+        validateExpression(regexValidation);
+        break;
       default:
         // Grab the current pattern (if it exists)
         const pattern = currWidgetsDetails?.options?.validation?.pattern;
@@ -1872,6 +1877,11 @@ function WidgetsValueModal(props) {
     }
   };
   const handleclose = () => {
+    // If validation is shown, clear the response and close the modal
+    if (isShowValidation) {
+      handleClear();
+      setIsShowValidation(false);
+    }
     dispatch(setIsShowModal({}));
     dispatch(setLastIndex(""));
     if (currWidgetsDetails?.type === textWidget && uniqueId) {
@@ -1936,7 +1946,7 @@ function WidgetsValueModal(props) {
     <>
       <ModalUi
         isOpen={true}
-        handleClose={() => !isShowValidation && handleclose()}
+        handleClose={() => handleclose()}
         position="bottom"
       >
         <div className="h-[100%] p-[18px]">

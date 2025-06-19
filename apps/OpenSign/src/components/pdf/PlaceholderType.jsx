@@ -226,6 +226,7 @@ function PlaceholderType(props) {
         props.isPlaceholder || props.isSignYourself || props.isSelfSign;
       return (
         <CellsWidget
+          isEnabled={iswidgetEnable}
           count={count}
           height={height}
           value={cells.join("")}
