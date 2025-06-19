@@ -7,6 +7,7 @@ import ModalUi from "./ModalUi";
 import AddSigner from "../components/AddSigner";
 import {
   emailRegex,
+  iconColor,
 } from "../constant/const";
 import Alert from "./Alert";
 import Tooltip from "./Tooltip";
@@ -38,9 +39,12 @@ import { useTranslation } from "react-i18next";
 import DownloadPdfZip from "./DownloadPdfZip";
 import * as XLSX from "xlsx";
 import EditContactForm from "../components/EditContactForm";
+import { useElSize } from "../hook/useElSize";
 
 const ReportTable = (props) => {
   const copyUrlRef = useRef(null);
+  const titleRef = useRef(null);
+  const titleElement = useElSize(titleRef);
   const appName =
     "OpenSign™";
   const drivename = appName === "OpenSign™" ? "OpenSign™" : "";
@@ -91,6 +95,12 @@ const ReportTable = (props) => {
   const recordsPerPage = 5;
   const startIndex = (currentPage - 1) * props.docPerPage;
   const { isMoreDocs, setIsNextRecord } = props;
+
+  useEffect(() => {
+    if (props.isSearchResult) {
+      setCurrentPage(1);
+    }
+  }, [props.isSearchResult]);
 
   const getPaginationRange = () => {
     const totalPageNumbers = 7; // Adjust this value to show more/less page numbers
@@ -907,7 +917,6 @@ const ReportTable = (props) => {
       setActLoader({});
     }
   };
-
   const handleUpdateExpiry = async (e, item) => {
     e.preventDefault();
     e.stopPropagation();
@@ -999,7 +1008,7 @@ const ReportTable = (props) => {
                   ? "op-border-primary op-text-primary"
                   : x.Activity === "VIEWED"
                     ? "border-green-400 text-green-400"
-                    : "border-black text-black"
+                    : "border-base-content text-base-content"
               } focus:outline-none border-2 w-[60px] h-[30px] text-[11px] rounded-full`}
             >
               {x?.Activity?.toUpperCase() || "-"}
@@ -1314,7 +1323,6 @@ const ReportTable = (props) => {
     try {
       const params = { docId: doc?.objectId };
       const templateRes = await Parse.Cloud.run("saveastemplate", params);
-      // console.log("templateRes ", templateRes);
       setTemplateId(templateRes?.id);
       setIsSuccess({ [doc.objectId]: true });
     } catch (err) {
@@ -1394,6 +1402,12 @@ const ReportTable = (props) => {
       setActLoader({});
     }
   };
+
+  const restrictBtn = (item, act) => {
+    return item.IsSignyourself && act.action === "recreatedocument"
+      ? true
+      : false;
+  };
   return (
     <div className="relative">
       {Object.keys(actLoader)?.length > 0 && (
@@ -1416,7 +1430,10 @@ const ReportTable = (props) => {
             />
           </>
         )}
-        <div className="flex flex-row items-center justify-between my-2 mx-3 text-[20px] md:text-[23px]">
+        <div
+          ref={titleRef}
+          className="flex flex-row items-center justify-between my-2 mx-3 text-[20px] md:text-[23px]"
+        >
           <div className="font-light">
             {t(`report-name.${props.ReportName}`)}{" "}
             {props.report_help && (
@@ -1428,26 +1445,68 @@ const ReportTable = (props) => {
               </span>
             )}
           </div>
-          <div className="flex flex-row justify-center items-center gap-3">
-            {props.isImport && (
-              <div className="cursor-pointer" onClick={() => handleImportBtn()}>
-                <i className="fa-light fa-upload op-text-secondary text-[23px] md:text-[30px]"></i>
+          <div className="flex flex-row justify-center items-center gap-3 mb-2">
+            {/* Search input for report bigger in width */}
+            {titleElement?.width > 500 && (
+              <div className="flex">
+                <input
+                  type="search"
+                  value={props.searchTerm}
+                  onChange={props.handleSearchChange}
+                  placeholder={
+                    props.ReportName === "Contactbook"
+                      ? t("search-contacts")
+                      : isTemplateReport
+                        ? t("search-templates")
+                        : t("search-documents")
+                  }
+                  onPaste={props.handleSearchPaste}
+                  className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-64 text-xs"
+                />
               </div>
             )}
+            {/* contact import */}
+            {props.isImport && (
+              <div
+                className="cursor-pointer flex"
+                onClick={() => handleImportBtn()}
+              >
+                <i className="fa-light fa-upload op-text-secondary text-[23px] md:text-[25px]"></i>
+              </div>
+            )}
+            {/* add contact form  */}
             {props.form && (
               <div
-                className="cursor-pointer"
+                className="cursor-pointer flex"
                 onClick={() => handleContactFormModal()}
               >
-                <i className="fa-light fa-square-plus text-accent text-[30px] md:text-[35px]"></i>
+                <i className="fa-light fa-square-plus text-accent text-[30px] md:text-[32px]"></i>
               </div>
             )}
+            {/* create template form  */}
             {isTemplateReport && (
-              <i
+              <div
                 data-tut="reactourFirst"
+                className="cursor-pointer flex"
                 onClick={() => navigate("/form/template")}
-                className="cursor-pointer fa-light fa-square-plus text-accent text-[30px] md:text-[35px]"
-              ></i>
+              >
+                <i className="cursor-pointer fa-light fa-square-plus text-accent text-[30px] md:text-[32px]"></i>
+              </div>
+            )}
+            {/* search icon/magnifer icon  */}
+            {titleElement?.width < 500 && (
+              <button
+                className="flex justify-center items-center focus:outline-none rounded-md text-[18px]"
+                aria-label="Search"
+                onClick={() =>
+                  props.setMobileSearchOpen(!props.mobileSearchOpen)
+                }
+              >
+                <i
+                  style={{ color: `${iconColor}` }}
+                  className="fa-solid fa-magnifying-glass"
+                ></i>
+              </button>
             )}
             <ModalUi
               isOpen={isModal?.export}
@@ -1536,6 +1595,19 @@ const ReportTable = (props) => {
             </ModalUi>
           </div>
         </div>
+        {/* Search input for report smalle in width */}
+        {titleElement?.width < 500 && props.mobileSearchOpen && (
+          <div className="top-full left-0 w-full bg-white px-3 pt-1 pb-3">
+            <input
+              type="search"
+              value={props.searchTerm}
+              onChange={props.handleSearchChange}
+              placeholder={t("search-documents")}
+              onPaste={props.handleSearchPaste}
+              className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
+            />
+          </div>
+        )}
         <div
           className={`overflow-auto w-full border-b ${
             props.List?.length > 0
@@ -1602,7 +1674,7 @@ const ReportTable = (props) => {
                                 handleClose={handleClose}
                               >
                                 <div className="m-[20px]">
-                                  <div className="text-lg font-normal text-black">
+                                  <div className="text-lg font-normal text-base-content">
                                     {t("contact-delete-alert")}
                                   </div>
                                   <hr className="bg-[#ccc] mt-4 " />
@@ -1837,33 +1909,39 @@ const ReportTable = (props) => {
                                         {isOption[item.objectId] &&
                                           act.action === "option" && (
                                             <ul className="absolute -right-1 top-auto z-[70] w-max op-dropdown-content op-menu shadow-black/20 shadow bg-base-100 text-base-content rounded-box">
-                                              {act.subaction?.map((subact) => (
-                                                <li
-                                                  key={subact.btnId}
-                                                  onClick={() =>
-                                                    handleActionBtn(
-                                                      subact,
-                                                      item
-                                                    )
-                                                  }
-                                                  title={t(
-                                                    `btnLabel.${subact.hoverLabel}`
-                                                  )}
-                                                >
-                                                  <span>
-                                                    <i
-                                                      className={`${subact.btnIcon} mr-1.5`}
-                                                    ></i>
-                                                    {subact.btnLabel && (
-                                                      <span className="text-[13px] capitalize font-medium">
-                                                        {t(
-                                                          `btnLabel.${subact.btnLabel}`
+                                              {act.subaction?.map(
+                                                (subact) =>
+                                                  !restrictBtn(
+                                                    item,
+                                                    subact
+                                                  ) && (
+                                                    <li
+                                                      key={subact.btnId}
+                                                      onClick={() =>
+                                                        handleActionBtn(
+                                                          subact,
+                                                          item
+                                                        )
+                                                      }
+                                                      title={t(
+                                                        `btnLabel.${subact.hoverLabel}`
+                                                      )}
+                                                    >
+                                                      <span>
+                                                        <i
+                                                          className={`${subact.btnIcon} mr-1.5`}
+                                                        ></i>
+                                                        {subact.btnLabel && (
+                                                          <span className="text-[13px] capitalize font-medium">
+                                                            {t(
+                                                              `btnLabel.${subact.btnLabel}`
+                                                            )}
+                                                          </span>
                                                         )}
                                                       </span>
-                                                    )}
-                                                  </span>
-                                                </li>
-                                              ))}
+                                                    </li>
+                                                  )
+                                              )}
                                             </ul>
                                           )}
                                       </div>
@@ -1972,7 +2050,7 @@ const ReportTable = (props) => {
                                 </div>
                               ) : (
                                 <div className="m-[20px]">
-                                  <div className="text-lg font-normal text-black">
+                                  <div className="text-lg font-normal text-base-content">
                                     {t("save-as-template-?")}
                                   </div>
                                   <hr className="bg-[#ccc] mt-3" />
@@ -2010,7 +2088,7 @@ const ReportTable = (props) => {
                                 </label>
                                 <input
                                   type="date"
-                                  className="rounded-full mb-2 bg-base-300 w-full px-4 py-2 text-black border-2 hover:border-spacing-2"
+                                  className="rounded-full mb-2 bg-base-300 w-full px-4 py-2 text-base-content border-2 hover:border-spacing-2"
                                   defaultValue={
                                     item?.ExpiryDate?.iso?.split("T")?.[0]
                                   }
@@ -2120,7 +2198,7 @@ const ReportTable = (props) => {
                               handleClose={handleClose}
                             >
                               <div className="m-[20px]">
-                                <div className="text-lg font-normal text-black">
+                                <div className="text-lg font-normal text-base-content">
                                   {t("delete-document-alert")}
                                 </div>
                                 <hr className="bg-[#ccc] mt-4" />
@@ -2177,7 +2255,7 @@ const ReportTable = (props) => {
                                 {shareUrls.map((share, i) => (
                                   <div
                                     key={i}
-                                    className="text-sm font-normal text-black flex my-2 justify-between items-center"
+                                    className="text-sm font-normal text-base-content flex my-2 justify-between items-center"
                                   >
                                     <span className="w-[150px] mr-[5px] md:mr-0 md:w-[300px] whitespace-nowrap overflow-hidden text-ellipsis text-sm font-semibold">
                                       {share.email}
@@ -2219,14 +2297,14 @@ const ReportTable = (props) => {
                               handleClose={handleClose}
                             >
                               <div className="m-[20px]">
-                                <div className="text-sm md:text-lg font-normal text-black">
+                                <div className="text-sm md:text-lg font-normal text-base-content">
                                   {t("revoke-document-alert")}
                                 </div>
                                 <div className="mt-2">
                                   <textarea
                                     rows={3}
                                     placeholder="Reason (optional)"
-                                    className="px-4 op-textarea op-textarea-bordered focus:outline-none hover:border-base-content w-full text-xs"
+                                    className="px-4 op-textarea op-textarea-bordered text-base-content focus:outline-none hover:border-base-content w-full text-xs"
                                     value={reason}
                                     onChange={(e) => setReason(e.target.value)}
                                   ></textarea>
@@ -2337,7 +2415,7 @@ const ReportTable = (props) => {
                                       )}
                                       {Object?.keys(isNextStep) <= 0 && (
                                         <div className="flex justify-between items-center gap-2 my-2 px-3">
-                                          <div className="text-black">
+                                          <div className="text-base-content">
                                             {user?.signerPtr?.Name || "-"}{" "}
                                             {`<${
                                               user?.email

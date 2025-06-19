@@ -5,6 +5,7 @@ import RegexParser from "regex-parser";
 import {
   signatureTypes,
   textInputWidget,
+  cellsWidget,
   textWidget
 } from "../../constant/Utils";
 import { fontColorArr, fontsizeArr } from "../../constant/Utils";
@@ -19,7 +20,8 @@ const WidgetNameModal = (props) => {
     status: "required",
     hint: "",
     textvalidate: "",
-    isReadOnly: false
+    isReadOnly: false,
+    cellCount: 5
   });
   const [isValid, setIsValid] = useState(true);
   const statusArr = ["Required", "Optional"];
@@ -51,12 +53,14 @@ const WidgetNameModal = (props) => {
           props.defaultdata?.options?.validation?.type === "regex"
             ? props.defaultdata?.options?.validation?.pattern
             : props.defaultdata?.options?.validation?.type || "",
-        isReadOnly: props.defaultdata?.options?.isReadOnly || false
+        isReadOnly: props.defaultdata?.options?.isReadOnly || false,
+        cellCount: props.defaultdata?.options?.cellCount || 5
       });
     } else {
       setFormdata({
         ...formdata,
-        name: props.defaultdata?.options?.name || ""
+        name: props.defaultdata?.options?.name || "",
+        cellCount: props.defaultdata?.options?.cellCount || 5
       });
     }
 
@@ -83,16 +87,17 @@ const WidgetNameModal = (props) => {
           props.handleData(data, props.defaultdata?.type);
         }
       } else {
-        const isTextInput = props.defaultdata?.type === textInputWidget;
+        const isTextInput = [textInputWidget, cellsWidget].includes(
+          props.defaultdata?.type
+        );
         const { isReadOnly, defaultValue, status } = formdata;
         // If it’s a text‐input widget, enforce that read-only fields have
         // either a defaultValue or an "optional" status.
         if (isTextInput) {
           const readOnlyWithoutValue =
             isReadOnly && !defaultValue && status !== "optional";
-
           if (readOnlyWithoutValue) {
-            alert(t("readonly-textinput-error"));
+            alert(t("readonly-error", { widgetName: props.defaultdata?.type }));
             return;
           }
         }
@@ -104,7 +109,8 @@ const WidgetNameModal = (props) => {
         defaultValue: "",
         status: "required",
         hint: "",
-        textvalidate: ""
+        textvalidate: "",
+        cellCount: 5
       });
       setSignatureType(signTypes);
     }
@@ -112,6 +118,23 @@ const WidgetNameModal = (props) => {
   const handleChange = (e) => {
     if (e) {
       setFormdata({ ...formdata, [e.target.name]: e.target.value });
+    } else {
+      setFormdata({ ...formdata, textvalidate: "" });
+    }
+  };
+
+  const handleChangeValidateInput = (e) => {
+    if (e) {
+      if (e.target.value === "ssn") {
+        setFormdata({
+          ...formdata,
+          [e.target.name]: e.target.value,
+          hint: "xxx-xx-xxxx",
+          cellCount: 11
+        });
+      } else {
+        setFormdata({ ...formdata, [e.target.name]: e.target.value });
+      }
     } else {
       setFormdata({ ...formdata, textvalidate: "" });
     }
@@ -125,7 +148,11 @@ const WidgetNameModal = (props) => {
     } else {
       setIsValid(true);
     }
-    setFormdata({ ...formdata, [e.target.name]: e.target.value });
+    const val =
+      props.defaultdata?.type === cellsWidget
+        ? e.target.value.slice(0, formdata.cellCount)
+        : e.target.value;
+    setFormdata({ ...formdata, [e.target.name]: val });
   };
 
   function handleValidation(type) {
@@ -135,7 +162,10 @@ const WidgetNameModal = (props) => {
       case "number":
         return "/^\\d+$/";
       case "text":
-        return "/^[a-zA-Zs]+$/";
+        //allow space in text regex
+        return "/^[a-zA-Z ]+$/";
+      case "ssn":
+        return "/^(?!000|666|9\\d{2})\\d{3}-(?!00)\\d{2}-(?!0000)\\d{4}$/";
       default:
         return type;
     }
@@ -163,7 +193,7 @@ const WidgetNameModal = (props) => {
       <form
         onSubmit={handleSubmit}
         className={`${
-          props.defaultdata?.type === textInputWidget
+          [textInputWidget, cellsWidget].includes(props.defaultdata?.type)
             ? "pt-0"
             : ["signature", "initials"].includes(props.defaultdata?.type)
               ? "pt-2"
@@ -187,7 +217,21 @@ const WidgetNameModal = (props) => {
             />
           </div>
         )}
-        {props.defaultdata?.type === textInputWidget && (
+        {props.defaultdata?.type === cellsWidget && (
+          <div className="mb-[0.75rem] text-[13px]">
+            <label htmlFor="cellCount">{t("cell-count")}</label>
+            <input
+              className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
+              type="number"
+              min="1"
+              name="cellCount"
+              value={formdata.cellCount}
+              onChange={(e) => handleChange(e)}
+              required
+            />
+          </div>
+        )}
+        {[textInputWidget, cellsWidget].includes(props.defaultdata?.type) && (
           <>
             <div className="mb-[0.75rem]">
               <label htmlFor="name" className="text-[13px]">
@@ -199,6 +243,11 @@ const WidgetNameModal = (props) => {
                 value={formdata.defaultValue}
                 onChange={(e) => handledefaultChange(e)}
                 autoComplete="off"
+                maxLength={
+                  props.defaultdata?.type === cellsWidget
+                    ? formdata.cellCount
+                    : undefined
+                }
                 onBlur={() => {
                   if (isValid === false) {
                     setFormdata({ ...formdata, defaultValue: "" });
@@ -250,7 +299,9 @@ const WidgetNameModal = (props) => {
                 );
               })}
             </div>
-            {[textInputWidget].includes(props.defaultdata?.type) && (
+            {[textInputWidget, cellsWidget].includes(
+              props.defaultdata?.type
+            ) && (
               <div className="flex items-center">
                 <input
                   id="isReadOnly"
@@ -265,7 +316,10 @@ const WidgetNameModal = (props) => {
                     }))
                   }
                 />
-                <label className="ml-1 mb-0" htmlFor="isreadonly">
+                <label
+                  className="ml-1.5 mb-0 capitalize text-[13px]"
+                  htmlFor="isreadonly"
+                >
                   {t("read-only")}
                 </label>
               </div>
@@ -317,6 +371,7 @@ const WidgetNameModal = (props) => {
         {[
           textInputWidget,
           textWidget,
+          cellsWidget,
           "name",
           "company",
           "job title",

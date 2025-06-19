@@ -195,7 +195,7 @@ const SelectFolder = ({ required, onSuccess, folderCls, isReset }) => {
                   ? selectFolder.Name
                   : t("OpenSign-drive", { appName: drivename })}
               </p>
-              <div className="text-black text-sm">
+              <div className="text-sm">
                 <i
                   className="fa-light fa-pencil cursor-pointer"
                   title={t("select-folder")}

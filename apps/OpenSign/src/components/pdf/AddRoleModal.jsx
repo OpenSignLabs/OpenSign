@@ -10,7 +10,7 @@ const AddRoleModal = (props) => {
       isOpen={props.isModalRole}
       handleClose={props.handleCloseRoleModal}
     >
-      <div className="h-full py-[10px] px-[20px]">
+      <div className="text-base-content h-full py-[10px] px-[20px]">
         <form className="flex flex-col" onSubmit={props.handleAddRole}>
           <input
             value={props.roleName}

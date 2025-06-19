@@ -27,6 +27,7 @@ import {
   multiSignEmbed,
   addWidgetOptions,
   textInputWidget,
+  cellsWidget,
   textWidget,
   radioButtonWidget,
   color,
@@ -1417,7 +1418,8 @@ function PlaceHolderSign() {
     deleteOption,
     status,
     defaultValue,
-    isHideLabel
+    isHideLabel,
+    layout
   ) => {
     const filterSignerPos = signerPos.filter((data) => data.Id === uniqueId);
     if (filterSignerPos.length > 0) {
@@ -1453,6 +1455,7 @@ function PlaceHolderSign() {
                     name: dropdownName,
                     values: dropdownOptions,
                     status: status,
+                    layout: layout,
                     isReadOnly: isReadOnly || false,
                     isHideLabel: isHideLabel || false,
                     defaultValue: defaultValue,
@@ -1492,6 +1495,7 @@ function PlaceHolderSign() {
                       maxRequiredCount: maxCount
                     },
                     defaultValue: defaultValue,
+                    layout: layout,
                     isReadOnly: isReadOnly || false,
                     isHideLabel: isHideLabel || false,
                     fontSize:
@@ -1579,6 +1583,30 @@ function PlaceHolderSign() {
                   status: defaultdata?.status || "required",
                   hint: defaultdata?.hint || "",
                   defaultValue: defaultdata?.defaultValue || "",
+                  validation:
+                        {},
+                  fontSize:
+                    fontSize || currWidgetsDetails?.options?.fontSize || 12,
+                  fontColor:
+                    fontColor ||
+                    currWidgetsDetails?.options?.fontColor ||
+                    "black",
+                  isReadOnly: defaultdata?.isReadOnly || false
+                }
+              };
+            } else if (position.type === cellsWidget) {
+              return {
+                ...position,
+                options: {
+                  ...position.options,
+                  name: defaultdata?.name || "Cells",
+                  status: defaultdata?.status || "required",
+                  hint: defaultdata?.hint || "",
+                  cellCount: parseInt(defaultdata?.cellCount || 5),
+                  defaultValue: (defaultdata?.defaultValue || "").slice(
+                    0,
+                    parseInt(defaultdata?.cellCount || 5)
+                  ),
                   validation:
                         {},
                   fontSize:
@@ -2150,7 +2178,7 @@ function PlaceHolderSign() {
                       navigate("/report/1MwEuxLEkF");
                     }}
                   >
-                    <div className="h-[100%] p-[20px]">
+                    <div className="h-[100%] p-[20px] text-base-content">
                       {mailStatus === "success" ? (
                         <div className="text-center mb-[10px]">
                           <LottieWithLoader />
@@ -2602,7 +2630,7 @@ function PlaceHolderSign() {
           title={t("document-alert")}
           showClose={false}
         >
-          <div className="h-[100%] p-[20px]">
+          <div className="h-[100%] p-[20px] text-base-content">
             <p>{isAlreadyPlace.message}</p>
             <div className="h-[1px] w-full my-[15px] bg-[#9f9f9f]"></div>
             <button

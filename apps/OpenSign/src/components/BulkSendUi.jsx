@@ -20,7 +20,7 @@ const BulkSendUi = (props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  //function to check atleast one signature field exist
+  //function to check at least one signature field exist
   const signatureExist = async () => {
       setIsDisableBulkSend(false);
       const getPlaceholder = props?.Placeholders;
