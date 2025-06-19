@@ -1608,13 +1608,7 @@ function PlaceHolderSign() {
                     parseInt(defaultdata?.cellCount || 5)
                   ),
                   validation:
-                    isSubscribe && inputype
-                      ? {
-                          type: inputype,
-                          pattern:
-                            inputype === "regex" ? defaultdata.textvalidate : ""
-                        }
-                      : {},
+                        {},
                   fontSize:
                     fontSize || currWidgetsDetails?.options?.fontSize || 12,
                   fontColor:
@@ -2636,7 +2630,7 @@ function PlaceHolderSign() {
           title={t("document-alert")}
           showClose={false}
         >
-          <div className="h-[100%] p-[20px]">
+          <div className="h-[100%] p-[20px] text-base-content">
             <p>{isAlreadyPlace.message}</p>
             <div className="h-[1px] w-full my-[15px] bg-[#9f9f9f]"></div>
             <button

@@ -123,6 +123,23 @@ const WidgetNameModal = (props) => {
     }
   };
 
+  const handleChangeValidateInput = (e) => {
+    if (e) {
+      if (e.target.value === "ssn") {
+        setFormdata({
+          ...formdata,
+          [e.target.name]: e.target.value,
+          hint: "xxx-xx-xxxx",
+          cellCount: 11
+        });
+      } else {
+        setFormdata({ ...formdata, [e.target.name]: e.target.value });
+      }
+    } else {
+      setFormdata({ ...formdata, textvalidate: "" });
+    }
+  };
+
   const handledefaultChange = (e) => {
     if (formdata.textvalidate) {
       const regexObject = RegexParser(handleValidation(formdata.textvalidate));
@@ -148,7 +165,7 @@ const WidgetNameModal = (props) => {
         //allow space in text regex
         return "/^[a-zA-Z ]+$/";
       case "ssn":
-        return "^\\d{3}-\\d{2}-\\d{4}$";
+        return "/^(?!000|666|9\\d{2})\\d{3}-(?!00)\\d{2}-(?!0000)\\d{4}$/";
       default:
         return type;
     }
