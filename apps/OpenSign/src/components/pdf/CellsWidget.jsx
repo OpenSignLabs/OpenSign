@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 
 const Cell = ({
+  isEnabled,
   count,
   h,
   value,
@@ -15,10 +16,11 @@ const Cell = ({
   hint
 }) => (
   <div
-    className="flex items-center justify-center border border-gray-800 bg-white"
+    className={`${isEnabled ? "bg-white border-gray-400" : "select-none-cls pointer-events-none border-gray-500"} flex items-center justify-center border-[1px]`}
     style={{ flex: `0 0 ${100 / count}%`, height: h }}
   >
     <input
+      disabled={!isEnabled}
       maxLength={1}
       value={value}
       readOnly={!editable}
@@ -27,7 +29,7 @@ const Cell = ({
       onKeyDown={editable ? (e) => onKeyDown && onKeyDown(e, index) : undefined}
       // trigger validation when leaving a cell
       onBlur={editable ? (e) => onBlur && onBlur(e, index) : undefined}
-      className="w-full text-center focus:outline-none bg-transparent placeholder-gray-300"
+      className={`${isEnabled ? "placeholder-gray-300" : "placeholder-gray-500"} w-full text-center focus:outline-none bg-transparent`}
       placeholder={hint}
       style={{ fontFamily: "Arial, sans-serif", fontSize, color: fontColor }}
     />
@@ -35,6 +37,7 @@ const Cell = ({
 );
 
 export default function CellsWidget({
+  isEnabled,
   count = 8,
   height = 40,
   value = "",
@@ -120,6 +123,7 @@ export default function CellsWidget({
       {cells.map((val, i) => (
         <Cell
           key={i}
+          isEnabled={isEnabled}
           count={cellCount}
           h={height}
           value={val}
