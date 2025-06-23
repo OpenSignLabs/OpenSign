@@ -1,6 +1,7 @@
 import http from 'http';
-import { ParseServer } from 'parse-server';
+import { ParseServer, FileSystemAdapter } from 'parse-server';
 import { app, config } from '../../index.js';
+import { BlobServiceClient, StorageSharedKeyCredential } from '@azure/storage-blob';
 
 export const dropDB = async () => {
   await Parse.User.logOut();
@@ -46,4 +47,60 @@ export async function startParseServer() {
 export async function stopParseServer() {
   await new Promise(resolve => parseServerState.httpServer.close(resolve));
   parseServerState = {};
+}
+
+export default class AzureBlobFilesAdapter extends FileSystemAdapter {
+  constructor(options) {
+    super();
+    this.accountName = options.accountName;
+    this.accountKey = options.accountKey;
+    this.containerName = options.containerName;
+    this.baseUrl = options.baseUrl || `https://${options.accountName}.blob.core.windows.net`;
+
+    const sharedKeyCredential = new StorageSharedKeyCredential(this.accountName, this.accountKey);
+    this.blobServiceClient = new BlobServiceClient(this.baseUrl, sharedKeyCredential);
+    this.containerClient = this.blobServiceClient.getContainerClient(this.containerName);
+  }
+
+  /**
+   * Create a file in Azure Blob Storage
+   */
+  async createFile(filename, data, contentType) {
+    const blockBlobClient = this.containerClient.getBlockBlobClient(filename);
+    await blockBlobClient.uploadData(data, {
+      blobHTTPHeaders: { blobContentType: contentType || 'application/octet-stream' },
+    });
+    return `${this.baseUrl}/${this.containerName}/${filename}`;
+  }
+
+  /**
+   * Delete a file in Azure Blob Storage
+   */
+  async deleteFile(filename) {
+    const blockBlobClient = this.containerClient.getBlockBlobClient(filename);
+    await blockBlobClient.deleteIfExists();
+  }
+
+  /**
+   * Get file data
+   */
+  async getFileData(filename) {
+    const blockBlobClient = this.containerClient.getBlockBlobClient(filename);
+    const downloadResponse = await blockBlobClient.download();
+    return downloadResponse.readableStreamBody;
+  }
+
+  /**
+   * Generate a presigned URL for accessing a file
+   */
+  async getPresignedUrl(filename, expiresInSeconds = 900) {
+    const blockBlobClient = this.containerClient.getBlockBlobClient(filename);
+    const expiryTime = new Date(new Date().valueOf() + expiresInSeconds * 1000);
+    const sasUrl = await blockBlobClient.generateSasUrl({
+      startsOn: new Date(),
+      expiresOn: expiryTime,
+      permissions: 'r', // Read-only
+    });
+    return sasUrl;
+  }
 }

@@ -1,11 +1,5 @@
 # Use an official Node runtime as the base image
-FROM node:22.14.0
-
-
-# Install LibreOffice for DOCX to PDF conversions
-RUN apt-get update \
-  && apt-get install -y libreoffice \
-  && rm -rf /var/lib/apt/lists/*
+FROM node:20
 
 # Set the working directory inside the container
 WORKDIR /usr/src/app

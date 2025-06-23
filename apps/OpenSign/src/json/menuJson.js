@@ -1,25 +1,3 @@
-const userssetting = [
-  {
-    icon: "fa-light fa-users fa-fw",
-    title: "Users",
-    target: "_self",
-    pageType: "",
-    description: "",
-    objectId: "users"
-  }
-];
-export const subSetting = [
-  {
-    icon: "fa-light fa-sliders",
-    title: "Preferences",
-    target: "_self",
-    pageType: "",
-    description: "",
-    objectId: "preferences"
-  },
-  ...userssetting
-];
-
 const sidebarList = [
   {
     icon: "fa-light fa-tachometer-alt",
@@ -77,11 +55,11 @@ const sidebarList = [
     target: "_self",
     pageType: "",
     description: "",
-    objectId: "drive"
+    objectId: "opensigndrive"
   },
   {
     icon: "fa-light fa-address-card",
-    title: "Documents",
+    title: "Reports",
     target: "_self",
     pageType: null,
     description: "",
@@ -134,16 +112,16 @@ const sidebarList = [
         pageType: "report",
         description: "",
         objectId: "zNqBHXHsYH"
+      },
+      {
+        icon: "fa-light fa-address-book",
+        title: "Contactbook",
+        target: "_self",
+        pageType: "report",
+        description: "",
+        objectId: "5KhaPr482K"
       }
     ]
-  },
-  {
-    icon: "fa-light fa-address-book",
-    title: "Contactbook",
-    target: "_self",
-    pageType: "report",
-    description: "",
-    objectId: "contacts"
   },
   {
     icon: "fa-light fa-cog",

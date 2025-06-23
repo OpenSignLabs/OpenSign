@@ -51,10 +51,7 @@ export default async function UpdateExistUserAsAdmin(request) {
     extClsQuery.notEqualTo('IsDisabled', true);
     const extAdminRes = await extClsQuery.find({ useMasterKey: true });
     if (extAdminRes && extAdminRes.length === 1 && extAdminRes?.[0]?.get('OrganizationId')) {
-      throw new Parse.Error(
-        Parse.Error.DUPLICATE_VALUE,
-        'Admin already exists. Please login to the application using admin credentials in order to manage users.'
-      );
+      throw new Parse.Error(Parse.Error.DUPLICATE_VALUE, 'Admin already exist.');
     } else {
       const extCls = new Parse.Query('contracts_Users');
       extCls.equalTo('Email', email);

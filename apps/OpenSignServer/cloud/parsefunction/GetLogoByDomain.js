@@ -1,26 +1,20 @@
-import { appName } from '../../Utils.js';
-
 // `GetLogoByDomain` is used to get logo by domain as well as check any tenant exist or not in db
 export default async function GetLogoByDomain(request) {
   const domain = request.params.domain;
   try {
     const tenantCreditsQuery = new Parse.Query('partners_Tenant');
     tenantCreditsQuery.equalTo('Domain', domain);
-    const res = await tenantCreditsQuery.first({ useMasterKey: true });
+    const res = await tenantCreditsQuery.first();
     if (res) {
       const updateRes = JSON.parse(JSON.stringify(res));
-      return {
-        logo: updateRes?.Logo,
-        appname: appName,
-        user: 'exist',
-      };
+      return { logo: updateRes?.Logo, user: 'exist' };
     } else {
       const tenantCreditsQuery = new Parse.Query('partners_Tenant');
-      const tenantRes = await tenantCreditsQuery.first({ useMasterKey: true });
+      const tenantRes = await tenantCreditsQuery.first();
       if (tenantRes) {
-        return { logo: '', appname: appName, user: 'exist' };
+        return { logo: '', user: 'exist' };
       } else {
-        return { logo: '', appname: appName, user: 'not_exist' };
+        return { logo: '', user: 'not_exist' };
       }
     }
   } catch (err) {

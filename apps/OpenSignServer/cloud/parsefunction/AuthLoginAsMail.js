@@ -1,15 +1,43 @@
 import axios from 'axios';
-import { cloudServerUrl } from '../../Utils.js';
+import {
+  cloudServerUrl,
+  getTimestampInTimezone,
+  insertDocumentHistoryRecord,
+} from '../../Utils.js';
+import { STRINGS } from '../../constants/strings.js';
+import geoip from 'geoip-lite';
+
+async function getDocument(docId) {
+  try {
+    const query = new Parse.Query('contracts_Document');
+    query.equalTo('objectId', docId);
+    query.include('ExtUserPtr');
+    query.include('DocUniqueId');
+    query.include('OpenSignAuthToken');
+    query.notEqualTo('IsArchive', true);
+    const res = await query.first({ useMasterKey: true });
+    const _res = res.toJSON();
+    return _res;
+  } catch (err) {
+    console.log('err ', err);
+  }
+}
+
 async function AuthLoginAsMail(request) {
   try {
     //function for login user using user objectId without touching user's password
     const serverUrl = cloudServerUrl; //process.env.SERVER_URL;
     const APPID = process.env.APP_ID;
     const masterKEY = process.env.MASTER_KEY;
-
+    const ip = request.headers['x-real-ip'];
+    const geo = geoip.lookup(
+      process.env.NODE_ENV === STRINGS.ENVIRONMENT.DEVELOPMENT ? process.env.TEST_IP : ip
+    );
     let otpN = request.params.otp;
     let otp = parseInt(otpN);
     let email = request.params.email;
+    const docId = request.params.docId;
+    const phoneNo = request.params.phoneNo;
 
     let message;
     //checking otp is correct or not which already save in defaultdata_Otp class
@@ -22,22 +50,39 @@ async function AuthLoginAsMail(request) {
 
       if (resOtp === otp) {
         var result = await getToken(request);
-        if (result && !result?.emailVerified) {
-          const userQuery = new Parse.Query(Parse.User);
-          const user = await userQuery.get(result?.objectId, {
-            sessionToken: result.sessionToken,
-          });
-          // Update the emailVerified field to true
-          user.set('emailVerified', true);
-          // Save the user object
-          const res = await user.save(null, { useMasterKey: true });
-          if (res) {
-            return result;
-          } else {
-            reject('user not found!');
+        if (result) {
+          const docRes = await getDocument(docId);
+
+          if (!result?.emailVerified) {
+            const userQuery = new Parse.Query(Parse.User);
+            const user = await userQuery.get(result?.objectId, {
+              sessionToken: result.sessionToken,
+            });
+
+            // Update the emailVerified field to true
+            user.set('emailVerified', true);
+            const res = await user.save(null, { useMasterKey: true });
+
+            if (!res) {
+              reject('User not found!');
+              return;
+            }
           }
-        } else {
+
+          // Common logic for document history
+          await insertDocumentHistoryRecord(
+            docRes?.DocUniqueId,
+            STRINGS.STATUS.OTPAUTHENTICATED,
+            STRINGS.OTP.AUTHENTICATED.replace('$phoneNo', phoneNo).replace('$ipAddress', ip),
+            request,
+            ip,
+            docRes?.OpenSignAuthToken,
+            getTimestampInTimezone(geo.timezone)
+          );
+
           return result;
+        } else {
+          reject('Result not found!');
         }
 
         async function getToken(request) {

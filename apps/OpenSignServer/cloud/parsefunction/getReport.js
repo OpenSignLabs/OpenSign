@@ -2,26 +2,19 @@ import { cloudServerUrl } from '../../Utils.js';
 import reportJson from './reportsJson.js';
 import axios from 'axios';
 
-// Escape regex special characters. Copied from filterDocs.js
-function escapeRegExp(str) {
-  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-}
-
 export default async function getReport(request) {
   const reportId = request.params.reportId;
   const limit = request.params.limit;
   const skip = request.params.skip;
-  const searchTerm = request.params.searchTerm || '';
 
   const serverUrl = cloudServerUrl; //process.env.SERVER_URL;
   const appId = process.env.APP_ID;
   const masterKey = process.env.MASTER_KEY;
-  const sessionToken = request.headers['sessiontoken'] || request.headers['x-parse-session-token'];
   try {
     const userRes = await axios.get(serverUrl + '/users/me', {
       headers: {
         'X-Parse-Application-Id': appId,
-        'X-Parse-Session-Token': sessionToken,
+        'X-Parse-Session-Token': request.headers['sessiontoken'],
       },
     });
     const userId = userRes.data && userRes.data.objectId;
@@ -32,7 +25,7 @@ export default async function getReport(request) {
         const { params, keys } = json;
         const orderBy = '-updatedAt';
         const strKeys = keys.join();
-        let paramsObj = { ...params };
+        let strParams = JSON.stringify(params);
         if (reportId == '6TeaPr321t') {
           const extUserQuery = new Parse.Query('contracts_Users');
           extUserQuery.equalTo('Email', userRes.data.email);
@@ -43,8 +36,8 @@ export default async function getReport(request) {
             if (_extUser?.TeamIds && _extUser.TeamIds?.length > 0) {
               let teamArr = [];
               _extUser?.TeamIds?.forEach(x => (teamArr = [...teamArr, ...x.Ancestors]));
-              paramsObj = {
-                ...paramsObj,
+              strParams = JSON.stringify({
+                ...params,
                 $or: [
                   { SharedWith: { $in: teamArr } },
                   {
@@ -54,37 +47,26 @@ export default async function getReport(request) {
                       objectId: extUser.id,
                     },
                   },
-                  {
-                    SharedWithUsers: {
-                      __type: 'Pointer',
-                      className: 'contracts_Users',
-                      objectId: extUser.id,
-                    },
-                  },
                 ],
-              };
+              });
             } else {
-              paramsObj = {
-                ...paramsObj,
-                CreatedBy: { __type: 'Pointer', className: '_User', objectId: userId },
-              };
+              strParams = JSON.stringify({
+                ...params,
+                CreatedBy: {
+                  __type: 'Pointer',
+                  className: '_User',
+                  objectId: userId,
+                },
+              });
             }
           }
         }
-        if (searchTerm) {
-          const escaped = escapeRegExp(searchTerm);
-          paramsObj = {
-            ...paramsObj,
-            Name: { $regex: `.*${escaped}.*`, $options: 'i' },
-          };
-        }
-        const strParams = JSON.stringify(paramsObj);
         const headers = {
           'Content-Type': 'application/json',
           'X-Parse-Application-Id': appId,
           'X-Parse-Master-Key': masterKey,
         };
-        const url = `${serverUrl}/classes/${clsName}?where=${strParams}&keys=${strKeys}&order=${orderBy}&skip=${skip}&limit=${limit}&include=AuditTrail.UserPtr,Placeholders.signerPtr,ExtUserPtr.TenantId`;
+        const url = `${serverUrl}/classes/${clsName}?where=${strParams}&keys=${strKeys}&order=${orderBy}&skip=${skip}&limit=${limit}&include=AuditTrail.UserPtr,Placeholders.signerPtr`;
         const res = await axios.get(url, { headers: headers });
         if (res.data && res.data.results) {
           return res.data.results;

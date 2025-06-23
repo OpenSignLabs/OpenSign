@@ -1,15 +1,6 @@
 export default function reportJson(id, userId) {
   const currentUserId = userId;
-  const commanKeys = [
-    'URL',
-    'Name',
-    'ExtUserPtr.Name',
-    'Signers.Name',
-    'Signers.Email',
-    'Signers.Phone',
-    'Placeholders',
-    'TemplateId',
-  ];
+
   switch (id) {
     // draft documents report
     case 'ByHuevtCFY':
@@ -21,10 +12,26 @@ export default function reportJson(id, userId) {
           IsDeclined: { $ne: true },
           IsArchive: { $ne: true },
           SignedUrl: { $exists: false },
-          CreatedBy: { __type: 'Pointer', className: '_User', objectId: currentUserId },
+          CreatedBy: {
+            __type: 'Pointer',
+            className: '_User',
+            objectId: currentUserId,
+          },
         },
-        keys: [...commanKeys, 'Note', 'Folder.Name', 'IsSignyourself'],
+        keys: [
+          'Name',
+          'Note',
+          'Folder.Name',
+          'URL',
+          'ExtUserPtr.Name',
+          'Signers.Name',
+          'Signers.Email',
+          'Signers.Phone',
+          'Placeholders',
+          'IsSignyourself',
+        ],
       };
+
     // Need your sign report
     case '4Hhwbp482K':
       return {
@@ -35,27 +42,41 @@ export default function reportJson(id, userId) {
           IsDeclined: { $ne: true },
           IsArchive: { $ne: true },
           SignedUrl: { $ne: null },
-          ExpiryDate: { $gt: { __type: 'Date', iso: new Date().toISOString() } },
+          ExpiryDate: {
+            $gt: { __type: 'Date', iso: new Date().toISOString() },
+          },
           Placeholders: { $ne: null },
           Signers: {
             $inQuery: {
-              where: { UserId: { __type: 'Pointer', className: '_User', objectId: currentUserId } },
+              where: {
+                UserId: {
+                  __type: 'Pointer',
+                  className: '_User',
+                  objectId: currentUserId,
+                },
+              },
               className: 'contracts_Contactbook',
             },
           },
         },
         keys: [
-          ...commanKeys,
+          'Name',
           'Note',
           'Folder.Name',
+          'URL',
+          'ExtUserPtr.Name',
           'ExtUserPtr.Email',
+          'ExtUserPtr.active_mail_adapter',
+          'Signers.Name',
+          'Signers.Email',
+          'Signers.Phone',
           'Signers.UserId',
           'AuditTrail',
+          'Placeholders',
           'SignedUrl',
-          'ExpiryDate',
         ],
       };
-    // In progress report
+    // In progess report
     case '1MwEuxLEkF':
       return {
         reportName: 'In-progress documents',
@@ -66,23 +87,32 @@ export default function reportJson(id, userId) {
           IsCompleted: { $ne: true },
           IsDeclined: { $ne: true },
           IsArchive: { $ne: true },
-          CreatedBy: { __type: 'Pointer', className: '_User', objectId: currentUserId },
-          ExpiryDate: { $gt: { __type: 'Date', iso: new Date().toISOString() } },
+          CreatedBy: {
+            __type: 'Pointer',
+            className: '_User',
+            objectId: currentUserId,
+          },
+          ExpiryDate: {
+            $gt: { __type: 'Date', iso: new Date().toISOString() },
+          },
         },
         keys: [
-          ...commanKeys,
+          'Name',
           'Note',
           'Folder.Name',
+          'URL',
+          'ExtUserPtr.Name',
           'ExtUserPtr.Email',
+          'ExtUserPtr.active_mail_adapter',
+          'Signers.Name',
+          'Signers.Email',
+          'Signers.Phone',
           'AuditTrail',
           'AuditTrail.UserPtr',
           'ExpiryDate',
           'SendMail',
+          'Placeholders',
           'SignedUrl',
-          'RequestBody',
-          'RequestSubject',
-          'ExtUserPtr.TenantId.RequestBody',
-          'ExtUserPtr.TenantId.RequestSubject',
         ],
       };
     // completed documents report
@@ -92,39 +122,28 @@ export default function reportJson(id, userId) {
         params: {
           Type: { $ne: 'Folder' },
           IsCompleted: true,
+          CreatedBy: {
+            __type: 'Pointer',
+            className: '_User',
+            objectId: currentUserId,
+          },
           IsDeclined: { $ne: true },
           IsArchive: { $ne: true },
-          // CreatedBy: {
-          //   __type: 'Pointer',
-          //   className: '_User',
-          //   objectId: currentUserId,
-          // },
-          $or: [
-            // Condition 1: If `CreatedBy` exists, no need for `Signers` filter
-            { CreatedBy: { __type: 'Pointer', className: '_User', objectId: currentUserId } },
-            // Condition 2: If `CreatedBy` does not exist, apply the `Signers` filter
-            {
-              Signers: {
-                $inQuery: {
-                  where: {
-                    UserId: { __type: 'Pointer', className: '_User', objectId: currentUserId },
-                  },
-                  className: 'contracts_Contactbook',
-                },
-              },
-            },
-          ],
         },
         keys: [
-          ...commanKeys,
+          'Name',
           'Note',
           'Folder.Name',
+          'URL',
           'SignedUrl',
+          'ExtUserPtr.Name',
+          'Signers.Name',
+          'Signers.Email',
+          'Signers.Phone',
           'TimeToCompleteDays',
+          'Placeholders',
           'IsSignyourself',
           'IsCompleted',
-          'ExpiryDate',
-          'IsSignyourself',
         ],
       };
     //  declined documents report
@@ -135,9 +154,26 @@ export default function reportJson(id, userId) {
           Type: null,
           IsArchive: { $ne: true },
           IsDeclined: true,
-          CreatedBy: { __type: 'Pointer', className: '_User', objectId: currentUserId },
+          CreatedBy: {
+            __type: 'Pointer',
+            className: '_User',
+            objectId: currentUserId,
+          },
         },
-        keys: [...commanKeys, 'Note', 'Folder.Name', 'DeclineReason', 'SignedUrl'],
+
+        keys: [
+          'Name',
+          'Note',
+          'Folder.Name',
+          'URL',
+          'ExtUserPtr.Name',
+          'Signers.Name',
+          'Signers.Email',
+          'Signers.Phone',
+          'Placeholders',
+          'DeclineReason',
+          'SignedUrl',
+        ],
       };
     //  Expired Documents report
     case 'zNqBHXHsYH':
@@ -149,10 +185,27 @@ export default function reportJson(id, userId) {
           IsArchive: { $ne: true },
           Type: { $ne: 'Folder' },
           SignedUrl: { $ne: null },
-          ExpiryDate: { $lt: { __type: 'Date', iso: new Date().toISOString() } },
-          CreatedBy: { __type: 'Pointer', className: '_User', objectId: currentUserId },
+          ExpiryDate: {
+            $lt: { __type: 'Date', iso: new Date().toISOString() },
+          },
+          CreatedBy: {
+            __type: 'Pointer',
+            className: '_User',
+            objectId: currentUserId,
+          },
         },
-        keys: [...commanKeys, 'Note', 'Folder.Name', 'SignedUrl', 'ExpiryDate'],
+        keys: [
+          'Name',
+          'Note',
+          'Folder.Name',
+          'URL',
+          'ExtUserPtr.Name',
+          'Signers.Name',
+          'Signers.Email',
+          'Signers.Phone',
+          'Placeholders',
+          'SignedUrl',
+        ],
       };
     //  Recently sent for signatures report show on dashboard
     case 'd9k3UfYHBc':
@@ -165,21 +218,30 @@ export default function reportJson(id, userId) {
           IsCompleted: { $ne: true },
           IsDeclined: { $ne: true },
           IsArchive: { $ne: true },
-          CreatedBy: { __type: 'Pointer', className: '_User', objectId: currentUserId },
-          ExpiryDate: { $gt: { __type: 'Date', iso: new Date().toISOString() } },
+          CreatedBy: {
+            __type: 'Pointer',
+            className: '_User',
+            objectId: currentUserId,
+          },
+          ExpiryDate: {
+            $gt: { __type: 'Date', iso: new Date().toISOString() },
+          },
         },
         keys: [
-          ...commanKeys,
+          'Name',
           'Folder.Name',
+          'URL',
+          'ExtUserPtr.Name',
           'ExtUserPtr.Email',
+          'ExtUserPtr.active_mail_adapter',
+          'Signers.Name',
+          'Signers.Email',
+          'Signers.Phone',
           'AuditTrail',
           'AuditTrail.UserPtr',
           'ExpiryDate',
+          'Placeholders',
           'SignedUrl',
-          'RequestBody',
-          'RequestSubject',
-          'ExtUserPtr.TenantId.RequestBody',
-          'ExtUserPtr.TenantId.RequestSubject',
         ],
       };
     //  Recent signature requests report show on dashboard
@@ -192,22 +254,36 @@ export default function reportJson(id, userId) {
           IsCompleted: { $ne: true },
           IsDeclined: { $ne: true },
           IsArchive: { $ne: true },
-          ExpiryDate: { $gt: { __type: 'Date', iso: new Date().toISOString() } },
+          ExpiryDate: {
+            $gt: { __type: 'Date', iso: new Date().toISOString() },
+          },
           Placeholders: { $ne: null },
           Signers: {
             $inQuery: {
-              where: { UserId: { __type: 'Pointer', className: '_User', objectId: currentUserId } },
+              where: {
+                UserId: {
+                  __type: 'Pointer',
+                  className: '_User',
+                  objectId: currentUserId,
+                },
+              },
               className: 'contracts_Contactbook',
             },
           },
         },
         keys: [
-          ...commanKeys,
+          'Name',
+          'URL',
+          'ExtUserPtr.Name',
           'ExtUserPtr.Email',
+          'ExtUserPtr.active_mail_adapter',
+          'Signers.Name',
           'Signers.UserId',
           'AuditTrail',
+          'Signers.Email',
+          'Signers.Phone',
+          'Placeholders',
           'SignedUrl',
-          'ExpiryDate',
         ],
       };
     // Drafts report show on dashboard
@@ -220,17 +296,35 @@ export default function reportJson(id, userId) {
           IsDeclined: { $ne: true },
           IsArchive: { $ne: true },
           SignedUrl: { $exists: false },
-          CreatedBy: { __type: 'Pointer', className: '_User', objectId: currentUserId },
+          CreatedBy: {
+            __type: 'Pointer',
+            className: '_User',
+            objectId: currentUserId,
+          },
         },
-        keys: [...commanKeys, 'Note', 'Folder.Name'],
+        keys: [
+          'Name',
+          'Note',
+          'Folder.Name',
+          'URL',
+          'ExtUserPtr.Name',
+          'Signers.Name',
+          'Signers.Email',
+          'Signers.Phone',
+          'Placeholders',
+        ],
       };
     // contact book report
-    case 'contacts':
+    case '5KhaPr482K':
       return {
         reportName: 'Contactbook',
         reportClass: 'contracts_Contactbook',
         params: {
-          CreatedBy: { __type: 'Pointer', className: '_User', objectId: currentUserId },
+          CreatedBy: {
+            __type: 'Pointer',
+            className: '_User',
+            objectId: currentUserId,
+          },
           IsDeleted: { $ne: true },
         },
         keys: ['Name', 'Email', 'Phone'],
@@ -240,16 +334,24 @@ export default function reportJson(id, userId) {
       return {
         reportName: 'Templates',
         reportClass: 'contracts_Template',
-        params: { Type: { $ne: 'Folder' }, IsArchive: { $ne: true } },
+        params: {
+          Type: { $ne: 'Folder' },
+          IsArchive: { $ne: true },
+        },
         keys: [
-          ...commanKeys,
+          'Name',
           'Note',
           'Folder.Name',
+          'URL',
+          'ExtUserPtr.Name',
+          'ExtUserPtr.active_mail_adapter',
+          'Signers.Name',
+          'Signers.Email',
+          'Signers.Phone',
+          'Placeholders',
           'IsPublic',
           'SharedWith.Name',
           'SendinOrder',
-          'SignatureType',
-          'NotifyOnSignatures',
         ],
       };
     default:

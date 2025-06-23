@@ -1,12 +1,11 @@
-import { PDFDocument, rgb } from 'pdf-lib';
+import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
 import fs from 'node:fs';
 import fontkit from '@pdf-lib/fontkit';
-import { formatDateTime } from '../../../Utils.js';
+import { convertUTCToTimezone, getTimestampInTimezone } from '../../../Utils.js';
+import geoip from 'geoip-lite';
+import { STRINGS } from '../../../constants/strings.js';
 
-export default async function GenerateCertificate(docDetails) {
-  const timezone = docDetails?.ExtUserPtr?.Timezone || '';
-  const Is12Hr = docDetails?.ExtUserPtr?.Is12HourTime || false;
-  const DateFormat = docDetails?.ExtUserPtr?.DateFormat || 'MM/DD/YYYY';
+export default async function GenerateCertificate(docDetails, userIP) {
   const pdfDoc = await PDFDocument.create();
   // `fontBytes` is used to embed custom font in pdf
   const fontBytes = fs.readFileSync('./font/times.ttf'); //
@@ -14,412 +13,568 @@ export default async function GenerateCertificate(docDetails) {
   const timesRomanFont = await pdfDoc.embedFont(fontBytes, { subset: true });
   const pngUrl = fs.readFileSync('./logo.png').buffer;
   const pngImage = await pdfDoc.embedPng(pngUrl);
-  const page = pdfDoc.addPage();
+  let page = pdfDoc.addPage();
   const { width, height } = page.getSize();
-  const startX = 15;
-  const startY = 15;
+  const startX = 10;
+  const startY = 10;
   const borderColor = rgb(0.12, 0.12, 0.12);
   const titleColor = rgb(0, 0.2, 0.4); //rgb(0, 0.53, 0.71);
   const titleUnderline = rgb(0, 0.2, 0.4); // rgb(0.12, 0.12, 0.12);
   const title = 25;
-  const subtitle = 16;
-  const text = 13;
-  const signertext = 13;
+  const subtitle = 20;
+  const text = 12;
   const timeText = 11;
   const textKeyColor = rgb(0.12, 0.12, 0.12);
   const textValueColor = rgb(0.3, 0.3, 0.3);
-  const completedAt = docDetails?.completedAt ? new Date(docDetails?.completedAt) : new Date();
-  const completedAtperTimezone = formatDateTime(completedAt, DateFormat, timezone, Is12Hr);
-  const completedUTCtime = completedAtperTimezone;
-  const signersCount = docDetails?.Signers?.length || 1;
-  const generateAt = docDetails?.completedAt ? new Date(docDetails?.completedAt) : new Date();
-  const generatedAtperTimezone = formatDateTime(generateAt, DateFormat, timezone, Is12Hr);
-  const generatedUTCTime = generatedAtperTimezone;
-  const generatedOn = 'Generated On ' + generatedUTCTime;
-  const textWidth = timesRomanFont.widthOfTextAtSize(generatedOn, 12);
-  const margin = 30;
-  const maxX = width - margin - textWidth; // Ensures text stays inside the border with 30px margin
+  const completedAt = new Date();
   const OriginIp = docDetails?.OriginIp || '';
+  const geo = geoip.lookup(
+    process.env.NODE_ENV === STRINGS.ENVIRONMENT.DEVELOPMENT ? process.env.TEST_IP : userIP
+  );
+  console.log('\n----userIP---in generateCert--', userIP);
+  console.log('\n----geo---in generateCert--', geo);
+  const utcTime = getTimestampInTimezone(geo.timezone, true); // convertUtcToSpecificTimezone(new Date().toISOString(), userTimezone); //getFormattedLocalTime(userTimezone);//`${new Date().toISOString().split('.')[0]} (UTC)`;
+  const completedUTCtime = utcTime;
+  const signersCount = docDetails?.Signers?.length || 1;
+  const generateAt = new Date();
+  const generatedUTCTime = utcTime;
+  const generatedOn = 'Generated On ' + utcTime;
   const company = docDetails?.ExtUserPtr?.Company || '';
   const createdAt = docDetails?.DocSentAt?.iso || docDetails.createdAt;
-  const createdAtperTimezone = formatDateTime(createdAt, DateFormat, timezone, Is12Hr);
+  const userTimezoneCreatedAt = getTimestampInTimezone(geo.timezone, true, createdAt); //convertUtcToSpecificTimezone(createdAt, userTimezone);
   const IsEnableOTP = docDetails?.IsEnableOTP || false;
-  const filteredaudit = docDetails?.AuditTrail?.filter(x => x?.UserPtr?.objectId);
+  const padding = 6; // Reduced padding
+  const topPadding = 20;
+  const borderPadding = 15; // Slightly reduced padding inside the border
+  const bottomPadding = 40; // Increased bottom padding to prevent cutoff
+  const bottomPadding_10 = 10;
+  const lineSpacing = text + padding;
+  const timezoneAbbr = getTimestampInTimezone(geo.timezone, true, null, true);
+
+  let currentY = height - startY - topPadding - borderPadding;
+  let initialYPosition = currentY; // Adjusted for border padding
+
   const auditTrail =
     docDetails?.Signers?.length > 0
-      ? filteredaudit?.map(x => {
-          const data = docDetails.Signers.find(y => y.objectId === x.UserPtr.objectId);
+      ? docDetails.AuditTrail.map((x, i) => {
+          const { Signers, AdditionalUserInfo, Placeholders } = docDetails;
+          const data = Signers.find(y => y.objectId === x.UserPtr.objectId);
+          const additionalInfo = AdditionalUserInfo[i];
+          const placeholdersInfo = Placeholders[i];
+          const userId = x.UserPtr.objectId;
+          // Check if current userId matches placeholdersInfo or additionalInfo signer object ID
+          const isPlaceholderSigner = userId === placeholdersInfo?.signerObjId;
+          const isAdditionalUserInfoSigner = userId === additionalInfo?.signerObjId;
           return {
             ...data,
             ipAddress: x.ipAddress,
             SignedOn: x?.SignedOn || generatedUTCTime,
             ViewedOn: x?.ViewedOn || x?.SignedOn || generatedUTCTime,
             Signature: x?.Signature || '',
+            Initials: x?.Initials || '',
+            Role: isPlaceholderSigner ? placeholdersInfo.Role : '',
+            TermsCond: isAdditionalUserInfoSigner ? additionalInfo.termsCond : '',
+            TermsCondAcceptedOn: isAdditionalUserInfoSigner
+              ? additionalInfo.termsCondAcceptedOn
+              : '',
+            OtpProtected: isAdditionalUserInfoSigner
+              ? additionalInfo.otpRequired
+                ? 'Yes'
+                : 'No'
+              : 'No',
           };
         })
       : [
           {
             ...docDetails.ExtUserPtr,
-            ipAddress: filteredaudit[0].ipAddress,
-            SignedOn: filteredaudit[0]?.SignedOn || generatedUTCTime,
-            ViewedOn: filteredaudit[0]?.ViewedOn || filteredaudit[0]?.SignedOn || generatedUTCTime,
-            Signature: filteredaudit[0]?.Signature || '',
+            ipAddress: docDetails?.AuditTrail[0].ipAddress,
+            SignedOn: docDetails?.AuditTrail[0]?.SignedOn || generatedUTCTime,
+            ViewedOn:
+              docDetails?.AuditTrail[0]?.ViewedOn ||
+              docDetails?.AuditTrail[0]?.SignedOn ||
+              generatedUTCTime,
+            Signature: docDetails?.AuditTrail[0]?.Signature || '',
           },
         ];
 
-  const ownerName = docDetails?.SenderName || docDetails.ExtUserPtr?.Name || 'n/a';
-  const ownerEmail = docDetails?.SenderMail || docDetails.ExtUserPtr?.Email || 'n/a';
   const half = width / 2;
-  // Draw a border
-  page.drawRectangle({
-    x: startX,
-    y: startY,
-    width: width - 2 * startX,
-    height: height - 2 * startY,
-    borderColor: borderColor,
-    borderWidth: 1,
-  });
+  // Draw border function with border and bottom padding
+  const drawBorder = page => {
+    const pageWidth = page.getWidth();
+    const pageHeight = page.getHeight();
+
+    page.drawRectangle({
+      x: startX, // Starting X position
+      y: startY, // Starting Y position
+      width: pageWidth - 2 * startX, // Page width minus padding from both sides
+      height: pageHeight - 2 * startY, // Page height minus padding from top and bottom
+      borderColor: borderColor, // Set border color
+      borderWidth: 1, // Set border width
+    });
+  };
+
+  function wrapText(text, font, fontSize, maxWidth) {
+    const words = text.split(' ');
+    let lines = [];
+    let currentLine = '';
+
+    words.forEach(word => {
+      const testLine = currentLine ? `${currentLine} ${word}` : word;
+      const textWidth = font.widthOfTextAtSize(testLine, fontSize);
+      if (textWidth <= maxWidth) {
+        currentLine = testLine;
+      } else {
+        lines.push(currentLine);
+        currentLine = word;
+      }
+    });
+
+    if (currentLine) {
+      lines.push(currentLine);
+    }
+
+    return lines;
+  }
+
+  // Draw border on the first page
+  drawBorder(page);
+
+  // Draw logo
   page.drawImage(pngImage, {
-    x: 30,
-    y: 790,
+    x: startX + 15,
+    y: currentY - 30,
     width: 100,
     height: 25,
   });
+  currentY -= 50;
 
   page.drawText(generatedOn, {
-    x: Math.max(startX, maxX), // Adjusts dynamically 320
-    y: 810,
+    x: startX + 310,
+    y: currentY + 50,
     size: 12,
     font: timesRomanFont,
     color: rgb(0.12, 0.12, 0.12),
   });
+  currentY -= padding + 20;
 
   page.drawText('Certificate of Completion', {
-    x: 160,
-    y: 755,
+    x: startX + 130,
+    y: currentY,
     size: title,
     font: timesRomanFont,
     color: titleColor,
   });
+  currentY -= padding + 2;
 
-  const underlineY = 745;
   page.drawLine({
-    start: { x: 30, y: underlineY },
-    end: { x: width - 30, y: underlineY },
+    start: { x: startX + borderPadding, y: currentY },
+    end: { x: width - startX - borderPadding, y: currentY },
     color: titleUnderline,
     thickness: 1,
   });
+  currentY -= padding + title;
 
+  // "Summary" section title
   page.drawText('Summary', {
-    x: 30,
-    y: 727,
+    x: startX + borderPadding,
+    y: currentY,
     size: subtitle,
     font: timesRomanFont,
     color: titleColor,
   });
+  currentY -= padding + subtitle;
 
-  page.drawText('Document Id :', {
-    x: 30,
-    y: 710,
-    size: text,
-    font: timesRomanFont,
-    color: textKeyColor,
-  });
+  // Document details
+  const textItems = [
+    { label: 'Document Id :', value: docDetails.objectId },
+    { label: 'Document Name :', value: docDetails.Name },
+    { label: 'Organization :', value: company },
+    { label: 'Created on :', value: userTimezoneCreatedAt },
+    { label: 'Completed on :', value: completedUTCtime },
+    { label: 'Signers :', value: signersCount.toString() },
+    { label: 'Document originator', value: '' },
+    { label: 'Name :', value: docDetails.ExtUserPtr.Name },
+    { label: 'Email :', value: docDetails.ExtUserPtr.Email },
+    { label: 'IP address :', value: OriginIp },
+  ];
 
-  page.drawText(docDetails.objectId, {
-    x: 110,
-    y: 710,
-    size: text,
-    font: timesRomanFont,
-    color: textValueColor,
-  });
-
-  page.drawText('Document Name :', {
-    x: 30,
-    y: 690,
-    size: text,
-    font: timesRomanFont,
-    color: textKeyColor,
-  });
-
-  page.drawText(docDetails?.Name, {
-    x: 130,
-    y: 690,
-    size: docDetails?.Name?.length >= 78 ? 12 : text,
-    font: timesRomanFont,
-    color: textValueColor,
-  });
-
-  page.drawText('Organization :', {
-    x: 30,
-    y: 670,
-    size: text,
-    font: timesRomanFont,
-    color: textKeyColor,
-  });
-
-  page.drawText(company, {
-    x: 110,
-    y: 670,
-    size: text,
-    font: timesRomanFont,
-    color: textValueColor,
-  });
-  page.drawText('Created on :', {
-    x: 30,
-    y: 650,
-    size: text,
-    font: timesRomanFont,
-    color: textKeyColor,
+  textItems.forEach(item => {
+    const isItemValueNull = item.value == '' ? true : false;
+    if (isItemValueNull) {
+      currentY -= padding * 2;
+    }
+    page.drawText(item.label, {
+      x: startX + borderPadding,
+      y: currentY,
+      size: isItemValueNull ? subtitle : text,
+      font: timesRomanFont,
+      color: isItemValueNull ? titleColor : borderColor,
+    });
+    if (isItemValueNull) {
+      currentY -= padding * 2;
+    }
+    if (item.value) {
+      page.drawText(item.value, {
+        x: startX + 120 + borderPadding,
+        y: currentY,
+        size: text,
+        font: timesRomanFont,
+        color: titleColor,
+      });
+    }
+    currentY -= padding + text;
   });
 
-  page.drawText(`${createdAtperTimezone}`, {
-    x: 97,
-    y: 650,
-    size: text,
-    font: timesRomanFont,
-    color: textValueColor,
-  });
-  page.drawText('Completed on :', {
-    x: 30,
-    y: 630,
-    size: text,
-    font: timesRomanFont,
-    color: textKeyColor,
-  });
-
-  page.drawText(`${completedUTCtime}`, {
-    x: 115,
-    y: 630,
-    size: text,
-    font: timesRomanFont,
-    color: textValueColor,
-  });
-  page.drawText('Signers :', {
-    x: 30,
-    y: 610,
-    size: text,
-    font: timesRomanFont,
-    color: textKeyColor,
-  });
-
-  page.drawText(`${signersCount}`, {
-    x: 80,
-    y: 610,
-    size: text,
-    font: timesRomanFont,
-    color: textValueColor,
-  });
-  page.drawText('Document originator', {
-    x: 30,
-    y: 590,
-    size: 17,
-    font: timesRomanFont,
-    color: titleColor,
-  });
-  page.drawText('Name :', {
-    x: 60,
-    y: 573,
-    size: text,
-    font: timesRomanFont,
-    color: textKeyColor,
-  });
-  page.drawText(ownerName, {
-    x: 105,
-    y: 573,
-    size: text,
-    font: timesRomanFont,
-    color: textValueColor,
-  });
-  page.drawText('Email :', {
-    x: 60,
-    y: 553,
-    size: text,
-    font: timesRomanFont,
-    color: textKeyColor,
-  });
-  page.drawText(ownerEmail, {
-    x: 105,
-    y: 553,
-    size: text,
-    font: timesRomanFont,
-    color: textValueColor,
-  });
-  page.drawText('IP address :', {
-    x: 60,
-    y: 533,
-    size: text,
-    font: timesRomanFont,
-    color: textKeyColor,
-  });
-  page.drawText(`${OriginIp}`, {
-    x: 125,
-    y: 533,
-    size: text,
-    font: timesRomanFont,
-    color: textValueColor,
-  });
-
+  // Draw separator line after Document originator section
   page.drawLine({
-    start: { x: 30, y: 527 },
-    end: { x: width - 30, y: 527 },
-    color: rgb(0.12, 0.12, 0.12),
+    start: { x: startX + borderPadding, y: currentY },
+    end: { x: width - startX - borderPadding, y: currentY },
+    color: borderColor,
     thickness: 0.5,
   });
-  let yPosition1 = 512;
-  let yPosition2 = 498;
-  let yPosition3 = 478;
-  let yPosition4 = 458;
-  let yPosition5 = 438;
-  let yPosition6 = 418;
-  let yPosition7 = 398;
-  let yPosition8 = 363;
+  currentY -= padding * 2;
 
-  auditTrail.slice(0, 3).forEach(async (x, i) => {
-    const embedPng = x.Signature ? await pdfDoc.embedPng(x.Signature) : '';
-    page.drawText(`Signer ${i + 1}`, {
-      x: 30,
-      y: yPosition1,
-      size: subtitle,
-      font: timesRomanFont,
-      color: titleColor,
-    });
-    page.drawText('Name :', {
-      x: 30,
-      y: yPosition2,
-      size: signertext,
-      font: timesRomanFont,
-      color: textKeyColor,
-    });
+  // Adjust starting Y position for "Signer" section to prevent overlap
+  const signerSectionStartY = currentY - 20; // Added space after "Document originator" section
 
-    page.drawText(x?.Name, {
-      x: 75,
-      y: yPosition2,
-      size: signertext,
-      font: timesRomanFont,
-      color: textValueColor,
-    });
+  // Pagination and audit trail section
+  initialYPosition = signerSectionStartY;
 
-    if (IsEnableOTP) {
-      page.drawText('Security level :', {
-        x: half + 120,
-        y: yPosition2,
+  const createNewPage = () => {
+    page = pdfDoc.addPage();
+    drawBorder(page); // Draw border on every new page
+    initialYPosition = page.getHeight() - startY - topPadding - borderPadding;
+  };
+
+  // Loop through audit trail
+  await Promise.all(
+    auditTrail.slice(0, 3).map(async (x, i) => {
+      if (initialYPosition < bottomPadding + borderPadding) {
+        createNewPage();
+      }
+
+      const embedPng = x.Signature ? await pdfDoc.embedPng(x.Signature) : '';
+      const embedInitialsPng = x.Initials ? await pdfDoc.embedPng(x.Initials) : '';
+
+      // Draw signer role
+      page.drawText(`Signer ${i + 1} - ${x.Role}`, {
+        x: startX + borderPadding,
+        y: initialYPosition,
+        size: subtitle,
+        font: timesRomanFont,
+        color: titleColor,
+      });
+      page.drawText('Viewed on:', {
+        x: half + 55,
+        y: initialYPosition,
         size: timeText,
         font: timesRomanFont,
         color: textKeyColor,
       });
-      page.drawText('Email, OTP Auth', {
-        x: half + 190,
-        y: yPosition2,
+
+      page.drawText(`${x.ViewedOn}`, {
+        x: half + 112,
+        y: initialYPosition,
         size: timeText,
         font: timesRomanFont,
         color: textValueColor,
       });
-    }
-
-    page.drawText('Email :', {
-      x: 30,
-      y: yPosition3,
-      size: signertext,
-      font: timesRomanFont,
-      color: textKeyColor,
-    });
-
-    page.drawText(x?.Email, {
-      x: 75,
-      y: yPosition3,
-      size: signertext,
-      font: timesRomanFont,
-      color: textValueColor,
-    });
-
-    page.drawText('Viewed on :', {
-      x: 30,
-      y: yPosition4,
-      size: signertext,
-      font: timesRomanFont,
-      color: textKeyColor,
-    });
-
-    page.drawText(`${formatDateTime(x.ViewedOn, DateFormat, timezone, Is12Hr)}`, {
-      x: 97,
-      y: yPosition4,
-      size: signertext,
-      font: timesRomanFont,
-      color: textValueColor,
-    });
-
-    page.drawText('Signed on :', {
-      x: 30,
-      y: yPosition5,
-      size: signertext,
-      font: timesRomanFont,
-      color: textKeyColor,
-    });
-
-    page.drawText(`${formatDateTime(x.SignedOn, DateFormat, timezone, Is12Hr)}`, {
-      x: 95,
-      y: yPosition5,
-      size: signertext,
-      font: timesRomanFont,
-      color: textValueColor,
-    });
-
-    page.drawText('IP address :', {
-      x: 30,
-      y: yPosition6,
-      size: signertext,
-      font: timesRomanFont,
-      color: textKeyColor,
-    });
-
-    page.drawText(x?.ipAddress, {
-      x: 95,
-      y: yPosition6,
-      size: signertext,
-      font: timesRomanFont,
-      color: textValueColor,
-    });
-
-    page.drawText('Signature :', {
-      x: 30,
-      y: yPosition7,
-      size: signertext,
-      font: timesRomanFont,
-      color: textKeyColor,
-    });
-
-    page.drawRectangle({
-      x: 98,
-      y: yPosition7 - 30,
-      width: 104,
-      height: 44,
-      borderColor: rgb(0.22, 0.18, 0.47),
-      borderWidth: 1,
-    });
-    if (embedPng) {
-      page.drawImage(embedPng, {
-        x: 100,
-        y: yPosition7 - 27,
-        width: 100,
-        height: 40,
+      initialYPosition -= lineSpacing;
+      const termsLines = wrapText(x?.TermsCond || '', timesRomanFont, text, width - startX - 150);
+      if (initialYPosition * (termsLines.length + 2) < text) {
+        createNewPage();
+      }
+      page.drawText(`Terms and Conditions:`, {
+        x: startX + borderPadding,
+        y: initialYPosition,
+        size: text,
+        font: timesRomanFont,
+        color: borderColor,
       });
+
+      termsLines.forEach(line => {
+        if (initialYPosition < text) {
+          createNewPage();
+        }
+        page.drawText(line, {
+          x: startX + 120 + borderPadding,
+          y: initialYPosition,
+          size: text,
+          font: timesRomanFont,
+          color: titleColor,
+        });
+        initialYPosition -= lineSpacing; // Move Y-coordinate for the next line
+      });
+      if (initialYPosition - lineSpacing < text) {
+        createNewPage();
+      }
+
+      page.drawText(`OTP Protected:`, {
+        x: startX + borderPadding,
+        y: initialYPosition,
+        size: text,
+        font: timesRomanFont,
+        color: borderColor,
+      });
+      page.drawText(x?.OtpProtected, {
+        x: startX + 120 + borderPadding,
+        y: initialYPosition,
+        size: text,
+        font: timesRomanFont,
+        color: titleColor,
+      });
+      initialYPosition -= lineSpacing;
+
+      let signatureIndex = 0; // Counter for signatures
+      let initialsIndex = 0; // Counter for initials
+
+      // Loop through placeholders and draw details
+      docDetails.Placeholders.forEach(async x2 => {
+        if (x.objectId === x2.signerObjId) {
+          x2.placeHolder.forEach(placeholder => {
+            placeholder.pos.forEach(pos => {
+              const { dateAdded, type } = pos;
+
+              if (type === 'signature' || type === 'initials') {
+                if (initialYPosition < bottomPadding + borderPadding) {
+                  createNewPage();
+                }
+
+                // Increment the respective counter
+                const displayIndex = type === 'signature' ? ++signatureIndex : ++initialsIndex;
+
+                // Draw Name
+                page.drawText('Name:', {
+                  x: startX + borderPadding,
+                  y: initialYPosition,
+                  size: text,
+                  font: timesRomanFont,
+                  color: borderColor,
+                });
+                page.drawText(x?.Name, {
+                  x: startX + 120 + borderPadding,
+                  y: initialYPosition,
+                  size: text,
+                  font: timesRomanFont,
+                  color: titleColor,
+                });
+                page.drawText('Page Number:', {
+                  x: half + 55,
+                  y: initialYPosition,
+                  size: timeText,
+                  font: timesRomanFont,
+                  color: textKeyColor,
+                });
+
+                page.drawText(`${placeholder.pageNumber}`, {
+                  x: half + 122,
+                  y: initialYPosition,
+                  size: timeText,
+                  font: timesRomanFont,
+                  color: textValueColor,
+                });
+
+                initialYPosition -= lineSpacing;
+
+                // Draw Email
+                page.drawText('Email:', {
+                  x: startX + borderPadding,
+                  y: initialYPosition,
+                  size: text,
+                  font: timesRomanFont,
+                  color: borderColor,
+                });
+                page.drawText(x?.Email, {
+                  x: startX + 120 + borderPadding,
+                  y: initialYPosition,
+                  size: text,
+                  font: timesRomanFont,
+                  color: titleColor,
+                });
+                initialYPosition -= lineSpacing;
+
+                // Draw IP Address
+                page.drawText('IP Address:', {
+                  x: startX + borderPadding,
+                  y: initialYPosition,
+                  size: text,
+                  font: timesRomanFont,
+                  color: borderColor,
+                });
+                page.drawText(x?.ipAddress, {
+                  x: startX + 120 + borderPadding,
+                  y: initialYPosition,
+                  size: text,
+                  font: timesRomanFont,
+                  color: titleColor,
+                });
+                initialYPosition -= lineSpacing;
+
+                // Draw Signed On date
+                page.drawText('Signed on:', {
+                  x: startX + borderPadding,
+                  y: initialYPosition,
+                  size: text,
+                  font: timesRomanFont,
+                  color: borderColor,
+                });
+                page.drawText(`${getTimestampInTimezone(geo.timezone, true, dateAdded)}`, {
+                  x: startX + 120 + borderPadding,
+                  y: initialYPosition,
+                  size: text,
+                  font: timesRomanFont,
+                  color: titleColor,
+                });
+                initialYPosition -= lineSpacing;
+                const textHeight = 10; // Height of the text
+                const rectangleHeight = 44; // Height of the rectangle
+                const rectangleWidth = 104; // Width of the rectangle
+                const spacingBetweenSections = 5; // Space between the bottom of the rectangle and the next section
+                const totalHeight = textHeight + rectangleHeight; // Total height needed for this section
+                if (initialYPosition - totalHeight < bottomPadding) {
+                  // Not enough space on the current page, add a new page
+                  createNewPage();
+                }
+
+                // Draw Signature/Initials
+                page.drawText(`${type.charAt(0).toUpperCase() + type.slice(1)} ${displayIndex}:`, {
+                  x: startX + borderPadding,
+                  y: initialYPosition,
+                  size: text,
+                  font: timesRomanFont,
+                  color: borderColor,
+                });
+
+                const rectX = startX + 120 + borderPadding; // X position of the rectangle
+                const rectY = initialYPosition - rectangleHeight + 10; // Adjust rectangle Y position to align with text
+                page.drawRectangle({
+                  x: rectX,
+                  y: rectY, // Align bottom of rectangle with current Y position
+                  width: rectangleWidth,
+                  height: rectangleHeight,
+                  borderColor: rgb(0.22, 0.18, 0.47),
+                  borderWidth: 1,
+                });
+
+                if (embedPng) {
+                  const imageWidth = 100; // Width of the image
+                  const imageHeight = 40; // Height of the image
+                  const imageX = rectX + (104 - imageWidth) / 2; // Center the image horizontally in the rectangle
+                  const imageY = rectY + (rectangleHeight - imageHeight) / 2; // Center the image vertically in the rectangle
+
+                  page.drawImage(type === 'signature' ? embedPng : embedInitialsPng, {
+                    x: imageX,
+                    y: imageY,
+                    width: imageWidth,
+                    height: imageHeight,
+                  });
+                }
+
+                // initialYPosition -= lineSpacing * 2;
+                // Update the Y position for the next entry
+                // initialYPosition -= requiredSpace; // Adjust as needed for spacing between entries
+                initialYPosition -= totalHeight;
+                // Add small space after the signature section
+                // initialYPosition -= 10;
+              }
+            });
+          });
+        }
+      });
+
+      // Draw horizontal line separator
+      page.drawLine({
+        start: { x: startX + borderPadding, y: initialYPosition - lineSpacing },
+        end: { x: width - startX - borderPadding, y: initialYPosition - lineSpacing },
+        color: rgb(0.12, 0.12, 0.12),
+        thickness: 0.5,
+      });
+
+      initialYPosition -= lineSpacing * 2;
+    })
+  );
+
+  initialYPosition -= lineSpacing;
+
+  // Draw "Document History" header
+  page.drawText(`Document History`, {
+    x: startX + borderPadding,
+    y: initialYPosition,
+    size: subtitle,
+    font: timesRomanFont,
+    color: titleColor,
+  });
+  initialYPosition -= lineSpacing;
+
+  page.drawText('Date', {
+    x: startX + borderPadding,
+    y: initialYPosition,
+    size: text,
+    font: timesRomanFont,
+    color: borderColor,
+  });
+
+  page.drawText('Details', {
+    x: half + 55, // Adjust this value to match where the details should start
+    y: initialYPosition,
+    size: timeText,
+    font: timesRomanFont,
+    color: textKeyColor,
+  });
+
+  // Adjust Y-position for Document History content
+  initialYPosition -= lineSpacing;
+
+  docDetails.DocumentHistory.forEach(item => {
+    const { details, timestamp, createdAt } = item;
+    const userTimezoneCreatedAt = convertUTCToTimezone(createdAt, geo.timezone);
+    const modifiedCreatedAt = `${userTimezoneCreatedAt} ${timezoneAbbr}`;
+
+    // Wrap text for 'details' to avoid overflow within the defined width
+    const timestampX = startX + borderPadding; // Starting X position for 'timestamp'
+    const timestampWidth = timesRomanFont.widthOfTextAtSize(timestamp, text); // Width of 'timestamp'
+    const detailsX = timestampX + timestampWidth + 20; // Small gap after 'timestamp'
+    const maxDetailsWidth = width - detailsX - borderPadding; // Maximum width for 'details' text
+
+    // Ensure text wrapping within the available width
+    const docHistoryMsg = wrapText(details.message || '', timesRomanFont, text, maxDetailsWidth);
+
+    // Check if a new page is needed before starting this entry
+    if (initialYPosition - text * (docHistoryMsg.length + 1) < bottomPadding_10) {
+      createNewPage();
     }
-    page.drawLine({
-      start: { x: 30, y: yPosition8 },
-      end: { x: width - 30, y: yPosition8 },
-      color: rgb(0.12, 0.12, 0.12),
-      thickness: 0.5,
+
+    // Draw timestamp
+    page.drawText(modifiedCreatedAt, {
+      x: timestampX,
+      y: initialYPosition,
+      size: text,
+      font: timesRomanFont,
+      color: titleColor,
     });
 
-    yPosition1 = yPosition8 - 20;
-    yPosition2 = yPosition1 - 20;
-    yPosition3 = yPosition2 - 20;
-    yPosition4 = yPosition3 - 20;
-    yPosition5 = yPosition4 - 20;
-    yPosition6 = yPosition5 - 20;
-    yPosition7 = yPosition6 - 20;
-    yPosition8 = yPosition8 - 174;
+    // Draw wrapped details text
+    docHistoryMsg.forEach((line, idx) => {
+      // Check for space before drawing each line
+      if (initialYPosition < bottomPadding_10) {
+        createNewPage();
+      }
+
+      // Draw the current line of the details message
+      page.drawText(line, {
+        x: detailsX, // Align all lines under the "Details" column
+        y: initialYPosition,
+        size: text,
+        font: timesRomanFont,
+        color: titleColor,
+      });
+
+      // Move down for the next line
+      initialYPosition -= text;
+    });
+
+    // Add spacing between entries to avoid overlap
+    initialYPosition -= text;
   });
 
   if (auditTrail.length > 3) {
@@ -429,7 +584,7 @@ export default async function GenerateCertificate(docDetails) {
       const embedPng = x.Signature ? await pdfDoc.embedPng(x.Signature) : '';
 
       // Calculate remaining space on current page
-      const remainingSpace = yPosition8;
+      const remainingSpace = yPosition6;
 
       // If there's not enough space for the next entry, create a new page
       if (remainingSpace < 90) {
@@ -449,10 +604,7 @@ export default async function GenerateCertificate(docDetails) {
         yPosition3 = yPosition2 - 20;
         yPosition4 = yPosition3 - 20;
         yPosition5 = yPosition4 - 20;
-        yPosition5 = yPosition4 - 20;
-        yPosition6 = yPosition5 - 20;
-        yPosition7 = yPosition6 - 20;
-        yPosition8 = currentPage.getHeight() - 190;
+        yPosition6 = currentPage.getHeight() - 160;
       }
 
       currentPage.drawText(`Signer ${4 + i}`, {
@@ -465,7 +617,7 @@ export default async function GenerateCertificate(docDetails) {
       currentPage.drawText('Name :', {
         x: 30,
         y: yPosition2,
-        size: signertext,
+        size: text,
         font: timesRomanFont,
         color: textKeyColor,
       });
@@ -473,32 +625,31 @@ export default async function GenerateCertificate(docDetails) {
       currentPage.drawText(x?.Name, {
         x: 75,
         y: yPosition2,
-        size: signertext,
+        size: text,
         font: timesRomanFont,
         color: textValueColor,
       });
 
-      if (IsEnableOTP) {
-        currentPage.drawText('Security level :', {
-          x: half + 120,
-          y: yPosition2,
-          size: timeText,
-          font: timesRomanFont,
-          color: textKeyColor,
-        });
-        currentPage.drawText(`Email, OTP Auth`, {
-          x: half + 190,
-          y: yPosition2,
-          size: timeText,
-          font: timesRomanFont,
-          color: textValueColor,
-        });
-      }
+      currentPage.drawText('Viewed on :', {
+        x: half,
+        y: yPosition2,
+        size: text,
+        font: timesRomanFont,
+        color: textKeyColor,
+      });
+
+      currentPage.drawText(`${new Date(x.ViewedOn).toUTCString()}`, {
+        x: half + 75,
+        y: yPosition2,
+        size: text,
+        font: timesRomanFont,
+        color: textValueColor,
+      });
 
       currentPage.drawText('Email :', {
         x: 30,
         y: yPosition3,
-        size: signertext,
+        size: text,
         font: timesRomanFont,
         color: textKeyColor,
       });
@@ -506,68 +657,68 @@ export default async function GenerateCertificate(docDetails) {
       currentPage.drawText(x?.Email, {
         x: 75,
         y: yPosition3,
-        size: signertext,
+        size: text,
         font: timesRomanFont,
         color: textValueColor,
       });
 
-      currentPage.drawText('Viewed on :', {
-        x: 30,
-        y: yPosition4,
-        size: signertext,
-        font: timesRomanFont,
-        color: textKeyColor,
-      });
-
-      currentPage.drawText(`${formatDateTime(x.ViewedOn, DateFormat, timezone, Is12Hr)}`, {
-        x: 97,
-        y: yPosition4,
-        size: signertext,
-        font: timesRomanFont,
-        color: textValueColor,
-      });
       currentPage.drawText('Signed on :', {
-        x: 30,
-        y: yPosition5,
-        size: signertext,
+        x: half,
+        y: yPosition3,
+        size: text,
         font: timesRomanFont,
         color: textKeyColor,
       });
 
-      currentPage.drawText(`${formatDateTime(x.SignedOn, DateFormat, timezone, Is12Hr)}`, {
-        x: 95,
-        y: yPosition5,
-        size: signertext,
+      currentPage.drawText(`${x.SignedOn}`, {
+        x: half + 70,
+        y: yPosition3,
+        size: text,
         font: timesRomanFont,
         color: textValueColor,
       });
 
       currentPage.drawText('IP address :', {
         x: 30,
-        y: yPosition6,
-        size: signertext,
+        y: yPosition4,
+        size: text,
         font: timesRomanFont,
         color: textKeyColor,
       });
 
       currentPage.drawText(x?.ipAddress, {
         x: 100,
-        y: yPosition6,
-        size: signertext,
+        y: yPosition4,
+        size: text,
+        font: timesRomanFont,
+        color: textValueColor,
+      });
+      currentPage.drawText('Security level :', {
+        x: half,
+        y: yPosition4,
+        size: text,
+        font: timesRomanFont,
+        color: textKeyColor,
+      });
+
+      currentPage.drawText(`Email, OTP Auth`, {
+        x: half + 90,
+        y: yPosition4,
+        size: text,
         font: timesRomanFont,
         color: textValueColor,
       });
 
       currentPage.drawText('Signature :', {
         x: 30,
-        y: yPosition7,
-        size: signertext,
+        y: yPosition5,
+        size: text,
         font: timesRomanFont,
         color: textKeyColor,
       });
       currentPage.drawRectangle({
         x: 98,
-        y: yPosition7 - 27,
+        y: yPosition5 - 27,
         width: 104,
         height: 44,
         borderColor: rgb(0.22, 0.18, 0.47),
@@ -576,28 +727,26 @@ export default async function GenerateCertificate(docDetails) {
       if (embedPng) {
         currentPage.drawImage(embedPng, {
           x: 100,
-          y: yPosition7 - 25,
+          y: yPosition5 - 25,
           width: 100,
           height: 40,
         });
       }
 
       currentPage.drawLine({
-        start: { x: 30, y: yPosition8 },
-        end: { x: width - 30, y: yPosition8 },
+        start: { x: 30, y: yPosition6 },
+        end: { x: width - 30, y: yPosition6 },
         color: rgb(0.12, 0.12, 0.12),
         thickness: 0.5,
       });
 
       // Update y positions for the next entry
-      yPosition1 = yPosition8 - 20;
+      yPosition1 = yPosition6 - 20;
       yPosition2 = yPosition1 - 20;
       yPosition3 = yPosition2 - 20;
       yPosition4 = yPosition3 - 20;
       yPosition5 = yPosition4 - 20;
-      yPosition6 = yPosition5 - 20;
-      yPosition7 = yPosition6 - 20;
-      yPosition8 = yPosition8 - 174;
+      yPosition6 = yPosition6 - 140;
     });
   }
 

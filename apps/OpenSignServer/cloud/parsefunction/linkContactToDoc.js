@@ -29,13 +29,7 @@ const saveRoleContact = async contact => {
   contactQuery.set('CreatedBy', contact.CreatedBy);
   contactQuery.set('UserId', contact.UserId);
   contactQuery.set('UserRole', 'contracts_Guest');
-  if (contact?.TenantId) {
-    contactQuery.set('TenantId', {
-      __type: 'Pointer',
-      className: 'partners_Tenant',
-      objectId: contact.TenantId,
-    });
-  }
+  contactQuery.set('TenantId', contact.TenantId);
   contactQuery.set('IsDeleted', false);
   const acl = new Parse.ACL();
   acl.setReadAccess(contact.CreatedBy.objectId, true);
@@ -52,8 +46,7 @@ const saveRoleContact = async contact => {
 // `linkContactToDoc` cloud function is used to create contact, add this contact in contracts_Guest role and
 // save contact pointer in placeholder, signers and ACL of Document
 export default async function linkContactToDoc(req) {
-  const requestemail = req.params?.email;
-  const email = requestemail?.toLowerCase()?.replace(/\s/g, '');
+  const email = req.params.email;
   const docId = req.params.docId;
   const name = req.params.name;
   const phone = req.params.phone;
@@ -61,7 +54,7 @@ export default async function linkContactToDoc(req) {
     if (docId) {
       // Execute the query to get the document with the specified 'docId'
       const docQuery = new Parse.Query('contracts_Document');
-      docQuery.include('ExtUserPtr,ExtUserPtr.TenantId');
+      docQuery.include('ExtUserPtr');
       const docRes = await docQuery.get(docId, { useMasterKey: true });
       // Check if the document was found; if not, throw an error indicating the document was not found
       if (!docRes) {
@@ -132,7 +125,7 @@ export default async function linkContactToDoc(req) {
               Email: email,
               Phone: _extUser?.Phone ? _extUser.Phone : '',
               CreatedBy: _docRes.CreatedBy,
-              TenantId: _docRes.ExtUserPtr?.TenantId?.objectId,
+              TenantId: _docRes.ExtUserPtr.TenantId,
             };
             // if user present on platform create contact on the basis of extended user details
             const contactRes = await saveRoleContact(contact);
@@ -184,7 +177,7 @@ export default async function linkContactToDoc(req) {
                   Email: email,
                   Phone: phone,
                   CreatedBy: _docRes.CreatedBy,
-                  TenantId: _docRes.ExtUserPtr?.TenantId?.objectId,
+                  TenantId: _docRes.ExtUserPtr.TenantId,
                 };
                 // Create new contract on the basis provided contact details by user and userId from _User class
                 const contactRes = await saveRoleContact(contact);
@@ -241,7 +234,7 @@ export default async function linkContactToDoc(req) {
                   Email: email,
                   Phone: phone,
                   CreatedBy: _docRes.CreatedBy,
-                  TenantId: _docRes.ExtUserPtr?.TenantId?.objectId,
+                  TenantId: _docRes.ExtUserPtr.TenantId,
                 };
                 // Create new contract on the basis provided contact details by user and userId from _User class
                 const contactRes = await saveRoleContact(contact);
@@ -281,7 +274,7 @@ export default async function linkContactToDoc(req) {
                 }
               }
             } catch (err) {
-              console.log('Err while creating contact link to doc', err);
+              console.log('Err', err);
             }
           } else {
             throw new Parse.Error(Parse.Error.OBJECT_NOT_FOUND, 'User not found.');

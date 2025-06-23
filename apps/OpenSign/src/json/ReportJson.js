@@ -1,11 +1,27 @@
 export default function reportJson(id) {
   // console.log("json ", json);
-  const head = ["Title", "Note", "Folder", "File", "Owner", "Signers"];
-  const declineHead = ["Title", "Reason", "Folder", "File", "Owner", "Signers"];
-  const iphead = ["Title", "Note", "Folder", "File", "Signers"];
-  const contactbook = ["Name", "Email", "Phone"];
+  const head = ["Sr.No", "Title", "Note", "Folder", "File", "Owner", "Signers"];
+  const declineHead = [
+    "Sr.No",
+    "Title",
+    "Reason",
+    "Folder",
+    "File",
+    "Owner",
+    "Signers"
+  ];
+  const iphead = [
+    "Sr.No",
+    "Title",
+    "Note",
+    "Folder",
+    "File",
+    "Status",
+    "Signers"
+  ];
+  const contactbook = ["Sr.No", "Name", "Email", "Phone"];
   const dashboardReportHead = ["Title", "File", "Owner", "Signers"];
-  const templateReport = ["Title", "File", "Owner", "Signers"];
+  const templateReport = ["Sr.No", "Title", "File", "Owner", "Signers"];
   switch (id) {
     // draft documents report
     case "ByHuevtCFY":
@@ -28,25 +44,6 @@ export default function reportJson(id) {
             btnIcon: "fa-light fa-trash",
             redirectUrl: "",
             action: "delete"
-          },
-          {
-            btnId: "22534",
-            hoverLabel: "option",
-            btnColor: "",
-            restrictBtn: true,
-            textColor: "black",
-            btnIcon: "fa-light fa-ellipsis-vertical fa-lg",
-            action: "option",
-            subaction: [
-              {
-                btnId: "1630",
-                btnLabel: "Save as template",
-                hoverLabel: "Save as template",
-                btnIcon: "fa-light fa-envelope",
-                redirectUrl: "",
-                action: "saveastemplate"
-              }
-            ]
           }
         ],
         helpMsg:
@@ -110,28 +107,12 @@ export default function reportJson(id) {
                 action: "resend"
               },
               {
-                btnId: "1633",
-                btnLabel: "Rename",
-                hoverLabel: "Rename",
-                btnIcon: "fa-light fa-pen-to-square",
-                redirectUrl: "",
-                action: "rename"
-              },
-              {
                 btnId: "1688",
                 btnLabel: "Revoke",
                 hoverLabel: "Revoke",
                 btnIcon: "fa-light fa-file-circle-xmark",
                 redirectUrl: "",
                 action: "revoke"
-              },
-              {
-                btnId: "0630",
-                btnLabel: "Save as template",
-                hoverLabel: "Save as template",
-                btnIcon: "fa-light fa-envelope",
-                redirectUrl: "",
-                action: "saveastemplate"
               },
               {
                 btnId: "1488",
@@ -166,36 +147,8 @@ export default function reportJson(id) {
             hoverLabel: "Delete",
             btnColor: "op-btn-secondary",
             btnIcon: "fa-light fa-trash",
-            restrictBtn: true,
             redirectUrl: "",
             action: "delete"
-          },
-          {
-            btnId: "33534",
-            hoverLabel: "option",
-            btnColor: "",
-            restrictBtn: true,
-            textColor: "black",
-            btnIcon: "fa-light fa-ellipsis-vertical fa-lg",
-            action: "option",
-            subaction: [
-              {
-                btnId: "0930",
-                btnLabel: "Save as template",
-                hoverLabel: "Save as template",
-                btnIcon: "fa-light fa-envelope",
-                redirectUrl: "",
-                action: "saveastemplate"
-              },
-              {
-                btnId: "8440",
-                btnLabel: "Fix & resend",
-                hoverLabel: "Fix & resend",
-                btnIcon: "fa-light fa-paper-plane",
-                redirectUrl: "",
-                action: "recreatedocument"
-              }
-            ]
           }
         ],
         helpMsg:
@@ -222,33 +175,6 @@ export default function reportJson(id) {
             btnIcon: "fa-light fa-trash",
             redirectUrl: "",
             action: "delete"
-          },
-          {
-            btnId: "44534",
-            hoverLabel: "option",
-            btnColor: "",
-            textColor: "black",
-            btnIcon: "fa-light fa-ellipsis-vertical fa-lg",
-            action: "option",
-            subaction: [
-              {
-                btnId: "0940",
-                btnLabel: "Save as template",
-                hoverLabel: "Save as template",
-                restrictBtn: true,
-                btnIcon: "fa-light fa-envelope",
-                redirectUrl: "",
-                action: "saveastemplate"
-              },
-              {
-                btnId: "8440",
-                btnLabel: "Fix & resend",
-                hoverLabel: "Fix & resend",
-                btnIcon: "fa-light fa-paper-plane",
-                redirectUrl: "",
-                action: "recreatedocument"
-              }
-            ]
           }
         ],
         helpMsg:
@@ -275,33 +201,6 @@ export default function reportJson(id) {
             btnIcon: "fa-light fa-trash",
             redirectUrl: "",
             action: "delete"
-          },
-          {
-            btnId: "3234",
-            hoverLabel: "option",
-            btnColor: "",
-            textColor: "black",
-            btnIcon: "fa-light fa-ellipsis-vertical fa-lg",
-            action: "option",
-            subaction: [
-              {
-                btnId: "2199",
-                btnLabel: "extend-expiry-date",
-                hoverLabel: "Extend expiry date",
-                btnColor: "op-btn-primary",
-                btnIcon: "fa-light fa-hourglass-end",
-                redirectUrl: "",
-                action: "extendexpiry"
-              },
-              {
-                btnId: "5530",
-                btnLabel: "Save as template",
-                hoverLabel: "Save as template",
-                btnIcon: "fa-light fa-envelope",
-                redirectUrl: "",
-                action: "saveastemplate"
-              }
-            ]
           }
         ],
         helpMsg:
@@ -346,28 +245,12 @@ export default function reportJson(id) {
                 action: "resend"
               },
               {
-                btnId: "1633",
-                btnLabel: "Rename",
-                hoverLabel: "Rename",
-                btnIcon: "fa-light fa-pen-to-square",
-                redirectUrl: "",
-                action: "rename"
-              },
-              {
                 btnId: "6788",
                 btnLabel: "Revoke",
                 hoverLabel: "Revoke",
                 btnIcon: "fa-light fa-file-circle-xmark",
                 redirectUrl: "",
                 action: "revoke"
-              },
-              {
-                btnId: "7730",
-                btnLabel: "Save as template",
-                hoverLabel: "Save as template",
-                btnIcon: "fa-light fa-envelope",
-                redirectUrl: "",
-                action: "saveastemplate"
               },
               {
                 btnId: "2000",
@@ -419,41 +302,15 @@ export default function reportJson(id) {
             btnIcon: "fa-light fa-trash",
             redirectUrl: "",
             action: "delete"
-          },
-          {
-            btnId: "55534",
-            hoverLabel: "option",
-            btnColor: "",
-            restrictBtn: true,
-            textColor: "black",
-            btnIcon: "fa-light fa-ellipsis-vertical fa-lg",
-            action: "option",
-            subaction: [
-              {
-                btnId: "6630",
-                btnLabel: "Save as template",
-                hoverLabel: "Save as template",
-                btnIcon: "fa-light fa-envelope",
-                redirectUrl: "",
-                action: "saveastemplate"
-              }
-            ]
           }
         ]
       };
     // contactbook report
-    case "contacts":
+    case "5KhaPr482K":
       return {
         reportName: "Contactbook",
         heading: contactbook,
         actions: [
-          {
-            btnId: "2674",
-            hoverLabel: "Edit",
-            btnColor: "op-btn-primary",
-            btnIcon: "fa-light fa-pen",
-            action: "edit"
-          },
           {
             btnId: "2204",
             hoverLabel: "Delete",
@@ -462,7 +319,6 @@ export default function reportJson(id) {
             action: "delete"
           }
         ],
-        import: true,
         form: "ContactBook",
         helpMsg:
           "This is a list of contacts/signers added by you. These will appear as suggestions when you try to add signers to a new document."
@@ -508,12 +364,18 @@ export default function reportJson(id) {
               action: "redirect"
             },
             {
-              btnId: "1633",
-              btnLabel: "Rename",
-              hoverLabel: "Rename",
-              btnIcon: "fa-light fa-pen-to-square",
-              redirectUrl: "",
-              action: "rename"
+              btnId: "2434",
+              btnLabel: "Embed",
+              hoverLabel: "Embed",
+              btnIcon: "fa-light fa-code",
+              action: "Embed"
+            },
+            {
+              btnId: "2434",
+              btnLabel: "Copy TemplateId",
+              hoverLabel: "Copy TemplateId",
+              btnIcon: "fa-light fa-copy",
+              action: "CopyTemplateId"
             },
             {
               btnId: "1834",
@@ -536,15 +398,18 @@ export default function reportJson(id) {
             if (item.action === "option") {
               // Make a shallow copy of the item
               const newItem = { ...item };
-              //splice method used to add `Share with team` option on second index of list
-              newItem.subaction.splice(1, 0, {
-                btnId: "1873",
-                btnLabel: "Share with team",
-                hoverLabel: "Share with team",
-                btnIcon: "fa-light fa-user-group",
-                redirectUrl: "",
-                action: "sharewithteam"
-              });
+              newItem.subaction = [
+                {
+                  btnId: "1873",
+                  btnLabel: "Share with team",
+                  hoverLabel: "Share with team",
+                  btnIcon: "fa-light fa-share-nodes",
+                  redirectUrl: "",
+                  action: "sharewith"
+                },
+                ...newItem.subaction
+              ];
+
               return newItem;
             }
             return item;

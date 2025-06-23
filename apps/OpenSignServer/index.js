@@ -15,36 +15,50 @@ import AWS from 'aws-sdk';
 import { app as customRoute } from './cloud/customRoute/customApp.js';
 import { exec } from 'child_process';
 import { createTransport } from 'nodemailer';
-import { appName, cloudServerUrl, smtpenable, smtpsecure, useLocal } from './Utils.js';
+import { app as v1 } from './cloud/customRoute/v1/apiV1.js';
+import { PostHog } from 'posthog-node';
+import {
+  appName,
+  azureOptions,
+  cloudServerUrl,
+  smtpenable,
+  smtpsecure,
+  useLocal,
+} from './Utils.js';
 import { SSOAuth } from './auth/authadapter.js';
-import createContactIndex from './migrationdb/createContactIndex.js';
-import { validateSignedLocalUrl } from './cloud/parsefunction/getSignedUrl.js';
-import maintenance_mode_message from 'aws-sdk/lib/maintenance_mode_message.js';
+import AzureBlobFilesAdapter from './spec/utils/test-runner.js';
 let fsAdapter;
-maintenance_mode_message.suppress = true;
+console.log('\n---process.env.APP_ID------', process.env.APP_ID);
 if (useLocal !== 'true') {
   try {
     const spacesEndpoint = new AWS.Endpoint(process.env.DO_ENDPOINT);
     const s3Options = {
-      bucket: process.env.DO_SPACE,
+      bucket: process.env.DO_SPACE, // globalConfig.S3FilesAdapter.bucket,
       baseUrl: process.env.DO_BASEURL,
-      fileAcl: 'none',
       region: process.env.DO_REGION,
       directAccess: true,
       preserveFileName: true,
       presignedUrl: true,
       presignedUrlExpires: 900,
       s3overrides: {
-        credentials: {
-          accessKeyId: process.env.DO_ACCESS_KEY_ID,
-          secretAccessKey: process.env.DO_SECRET_ACCESS_KEY,
-        },
+        accessKeyId: process.env.DO_ACCESS_KEY_ID,
+        secretAccessKey: process.env.DO_SECRET_ACCESS_KEY,
         endpoint: spacesEndpoint,
       },
     };
-    fsAdapter = new S3Adapter(s3Options);
+    const azureFilesAdapter = new AzureBlobFilesAdapter({
+      accountName: azureOptions.accountName,
+      accountKey: azureOptions.accessKey,
+      containerName: azureOptions.container,
+      directAccess: true,
+    });
+    // fsAdapter = new S3Adapter(s3Options);
+    // fsAdapter = azureFilesAdapter;
+    fsAdapter = new FSFilesAdapter({
+      filesSubDirectory: 'files', // optional, defaults to ./files
+    });
   } catch (err) {
-    console.log('Please provide AWS credintials in env file! Defaulting to local storage.');
+    console.log('Please provide AWS credentials in env file! Defaulting to local storage.');
     fsAdapter = new FSFilesAdapter({
       filesSubDirectory: 'files', // optional, defaults to ./files
     });
@@ -66,7 +80,7 @@ if (smtpenable) {
       port: process.env.SMTP_PORT || 465,
       secure: smtpsecure,
       auth: {
-        user: process.env.SMTP_USERNAME ? process.env.SMTP_USERNAME : process.env.SMTP_USER_EMAIL,
+        user: process.env.SMTP_USER_EMAIL,
         pass: process.env.SMTP_PASS,
       },
     });
@@ -147,8 +161,6 @@ export const config = {
     : {}),
   filesAdapter: fsAdapter,
   auth: { google: { enabled: true }, sso: SSOAuth },
-  // for fix Adapter prototype don't match expected prototype
-  push: { queueOptions: { disablePushWorker: true } },
 };
 // Client-keys like the javascript key or the .NET key are not necessary with parse-server
 // If you wish you require them, you can set them as options in the initialization above:
@@ -160,8 +172,6 @@ app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 app.use(function (req, res, next) {
   req.headers['x-real-ip'] = getUserIP(req);
-  const publicUrl = 'https://' + req?.get('host');
-  req.headers['public_url'] = publicUrl;
   next();
 });
 function getUserIP(request) {
@@ -176,28 +186,16 @@ function getUserIP(request) {
     return request.socket.remoteAddress;
   }
 }
-
-app.use(async function (req, res, next) {
-  const isFilePath = req.path.includes('files') || false;
-  if (isFilePath && req.method.toLowerCase() === 'get') {
-    const serverUrl = new URL(process.env.SERVER_URL);
-    const origin = serverUrl.pathname === '/api/app' ? serverUrl.origin + '/api' : serverUrl.origin;
-    const fileUrl = origin + req.originalUrl;
-    const params = fileUrl?.split('?')?.[1];
-    if (params) {
-      const fileRes = await validateSignedLocalUrl(fileUrl);
-      if (fileRes === 'Unauthorized') {
-        return res.status(400).json({ message: 'unauthorized' });
-      }
-    } else {
-      return res.status(400).json({ message: 'unauthorized' });
-    }
-    next();
-  } else {
-    next();
+app.use(function (req, res, next) {
+  const ph_project_api_key = process.env.PH_PROJECT_API_KEY;
+  try {
+    req.posthog = new PostHog(ph_project_api_key);
+  } catch (err) {
+    // console.log('Err', err);
+    req.posthog = '';
   }
+  next();
 });
-
 // Serve static assets from the /public folder
 app.use('/public', express.static(path.join(__dirname, '/public')));
 
@@ -210,11 +208,13 @@ if (!process.env.TESTING) {
     app.use(mountPath, server.app);
   } catch (err) {
     console.log(err);
-    process.exit();
   }
 }
 // Mount your custom express app
 app.use('/', customRoute);
+
+// Mount v1
+app.use('/v1', v1);
 
 // Parse Server plays nicely with the rest of your web routes
 app.get('/', function (req, res) {
@@ -231,7 +231,6 @@ if (!process.env.TESTING) {
     console.log('opensign-server running on port ' + port + '.');
     const isWindows = process.platform === 'win32';
     // console.log('isWindows', isWindows);
-    createContactIndex();
 
     const migrate = isWindows
       ? `set APPLICATION_ID=${process.env.APP_ID}&& set SERVER_URL=${cloudServerUrl}&& set MASTER_KEY=${process.env.MASTER_KEY}&& npx parse-dbtool migrate`

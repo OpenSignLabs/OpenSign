@@ -168,6 +168,21 @@
 }
 
 
+.sort {
+  padding: 8px 15px;
+  margin: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.sort:hover {
+  box-shadow: 0 2px 4px rgba(168, 204, 206, 0.1);
+  background-color: var(--mauve-3);
+  border-radius: 2px;
+}
+
 .fileName {
   display: inline-block;
   width: 100px;
@@ -177,12 +192,6 @@
   font-size: 11px;
   text-align: center;
   font-weight: 480;
-}
-.select-none-cls{
-  -webkit-user-select: none;
-  /* Disable text selection in WebKit browsers */
-  -moz-user-select: none;
-  user-select: none;
 }
 
 a {
@@ -204,15 +213,6 @@ a {
   align-items: center;
 }
 
-/* Dark mode support for HoverCard */
-[data-theme="opensigndark"] .HoverCardContent {
-  background-color: #1F2937;
-  color: #E5E7EB;
-  box-shadow:
-    hsl(0 0% 0% / 50%) 0px 10px 38px -10px,
-    hsl(0 0% 0% / 30%) 0px 10px 20px -15px;
-}
-
 .HoverCardContent[data-side="top"] {
   animation-name: slideDownAndFade;
 }
@@ -231,11 +231,6 @@ a {
 
 .HoverCardArrow {
   fill: white;
-}
-
-/* Dark mode support for HoverCard arrow */
-[data-theme="opensigndark"] .HoverCardArrow {
-  fill: #1F2937;
 }
 
 @keyframes slideUpAndFade {
@@ -283,5 +278,17 @@ a {
   100% {
     opacity: 1;
     transform: translateX(0);
+  }
+}
+
+@media (min-width: 310px) and (max-width: 550px) {
+  .sort {
+    padding: 2px;
+  }
+}
+
+@media screen and (max-width: 309px) {
+  .sort {
+    padding: 2px;
   }
 }

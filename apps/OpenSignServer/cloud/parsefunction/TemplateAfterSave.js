@@ -6,16 +6,13 @@ export default async function TemplateAfterSave(request) {
       const signers = request.object.get('Signers');
       const AutoReminder = request?.object?.get('AutomaticReminders') || false;
       const ip = request?.headers?.['x-real-ip'] || '';
-      const originIp = request?.object?.get('OriginIp') || '';
       if (AutoReminder) {
         const RemindOnceInEvery = request?.object?.get('RemindOnceInEvery') || 5;
         const ReminderDate = new Date(request?.object?.get('createdAt'));
         ReminderDate.setDate(ReminderDate.getDate() + RemindOnceInEvery);
         request.object.set('NextReminderDate', ReminderDate);
       }
-      if (!originIp) {
-        request.object.set('OriginIp', ip);
-      }
+      request.object.set('OriginIp', ip);
       await request.object.save(null, { useMasterKey: true });
       if (signers && signers.length > 0) {
         await updateAclDoc(request.object.id);
@@ -47,7 +44,6 @@ export default async function TemplateAfterSave(request) {
     const Query = new Parse.Query('contracts_Template');
     Query.include('Signers');
     Query.include('CreatedBy');
-    Query.include('ExtUserPtr.TenantId');
     const updateACL = await Query.get(objId, { useMasterKey: true });
     const res = JSON.parse(JSON.stringify(updateACL));
     // console.log("res");
@@ -89,7 +85,6 @@ export default async function TemplateAfterSave(request) {
 
     const Query = new Parse.Query('contracts_Template');
     Query.include('CreatedBy');
-    Query.include('ExtUserPtr.TenantId');
     const updateACL = await Query.get(objId, { useMasterKey: true });
     const res = JSON.parse(JSON.stringify(updateACL));
     // console.log("res");

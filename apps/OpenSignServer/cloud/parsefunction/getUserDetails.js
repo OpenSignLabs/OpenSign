@@ -14,9 +14,7 @@ async function getUserDetails(request) {
       userQuery.include('UserId');
       userQuery.include('CreatedBy');
       userQuery.exclude('CreatedBy.authData');
-      userQuery.exclude('TenantId.FileAdapters');
       userQuery.exclude('google_refresh_token');
-      userQuery.exclude('TenantId.PfxFile');
       if (userId) {
         userQuery.equalTo('CreatedBy', { __type: 'Pointer', className: '_User', objectId: userId });
       }
@@ -36,8 +34,7 @@ async function getUserDetails(request) {
       const msg = err?.message || 'Something went wrong.';
       throw new Parse.Error(code, msg);
     }
-  }
-  else {
+  } else {
     throw new Parse.Error(Parse.Error.INVALID_SESSION_TOKEN, 'User is not authenticated.');
   }
 }

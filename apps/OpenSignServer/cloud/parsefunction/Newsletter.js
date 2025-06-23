@@ -1,14 +1,15 @@
 import axios from 'axios';
 export default async function Newsletter(request) {
   const name = request.params.name;
-  const email = request.params?.email?.toLowerCase()?.replace(/\s/g, '');
+  const email = request.params.email;
   const domain = request.params.domain;
   try {
-    const envAppId = 'opensign';
-    const headers = { 'Content-Type': 'application/json', 'X-Parse-Application-Id': envAppId };
-    const envProdServer = 'https://app.opensignlabs.com/api/app';
+    const headers = {
+      'Content-Type': 'application/json',
+      'X-Parse-Application-Id': 'legadranaxn',
+    };
     const newsletter = await axios.post(
-      `${envProdServer}/classes/Newsletter`,
+      'https://app.opensignlabs.com/api/app/classes/Newsletter',
       { Name: name, Email: email, Domain: domain },
       { headers: headers }
     );

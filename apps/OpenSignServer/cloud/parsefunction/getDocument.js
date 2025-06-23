@@ -1,16 +1,17 @@
 import axios from 'axios';
 import { cloudServerUrl } from '../../Utils.js';
+
 export default async function getDocument(request) {
   const serverUrl = cloudServerUrl; //process.env.SERVER_URL;
   const docId = request.params.docId;
-  const sessiontoken = request?.headers?.sessiontoken || '';
+  const contactId = request.params.contactId;
+
   try {
     if (docId) {
       try {
         const query = new Parse.Query('contracts_Document');
         query.equalTo('objectId', docId);
         query.include('ExtUserPtr');
-        query.include('ExtUserPtr.TenantId');
         query.include('CreatedBy');
         query.include('Signers');
         query.include('AuditTrail.UserPtr');
@@ -19,25 +20,27 @@ export default async function getDocument(request) {
         query.notEqualTo('IsArchive', true);
         const res = await query.first({ useMasterKey: true });
         if (res) {
-          const IsEnableOTP = res?.get('IsEnableOTP') || false;
-          const document = JSON.parse(JSON.stringify(res));
-          delete document.ExtUserPtr.TenantId.FileAdapters;
-          delete document?.ExtUserPtr?.TenantId?.PfxFile;
+          const signersArr = res?.get('Signers');
+          const signer1OTPRequired = res?.get('Signer1OTPRequired');
+          const signer2OTPRequired = res?.get('Signer2OTPRequired');
+          const enableOTP = signersArr[0].id == contactId ? signer1OTPRequired : signer2OTPRequired;
+          // const IsEnableOTP = res?.get('IsEnableOTP') || false;
+          const IsEnableOTP = enableOTP || false;
           if (!IsEnableOTP) {
-            return document;
+            return res;
           } else {
-            if (sessiontoken) {
+            if (request?.headers?.['sessiontoken']) {
               try {
                 const userRes = await axios.get(serverUrl + '/users/me', {
                   headers: {
                     'X-Parse-Application-Id': process.env.APP_ID,
-                    'X-Parse-Session-Token': sessiontoken,
+                    'X-Parse-Session-Token': request.headers['sessiontoken'],
                   },
                 });
                 const userId = userRes.data && userRes.data?.objectId;
                 const acl = res.getACL();
                 if (userId && acl && acl.getReadAccess(userId)) {
-                  return document;
+                  return res;
                 } else {
                   return { error: "You don't have access of this document!" };
                 }
@@ -50,7 +53,7 @@ export default async function getDocument(request) {
             }
           }
         } else {
-          return { error: "document deleted or you don't have access." };
+          return { error: "You don't have access of this document!" };
         }
       } catch (err) {
         console.log('err', err);
