@@ -37,7 +37,7 @@
     "generate-api-key": "^1.0.2",
     "googleapis": "^150.0.1",
     "libreoffice-convert": "^1.6.1",
-    "mailgun.js": "^12.0.2",
+    "mailgun.js": "^12.0.3",
     "mongodb": "^6.17.0",
     "multer": "^2.0.1",
     "multer-s3": "^3.0.1",
