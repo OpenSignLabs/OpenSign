@@ -15,7 +15,7 @@ import AWS from 'aws-sdk';
 import { app as customRoute } from './cloud/customRoute/customApp.js';
 import { exec } from 'child_process';
 import { createTransport } from 'nodemailer';
-import { appName, cloudServerUrl, smtpenable, smtpsecure, useLocal } from './Utils.js';
+import { appName, cloudServerUrl, serverAppId, smtpenable, smtpsecure, useLocal } from './Utils.js';
 import { SSOAuth } from './auth/authadapter.js';
 import createContactIndex from './migrationdb/createContactIndex.js';
 import { validateSignedLocalUrl } from './cloud/parsefunction/getSignedUrl.js';
@@ -97,7 +97,7 @@ export const config = {
   cloud: function () {
     import('./cloud/main.js');
   },
-  appId: process.env.APP_ID || 'opensign',
+  appId: serverAppId,
   logLevel: ['error'],
   maxLimit: 500,
   maxUploadSize: '30mb',
@@ -234,8 +234,8 @@ if (!process.env.TESTING) {
     createContactIndex();
 
     const migrate = isWindows
-      ? `set APPLICATION_ID=${process.env.APP_ID}&& set SERVER_URL=${cloudServerUrl}&& set MASTER_KEY=${process.env.MASTER_KEY}&& npx parse-dbtool migrate`
-      : `APPLICATION_ID=${process.env.APP_ID} SERVER_URL=${cloudServerUrl} MASTER_KEY=${process.env.MASTER_KEY} npx parse-dbtool migrate`;
+      ? `set APPLICATION_ID=${serverAppId}&& set SERVER_URL=${cloudServerUrl}&& set MASTER_KEY=${process.env.MASTER_KEY}&& npx parse-dbtool migrate`
+      : `APPLICATION_ID=${serverAppId} SERVER_URL=${cloudServerUrl} MASTER_KEY=${process.env.MASTER_KEY} npx parse-dbtool migrate`;
     exec(migrate, (error, stdout, stderr) => {
       if (error) {
         console.error(`Error: ${error.message}`);

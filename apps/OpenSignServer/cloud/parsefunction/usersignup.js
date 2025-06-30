@@ -1,7 +1,7 @@
 import axios from 'axios';
-import { cloudServerUrl } from '../../Utils.js';
+import { cloudServerUrl, serverAppId } from '../../Utils.js';
 const serverUrl = cloudServerUrl; //process.env.SERVER_URL;
-const APPID = process.env.APP_ID;
+const APPID = serverAppId;
 const masterKEY = process.env.MASTER_KEY;
 
 async function saveUser(userDetails) {

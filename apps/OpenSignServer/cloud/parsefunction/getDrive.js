@@ -1,8 +1,8 @@
 import axios from 'axios';
-import { cloudServerUrl } from '../../Utils.js';
+import { cloudServerUrl, serverAppId } from '../../Utils.js';
 export default async function getDrive(request) {
   const serverUrl = cloudServerUrl; //process.env.SERVER_URL;
-  const appId = process.env.APP_ID;
+  const appId = serverAppId;
   const limit = request.params.limit;
   const skip = request.params.skip;
   const docId = request.params.docId;
