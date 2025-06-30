@@ -3,7 +3,7 @@ import axios from 'axios';
 import multer from 'multer';
 import libre from 'libreoffice-convert';
 import util from 'node:util';
-import { cloudServerUrl, getSecureUrl } from '../../Utils.js';
+import { cloudServerUrl, getSecureUrl, serverAppId } from '../../Utils.js';
 
 libre.convertAsync = util.promisify(libre.convert);
 
@@ -29,7 +29,7 @@ function generatePdfName(length) {
 
 export default async function docxtopdf(req, res) {
   const serverUrl = cloudServerUrl;
-  const appId = process.env.APP_ID;
+  const appId = serverAppId;
   const masterKey = process.env.MASTER_KEY;
   const inputPath = req.file.path;
   const name = generatePdfName(16);

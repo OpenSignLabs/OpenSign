@@ -694,17 +694,20 @@ function WidgetsValueModal(props) {
       }
     }
     if (isTab === "type") {
+      //trim user name or typed name value to show in initial signature      
       const trimmedName = typedSignature
         ? typedSignature?.trim()
         : currentUserName?.trim();
+        //get full name of user
+        const fullUserName = typedSignature || currentUserName
       const firstCharacter = trimmedName?.charAt(0);
       const userName =
         currWidgetsDetails?.type === "initials"
           ? firstCharacter
-          : typedSignature;
+          : fullUserName;
       const signatureValue = currWidgetsDetails?.typeSignature;
       setTypedSignature(signatureValue || userName || "");
-      convertToImg(fontSelect, userName);
+      convertToImg(fontSelect, signatureValue || userName || "");      
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isTab]);
