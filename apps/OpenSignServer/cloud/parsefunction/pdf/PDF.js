@@ -7,6 +7,7 @@ import {
   saveFileUsage,
   getSecureUrl,
   appName,
+  serverAppId,
 } from '../../../Utils.js';
 import GenerateCertificate from './GenerateCertificate.js';
 import { pdflibAddPlaceholder } from '@signpdf/placeholder-pdf-lib';
@@ -15,7 +16,7 @@ import { SignPdf } from '@signpdf/signpdf';
 import { P12Signer } from '@signpdf/signer-p12';
 
 const serverUrl = cloudServerUrl; // process.env.SERVER_URL;
-const APPID = process.env.APP_ID;
+const APPID = serverAppId;
 const masterKEY = process.env.MASTER_KEY;
 const eSignName = 'OpenSign';
 const eSigncontact = 'hello@opensignlabs.com';
