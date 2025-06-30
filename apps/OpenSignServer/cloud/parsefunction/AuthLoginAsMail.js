@@ -1,10 +1,10 @@
 import axios from 'axios';
-import { cloudServerUrl } from '../../Utils.js';
+import { cloudServerUrl, serverAppId } from '../../Utils.js';
 async function AuthLoginAsMail(request) {
   try {
     //function for login user using user objectId without touching user's password
     const serverUrl = cloudServerUrl; //process.env.SERVER_URL;
-    const APPID = process.env.APP_ID;
+    const APPID = serverAppId;
     const masterKEY = process.env.MASTER_KEY;
 
     let otpN = request.params.otp;

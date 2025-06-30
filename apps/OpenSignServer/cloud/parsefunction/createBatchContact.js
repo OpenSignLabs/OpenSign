@@ -1,6 +1,6 @@
 import axios from 'axios';
-import { cloudServerUrl } from '../../Utils.js';
-const appId = process.env.APP_ID;
+import { cloudServerUrl, serverAppId } from '../../Utils.js';
+const appId = serverAppId;
 const masterkey = process.env.MASTER_KEY;
 export default async function createBatchContact(req) {
   if (!req?.user) {

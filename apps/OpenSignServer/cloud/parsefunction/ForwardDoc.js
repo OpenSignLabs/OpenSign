@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { appName, cloudServerUrl } from '../../Utils.js';
+import { appName, cloudServerUrl, serverAppId } from '../../Utils.js';
 
 export default async function forwardDoc(request) {
   try {
@@ -58,7 +58,7 @@ export default async function forwardDoc(request) {
           mailRes = await axios.post(`${cloudServerUrl}/functions/sendmailv3`, params, {
             headers: {
               'Content-Type': 'application/json',
-              'X-Parse-Application-Id': process.env.APP_ID,
+              'X-Parse-Application-Id': serverAppId,
               'X-Parse-Master-Key': process.env.MASTER_KEY,
             },
           });
