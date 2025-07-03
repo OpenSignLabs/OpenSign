@@ -116,7 +116,7 @@ const Header = ({ showSidebar, setIsMenu, isConsole }) => {
 
   return (
     <div>
-      <div className="op-navbar bg-base-100 shadow">
+      <div className="op-navbar bg-base-100 shadow touch-none">
         <div className="flex-none">
           <button
             className="op-btn op-btn-square op-btn-ghost focus:outline-none hover:bg-transparent op-btn-sm no-animation"

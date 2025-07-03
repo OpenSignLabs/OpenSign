@@ -863,7 +863,6 @@ function PlaceHolderSign() {
       try {
         //pdfOriginalWH contained all pdf's pages width,height & pagenumber in array format
         const pdfBase64 = await multiSignEmbed(
-          pdfOriginalWH,
           placeholder,
           pdfDoc,
           isSignYourSelfFlow,
@@ -1745,14 +1744,14 @@ function PlaceHolderSign() {
           objectId: data.objectId
         };
         const updatePlaceHolder = signerPos.map((x) => {
-          if (x.Id === id) {
+          if (x.Id === id || x.signerObjId === id) {
             return { ...x, signerPtr: signerPtr, signerObjId: data.objectId };
           }
           return { ...x };
         });
         setSignerPos(updatePlaceHolder);
         const updateSigner = signersdata.map((x) => {
-          if (x.Id === id) {
+          if (x.Id === id || x.objectId === id) {
             return { ...x, ...data, className: "contracts_Contactbook" };
           }
           return { ...x };
@@ -1767,7 +1766,9 @@ function PlaceHolderSign() {
           }
         }
         setSignersData(updateSigner);
-        const index = signersdata.findIndex((x) => x.Id === id);
+        const index = signersdata.findIndex(
+          (x) => x.Id === id || x.objectId === id
+        );
         setIsSelectId(index);
       }
       if (isNewContact.status) {
@@ -1931,7 +1932,9 @@ function PlaceHolderSign() {
   };
   //`handleInputChange` function to get signers list from dropdown
   const handleInputChange = (item, id) => {
-    const signerExist = forms.some((x) => x.value === item.value);
+    const signerExist = signersdata?.some(
+      (x) => x.objectId && x.objectId === item.value
+    );
     if (signerExist) {
       alert(t("already-exist-signer"));
     } else {

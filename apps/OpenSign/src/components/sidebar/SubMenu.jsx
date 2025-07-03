@@ -12,16 +12,16 @@ const Submenu = ({ item, closeSidebar, toggleSubmenu, submenuOpen }) => {
     <li role="none" className="my-0.5">
       <button
         onClick={() => toggleSubmenu(item.title)}
-        className="flex items-center justify-start text-left p-3 lg:p-4 text-base-content hover:text-base-content focus:bg-base-300 hover:bg-base-300 hover:no-underline focus:outline-none "
+        className="flex gap-x-5 items-center justify-start text-left p-3 text-base-content hover:text-base-content focus:bg-base-300 hover:bg-base-300 hover:no-underline focus:outline-none"
         aria-expanded={submenuOpen}
         aria-haspopup="true"
         aria-controls={`submenu-${title}`}
       >
         <span className="w-[20px] h-[20px] flex justify-center">
-          <i className={`${icon} text-[18px]`}></i>
+          <i className={`${icon} text-[20px]`}></i>
         </span>
         <div className="flex justify-between items-center w-full">
-          <span className="ml-3 lg:ml-4 text-start">
+          <span className="flex items-center mb-0.5">
             {t(`sidebar.${item.title}`, { appName })}
           </span>
           <i
@@ -46,20 +46,20 @@ const Submenu = ({ item, closeSidebar, toggleSubmenu, submenuOpen }) => {
                 }
                 className={({ isActive }) =>
                   `${
-                    isActive ? "bg-base-300 text-base-content" : ""
-                  } flex items-center justify-start text-left pl-6 md:pl-8 py-2 text-sm cursor-pointer text-base-content hover:text-base-content focus:bg-base-300 hover:bg-base-300 hover:no-underline focus:outline-none`
+                    isActive ? "bg-base-300 text-base-content " : ""
+                  } pl-4 flex items-center gap-x-5 py-2 text-sm cursor-pointer text-base-content hover:text-base-content focus:bg-base-300 hover:bg-base-300 hover:no-underline focus:outline-none`
                 }
                 onClick={closeSidebar}
                 role="menuitem"
                 tabIndex={submenuOpen ? 0 : -1}
               >
-                <span className="w-[15px] h-[15px] flex justify-center">
+                <span className="w-[18px] h-[18px] flex justify-center">
                   <i
                     className={`${childItem.icon} text-[18px]`}
                     aria-hidden="true"
                   ></i>
                 </span>
-                <span className="ml-3 lg:ml-4">
+                <span className="mb-0.5">
                   {t(`sidebar.${item.title}-Children.${childItem.title}`, {
                     appName: drivename
                   })}

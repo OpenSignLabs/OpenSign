@@ -15,6 +15,7 @@ const BulkSendUi = (props) => {
   const [isSignatureExist, setIsSignatureExist] = useState();
   const [isDisableBulkSend, setIsDisableBulkSend] = useState(false);
   const [isLoader, setIsLoader] = useState(false);
+  const [signers, setSigners] = useState([]);
   useEffect(() => {
     signatureExist();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -47,7 +48,14 @@ const BulkSendUi = (props) => {
     (() => {
       if (props?.Placeholders?.length > 0) {
         let users = [];
+        let emails = [];
         props?.Placeholders?.forEach((element) => {
+          const signerEmail = element?.email || element?.signerPtr?.Email;
+
+          // only add when there's a non-empty signerEmail
+          if (signerEmail) {
+            emails = [...emails, signerEmail];
+          }
           if (!element.signerObjId) {
             users = [
               ...users,
@@ -60,7 +68,10 @@ const BulkSendUi = (props) => {
             ];
           }
         });
+        setEmails(emails);
         setForms((prevForms) => [...prevForms, { Id: 1, fields: users }]);
+        const signer = props.item?.Signers?.filter((x) => x?.objectId);
+        setSigners(signer);
       }
     })();
     // eslint-disable-next-line
@@ -82,10 +93,16 @@ const BulkSendUi = (props) => {
 
   function validateEmails(data) {
     for (const item of data) {
+      let email = "";
       for (const field of item.fields) {
         if (!emailRegex.test(field.email)) {
-          alert(`Invalid email found: ${field.email}`);
+          alert(t("invalid-email-found", { email: field.email }));
           return false;
+        } else if (email === field.email || emails?.includes(field.email)) {
+          alert(t("duplicate-email-found", { email: field.email }));
+          return false;
+        } else {
+          email = field.email;
         }
       }
     }
@@ -143,15 +160,14 @@ const BulkSendUi = (props) => {
             Documents.push({
               ...props.item,
               Placeholders: updatedPlaceholders,
-              Signers: props.item.Signers
-                ? [...props.item.Signers, ...existSigner]
-                : [...existSigner]
+              Signers: signers ? [...signers, ...existSigner] : [...existSigner]
             });
           } else {
             Documents.push({
               ...props.item,
               Placeholders: updatedPlaceholders,
-              SignatureType: props.signatureType
+              SignatureType: props.signatureType,
+              Signers: signers
             });
           }
         });
