@@ -648,7 +648,6 @@ function SignYourSelf() {
             }
             //embed all widgets in document
             const pdfBytes = await multiSignEmbed(
-              pdfOriginalWH,
               xyPosition,
               pdfDoc,
               isSignYourSelfFlow,

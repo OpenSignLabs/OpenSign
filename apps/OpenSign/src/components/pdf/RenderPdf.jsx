@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import RSC from "react-scrollbars-custom";
 import { Document, Page } from "react-pdf";
 import {
@@ -11,12 +11,44 @@ import {
 import Placeholder from "./Placeholder";
 import Alert from "../../primitives/Alert";
 import { useTranslation } from "react-i18next";
+import usePdfPinchZoom from "../../hook/usePdfPinchZoom";
 
 function RenderPdf(props) {
   const { t } = useTranslation();
   const [scaledHeight, setScaledHeight] = useState();
+  const [guideline, setGuideline] = useState({
+    show: false,
+    x1: 0,
+    x2: 0,
+    y1: 0,
+    y2: 0
+  });
   //check isGuestSigner is present in local if yes than handle login flow header in mobile view
   const isGuestSigner = localStorage.getItem("isGuestSigner");
+
+  const pdfContainerRef = useRef(null);
+
+  // enable pinch to zoom only on actual pdf wrapper
+  usePdfPinchZoom(
+    pdfContainerRef,
+    props.scale,
+    props.setScale,
+    props.setZoomPercent
+  );
+
+  const handleGuideline = (isShow, x = 0, y = 0, width = 0, height = 0) => {
+    if (isShow) {
+      setGuideline({
+        show: true,
+        x1: x,
+        x2: x + width,
+        y1: y,
+        y2: y + height
+      });
+    } else {
+      setGuideline({ show: false, x1: 0, x2: 0, y1: 0, y2: 0 });
+    }
+  };
 
   // handle signature block width and height according to screen
   const posWidth = (pos, signYourself) => {
@@ -115,6 +147,7 @@ function RenderPdf(props) {
                       isSignYourself={false}
                       posWidth={posWidth}
                       posHeight={posHeight}
+                      showGuidelines={handleGuideline}
                       isDragging={props.isDragging}
                       pdfDetails={props.pdfDetails}
                       unSignedWidgetId={props.unSignedWidgetId}
@@ -204,14 +237,17 @@ function RenderPdf(props) {
           data-tut={isMobile ? "reactourForth" : undefined}
           className={
             isMobile
-              ? `${isGuestSigner ? "30px" : ""} border-[0.1px] border-[#ebe8e8] overflow-x-auto`
-              : ""
+              ? `${isGuestSigner ? "30px" : ""} border-[0.1px] border-[#ebe8e8] overflow-x-auto relative`
+              : "relative"
           }
           style={{
             width:
               props.containerWH?.width && props.containerWH?.width * props.scale
           }}
-          ref={props.drop}
+          ref={(node) => {
+            pdfContainerRef.current = node;
+            props.drop && props.drop(node);
+          }}
           id="container"
         >
           {props.pdfLoad !== false &&
@@ -258,6 +294,7 @@ function RenderPdf(props) {
                                         isSignYourself={false}
                                         posWidth={posWidth}
                                         posHeight={posHeight}
+                                        showGuidelines={handleGuideline}
                                         isDragging={props.isDragging}
                                         setIsValidate={props.setIsValidate}
                                         setIsRadio={props.setIsRadio}
@@ -325,6 +362,7 @@ function RenderPdf(props) {
                                     isSignYourself={true}
                                     posWidth={posWidth}
                                     posHeight={posHeight}
+                                    showGuidelines={handleGuideline}
                                     pdfDetails={props.pdfDetails[0]}
                                     isDragging={props.isDragging}
                                     setIsCheckbox={props.setIsCheckbox}
@@ -389,6 +427,30 @@ function RenderPdf(props) {
               }}
             />
           </Document>
+          {guideline.show && (
+            <>
+              {/* top guide */}
+              <div
+                className="absolute pointer-events-none z-[1000] left-0 w-full border-t-[1px] border-dashed border-[#3b82f6]"
+                style={{ top: guideline.y1 }}
+              />
+              {/* bottom guide */}
+              <div
+                className="absolute pointer-events-none z-[1000] left-0 w-full border-t-[1px] border-dashed border-[#3b82f6]"
+                style={{ top: guideline.y2 }}
+              />
+              {/* left guide */}
+              <div
+                className="absolute pointer-events-none z-[1000] top-0 h-full border-l-[1px] border-dashed border-[#3b82f6]"
+                style={{ left: guideline.x1 }}
+              />
+              {/* right guide */}
+              <div
+                className="absolute pointer-events-none z-[1000] top-0 h-full border-l-[1px] border-dashed border-[#3b82f6]"
+                style={{ left: guideline.x2 }}
+              />
+            </>
+          )}
         </div>
       </RSC>
     </>

@@ -209,8 +209,8 @@ function RenderAllPdfPage(props) {
               onChange={handleFileUpload}
             />
             <i className="fa-light fa-plus text-gray-500"></i>
-            <span className="text-xs lg:text-sm text-base-content ">
-              Add pages
+            <span className="text-xs lg:text-sm text-base-content">
+              {t("add-pages")}
             </span>
           </button>
         )}

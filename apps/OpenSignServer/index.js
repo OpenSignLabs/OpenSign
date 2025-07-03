@@ -232,7 +232,6 @@ if (!process.env.TESTING) {
     const isWindows = process.platform === 'win32';
     // console.log('isWindows', isWindows);
     createContactIndex();
-
     const migrate = isWindows
       ? `set APPLICATION_ID=${serverAppId}&& set SERVER_URL=${cloudServerUrl}&& set MASTER_KEY=${process.env.MASTER_KEY}&& npx parse-dbtool migrate`
       : `APPLICATION_ID=${serverAppId} SERVER_URL=${cloudServerUrl} MASTER_KEY=${process.env.MASTER_KEY} npx parse-dbtool migrate`;

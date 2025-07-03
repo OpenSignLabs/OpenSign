@@ -92,7 +92,7 @@ async function AuthLoginAsMail(request) {
   } catch (err) {
     console.log('err in Auth');
     console.log(err);
-    return 'Result not found', err;
+    return 'Result not found';
   }
 }
 export default AuthLoginAsMail;

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, forwardRef, useRef } from "react";
+import React, { useEffect, useState, forwardRef } from "react";
 import {
   getMonth,
   getYear,
@@ -36,7 +36,6 @@ function PlaceholderType(props) {
   const widgetData =
     props.pos?.options?.response ?? props.pos?.options?.defaultValue ?? "";
   const widgetTypeTranslation = t(`widgets-name.${props?.pos?.type}`);
-  const inputRef = useRef(null);
   const [widgetValue, setwidgetValue] = useState();
   const [selectedCheckbox, setSelectedCheckbox] = useState([]);
   const [hint, setHint] = useState("");
@@ -158,7 +157,7 @@ function PlaceholderType(props) {
       const checkBoxWrapperClass = `flex items-start ${
         checkBoxLayout === "horizontal"
           ? `flex-row flex-wrap ${isMultipleCheckbox ? "gap-x-2" : ""}`
-          : `flex-col ${isMultipleCheckbox ? "gap-y-[5px]" : ""}`
+          : `flex-col ${isMultipleCheckbox ? "gap-y-[3px]" : ""}`
       }`; // Using gap-y-1 for consistency, adjust if needed
 
       return (
@@ -193,7 +192,6 @@ function PlaceholderType(props) {
     case textInputWidget:
       return props.isSignYourself || iswidgetEnable ? (
         <textarea
-          ref={inputRef}
           placeholder={hint || t("widgets-name.text")}
           rows={1}
           value={widgetValue}
@@ -277,7 +275,6 @@ function PlaceholderType(props) {
       return iswidgetEnable ? (
         <textarea
           readOnly
-          ref={inputRef}
           placeholder={hint || widgetTypeTranslation}
           rows={1}
           value={widgetValue}
@@ -300,7 +297,6 @@ function PlaceholderType(props) {
       return iswidgetEnable ? (
         <textarea
           readOnly
-          ref={inputRef}
           placeholder={hint || widgetTypeTranslation}
           rows={1}
           value={widgetValue}
@@ -323,7 +319,6 @@ function PlaceholderType(props) {
       return iswidgetEnable ? (
         <textarea
           readOnly
-          ref={inputRef}
           placeholder={hint || widgetTypeTranslation}
           rows={1}
           value={widgetValue}
@@ -429,7 +424,6 @@ function PlaceholderType(props) {
       return iswidgetEnable ? (
         <textarea
           readOnly
-          ref={inputRef}
           placeholder={hint || widgetTypeTranslation}
           rows={1}
           value={widgetValue}
@@ -453,7 +447,7 @@ function PlaceholderType(props) {
       const isOnlyOneBtn = props.pos.options?.values?.length > 0 ? true : false;
       const radioWrapperClass = `flex items-start ${
         radioLayout === "horizontal"
-          ? `flex-row flex-wrap ${isOnlyOneBtn ? "gap-x-2" : ""}`
+          ? `flex-row flex-wrap ${isOnlyOneBtn ? "gap-x-[10px]" : ""}`
           : `flex-col ${isOnlyOneBtn ? "gap-y-[5px]" : ""}`
       }`; // Using gap-y-1 for consistency, adjust if needed
       return (

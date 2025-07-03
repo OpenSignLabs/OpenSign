@@ -693,7 +693,6 @@ function PdfRequestFiles(
               }
               //embed all widgets in document
               const pdfBytes = await multiSignEmbed(
-                pdfOriginalWH,
                 widgets,
                 pdfDoc,
                 isSignYourSelfFlow,

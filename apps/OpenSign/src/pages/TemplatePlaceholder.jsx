@@ -833,7 +833,6 @@ const TemplatePlaceholder = () => {
       try {
         //pdfOriginalWH contained all pdf's pages width,height & pagenumber in array format
         const pdfBase64 = await multiSignEmbed(
-          pdfOriginalWH,
           placeholder,
           pdfDoc,
           isSignYourSelfFlow,
