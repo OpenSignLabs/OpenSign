@@ -405,7 +405,7 @@ function DriveBody(props) {
         </tr>
       )
     ) : listType === "list" && data.Type === "Folder" ? (
-      <div className="relative w-[100px] h-auto mx-auto">
+      <div className="relative w-[100px] h-[100px] mx-2 my-3">
         <ContextMenu.Root>
           <ContextMenu.Trigger className="flex flex-col justify-center items-center select-none-cls">
             {/* folder */}
@@ -480,7 +480,7 @@ function DriveBody(props) {
         <HoverCard.Trigger asChild>
           <div>
             <ContextMenu.Root>
-              <div className="relative w-[100px] h-auto mx-auto">
+              <div className="relative w-[100px] h-[100px] mx-2 my-3">
                 <ContextMenu.Trigger
                   asChild
                   className="flex flex-col justify-center items-center select-none-cls"
@@ -638,7 +638,7 @@ function DriveBody(props) {
           </Table>
         </div>
       ) : (
-        <div className="grid grid-cols-[repeat(auto-fit,minmax(100px,1fr))] mx-4 mt-3 pb-[20px] items-center gap-3 justify-center">
+        <div className="flex flex-row flex-wrap items-center mt-1 pb-[20px] mx-[5px]">
           {props.pdfData.map((data, ind) => {
             return <React.Fragment key={ind}>{handleFolderData(data, ind, "list")}</React.Fragment>;
           })}
