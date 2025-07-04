@@ -427,8 +427,10 @@ paths:
           - "mmm dd, yyyy",
           - "mmmm dd, yyyy",
           - "dd mmm, yyyy",
-          - "dd mmmm, yyy".
-
+          - "dd mmmm, yyy",
+          - "dd/mm/yyyy",
+          - "dd.mm.yyyy".
+          
         9. **textbox**
         ```
         {
@@ -473,6 +475,7 @@ paths:
             "hidelabel": false,
             "color": "black",
             "fontsize": 12,
+            "layout": "vertical",
             "validation": {
               "minselections": 0,
               "maxselections": 0
@@ -699,7 +702,9 @@ paths:
           - "mmm dd, yyyy",
           - "mmmm dd, yyyy",
           - "dd mmm, yyyy",
-          - "dd mmmm, yyy".
+          - "dd mmmm, yyy",
+          - "dd/mm/yyyy",
+          - "dd.mm.yyyy".
 
         9. **textbox**
         ```
@@ -745,6 +750,7 @@ paths:
             "hidelabel": false,
             "color": "black",
             "fontsize": 12,
+            "layout": "vertical",
             "validation": {
               "minselections": 0,
               "maxselections": 0
@@ -799,7 +805,8 @@ paths:
             "values": ["male", "female", "other"],
             "default": "male",
             "color": "black",
-            "fontsize": 12
+            "fontsize": 12,
+            "layout": "vertical"
           }
         }
         ```
@@ -1019,7 +1026,9 @@ paths:
           - "mmm dd, yyyy",
           - "mmmm dd, yyyy",
           - "dd mmm, yyyy",
-          - "dd mmmm, yyy".
+          - "dd mmmm, yyy",
+          - "dd/mm/yyyy",
+          - "dd.mm.yyyy".
 
         9. **textbox**
         ```
@@ -1065,6 +1074,7 @@ paths:
             "hidelabel": false,
             "color": "black",
             "fontsize": 12,
+            "layout": "vertical",
             "validation": {
               "minselections": 0,
               "maxselections": 0
@@ -1119,7 +1129,8 @@ paths:
             "values": ["male", "female", "other"],
             "default": "male",
             "color": "black",
-            "fontsize": 12
+            "fontsize": 12,
+            "layout": "vertical"
           }
         }
         ```
@@ -1797,7 +1808,9 @@ paths:
           - "mmm dd, yyyy",
           - "mmmm dd, yyyy",
           - "dd mmm, yyyy",
-          - "dd mmmm, yyy".
+          - "dd mmmm, yyy",
+          - "dd/mm/yyyy",
+          - "dd.mm.yyyy".
 
         9. **textbox**
         ```
@@ -1843,6 +1856,7 @@ paths:
             "hidelabel": false,
             "color": "black",
             "fontsize": 12,
+            "layout": "vertical",
             "validation": {
               "minselections": 0,
               "maxselections": 0
@@ -1897,7 +1911,8 @@ paths:
             "values": ["male", "female", "other"],
             "default": "male",
             "color": "black",
-            "fontsize": 12
+            "fontsize": 12,
+            "layout": "vertical"
           }
         }
         ```
@@ -2117,7 +2132,9 @@ paths:
           - "mmm dd, yyyy",
           - "mmmm dd, yyyy",
           - "dd mmm, yyyy",
-          - "dd mmmm, yyy".
+          - "dd mmmm, yyy",
+          - "dd/mm/yyyy",
+          - "dd.mm.yyyy".
 
         9. **textbox**
         ```
@@ -2163,6 +2180,7 @@ paths:
             "hidelabel": false,
             "color": "black",
             "fontsize": 12,
+            "layout": "vertical",
             "validation": {
               "minselections": 0,
               "maxselections": 0
@@ -2217,7 +2235,8 @@ paths:
             "values": ["male", "female", "other"],
             "default": "male",
             "color": "black",
-            "fontsize": 12
+            "fontsize": 12,
+            "layout": "vertical"
           }
         }
         ```
@@ -3586,6 +3605,12 @@ components:
       - signers
       type: object
       properties:
+        title:
+          type: string
+          format: string
+          example: New document title
+          description: |
+            An optional parameter specifying the title for the newly created document. If omitted, the template’s title will be used by default.
         signers:
           type: array
           items:
