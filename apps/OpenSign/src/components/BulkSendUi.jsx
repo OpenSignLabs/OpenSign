@@ -16,6 +16,7 @@ const BulkSendUi = (props) => {
   const [isDisableBulkSend, setIsDisableBulkSend] = useState(false);
   const [isLoader, setIsLoader] = useState(false);
   const [signers, setSigners] = useState([]);
+  const [emails, setEmails] = useState([]);
   useEffect(() => {
     signatureExist();
     // eslint-disable-next-line react-hooks/exhaustive-deps
