@@ -75,6 +75,17 @@ const config = {
             sidebarOptions: {
               groupPathsBy: "tag", // generate a sidebar.js slice that groups operations by tag
             },
+            version: "1.0",
+            label: "v1.0",
+            baseUrl: "1.0",
+            versions: {
+              "1.1": {
+                specPath: "docs/API-docs/opensign.yaml",
+                outputDir: "docs/API-docs-1.1",
+                label: "v1.1",
+                baseUrl: "1.1",
+              },
+            },
           }
         }
       },

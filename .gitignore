@@ -25,3 +25,8 @@ yarn-error.log*
 apps/OpenSign/public/mfbuild/*
 microfrontends/SignDocuments/build/*
 apps/OpenSignServer/files/files/*
+# ignore generated API documentation
+/docs/docs/API-docs/*
+!/docs/docs/API-docs/opensign.yaml
+!/docs/docs/API-docs/intro.md
+/docs/docs/API-docs-1.1/
