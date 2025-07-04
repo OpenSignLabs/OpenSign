@@ -84,7 +84,7 @@ async function sendMail(document, publicUrl) {
       };
       let params = {
         extUserId: document.ExtUserPtr.objectId,
-        recipient: objectId ? existSigner?.Email : signerMail[i].email,
+        recipient: existSigner?.Email || signerMail[i].email,
         subject: replaceVar?.subject ? replaceVar?.subject : mailTemplate(mailparam).subject,
         from: document.ExtUserPtr.Email,
         replyto: senderEmail || '',

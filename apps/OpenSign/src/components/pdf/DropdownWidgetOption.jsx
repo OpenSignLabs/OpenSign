@@ -389,8 +389,8 @@ function DropdownWidgetOption(props) {
                         checked={layout.toLowerCase() === data.toLowerCase()}
                         onChange={() => setLayout(data.toLowerCase())}
                       />
-                      <label className="text-[13px] font-500 mb-0 capitalize">
-                        {data}
+                      <label className="text-[13px] font-500 mb-0">
+                        {t(data)}
                       </label>
                     </div>
                   ))}

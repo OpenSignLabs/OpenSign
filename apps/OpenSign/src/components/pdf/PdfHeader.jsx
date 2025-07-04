@@ -167,7 +167,7 @@ function Header(props) {
       {isMobile && props?.isShowHeader ? (
         <div
           id="navbar"
-          className="stickyHead"
+          className="stickyHead touch-none"
           style={{
             width: window.innerWidth + "px"
           }}

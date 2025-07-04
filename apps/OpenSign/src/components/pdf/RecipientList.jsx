@@ -82,7 +82,7 @@ const RecipientList = (props) => {
   };
   return (
     <>
-      {props.signersdata.length > 0 &&
+      {props.signersdata?.length > 0 &&
         props.signersdata.map((obj, ind) => {
           return (
             <div

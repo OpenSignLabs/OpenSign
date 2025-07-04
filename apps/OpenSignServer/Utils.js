@@ -289,6 +289,8 @@ export const selectFormat = data => {
       return 'MMMM dd, yyyy';
     case 'DD MMMM, YYYY':
       return 'dd MMMM, yyyy';
+    case 'DD.MM.YYYY':
+      return 'dd.MM.yyyy';
     default:
       return 'MM/dd/yyyy';
   }

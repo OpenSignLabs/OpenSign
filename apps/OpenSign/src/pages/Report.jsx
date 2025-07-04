@@ -180,7 +180,7 @@ const Report = () => {
           const listData = res.data?.result.filter((x) => x.Signers.length > 0);
           let arr = [];
           for (const obj of listData) {
-            const isSigner = obj.Signers.some(
+            const isSigner = obj?.Signers?.some(
               (item) => item.UserId.objectId === currentUser
             );
             if (isSigner) {

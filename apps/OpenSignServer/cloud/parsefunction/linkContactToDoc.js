@@ -1,25 +1,5 @@
 // `saveRoleContact` is used to save user in contracts_Guest role and create contact
 const saveRoleContact = async contact => {
-  try {
-    const Role = new Parse.Query(Parse.Role);
-    const guestRole = await Role.equalTo('name', 'contracts_Guest').first();
-    if (guestRole) {
-      // Check if the user is already in the role
-      const relation = guestRole.relation('users');
-      const usersInRoleQuery = relation.query();
-      usersInRoleQuery.equalTo('objectId', contact.UserId.objectId);
-      const usersInRole = await usersInRoleQuery.find();
-      if (usersInRole.length > 0) {
-        console.log('User already added to Guest role.');
-      } else {
-        relation.add({ __type: 'Pointer', className: '_User', id: contact.UserId.objectId });
-        await guestRole.save(null, { useMasterKey: true });
-        // console.log('User added to Guest role successfully.');
-      }
-    }
-  } catch (err) {
-    console.log('err in role save', err);
-  }
   const contactQuery = new Parse.Object('contracts_Contactbook');
   contactQuery.set('Name', contact.Name);
   contactQuery.set('Email', contact.Email);
