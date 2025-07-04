@@ -38,7 +38,6 @@ const makeEmail = async (
   replyto,
   testPdf
 ) => {
-  const publicUrl = new URL(process.env.SERVER_URL);
   const htmlContent = html;
   const boundary = 'boundary_' + Date.now().toString(16);
   const bccHeader = bcc && bcc.length > 0 ? `BCC: ${bcc.join(',')}\n` : ''; // Construct BCC header if provided

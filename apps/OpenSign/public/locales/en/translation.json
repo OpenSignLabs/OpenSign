@@ -761,6 +761,8 @@
   "Rotation-alert": "Rotate page",
   "bulk-import": "Bulk import",
   "contacts-file": "Contacts file (xlsx, csv)",
+  "import-guideline": "Upload a CSV or Excel file with columns Name, Email and optional Phone. Only the first 100 records will be imported.",
+  "download-sample": "Download sample file",
   "100-records-only": "Currently you can only import up to 100 records.",
   "csv-excel-support-only": "Upload a file in one of the following formats: CSV, XLSX or XLS.",
   "contact-imported": "{{imported}} contacts were imported. {{failed}} contacts failed to import.",
@@ -1033,5 +1035,11 @@
   "choose-one":"Choose One",
   "search-templates": "Search templates…",
   "search-documents": "Search documents…",
-  "search-contacts": "Search contacts…"
+  "search-contacts": "Search contacts…",
+  "invalid-email-found": "Invalid email found: {{email}}",
+  "duplicate-email-found": "Duplicate email found: {{email}}",
+  "vertical": "Vertical",
+  "horizontal": "Horizontal",
+  "billing": "Billing",
+  "console": "Console"
 }

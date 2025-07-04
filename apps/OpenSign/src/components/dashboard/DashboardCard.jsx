@@ -148,7 +148,7 @@ const DashboardCard = (props) => {
               );
               let arr = [];
               for (const obj of listData) {
-                const isSigner = obj.Signers.some(
+                const isSigner = obj.Signers?.some(
                   (item) => item.UserId.objectId === currentUser.id
                 );
                 if (isSigner) {

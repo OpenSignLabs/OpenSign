@@ -241,6 +241,13 @@ export const handleImageResize = (
   signerId,
   showResize
 ) => {
+  // Compute widget dimensions only once
+  const { offsetWidth, offsetHeight } = ref;
+  const factor = scale * containerScale || 1;
+  const widgetWidth = offsetWidth / factor;
+  const widgetHeight = offsetHeight / factor;
+  const widgetDims = { Width: widgetWidth, Height: widgetHeight };
+
   const filterSignerPos = signerPos.filter((data) => data.Id === signerId);
   if (filterSignerPos.length > 0) {
     const getPlaceHolder = filterSignerPos[0].placeHolder;
@@ -252,12 +259,28 @@ export const handleImageResize = (
       const getPosData = getXYdata;
       const addSignPos = getPosData.map((url) => {
         if (url.key === key) {
-          return {
+          // Base fields for every resized signature
+          const base = {
             ...url,
-            Width: ref.offsetWidth / (containerScale * scale),
-            Height: ref.offsetHeight / (containerScale * scale),
+            Width: widgetWidth,
+            Height: widgetHeight,
             IsResize: showResize ? true : false
           };
+          // If it's a “type” signature, regenerate the image and options
+          if (url.typeSignature && url.signatureType === "type") {
+            const signImg = convertTextToImg(
+              url.typeFont ?? "Fasthand",
+              url.typeSignature,
+              url.fontColor ?? "blue",
+              widgetDims
+            );
+            return {
+              ...base,
+              SignUrl: signImg,
+              options: { ...url.options, response: signImg }
+            };
+          }
+          return base;
         }
         return url;
       });
@@ -280,6 +303,7 @@ export const handleImageResize = (
     }
   }
 };
+
 export const widgets = [
   { type: "signature", icon: "fa-light fa-pen-nib", iconSize: "20px" },
   { type: "stamp", icon: "fa-light fa-stamp", iconSize: "19px" },
@@ -336,6 +360,8 @@ export const selectFormat = (data) => {
       return "MMMM dd, yyyy";
     case "DD MMMM, YYYY":
       return "dd MMMM, yyyy";
+    case "DD.MM.YYYY":
+      return "dd.MM.yyyy";  
     default:
       return "MM/dd/yyyy";
   }
@@ -363,6 +389,8 @@ export const changeDateToMomentFormat = (format) => {
       return "MMM DD, YYYY";
     case "dd MMMM, yyyy":
       return "DD MMMM, YYYY";
+    case "dd.MM.yyyy":
+      return"DD.MM.YYYY";
     default:
       return "L";
   }
@@ -590,7 +618,6 @@ export async function getBase64FromIMG(url) {
     reader.readAsDataURL(blob);
     reader.onloadend = function () {
       const pdfBase = this.result;
-
       resolve(pdfBase);
     };
   });
@@ -632,27 +659,57 @@ export const handleSignYourselfImageResize = (
   containerScale,
   scale
 ) => {
-  const getXYdata = xyPosition[index].pos;
-  const getPosData = getXYdata;
-  const addSign = getPosData.map((url) => {
-    if (url.key === key) {
-      return {
-        ...url,
-        Width: ref.offsetWidth / (scale * containerScale),
-        Height: ref.offsetHeight / (scale * containerScale),
-        IsResize: true
-      };
-    }
-    return url;
-  });
+  // Guard against bad index
+  if (!xyPosition[index]) {
+    console.log(`ImageResize invalid index ${index}`);
+    return;
+  }
 
-  const newUpdateUrl = xyPosition.map((obj, ind) => {
-    if (ind === index) {
-      return { ...obj, pos: addSign };
-    }
-    return obj;
+  // Compute widget dimensions only once
+  const { offsetWidth, offsetHeight } = ref;
+  const factor = scale * containerScale || 1;
+  const widgetWidth = offsetWidth / factor;
+  const widgetHeight = offsetHeight / factor;
+  const widgetDims = { Width: widgetWidth, Height: widgetHeight };
+
+  // Single pass to update only the targeted index/key
+  const updated = xyPosition.map((item, idx) => {
+    if (idx !== index) return item;
+
+    return {
+      ...item,
+      pos: item.pos.map((url) => {
+        if (url.key !== key) return url;
+
+        // Base fields for every resized signature
+        const base = {
+          ...url,
+          Width: widgetWidth,
+          Height: widgetHeight,
+          IsResize: true
+        };
+
+        // If it's a “type” signature, regenerate the image and options
+        if (url.typeSignature && url.signatureType === "type") {
+          const signImg = convertTextToImg(
+            url.typeFont ?? "Fasthand",
+            url.typeSignature,
+            url.fontColor ?? "blue",
+            widgetDims
+          );
+
+          return {
+            ...base,
+            SignUrl: signImg,
+            options: { ...url.options, response: signImg }
+          };
+        }
+
+        return base;
+      })
+    };
   });
-  setXyPosition(newUpdateUrl);
+  setXyPosition(updated);
 };
 
 //function for call cloud function signPdf and generate digital signature
@@ -1205,6 +1262,62 @@ export const embedDocId = async (pdfOriginalWH, pdfDoc, documentId) => {
   }
 };
 
+// function for convert input text value in image
+export function convertTextToImg(fontStyle, text, color, widgetDims) {
+  // read your widget dimensions:
+  const maxWidth = widgetDims.Width;
+  const maxHeight = widgetDims.Height;
+  const baselineFontSizePx = maxHeight;
+  const fontFamily = fontStyle || "Fasthand";
+  const fillColor = color || "blue";
+
+  // 1. Use a temporary canvas to measure actual text size
+  const tempCanvas = document.createElement("canvas");
+  const tempCtx = tempCanvas.getContext("2d");
+  tempCtx.font = `${baselineFontSizePx}px ${fontFamily}`;
+  const metrics = tempCtx.measureText(text);
+
+  const actualHeight =
+    metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent;
+  const actualWidth = metrics.width;
+
+  // const renderscale = 3;
+  // 2. Scale font size so text height fills canvas
+  const scaleX = maxWidth / actualWidth;
+  const scaleY = maxHeight / actualHeight;
+  const scale = Math.min(scaleX, scaleY, 1);
+  // final font-size
+  // const finalFontSizePx = baselineFontSizePx * scale * renderscale;
+  const finalFontSizePx = baselineFontSizePx * scale;
+  // 3. Create the final canvas
+  const pxRatio = window.devicePixelRatio * 2 || 3;
+  const canvas = document.createElement("canvas");
+  canvas.width = Math.ceil(maxWidth * pxRatio);
+  canvas.height = Math.ceil(maxHeight * pxRatio);
+  const ctx = canvas.getContext("2d");
+  ctx.scale(pxRatio, pxRatio);
+
+  // 4. Setup text with final font
+  ctx.font = `${finalFontSizePx}px ${fontFamily}`;
+  ctx.fillStyle = fillColor;
+  ctx.textAlign = "center";
+  ctx.textBaseline = "alphabetic";
+
+  const newMetrics = ctx.measureText(text);
+  const ascent = newMetrics.actualBoundingBoxAscent;
+  const descent = newMetrics.actualBoundingBoxDescent;
+
+  // 5. Align text vertically so it touches top and bottom
+  const y = maxHeight / 2 + (ascent - descent) / 2;
+
+  ctx.clearRect(0, 0, maxWidth, maxHeight);
+  ctx.fillText(text, maxWidth / 2, y);
+
+  // 6. Output image
+  const dataUrl = canvas.toDataURL("image/png");
+  return dataUrl;
+}
+
 //function for save button to save signature or image url
 export function onSaveSign(
   type,
@@ -1218,10 +1331,14 @@ export function onSaveSign(
   typedSignature,
   isAutoSign,
   widgetsType,
-  isApplyAll
+  isApplyAll,
+  typeFont,
+  fontColor
 ) {
   let getIMGWH, posWidth, posHeight;
   let getXYdata = xyPosition[index].pos;
+  const isSignOrInitials =
+    widgetsType && ["signature", "initials"].includes(widgetsType);
   const updateXYData = getXYdata.map((position) => {
     if (position.key === signKey) {
       if (isDefaultSign === "initials") {
@@ -1248,14 +1365,22 @@ export function onSaveSign(
       }
       posWidth = getIMGWH ? getIMGWH.newWidth : 150;
       posHeight = getIMGWH ? getIMGWH.newHeight : 60;
+      const widgetDims = { Width: posWidth, Height: posHeight };
+      const signImg = typedSignature
+        ? convertTextToImg(typeFont, typedSignature, fontColor, widgetDims)
+        : signatureImg;
       return {
         ...position,
         Width: posWidth,
         Height: posHeight,
-        SignUrl: signatureImg,
-        ...(type && { signatureType: type }),
-        options: { ...position.options, response: signatureImg },
-        ...(typedSignature && { typeSignature: typedSignature })
+        SignUrl: signImg,
+        ...(isSignOrInitials && { signatureType: type || "" }),
+        options: { ...position.options, response: signImg },
+        ...(typedSignature && {
+          typeSignature: typedSignature,
+          typeFont: typeFont ?? "Fasthand",
+          fontColor: fontColor ?? "blue"
+        })
       };
     }
     return position;
@@ -1271,20 +1396,29 @@ export function onSaveSign(
   if (isApplyAll || isAutoSign) {
     const updatedArray = updateXYposition.map((page) => ({
       ...page,
-      pos: page.pos.map(
-        (item) =>
-          item.type === widgetsType
-            ? {
-                ...item,
-                Width: posWidth,
-                Height: posHeight,
-                SignUrl: signatureImg,
-                ...(type && { signatureType: type }),
-                options: { ...item.options, response: signatureImg },
-                ...(typedSignature && { typeSignature: typedSignature })
-              }
-            : item // Otherwise, keep it unchanged
-      )
+      pos: page.pos.map((item) => {
+        if (item.type === widgetsType) {
+          const widgetDims = { Width: item.Width, Height: item.Height };
+          const signImg = typedSignature
+            ? convertTextToImg(typeFont, typedSignature, fontColor, widgetDims)
+            : signatureImg;
+          return {
+            ...item,
+            // Only copy signature content, keep existing dimensions
+            // Width: posWidth,
+            // Height: posHeight,
+            SignUrl: signImg,
+            ...(isSignOrInitials && { signatureType: type || "" }),
+            options: { ...item.options, response: signImg },
+            ...(typedSignature && {
+              typeSignature: typedSignature,
+              typeFont: typeFont || "Fasthand",
+              fontColor: fontColor || "blue"
+            })
+          };
+        }
+        return item; // Otherwise, keep it unchanged
+      })
     }));
     return updatedArray;
   } else {
@@ -1318,8 +1452,8 @@ export const handleCopySignUrl = (
     if (x.key === currentPos.key) {
       return {
         ...x,
-        Width: existSignPosition.Width,
-        Height: existSignPosition.Height,
+        // Width: existSignPosition.Width,
+        // Height: existSignPosition.Height,
         SignUrl: existSignPosition.SignUrl,
         signatureType: existSignPosition.signatureType,
         options: { ...x.options, response: existSignPosition.SignUrl },
@@ -1351,7 +1485,6 @@ export const calculateImgAspectRatio = (imgWH, pos) => {
   const aspectRatio = imgWH.width / imgWH.height;
   newWidth = aspectRatio * placeholderHeight;
   newHeight = placeholderHeight;
-
   return { newHeight, newWidth };
 };
 
@@ -1404,8 +1537,8 @@ export function onSaveImage(
           item.type === widgetsType && item.type !== "image"
             ? {
                 ...item,
-                Width: getIMGWH.newWidth,
-                Height: getIMGWH.newHeight,
+                // Width: getIMGWH.newWidth,
+                // Height: getIMGWH.newHeight,
                 SignUrl: image.src,
                 ImageType: image.imgType,
                 options: {
@@ -1552,13 +1685,7 @@ const getWidgetsFontColor = (type) => {
   }
 };
 //function for embed multiple signature using pdf-lib
-export const multiSignEmbed = async (
-  pdfOriginalWH,
-  widgets,
-  pdfDoc,
-  signyourself,
-  scale
-) => {
+export const multiSignEmbed = async (widgets, pdfDoc, signyourself, scale) => {
   // `fontBytes` is used to embed custom font in pdf
   const fontBytes = await fileasbytes(
     "https://cdn.opensignlabs.com/webfonts/times.ttf"
@@ -1567,15 +1694,9 @@ export const multiSignEmbed = async (
   const font = await pdfDoc.embedFont(fontBytes, { subset: true });
   let hasError = false;
   for (let item of widgets) {
-    //pdfOriginalWH contained all pdf's pages width and height
-    //'getSize' is used to get particular pdf's page width and height
-    const getSize = pdfOriginalWH.find(
-      (page) => page?.pageNumber === item?.pageNumber
-    );
     if (hasError) break; // Stop the outer loop if an error occurred
     const typeExist = item.pos.some((data) => data?.type);
     let updateItem;
-
     if (typeExist) {
       if (signyourself) {
         updateItem = item.pos;
@@ -1601,6 +1722,21 @@ export const multiSignEmbed = async (
     const pages = pdfDoc.getPages();
     const form = pdfDoc.getForm();
     const page = pages[pageNo - 1];
+    // `page.getCropBox()` returns the visible area of the PDF page.
+    // It provides an object with the following properties:
+    // - x: the x-coordinate of the lower-left corner of the visible area
+    // - y: the y-coordinate of the lower-left corner of the visible area
+    // - width: the width of the visible area (x1 - x0)
+    // - height: the height of the visible area (y1 - y0)
+    // If the page does not explicitly define a CropBox, this method returns
+    // the MediaBox instead, which represents the full physical size of the page.
+    //
+    // Example CropBox: [0, 7.92, 612, 799.92]
+    // => x = 0, y = 7.92, width = 612 - 0 = 612, height = 799.92 - 7.92 = 792
+    // This is equivalent to `react-pdf`'s `page.view` array: [x0, y0, x1, y1]
+    const { _, y, width, height } = page.getCropBox();
+    const originalHeight = height + y;
+    const getSize = { height: originalHeight, width: width };
     const images = await Promise.all(
       widgetsPositionArr.map(async (widget) => {
         // `SignUrl` this is wrong nomenclature and maintain for older code in this options we save base64 of signature image from sign pad
@@ -1701,8 +1837,8 @@ export const multiSignEmbed = async (
           let currentY = yPos(position) + 2;
           // Size and spacing settings
           const checkboxSize = fontSize - 1; // checkbox diameter
-          const checkboxTextGapFromLeft = fontSize + 5; // gap between box and its label
-          const verticalGap = fontSize + 3.2; // gap between two rows (vertical layout)
+          const checkboxTextGapFromLeft = fontSize + 3.4; // gap between box and its label
+          const verticalGap = fontSize + 3.4; // gap between two rows (vertical layout)
           let horizontalGap = 0; // will compute after drawing each label
           if (position?.options?.values.length > 0) {
             position.options.values.forEach((item, ind) => {
@@ -1766,8 +1902,10 @@ export const multiSignEmbed = async (
                 // Measure the width of this label text at `fontSize`
                 const textWidth = font.widthOfTextAtSize(item, fontSize);
                 // Next checkbox should come after: [box] + gap + [label text] + extra 10pt padding
-                horizontalGap =
-                  checkboxSize + checkboxTextGapFromLeft + textWidth;
+                const gap = position.options?.isHideLabel
+                  ? checkboxTextGapFromLeft - 5
+                  : checkboxTextGapFromLeft + textWidth;
+                horizontalGap = checkboxSize + gap;
               }
             });
           }
@@ -1912,13 +2050,13 @@ export const multiSignEmbed = async (
           const radioGroup = form.createRadioGroup(radioRandomId);
           //getting radio buttons options text font size
           const optionsFontSize = fontSize; // font size for option text
-          const radioTextGapFromLeft = fontSize + 6; // gap between circle and its label
+          const radioTextGapFromLeft = fontSize + 3; // gap between circle and its label
           const radioSize = fontSize; // circle diameter (square of width×height)
           // Initial “cursor” positions (from your existing helpers)
           let currentX = xPos(position) + 2;
-          let currentY = yPos(position);
+          let currentY = yPos(position) + 3;
           // Vertical gap between two radio‐rows
-          const verticalGap = fontSize + 6;
+          const verticalGap = fontSize + 3;
           // We’ll compute horizontalGap on the fly—after drawing each label
           // Initialize to zero (will be set after first option is placed)
           let horizontalGap = 0;
@@ -1974,7 +2112,10 @@ export const multiSignEmbed = async (
                 const textWidth = font.widthOfTextAtSize(item, optionsFontSize);
                 // radioSize = the circle.  radioTextGapFromLeft = gap between circle and label.
                 // Add a small extra padding (e.g. 10pt) before placing next circle.
-                horizontalGap = radioSize + radioTextGapFromLeft + textWidth;
+                const gap = position?.options?.isHideLabel
+                  ? radioTextGapFromLeft - 6
+                  : radioTextGapFromLeft + textWidth;
+                horizontalGap = radioSize + gap;
               }
             });
           }
@@ -2725,9 +2866,9 @@ function getWidgetPosition(page, image, sizeRatio, getSize) {
   let pageWidth;
   // pageHeight;
   if ([90, 270].includes(page.getRotation().angle)) {
-    pageWidth = page.getHeight();
+    pageWidth = getSize?.height || page.getHeight();
   } else {
-    pageWidth = page.getWidth();
+    pageWidth = getSize?.width || page.getWidth();
   }
   // eslint-disable-next-line
   if (!image?.hasOwnProperty("vpWidth")) {
@@ -2864,8 +3005,9 @@ export const convertBase64ToFile = async (
     }
 };
 export const onClickZoomIn = (scale, zoomPercent, setScale, setZoomPercent) => {
-  setScale(scale + 0.1 * scale);
-  setZoomPercent(zoomPercent + 10);
+  const newPercent = zoomPercent + 10;
+  setZoomPercent(newPercent);
+  setScale(1 + newPercent / 100);
 };
 export const onClickZoomOut = (
   zoomPercent,
@@ -2874,12 +3016,9 @@ export const onClickZoomOut = (
   setScale
 ) => {
   if (zoomPercent > 0) {
-    if (zoomPercent === 10) {
-      setScale(1);
-    } else {
-      setScale(scale - 0.1 * scale);
-    }
-    setZoomPercent(zoomPercent - 10);
+    const newPercent = Math.max(0, zoomPercent - 10);
+    setZoomPercent(newPercent);
+    setScale(1 + newPercent / 100);
   }
 };
 
@@ -3325,8 +3464,13 @@ export const getOriginalWH = async (pdf) => {
   for (let index = 0; index < totalPages; index++) {
     try {
       const getPage = await pdf.getPage(index + 1);
-      const width = getPage?.view[2];
-      const height = getPage?.view[3];
+      const scale = 1;
+      //getting extra height which is removed from viewPort height (letter type pdf have originial h-799.92 but using getPage.getViewport getting height-792 something diffrence-7.92px)
+      //getPage?.view[1] store diffrence of height (Page starts 7.92 from bottom)
+      const y0 = getPage?.view[1] || 0;
+      let { width, height } = getPage.getViewport({ scale });
+      //adding it on viewPort height then get original height ex- 792+7.92 = 799.92 orignial height
+      height = height + y0;
       pdfWHObj.push({ pageNumber: index + 1, width, height });
     } catch (e) {
       console.log(`Error getting page ${index + 1} of PDF: ${e.message}`);

@@ -8,12 +8,15 @@ export default async function updateTenant(request) {
   if (!request.user) {
     throw new Parse.Error(Parse.Error.INVALID_SESSION_TOKEN, 'unauthorized');
   }
+  const validKeys = ['CompletionBody', 'CompletionSubject', 'RequestBody', 'RequestSubject'];
   try {
     const tenant = new Parse.Object('partners_Tenant');
     tenant.id = tenantId;
     // Update tenant details
     Object.keys(details).forEach(key => {
-      tenant.set(key, details?.[key]);
+      if (validKeys.includes(key)) {
+        tenant.set(key, details?.[key]);
+      }
     });
 
     const tenantRes = await tenant.save(null, { useMasterKey: true });

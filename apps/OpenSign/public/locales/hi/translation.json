@@ -355,7 +355,7 @@
   "widgets-name": {
     "signature": "हस्ताक्षर",
     "stamp": "मोहर",
-    "initials": "हस्ताक्षर",
+    "initials": "प्रारंभिक अक्षर",
     "name": "नाम",
     "job title": "पद",
     "company": "कंपनी",
@@ -389,7 +389,7 @@
   "Email-verified-alert-2": "ईमेल पहले से ही सत्यापित है।",
   "upload-stamp-image": "मोहर छवि अपलोड करें",
   "draw": "आरेखित करें",
-  "type": "प्रकार",
+  "type": "टाइप",
   "color-type": {
     "red": "लाल",
     "blue": "नीला",
@@ -761,6 +761,8 @@
   "Rotation-alert": "पृष्ठ घुमाएँ",
   "bulk-import": "थोक आयात",
   "contacts-file": "संपर्क फ़ाइल (xlsx, csv)",
+  "import-guideline": "नाम, ईमेल और वैकल्पिक फोन कॉलम वाली CSV या Excel फ़ाइल अपलोड करें। केवल पहले 100 संपर्क आयात किए जाएंगे.",
+  "download-sample": "उदाहरण फ़ाइल डाउनलोड करें",
   "100-records-only": "वर्तमान में आप केवल 100 रिकॉर्ड तक आयात कर सकते हैं।",
   "csv-excel-support-only": "निम्नलिखित प्रारूपों में से किसी एक में फ़ाइल अपलोड करें: CSV, XLSX या XLS।",
   "contact-imported": "{{imported}} संपर्क आयात किए गए। {{failed}} संपर्क आयात करने में विफल रहे।",
@@ -1033,5 +1035,11 @@
   "choose-one":"एक का चयन",
   "search-templates": "टेम्पलेट खोजें…",
   "search-documents": "दस्तावेज़ खोजें…",
-  "search-contacts": "संपर्क खोजें…"
+  "search-contacts": "संपर्क खोजें…",
+  "invalid-email-found": "अमान्य ईमेल पाया गया: {{email}}",
+  "duplicate-email-found": "डुप्लिकेट ईमेल पाया गया: {{email}}",
+  "vertical": "वर्टिकल",
+  "horizontal": "हॉरिज़ॉन्टल",
+  "billing": "बिलिंग",
+  "console": "कंसोल"
 }
