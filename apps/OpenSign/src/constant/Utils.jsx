@@ -2414,7 +2414,10 @@ export const getAppLogo = async () => {
       });
       if (tenant) {
           localStorage.setItem("appname", "OpenSign™");
-        return { logo: tenant?.logo, user: tenant?.user };
+        return {
+          logo: tenant?.logo,
+          user: tenant?.user
+        };
       }
     } catch (err) {
       console.log("err in getlogo ", err);
