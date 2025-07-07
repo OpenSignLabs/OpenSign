@@ -7,6 +7,7 @@ import axios from 'axios';
 dotenv.config();
 
 export const cloudServerUrl = 'http://localhost:8080/app';
+export const serverAppId = process.env.APP_ID || 'opensign';
 export const appName = 'OpenSign™';
 
 export const MAX_NAME_LENGTH = 250;
@@ -288,6 +289,8 @@ export const selectFormat = data => {
       return 'MMMM dd, yyyy';
     case 'DD MMMM, YYYY':
       return 'dd MMMM, yyyy';
+    case 'DD.MM.YYYY':
+      return 'dd.MM.yyyy';
     default:
       return 'MM/dd/yyyy';
   }

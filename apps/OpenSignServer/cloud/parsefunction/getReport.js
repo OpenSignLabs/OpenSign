@@ -1,4 +1,4 @@
-import { cloudServerUrl } from '../../Utils.js';
+import { cloudServerUrl, serverAppId } from '../../Utils.js';
 import reportJson from './reportsJson.js';
 import axios from 'axios';
 
@@ -14,7 +14,7 @@ export default async function getReport(request) {
   const searchTerm = request.params.searchTerm || '';
 
   const serverUrl = cloudServerUrl; //process.env.SERVER_URL;
-  const appId = process.env.APP_ID;
+  const appId = serverAppId;
   const masterKey = process.env.MASTER_KEY;
   const sessionToken = request.headers['sessiontoken'] || request.headers['x-parse-session-token'];
   try {

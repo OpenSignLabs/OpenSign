@@ -405,7 +405,7 @@ function DriveBody(props) {
         </tr>
       )
     ) : listType === "list" && data.Type === "Folder" ? (
-      <div key={ind} className="relative w-[100px] h-[100px] mx-2 my-3">
+      <div className="relative w-[100px] h-[100px] mx-2 my-3">
         <ContextMenu.Root>
           <ContextMenu.Trigger className="flex flex-col justify-center items-center select-none-cls">
             {/* folder */}
@@ -447,7 +447,6 @@ function DriveBody(props) {
               )}
             </div>
           </ContextMenu.Trigger>
-
           <ContextMenu.Portal>
             <ContextMenu.Content
               className="ContextMenuContent"
@@ -641,7 +640,7 @@ function DriveBody(props) {
       ) : (
         <div className="flex flex-row flex-wrap items-center mt-1 pb-[20px] mx-[5px]">
           {props.pdfData.map((data, ind) => {
-            return <div key={ind}>{handleFolderData(data, ind, "list")}</div>;
+            return <React.Fragment key={ind}>{handleFolderData(data, ind, "list")}</React.Fragment>;
           })}
         </div>
       )}

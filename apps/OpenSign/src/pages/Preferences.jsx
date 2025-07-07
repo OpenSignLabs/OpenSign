@@ -56,6 +56,10 @@ const Preferences = () => {
   const [dateFormat, setDateFormat] = useState("MM/DD/YYYY");
   const [is12HourTime, setIs12HourTime] = useState(false);
   const [isLTVEnabled, setIsLTVEnabled] = useState(false);
+  const [isDefaultMail, setIsDefaultMail] = useState({
+    requestMail: false,
+    completionMail: false
+  });
   useEffect(() => {
     fetchSignType();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -227,6 +231,7 @@ const Preferences = () => {
         setRequestSubject(
           `{{sender_name}} has requested you to sign {{document_title}}`
         );
+        setIsDefaultMail((prev) => ({ ...prev, requestMail: true }));
       }
       setDefaultReqHtml({
         body: defaultRequestBody,
@@ -241,6 +246,7 @@ const Preferences = () => {
         setCompletionSubject(
           `Document {{document_title}} has been signed by all parties`
         );
+        setIsDefaultMail((prev) => ({ ...prev, completionMail: true }));
       }
       setDefaultCompHtml({
         body: defaultCompletionBody,
@@ -318,13 +324,45 @@ const Preferences = () => {
   };
 
   //function to use reset form
-  const handleReset = (request, completion) => {
-    if (request) {
+  const handleReset = async (request, completion) => {
+    let extUser =
+      localStorage.getItem("Extand_Class") &&
+      JSON.parse(localStorage.getItem("Extand_Class"))?.[0];
+    handleModifyMail(request);
+    if (request && !isDefaultMail?.requestMail) {
       setRequestBody(defaultReqHtml?.body);
       setRequestSubject(defaultReqHtml?.subject);
-    } else if (completion) {
+      try {
+        await Parse.Cloud.run("updatetenant", {
+          tenantId: tenantId,
+          details: { RequestBody: "", RequestSubject: "" }
+        });
+        if (extUser && extUser?.objectId) {
+          extUser.TenantId.RequestBody = "";
+          extUser.TenantId.RequestSubject = "";
+          const _extUser = JSON.parse(JSON.stringify(extUser));
+          localStorage.setItem("Extand_Class", JSON.stringify([_extUser]));
+        }
+      } catch (err) {
+        console.log("Err in reseting request mail", err);
+      }
+    } else if (completion && !isDefaultMail?.completionMail) {
       setCompletionSubject(defaultCompHtml?.subject);
       SetCompletionBody(defaultCompHtml?.body);
+      try {
+        await Parse.Cloud.run("updatetenant", {
+          tenantId: tenantId,
+          details: { CompletionBody: "", CompletionSubject: "" }
+        });
+        if (extUser && extUser?.objectId) {
+          extUser.TenantId.CompletionBody = "";
+          extUser.TenantId.CompletionSubject = "";
+          const _extUser = JSON.parse(JSON.stringify(extUser));
+          localStorage.setItem("Extand_Class", JSON.stringify([_extUser]));
+        }
+      } catch (err) {
+        console.log("Err in reseting completion mail", err);
+      }
     }
   };
   //function for handle ontext change and save again text in delta
@@ -344,6 +382,11 @@ const Preferences = () => {
   const handleTourInput = () => setIsTourEnabled(!isTourEnabled);
   const handleSendinOrderInput = () => setSendinOrder(!sendinOrder);
   const tabName = (ind) => tab.find((t, i) => i === ind)?.name;
+  const handleModifyMail = (mode) => {
+    mode === "request"
+      ? setIsDefaultMail((p) => ({ ...p, requestMail: !p?.requestMail }))
+      : setIsDefaultMail((p) => ({ ...p, completionMail: !p?.completionMail }));
+  };
   return (
     <React.Fragment>
       <Title title={t("Preferences")} />
@@ -737,6 +780,18 @@ const Preferences = () => {
                         {t("request-email")}
                       </h1>
                       <div className="relative mt-2 mb-4">
+                        {
+                            isDefaultMail?.requestMail && (
+                              <div className="absolute backdrop-blur-[2px] flex w-full h-full justify-center items-center bg-black/10 rounded-box select-none z-20">
+                                <button
+                                  onClick={() => handleModifyMail("request")}
+                                  className="op-btn op-btn-primary shadow-lg"
+                                >
+                                  Modify
+                                </button>
+                              </div>
+                            )
+                        }
                         <form
                           onSubmit={handleSaveRequestEmail}
                           className="p-3 border-[1px] border-base-content rounded-box"
@@ -801,6 +856,18 @@ const Preferences = () => {
                         {t("completion-email")}
                       </h1>
                       <div className="relative my-2">
+                        {
+                            isDefaultMail?.completionMail && (
+                              <div className="absolute backdrop-blur-[2px] flex w-full h-full justify-center items-center bg-black/10 rounded-box select-none z-20">
+                                <button
+                                  onClick={() => handleModifyMail("completion")}
+                                  className="op-btn op-btn-primary shadow-lg"
+                                >
+                                  Modify
+                                </button>
+                              </div>
+                            )
+                        }
                         <form
                           onSubmit={handleSaveCompletionEmail}
                           className="p-3 border-[1px] border-base-content rounded-box"

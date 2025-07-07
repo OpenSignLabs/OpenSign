@@ -1,7 +1,7 @@
 import axios from 'axios';
-import { cloudServerUrl, mailTemplate, replaceMailVaribles } from '../../Utils.js';
+import { cloudServerUrl, mailTemplate, replaceMailVaribles, serverAppId } from '../../Utils.js';
 const serverUrl = cloudServerUrl; //process.env.SERVER_URL;
-const appId = process.env.APP_ID;
+const appId = serverAppId;
 async function deductcount(docsCount, extUserId) {
   try {
     const extCls = new Parse.Object('contracts_Users');
@@ -84,7 +84,7 @@ async function sendMail(document, publicUrl) {
       };
       let params = {
         extUserId: document.ExtUserPtr.objectId,
-        recipient: objectId ? existSigner?.Email : signerMail[i].email,
+        recipient: existSigner?.Email || signerMail[i].email,
         subject: replaceVar?.subject ? replaceVar?.subject : mailTemplate(mailparam).subject,
         from: document.ExtUserPtr.Email,
         replyto: senderEmail || '',

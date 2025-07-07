@@ -1,4 +1,4 @@
-import { defineConfig } from "vite";
+import { defineConfig, splitVendorChunkPlugin } from "vite";
 import react from "@vitejs/plugin-react";
 import svgr from "vite-plugin-svgr";
 import { resolve } from "path";
@@ -12,7 +12,8 @@ export default defineConfig(({ command, mode }) => {
   return {
     plugins: [
       react(),
-      svgr() // Transform SVGs into React components
+      svgr(), // Transform SVGs into React components
+      splitVendorChunkPlugin()
     ],
     resolve: {
       alias: {

@@ -14,7 +14,8 @@ import {
   radioButtonWidget,
   textInputWidget,
   cellsWidget,
-  textWidget
+  textWidget,
+  selectFormat
 } from "../../constant/Utils";
 import PlaceholderType from "./PlaceholderType";
 import moment from "moment";
@@ -24,37 +25,6 @@ import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 import { setIsShowModal } from "../../redux/reducers/widgetSlice";
 import { themeColor } from "../../constant/const";
-
-const selectFormat = (data) => {
-  switch (data) {
-    case "L":
-      return "MM/dd/yyyy";
-    case "MM/DD/YYYY":
-      return "MM/dd/yyyy";
-    case "DD-MM-YYYY":
-      return "dd-MM-yyyy";
-    case "DD/MM/YYYY":
-      return "dd/MM/yyyy";
-    case "LL":
-      return "MMMM dd, yyyy";
-    case "DD MMM, YYYY":
-      return "dd MMM, yyyy";
-    case "YYYY-MM-DD":
-      return "yyyy-MM-dd";
-    case "MM-DD-YYYY":
-      return "MM-dd-yyyy";
-    case "MM.DD.YYYY":
-      return "MM.dd.yyyy";
-    case "MMM DD, YYYY":
-      return "MMM dd, yyyy";
-    case "MMMM DD, YYYY":
-      return "MMMM dd, yyyy";
-    case "DD MMMM, YYYY":
-      return "dd MMMM, yyyy";
-    default:
-      return "MM/dd/yyyy";
-  }
-};
 
 //function to get default format
 const getDefaultFormat = (dateFormat) => dateFormat || "MM/dd/yyyy";
@@ -110,7 +80,9 @@ function Placeholder(props) {
     "MMM DD, YYYY",
     "LL",
     "DD MMM, YYYY",
-    "DD MMMM, YYYY"
+    "DD MMMM, YYYY",
+    "DD.MM.YYYY",
+    "DD/MM/YYYY"
   ];
 
   useEffect(() => {
@@ -132,15 +104,18 @@ function Placeholder(props) {
       if (selectDate && selectDate.format === "dd-MM-yyyy") {
         const [day, month, year] = selectDate.date.split("-");
         date = new Date(`${year}-${month}-${day}`);
+      } else if (selectDate && selectDate.format === "dd.MM.yyyy") {
+        const [day, month, year] = selectDate.date.split(".");
+        date = new Date(`${year}.${month}.${day}`);
+      } else if (selectDate && selectDate.format === "dd/MM/yyyy") {
+        const [day, month, year] = selectDate.date.split("/");
+        date = new Date(`${year}/${month}/${day}`);
       } else {
         date = new Date(selectDate?.date);
       }
       const milliseconds = date.getTime();
       const newDate = moment(milliseconds).format(data);
-      const dateObj = {
-        date: newDate,
-        format: selectFormat(data)
-      };
+      const dateObj = { date: newDate, format: selectFormat(data) };
       updateDate.push(dateObj);
     });
     setDateFormat(updateDate);
@@ -391,9 +366,12 @@ function Placeholder(props) {
 
   //function to save date and format on local array onchange date and onclick format
   const handleSaveDate = (data, isDateChange) => {
+    const isSpecialDateFormat =
+      data?.format &&
+      ["dd-MM-yyyy", "dd.MM.yyyy", "dd/MM/yyyy"].includes(data?.format);
     let updateDate = data.date;
     let date;
-    if (data?.format === "dd-MM-yyyy") {
+    if (isSpecialDateFormat) {
       date = isDateChange
         ? moment(updateDate).format(changeDateToMomentFormat(data.format))
         : updateDate;
@@ -859,8 +837,16 @@ function Placeholder(props) {
               props.isNeedSign && props.data?.Id !== props?.uniqueId && "0.4",
             background: handleBackground()
           }}
-          onDrag={() => {
+          onDrag={(_, d) => {
             props.handleTabDrag && props.handleTabDrag(props.pos.key);
+            props.showGuidelines &&
+              props.showGuidelines(
+                true,
+                d.x,
+                d.y,
+                d.node.offsetWidth,
+                d.node.offsetHeight
+              );
           }}
           size={{
             width:
@@ -881,8 +867,26 @@ function Placeholder(props) {
                 calculateFont(props.pos.options?.fontSize, true)
           }
           maxHeight="auto"
-          onResizeStart={() => {
+          onResizeStart={(e, dir, ref) => {
             props.setIsResize && props.setIsResize(true);
+            props.showGuidelines &&
+              props.showGuidelines(
+                true,
+                xPos(props.pos, props.isSignYourself),
+                yPos(props.pos, props.isSignYourself),
+                ref.offsetWidth,
+                ref.offsetHeight
+              );
+          }}
+          onResize={(e, dir, ref, delta, position) => {
+            props.showGuidelines &&
+              props.showGuidelines(
+                true,
+                position.x,
+                position.y,
+                ref.offsetWidth,
+                ref.offsetHeight
+              );
           }}
           onResizeStop={(e, direction, ref) => {
             setTimeout(() => {
@@ -900,6 +904,7 @@ function Placeholder(props) {
                 props.data && props.data.Id,
                 props.isResize
               );
+            props.showGuidelines && props.showGuidelines(false);
           }}
           onDragStop={(event, dragElement) => {
             props.handleStop &&
@@ -909,6 +914,9 @@ function Placeholder(props) {
                 props.data?.Id,
                 props.pos?.key
               );
+            props.isDragging &&
+              props.showGuidelines &&
+              props.showGuidelines(false);
           }}
           position={{
             x: xPos(props.pos, props.isSignYourself),
@@ -945,7 +953,6 @@ function Placeholder(props) {
             ![radioButtonWidget, "checkbox"].includes(props.pos.type) &&
             props.pos.key === props?.currWidgetsDetails?.key && <BorderResize />
           )}
-
           {/* 1- Show a border if props.pos.key === props?.currWidgetsDetails?.key, indicating the current user's selected widget.
               2- If props.isShowBorder is true, display border for all widgets. 
               3- Use the combination of props?.isAlllowModify and !props?.assignedWidgetId.includes(props.pos.key) to determine when to show border:

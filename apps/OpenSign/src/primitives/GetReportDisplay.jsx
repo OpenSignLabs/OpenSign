@@ -91,6 +91,7 @@ const ReportTable = (props) => {
   const [contact, setContact] = useState({ Name: "", Email: "", Phone: "" });
   const [isSuccess, setIsSuccess] = useState({});
   const [templateId, setTemplateId] = useState("");
+  const [sortOrder, setSortOrder] = useState("asc");
   const isTemplateReport = props.ReportName === "Templates";
   const recordsPerPage = 5;
   const startIndex = (currentPage - 1) * props.docPerPage;
@@ -437,7 +438,22 @@ const ReportTable = (props) => {
   // Get current list
   const indexOfLastDoc = currentPage * props.docPerPage;
   const indexOfFirstDoc = indexOfLastDoc - props.docPerPage;
-  const currentList = props.List?.slice(indexOfFirstDoc, indexOfLastDoc);
+  const sortedList = React.useMemo(() => {
+    if (props.ReportName === "Contactbook") {
+      const contacts = [...props.List];
+      contacts.sort((a, b) => {
+        const nameA = a?.Name?.toLowerCase() || "";
+        const nameB = b?.Name?.toLowerCase() || "";
+        if (nameA < nameB) return sortOrder === "asc" ? -1 : 1;
+        if (nameA > nameB) return sortOrder === "asc" ? 1 : -1;
+        return 0;
+      });
+      return contacts;
+    }
+    return props.List;
+  }, [props.List, sortOrder, props.ReportName]);
+
+  const currentList = sortedList?.slice(indexOfFirstDoc, indexOfLastDoc);
 
   // Change page
   const paginateFront = () => {
@@ -455,6 +471,10 @@ const ReportTable = (props) => {
 
   const handleContactFormModal = () => {
     setIsContactform(!isContactform);
+  };
+
+  const toggleSortOrder = () => {
+    setSortOrder(sortOrder === "asc" ? "desc" : "asc");
   };
 
   const handleUserData = (data) => {
@@ -1536,6 +1556,17 @@ const ReportTable = (props) => {
                       required
                       className="op-file-input op-file-input-bordered op-file-input-sm focus:outline-none hover:border-base-content w-full text-xs"
                     />
+                    <p className="mt-1 ml-2 text-[11px] text-gray-600">
+                      {t("import-guideline")}{" "}
+                      <a
+                        href="/sample_contacts.csv"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-primary underline"
+                      >
+                        {t("download-sample")}
+                      </a>
+                    </p>
                   </div>
                   <div className="text-md m-2">
                     <div className="flex flex-col md:flex-row gap-1">
@@ -1624,7 +1655,24 @@ const ReportTable = (props) => {
               <tr className="border-y-[1px]">
                 {props.heading?.map((item, index) => (
                   <React.Fragment key={index}>
-                    <th className="p-2">{t(`report-heading.${item}`)}</th>
+                    <th className="p-2">
+                      {t(`report-heading.${item}`)}
+                      {props.ReportName === "Contactbook" && item === "Name" && (
+                        <button
+                          type="button"
+                          onClick={toggleSortOrder}
+                          className="ml-1"
+                        >
+                          <i
+                            className={
+                              sortOrder === "asc"
+                                ? "fa-light fa-arrow-down-a-z"
+                                : "fa-light fa-arrow-up-a-z"
+                            }
+                          ></i>
+                        </button>
+                      )}
+                    </th>
                   </React.Fragment>
                 ))}
                 {props.actions?.length > 0 && (
@@ -1817,7 +1865,7 @@ const ReportTable = (props) => {
                                         {/* template report */}
                                         {isOption[item.objectId] &&
                                           act.action === "option" && (
-                                            <ul className="absolute -right-1 top-auto z-[70] w-52 op-dropdown-content op-menu shadow-black/20 shadow bg-base-100 text-base-content rounded-box">
+                                            <ul className="absolute -right-1 top-auto z-[70] w-52 op-dropdown-content op-menu op-menu-sm shadow-black/20 shadow bg-base-100 text-base-content rounded-box">
                                               {act.subaction?.map((subact) => (
                                                 <li
                                                   key={subact.btnId}
@@ -1908,7 +1956,7 @@ const ReportTable = (props) => {
                                         {/* doc report */}
                                         {isOption[item.objectId] &&
                                           act.action === "option" && (
-                                            <ul className="absolute -right-1 top-auto z-[70] w-max op-dropdown-content op-menu shadow-black/20 shadow bg-base-100 text-base-content rounded-box">
+                                            <ul className="absolute -right-1 top-auto z-[70] w-max op-dropdown-content op-menu op-menu-sm shadow-black/20 shadow bg-base-100 text-base-content rounded-box">
                                               {act.subaction?.map(
                                                 (subact) =>
                                                   !restrictBtn(

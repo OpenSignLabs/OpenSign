@@ -59,6 +59,7 @@ export default async function saveAsTemplate(request) {
               options: {
                 ...p.options,
                 status: 'required',
+                ...(p?.options?.defaultValue ? { defaultValue: '' } : {}),
               },
             })),
           }));
@@ -73,10 +74,28 @@ export default async function saveAsTemplate(request) {
           };
           templateCls.set('Placeholders', [placeHolders]);
         } else {
-          const placeHolders = _docRes?.Placeholders?.map((x, i) => {
-            const email = x.email ? { email: '' } : {};
-            return { ...x, signerObjId: '', signerPtr: {}, Role: 'Role ' + (i + 1), ...email };
-          });
+          const placeHolders = _docRes?.Placeholders.map((signer, signerIndex) => ({
+            // copy everything else, then overwrite these fields:
+            ...signer,
+            signerObjId: '',
+            signerPtr: {},
+            Role: `Role ${signerIndex + 1}`,
+            email: '',
+
+            // rebuild placeHolder/pages
+            placeHolder: (signer.placeHolder || []).map(page => ({
+              ...page,
+              pos: (page.pos || []).map(widget => {
+                // if there is a defaultValue in options, zero it out
+                if (widget.options && widget.options.defaultValue !== undefined) {
+                  return { ...widget, options: { ...widget.options, defaultValue: '' } }; // reset only the value
+                }
+                // otherwise, return the widget unchanged
+                return widget;
+              }),
+            })),
+          }));
+
           templateCls.set('Placeholders', placeHolders);
         }
       }

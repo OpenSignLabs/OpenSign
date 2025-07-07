@@ -17,7 +17,8 @@ import {
   textInputWidget,
   cellsWidget,
   textWidget,
-  years
+  years,
+  convertTextToImg
 } from "../../constant/Utils";
 import CellsWidget from "./CellsWidget";
 import DatePicker from "react-datepicker";
@@ -67,6 +68,11 @@ const fontOptions = [
   { value: "Delicious Handrawn" }
   // Add more font options as needed
 ];
+const allColor = ["blue", "red", "black"];
+const textInputcls =
+  "op-input op-input-bordered op-input-sm focus:outline-none text-base-content hover:border-base-content w-full text-xs";
+const isTabCls = "bg-[#002864] text-white rounded-[15px] px-[10px] py-[4px]";
+
 function WidgetsValueModal(props) {
   const dispatch = useDispatch();
   const saveSignCheckbox = useSelector(
@@ -167,10 +173,7 @@ function WidgetsValueModal(props) {
         )
       : new Date()
   );
-  const allColor = ["blue", "red", "black"];
-  const textInputcls =
-    "op-input op-input-bordered op-input-sm focus:outline-none text-base-content hover:border-base-content w-full text-xs";
-  const isTabCls = "bg-[#002864] text-white rounded-[15px] px-[10px] py-[4px]";
+
   useEffect(() => {
     if (
       ["name", "email", "job title", "company", textInputWidget].includes(
@@ -187,6 +190,8 @@ function WidgetsValueModal(props) {
       } else {
         setHint(currWidgetsDetails?.type);
       }
+    } else if (["signature", "initials"].includes(currWidgetsDetails?.type)) {
+      setIsTab(currWidgetsDetails?.signatureType);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currWidgetsDetails]); // Added currWidgetsDetails to dependency array for reset logic
@@ -345,7 +350,6 @@ function WidgetsValueModal(props) {
           const placeholderIndex = signer.placeHolder.findIndex(
             (x) => x.pageNumber === pageNumber
           );
-
           const updatedPlaceholders = onSaveSign(
             type,
             signer.placeHolder,
@@ -358,7 +362,9 @@ function WidgetsValueModal(props) {
             typedSignature,
             isAutoSign,
             widgetsType,
-            isApplyAll
+            isApplyAll,
+            fontSelect,
+            penColor
           );
           return {
             ...signer,
@@ -379,7 +385,9 @@ function WidgetsValueModal(props) {
         imgWH,
         isDefaultSign,
         isTypeText,
-        typedSignature
+        typedSignature,
+        false,
+        widgetsType
       );
       setXyPosition(getUpdatePosition);
     }
@@ -405,7 +413,9 @@ function WidgetsValueModal(props) {
     if (getIndex !== -1) {
       setIsSignTypes(true);
       const tab = signatureTypes?.[getIndex].name;
-      if (tab === "draw") {
+      if (currWidgetsDetails?.signatureType === "type") {
+        setIsTab("type");
+      } else if (tab === "draw") {
         setIsTab("draw");
       } else if (tab === "upload") {
         setIsImageSelect(true);
@@ -619,7 +629,7 @@ function WidgetsValueModal(props) {
         if (isTab === "type") {
           setSignature("");
           handleSaveSignature(
-            null,
+            "type",
             false,
             !currWidgetsDetails?.type === "initials" && textWidth > 150
               ? 150
@@ -694,91 +704,43 @@ function WidgetsValueModal(props) {
       }
     }
     if (isTab === "type") {
+      //trim user name or typed name value to show in initial signature
       const trimmedName = typedSignature
         ? typedSignature?.trim()
         : currentUserName?.trim();
+      //get full name of user
+      const fullUserName = typedSignature || currentUserName;
       const firstCharacter = trimmedName?.charAt(0);
       const userName =
-        currWidgetsDetails?.type === "initials"
-          ? firstCharacter
-          : typedSignature;
+        currWidgetsDetails?.type === "initials" ? firstCharacter : fullUserName;
       const signatureValue = currWidgetsDetails?.typeSignature;
       setTypedSignature(signatureValue || userName || "");
-      convertToImg(fontSelect, userName);
+      convertToImg(fontSelect, signatureValue || userName || "");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isTab]);
   // function for convert input text value in image
   const convertToImg = async (fontStyle, text, color) => {
-    // 1) Read the max widget dimensions:
-    const maxWidth = currWidgetsDetails.Width; // e.g. 150 px
-    const maxHeight = currWidgetsDetails.Height; // e.g.  40 px
-
-    // 2) Pick a “baseline” font size for measurement:
-    const baselineFontSizePx = 40;
-    const chosenFontFamily = fontStyle || fontSelect || "Fasthand";
+    const maxWidth = currWidgetsDetails?.Width;
+    const maxHeight = currWidgetsDetails?.Height;
+    const widgetDims = { Width: maxWidth, Height: maxHeight };
+    const fontFamily = fontStyle || fontSelect || "Fasthand";
     const fillColor = color || penColor;
-
-    // 3) Create a temporary <span> (hidden) to measure the text at 40px:
-    const span = document.createElement("span");
-    span.textContent = text;
-    span.style.font = `${baselineFontSizePx}px ${chosenFontFamily}`;
-    span.style.visibility = "hidden"; // keep it in the DOM so offsetWidth/Height works
-    span.style.whiteSpace = "nowrap"; // so we measure a single line
-    document.body.appendChild(span);
-
-    // Measured size at 40px:
-    const measuredWidth = span.offsetWidth;
-    const measuredHeight = span.offsetHeight;
-    document.body.removeChild(span);
-
-    // 4) Compute uniform scale so that 40px‐sized text fits inside (maxWidth × maxHeight):
-    const scaleX = maxWidth / measuredWidth;
-    const scaleY = maxHeight / measuredHeight;
-    const scale = Math.min(scaleX, scaleY, 1); // never scale up beyond 1
-
-    // 5) Final text size in **CSS px**:
-    const finalFontSizePx = baselineFontSizePx * scale;
-
-    // 6) Create a <canvas> that is ALWAYS maxWidth × maxHeight in **CSS px**,
-    //    but use devicePixelRatio for sharpness.
-    const pixelRatio = window.devicePixelRatio || 1;
-    const canvas = document.createElement("canvas");
-
-    // ★ Instead of using `finalTextWidth/Height`, force it to be the max box:
-    canvas.width = Math.ceil(maxWidth * pixelRatio);
-    canvas.height = Math.ceil(maxHeight * pixelRatio);
-
-    const ctx = canvas.getContext("2d");
-    ctx.scale(pixelRatio, pixelRatio);
-
-    // 7) Draw the text **centered** inside the full maxWidth×maxHeight box:
-    ctx.font = `${finalFontSizePx}px ${chosenFontFamily}`;
-    ctx.fillStyle = fillColor;
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-
-    // ★ Center = (maxWidth/2, maxHeight/2):
-    const centerX = maxWidth / 2;
-    const centerY = maxHeight / 2;
-
-    ctx.fillText(text, centerX, centerY);
-
-    // 8) Export to a PNG data-URL:
-    const dataUrl = canvas.toDataURL("image/png");
+    const dataUrl = convertTextToImg(fontFamily, text, fillColor, widgetDims);
     setSignature(dataUrl);
+    setTextWidth(maxWidth);
+    setTextHeight(maxHeight);
   };
-  const PenColorComponent = (props) => {
+  const PenColorComponent = () => {
     return (
       <div className="flex flex-row items-center m-[5px] gap-3">
-        <span className="text-base-content">Options</span>
+        <span className="text-base-content">{t("options")}</span>
         {allColor.map((data, key) => {
           return (
             <i
               key={key}
               onClick={() => {
-                props?.convertToImg &&
-                  props?.convertToImg(fontSelect, typedSignature, data);
+                convertToImg(fontSelect, typedSignature, data);
                 setPenColor(allColor[key]);
               }}
               className={`border-b-[2px] cursor-pointer ${key === 0 && penColor === "blue" ? "border-blue-600" : key === 1 && penColor === "red" ? "border-red-500" : key === 2 && penColor === "black" ? "border-black" : "border-white"} text-[${data}] text-[16px] fa-light fa-pen-nib`}
@@ -787,17 +749,6 @@ function WidgetsValueModal(props) {
         })}
       </div>
     );
-  };
-
-  // `handleCancelBtn` function trigger when user click on cross button
-  const handleCancelBtn = () => {
-    setPenColor("blue");
-    setIsImageSelect(false);
-    setIsDefaultSign(false);
-    setImage(null);
-    setOriginalImage(null); // Add this
-    setRemoveBgEnabled(false); // Add this
-    handleTab();
   };
 
   // Effect to store original image and apply initial BG removal if enabled
@@ -902,7 +853,7 @@ function WidgetsValueModal(props) {
         checked={isSavedSign}
         onChange={(e) => setIsSavedSign(e.target.checked)}
       />
-      {t("save")} {currWidgetsDetails?.type}
+      {t("save")} {t(`widgets-name.${currWidgetsDetails?.type}`)}
     </label>
   );
   //function for set checked and unchecked value of checkbox
@@ -1048,10 +999,28 @@ function WidgetsValueModal(props) {
                   currWidgetsDetails?.type !== "image" && (
                     <div className="text-base-content rounded-[4px] tabWidth">
                       <div className="ml-3 flex justify-start gap-4 text-[11px] md:text-base my-[3px]">
-                        <>
-                          {currWidgetsDetails?.type !== "initials" &&
-                          defaultSignImg &&
-                          isTabEnabled("default") ? (
+                        {currWidgetsDetails?.type !== "initials" &&
+                        defaultSignImg &&
+                        isTabEnabled("default") ? (
+                          <div>
+                            <span
+                              onClick={() => {
+                                setIsDefaultSign(true);
+                                setIsImageSelect(true);
+                                setIsTab("mysignature");
+                                setImage();
+                              }}
+                              className={`${
+                                isTab === "mysignature" && `${isTabCls}`
+                              } ml-[2px] cursor-pointer`}
+                            >
+                              {t("my-signature")}
+                            </span>
+                          </div>
+                        ) : (
+                          currWidgetsDetails?.type === "initials" &&
+                          myInitial &&
+                          isTabEnabled("default") && (
                             <div>
                               <span
                                 onClick={() => {
@@ -1062,84 +1031,64 @@ function WidgetsValueModal(props) {
                                 }}
                                 className={`${
                                   isTab === "mysignature" && `${isTabCls}`
-                                } ml-[2px] cursor-pointer`}
-                              >
-                                {t("my-signature")}
-                              </span>
-                            </div>
-                          ) : (
-                            currWidgetsDetails?.type === "initials" &&
-                            myInitial &&
-                            isTabEnabled("default") && (
-                              <div>
-                                <span
-                                  onClick={() => {
-                                    setIsDefaultSign(true);
-                                    setIsImageSelect(true);
-                                    setIsTab("mysignature");
-                                    setImage();
-                                  }}
-                                  className={`${
-                                    isTab === "mysignature" && `${isTabCls}`
-                                  }   ml-[2px] cursor-pointer`}
-                                >
-                                  {t("my-initials")}
-                                </span>
-                              </div>
-                            )
-                          )}
-                          {isTabEnabled("draw") && (
-                            <div>
-                              <span
-                                onClick={() => {
-                                  setIsDefaultSign(false);
-                                  setIsImageSelect(false);
-                                  setIsTab("draw");
-                                  setImage();
-                                  setSignature("");
-                                }}
-                                className={`${
-                                  isTab === "draw" && `${isTabCls}`
                                 }   ml-[2px] cursor-pointer`}
                               >
-                                {t("draw")}
+                                {t("my-initials")}
                               </span>
                             </div>
-                          )}
-                          {isTabEnabled("upload") && (
-                            <div>
-                              <span
-                                onClick={() => {
-                                  setIsDefaultSign(false);
-                                  setIsImageSelect(true);
-                                  setIsTab("uploadImage");
-                                }}
-                                className={`${
-                                  isTab === "uploadImage" && `${isTabCls}`
-                                }  ml-[2px] cursor-pointer`}
-                              >
-                                {t("upload-image")}
-                              </span>
-                            </div>
-                          )}
-                          {isTabEnabled("typed") && (
-                            <div>
-                              <span
-                                onClick={() => {
-                                  setIsDefaultSign(false);
-                                  setIsImageSelect(false);
-                                  setIsTab("type");
-                                  setImage();
-                                }}
-                                className={`${
-                                  isTab === "type" && `${isTabCls}`
-                                } ml-[2px] cursor-pointer`}
-                              >
-                                {t("type")}
-                              </span>
-                            </div>
-                          )}
-                        </>
+                          )
+                        )}
+                        {isTabEnabled("draw") && (
+                          <div>
+                            <span
+                              onClick={() => {
+                                setIsDefaultSign(false);
+                                setIsImageSelect(false);
+                                setIsTab("draw");
+                                setImage();
+                                setSignature("");
+                              }}
+                              className={`${
+                                isTab === "draw" && `${isTabCls}`
+                              }   ml-[2px] cursor-pointer`}
+                            >
+                              {t("draw")}
+                            </span>
+                          </div>
+                        )}
+                        {isTabEnabled("upload") && (
+                          <div>
+                            <span
+                              onClick={() => {
+                                setIsDefaultSign(false);
+                                setIsImageSelect(true);
+                                setIsTab("uploadImage");
+                              }}
+                              className={`${
+                                isTab === "uploadImage" && `${isTabCls}`
+                              }  ml-[2px] cursor-pointer`}
+                            >
+                              {t("upload-image")}
+                            </span>
+                          </div>
+                        )}
+                        {isTabEnabled("typed") && (
+                          <div>
+                            <span
+                              onClick={() => {
+                                setIsDefaultSign(false);
+                                setIsImageSelect(false);
+                                setIsTab("type");
+                                setImage();
+                              }}
+                              className={`${
+                                isTab === "type" && `${isTabCls}`
+                              } ml-[2px] cursor-pointer`}
+                            >
+                              {t("type")}
+                            </span>
+                          </div>
+                        )}
                       </div>
                     </div>
                   )}
@@ -1174,7 +1123,7 @@ function WidgetsValueModal(props) {
                               </div>
                             </div>
                             {/* Standalone autoSignAll for "My Signature/Initials" (isDefaultSign) if conditions met */}
-                            {setIsAutoSign && uniqueId && (
+                            {uniqueId && (
                               <div className="flex justify-center my-2">
                                 {autoSignAll}
                               </div>
@@ -1203,7 +1152,7 @@ function WidgetsValueModal(props) {
                               </div>
                             </div>
                             {/* Standalone autoSignAll for "My Signature/Initials" (isDefaultSign) if conditions met */}
-                            {setIsAutoSign && uniqueId && (
+                            {uniqueId && (
                               <div className="flex justify-center my-2">
                                 {autoSignAll}
                               </div>
@@ -1228,8 +1177,8 @@ function WidgetsValueModal(props) {
                             ref={imageRef}
                             hidden
                           />
-                          <i className="fa-light fa-cloud-upload-alt uploadImgLogo"></i>
-                          <div className="text-[10px]">{t("upload")}</div>
+                          <i className="fa-light fa-cloud-upload-alt uploadImgLogo text-base-content"></i>
+                          <div className="text-[10px] text-base-content">{t("upload")}</div>
                         </div>
                       </div>
                     ) : (
@@ -1248,14 +1197,14 @@ function WidgetsValueModal(props) {
                           </div>
                         </div>
                         {/* Shared container for autoSignAll and removeBackground when image is displayed for upload/stamp/image */}
-                        {((setIsAutoSign && uniqueId) ||
+                        {(uniqueId ||
                           (image &&
                             (isImageSelect ||
                               ["image", "stamp"].includes(
                                 currWidgetsDetails?.type
                               )))) && (
                           <div className="flex justify-center items-center gap-x-2 my-2">
-                            {setIsAutoSign && uniqueId && autoSignAll}
+                            {uniqueId && autoSignAll}
                             {image &&
                               (isImageSelect ||
                                 ["image", "stamp"].includes(
@@ -1345,7 +1294,7 @@ function WidgetsValueModal(props) {
                       </div>
                       <div className="flex flex-row ml-1 mt-2 gap-x-3 text-base-content">
                         {/* Standalone autoSignAll for "Type" tab if conditions met */}
-                        {setIsAutoSign && uniqueId && (
+                        {uniqueId && (
                           <div className="flex justify-start my-1">
                             {autoSignAll}
                           </div>
@@ -1381,7 +1330,7 @@ function WidgetsValueModal(props) {
                       </div>
                       <div className="flex flex-row ml-1 mt-1 gap-x-3 text-base-content">
                         {/* Standalone autoSignAll for "Draw" tab if conditions met */}
-                        {setIsAutoSign && uniqueId && (
+                        {uniqueId && (
                           <div className="flex justify-start my-1">
                             {autoSignAll}
                           </div>
@@ -1778,6 +1727,7 @@ function WidgetsValueModal(props) {
         break;
     }
   };
+  // console.log("currwidgetdetails ", currWidgetsDetails )
   //function too use on click on next/finish button then update modal UI according to current widgets
   const handleClickOnNext = (isFinishDoc) => {
     if (
