@@ -21,6 +21,7 @@ const Header = ({ showSidebar, setIsMenu, isConsole }) => {
   const image = localStorage.getItem("profileImg") || dp;
   const [isOpen, setIsOpen] = useState(false);
   const [applogo, setAppLogo] = useState("");
+  const [isDarkTheme, setIsDarkTheme] = useState();
 
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
@@ -88,22 +89,15 @@ const Header = ({ showSidebar, setIsMenu, isConsole }) => {
 
 
   useEffect(() => {
-    const updateLogoForTheme = () => {
-      const isDarkMode =
+    const updateThemeStatus = () => {
+      const isDarkTheme =
         document.documentElement.getAttribute("data-theme") === "opensigndark";
-      const logo = isDarkMode
-        ? "/static/js/assets/images/logo-dark.png" // Path to the dark mode logo
-        : appInfo.applogo; // Use current logo for light mode
-      if (applogo !== logo) {
-        setAppLogo(logo);
-      }
+      setIsDarkTheme(isDarkTheme);
     };
-
-    // Set the logo immediately based on the current theme
-    updateLogoForTheme();
+    updateThemeStatus();
 
     const observer = new MutationObserver(() => {
-      updateLogoForTheme();
+      updateThemeStatus();
     });
 
     observer.observe(document.documentElement, {
@@ -112,7 +106,7 @@ const Header = ({ showSidebar, setIsMenu, isConsole }) => {
     });
 
     return () => observer.disconnect();
-  }, [applogo]);
+  }, []);
 
   return (
     <div>
@@ -129,9 +123,11 @@ const Header = ({ showSidebar, setIsMenu, isConsole }) => {
           <div className="h-[25px] md:h-[40px] w-auto overflow-hidden">
             {applogo && (
               <img
-                className="object-contain h-full w-auto"
-                src={applogo}
-                alt="logo"
+                src={
+                      isDarkTheme
+                      ? "/static/js/assets/images/logo-dark.png"
+                      : applogo
+                }
               />
             )}
           </div>
