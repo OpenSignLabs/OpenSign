@@ -3357,11 +3357,11 @@ components:
         email_subject:
           type: string
           description: "Custom mail subject for signature request. Can include the following  {{document_title}} {{sender_name}}, {{sender_mail}}, {{sender_phone}}, {{receiver_name}}, {{receiver_email}}, {{receiver_phone}}, {{expiry_date}}, {{company_name}}, {{signing_url}}, {{note}}."
-          example: ""
+          example: "{{sender_name}} has requested you to sign {{document_title}}"
         email_body:
           type: string
           description: "Custom signature request email body. Can include the following  {{document_title}} {{sender_name}}, {{sender_mail}}, {{sender_phone}}, {{receiver_name}}, {{receiver_email}}, {{receiver_phone}}, {{expiry_date}}, {{company_name}}, {{signing_url}}, {{note}}."
-          example: ""
+          example: "<p>Hi {{receiver_name}},</p><p>We hope this email finds you well. <strong>{{sender_name}}</strong> has requested you to review and sign <strong>{{document_title}}</strong>.</p><p>Your signature is crucial to proceed with the next steps as it signifies your agreement and authorization.</p><p><a href='{{signing_url}}'>Sign here</a></p><p>If you have any questions or need further clarification, please contact the sender.</p><p>Thanks,<br>Team OpenSign™</p>"
         enableTour:
           type: boolean
           description: "true - this option will enable a guided tour for signers, providing instructions during the signing process. false - disable the guided tour, ensuring a faster, uninterrupted signing experience."
@@ -3419,11 +3419,11 @@ components:
         email_subject:
           type: string
           description: "Custom mail subject for signature request. Can include the following  {{document_title}} {{sender_name}}, {{sender_mail}}, {{sender_phone}}, {{receiver_name}}, {{receiver_email}}, {{receiver_phone}}, {{expiry_date}}, {{company_name}}, {{signing_url}}, {{note}}."
-          example: ""
+          example: "{{sender_name}} has requested you to sign {{document_title}}"
         email_body:
           type: string
           description: "Custom signature request email body. Can include the following  {{document_title}} {{sender_name}}, {{sender_mail}}, {{sender_phone}}, {{receiver_name}}, {{receiver_email}}, {{receiver_phone}}, {{expiry_date}}, {{company_name}}, {{signing_url}}, {{note}}."
-          example: ""
+          example: "<p>Hi {{receiver_name}},</p><p>We hope this email finds you well. <strong>{{sender_name}}</strong> has requested you to review and sign <strong>{{document_title}}</strong>.</p><p>Your signature is crucial to proceed with the next steps as it signifies your agreement and authorization.</p><p><a href='{{signing_url}}'>Sign here</a></p><p>If you have any questions or need further clarification, please contact the sender.</p><p>Thanks,<br>Team OpenSign™</p>"
         sendInOrder:
           type: boolean
           description: "If set to 'true', only the first signer will receive the signature request email initially. Emails to subsequent signers will be triggered sequentially, with each sent only after the previous signer has completed their signing. By default, sendInOrder is set to 'true'."
@@ -3502,11 +3502,11 @@ components:
         email_subject:
           type: string
           description: "Custom mail subject for signature request. Can include the following  {{document_title}} {{sender_name}}, {{sender_mail}}, {{sender_phone}}, {{receiver_name}}, {{receiver_email}}, {{receiver_phone}}, {{expiry_date}}, {{company_name}}, {{signing_url}}, {{note}}."
-          example: ""
+          example: "{{sender_name}} has requested you to sign {{document_title}}"
         email_body:
           type: string
           description: "Custom signature request email body. Can include the following  {{document_title}} {{sender_name}}, {{sender_mail}}, {{sender_phone}}, {{receiver_name}}, {{receiver_email}}, {{receiver_phone}}, {{expiry_date}}, {{company_name}}, {{signing_url}}, {{note}}."
-          example: ""
+          example: "<p>Hi {{receiver_name}},</p><p>We hope this email finds you well. <strong>{{sender_name}}</strong> has requested you to review and sign <strong>{{document_title}}</strong>.</p><p>Your signature is crucial to proceed with the next steps as it signifies your agreement and authorization.</p><p><a href='{{signing_url}}'>Sign here</a></p><p>If you have any questions or need further clarification, please contact the sender.</p><p>Thanks,<br>Team OpenSign™</p>"
         sendInOrder:
           type: boolean
           description: "If set to 'true', only the first signer will receive the signature request email initially. Emails to subsequent signers will be triggered sequentially, with each sent only after the previous signer has completed their signing. By default, sendInOrder is set to 'true'."
@@ -3626,11 +3626,11 @@ components:
         email_subject:
           type: string
           description: "Custom mail subject for signature request. Can include the following  {{document_title}} {{sender_name}}, {{sender_mail}}, {{sender_phone}}, {{receiver_name}}, {{receiver_email}}, {{receiver_phone}}, {{expiry_date}}, {{company_name}}, {{signing_url}}, {{note}}."
-          example: ""
+          example: "{{sender_name}} has requested you to sign {{document_title}}"
         email_body:
           type: string
           description: "Custom signature request email body. Can include the following  {{document_title}} {{sender_name}}, {{sender_mail}}, {{sender_phone}}, {{receiver_name}}, {{receiver_email}}, {{receiver_phone}}, {{expiry_date}}, {{company_name}}, {{signing_url}}, {{note}}."
-          example: ""
+          example: "<p>Hi {{receiver_name}},</p><p>We hope this email finds you well. <strong>{{sender_name}}</strong> has requested you to review and sign <strong>{{document_title}}</strong>.</p><p>Your signature is crucial to proceed with the next steps as it signifies your agreement and authorization.</p><p><a href='{{signing_url}}'>Sign here</a></p><p>If you have any questions or need further clarification, please contact the sender.</p><p>Thanks,<br>Team OpenSign™</p>"
         sendInOrder:
           type: boolean
           description: "If set to 'true', only the first signer will receive the signature request email initially. Emails to subsequent signers will be triggered sequentially, with each sent only after the previous signer has completed their signing. By default, sendInOrder is set to 'true'."
@@ -3696,11 +3696,11 @@ components:
         email_subject:
           type: string
           description: "Custom signature request email subject in text/html format. Can include following variables  {{document_title}} {{sender_name}}, {{sender_mail}}, {{sender_phone}}, {{receiver_name}}, {{receiver_email}}, {{receiver_phone}}, {{expiry_date}}, {{company_name}}, {{signing_url}}, {{note}}."
-          example: ""
+          example: "{{sender_name}} has requested you to sign {{document_title}}"
         email_body:
           type: string
           description: "Custom signature request email body in text/html format. Can include following variables  {{document_title}} {{sender_name}}, {{sender_mail}}, {{sender_phone}}, {{receiver_name}}, {{receiver_email}}, {{receiver_phone}}, {{expiry_date}}, {{company_name}}, {{signing_url}}, {{note}}."
-          example: ""
+          example: "<p>Hi {{receiver_name}},</p><p>We hope this email finds you well. <strong>{{sender_name}}</strong> has requested you to review and sign <strong>{{document_title}}</strong>.</p><p>Your signature is crucial to proceed with the next steps as it signifies your agreement and authorization.</p><p><a href='{{signing_url}}'>Sign here</a></p><p>If you have any questions or need further clarification, please contact the sender.</p><p>Thanks,<br>Team OpenSign™</p>"
     inline_response_404_3:
       type: object
       properties:
