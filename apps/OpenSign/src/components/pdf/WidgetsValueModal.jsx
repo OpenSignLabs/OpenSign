@@ -18,7 +18,8 @@ import {
   cellsWidget,
   textWidget,
   years,
-  convertTextToImg
+  convertTextToImg,
+  convertJpegToPng
 } from "../../constant/Utils";
 import CellsWidget from "./CellsWidget";
 import DatePicker from "react-datepicker";
@@ -110,7 +111,6 @@ function WidgetsValueModal(props) {
   const [signature, setSignature] = useState();
   const [isImageSelect, setIsImageSelect] = useState(false);
   const [isFinish, setIsFinish] = useState(false);
-  const [imgWH, setImgWH] = useState({});
   const [fontSelect, setFontSelect] = useState(fontOptions[0].value);
   const [isSavedSign, setIsSavedSign] = useState(false);
   const [isAutoSign, setIsAutoSign] = useState(false);
@@ -257,11 +257,11 @@ function WidgetsValueModal(props) {
       setOriginalImage(null); // Reset original image when a new file is selected
       setRemoveBgEnabled(false); // Optionally reset toggle
       // Ensure compressedFileSize calls setImage, which then triggers the useEffect for BG removal.
-      compressedFileSize(file, setImgWH, setImage);
+      compressedFileSize(file, setImage);
     }
   };
   //function is used to save image,stamp widgets data
-  const handleSaveImage = () => {
+  const handleSaveImage = (signatureType) => {
     const widgetsType = currWidgetsDetails?.type;
     //`isApplyAll` is used when user edit stamp then updated signature apply all existing drawn signatures
     const isApplyAll = true;
@@ -278,10 +278,10 @@ function WidgetsValueModal(props) {
 
           // Get updated placeholder list
           const updatedPlaceholders = onSaveImage(
+            signatureType,
             signer.placeHolder,
             index,
             currWidgetsDetails?.key,
-            imgWH,
             image,
             isAutoSign,
             widgetsType,
@@ -299,11 +299,13 @@ function WidgetsValueModal(props) {
         return object.pageNumber === pageNumber;
       });
       const getImage = onSaveImage(
+        signatureType,
         props?.xyPosition,
         index,
         currWidgetsDetails?.key,
-        imgWH,
-        image
+        image,
+        false,
+        widgetsType
       );
       setXyPosition(getImage);
     }
@@ -311,36 +313,28 @@ function WidgetsValueModal(props) {
   };
 
   //function is used to save draw type or initial type signature
-  const handleSaveSignature = (
-    type,
+  const handleSaveSignature = async (
+    signType,
     isDefaultSign,
     width,
     height,
     typedSignature
   ) => {
-    //get current click widget type
+    // get current click widget type
     const widgetsType = currWidgetsDetails?.type;
-    //if there are any width and height then it will typed signature
+    // if there are any width and height then it will typed signature
     const isTypeText = width && height ? true : false;
-    //final getting signature url via default select sign/default initial sign/self draw sign
-    const signatureImg = isDefaultSign
+    // final getting signature url via default select sign/default initial sign/self draw sign
+    const signUrl = isDefaultSign
       ? isDefaultSign === "initials"
-        ? myInitial
-        : defaultSignImg
-      : signature;
-
+        ? await convertJpegToPng(myInitial, "myinitials") // default initials set through my signature tab
+        : await convertJpegToPng(defaultSignImg, "mysign") // default signature set through my signature tab
+      : signature; // signature done by user thorugh draw, upload, typed
+    const signatureImg = signUrl;
     let imgWH = { width: width ? width : "", height: height ? height : "" };
     setIsImageSelect(false);
     setImage();
-    //set default signature image width and height
-    if (isDefaultSign) {
-      const img = new Image();
-      img.src = defaultSignImg;
-      if (img.complete) {
-        imgWH = { width: img.width, height: img.height };
-      }
-    }
-    //`isApplyAll` is used when user edit signature/initial then updated signature apply all existing drawn signatures
+    // `isApplyAll` is used when user edit signature/initial then updated signature apply all existing drawn signatures
     const isApplyAll = true;
     if (uniqueId) {
       setXyPosition((prevState) =>
@@ -351,13 +345,12 @@ function WidgetsValueModal(props) {
             (x) => x.pageNumber === pageNumber
           );
           const updatedPlaceholders = onSaveSign(
-            type,
+            signType,
             signer.placeHolder,
             placeholderIndex,
             currWidgetsDetails?.key,
             signatureImg,
             imgWH,
-            isDefaultSign,
             isTypeText,
             typedSignature,
             isAutoSign,
@@ -377,13 +370,12 @@ function WidgetsValueModal(props) {
         return object.pageNumber === pageNumber;
       });
       const getUpdatePosition = onSaveSign(
-        type,
+        signType,
         props?.xyPosition,
         index,
         currWidgetsDetails?.key,
         signatureImg,
         imgWH,
-        isDefaultSign,
         isTypeText,
         typedSignature,
         false,
@@ -535,7 +527,7 @@ function WidgetsValueModal(props) {
     }
   };
 
-  // `handlesavesign` is used to save signaute, initials, stamp as a default
+  // `handlesavesign` is used to save signature, initials, stamp as a default
   const handleSaveSign = async () => {
     if (signature || image?.src) {
       setIsLoader(true);
@@ -556,7 +548,7 @@ function WidgetsValueModal(props) {
           objectId: User?.id
         };
         if (imageUrl) {
-          //  below code is used to save or update default signaute, initials, stamp
+          // below code is used to save or update default signature, initials, stamp
           try {
             const signCls = new Parse.Object("contracts_Signature");
             if (props?.saveSignCheckbox?.signId) {
@@ -642,13 +634,14 @@ function WidgetsValueModal(props) {
         } else {
           setSignature("");
           canvasRef?.current?.clear();
-          handleSaveSignature(isTab);
+          const tab = isTab === "uploadImage" ? "image" : isTab;
+          handleSaveSignature(tab);
         }
       }
       setPenColor("blue");
     } else {
       setSignature("");
-      handleSaveImage();
+      handleSaveImage("image");
     }
     setIsImageSelect(false);
     setIsDefaultSign(false);
@@ -1178,7 +1171,9 @@ function WidgetsValueModal(props) {
                             hidden
                           />
                           <i className="fa-light fa-cloud-upload-alt uploadImgLogo text-base-content"></i>
-                          <div className="text-[10px] text-base-content">{t("upload")}</div>
+                          <div className="text-[10px] text-base-content">
+                            {t("upload")}
+                          </div>
                         </div>
                       </div>
                     ) : (
@@ -1324,7 +1319,6 @@ function WidgetsValueModal(props) {
                           dotSize={1}
                         />
                       </div>
-
                       <div className="flex flex-row justify-between mt-[10px]">
                         <PenColorComponent />
                       </div>
@@ -1988,7 +1982,7 @@ function WidgetsValueModal(props) {
                         handleClickOnNext(isFinishDoc);
                       }}
                     >
-                      {t("finish")}
+                      {t("done")}
                     </button>
                   ) : (
                     <button

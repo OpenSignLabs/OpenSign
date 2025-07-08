@@ -108,7 +108,7 @@ function PlaceholderType(props) {
           alt="signature"
           draggable="false"
           src={props.pos.SignUrl}
-          className="w-full h-full select-none-cls "
+          className={`${props.pos.signatureType !== "type" ? "object-contain" : ""} w-full h-full select-none-cls`}
         />
       ) : (
         <div className={widgetCls}>
@@ -132,7 +132,7 @@ function PlaceholderType(props) {
           alt="stamp"
           draggable="false"
           src={props.pos.SignUrl}
-          className="w-full h-full select-none-cls"
+          className="w-full h-full select-none-cls object-contain"
         />
       ) : (
         <div className={widgetCls}>
@@ -253,7 +253,7 @@ function PlaceholderType(props) {
           alt="initials"
           draggable="false"
           src={props.pos.SignUrl}
-          className="w-full h-full select-none-cls"
+          className={`${props.pos.signatureType !== "type" ? "object-contain" : ""} w-full h-full select-none-cls`}
         />
       ) : (
         <div className={widgetCls}>
@@ -402,7 +402,7 @@ function PlaceholderType(props) {
           alt="image"
           draggable="false"
           src={props.pos.SignUrl}
-          className="w-full h-full select-none-cls"
+          className="w-full h-full select-none-cls object-contain"
         />
       ) : (
         <div className={widgetCls}>
