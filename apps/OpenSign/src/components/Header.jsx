@@ -123,11 +123,13 @@ const Header = ({ showSidebar, setIsMenu, isConsole }) => {
           <div className="h-[25px] md:h-[40px] w-auto overflow-hidden">
             {applogo && (
               <img
+                className="object-contain h-full w-auto"
                 src={
                       isDarkTheme
                       ? "/static/js/assets/images/logo-dark.png"
                       : applogo
                 }
+                alt="logo"
               />
             )}
           </div>

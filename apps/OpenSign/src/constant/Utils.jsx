@@ -361,7 +361,7 @@ export const selectFormat = (data) => {
     case "DD MMMM, YYYY":
       return "dd MMMM, yyyy";
     case "DD.MM.YYYY":
-      return "dd.MM.yyyy";  
+      return "dd.MM.yyyy";
     default:
       return "MM/dd/yyyy";
   }
@@ -390,7 +390,7 @@ export const changeDateToMomentFormat = (format) => {
     case "dd MMMM, yyyy":
       return "DD MMMM, YYYY";
     case "dd.MM.yyyy":
-      return"DD.MM.YYYY";
+      return "DD.MM.YYYY";
     default:
       return "L";
   }
@@ -1318,15 +1318,14 @@ export function convertTextToImg(fontStyle, text, color, widgetDims) {
   return dataUrl;
 }
 
-//function for save button to save signature or image url
+// `onSaveSign` trigger on save button to save for signature, initials widget for type: draw, typed, default
 export function onSaveSign(
   type,
   xyPosition,
   index,
   signKey,
   signatureImg,
-  defaultImgWH,
-  isDefaultSign,
+  updatedImgWH,
   isTypeText,
   typedSignature,
   isAutoSign,
@@ -1341,27 +1340,11 @@ export function onSaveSign(
     widgetsType && ["signature", "initials"].includes(widgetsType);
   const updateXYData = getXYdata.map((position) => {
     if (position.key === signKey) {
-      if (isDefaultSign === "initials") {
-        let imgWH = { width: position.Width, height: position.Height };
-        getIMGWH = calculateImgAspectRatio(imgWH, position);
-      } else if (isDefaultSign === "default") {
-        getIMGWH = calculateImgAspectRatio(defaultImgWH, position);
-      } else if (isTypeText) {
+      if (isTypeText) {
         getIMGWH = {
-          newWidth: defaultImgWH.width,
-          newHeight: defaultImgWH.height
+          newWidth: updatedImgWH.width,
+          newHeight: updatedImgWH.height
         };
-      } else {
-        const defaultWidth = defaultWidthHeight(position?.type).width;
-        const defaultHeight = defaultWidthHeight(position?.type).height;
-
-        getIMGWH = calculateImgAspectRatio(
-          {
-            width: defaultWidth ? defaultWidth : 150,
-            height: defaultHeight ? defaultHeight : 60
-          },
-          position
-        );
       }
       posWidth = getIMGWH ? getIMGWH.newWidth : 150;
       posHeight = getIMGWH ? getIMGWH.newHeight : 60;
@@ -1371,8 +1354,8 @@ export function onSaveSign(
         : signatureImg;
       return {
         ...position,
-        Width: posWidth,
-        Height: posHeight,
+        ...(type === "type" ? { Width: posWidth } : {}),
+        ...(type === "type" ? { Height: posHeight } : {}),
         SignUrl: signImg,
         ...(isSignOrInitials && { signatureType: type || "" }),
         options: { ...position.options, response: signImg },
@@ -1392,7 +1375,7 @@ export function onSaveSign(
     }
     return obj;
   });
-  //condition  when draw/upload signature/initials then apply it all related to widgets (signature,image,typed signature or default signature)
+  //condition  when draw/upload signature/initials then apply it all related to widgets (draw, typed signature or default signature)
   if (isApplyAll || isAutoSign) {
     const updatedArray = updateXYposition.map((page) => ({
       ...page,
@@ -1404,9 +1387,6 @@ export function onSaveSign(
             : signatureImg;
           return {
             ...item,
-            // Only copy signature content, keep existing dimensions
-            // Width: posWidth,
-            // Height: posHeight,
             SignUrl: signImg,
             ...(isSignOrInitials && { signatureType: type || "" }),
             options: { ...item.options, response: signImg },
@@ -1424,6 +1404,54 @@ export function onSaveSign(
   } else {
     return updateXYposition;
   }
+}
+
+/**
+ * Scales and centers a base64‐encoded image into a fixed‐size widget
+ * and returns a new base64 PNG.
+ *
+ * @param {string} base64Image  A data-URL (e.g. "data:image/png;base64,…")
+ * @param {{ Width: number, Height: number }} widgetDims
+ * @returns {Promise<string>}  A Promise that resolves to a data-URL of the new image
+ */
+export async function convertBase64ToImg(base64Image, widgetDims) {
+  const { Width: maxWidth, Height: maxHeight } = widgetDims;
+
+  // Detect input format from data URL
+  const match = base64Image.match(/^data:(image\/(png|jpeg|jpg|webp));base64,/);
+  const inputMime = match ? match[1] : "image/png"; // fallback to PNG if unknown
+
+  // 1. Load the image off-DOM
+  const img = new Image();
+  img.src = base64Image;
+  await new Promise((resolve, reject) => {
+    img.onload = resolve;
+    img.onerror = reject;
+  });
+
+  // 2. Compute scale to fit within widget (preserving aspect ratio)
+  const { naturalWidth: imgW, naturalHeight: imgH } = img;
+  const scale = Math.min(maxWidth / imgW, maxHeight / imgH, 1);
+  const drawW = imgW * scale;
+  const drawH = imgH * scale;
+
+  // 3. Prepare a high-DPI canvas
+  const pxRatio = (window.devicePixelRatio || 1) * 2;
+  const canvas = document.createElement("canvas");
+  canvas.width = Math.ceil(maxWidth * pxRatio);
+  canvas.height = Math.ceil(maxHeight * pxRatio);
+  const ctx = canvas.getContext("2d");
+  ctx.scale(pxRatio, pxRatio);
+  ctx.clearRect(0, 0, maxWidth, maxHeight);
+
+  // 4. Center the image in the widget rectangle
+  const x = (maxWidth - drawW) / 2;
+  const y = (maxHeight - drawH) / 2;
+  ctx.drawImage(img, x, y, drawW, drawH);
+  // 5. Return new base64 in same format as input
+  const quality =
+    inputMime.includes("jpeg") || inputMime.includes("jpg") ? 0.9 : undefined;
+  return canvas.toDataURL(inputMime, quality);
 }
 
 //function to use After setting the signature URL for the first signature widget, clicking on subsequent
@@ -1488,35 +1516,30 @@ export const calculateImgAspectRatio = (imgWH, pos) => {
   return { newHeight, newWidth };
 };
 
-//function for upload stamp or image
+// `onSaveImage` trigger for upload image through stamp, image, signature, initials widgets
 export function onSaveImage(
+  signatureType,
   xyPosition,
   index,
   signKey,
-  imgWH,
   image,
   isAutoSign,
   widgetsType,
   isApplyAll
 ) {
-  let getIMGWH;
-
+  // let getIMGWH;
+  const isSignOrInitials =
+    widgetsType && ["signature", "initials"].includes(widgetsType);
   //get current page position
   const getXYData = xyPosition[index].pos;
   const updateXYData = getXYData.map((position) => {
     if (position.key === signKey) {
-      getIMGWH = calculateImgAspectRatio(imgWH, position);
-
       return {
         ...position,
-        Width: getIMGWH.newWidth,
-        Height: getIMGWH.newHeight,
         SignUrl: image.src,
         ImageType: image.imgType,
-        options: {
-          ...position.options,
-          response: image.src
-        }
+        ...(isSignOrInitials && { signatureType: signatureType || "" }),
+        options: { ...position.options, response: image.src }
       };
     }
     return position;
@@ -1528,17 +1551,16 @@ export function onSaveImage(
     }
     return obj;
   });
-  //condition  when user upload(stamp) then apply it all related to widgets
+  // condition when user upload(stamp) then apply it all related to widgets
   if (isApplyAll || isAutoSign) {
     const updatedArray = updateXYposition.map((page) => ({
       ...page,
       pos: page.pos.map(
         (item) =>
+          // below condition to exclude apply all for image widget
           item.type === widgetsType && item.type !== "image"
             ? {
                 ...item,
-                // Width: getIMGWH.newWidth,
-                // Height: getIMGWH.newHeight,
                 SignUrl: image.src,
                 ImageType: image.imgType,
                 options: {
@@ -1556,7 +1578,7 @@ export function onSaveImage(
 }
 
 //function for select image and upload image
-export const onImageSelect = (setImgWH, setImage, file) => {
+export const onImageSelect = (setImage, file) => {
   const reader = new FileReader();
   reader.readAsDataURL(file);
   reader.onloadend = function (e) {
@@ -1575,13 +1597,12 @@ export const onImageSelect = (setImgWH, setImage, file) => {
         width = 184 * imgR;
         height = 184;
       }
-      setImgWH({ width: width, height: height });
     };
     image.src = reader.result;
     setImage({ src: image.src, imgType: file.type });
   };
 };
-export const compressedFileSize = (file, setImgWH, setImage) => {
+export const compressedFileSize = (file, setImage) => {
   // Create a new FileReader instance to read the uploaded file
   const reader = new FileReader();
 
@@ -1606,7 +1627,7 @@ export const compressedFileSize = (file, setImgWH, setImage) => {
       // Draw the image onto the canvas with the specified dimensions
       ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
       // Get the original file type (default to "image/png" if not recognized)
-      const fileType = file.type || "image/png";
+      const fileType = "image/png"; //file.type || "image/png"
       // Compress the image and convert it into a Blob
       canvas.toBlob(
         (blob) => {
@@ -1616,7 +1637,7 @@ export const compressedFileSize = (file, setImgWH, setImage) => {
             lastModified: Date.now() // Update the last modified timestamp
           });
           // Pass the compressed file to a custom function for further processing
-          onImageSelect(setImgWH, setImage, compressedFile);
+          onImageSelect(setImage, compressedFile);
         },
         fileType, // Output format for the compressed image
         0.3 // Compression quality (30%)
@@ -1741,10 +1762,12 @@ export const multiSignEmbed = async (widgets, pdfDoc, signyourself, scale) => {
       widgetsPositionArr.map(async (widget) => {
         // `SignUrl` this is wrong nomenclature and maintain for older code in this options we save base64 of signature image from sign pad
         let signbase64 = widget.SignUrl && widget.SignUrl;
+        const widgetDims = { Width: widget.Width, Height: widget.Height };
         if (signbase64) {
           let arr = signbase64.split(","),
             mime = arr[0].match(/:(.*?);/)[1];
-          const res = await fetch(signbase64);
+          const signatureImg = await convertBase64ToImg(signbase64, widgetDims);
+          const res = await fetch(signatureImg);
           const arrayBuffer = await res.arrayBuffer();
           const obj = { mimetype: mime, arrayBuffer: arrayBuffer };
           return obj;
@@ -2272,28 +2295,25 @@ export const addDefaultSignatureImg = (xyPosition, defaultSignImg, type) => {
   const img = new Image();
   img.src = defaultSignImg;
   if (img.complete) {
-    imgWH = {
-      width: img.width,
-      height: img.height
-    };
+    imgWH = { width: img.width, height: img.height };
   }
 
   let xyDefaultPos = [];
   for (let i = 0; i < xyPosition.length; i++) {
-    let getIMGWH;
+    // let getIMGWH;
     const getXYdata = xyPosition[i].pos;
     const getPageNo = xyPosition[i].pageNumber;
     const getPosData = getXYdata;
 
     const addSign = getPosData.map((position) => {
-      getIMGWH = calculateImgAspectRatio(imgWH, position);
+      // getIMGWH = calculateImgAspectRatio(imgWH, position);
       if (position.type) {
         if (position?.type === type) {
           return {
             ...position,
             SignUrl: defaultSignImg,
-            Width: getIMGWH.newWidth,
-            Height: getIMGWH.newHeight,
+            // Width: getIMGWH.newWidth,
+            // Height: getIMGWH.newHeight,
             ImageType: "default",
             options: {
               ...position.options,
@@ -2305,8 +2325,8 @@ export const addDefaultSignatureImg = (xyPosition, defaultSignImg, type) => {
         return {
           ...position,
           SignUrl: defaultSignImg,
-          Width: getIMGWH.newWidth,
-          Height: getIMGWH.newHeight,
+          // Width: getIMGWH.newWidth,
+          // Height: getIMGWH.newHeight,
           ImageType: "default",
           options: {
             ...position.options,
@@ -3653,3 +3673,60 @@ export function getFileAsArrayBuffer(file) {
     reader.readAsArrayBuffer(file);
   });
 }
+
+/**
+ * Converts a JPEG/JPG File/Blob into a PNG File.
+ *
+ * @param {string} base64Image  - A data-URL (e.g. "data:image/jpeg;base64,…")
+ * @param {string} filename     - Desired filename (e.g. "input").
+ * @returns {Promise<File>}     - A promise that resolves with a new PNG File.
+ */
+export function convertJpegToPng(base64Image, filename) {
+  const arr = base64Image.split(",");
+  const mimeMatch = arr[0].match(/:(.*?);/);
+  if (!mimeMatch) throw new Error("Invalid dataURL");
+  const mime = mimeMatch[1];
+  const type = mime.split("/")[1];
+  if (type === "png") {
+    return base64Image;
+  } else {
+    const bstr = atob(arr[1]);
+    let n = bstr.length;
+    const u8arr = new Uint8Array(n);
+    while (n--) u8arr[n] = bstr.charCodeAt(n);
+    const inputFile = new File([u8arr], `${filename}.${type}`, { type: mime });
+    return new Promise((resolve, reject) => {
+      // ensure it’s JPEG/JPG (you can remove this check if not needed)
+      if (!/image\/jpe?g/.test(inputFile.type)) {
+        return reject(new Error("Input must be a JPEG or JPG image"));
+      }
+
+      // Read the file as a data URL
+      const reader = new FileReader();
+      reader.onerror = () => reject(new Error("Failed to read the file"));
+      reader.onload = () => {
+        const img = new Image();
+        img.onerror = () => reject(new Error("Failed to load image"));
+        img.onload = () => {
+          // draw image onto a canvas
+          const canvas = document.createElement("canvas");
+          canvas.width = img.width;
+          canvas.height = img.height;
+          const ctx = canvas.getContext("2d");
+          ctx.drawImage(img, 0, 0);
+
+          // directly get PNG as base64 data URL
+          try {
+            const pngDataUrl = canvas.toDataURL("image/png");
+            resolve(pngDataUrl);
+          } catch (err) {
+            reject(new Error("Failed to convert canvas to PNG"));
+          }
+        };
+        img.src = reader.result;
+      };
+      reader.readAsDataURL(inputFile);
+    });
+  }
+}
+
