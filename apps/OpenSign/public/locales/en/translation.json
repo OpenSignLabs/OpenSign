@@ -1042,5 +1042,6 @@
   "vertical": "Vertical",
   "horizontal": "Horizontal",
   "billing": "Billing",
-  "console": "Console"
+  "console": "Console",
+  "action-prohibited": "This action isn't allowed for your email domain. Please contact your administrator for assistance."
 }

@@ -125,7 +125,11 @@ function Login() {
       }
     } catch (error) {
       console.error("Error while logging in user", error);
-      showToast("danger", "Invalid username/password or region");
+      if (error?.code === 1001) {
+        showToast("danger", t("action-prohibited"));
+      } else {
+        showToast("danger", "Invalid username/password or region");
+      }
     }
   };
   const handleLoginBtn = async (event) => {

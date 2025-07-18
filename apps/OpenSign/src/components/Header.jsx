@@ -19,6 +19,10 @@ const Header = ({ showSidebar, setIsMenu, isConsole }) => {
   const { width } = useWindowSize();
   const username = localStorage.getItem("username") || "";
   const image = localStorage.getItem("profileImg") || dp;
+  const isAdmin =
+    localStorage.getItem("Extand_Class") &&
+    JSON.parse(localStorage.getItem("Extand_Class"))?.[0]?.UserRole ===
+      "contracts_Admin";
   const [isOpen, setIsOpen] = useState(false);
   const [applogo, setAppLogo] = useState("");
   const [isDarkTheme, setIsDarkTheme] = useState();
