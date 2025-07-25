@@ -1042,5 +1042,6 @@
   "vertical": "Vertical",
   "horizontal": "Horizontal",
   "billing": "Facturation",
-  "console": "Console"
+  "console": "Console",
+  "action-prohibited": "Cette action n'est pas autorisée pour votre domaine de messagerie. Veuillez contacter votre administrateur pour obtenir de l'aide."
 }
