@@ -1042,5 +1042,6 @@
   "vertical": "Vertical",
   "horizontal": "Horizontal",
   "billing": "Facturación",
-  "console": "Consola"
+  "console": "Consola",
+  "action-prohibited": "Esta acción no está permitida para su dominio de correo electrónico. Por favor, contacte con su administrador para obtener ayuda."
 }
