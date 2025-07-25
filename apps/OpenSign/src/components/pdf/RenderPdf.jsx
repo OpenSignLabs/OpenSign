@@ -160,8 +160,6 @@ function RenderPdf(props) {
                       ispublicTemplate={props.ispublicTemplate}
                       handleUserDetails={props.handleUserDetails}
                       isResize={props.isResize}
-                      setIsAgreeTour={props.setIsAgreeTour}
-                      isAgree={props.isAgree}
                       handleTabDrag={props.handleTabDrag}
                       handleStop={props.handleStop}
                       setUniqueId={props.setUniqueId}
