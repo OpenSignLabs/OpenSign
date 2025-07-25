@@ -43,9 +43,9 @@ async function saveUser(userDetails) {
 }
 export default async function usersignup(request) {
   const userDetails = request.params.userDetails;
-  const user = await saveUser(userDetails);
 
   try {
+    const user = await saveUser(userDetails);
     const extClass = userDetails.role.split('_')[0];
 
     const extQuery = new Parse.Query(extClass + '_Users');

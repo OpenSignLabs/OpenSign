@@ -180,13 +180,8 @@ function Placeholder(props) {
 
   const widgetClickHandler = () => {
     props.setCurrWidgetsDetails && props.setCurrWidgetsDetails(props.pos);
-    //condition to check in request signing flow user click on agree or not
     if (props?.data?.signerObjId === props?.signerObjId && !props.isDragging) {
-      if (!props.isAgree && !props.isSelfSign) {
-        props.setIsAgreeTour && props.setIsAgreeTour(true);
-      } else {
-        handleWidgetIdandPopup();
-      }
+      handleWidgetIdandPopup();
     } //condition for open contact details popup when sign templet from public signing flow
     else if (props?.uniqueId && props.data?.Id === props?.uniqueId) {
       handleWidgetIdandPopup();

@@ -144,7 +144,6 @@ function PdfRequestFiles(
   const [signatureType, setSignatureType] = useState([]);
   const [pdfBase64Url, setPdfBase64Url] = useState("");
   const [isAgree, setIsAgree] = useState(false);
-  const [isAgreeTour, setIsAgreeTour] = useState(false);
   const [redirectTimeLeft, setRedirectTimeLeft] = useState(5);
   const [isredirectCanceled, setIsredirectCanceled] = useState(true);
   const [isDragging, setIsDragging] = useState(false);
@@ -1378,18 +1377,7 @@ function PdfRequestFiles(
       setIsUiLoading(false);
       alert(t("expiry-date-error"));
     }
-  };
-  const AgreementTour = [
-    {
-      selector: '[data-tut="IsAgree"]',
-      content: () => <p className="p-0">{t("agrrement-alert")}</p>,
-      position: "top",
-      style: { fontSize: "13px" }
-    }
-  ];
-  const handleCloseAgreeTour = () => {
-    setIsAgreeTour(false);
-  };
+  }; 
   // `handleRedirectCancel` is used to cancel redirecting to redirectUrl
   const handleRedirectCancel = () => {
     setIsredirectCanceled(true);
@@ -1599,7 +1587,7 @@ function PdfRequestFiles(
       }
     }
   };
-  //function to get first widget and page number to assign currect signer and tour message
+  //function to get first widget id and page number to assign correct signer and show tour message
   const showFirstWidget = () => {
     if (!requestSignTour) {
       const getCurrentUserPlaceholder = signerPos?.find(
@@ -1644,21 +1632,9 @@ function PdfRequestFiles(
                 !isDecline?.isDeclined && (
                   <AgreementSign
                     setIsAgree={setIsAgree}
-                    setIsAgreeTour={setIsAgreeTour}
                     showFirstWidget={showFirstWidget}
                   />
                 )}
-              <Tour
-                showNumber={false}
-                showNavigation={false}
-                showNavigationNumber={false}
-                onRequestClose={handleCloseAgreeTour}
-                steps={AgreementTour}
-                isOpen={isAgreeTour}
-                rounded={5}
-                closeWithMask={false}
-              />
-
               {isUiLoading && (
                 <div className="absolute h-[100vh] w-full flex flex-col justify-center items-center z-[999] bg-[#e6f2f2] bg-opacity-80">
                   <Loader />
@@ -2011,8 +1987,6 @@ function PdfRequestFiles(
                           scale={scale}
                           uniqueId={uniqueId}
                           pdfBase64Url={pdfBase64Url}
-                          setIsAgreeTour={setIsAgreeTour}
-                          isAgree={isAgree}
                           handleTabDrag={handleTabDrag}
                           handleStop={handleStop}
                           isDragging={isDragging}
@@ -2095,8 +2069,6 @@ function PdfRequestFiles(
                               signatureType?.find((x) => x.name === "default")
                                 ?.enabled || false
                             }
-                            isAgree={isAgree}
-                            setIsAgreeTour={setIsAgreeTour}
                           />
                         )}
                     </div>
