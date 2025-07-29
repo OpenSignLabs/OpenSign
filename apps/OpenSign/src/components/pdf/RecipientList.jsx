@@ -129,9 +129,9 @@ const RecipientList = (props) => {
                 }
               }}
             >
-              <div className="flex flex-row items-center w-full">
+              <div className="flex flex-row items-center w-full overflow-hidden pr-2">
                 <div
-                  className="flex w-[30px] h-[30px] rounded-full items-center justify-center mr-2"
+                  className="flex flex-shrink-0 w-[30px] h-[30px] rounded-full items-center justify-center mr-2"
                   style={{
                     background: obj?.blockColor
                       ? darkenColor(obj?.blockColor, 0.4)
@@ -153,7 +153,7 @@ const RecipientList = (props) => {
                 <div
                   className={`${
                     obj.Name ? "flex-col" : "flex-row"
-                  } flex items-center`}
+                  } flex overflow-hidden flex-grow-0`}
                 >
                   {obj.Name ? (
                     <span
@@ -162,7 +162,7 @@ const RecipientList = (props) => {
                         props.isSelectListId === ind
                           ? "text-[#424242]"
                           : "text-base-content"
-                      } text-[12px] font-bold w-[100px] whitespace-nowrap overflow-hidden text-ellipsis`}
+                      } text-[12px] font-bold truncate whitespace-nowrap`}
                     >
                       {obj.Name}
                     </span>
@@ -173,7 +173,7 @@ const RecipientList = (props) => {
                         props.isSelectListId === ind
                           ? "text-[#424242]"
                           : "text-base-content"
-                      } text-[12px] font-bold w-[100px] whitespace-nowrap overflow-hidden text-ellipsis cursor-pointer`}
+                      } text-[12px] font-bold truncate whitespace-nowrap cursor-pointer`}
                       onClick={() => {
                         setIsEdit({ [obj.Id]: true });
                         props.setRoleName(obj.Role);
@@ -182,7 +182,7 @@ const RecipientList = (props) => {
                       {isEdit?.[obj.Id] && props.handleRoleChange ? (
                         <input
                           ref={inputRef}
-                          className="bg-transparent p-[3px]"
+                          className="bg-transparent p-[3px] w-full"
                           value={obj.Role}
                           onChange={(e) => props.handleRoleChange(e, obj.Id)}
                           onBlur={() => {
@@ -210,7 +210,7 @@ const RecipientList = (props) => {
                         props.isSelectListId === ind
                           ? "text-[#424242]"
                           : "text-base-content"
-                      } text-[10px] font-medium w-[100px] whitespace-nowrap overflow-hidden text-ellipsis`}
+                      } text-[10px] font-medium truncate whitespace-nowrap`}
                     >
                       {obj?.Role || obj?.Email}
                     </span>
