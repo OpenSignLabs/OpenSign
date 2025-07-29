@@ -994,6 +994,7 @@ const ReportTable = (props) => {
     const timezone = extClass?.[0]?.Timezone || "";
     const DateFormat = extClass?.[0]?.DateFormat || "MM/DD/YYYY";
     const Is12Hr = extClass?.[0]?.Is12HourTime || false;
+    const isCompletedReport = props?.ReportName === "Completed Documents";
     const signers = item?.Placeholders?.map((x, i) => {
       const audit = item?.AuditTrail?.find(
         (audit) => audit?.UserPtr?.objectId === x.signerObjId
@@ -1021,20 +1022,22 @@ const ReportTable = (props) => {
             key={i}
             className="text-sm font-medium flex flex-row gap-2 items-center"
           >
-            <button
-              onClick={() => setIsModal({ [`${item.objectId}_${i}`]: true })}
-              className={`${
-                x.Activity === "SIGNED"
-                  ? "op-border-primary op-text-primary"
-                  : x.Activity === "VIEWED"
-                    ? "border-green-400 text-green-400"
-                    : "border-base-content text-base-content"
-              } focus:outline-none border-2 w-[60px] h-[30px] text-[11px] rounded-full`}
-            >
-              {x?.Activity?.toUpperCase() || "-"}
-            </button>
+            {!isCompletedReport && (
+              <button
+                onClick={() => setIsModal({ [`${item.objectId}_${i}`]: true })}
+                className={`${
+                  x.Activity === "SIGNED"
+                    ? "op-border-primary op-text-primary"
+                    : x.Activity === "VIEWED"
+                      ? "border-green-400 text-green-400"
+                      : "border-base-content text-base-content"
+                } focus:outline-none border-2 w-[60px] h-[30px] text-[11px] rounded-full`}
+              >
+                {x?.Activity?.toUpperCase() || "-"}
+              </button>
+            )}
             <div className="py-2 font-bold text-[12px]">{x?.Email || "-"}</div>
-            {isModal[`${item.objectId}_${i}`] && (
+            {!isCompletedReport && isModal[`${item.objectId}_${i}`] && (
               <ModalUi
                 isOpen
                 title={t("document-logs")}
@@ -1657,21 +1660,22 @@ const ReportTable = (props) => {
                   <React.Fragment key={index}>
                     <th className="p-2">
                       {t(`report-heading.${item}`)}
-                      {props.ReportName === "Contactbook" && item === "Name" && (
-                        <button
-                          type="button"
-                          onClick={toggleSortOrder}
-                          className="ml-1"
-                        >
-                          <i
-                            className={
-                              sortOrder === "asc"
-                                ? "fa-light fa-arrow-down-a-z"
-                                : "fa-light fa-arrow-up-a-z"
-                            }
-                          ></i>
-                        </button>
-                      )}
+                      {props.ReportName === "Contactbook" &&
+                        item === "Name" && (
+                          <button
+                            type="button"
+                            onClick={toggleSortOrder}
+                            className="ml-1"
+                          >
+                            <i
+                              className={
+                                sortOrder === "asc"
+                                  ? "fa-light fa-arrow-down-a-z"
+                                  : "fa-light fa-arrow-up-a-z"
+                              }
+                            ></i>
+                          </button>
+                        )}
                     </th>
                   </React.Fragment>
                 ))}
@@ -1807,12 +1811,16 @@ const ReportTable = (props) => {
                           </td>
                         )}
                         {props.heading.includes("Signers") &&
-                        ["In-progress documents", "Need your sign"].includes(
-                          props.ReportName
-                        ) ? (
+                        [
+                          "In-progress documents",
+                          "Need your sign",
+                          "Completed Documents"
+                        ].includes(props.ReportName) ? (
                           <td className="px-1 py-2">
-                            {!item?.IsSignyourself && item?.Placeholders && (
+                            {!item?.IsSignyourself && item?.Placeholders ? (
                               <>{formatStatusRow(item)}</>
+                            ) : (
+                              <>-</>
                             )}
                           </td>
                         ) : (
