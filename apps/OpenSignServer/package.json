@@ -66,7 +66,8 @@
   },
   "overrides": {
     "ws": "$ws",
-    "parse": "$parse"
+    "parse": "$parse",
+    "form-data": "$form-data"
   },
   "engines": {
     "node": "18 || 20 || 22"
