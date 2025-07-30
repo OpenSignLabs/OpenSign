@@ -100,9 +100,57 @@ If set to "Yes," the signer will see the tour guide while signing the document. 
     - Copy : Clicking on this you can duplicate the Text widget.
   
  - **Text Input**: After placing the Text Input widget, you will see the options on the widget such as:
-    - Setting icon: By clicking on the option, you can set the color and font.
-    - Add Signer/Change Signer: Clicking the first icon on the Text Input widget allows you to change the signer. You can choose from existing signers in the dropdown or add a new signer.
-    - Copy : Clicking on this you can duplicate the Text Input widget.
+    - Setting icon: The widget settings panel provides additional customization options, including:
+       - Manually entering the **number of cells**
+       - Choosing a **font color**
+       - Setting the **font size**
+       - Marking the field as **required** or **optional**
+       - Providing a **default value**
+       - Making the field **read-only**
+       - Adding a **hint**, which will be displayed on the widget for better clarity
+       - **Custom Validations** are also supported, including:
+       - Predefined formats like **SSN**, **email**, or **numeric values**
+          - Custom JavaScript validations using regular expressions
+            For example:
+             - `^\d+$` – allows only digits  
+             - `^[A-Z]+$` – allows only uppercase letters  
+
+  You can enter your regex pattern in the **Validations** field of the widget.  
+  *(Optional reference: [JavaScript RegExp guide](https://www.w3schools.com/jsref/jsref_obj_regexp.asp))*
+  
+  <img width="800" alt="Cells widget" src="https://github.com/user-attachments/assets/ce0c335b-b2bf-4d30-968c-c4c957f46014" />
+  
+  - Add Signer/Change Signer: Clicking the first icon on the Text Input widget allows you to change the signer. You can choose from existing signers in the dropdown or add a new signer.
+  -  Copy : Clicking on this you can duplicate the Text Input widget.
+    
+  - **Cells**  
+  The **Cells widget** is ideal for forms with table-like columns. After dragging and dropping the widget onto the document, you can adjust the number of cells by moving the **blue marker**.
+
+<img width="800" alt="Cells widget" src="https://github.com/user-attachments/assets/20184017-2fa9-4acb-985f-fde18ee53246" />
+
+   - Setting icon: The widget settings panel provides additional customization options, including:
+        - Manually entering the **number of cells**
+        - Choosing a **font color**
+        - Setting the **font size**
+        - Marking the field as **required** or **optional**
+        - Providing a **default value**
+        - Making the field **read-only**
+        - Adding a **hint**, which will be displayed on the widget for better clarity
+        - **Custom Validations** are also supported, including:
+        -  Predefined formats like **SSN**, **email**, or **numeric values**
+        -  Custom JavaScript validations using regular expressions
+            - For example:
+            - `^\d+$` – allows only digits
+            - `^[A-Z]+$` – allows only uppercase letters  
+
+  You can enter your regex pattern in the **Validations** field of the widget.  
+  *(Optional reference: [JavaScript RegExp guide](https://www.w3schools.com/jsref/jsref_obj_regexp.asp))*
+
+<img width="800" alt="request signatures" src="https://github.com/user-attachments/assets/100579af-a12f-4c90-8cad-1db697db1f1c" />
+
+ - Add Signer/Change Signer: Clicking the first icon on the Cells widget allows you to change the signer. You can choose from existing signers in the dropdown or add a new signer.
+  - Copy : Clicking on this you can duplicate the cells widget.
+    
  - **Checkbox**: Once you drop the checkbox widget, a popup will open where you can set the checkbox name and options. Additionally, there are a few options available such as setting the minimum and maximum checks, making the checkbox read-only, and hiding the label.
      - Add Signer/Change Signer: Clicking the first icon on the CheckBox widget allows you to change the signer. You can choose from existing signers in the dropdown or add a new signer.
      - Copy : Clicking on this you can duplicate the image widget.
@@ -121,6 +169,24 @@ If set to "Yes," the signer will see the tour guide while signing the document. 
     - Add Signer/Change Signer: Clicking the first icon on the Email widget allows you to change the signer. You can choose from existing signers in the dropdown or add a new signer.
     - Copy : Clicking on this you can duplicate the email widget.
       
+ ### 📄 Document Page Controls
+- **Add Pages**  
+  In the left-side panel, users will see an **"Add" button**. Clicking it allows users to select and merge new documents into the current one.
+
+- **Delete Page**  
+  An option is available to **delete** any unwanted page from the document.
+
+- **Reorder Pages**  
+  Users can reorder pages by clicking the **"Reorder" button**, which opens a popup displaying all pages. Use the **Up** and **Down** arrows to change the order. Click **Save** to apply the new page order.
+
+- **Zoom In / Zoom Out**  
+  Controls are available to **zoom in** or **zoom out** of the document view.
+
+- **Rotate Page**  
+  Options are provided to **rotate pages** in both **clockwise** and **counterclockwise** directions.
+
+<img width="918" alt="page controls" src="https://github.com/user-attachments/assets/71e9873b-d8e1-4a01-b0a4-88f9a62b2be4" />
+
 ### Save Template 
 **Next button**: Once you’ve organized your widgets and set their properties, simply click the “Next” button to save your template.
 
