@@ -36,12 +36,36 @@ Select the option that best suits the needs of your document processing.
 ### Auto reminder (feature only available for the subscribed user)
 - **[7]** Once you enable the auto reminder, a text field will appear allowing you to set the reminder for a specific number of days.
 - **Remind once in every (Days)**: Here, you can set the number of days for the reminder.
+- 
+  Note: You can set a maximum of 15 reminders. For example, if the document completion time is 16 days and you try to schedule a reminder every day, the system will not allow it, as the reminder limit would be exceeded.
+  
+### **[8]** Time to complete (days)
+You can specify the number of days within which the document must be signed. For example, if you set the expiration period to 15 days, the created document will remain available for signing for 15 days from the date of creation. After this period, the document will expire, and the signer will no longer be able to sign it.
+
+### **[9]** BCC
+The BCC (Blind Carbon Copy) feature allows users to receive document completion emails at specified email addresses.
+You can add multiple contacts in the BCC field to notify several recipients. 
+You can either:
+Click "Add New" to enter a new email contact, or
+Select from existing contacts using the dropdown list.
+
 ### Security Setting
-- **[8] Enable OTP Verification** : 
+- **[10] Enable OTP Verification** : 
 If set to "Yes," the signer will be required to complete email OTP verification before viewing and signing the document. If "Enable OTP Verification" is set to "No," the signer will not be prompted for OTP verification during the signing process.
 
-- **[9] Enable tour**: 
+- **[11] Enable tour**: 
 If set to "Yes," the signer will see the tour guide while signing the document. If your signer is familiar with OpenSign and you prefer not to display the tour guide, you can select "No," and the tour guide will not be shown to your signers.
+- **[12] Notify on signatures**: 
+If set to "Yes," the document owner will receive an email notification each signer completes their signature.
+- **[13] allow modifications**: 
+If set to Yes, the signer will be allowed to make modifications to the document during the signing process. However, they cannot edit or remove any fields that were already placed by the document owner. They can only add basic fields such as signature, stamp, text, cells, and image.
+
+If both Allow Modification and Enable OTP are set to Yes, the signer will still not be able to edit or delete existing fields, but will gain access to additional advanced fields to add during signing. These include: signature, stamp, name, job title, company, text, cells, and image.
+
+Note: This feature is available exclusively on paid plans.
+
+- **[14] Redirect url**: 
+After signing the document and upon its completion, the signer will be redirected to the specified URL.
 
 ### Proceed to Template Creation Panel
 - **Next**: Click the "Next" button to proceed to the next stage of template creation, where you can add widgets and finalize the template.
@@ -168,7 +192,33 @@ If set to "Yes," the signer will see the tour guide while signing the document. 
     - Setting icon: By clicking on the option, you can set the color and font.
     - Add Signer/Change Signer: Clicking the first icon on the Email widget allows you to change the signer. You can choose from existing signers in the dropdown or add a new signer.
     - Copy : Clicking on this you can duplicate the email widget.
-      
+ ### 📄 Edit Template
+At the top of the Create Template panel, you’ll find a settings (gear) icon. Clicking this icon opens the Edit Template Details panel, where you can modify various details of your template.
+
+<img width="800" alt="edit template details" src="https://github.com/user-attachments/assets/161d41fd-bf07-485e-ab7b-5b33e0c500bf" />
+
+- **🔁 File Replacement** : Users can replace the existing document by simply uploading a new file. However, certain conditions must be met:
+  - The new document must have the same number of pages.
+  - The page dimensions (width and height) must be identical to the original.
+
+These conditions are enforced to ensure that, during template editing, the pre-placed widgets remain correctly aligned. If the new document's dimensions don’t match, widgets may shift or be positioned outside the visible area of the document.
+
+<img width="800" alt="Edit template details" src="https://github.com/user-attachments/assets/f03b76d3-6480-4d4b-b310-9f3f4a3acf4c" />
+
+You can also update the following template details: 
+- **Template Title** 
+- **Description** 
+- **Note** 
+- **Send in Order**
+- **Auto reminder** 
+- **Enable OTP Verification** : 
+- **Enable tour**:
+- **Notify on signatures**:
+- **BCC**:
+- **Redirect Url**
+- **Time to complete (Days)**
+Clik on the submit button to save the edits.
+
  ### 📄 Document Page Controls
 - **Add Pages**  
   In the left-side panel, users will see an **"Add" button**. Clicking it allows users to select and merge new documents into the current one.
