@@ -124,7 +124,7 @@ If set to "Yes," the signer will see the tour guide while signing the document. 
   -  Copy : Clicking on this you can duplicate the Text Input widget.
     
   - **Cells**  
-  The **Cells widget** is ideal for forms with table-like columns. After dragging and dropping the widget onto the document, you can adjust the number of cells by moving the **blue marker**.
+  The **Cells widget** is ideal for documents that require input in a structured, table-like format, allowing the signer to fill in details within individual cells. After dragging and dropping the widget onto the document, you can adjust the number of cells by moving the **blue marker**.
 
 <img width="800" alt="Cells widget" src="https://github.com/user-attachments/assets/20184017-2fa9-4acb-985f-fde18ee53246" />
 
