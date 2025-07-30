@@ -1020,7 +1020,9 @@ const ReportTable = (props) => {
         {displaySigners?.map((x, i) => (
           <div
             key={i}
-            className="text-sm font-medium flex flex-row gap-2 items-center"
+            className={`text-sm flex flex-row gap-2 items-center ${
+              i !== displaySigners.length - 1 ? "mb-2" : ""
+            }`}
           >
             {!isCompletedReport && (
               <button
@@ -1036,7 +1038,7 @@ const ReportTable = (props) => {
                 {x?.Activity?.toUpperCase() || "-"}
               </button>
             )}
-            <div className="py-2 font-bold text-[12px]">{x?.Email || "-"}</div>
+            <div className="text-[12px]">{x?.Email || "-"}</div>
             {!isCompletedReport && isModal[`${item.objectId}_${i}`] && (
               <ModalUi
                 isOpen
@@ -1060,7 +1062,7 @@ const ReportTable = (props) => {
                 [item.objectId]: !isShowAllSigners[item.objectId]
               })
             }
-            className="ml-2 text-xs font-medium text-blue-500 underline focus:outline-none"
+             className="ml-2 mt-1 text-xs font-medium text-blue-500 underline focus:outline-none"
           >
             {isShowAllSigners[item.objectId] ? "Hide" : "Show More"}
           </button>

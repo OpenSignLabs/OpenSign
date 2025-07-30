@@ -472,7 +472,7 @@
   "placeholder-alert-3": " ¿En definitiva quieres enviar este documento para ser firmado?",
   "placeholder-alert-4": "¡Has enviado exitosamente correos a todos los destinatarios!",
   "placeholder-mail-alert": "Has enviado un correo electrónico con éxito a {{name}}. Los siguientes firmantes recibirán un correo electrónico una vez que {{name}} firme el documento.",
-  "placeholder-mail-alert-you": "Los firmantes posteriores recibirán correos electrónicos una vez que firme el documento.",
+  "placeholder-mail-alert-you": "Los firmantes siguientes recibirán un correo electrónico una vez que usted firme el documento.",
   "placeholder-alert-5": "¿Quieres firmar documentos ahora mismo?",
   "placeholder-alert-6": "¡Por favor, configura el adaptador de correo para enviar correos!",
   "placeholder-alert-7": "¡Por favor, selecciona un firmante para agregar un marcador de posición!",
@@ -1043,5 +1043,6 @@
   "horizontal": "Horizontal",
   "billing": "Facturación",
   "console": "Consola",
-  "action-prohibited": "Esta acción no está permitida para su dominio de correo electrónico. Por favor, contacte con su administrador para obtener ayuda."
+  "action-prohibited": "Esta acción no está permitida para su dominio de correo electrónico. Por favor, contacte con su administrador para obtener ayuda.",
+  "browse-or-drag-to-replace-existing-file": "Busque o arrastre y suelte un nuevo archivo para reemplazar el existente"
 }
