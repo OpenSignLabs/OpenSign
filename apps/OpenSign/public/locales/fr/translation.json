@@ -472,7 +472,7 @@
   "placeholder-alert-3": "Etes-vous sûr de vouloir envoyer ce document pour signature ? ",
   "placeholder-alert-4": "Vous avez envoyé avec succès des mails à tous les",
   "placeholder-mail-alert": "Vous avez envoyé un e-mail avec succès à {{name}}. Les signataires suivants recevront un e-mail une fois que {{name}} aura signé le document.",
-  "placeholder-mail-alert-you": "Les signataires suivants recevront un e-mail dès que vous signez le document.",
+  "placeholder-mail-alert-you": "Les signataires suivants recevront un e-mail une fois que vous aurez signé le document.",
   "placeholder-alert-5": "Voulez-vous signer des documents maintenant ?",
   "placeholder-alert-6": "Veuillez configurer l'adaptateur de messagerie pour envoyer du courrier !",
   "placeholder-alert-7": "Veuillez sélectionner le signataire pour ajouter un espace réservé !",
@@ -1043,5 +1043,6 @@
   "horizontal": "Horizontal",
   "billing": "Facturation",
   "console": "Console",
-  "action-prohibited": "Cette action n'est pas autorisée pour votre domaine de messagerie. Veuillez contacter votre administrateur pour obtenir de l'aide."
+  "action-prohibited": "Cette action n'est pas autorisée pour votre domaine de messagerie. Veuillez contacter votre administrateur pour obtenir de l'aide.",
+  "browse-or-drag-to-replace-existing-file": "Parcourez ou faites glisser un nouveau fichier pour remplacer l'existant"
 }

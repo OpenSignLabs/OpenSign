@@ -344,7 +344,7 @@ const Preferences = () => {
           localStorage.setItem("Extand_Class", JSON.stringify([_extUser]));
         }
       } catch (err) {
-        console.log("Err in reseting request mail", err);
+        console.log("Err in resetting request mail", err);
       }
     } else if (completion && !isDefaultMail?.completionMail) {
       setCompletionSubject(defaultCompHtml?.subject);
@@ -361,7 +361,7 @@ const Preferences = () => {
           localStorage.setItem("Extand_Class", JSON.stringify([_extUser]));
         }
       } catch (err) {
-        console.log("Err in reseting completion mail", err);
+        console.log("Err in resetting completion mail", err);
       }
     }
   };

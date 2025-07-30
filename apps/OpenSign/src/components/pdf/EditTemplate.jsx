@@ -286,7 +286,7 @@ const EditTemplate = ({
                   htmlFor="fileUpload"
                   className="cursor-pointer text-center mb-0"
                 >
-                  Browse or drag & drop a new file to replace the existng one
+                  {t("browse-or-drag-to-replace-existing-file")}
                 </label>
               </div>
               <input

@@ -472,7 +472,7 @@
   "placeholder-alert-3": "Sei sicuro di voler inviare questo documento per le firme?",
   "placeholder-alert-4": "Hai inviato con successo le mail a tutti i destinatari!",
   "placeholder-mail-alert": "Hai inviato con successo un'e-mail a {{name}}. I firmatari successivi riceveranno un'e-mail una volta che {{name}} avrà firmato il documento.",
-  "placeholder-mail-alert-you": "I firmatari successivi riceveranno un'email non appena firmi il documento.",
+  "placeholder-mail-alert-you": "I firmatari successivi riceveranno un'email dopo che avrai firmato il documento.",
   "placeholder-alert-5": "Vuoi firmare i documenti ora?",
   "placeholder-alert-6": "Configura l'adattatore email per inviare mail!",
   "placeholder-alert-7": "Seleziona il firmatario per aggiungere un segnaposto!",
@@ -1043,5 +1043,6 @@
   "horizontal": "Orizzontale",
   "billing": "Fatturazione",
   "console": "Console",
-  "action-prohibited": "Questa azione non è consentita per il tuo dominio email. Contatta il tuo amministratore per ricevere assistenza."
+  "action-prohibited": "Questa azione non è consentita per il tuo dominio email. Contatta il tuo amministratore per ricevere assistenza.",
+  "browse-or-drag-to-replace-existing-file": "Sfoglia o trascina un nuovo file per sostituire quello esistente"
 }
