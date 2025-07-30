@@ -472,7 +472,7 @@
   "placeholder-alert-3": " Are you sure you want to send out this document for signatures?",
   "placeholder-alert-4": "You have successfully sent mails to all recipients!",
   "placeholder-mail-alert": "You have successfully sent email to {{name}}. Subsequent signers will get email(s) once {{name}} signs the document",
-  "placeholder-mail-alert-you": "Subsequent signers will get email(s) once you signs the document.",
+  "placeholder-mail-alert-you": "Subsequent signers will get email(s) once you sign the document.",
   "placeholder-alert-5": "Do you want to sign the document right now?",
   "placeholder-alert-6": "Please setup mail adapter to send mail!",
   "placeholder-alert-7": "Please select signer for add placeholder!",
@@ -1043,5 +1043,6 @@
   "horizontal": "Horizontal",
   "billing": "Billing",
   "console": "Console",
-  "action-prohibited": "This action isn't allowed for your email domain. Please contact your administrator for assistance."
+  "action-prohibited": "This action isn't allowed for your email domain. Please contact your administrator for assistance.",
+  "browse-or-drag-to-replace-existing-file": "Browse or drag & drop a new file to replace the existing one"
 }
