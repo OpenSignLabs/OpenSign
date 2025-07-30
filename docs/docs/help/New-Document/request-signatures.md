@@ -100,33 +100,50 @@ Use the option on the right side to add recipients if you need to include additi
     - Copy : Clicking on this you can duplicate the Text widget.
   
  - **Text Input**: After placing the Text Input widget, you will see the options on the widget such as:
-    - Setting icon: By clicking on the option, you can set the color and font.
-    - Add Signer/Change Signer: Clicking the first icon on the Text Input widget allows you to change the signer. You can choose from existing signers in the dropdown or add a new signer.
-    - Copy : Clicking on this you can duplicate the Text Input widget.
+    - Setting : The widget settings panel provides additional customization options, including:
+      - Manually entering the **number of cells**
+      - Choosing a **font color**
+      - Setting the **font size**
+      - Marking the field as **required** or **optional**
+      - Providing a **default value**
+      - Making the field **read-only**
+      - Adding a **hint**, which will be displayed on the widget for better clarity
+      - **Custom Validations** are also supported, including:
+       - Predefined formats like **SSN**, **email**, or **numeric values**
+       - Custom JavaScript validations using regular expressions
+         - For example:
+          - `^\d+$` – allows only digits
+          - `^[A-Z]+$` – allows only uppercase letters  
+
+  You can enter your regex pattern in the **Validations** field of the widget.  
+  *(Optional reference: [JavaScript RegExp guide](https://www.w3schools.com/jsref/jsref_obj_regexp.asp))*
+  
+   - Add Signer/Change Signer: Clicking the first icon on the Text Input widget allows you to change the signer. You can choose from existing signers in the dropdown or add a new signer.
+
+   - Copy : Clicking on this you can duplicate the Text Input widget.
 
 - **Cells**  
-  The **Cells widget** is ideal for forms with table-like columns. After dragging and dropping the widget onto the document, you can adjust the number of cells by moving the **blue marker**.
+  The **Cells widget** is ideal for documents that require input in a structured, table-like format, allowing the signer to fill in details within individual cells. After dragging and dropping the widget onto the document, you can adjust the number of cells by moving the **blue marker**.
   
 <img width="800" alt="Cells widget" src="https://github.com/user-attachments/assets/2a301776-5275-4daf-b361-fd48af2878fc" />
 
   The widget settings panel provides additional customization options, including:
-
-  - Manually entering the **number of cells**
-  - Choosing a **font color**
-  - Setting the **font size**
-  - Marking the field as **required** or **optional**
-  - Providing a **default value**
-  - Making the field **read-only**
-  - Adding a **hint**, which will be displayed on the widget for better clarity
+   - Manually entering the **number of cells**
+   - Choosing a **font color**
+   - Setting the **font size**
+   - Marking the field as **required** or **optional**
+   - Providing a **default value**
+   - Making the field **read-only**
+   - Adding a **hint**, which will be displayed on the widget for better clarity
 
   **Custom Validations** are also supported, including:
 
-  - Predefined formats like **SSN**, **email**, or **numeric values**
-  - Custom JavaScript validations using regular expressions
+   - Predefined formats like **SSN**, **email**, or **numeric values**
+   - Custom JavaScript validations using regular expressions
 
   For example:
-  - `^\d+$` – allows only digits  
-  - `^[A-Z]+$` – allows only uppercase letters  
+   - `^\d+$` – allows only digits  
+   - `^[A-Z]+$` – allows only uppercase letters  
 
   You can enter your regex pattern in the **Validations** field of the widget.  
   *(Optional reference: [JavaScript RegExp guide](https://www.w3schools.com/jsref/jsref_obj_regexp.asp))*
