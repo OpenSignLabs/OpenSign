@@ -2,7 +2,7 @@
 
 The OpenSign™ Drive interface allows users to rename their documents efficiently.
 
-![rename](https://github.com/OpenSignLabs/OpenSign/assets/5486116/ea3df671-07a8-423d-916b-eb22aa4a1f50)
+<img width="918" alt="Rename folder" src="https://github.com/user-attachments/assets/0dfddc33-1724-4712-9335-f141247ffda4" />
 
 ## Overview of User Interface
 
