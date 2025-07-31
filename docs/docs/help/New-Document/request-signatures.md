@@ -64,44 +64,43 @@ Use the option on the right side to add recipients if you need to include additi
     -  All pages but first: It will copy the signature widget to all pages except the first page.
  
 - **[2] Add other widgets**: Depending on your needs, you can include additional widgets such as:
- - **Stamp**: After placing the Stamp widget, you will see the options on the widget such as:
+ - **Stamp**: The stamp widget allows signers to add a stamp to the document. Signers can upload their stamp during the signing process. After placing the Stamp widget, you will see the options on the widget such as:
       - Setting icon: By clicking on the option, you can specify whether this widget is mandatory or optional during the document signing.
       - Add Signer/Change Signer: Clicking the second option on the stamp widget allows you to change the signer. You can choose from existing signers in the dropdown or add a new signer.
       - Copy Stamp: Clicking on this option reveals the following choices.
         -  All pages : It will copy the stamp widget to all pages.
         -  All pages but last: It will copy the stamp widget to all pages except the last page.
         -  All pages but first: It will copy the stamp widget to all pages except the first page.
- - **Initials**: After placing the Initials widget, you will see the options on the widget such as:
+ - **Initials**: The initials widget allows signers to add their initials to the document. During the signing process, signers can draw, upload, or type their initials. After placing the Initials widget, you will see the options on the widget such as:
     - Setting icon: By clicking on the option, you can specify whether this widget is mandatory or optional during the document signing.
     - Add Signer/Change Signer: Clicking the first icon on the Initials widget allows you to change the signer. You can choose from existing signers in the dropdown or add a new signer.
     - Copy Initials: Clicking on this option reveals the following choices.
       -  All pages : It will copy the stamp widget to all pages.
       -  All pages but last: It will copy the stamp widget to all pages except the last page.
       -  All pages but first: It will copy the stamp widget to all pages except the first page.
- - **Name**: After placing the name widget, you will see the options on the widget such as:
+ - **Name**: The name widget allows signers to add their name or any other text, functioning like a text field during the signing process. After placing the name widget, you will see the options on the widget such as:
     - Setting icon: By clicking on the option, you can set the color and font.
     - Add Signer/Change Signer: Clicking the first icon on the Name widget allows you to change the signer. You can choose from existing signers in the dropdown or add a new signer.
     - Copy : Clicking on this you can duplicate the name widget.
- - **Job title**: After placing the job title widget, you will see the options on the widget such as:
+ - **Job title**: The Job title widget allows signers to add their Job title or any other text, functioning like a text field during the signing process. After placing the job title widget, you will see the options on the widget such as:
     - Setting icon: By clicking on the option, you can set the color and font.
     - Add Signer/Change Signer: Clicking the first icon on the Job title widget allows you to change the signer. You can choose from existing signers in the dropdown or add a new signer.
     - Copy : Clicking on this you can duplicate the job title widget.
   
- - **Company**: After placing the company widget, you will see the options on the widget such as:
+ - **Company**: The company widget allows signers to add their company or any other text, functioning like a text field during the signing process. After placing the company widget, you will see the options on the widget such as:
      - Setting icon: By clicking on the option, you can set the color and font.
      - Add Signer/Change Signer: Clicking the first icon on the Company widget allows you to change the signer. You can choose from existing signers in the dropdown or add a new signer.
      - Copy : Clicking on this you can duplicate the Company widget.
- - **Date**: After placing the date widget, you will see the options on the widget such as:
+ - **Date**: The date widget allows signers to add a date during the signing process. After placing the date widget, you will see the options on the widget such as:
      - Setting icon: By clicking on the option, you can choose from various date formats.
      - Add Signer/Change Signer: Clicking the first icon on the Date widget allows you to change the signer. You can choose from existing signers in the dropdown or add a new signer.
      - Copy : Clicking on this you can duplicate the date widget. 
- - **Text**: After placing the Text widget, you will see the options on the widget such as:
+ - **Text**: The text field functions as a label. Users can add and type text into this field, which will be embedded in the document when it's sent. This field is not editable by the signer. After placing the Text widget, you will see the options on the widget such as:
     - Setting icon: By clicking on the option, you can set the color and font.
     - Copy : Clicking on this you can duplicate the Text widget.
   
- - **Text Input**: After placing the Text Input widget, you will see the options on the widget such as:
+ - **Text Input**: The text input field is used to collect input from the signer. Signers can type their responses directly into this field. After placing the Text Input widget, you will see the options on the widget such as:
     - Setting : The widget settings panel provides additional customization options, including:
-      - Manually entering the **number of cells**
       - Choosing a **font color**
       - Setting the **font size**
       - Marking the field as **required** or **optional**
@@ -150,20 +149,20 @@ Use the option on the right side to add recipients if you need to include additi
 
 <img width="800" alt="request signatures" src="https://github.com/user-attachments/assets/dee17fe8-243b-4113-896a-00424d12ea8a" />
 
- - **Checkbox**: Once you drop the checkbox widget, a popup will open where you can set the checkbox name and options. Additionally, there are a few options available such as setting the minimum and maximum checks, making the checkbox read-only, and hiding the label.
+ - **Checkbox**: The checkbox widget is used to capture input in the form of a checkbox selection. Once you drop the checkbox widget, a popup will open where you can set the checkbox name and options. Additionally, there are a few options available such as setting the minimum and maximum checks, making the checkbox read-only, and hiding the label.
      - Add Signer/Change Signer: Clicking the first icon on the CheckBox widget allows you to change the signer. You can choose from existing signers in the dropdown or add a new signer.
-     - Copy : Clicking on this you can duplicate the image widget.
+     - Copy : Clicking on this you can duplicate the Checkbox widget.
 - **Dropdown**: Once you drop the dropdown widget, a popup will open where you can set the dropdown name and options. Additionally, there are a few options available such as setting a default value and marking the dropdown as required or optional.
      - Add Signer/Change Signer: Clicking the first icon on the Dropdown widget allows you to change the signer. You can choose from existing signers in the dropdown or add a new signer.
-     - Copy : Clicking on this you can duplicate the image widget.
- - **Radio button**: Once you drop the radio button widget, a popup will open where you can set the radio button name and options. Additionally, there are a few options available such as setting a default value, making the radio button read-only, and hiding the label.
+     - Copy : Clicking on this you can duplicate the dropdown widget.
+ - **Radio button**: The radio button widget is used to capture input in the form of a radio button selection. Once you drop the radio button widget, a popup will open where you can set the radio button name and options. Additionally, there are a few options available such as setting a default value, making the radio button read-only, and hiding the label.
      - Add Signer/Change Signer: Clicking the first icon on the Radio button widget allows you to change the signer. You can choose from existing signers in the dropdown or add a new signer.
-     - Copy : Clicking on this you can duplicate the image widget.
- - **Image**: After placing the Image widget, you will see the options on the widget such as:
+     - Copy : Clicking on this you can duplicate the radio button widget.
+ - **Image**: The image widget allows signers to upload an image during the signing process. After placing the Image widget, you will see the options on the widget such as:
     - Setting icon: By clicking on the option, you can specify whether this widget is mandatory or optional during the document signing.
     - Add Signer/Change Signer: Clicking the first icon on the Image widget allows you to change the signer. You can choose from existing signers in the dropdown or add a new signer.
     - Copy : Clicking on this you can duplicate the image widget.
- - **Email**: After placing the email widget, you will see the options on the widget such as:
+ - **Email**: The email widget is used to enter an email address during the signing process. It only accepts input in a valid email format. If the signer enters invalid text, a validation error will occur, and the document cannot be completed until it's corrected. After placing the email widget, you will see the options on the widget such as:
     - Setting icon: By clicking on the option, you can set the color and font.
     - Add Signer/Change Signer: Clicking the first icon on the Email widget allows you to change the signer. You can choose from existing signers in the dropdown or add a new signer.
     - Copy : Clicking on this you can duplicate the email widget.
