@@ -87,6 +87,7 @@ Note: This feature is available exclusively on paid plans.
   - **Add Roles**: In the roles section on the right, click "+ Add role" to specify the roles involved in the document, such as Candidate, HR, and Manager.
 - **[2] Assign Widgets to Roles**: Click on each role to highlight it, then drag and drop the widget to assign it to that role.
   - **[1] Assign signature widget**: The signature widget is used to add a signature to the document. Each role must have at least one signature widget assigned.
+    
 Select the Role from the right side panel, click on the signature widget, and position it where the signature is required. You can place multiple signature widgets for each Role, as required.
 
   After placing the Signature widget, you will see the options on the widget such as:
@@ -105,14 +106,13 @@ After placing the Stamp widget, you will see the options on the widget such as:
           -  All pages : It will copy the stamp widget to all pages.
           -  All pages but last: It will copy the stamp widget to all pages except the last page.
           -  All pages but first: It will copy the stamp widget to all pages except the first page.
-   - **Initials**: The initials widget allows signers to add their initials to the document. During the signing process, signers can draw, upload, or type their initials.
-   - After placing the Initials widget, you will see the options on the widget such as:
-    - Setting icon: By clicking on the option, you can specify whether this widget is mandatory or optional during the document signing.
-    - Add Signer/Change Signer: Clicking the first icon on the Initials widget allows you to change the signer. You can choose from existing signers in the dropdown or add a new signer.
-    - Copy Initials: Clicking on this option reveals the following choices.
-      -  All pages : It will copy the initials widget to all pages.
-      -  All pages but last: It will copy the initials widget to all pages except the last page.
-      -  All pages but first: It will copy the initials widget to all pages except the first page.
+   - **Initials**: The initials widget allows signers to add their initials to the document. During the signing process, signers can draw, upload, or type their initials. After placing the Initials widget, you will see the options on the widget such as:
+        - Setting icon: By clicking on the option, you can specify whether this widget is mandatory or optional during the document signing.
+        - Add Signer/Change Signer: Clicking the first icon on the Initials widget allows you to change the signer. You can choose from existing signers in the dropdown or add a new signer.
+        - Copy Initials: Clicking on this option reveals the following choices.
+          -  All pages : It will copy the initials widget to all pages.
+          -  All pages but last: It will copy the initials widget to all pages except the last page.
+          -  All pages but first: It will copy the initials widget to all pages except the first page.
  - **Name**: The name widget allows signers to add their name or any other text, functioning like a text field during the signing process.
 After placing the name widget, you will see the options on the widget such as:
     - Setting icon: By clicking on the option, you can set the color and font.
