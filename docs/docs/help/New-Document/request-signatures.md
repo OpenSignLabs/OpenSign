@@ -14,42 +14,76 @@ The OpenSign™ Request signatures interface is designed to streamline the proce
 ### Step 1: Begin New Document Creation
 
 - **Navigate to Request Signatures form**: Start by navigating to 'Request Signatures' from the main menu to initiate the creation of a document for signatures.
+
+<img width="800" alt="request signatures" src="https://github.com/user-attachments/assets/65087c2d-a1e4-4735-8420-759ea97b38aa" />
+
+### Uploading Your Document
+
+- **[1] Choose File**: Once the "Request signature" form opens, click "Choose file" button to select and upload the document file from your computer that needs to be signed. Currently you can upload only 1 file at a time but you can add additional documents by clicking "Add pages" in the next step.
+- **[2] Choose File from Dropbox**: Click the dropbox icon to select the document file from your dropbox account.
+
+### Entering Document Details And Signers
+
+- **[3] Title** *(Required)*: Input the title of your document. This identifier will be visible to signers and in your document management.
+- **[4] Signers**: Use the dropdown to select existing signers or use the addition button to add a new signer who needs to sign the document. (Here, add the signer's details such as name, email, and phone number). 
+- **[5] Note**: Optionally add a note to give context or instructions regarding the document.
+
+### Organizing Your Document
+
+- **[6] Folder**: Select a folder where you want the document to be stored, or leave it to default to the 'Root' folder. You can browse your documents in a beautiful explorer view by navigating to "OpenSign™ Drive".
   
-<img width="800" alt="request signatures" src="https://github.com/user-attachments/assets/94112aec-4581-46a5-8e09-b6fc42e9e72a" />
+### Set the sending order
+- **[7] Send in Order**
 
-### Step 2: Uploading Your Document
-
-- **[2] Choose File**: Once the "Request signature" form opens, click "Choose file" button to select and upload the document file from your computer that needs to be signed. Currently you can upload only 1 file at a time but you can add additional documents by clicking "Add pages" in the next step.
-- **[3] Choose File from Dropbox**: Click the dropbox icon to select the document file from your dropbox account.
-
-### Step 3: Entering Document Details And Signers
-
-- **[4] Title** *(Required)*: Input the title of your document. This identifier will be visible to signers and in your document management.
-- **[5] Signers**: Use the dropdown to select existing signers or use the addition button to add a new signer who needs to sign the document. (Here, add the signer's details such as name, email, and phone number). 
-- **[6] Note**: Optionally add a note to give context or instructions regarding the document.
-
-### Step 4: Organizing Your Document
-
-- **[7] Folder**: Select a folder where you want the document to be stored, or leave it to default to the 'Root' folder. You can browse your documents in a beautiful explorer view by navigating to "OpenSign™ Drive".
-
-### Step 5: Setting the Time Frame
-
-- **[8] Time To Complete (Days)** *(Required)*: Specify the number of days the signers have to complete the signatures. After that, the document will no longer be available for signing.
-
-### Step 6: Set the sending order
-- **[9] Send in Order**
-  - **If you choose:**
+  **If you choose:**
   - **Yes**: Selecting this option will send the signing request to the first signer initially. Once the first signer completes their part, the next signer in the sequence will receive the request. This process continues until all signers have signed the document. This method ensures that the document is signed in a specific order.
   - **No**: Selecting this option will send the signing links to all signers simultaneously. Every signer can sign the document at their convenience, regardless of whether other signers have completed their signatures. This method is faster but does not enforce any signing order among the participants.
 Select the option that best suits the needs of your document processing.
-### Step 7: Auto reminder (feature only available for the subscribed user)
-- **[10]** Once you enable the auto reminder, a text field will appear allowing you to set the reminder for a specific number of days.
-- **Remind once in every (Days)**: Here, you can set the number of days for the reminder.
+
+### Setting the Time Frame
+- **[8] Time To Complete (Days)** *(Required)*: Specify the number of days the signers have to complete the signatures. After that, the document will no longer be available for signing.
   
-### Step 8: Proceed to Document Creation Panel
+### Setting BCC
+**[9] BCC**: The BCC (Blind Carbon Copy) feature allows users to receive document completion emails at specified email addresses.
+You can add multiple contacts in the BCC field to notify several recipients. 
+You can either:
+Click "Add New" to enter a new email contact, or
+Select from existing contacts using the dropdown list.
+
+### Auto reminder
+- **[10]** Once you enable the auto reminder, a text field will appear allowing you to set the reminder for a specific number of days.
+- **Remind once in every (Days)**: You can specify the reminder interval in days (e.g., every 1 or every 2 days).
+Note: You can set a maximum of 15 reminders. For example, if the document completion time is 16 days and you try to schedule a reminder every day, the system will not allow it, as the reminder limit would be exceeded.
+This feature only available for the paid users.
+
+### Security Setting
+**[11] Enable OTP Verification** :
+  
+If set to "Yes," the signer will be required to complete email OTP verification before viewing and signing the document. If "Enable OTP Verification" is set to "No," the signer will not be prompted for OTP verification during the signing process.
+Note: This feature is available exclusively on paid plans.
+
+### Enable tour:
+**[12]** If set to "Yes," the signer will see the tour guide while signing the document. If your signer is familiar with OpenSign and you prefer not to display the tour guide, you can select "No," and the tour guide will not be shown to your signers.
+
+### Notify on signatures: 
+**[13]** If set to "Yes," the document owner will receive an email notification each signer completes their signature.
+Note: This feature is available exclusively on paid plans.
+
+### allow modifications: 
+**[14]** If set to Yes, the signer will be allowed to make modifications to the document during the signing process. However, they cannot edit or remove any fields that were already placed by the document owner. They can only add basic fields such as signature, stamp, initials, text, and cells.
+
+If both Allow Modification and Enable OTP are set to Yes, the signer will still not be able to edit or delete existing fields, but will gain access to additional advanced fields to add during signing. These include: signature, stamp, initials, name, job title, company, text, cells, and email.
+
+Note: This feature is available exclusively on paid plans.
+
+### Redirect url: 
+**[15]**  After signing the document and upon its completion, the signer will be redirected to the specified URL.
+
+### Step 2: Proceed to Document Creation Panel
 - **Next**: Once all the necessary fields are filled, click this button to proceed to create the document for signing.
 - **Cancel**: If you need to start over or make changes, click this button to clear the form.
-### Step 9: Document creation 
+  
+### Step 3: Document creation 
 
 <img width="800" alt="request signatures" src="https://github.com/user-attachments/assets/b4e6f257-e362-46a7-b809-546f0e5999fc" />
 
@@ -75,9 +109,9 @@ Use the option on the right side to add recipients if you need to include additi
     - Setting icon: By clicking on the option, you can specify whether this widget is mandatory or optional during the document signing.
     - Add Signer/Change Signer: Clicking the first icon on the Initials widget allows you to change the signer. You can choose from existing signers in the dropdown or add a new signer.
     - Copy Initials: Clicking on this option reveals the following choices.
-      -  All pages : It will copy the stamp widget to all pages.
-      -  All pages but last: It will copy the stamp widget to all pages except the last page.
-      -  All pages but first: It will copy the stamp widget to all pages except the first page.
+      -  All pages : It will copy the initials widget to all pages.
+      -  All pages but last: It will copy the initials widget to all pages except the last page.
+      -  All pages but first: It will copy the initials widget to all pages except the first page.
  - **Name**: The name widget allows signers to add their name or any other text, functioning like a text field during the signing process. After placing the name widget, you will see the options on the widget such as:
     - Setting icon: By clicking on the option, you can set the color and font.
     - Add Signer/Change Signer: Clicking the first icon on the Name widget allows you to change the signer. You can choose from existing signers in the dropdown or add a new signer.
@@ -184,10 +218,10 @@ Use the option on the right side to add recipients if you need to include additi
  
 <img width="918" alt="OpenSign_Widgets" src="https://github.com/user-attachments/assets/36651043-6646-4a43-9fe3-2650c133a21e" />
       
-### Step 10: Next:
+### Step 4: Next:
 - **Next**: After adding the widgets and signatures, click the 'Next' button. The document will then be created.
 
-### Step 11: Send Mail
+### Step 5: Send Mail
 After finishing the document creation, a 'Send Mail' popup will appear, offering options to Send Email, Customize Email, Copy Link, or Share the document.
   - Send Email: Click the 'Send' button to send the document for signing to all signers. If the sending order is set to 'Yes', it will send the document to the first signer.
 
@@ -200,7 +234,7 @@ After finishing the document creation, a 'Send Mail' popup will appear, offering
   <img width="800" alt="request signatures" src="https://github.com/user-attachments/assets/e2344479-daae-43ff-a61a-14ea98b237d6" />   
                                                                                                                              
 ## Signers Signing Process
-### Step 12: Email OTP verification
+### Step 6: Email OTP verification
 Once the email is received, the signer can click the 'Sign Here' button. This will open the email verification page. After clicking the 'Get Verification Code' button, an OTP (one-time password) will be sent to the signer’s email address. Enter the received OTP into the verification textbox and click the 'Verify' button.
 
 <div>
@@ -210,7 +244,7 @@ Once the email is received, the signer can click the 'Sign Here' button. This wi
   <img width="800" alt="OpenSign verify otp" src="https://github.com/user-attachments/assets/63cf4b75-9d47-4630-a83c-e916a5c13b3c" />
 </div>
 
-### Step 13: Finalizing the Process:
+### Step 7: Finalizing the Process:
 
 After verification, the signer will be redirected to the document signing page, where he can view the document received for signing. To sign, the signer simply clicks on the signature widget, which allows them to draw, upload a digitally scanned signature, or type the signature. 
 
