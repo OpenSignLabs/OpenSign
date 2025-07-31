@@ -59,7 +59,9 @@ This feature only available for the paid users.
 ### Security Setting
 - **[11] Enable OTP Verification** :
   
-If set to "Yes," the signer will be required to complete email OTP verification before viewing and signing the document. If "Enable OTP Verification" is set to "No," the signer will not be prompted for OTP verification during the signing process.
+   - If set to "Yes," the signer will be required to complete email OTP verification before viewing and signing the document.
+   - If "Enable OTP Verification" is set to "No," the signer will not be prompted for OTP verification during the signing process.
+
 Note: This feature is available exclusively on paid plans.
 
 ### Enable tour:
