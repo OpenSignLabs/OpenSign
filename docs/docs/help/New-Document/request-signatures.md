@@ -44,7 +44,7 @@ Select the option that best suits the needs of your document processing.
 - **[8] Time To Complete (Days)** *(Required)*: Specify the number of days the signers have to complete the signatures. After that, the document will no longer be available for signing.
   
 ### Setting BCC
-**[9] BCC**: The BCC (Blind Carbon Copy) feature allows users to receive document completion emails at specified email addresses.
+- **[9] BCC**: The BCC (Blind Carbon Copy) feature allows users to receive document completion emails at specified email addresses.
 You can add multiple contacts in the BCC field to notify several recipients. 
 You can either:
 Click "Add New" to enter a new email contact, or
@@ -57,27 +57,27 @@ Note: You can set a maximum of 15 reminders. For example, if the document comple
 This feature only available for the paid users.
 
 ### Security Setting
-**[11] Enable OTP Verification** :
+- **[11] Enable OTP Verification** :
   
 If set to "Yes," the signer will be required to complete email OTP verification before viewing and signing the document. If "Enable OTP Verification" is set to "No," the signer will not be prompted for OTP verification during the signing process.
 Note: This feature is available exclusively on paid plans.
 
 ### Enable tour:
-**[12]** If set to "Yes," the signer will see the tour guide while signing the document. If your signer is familiar with OpenSign and you prefer not to display the tour guide, you can select "No," and the tour guide will not be shown to your signers.
+- **[12]** If set to "Yes," the signer will see the tour guide while signing the document. If your signer is familiar with OpenSign and you prefer not to display the tour guide, you can select "No," and the tour guide will not be shown to your signers.
 
 ### Notify on signatures: 
-**[13]** If set to "Yes," the document owner will receive an email notification each signer completes their signature.
+- **[13]** If set to "Yes," the document owner will receive an email notification each signer completes their signature.
 Note: This feature is available exclusively on paid plans.
 
 ### allow modifications: 
-**[14]** If set to Yes, the signer will be allowed to make modifications to the document during the signing process. However, they cannot edit or remove any fields that were already placed by the document owner. They can only add basic fields such as signature, stamp, initials, text, and cells.
+- **[14]** If set to Yes, the signer will be allowed to make modifications to the document during the signing process. However, they cannot edit or remove any fields that were already placed by the document owner. They can only add basic fields such as signature, stamp, initials, text, and cells.
 
 If both Allow Modification and Enable OTP are set to Yes, the signer will still not be able to edit or delete existing fields, but will gain access to additional advanced fields to add during signing. These include: signature, stamp, initials, name, job title, company, text, cells, and email.
 
 Note: This feature is available exclusively on paid plans.
 
 ### Redirect url: 
-**[15]**  After signing the document and upon its completion, the signer will be redirected to the specified URL.
+- **[15]**  After signing the document and upon its completion, the signer will be redirected to the specified URL.
 
 ### Step 2: Proceed to Document Creation Panel
 - **Next**: Once all the necessary fields are filled, click this button to proceed to create the document for signing.
