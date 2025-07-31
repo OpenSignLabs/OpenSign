@@ -3,7 +3,8 @@
 ## Overview
 
 This documentation provides an overview of the OpenSign™ Drive interface, detailing its key features, user interface elements and functionality.
-![OSD](https://github.com/OpenSignLabs/OpenSign/assets/5486116/e11c7060-15ab-4062-915e-2f47e832f023)
+
+<img width="918" alt="OpenSign_Widgets" src="https://github.com/user-attachments/assets/625dac8f-7357-4f7e-9ab4-33c9f6732533" />
 
 ### Interface Elements
 
