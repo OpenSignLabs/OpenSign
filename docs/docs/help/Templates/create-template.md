@@ -64,7 +64,7 @@ Note: This feature is available exclusively on paid plans.
 **[12]** If set to "Yes," the document owner will receive an email notification each signer completes their signature.
 Note: This feature is available exclusively on paid plans.
 
-### allow modifications**: 
+### Allow modifications: 
 
 **[13]** If set to Yes, the signer will be allowed to make modifications to the document during the signing process. However, they cannot edit or remove any fields that were already placed by the document owner. They can only add basic fields such as signature, stamp, initials, text, and cells.
 
@@ -118,13 +118,13 @@ After placing the name widget, you will see the options on the widget such as:
     - Setting icon: By clicking on the option, you can set the color and font.
     - Add Signer/Change Signer: Clicking the first icon on the Name widget allows you to change the signer. You can choose from existing signers in the dropdown or add a new signer.
     - Copy : Clicking on this you can duplicate the name widget.
- - **Job title**: The Job title widget allows signers to add their Job title or any other text, functioning like a text field during the signing process
+ - **Job title**: The Job title widget allows signers to add their Job title or any other text, functioning like a text field during the signing process.
 After placing the job title widget, you will see the options on the widget such as:
     - Setting icon: By clicking on the option, you can set the color and font.
     - Add Signer/Change Signer: Clicking the first icon on the Job title widget allows you to change the signer. You can choose from existing signers in the dropdown or add a new signer.
     - Copy : Clicking on this you can duplicate the job title widget.
   
- - **Company**: The company widget allows signers to add their company or any other text, functioning like a text field during the signing process
+ - **Company**: The company widget allows signers to add their company or any other text, functioning like a text field during the signing process.
 After placing the company widget, you will see the options on the widget such as:
      - Setting icon: By clicking on the option, you can set the color and font.
      - Add Signer/Change Signer: Clicking the first icon on the Company widget allows you to change the signer. You can choose from existing signers in the dropdown or add a new signer.
