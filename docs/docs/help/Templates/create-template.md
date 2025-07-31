@@ -14,7 +14,7 @@ Creating a template in OpenSign is straightforward and can significantly enhance
 
 - **Navigate to New template form**: On the left sidebar, click on "Templates" to expand the menu. and Click on the "Create template" option.
 
-<img width="828" alt="Create Template" src="https://github.com/user-attachments/assets/1cb7610f-c144-4774-85c2-ed7d70e0a73c" />
+<img width="828" alt="Create Template" src="https://github.com/user-attachments/assets/143a752c-1ee3-4424-afe4-65922b71ddbb" />
 
 ### Uploading Your Document
 
@@ -36,12 +36,44 @@ Select the option that best suits the needs of your document processing.
 ### Auto reminder (feature only available for the subscribed user)
 - **[7]** Once you enable the auto reminder, a text field will appear allowing you to set the reminder for a specific number of days.
 - **Remind once in every (Days)**: Here, you can set the number of days for the reminder.
-### Security Setting
-- **[8] Enable OTP Verification** : 
-If set to "Yes," the signer will be required to complete email OTP verification before viewing and signing the document. If "Enable OTP Verification" is set to "No," the signer will not be prompted for OTP verification during the signing process.
 
-- **[9] Enable tour**: 
-If set to "Yes," the signer will see the tour guide while signing the document. If your signer is familiar with OpenSign and you prefer not to display the tour guide, you can select "No," and the tour guide will not be shown to your signers.
+  Note: You can set a maximum of 15 reminders. For example, if the document completion time is 16 days and you try to schedule a reminder every day, the system will not allow it, as the reminder limit would be exceeded.
+  
+### Time to complete (days)
+**[8]** You can specify the number of days within which the document must be signed. For example, if you set the expiration period to 15 days, the created document will remain available for signing for 15 days from the date of creation. After this period, the document will expire, and the signer will no longer be able to sign it.
+
+###  BCC
+**[9]** The BCC (Blind Carbon Copy) feature allows users to receive document completion emails at specified email addresses.
+You can add multiple contacts in the BCC field to notify several recipients. 
+You can either:
+Click "Add New" to enter a new email contact, or
+Select from existing contacts using the dropdown list.
+
+### Security Setting
+**[10] Enable OTP Verification** :
+  
+If set to "Yes," the signer will be required to complete email OTP verification before viewing and signing the document. If "Enable OTP Verification" is set to "No," the signer will not be prompted for OTP verification during the signing process.
+Note: This feature is available exclusively on paid plans.
+
+### Enable tour:
+  
+**[11]** If set to "Yes," the signer will see the tour guide while signing the document. If your signer is familiar with OpenSign and you prefer not to display the tour guide, you can select "No," and the tour guide will not be shown to your signers.
+
+### Notify on signatures:
+  
+**[12]** If set to "Yes," the document owner will receive an email notification each signer completes their signature.
+Note: This feature is available exclusively on paid plans.
+
+### allow modifications**: 
+
+**[13]** If set to Yes, the signer will be allowed to make modifications to the document during the signing process. However, they cannot edit or remove any fields that were already placed by the document owner. They can only add basic fields such as signature, stamp, initials, text, and cells.
+
+If both Allow Modification and Enable OTP are set to Yes, the signer will still not be able to edit or delete existing fields, but will gain access to additional advanced fields to add during signing. These include: signature, stamp, initials, name, job title, company, text, cells, and email.
+
+Note: This feature is available exclusively on paid plans.
+
+### Redirect url: 
+**[14]**  After signing the document and upon its completion, the signer will be redirected to the specified URL.
 
 ### Proceed to Template Creation Panel
 - **Next**: Click the "Next" button to proceed to the next stage of template creation, where you can add widgets and finalize the template.
@@ -100,9 +132,57 @@ If set to "Yes," the signer will see the tour guide while signing the document. 
     - Copy : Clicking on this you can duplicate the Text widget.
   
  - **Text Input**: After placing the Text Input widget, you will see the options on the widget such as:
-    - Setting icon: By clicking on the option, you can set the color and font.
-    - Add Signer/Change Signer: Clicking the first icon on the Text Input widget allows you to change the signer. You can choose from existing signers in the dropdown or add a new signer.
-    - Copy : Clicking on this you can duplicate the Text Input widget.
+    - Setting icon: The widget settings panel provides additional customization options, including:
+       - Manually entering the **number of cells**
+       - Choosing a **font color**
+       - Setting the **font size**
+       - Marking the field as **required** or **optional**
+       - Providing a **default value**
+       - Making the field **read-only**
+       - Adding a **hint**, which will be displayed on the widget for better clarity
+       - **Custom Validations** are also supported, including:
+       - Predefined formats like **SSN**, **email**, or **numeric values**
+          - Custom JavaScript validations using regular expressions
+            For example:
+             - `^\d+$` – allows only digits  
+             - `^[A-Z]+$` – allows only uppercase letters  
+
+  You can enter your regex pattern in the **Validations** field of the widget.  
+  *(Optional reference: [JavaScript RegExp guide](https://www.w3schools.com/jsref/jsref_obj_regexp.asp))*
+  
+  <img width="800" alt="Cells widget" src="https://github.com/user-attachments/assets/ce0c335b-b2bf-4d30-968c-c4c957f46014" />
+  
+  - Add Signer/Change Signer: Clicking the first icon on the Text Input widget allows you to change the signer. You can choose from existing signers in the dropdown or add a new signer.
+  -  Copy : Clicking on this you can duplicate the Text Input widget.
+    
+  - **Cells**  
+  The **Cells widget** is ideal for documents that require input in a structured, table-like format, allowing the signer to fill in details within individual cells. After dragging and dropping the widget onto the document, you can adjust the number of cells by moving the **blue marker**.
+
+<img width="800" alt="Cells widget" src="https://github.com/user-attachments/assets/20184017-2fa9-4acb-985f-fde18ee53246" />
+
+   - Setting icon: The widget settings panel provides additional customization options, including:
+        - Manually entering the **number of cells**
+        - Choosing a **font color**
+        - Setting the **font size**
+        - Marking the field as **required** or **optional**
+        - Providing a **default value**
+        - Making the field **read-only**
+        - Adding a **hint**, which will be displayed on the widget for better clarity
+        - **Custom Validations** are also supported, including:
+        -  Predefined formats like **SSN**, **email**, or **numeric values**
+        -  Custom JavaScript validations using regular expressions
+            - For example:
+            - `^\d+$` – allows only digits
+            - `^[A-Z]+$` – allows only uppercase letters  
+
+  You can enter your regex pattern in the **Validations** field of the widget.  
+  *(Optional reference: [JavaScript RegExp guide](https://www.w3schools.com/jsref/jsref_obj_regexp.asp))*
+
+<img width="800" alt="request signatures" src="https://github.com/user-attachments/assets/100579af-a12f-4c90-8cad-1db697db1f1c" />
+
+ - Add Signer/Change Signer: Clicking the first icon on the Cells widget allows you to change the signer. You can choose from existing signers in the dropdown or add a new signer.
+  - Copy : Clicking on this you can duplicate the cells widget.
+    
  - **Checkbox**: Once you drop the checkbox widget, a popup will open where you can set the checkbox name and options. Additionally, there are a few options available such as setting the minimum and maximum checks, making the checkbox read-only, and hiding the label.
      - Add Signer/Change Signer: Clicking the first icon on the CheckBox widget allows you to change the signer. You can choose from existing signers in the dropdown or add a new signer.
      - Copy : Clicking on this you can duplicate the image widget.
@@ -120,7 +200,51 @@ If set to "Yes," the signer will see the tour guide while signing the document. 
     - Setting icon: By clicking on the option, you can set the color and font.
     - Add Signer/Change Signer: Clicking the first icon on the Email widget allows you to change the signer. You can choose from existing signers in the dropdown or add a new signer.
     - Copy : Clicking on this you can duplicate the email widget.
-      
+ ### 📄 Edit Template
+At the top of the Create Template panel, you’ll find a settings (gear) icon. Clicking this icon opens the Edit Template Details panel, where you can modify various details of your template.
+
+<img width="800" alt="edit template details" src="https://github.com/user-attachments/assets/161d41fd-bf07-485e-ab7b-5b33e0c500bf" />
+
+- **🔁 File Replacement** : Users can replace the existing document by simply uploading a new file. However, certain conditions must be met:
+  - The new document must have the same number of pages.
+  - The page dimensions (width and height) must be identical to the original.
+
+These conditions are enforced to ensure that, during template editing, the pre-placed widgets remain correctly aligned. If the new document's dimensions don’t match, widgets may shift or be positioned outside the visible area of the document.
+
+<img width="800" alt="Edit template details" src="https://github.com/user-attachments/assets/f03b76d3-6480-4d4b-b310-9f3f4a3acf4c" />
+
+You can also update the following template details: 
+- **Template Title** 
+- **Description** 
+- **Note** 
+- **Send in Order**
+- **Auto reminder** 
+- **Enable OTP Verification** : 
+- **Enable tour**:
+- **Notify on signatures**:
+- **BCC**:
+- **Redirect Url**
+- **Time to complete (Days)**
+Clik on the submit button to save the edits.
+
+ ### 📄 Document Page Controls
+- **Add Pages**  
+  In the left-side panel, users will see an **"Add" button**. Clicking it allows users to select and merge new documents into the current one.
+
+- **Delete Page**  
+  An option is available to **delete** any unwanted page from the document.
+
+- **Reorder Pages**  
+  Users can reorder pages by clicking the **"Reorder" button**, which opens a popup displaying all pages. Use the **Up** and **Down** arrows to change the order. Click **Save** to apply the new page order.
+
+- **Zoom In / Zoom Out**  
+  Controls are available to **zoom in** or **zoom out** of the document view.
+
+- **Rotate Page**  
+  Options are provided to **rotate pages** in both **clockwise** and **counterclockwise** directions.
+
+<img width="918" alt="page controls" src="https://github.com/user-attachments/assets/71e9873b-d8e1-4a01-b0a4-88f9a62b2be4" />
+
 ### Save Template 
 **Next button**: Once you’ve organized your widgets and set their properties, simply click the “Next” button to save your template.
 
@@ -145,15 +269,37 @@ On the Manage templates page you will see a list of templates you have created o
 
 **Use Template**: To use a template, click the "+ USE" button next to the desired template. This will open the template, enabling you to create a document for a signature request. Simply assign the signers and send it for signatures.
 
-**Quick Send**: For faster processing, the Quick Send feature allows you to swiftly create and send a document to a signer using the selected template.
+**Bulk send**: This feature streamlines processing by allowing you to create and send multiple documents at once using a selected template. You can add multiple signers and generate all documents with a single click.
 
 **Edit**: The "Edit" feature is crucial for keeping your document templates up-to-date and relevant. Whether you need to make minor tweaks or major changes, OpenSign's editing capabilities are user-friendly and efficient.
 Click on the three dots next to the template you want to edit.
 Select "Edit." Make the necessary changes and save them.
 
-**Share With Team**: Collaboration is essential for any successful team, and OpenSign simplifies sharing document templates with your team. Here's how you can utilize the "Share With Team" feature:
-Click on the three dots next to the template you want to share.
-Select "Share With Team."
+**Share With Team**: Collaboration is crucial for any successful workflow, and OpenSign makes it easy to share document templates with your team.
+ - Click the three dots next to the template you wish to share.
+ - Select "Share with Team" from the menu.
+ - Choose the desired team from the list and click Submit.
+   
+The selected team members will now have access to the template and can use it to create documents.
+
+  Note: Team members will have view and usage-only access to the shared template — they cannot edit or delete it. 
+  This feature is available exclusively on Teams and Enterprise plans.
+  
+**Share With colleague**: OpenSign also allows you to share templates with individual colleagues for efficient collaboration.
+ - Click the three dots next to the template you wish to share.
+
+ - Select "Share with Colleague" from the menu.
+
+ - Choose the user from the list and click Submit.
+
+The selected user will be able to access the template and create documents from it.
+
+   Note: The user will have permission only to use the template. They cannot edit or delete it. 
+   This feature is available exclusively on Teams and Enterprise plans.
+
+   <img width="828" alt="Manage Template" src="https://github.com/user-attachments/assets/89780622-dd0d-47b7-b3b2-a71d537d7967" />
+   
+   <img width="828" alt="Manage Template" src="https://github.com/user-attachments/assets/fdc98efe-dc2d-4e53-bc66-be3aab07eef0" />
 
 **Embed**: The "Embed" option provides you with a code to embed the template into a website or other platforms, allowing users to interact with it directly from the external site.
 Click "Embed" to generate the code that can be copied and pasted into your desired web location. We currently support React, HTML/JavaScript and Angular-based websites.
@@ -164,6 +310,13 @@ Click "Embed" to generate the code that can be copied and pasted into your desir
 
 **Copy public URL**: This generates a public link for the template, allowing external users to access it without logging into OpenSign.
 Click "Copy Public URL" to generate the link, then share it as needed.
+
+**Kiosk Mode**: Kiosk Mode offers a simplified and secure environment for signers to complete documents on a shared or public device. It's ideal for use cases like front-desk sign-ins, in-office document execution, or on-site registrations where multiple individuals need to sign documents one after another.
+
+When you click the Kiosk Mode option along with a selected template, the document opens in a dedicated signing interface. Signers can then complete their portions sequentially on the same screen and device, ensuring a smooth and efficient signing flow without requiring individual logins.
+Note: This feature is available exclusively on Teams and Enterprise plans.
+
+**Duplicate**: When you need to create a copy of an existing template, use the Duplicate option. This feature allows you to quickly generate an exact replica of the selected template, making it easy to reuse and modify without affecting the original.
 
 **Delete**: Sometimes, it's necessary to clean up your templates to keep your workspace organized. The "Delete" feature allows you to remove outdated or unnecessary templates with ease.
 Click on the three dots next to the template you want to delete.

@@ -59,11 +59,34 @@ In the "Draw Signature" popup, you have three options available:
      - **Company**: Once you drop the company widget, you can edit the company name. Customization options such as setting the color or font are also provided. Additionally, there is a copy option available to duplicate the widget.
      - **Date** :  Once you drop the date widget, you can choose from various date formats.
      - **Text**: Once you drop the text widget, you can write the text. Customization options such as setting the color or font are also provided. Additionally, there is a copy option available to duplicate the widget.
+     - **Cells**: The Cells widget is ideal for documents that require input in a structured, table-like format, allowing the signer to fill in details within individual cells. After dragging and dropping the widget onto the document, a popup will appear allowing you to adjust the number of cells by moving the blue marker. This adjustment option is also available directly on the widget after it's placed. Additionally, the widget settings panel provides options to manually enter the number of cells, choose a color, and set the font size.
+      <img width="918" alt="cells widget" src="https://github.com/user-attachments/assets/039e2999-8c75-43b6-a742-bfb294aa52ee" />
+
      - **Checkbox**: After dropping the checkbox widget, a popup will open allowing you to set the checkbox name and options. Once you click save, the checkbox will be created on the document. Additionally, a copy option will be available to duplicate the widget.
      - **Image** : After dragging and dropping the image widget, the "Upload Image" popup will appear, allowing you to upload an image from your file explorer. Once the image is uploaded, it will be displayed on the document. Additionally, there is an option to duplicate the image.
      - **Email**: Once you drop the email widget, you can edit the email. Customization options such as setting the color or font are also provided. Additionally, there is a copy option available to duplicate the widget.
 
-<img width="918" alt="OpenSign_Widgets" src="https://github.com/user-attachments/assets/b73ef535-245c-43c8-98eb-cb43e4720bc5" />
+<img width="918" alt="OpenSign_Widgets" src="https://github.com/user-attachments/assets/8f61a30d-8c65-4343-bdb9-ed7c004c16db" />
+
+### 📄 Document Page Controls
+- **Add Pages**  
+  In the left-side panel, users will see an **"Add" button**. Clicking it allows users to select and merge new documents into the current one.
+
+- **Delete Page**  
+  An option is available to **delete** any unwanted page from the document.
+
+- **Reorder Pages**  
+  Users can reorder pages by clicking the **"Reorder" button**, which opens a popup displaying all pages. Use the **Up** and **Down** arrows to change the order. Click **Save** to apply the new page order.
+
+- **Zoom In / Zoom Out**  
+  Controls are available to **zoom in** or **zoom out** of the document view.
+
+- **Rotate Page**  
+  Options are provided to **rotate pages** in both **clockwise** and **counterclockwise** directions.
+  
+<img width="918" alt="OpenSign_Widgets" src="https://github.com/user-attachments/assets/ae54ce3c-6373-49bf-b905-a4b734444a31" />
+
+---
 
 ### Step 5: Finalizing the Process:
 - **Finish**: After adding the widgets and signatures, click the "Finish" button. This will create a digitally signed document.
