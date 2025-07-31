@@ -10,7 +10,7 @@ OpenSign Drive offers a streamlined way to manage, sign, and request signatures 
 ### 1. Accessing OpenSign Drive
 After logging into OpenSign, navigate to the left-hand sidebar and click on "OpenSign Drive." This will open the OpenSign Drive page where you can see all your stored files.
 
-<img width="828" alt="OpenSign drive" src="https://github.com/user-attachments/assets/1159afaa-e7e4-4f6d-9087-e22ea7a0c840" />
+<img width="828" alt="OpenSign drive" src="https://github.com/user-attachments/assets/365cce22-899a-4162-a7a0-41a7b49504a3" />
 
 ### 2. Creating a New Folder
 Organizing your documents into folders helps you keep track of different categories of files.
@@ -20,7 +20,7 @@ Organizing your documents into folders helps you keep track of different categor
 **Step 3:** A dialog box will prompt you to name your new folder. Enter a descriptive name and hit "Add."  
 **Step 4:** Your new folder will appear in the main area of OpenSign Drive, ready to store your documents.
 
-<img width="828" alt="Create new folder" src="https://github.com/user-attachments/assets/f0260329-d3b0-4c03-af1b-7231b4f2c6a4" />
+<img width="828" alt="Create new folder" src="https://github.com/user-attachments/assets/73dfb391-c184-45f6-8f06-e716ced258c0" />
 
 ### 3. Creating a New Document
 To create a document for self-signing or by requesting a signature, you can do so by selecting the appropriate option from OpenSign Drive.
@@ -29,7 +29,7 @@ To create a document for self-signing or by requesting a signature, you can do s
 **Step 2:** This time, choose "Sign Yourself" or "Request Signatures" depending on whether you want to sign the document yourself or send it to others for their signatures.  
 **Step 3:** When you select the "Sign Yourself" or "Request Signature" option, the document creation page will open, allowing you to enter details such as the document title, description, notes, and other necessary information. You can also choose an OpenSign Drive folder to store your document. Once you’ve selected the folder and created the document, it will be saved in that folder, making it easily accessible from your OpenSign Drive.
 
-<img width="828" alt="Create new document" src="https://github.com/user-attachments/assets/97bd75ec-ea9d-4f1d-b514-b9e04ce856aa" />
+<img width="828" alt="Create new document" src="https://github.com/user-attachments/assets/8987b111-4fd3-4bbd-b8cb-32ee7959f05e" />
 
 ### 4. Organizing Documents
 After creating or uploading documents, it's crucial to organize them effectively. Here are some options available in OpenSign Drive for managing your documents:
@@ -60,12 +60,12 @@ These indicators are represented by different icons on your documents, allowing 
 - **Declined document (Red Exclamation Mark):** This icon highlights documents that require immediate action, indicating that the document has been declined.
 - **Expired (Gray Hourglass):** A gray hourglass indicates that the document is expired.
 
-  <img width="828" alt="Create new folder" src="https://github.com/user-attachments/assets/b488ef24-3db5-4323-a3b3-ed3c12a04291" />
+  <img width="828" alt="Create new folder" src="https://github.com/user-attachments/assets/e56c01f8-2e9e-4acc-bd04-52a323303820" />
 
 ### 6. Filter and Sort Documents in OpenSign Drive
 OpenSign Drive provides a powerful and easy-to-use interface for managing your documents. To help you quickly find and organize your files, OpenSign Drive offers several sorting and filtering options, allowing you to arrange your documents by name or date, in either ascending or descending order.
 
-<img width="861" alt="OpenSign filters" src="https://github.com/user-attachments/assets/af51e68a-730c-4203-8015-54b30da572f6" />
+<img width="861" alt="OpenSign filters" src="https://github.com/user-attachments/assets/1171d581-cb28-47bb-a5c9-632b6b458155" />
 
 - **Sorting Documents by Name:**
 To sort your documents alphabetically:
@@ -86,6 +86,17 @@ If you prefer to sort your documents based on when they were created or modified
 - **Descending Order:** Choosing "Descending" will reverse the order, arranging documents from Z to A (by name) or from newest to oldest (by date).
 
 These sorting features help you keep your documents organized, making it easier to locate specific files quickly, especially when you have a large number of documents stored in your OpenSign Drive.
+
+### 7. Connect to google drive
+OpenSign provides the feature to store your signed and completed documents in your own Google Drive.
+- To use this feature, click the Drive icon located in the top-right corner. A popup will appear displaying the "Connect to Google Drive" button.
+- Click the button, then log in to your Gmail account and grant the necessary permissions. Once authorized, your OpenSign account will be connected to your Google Drive.
+
+  <img width="828" alt="Connect to gdrive" src="https://github.com/user-attachments/assets/66c1ca6a-40cb-4da9-90d3-b3880dfc8726" />
+
+- After completing your first document, a folder named OpenSign™ will be created in your Google Drive. Your completed documents will be stored inside this folder.
+
+<img width="828" alt="Gdrive opensign folder" src="https://github.com/user-attachments/assets/5248c443-682c-46d4-a9bc-cc09ef718c89" />
 
 If you require more help, feel free to reach out to our customer support on support@opensignlabs.com.
 
