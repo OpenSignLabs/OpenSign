@@ -35,45 +35,45 @@ Creating a template in OpenSign is straightforward and can significantly enhance
 Select the option that best suits the needs of your document processing.
 ### Auto reminder (feature only available for subscribed users)
 - **[7]** Once you enable the auto reminder, a text field will appear allowing you to set the reminder for a specific number of days.
-- **Remind once in every (Days)**: Here, you can set the number of days for the reminder.
+  - **Remind once in every (Days)**: Here, you can set the number of days for the reminder.
 
   Note: You can set a maximum of 15 reminders. For example, if the document completion time is 16 days and you try to schedule a reminder every day, the system will not allow it, as the reminder limit would be exceeded.
   
 ### Time to complete (days)
-**[8]** You can specify the number of days within which the document must be signed. For example, if you set the expiration period to 15 days, the created document will remain available for signing for 15 days from the date of creation. After this period, the document will expire, and the signer will no longer be able to sign it.
+- **[8]** You can specify the number of days within which the document must be signed. For example, if you set the expiration period to 15 days, the created document will remain available for signing for 15 days from the date of creation. After this period, the document will expire, and the signer will no longer be able to sign it.
 
 ###  BCC
-**[9]** The BCC (Blind Carbon Copy) feature allows users to receive document completion emails at specified email addresses.
+- **[9]** The BCC (Blind Carbon Copy) feature allows users to receive document completion emails at specified email addresses.
 You can add multiple contacts in the BCC field to notify several recipients. 
 You can either:
 Click "Add New" to enter a new email contact, or
 Select from existing contacts using the dropdown list.
 
 ### Security Setting
-**[10] Enable OTP Verification** :
+- **[10] Enable OTP Verification** :
   
 If set to "Yes," the signer will be required to complete email OTP verification before viewing and signing the document. If "Enable OTP Verification" is set to "No," the signer will not be prompted for OTP verification during the signing process.
 Note: This feature is available exclusively on paid plans.
 
 ### Enable tour:
   
-**[11]** If set to "Yes," the signer will see the tour guide while signing the document. If your signer is familiar with OpenSign and you prefer not to display the tour guide, you can select "No," and the tour guide will not be shown to your signers.
+- **[11]** If set to "Yes," the signer will see the tour guide while signing the document. If your signer is familiar with OpenSign and you prefer not to display the tour guide, you can select "No," and the tour guide will not be shown to your signers.
 
 ### Notify on signatures:
   
-**[12]** If set to "Yes," the document owner will receive an email notification each signer completes their signature.
+- **[12]** If set to "Yes," the document owner will receive an email notification each signer completes their signature.
 Note: This feature is available exclusively on paid plans.
 
-### allow modifications**: 
+### Allow modifications: 
 
-**[13]** If set to Yes, the signer will be allowed to make modifications to the document during the signing process. However, they cannot edit or remove any fields that were already placed by the document owner. They can only add basic fields such as signature, stamp, initials, text, and cells.
+- **[13]** If set to Yes, the signer will be allowed to make modifications to the document during the signing process. However, they cannot edit or remove any fields that were already placed by the document owner. They can only add basic fields such as signature, stamp, initials, text, and cells.
 
 If both Allow Modification and Enable OTP are set to Yes, the signer will still not be able to edit or delete existing fields, but will gain access to additional advanced fields to add during signing. These include: signature, stamp, initials, name, job title, company, text, cells, and email.
 
 Note: This feature is available exclusively on paid plans.
 
 ### Redirect url: 
-**[14]**  After signing the document and upon its completion, the signer will be redirected to the specified URL.
+- **[14]**  After signing the document and upon its completion, the signer will be redirected to the specified URL.
 
 ### Proceed to Template Creation Panel
 - **Next**: Click the "Next" button to proceed to the next stage of template creation, where you can add widgets and finalize the template.
@@ -87,6 +87,7 @@ Note: This feature is available exclusively on paid plans.
   - **Add Roles**: In the roles section on the right, click "+ Add role" to specify the roles involved in the document, such as Candidate, HR, and Manager.
 - **[2] Assign Widgets to Roles**: Click on each role to highlight it, then drag and drop the widget to assign it to that role.
   - **[1] Assign signature widget**: The signature widget is used to add a signature to the document. Each role must have at least one signature widget assigned.
+    
 Select the Role from the right side panel, click on the signature widget, and position it where the signature is required. You can place multiple signature widgets for each Role, as required.
 
   After placing the Signature widget, you will see the options on the widget such as:
@@ -105,26 +106,25 @@ After placing the Stamp widget, you will see the options on the widget such as:
           -  All pages : It will copy the stamp widget to all pages.
           -  All pages but last: It will copy the stamp widget to all pages except the last page.
           -  All pages but first: It will copy the stamp widget to all pages except the first page.
-   - **Initials**: The initials widget allows signers to add their initials to the document. During the signing process, signers can draw, upload, or type their initials.
-   - After placing the Initials widget, you will see the options on the widget such as:
-    - Setting icon: By clicking on the option, you can specify whether this widget is mandatory or optional during the document signing.
-    - Add Signer/Change Signer: Clicking the first icon on the Initials widget allows you to change the signer. You can choose from existing signers in the dropdown or add a new signer.
-    - Copy Initials: Clicking on this option reveals the following choices.
-      -  All pages : It will copy the initials widget to all pages.
-      -  All pages but last: It will copy the initials widget to all pages except the last page.
-      -  All pages but first: It will copy the initials widget to all pages except the first page.
+   - **Initials**: The initials widget allows signers to add their initials to the document. During the signing process, signers can draw, upload, or type their initials. After placing the Initials widget, you will see the options on the widget such as:
+        - Setting icon: By clicking on the option, you can specify whether this widget is mandatory or optional during the document signing.
+        - Add Signer/Change Signer: Clicking the first icon on the Initials widget allows you to change the signer. You can choose from existing signers in the dropdown or add a new signer.
+        - Copy Initials: Clicking on this option reveals the following choices.
+          -  All pages : It will copy the initials widget to all pages.
+          -  All pages but last: It will copy the initials widget to all pages except the last page.
+          -  All pages but first: It will copy the initials widget to all pages except the first page.
  - **Name**: The name widget allows signers to add their name or any other text, functioning like a text field during the signing process.
 After placing the name widget, you will see the options on the widget such as:
     - Setting icon: By clicking on the option, you can set the color and font.
     - Add Signer/Change Signer: Clicking the first icon on the Name widget allows you to change the signer. You can choose from existing signers in the dropdown or add a new signer.
     - Copy : Clicking on this you can duplicate the name widget.
- - **Job title**: The Job title widget allows signers to add their Job title or any other text, functioning like a text field during the signing process
+ - **Job title**: The Job title widget allows signers to add their Job title or any other text, functioning like a text field during the signing process.
 After placing the job title widget, you will see the options on the widget such as:
     - Setting icon: By clicking on the option, you can set the color and font.
     - Add Signer/Change Signer: Clicking the first icon on the Job title widget allows you to change the signer. You can choose from existing signers in the dropdown or add a new signer.
     - Copy : Clicking on this you can duplicate the job title widget.
   
- - **Company**: The company widget allows signers to add their company or any other text, functioning like a text field during the signing process
+ - **Company**: The company widget allows signers to add their company or any other text, functioning like a text field during the signing process.
 After placing the company widget, you will see the options on the widget such as:
      - Setting icon: By clicking on the option, you can set the color and font.
      - Add Signer/Change Signer: Clicking the first icon on the Company widget allows you to change the signer. You can choose from existing signers in the dropdown or add a new signer.
