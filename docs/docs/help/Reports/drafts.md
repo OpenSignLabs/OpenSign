@@ -41,7 +41,7 @@ The "Draft documents" report also includes several actions icons for each docume
 - **Delete:** If a draft is no longer needed, click the trash icon to delete it. Be cautious when using this action as deleted drafts cannot be recovered.
   
 - **Save as template:** This option allows the user to save the current document as a reusable template. Upon clicking, a confirmation popup will appear. If the user selects Yes, the template will be created successfully. After that, the user will be presented with options to Use Template, Send in Bulk, or Edit the Template. The newly created template will also be available in the Manage Templates list.
-- 
+  
 If you require more help, feel free to reach out to our customer support on support@opensignlabs.com.
 
 Happy signing with OpenSign™!
