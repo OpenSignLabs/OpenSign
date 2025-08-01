@@ -15,6 +15,8 @@ The "Need your sign" feature in OpenSign is designed to simplify the process of 
 
 Upon clicking "Need your sign," you will be presented with a list of documents awaiting your signature. Here's a breakdown of the key elements within this interface:
 
+<img width="816" alt="OpenSign_Signyourself" src="https://github.com/user-attachments/assets/1211e156-5e82-4979-9ee1-3ee4bcc86aa1" />
+
 - **Sr.No**: This column provides a serial number for each document in the list, allowing for easy identification and reference.
  
 - **Title**: The "Title" column displays the name of the document.
