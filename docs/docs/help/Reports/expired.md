@@ -32,9 +32,13 @@ The Expired documents report displays a list of documents that have not been sig
 
 For each expired document, you can perform several actions:
 
+<img width="828" alt="Expired document" src="https://github.com/user-attachments/assets/ca2a4185-6623-4ad9-838b-f18012878c9e" />
+
 - **Delete**: Deletes the document from your OpenSign account.
 - **View**: Opens the document in a viewer within OpenSign, allowing you to review the details and contents of the document.
-
+- **Extend expiry date**: This option allows the user to extend the document's expiration date, keeping it available for signing.
+- **Save as template**: This option allows the user to save the current document as a reusable template. Upon clicking, a confirmation popup will appear. If the user selects Yes, the template will be created successfully. After that, the user will be presented with options to Use Template, Send in Bulk, or Edit the Template. The newly created template will also be available in the Manage Templates list.
+  
 ## Managing Expired documents
 
 Managing your expired documents effectively can help ensure that no important document is overlooked. Consider the following tips:
