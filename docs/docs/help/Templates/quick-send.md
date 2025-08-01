@@ -120,11 +120,13 @@ After adding the signers, click the Send button. This will generate the document
 
 ### Step 5: Signers Signing Process
 
-🔹 Enable OTP Verification: No
+- Enable OTP Verification: No
+
 If OTP verification is set to No, the signer can access and sign the document directly without email verification.
 Once the signer clicks the signature request link received via email, the document will load immediately, allowing them to sign without entering any OTP.
 
-🔹 Enable OTP Verification: Yes
+- Enable OTP Verification: Yes
+
 If OTP verification is enabled, the signer must complete email verification before signing.
 After receiving the email, the signer should click the ‘Sign Here’ button. This will open the email verification screen.
 Click ‘Get Verification Code’ to receive an OTP via email. Enter the OTP into the textbox and click ‘Verify’. Once verified, the document will open and the signer can proceed to sign.
