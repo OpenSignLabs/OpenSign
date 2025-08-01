@@ -59,8 +59,8 @@ The pop-up will display a list of email addresses of the intended recipients or 
 - **Rename:** Allows the user to rename the document.
   
 - **Revoke:** If there’s a mistake or you need to cancel the document, revoking stops all signing actions immediately. This is useful when changes are needed before re-sending the document.
-  
-<img width="816" alt="resend document" src="https://github.com/user-attachments/assets/b2273768-ef81-44cd-95ea-92babee429b6" />
+
+<img width="816" alt="resend document" src="https://github.com/user-attachments/assets/a9bfcfa9-b073-4111-a823-93d6a2e80c40" />
 
 - **Save as template:** This option allows the user to save the current document as a reusable template.
 Upon clicking, a confirmation popup will appear. If the user selects Yes, the template will be created successfully. After that, the user will be presented with options to Use Template, Send in Bulk, or Edit the Template.
