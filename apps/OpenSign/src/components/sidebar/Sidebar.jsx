@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import Menu from "./Menu";
 import Submenu from "./SubMenu";
 import SocialMedia from "../SocialMedia";
@@ -27,39 +27,18 @@ const Sidebar = ({ isOpen, closeSidebar }) => {
       if (localStorage.getItem("defaultmenuid")) {
         const Extand_Class = localStorage.getItem("Extand_Class");
         const extClass = Extand_Class && JSON.parse(Extand_Class);
-        // console.log("extClass ", extClass);
-        let userRole = "contracts_User";
-        if (extClass && extClass.length > 0) {
-          userRole = extClass[0].UserRole;
-        }
-        if (
-          userRole === "contracts_Admin" ||
-          userRole === "contracts_OrgAdmin"
-        ) {
-          const newSidebarList = sidebarList.map((item) => {
-            if (item.title === "Settings") {
-              // Make a shallow copy of the item
-              const newItem = { ...item };
-                const arr = newItem.children.slice(0, 1);
-                newItem.children = [...arr, ...subSetting];
-              return newItem;
-            }
-            return item;
-          });
-          setmenuList(newSidebarList);
-        } else {
-            const newSidebarList = sidebarList.map((item) => {
-              if (item.title === "Settings") {
-                // Make a shallow copy of the item
-                const newItem = { ...item };
-                const arr = newItem.children.slice(0, 1);
-                newItem.children = arr;
-                return newItem;
-              }
-              return item;
-            });
-            setmenuList(newSidebarList);
-        }
+        const userRole = extClass?.[0]?.UserRole || "contracts_User";
+        const isAdmin =
+          userRole === "contracts_Admin" || userRole === "contracts_OrgAdmin";
+        const newSidebarList = sidebarList.map((item) => {
+          if (item.title !== "Settings") return item;
+          const newItem = { ...item };
+          const baseChildren = isAdmin ? subSetting : subSetting?.slice(0, 1);
+            const mysignature = newItem.children.slice(0, 1);
+            newItem.children = [...mysignature, ...baseChildren];
+          return newItem;
+        });
+        setmenuList(newSidebarList);
       }
     } catch (e) {
       console.error("Problem", e);
