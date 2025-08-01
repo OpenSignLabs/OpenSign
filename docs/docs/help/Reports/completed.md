@@ -19,7 +19,7 @@ The "Completed documents" report within OpenSign serves as a vital tool for mana
 
 The "Completed documents" report is displayed in a tabular format, presenting key information about each finalized document. Below is a breakdown of each column and its purpose:
 
-<img width="816" alt="OpenSign_Signyourself" src="https://github.com/user-attachments/assets/4694c9b3-ca2c-4f27-a9d9-8dca220a4124" />
+<img width="816" alt="OpenSign_Signyourself" src="https://github.com/user-attachments/assets/608ebc3c-e32b-4a2f-bc58-3c1b60108741" />
 
 - **Sr.No:** This column displays the serial number for each document in the list, helping you quickly identify and reference documents.
 
@@ -43,6 +43,13 @@ The "Completed documents" report also includes several actions icons for each do
 
 - **Delete Document:** The trash bin icon enables you to permanently delete a document from your completed list. Be cautious, as this action cannot be undone.
 
+<img width="816" alt="OpenSign_Signyourself" src="https://github.com/user-attachments/assets/a83aa2b8-f4c9-4f42-b5be-ff2b9297ab40" />
+
+- **Save as template:** This option allows the user to save the current document as a reusable template. Upon clicking, a confirmation popup will appear. If the user selects Yes, the template will be created successfully. After that, the user will be presented with options to Use Template, Send in Bulk, or Edit the Template. The newly created template will also be available in the Manage Templates list.
+  
+- **Fix and resend:** This option allows the user to recreate a completed document.
+It is useful when the completed document contains missing or incorrect information. Instead of starting from scratch, the user can use this feature to make the necessary edits and resend the document for signature.
+  
 If you require more help, feel free to reach out to our customer support on support@opensignlabs.com.
 
 Happy signing with OpenSign™!

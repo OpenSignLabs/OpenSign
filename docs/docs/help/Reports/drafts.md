@@ -16,7 +16,7 @@ The Draft documents section in OpenSign helps you manage all your in-progress do
 
 The Draft documents section provides an organized list of all documents that are saved as drafts. Each draft entry contains key details that help you quickly identify and manage your documents. Here’s a breakdown of the information available:
 
-<img width="816" alt="Draft documents" src="https://github.com/user-attachments/assets/6f743287-6459-4e93-ad7d-064c1ed68da0" />
+<img width="816" alt="Draft documents" src="https://github.com/user-attachments/assets/03c1895f-c0c3-40a6-bb56-6b36bfe3b9f5" />
 
 - **Sr.No:** This column displays the serial number for each document in the list, helping you quickly identify and reference documents.
 
@@ -39,7 +39,9 @@ The "Draft documents" report also includes several actions icons for each docume
 - **Edit:** If you need to make changes to your draft, click the edit (pencil) icon. This will open the document for you to make the necessary modifications before sending it for signatures.
 
 - **Delete:** If a draft is no longer needed, click the trash icon to delete it. Be cautious when using this action as deleted drafts cannot be recovered.
-
+  
+- **Save as template:** This option allows the user to save the current document as a reusable template. Upon clicking, a confirmation popup will appear. If the user selects Yes, the template will be created successfully. After that, the user will be presented with options to Use Template, Send in Bulk, or Edit the Template. The newly created template will also be available in the Manage Templates list.
+  
 If you require more help, feel free to reach out to our customer support on support@opensignlabs.com.
 
 Happy signing with OpenSign™!

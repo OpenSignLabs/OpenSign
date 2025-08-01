@@ -15,9 +15,7 @@ The In-Progress documents report in OpenSign helps you monitor and manage docume
 
 The "In progress documents" report is displayed in a tabular format, presenting key information about each finalized document. Below is a breakdown of each column and its purpose:
 
-<img width="816" alt="Inprogress documents" src="https://github.com/user-attachments/assets/60100998-1412-4331-8842-55fd9dd10307" />
-
-- **Sr.No:** This column displays the serial number for each document in the list, helping you quickly identify and reference documents.
+<img width="816" alt="Inprogress documents" src="https://github.com/user-attachments/assets/d0ead0ca-0c13-4d94-bab5-1fe58118001a" />
 
 - **Title:** The "Title" column displays the name of the document.
   
@@ -28,9 +26,8 @@ The "In progress documents" report is displayed in a tabular format, presenting 
 - **File:** Here, you will find a **"Download"** link that allows you to directly download the In-progress document to your local device for review.
 
 - **Status:** This column displays the current status of the document, indicating whether it has been viewed or signed by the signer. Once the signer has viewed or signed the document, the Owner of the document can click "View" to see the activity logs.
-  
-<img width="816" alt="Inprogress documents" src="https://github.com/user-attachments/assets/4eb43321-5eec-48ec-a3b6-75e932d31c6c" />
 
+<img width="816" alt="Inprogress documents" src="https://github.com/user-attachments/assets/c2353510-571e-4081-b429-0a522dc1da0b" />
 
 - **Signers:** The "Signers" column displays the names and email addresses of the signers assigned to that document for signature. Click the "View" button to see the signers.
 
@@ -40,7 +37,7 @@ The "In progress documents" report also includes several actions icons for each 
 
 - **Share Document:** The "Share" option in the In-Progress Documents report allows you to manually share the signing link of a document with signers or other recipients directly via email. This feature ensures that the signers can easily access the document, even if they have missed the initial notification.
 
-<img width="816" alt="Inprogress documents" src="https://github.com/user-attachments/assets/7c632c2d-c784-4b51-9517-5c6817abd16f" />
+<img width="816" alt="Inprogress documents" src="https://github.com/user-attachments/assets/9fd83c72-17a1-49bd-b7a3-30b80ef5f0ed" />
 
 Upon clicking the Share icon, a pop-up window titled Copy link will appear. This window provides multiple options to share the document link with designated recipients. 
 
@@ -59,9 +56,15 @@ The pop-up will display a list of email addresses of the intended recipients or 
   
 <img width="816" alt="resend document" src="https://github.com/user-attachments/assets/c0cb3348-47ca-4d2e-a2d7-81cb3b18a0c6" />
 
+- **Rename:** Allows the user to rename the document.
+  
 - **Revoke:** If there’s a mistake or you need to cancel the document, revoking stops all signing actions immediately. This is useful when changes are needed before re-sending the document.
   
 <img width="816" alt="resend document" src="https://github.com/user-attachments/assets/b2273768-ef81-44cd-95ea-92babee429b6" />
+
+- **Save as template:** This option allows the user to save the current document as a reusable template.
+Upon clicking, a confirmation popup will appear. If the user selects Yes, the template will be created successfully. After that, the user will be presented with options to Use Template, Send in Bulk, or Edit the Template.
+The newly created template will also be available in the Manage Templates list.
 
 - **Delete :** If the document is outdated or was sent by mistake, you can permanently remove it from the list. Use this action cautiously, as deleted documents cannot be recovered.
 
