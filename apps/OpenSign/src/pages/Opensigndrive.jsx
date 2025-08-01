@@ -712,14 +712,14 @@ function Opensigndrive() {
                       onClick={() => navigate("/form/sHAnZphf69")}
                     >
                       <i className="fa-light fa-pen-nib mr-[5px]"></i>
-                      {t("form-name.Sign Yourself")}
+                      {t("Sign Yourself")}
                     </span>
                     <span
                       className="dropdown-item text-[10px] md:text-[13px]"
                       onClick={() => navigate("/form/8mZzFxbG1z")}
                     >
                       <i className="fa-light fa-file-signature mr-[5px]"></i>
-                      {t("form-name.Request Signatures")}
+                      {t("Request Signatures")}
                     </span>
                   </div>
                 </div>
@@ -840,14 +840,14 @@ function Opensigndrive() {
                       onClick={() => navigate("/form/sHAnZphf69")}
                     >
                       <i className="fa-light fa-pen-nib mr-[5px]"></i>
-                      {t("form-name.Sign Yourself")}
+                      {t("Sign Yourself")}
                     </span>
                     <span
                       className="dropdown-item text-[10px] md:text-[13px]"
                       onClick={() => navigate("/form/8mZzFxbG1z")}
                     >
                       <i className="fa-light fa-file-signature mr-[5px]"></i>
-                      {t("form-name.Request Signatures")}
+                      {t("Request Signatures")}
                     </span>
                   </div>
                 </div>
