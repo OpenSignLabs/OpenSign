@@ -499,7 +499,7 @@ function Login() {
                               to="/forgetpassword"
                               className="text-[13px] op-link op-link-primary underline-offset-1 focus:outline-none ml-1"
                             >
-                              {t("forgot-password")}
+                              {t("forgot-password")}?
                             </NavLink>
                           </div>
                       </div>
