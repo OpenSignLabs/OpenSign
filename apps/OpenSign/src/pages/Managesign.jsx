@@ -324,13 +324,8 @@ const ManageSign = () => {
                 hidden
               />
               <div className="relative">
-                {isLoader && (
-                  <div className="absolute bg-black bg-opacity-30 z-50 w-full h-full flex justify-center items-center">
-                    <Loader />
-                  </div>
-                )}
                 {image ? (
-                  <div className="signatureCanvas relative border-[2px] border-[#888] rounded-box overflow-hidden">
+                  <div className="mysignatureCanvas  relative border-[2px] border-[#888] rounded-box overflow-hidden">
                     <img
                       alt="signature"
                       src={image}
@@ -342,10 +337,8 @@ const ManageSign = () => {
                     ref={canvasRef}
                     penColor={penColor}
                     canvasProps={{
-                      width: "456px",
-                      height: "180px",
                       className:
-                        "signatureCanvas border-[2px] border-[#888] rounded-box"
+                        "mysignatureCanvas border-[2px] border-[#888] rounded-box"
                     }}
                     onEnd={() =>
                       handleSignatureChange(canvasRef.current.toDataURL())
