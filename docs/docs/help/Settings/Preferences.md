@@ -61,7 +61,7 @@ Navigate to **Settings > Preferences** to configure user-level signature types.
 
 If a user sets preferred types here, only those will appear when adding signature or initial widgets during document creation.
 
-![Signature type setup preferences](https://github.com/user-attachments/assets/ae413b24-fe53-4aa9-9242-624574f1d7b3)
+<img width="861" height="480" alt="signatures" src="https://github.com/user-attachments/assets/69d0851c-57f2-42e5-af6e-419f6d8821c2" />
 
 ### 📄 Document-Level
 
@@ -113,7 +113,57 @@ The tour feature provides guidance for first-time users. You can turn this off f
 💡 **Tip**: Disable if your users are already familiar with OpenSign™.
 
 ---
+### 📧 Custom SMTP Configuration in OpenSign
 
+OpenSign allows users to **send emails using their own SMTP configuration**. This includes options to connect with Gmail or use third-party SMTP providers.
+
+To set up and enable custom SMTP:
+
+1. Navigate to the **Settings** menu.
+2. Click on **Preferences**.
+3. Choose one of the available SMTP options below:
+
+---
+
+#### 🔗 Connect to Gmail
+
+OpenSign allows you to send request signature emails directly from your **Gmail account**.
+
+- Click the **Connect to Gmail** button.
+- A popup will appear prompting you to log in to your Gmail account.
+- Grant the required permissions.
+- Once authorized, your OpenSign account will be connected and ready to send emails using your Gmail.
+
+---
+
+#### ⚙️ Custom SMTP
+
+You can also configure a **custom SMTP provider** such as SMTP2GO, Mailgun, etc.
+
+- Click the **Custom SMTP** button.
+- A popup will appear asking for your SMTP credentials:
+  - **Host:** SMTP host address (e.g., `mail.smtp2go.com`)
+  - **Port:** SMTP port (e.g., `2525`)
+  - **Sender Email:** Email address configured in your SMTP account
+  - **Username:** SMTP username (can be the same as the sender email)
+  - **Password:** SMTP password
+
+<img width="820" alt="Custom smtp" src="https://github.com/user-attachments/assets/a3c33510-11b9-4a32-bd44-99614182b089"></img>
+
+---
+
+#### 📤 OpenSign™ Default SMTP
+
+If you choose the **default SMTP**, all request signature emails will be sent via OpenSign’s built-in SMTP server.
+
+---
+
+> ⚠️ **Note:**
+> - A green checkmark next to an option indicates the **currently active SMTP**.
+> - **Only one SMTP option can be active at a time.**
+> - This feature is available only on paid plans.
+
+  ---
 ## 🧭 Timezone & Date Format
 
 Customize the **Timezone** and **Date Format** according to your regional preferences.  
@@ -133,7 +183,7 @@ These settings are reflected in:
 - Supports **12-hour** and **24-hour** formats.
 - Affects timestamps in certificates, logs, and webhooks.
 
-![Preferences setup](https://github.com/user-attachments/assets/5bb9ad1a-f3c7-4b6e-9469-1bb003e1eec0)
+<img width="820" alt="Time zone" src="https://github.com/user-attachments/assets/bc1f29a2-565a-4ac2-96a4-9aa18b80b064"></img>
 
 ---
 
