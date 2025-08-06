@@ -6,18 +6,21 @@
 .react-datepicker__input-container {
   position: initial !important;
 }
+
 .select-none-cls {
   -webkit-user-select: none;
   /* Disable text selection in WebKit browsers */
   -moz-user-select: none;
   user-select: none;
 }
+
 .widgets {
   -webkit-user-select: none;
   /* Disable text selection in WebKit browsers */
   -moz-user-select: none;
   user-select: none;
 }
+
 .radioButton {
   width: 100%;
   height: 100%;
@@ -33,10 +36,16 @@
   width: 440px;
   height: 167px;
 }
+
 .tabWidth {
   border: 1px solid #f3f4f6;
   background-color: #f3f4f6;
   width: 440px;
+}
+
+.mysignatureCanvas {
+  width: 456px;
+  height: 180px;
 }
 
 [data-theme="opensigndark"] .tabWidth {
@@ -48,6 +57,7 @@
   width: 150px;
   height: 150px;
 }
+
 .checked-radio::after {
   content: "";
   position: absolute;
@@ -56,14 +66,15 @@
   width: 50%;
   height: 50%;
   border-radius: 9999px;
-  background-color: #111111; /* blue-500 */
+  background-color: #111111;
+  /* blue-500 */
 }
 
 .intialSignature {
   border: 2px solid #888;
   background-color: rgb(255, 255, 255);
-  width: 183px;
-  height: 183px;
+  width: 180px;
+  height: 180px;
 }
 
 /* Dark mode support for initials box in /managesign */
@@ -96,6 +107,12 @@
 
 /* Also support signature canvas for consistency */
 [data-theme="opensigndark"] .signatureCanvas {
+  background-color: #1f2937 !important;
+  border-color: #4b5563 !important;
+}
+
+/* Also support signature canvas for consistency */
+[data-theme="opensigndark"] .mysignatureCanvas {
   background-color: #1f2937 !important;
   border-color: #4b5563 !important;
 }
@@ -115,6 +132,7 @@
 .ScrollbarsCustom-TrackY {
   width: 4px !important;
 }
+
 .ScrollbarsCustom-TrackX {
   height: 4px !important;
 }
@@ -143,6 +161,7 @@
   overflow: hidden !important;
   text-overflow: ellipsis;
 }
+
 .disabled {
   opacity: 0.5;
   /* Example: reduce opacity to visually indicate disabled state */
@@ -431,7 +450,7 @@ option {
   to prevent sudden quick movement (as the
   navigation bar gets a new position at the top of the
   page (position:fixed and top:0) */
-  .stickyHead + .content {
+  .stickyHead+.content {
     padding-top: 60px;
   }
 }
@@ -441,6 +460,12 @@ option {
     width: 300px;
     height: 120px;
   }
+
+  .mysignatureCanvas {
+    width: 300px;
+    height: 118px;
+  }
+
   .tabWidth {
     width: 300px;
   }
@@ -462,11 +487,18 @@ option {
 .scroll-hide::-webkit-scrollbar {
   display: none;
 }
+
 @media screen and (max-width: 350px) and (min-width: 311px) {
   .signatureCanvas {
     width: 280px;
     height: 112px;
   }
+
+  .mysignatureCanvas {
+    width: 280px;
+    height: 111px;
+  }
+
   .tabWidth {
     width: 280px;
   }
@@ -491,6 +523,12 @@ option {
     width: 230px;
     height: 92px;
   }
+
+  .mysignatureCanvas {
+    width: 230px;
+    height: 91px;
+  }
+
   .tabWidth {
     width: 230px;
   }
