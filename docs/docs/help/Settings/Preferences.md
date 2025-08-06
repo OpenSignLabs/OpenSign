@@ -136,6 +136,8 @@ OpenSign allows you to send request signature emails directly from your **Gmail 
 
 ---
 
+<img width="820" alt="Custom smtp" src="https://github.com/user-attachments/assets/462ec0d0-bed9-4edc-bef9-5dd451cb248f"></img>
+
 #### ⚙️ Custom SMTP
 
 You can also configure a **custom SMTP provider** such as SMTP2GO, Mailgun, etc.
