@@ -19,13 +19,13 @@ Follow the steps below to generate one.
 
 **Step 2:** Navigate to the **Settings** section and click on **API Token**.
 
-<img width="436" alt="Navigate-to-Api-token" src="https://github.com/user-attachments/assets/8079ecb5-ad5b-4ce6-8d6c-14395130a654" />
+<img width="436" alt="Navigate-to-Api-token" src="https://github.com/user-attachments/assets/e0e05a23-f815-4805-a047-f08d3727ad98" />
 
 **Step 3:** On the API Token page, click the **Generate Live API Token** button.
 
 > **Note:** To generate a **Live API Token**, you must upgrade to a **paid plan** — either the **Professional** or **Teams** plan.
 
-<img width="436" alt="Generate token" src="https://github.com/user-attachments/assets/6188ae46-0f40-4de6-9903-33ae0aa4e63f" />
+<img width="436" alt="Generate token" src="https://github.com/user-attachments/assets/f5a17744-cfce-464f-9b82-685570ed1e39" />
 
 - Your `x-api-token` will now be generated and displayed.
 - **Copy this token** — you’ll need it to authenticate your OpenSign API requests.
@@ -39,7 +39,30 @@ You’ll also find the option to generate a **Sandbox API Token** on the same pa
 - **Sandbox API tokens** are available on all plans, including the **free plan**, and are intended for development and testing.
 - **Do not upload confidential data** to the Sandbox environment.
 
+  <img width="436" alt="Sandbox api token" src="https://github.com/user-attachments/assets/f27d9e00-7989-4c01-b23e-cecaccce4be2" />
+  
+### 🧪 Sandbox Cloud Account Login
+
+OpenSign provides a **sandbox testing cloud environment**, which is a replica of the production environment. This allows users to test features without affecting live data.
+
+- ✅ Available in **all plans**, including the **free plan**.
+- 🧪 Ideal for **testing and development** purposes.
+
+<img width="436" alt="login to sandbox" src="https://github.com/user-attachments/assets/3bc6bacd-9c15-4232-b9d7-6d0fb423cf57" />
+
+#### 🔐 How to Access the Sandbox Environment
+
+1. Go to the **Settings** menu.
+2. Click on **API Token**.
+3. On the API Token page, click **Login to Sandbox**.
+4. You will be automatically logged in to the sandbox environment using your existing account — **no need to enter your username or password**.
+
+> ⚠️ **Important Note:**  
+> Manually entering your username and password will **not work** for sandbox login. Always use the "Login to Sandbox" button for access.
 ---
+### Buy the api credit 
+User can buy the api credit using this feature 
+On the click of the buy premium credits the 
 
 ## 🧠 Frequently Asked Questions
 
