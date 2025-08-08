@@ -3729,4 +3729,3 @@ export function convertJpegToPng(base64Image, filename) {
     });
   }
 }
-
