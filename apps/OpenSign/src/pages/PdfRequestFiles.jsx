@@ -75,9 +75,6 @@ function PdfRequestFiles(
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const isShowModal = useSelector((state) => state.widget.isShowModal);
-  const saveSignCheckbox = useSelector(
-    (state) => state.widget.saveSignCheckbox
-  );
   const defaultSignImg = useSelector((state) => state.widget.defaultSignImg);
   const myInitial = useSelector((state) => state.widget.myInitial);
   const appName =
@@ -484,12 +481,7 @@ function PdfRequestFiles(
               } else {
                 setRequestSignTour(false);
               }
-              dispatch(
-                setSaveSignCheckbox({
-                  ...saveSignCheckbox,
-                  isVisible: true
-                })
-              );
+
               //function to get default signatur of current user from `contracts_Signature` class
               const defaultSignRes = await getDefaultSignature(
                 jsonSender?.objectId
@@ -497,7 +489,6 @@ function PdfRequestFiles(
               if (defaultSignRes?.status === "success") {
                 dispatch(
                   setSaveSignCheckbox({
-                    ...saveSignCheckbox,
                     isVisible: true,
                     signId: defaultSignRes?.res?.id
                   })
@@ -506,6 +497,8 @@ function PdfRequestFiles(
                 const initials = defaultSignRes?.res?.defaultInitial || "";
                 dispatch(setDefaultSignImg(sign));
                 dispatch(setMyInitial(initials));
+              } else {
+                dispatch(setSaveSignCheckbox({ isVisible: true }));
               }
             } else if (res?.length === 0) {
               const res = await contactBook(currUserId);
@@ -642,7 +635,7 @@ function PdfRequestFiles(
           (data) => data.signerObjId === signerObjectId
         );
         if (checkUser && checkUser.length > 0) {
-          const status = handleCheckResponse(checkUser,setminRequiredCount)      
+          const status = handleCheckResponse(checkUser, setminRequiredCount);
           if (status?.showAlert) {
             setUnSignedWidgetId(status?.widgetKey);
             setPageNumber(status?.tourPageNumber);
@@ -1377,7 +1370,7 @@ function PdfRequestFiles(
       setIsUiLoading(false);
       alert(t("expiry-date-error"));
     }
-  }; 
+  };
   // `handleRedirectCancel` is used to cancel redirecting to redirectUrl
   const handleRedirectCancel = () => {
     setIsredirectCanceled(true);

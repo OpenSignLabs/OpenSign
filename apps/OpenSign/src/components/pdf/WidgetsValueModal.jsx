@@ -551,8 +551,8 @@ function WidgetsValueModal(props) {
           // below code is used to save or update default signature, initials, stamp
           try {
             const signCls = new Parse.Object("contracts_Signature");
-            if (props?.saveSignCheckbox?.signId) {
-              signCls.id = props.saveSignCheckbox.signId;
+            if (saveSignCheckbox?.signId) {
+              signCls.id = saveSignCheckbox.signId;
             }
             if (currWidgetsDetails?.type === "initials") {
               signCls.set("Initials", imageUrl);
