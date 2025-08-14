@@ -286,7 +286,9 @@ function UserProfile() {
                       style={{ width: `${percentage}%` }}
                     ></div>
                   </div>
-                  <span className="text-base-contentk text-sm">{percentage}%</span>
+                  <span className="text-base-contentk text-sm">
+                    {percentage}%
+                  </span>
                 </div>
               )}
               <div className="text-base font-semibold pt-4">
