@@ -77,9 +77,6 @@ function SignYourSelf() {
   const { docId } = useParams();
   const dispatch = useDispatch();
   const isShowModal = useSelector((state) => state.widget.isShowModal);
-  const saveSignCheckbox = useSelector(
-    (state) => state.widget.saveSignCheckbox
-  );
   const appName =
     "OpenSign™";
   const divRef = useRef(null);
@@ -268,13 +265,14 @@ function SignYourSelf() {
       if (defaultSignRes?.status === "success") {
         dispatch(
           setSaveSignCheckbox({
-            ...saveSignCheckbox,
             isVisible: true,
             signId: defaultSignRes?.res?.id
           })
         );
         dispatch(setDefaultSignImg(defaultSignRes?.res?.defaultSignature));
         dispatch(setMyInitial(defaultSignRes?.res?.defaultInitial));
+      } else {
+        dispatch(setSaveSignCheckbox({ isVisible: true }));
       }
       const contractUsersRes = await contractUsers();
       if (contractUsersRes === "Error: Something went wrong!") {
@@ -283,8 +281,6 @@ function SignYourSelf() {
       } else if (contractUsersRes[0] && contractUsersRes.length > 0) {
         setContractName("_Users");
         setSignerUserId(contractUsersRes[0].objectId);
-        dispatch(setSaveSignCheckbox({ ...saveSignCheckbox, isVisible: true }));
-
         const tourstatuss =
           contractUsersRes[0].TourStatus && contractUsersRes[0].TourStatus;
         if (tourstatuss && tourstatuss.length > 0 && !isCompleted) {
@@ -1046,12 +1042,18 @@ function SignYourSelf() {
 
   const setCellCount = (key, newCount) => {
     setXyPosition((prev) => {
-      const getPageNumer = prev.filter((data) => data.pageNumber === pageNumber);
+      const getPageNumer = prev.filter(
+        (data) => data.pageNumber === pageNumber
+      );
       if (getPageNumer.length > 0) {
         const updatePos = getPageNumer[0].pos.map((p) =>
-          p.key === key ? { ...p, options: { ...p.options, cellCount: newCount } } : p
+          p.key === key
+            ? { ...p, options: { ...p.options, cellCount: newCount } }
+            : p
         );
-        return prev.map((obj, ind) => (ind === index ? { ...obj, pos: updatePos } : obj));
+        return prev.map((obj, ind) =>
+          ind === index ? { ...obj, pos: updatePos } : obj
+        );
       }
       return prev;
     });
@@ -1082,7 +1084,8 @@ function SignYourSelf() {
                 cellCount: count,
                 defaultValue: (defaultdata?.defaultValue || "").slice(0, count),
                 fontSize: newFontSize || position.options?.fontSize || 12,
-                fontColor: newFontColor || position.options?.fontColor || "black"
+                fontColor:
+                  newFontColor || position.options?.fontColor || "black"
               }
             };
           } else {
