@@ -1,5 +1,5 @@
 ---
-sidebar_position: 5
+sidebar_position: 6
 title: Embedding OpenSign templates
 ---
 import ReactPlayer from 'react-player';
