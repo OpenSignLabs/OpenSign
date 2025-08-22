@@ -1,5 +1,5 @@
 ---
-sidebar_position: 4
+sidebar_position: 5
 title: Setting up an OpenSign template for public signing
 ---
 

@@ -1,5 +1,5 @@
 ---
-sidebar_position: 2
+sidebar_position: 3
 title: Use template to create documents
 ---
 # How to use template to create documents in OpenSign™
