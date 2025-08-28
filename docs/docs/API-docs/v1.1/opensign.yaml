@@ -13,9 +13,10 @@ info:
     - [OpenSign GitHub Repository](https://github.com/opensignlabs/opensign)
     - [Generate x-api-token](https://docs.opensignlabs.com/docs/help/Settings/APIToken) – Learn how to securely generate and manage your API token for authenticating requests.
 
-    **Update in v1.1:**
-    - Public template: A public template can be created and shared via a link. Any user with the link can create and sign a document from it. However, users cannot edit the template itself.
-    - Prefill widget: Prefill widgets are embedded in a document before it is sent to users. They are available in the following endpoints: draft documents, document creation, document creation with a template, draft templates, and public templates. 
+    **What’s New in v1.1**
+    - **Public Templates**: Create templates that can be shared via a public link. Any user with the link can generate and sign documents based on the template. Templates themselves cannot be edited through the public link.
+    - **Prefill Widgets**: Add prefill widgets to documents before they are sent. Prefill widgets are supported in the following endpoints: draft documents, document creation, document creation with a template, draft templates, and public templates.
+
 
   x-api-token: 
     description: "refer docs to generate api token [APIToken help](https://docs.opensignlabs.com/docs/help/Settings/APIToken)"
@@ -23,7 +24,7 @@ info:
     email: api@opensignlabs.com
   termsOfService: http://www.opensignlabs.com/terms/
   license:
-    name: AGPL v 3.0
+    name: AGPL v3.0
     url: http://github.com/opensignlabs/opensign/LICENSE
   version: 1.0.0
 externalDocs:
