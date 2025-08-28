@@ -27,14 +27,14 @@ const sidebars = {
       type: 'category',
       label: 'v1',
       // Optional: clicking the category label goes to a “generated index”
-      link: { type: 'generated-index', title: 'OpenSign API v1', slug: '/api/v1' },
+      link: { type: 'generated-index', title: 'OpenSign API v1', slug: '/API-docs/v1' },
       collapsed: false,
       items: apiV1Sidebar,
     },
     {
       type: 'category',
       label: 'v1.1',
-      link: { type: 'generated-index', title: 'OpenSign API v1.1', slug: '/api/v1.1' },
+      link: { type: 'generated-index', title: 'OpenSign API v1.1', slug: '/API-docs/v1.1' },
       collapsed: false,
       items: apiV11Sidebar,
     },
