@@ -23,7 +23,6 @@ const sidebars = {
   // apiSidebar: apiSidebar,
   // Single API sidebar containing two top-level categories
   apiSidebar: [
-   'API-docs/intro',
     {
       type: 'category',
       label: 'v1.1',
