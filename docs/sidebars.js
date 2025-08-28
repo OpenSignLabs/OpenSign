@@ -23,14 +23,7 @@ const sidebars = {
   // apiSidebar: apiSidebar,
   // Single API sidebar containing two top-level categories
   apiSidebar: [
-    {
-      type: 'category',
-      label: 'v1',
-      // Optional: clicking the category label goes to a “generated index”
-      link: { type: 'generated-index', title: 'OpenSign API v1', slug: '/API-docs/v1' },
-      collapsed: false,
-      items: apiV1Sidebar,
-    },
+   'API-docs/intro',
     {
       type: 'category',
       label: 'v1.1',
@@ -38,6 +31,14 @@ const sidebars = {
       collapsed: false,
       items: apiV11Sidebar,
     },
+    {
+      type: 'category',
+      label: 'v1',
+      // Optional: clicking the category label goes to a “generated index”
+      link: { type: 'generated-index', title: 'OpenSign API v1', slug: '/API-docs/v1' },
+      collapsed: false,
+      items: apiV1Sidebar,
+    }
   ],
  
   // But you can create a sidebar manually
