@@ -69,14 +69,29 @@ const config = {
         id: "openapi",
         docsPluginId: "default", // e.g. "classic" or the plugin-content-docs id
         config: {
-          opensign: { // "petstore" is considered the <id> that you will reference in the CLI
-            specPath: "docs/API-docs/opensign.yaml", // path or URL to the OpenAPI spec
-            outputDir: "docs/API-docs", // output directory for generated *.mdx and sidebar.js files
-            sidebarOptions: {
-              groupPathsBy: "tag", // generate a sidebar.js slice that groups operations by tag
+         opensign: {
+          // Optional: put all versions under a single route
+          routeBasePath: 'api/opensign',
+          sidebarOptions: {
+            groupPathsBy: 'tag',
+          },
+          // Define your versions here
+          versions: {
+              'v1': {
+                specPath: 'docs/API-docs/v1/opensign.yaml',
+                outputDir: 'docs/API-docs/opensign/v1',
+                label: 'v1',
+                // isLatest: false, // default
+              },
+              'v1.1': {
+                specPath: 'docs/API-docs/v1.1/opensign.yaml',
+                outputDir: 'docs/API-docs/opensign/v1.1',
+                label: 'v1.1',
+                isLatest: true, // makes this the default version in the UI
+              },
             },
-          }
-        }
+          },
+        },
       },
     ]
   ],
