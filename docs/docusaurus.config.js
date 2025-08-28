@@ -65,34 +65,24 @@ const config = {
   plugins: [
     [
       "docusaurus-plugin-openapi-docs",
-      {
-        id: "openapi",
-        docsPluginId: "default", // e.g. "classic" or the plugin-content-docs id
-        config: {
-         opensign: {
-          // Optional: put all versions under a single route
-          routeBasePath: 'api/opensign',
-          sidebarOptions: {
-            groupPathsBy: 'tag',
-          },
-          // Define your versions here
-          versions: {
-              'v1': {
-                specPath: 'docs/API-docs/v1/opensign.yaml',
-                outputDir: 'docs/API-docs/opensign/v1',
-                label: 'v1',
-                // isLatest: false, // default
-              },
-              'v1.1': {
-                specPath: 'docs/API-docs/v1.1/opensign.yaml',
-                outputDir: 'docs/API-docs/opensign/v1.1',
-                label: 'v1.1',
-                isLatest: true, // makes this the default version in the UI
-              },
+        {
+          id: "openapi",
+          docsPluginId: "default", // e.g. "classic" or the plugin-content-docs id
+          config: {
+            opensign_v1: {
+              // OpenAPI v1
+              specPath: "docs/API-docs/v1/opensign.yaml", // your v1 spec file
+              outputDir: "docs/API-docs/v1",              // generated mdx + sidebar.js
+              sidebarOptions: { groupPathsBy: "tag" },
             },
-          },
-        },
-      },
+            opensign_v1_1: {
+              // OpenAPI v1.1
+              specPath: "docs/API-docs/v1.1/opensign.yaml", // your v1.1 spec file
+              outputDir: "docs/API-docs/v1.1",              // generated mdx + sidebar.js
+              sidebarOptions: { groupPathsBy: "tag" },
+          }
+        }
+      }
     ]
   ],
   themes: ["docusaurus-theme-openapi-docs"], // exports ApiItem and ApiDemoPanel
