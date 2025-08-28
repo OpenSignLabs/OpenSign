@@ -2875,7 +2875,7 @@ paths:
       - Templates
       summary: Public Template
       description: |
-        The Public Template API enables users to create templates, serving as blueprints for generating documents with predefined structures. Upon successful creation of a template, the API returns a **public_url** which can be used to generate documents based on the specified template and this url can be send to any user it's public accessiable to any user using url and but cannot edit the template just create and sign document using template. Additionally, unique **template_id**.
+        The Public Template API allows users to create templates that serve as blueprints for generating documents with predefined structures. When a template is successfully created, the API returns a unique **template_id** and a **public_url**. The **public_url** is publicly accessible and may be shared with any user, enabling them to generate and sign documents based on the template. However, the template itself cannot be modified through this URL; it can only be used for document creation and signing.
 
         Tip: Upload your PDF document to our [**Debug UI**](https://app.opensignlabs.com/debugpdf), where you can easily add widgets, then copy coordinates, page numbers, and more in a ready-to-use JSON format. Plus, you can directly copy the document's base64 string, making it quick to send to the API.
 
