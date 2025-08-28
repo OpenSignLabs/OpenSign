@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkOpenSign_Docs=self.webpackChunkOpenSign_Docs||[]).push([[448],{43519:e=>{e.exports=JSON.parse('{"categoryGeneratedIndex":{"title":"OpenSign API v1.1","slug":"/API-docs/v1.1","permalink":"/docs/API-docs/v1.1","sidebar":"apiSidebar","navigation":{"next":{"title":"Introduction","permalink":"/docs/API-docs/v1.1/opensign-api-v-1-1"}}}}')}}]);
