@@ -11,11 +11,8 @@
 
 // @ts-check
 // import apiSidebar from './docs/API-docs/sidebar.ts';
-import v1SidebarMod from './docs/API-docs/v1/sidebar.js';
-import v11SidebarMod from './docs/API-docs/v1.1/sidebar.js';
-// The generator may export either an array or an object with { sidebar: [...] }
-const apiV1Sidebar = Array.isArray(v1SidebarMod) ? v1SidebarMod : (v1SidebarMod.sidebar || v1SidebarMod.default || v1SidebarMod);
-const apiV11Sidebar = Array.isArray(v11SidebarMod) ? v11SidebarMod : (v11SidebarMod.sidebar || v11SidebarMod.default || v11SidebarMod);
+import apiV1Sidebar from './docs/API-docs/v1/sidebar.ts';
+import apiV11Sidebar from './docs/API-docs/v1.1/sidebar.ts';
 
 /** @type {import('@docusaurus/plugin-content-docs').SidebarsConfig} */
 const sidebars = {
