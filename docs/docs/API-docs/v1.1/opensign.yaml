@@ -829,6 +829,128 @@ paths:
           }
         }
         ```
+        
+        **Prefill Widgets:** Prefill widgets are elements that are inserted into a document before it is shared with a user. Only the document creator has permission to add them.
+        
+        **List of widgets supported in Prefill**
+        1. **textbox**
+        ```
+        {
+          "type": "textbox",
+          "page": 1,
+          "x": 290,
+          "y": 165,
+          "w": 150,
+          "h": 20,
+          "options": {
+           "name": "textbox",
+           "response": "joe",
+           "color": "red",
+           "fontsize": 12
+           }
+        }
+        ```
+        - **response:** Enter the text you would like to display inside the textbox.
+        - **color:** Choose the text color (options: black, blue, or red).
+        
+        2. **date**
+        ```
+        {
+          "type": "date"
+          "page": 1
+          "x": 173
+          "y": 588
+          "w": 114
+          "h": 21
+          "options": {
+            "name": "date"
+            "response": "04/15/2024"
+            "format": "mm/dd/yyyy"
+            "color": "black"
+            "fontsize": 12
+          }  
+        }
+        ```
+        - **response:** Enter the date you would like to display inside the date box.
+        - **format:** Specify the date format of your choice from the options below.
+          - "mm/dd/yyyy",
+          - "dd-mm-yyyy",
+          - "yyyy-mm-dd",
+          - "mm.dd.yyyy",
+          - "mm-dd-yyyy",
+          - "mmm dd, yyyy",
+          - "mmmm dd, yyyy",
+          - "dd mmm, yyyy",
+          - "dd mmmm, yyy",
+          - "dd/mm/yyyy",
+          - "dd.mm.yyyy".
+        - **color:** Choose the text color (options: black, blue, or red).
+        
+        3. **checkbox**
+        ```
+        {
+          "type": "checkbox",
+          "page": 1,
+          "x": 172,
+          "y": 630,
+          "w": 114,
+          "h": 21,
+          "options": {
+            "name": "checkbox",
+            "values": ["male", "female", "other"],
+            "response": ["male", "female"],
+            "hidelabel": false,
+            "color": "black",
+            "fontsize": 12
+          }
+        }
+        ```
+        - **values:** Provide options for the checkbox list.
+        - **response:** Provide values that need to be selected.
+        - **hidelabel:** Set to true if you want to hide labels of the checkbox. By default, it's false.
+        - **color:** Choose the text color (options: black, blue, or red).
+       
+        4. **radio button**
+        ```
+        {
+          "type": "radio button",
+          "page": 1,
+          "x": 173,
+          "y": 718,
+          "w": 114,
+          "h": 21,
+          "options": {
+            "name": "radio button",
+            "values": ["male", "female", "other"],
+            "response": "male",
+            "hidelabel": false,
+            "color": "black",
+            "fontsize": 12
+          } 
+        }
+        ```
+        - **values:** Provide options for the radio button list.
+        - **response:** Provide the value that needs to be selected. Only one value is accepted.
+        - **hidelabel:** Set to true if you want to hide labels of the radio button. By default, it's false.
+        - **color:** Choose the text color (options: black, blue, or red).
+        
+        5. **image**
+        ```
+        {
+          "type": "image",
+          "page": 1,
+          "x": 100,
+          "y": 95,
+          "w": 92,
+          "h": 55,
+          "options": {
+            "name": "image",
+            "response":"iVBORw0KGgoAAAANSUhEUgAAAmoAAA..."
+          }
+        }
+        ```
+        - **response:** Provide image in base64 format like iVBORw0KGgoAAAANSUhEUgA... or data:image/png;base64,iVBORw0KGgoAAAANSUhEUgA....
+        
       operationId: draftdocument
       requestBody:
         content:
@@ -1153,6 +1275,128 @@ paths:
           }
         }
         ```
+        
+        **Prefill Widgets:** Prefill widgets are elements that are inserted into a document before it is shared with a user. Only the document creator has permission to add them.
+        
+        **List of widgets supported in Prefill**
+        1. **textbox**
+        ```
+        {
+          "type": "textbox",
+          "page": 1,
+          "x": 290,
+          "y": 165,
+          "w": 150,
+          "h": 20,
+          "options": {
+           "name": "textbox",
+           "response": "joe",
+           "color": "red",
+           "fontsize": 12
+           }
+        }
+        ```
+        - **response:** Enter the text you would like to display inside the textbox.
+        - **color:** Choose the text color (options: black, blue, or red).
+        
+        2. **date**
+        ```
+        {
+          "type": "date"
+          "page": 1
+          "x": 173
+          "y": 588
+          "w": 114
+          "h": 21
+          "options": {
+            "name": "date"
+            "response": "04/15/2024"
+            "format": "mm/dd/yyyy"
+            "color": "black"
+            "fontsize": 12
+          }  
+        }
+        ```
+        - **response:** Enter the date you would like to display inside the date box.
+        - **format:** Specify the date format of your choice from the options below.
+          - "mm/dd/yyyy",
+          - "dd-mm-yyyy",
+          - "yyyy-mm-dd",
+          - "mm.dd.yyyy",
+          - "mm-dd-yyyy",
+          - "mmm dd, yyyy",
+          - "mmmm dd, yyyy",
+          - "dd mmm, yyyy",
+          - "dd mmmm, yyy",
+          - "dd/mm/yyyy",
+          - "dd.mm.yyyy".
+        - **color:** Choose the text color (options: black, blue, or red).
+        
+        3. **checkbox**
+        ```
+        {
+          "type": "checkbox",
+          "page": 1,
+          "x": 172,
+          "y": 630,
+          "w": 114,
+          "h": 21,
+          "options": {
+            "name": "checkbox",
+            "values": ["male", "female", "other"],
+            "response": ["male", "female"],
+            "hidelabel": false,
+            "color": "black",
+            "fontsize": 12
+          }
+        }
+        ```
+        - **values:** Provide options for the checkbox list.
+        - **response:** Provide values that need to be selected.
+        - **hidelabel:** Set to true if you want to hide labels of the checkbox. By default, it's false.
+        - **color:** Choose the text color (options: black, blue, or red).
+       
+        4. **radio button**
+        ```
+        {
+          "type": "radio button",
+          "page": 1,
+          "x": 173,
+          "y": 718,
+          "w": 114,
+          "h": 21,
+          "options": {
+            "name": "radio button",
+            "values": ["male", "female", "other"],
+            "response": "male",
+            "hidelabel": false,
+            "color": "black",
+            "fontsize": 12
+          } 
+        }
+        ```
+        - **values:** Provide options for the radio button list.
+        - **response:** Provide the value that needs to be selected. Only one value is accepted.
+        - **hidelabel:** Set to true if you want to hide labels of the radio button. By default, it's false.
+        - **color:** Choose the text color (options: black, blue, or red).
+        
+        5. **image**
+        ```
+        {
+          "type": "image",
+          "page": 1,
+          "x": 100,
+          "y": 95,
+          "w": 92,
+          "h": 55,
+          "options": {
+            "name": "image",
+            "response":"iVBORw0KGgoAAAANSUhEUgAAAmoAAA..."
+          }
+        }
+        ```
+        - **response:** Provide image in base64 format like iVBORw0KGgoAAAANSUhEUgA... or data:image/png;base64,iVBORw0KGgoAAAANSUhEUgA....
+        
       operationId: createdocument
       requestBody:
         content:
@@ -1269,6 +1513,55 @@ paths:
           "name": "radio",
           "readonly": false,
           "default": "option1"
+        }
+        ```
+        
+        **Prefill Widgets:** Prefill widgets are elements that are inserted into a document before it is shared with a user. Only the document creator has permission to add them.
+        
+        - **response:** Provide the value that should replace the existing response.
+        
+        **List of widgets supported in Prefill**
+        1. **textbox**
+        ```
+        {
+          "name":"textbox",
+          "response":"andrew bee"
+        }
+        ```
+        2. **date**
+        ```
+        {
+          "name": "date"
+          "response": "04/15/2024"
+        }
+        ```
+        3. **checkbox**
+        ```
+        {
+          "name": "checkbox",
+          "response": ["male", "female"]
+        }
+        ```
+        4. **radio button**
+        ```
+        {
+          "name": "radio button",
+          "response": "male"
+        }
+        ```
+        5. **image**
+        ```
+        {
+          "name": "image",
+          "response":"iVBORw0KGgoAAAANSUhEUgAAAmoAAA..."
+        }
+
+        ```
+        6. **dropdown**
+        ```
+        {
+          "name": "dropdown",
+          "response": "female"
         }
         ```
       operationId: createdocumentwithtemplateid
@@ -1935,6 +2228,149 @@ paths:
           }
         }
         ```
+        
+        **Prefill Widgets:** Prefill widgets are elements that are inserted into a document before it is shared with a user. Only the document creator has permission to add them.
+        
+        **List of widgets supported in Prefill**
+        1. **textbox**
+        ```
+        {
+          "type": "textbox",
+          "page": 1,
+          "x": 290,
+          "y": 165,
+          "w": 150,
+          "h": 20,
+          "options": {
+           "name": "textbox",
+           "response": "joe",
+           "color": "red",
+           "fontsize": 12
+           }
+        }
+        ```
+        - **response:** Enter the text you would like to display inside the textbox.
+        - **color:** Choose the text color (options: black, blue, or red).
+        
+        2. **date**
+        ```
+        {
+          "type": "date"
+          "page": 1
+          "x": 173
+          "y": 588
+          "w": 114
+          "h": 21
+          "options": {
+            "name": "date"
+            "response": "04/15/2024"
+            "format": "mm/dd/yyyy"
+            "color": "black"
+            "fontsize": 12
+          }  
+        }
+        ```
+        - **response:** Enter the date you would like to display inside the date box.
+        - **format:** Specify the date format of your choice from the options below.
+          - "mm/dd/yyyy",
+          - "dd-mm-yyyy",
+          - "yyyy-mm-dd",
+          - "mm.dd.yyyy",
+          - "mm-dd-yyyy",
+          - "mmm dd, yyyy",
+          - "mmmm dd, yyyy",
+          - "dd mmm, yyyy",
+          - "dd mmmm, yyy",
+          - "dd/mm/yyyy",
+          - "dd.mm.yyyy".
+        - **color:** Choose the text color (options: black, blue, or red).
+        
+        3. **checkbox**
+        ```
+        {
+          "type": "checkbox",
+          "page": 1,
+          "x": 172,
+          "y": 630,
+          "w": 114,
+          "h": 21,
+          "options": {
+            "name": "checkbox",
+            "values": ["male", "female", "other"],
+            "response": ["male", "female"],
+            "hidelabel": false,
+            "color": "black",
+            "fontsize": 12
+          }
+        }
+        ```
+        - **values:** Provide options for the checkbox list.
+        - **response:** Provide values that need to be selected.
+        - **hidelabel:** Set to true if you want to hide labels of the checkbox. By default, it's false.
+        - **color:** Choose the text color (options: black, blue, or red).
+       
+        4. **radio button**
+        ```
+        {
+          "type": "radio button",
+          "page": 1,
+          "x": 173,
+          "y": 718,
+          "w": 114,
+          "h": 21,
+          "options": {
+            "name": "radio button",
+            "values": ["male", "female", "other"],
+            "response": "male",
+            "hidelabel": false,
+            "color": "black",
+            "fontsize": 12
+          } 
+        }
+        ```
+        - **values:** Provide options for the radio button list.
+        - **response:** Provide the value that needs to be selected. Only one value is accepted.
+        - **hidelabel:** Set to true if you want to hide labels of the radio button. By default, it's false.
+        - **color:** Choose the text color (options: black, blue, or red).
+        
+        5. **image**
+        ```
+        {
+          "type": "image",
+          "page": 1,
+          "x": 100,
+          "y": 95,
+          "w": 92,
+          "h": 55,
+          "options": {
+            "name": "image",
+            "response":"iVBORw0KGgoAAAANSUhEUgAAAmoAAA..."
+          }
+        }
+        ```
+        - **response:** Provide image in base64 format like iVBORw0KGgoAAAANSUhEUgA... or data:image/png;base64,iVBORw0KGgoAAAANSUhEUgA....
+        6. **dropdown**
+        ```
+        {
+          "type": "dropdown",
+          "page": 1,
+          "x": 327,
+          "y": 528,
+          "w": 114,
+          "h": 21,
+          "options": {
+            "name": "dropdown",
+            "values": ["male", "female", "other"],
+            "response": "female",
+            "color": "black",
+            "fontsize": 12
+          }
+        }
+        ```
+        - **values:** Provide options for the dropdown list.
+        - **response:** Provide the value that needs to be selected. Only one value is accepted.
+        - **color:** Choose the text color (options: black, blue, or red).
+
       operationId: drafttemplate
       requestBody:
         content:
@@ -2259,6 +2695,148 @@ paths:
           }
         }
         ```
+        
+        **Prefill Widgets:** Prefill widgets are elements that are inserted into a document before it is shared with a user. Only the document creator has permission to add them.
+        
+        **List of widgets supported in Prefill**
+        1. **textbox**
+        ```
+        {
+          "type": "textbox",
+          "page": 1,
+          "x": 290,
+          "y": 165,
+          "w": 150,
+          "h": 20,
+          "options": {
+           "name": "textbox",
+           "response": "joe",
+           "color": "red",
+           "fontsize": 12
+           }
+        }
+        ```
+        - **response:** Enter the text you would like to display inside the textbox.
+        - **color:** Choose the text color (options: black, blue, or red).
+        
+        2. **date**
+        ```
+        {
+          "type": "date"
+          "page": 1
+          "x": 173
+          "y": 588
+          "w": 114
+          "h": 21
+          "options": {
+            "name": "date"
+            "response": "04/15/2024"
+            "format": "mm/dd/yyyy"
+            "color": "black"
+            "fontsize": 12
+          }  
+        }
+        ```
+        - **response:** Enter the date you would like to display inside the date box.
+        - **format:** Specify the date format of your choice from the options below.
+          - "mm/dd/yyyy",
+          - "dd-mm-yyyy",
+          - "yyyy-mm-dd",
+          - "mm.dd.yyyy",
+          - "mm-dd-yyyy",
+          - "mmm dd, yyyy",
+          - "mmmm dd, yyyy",
+          - "dd mmm, yyyy",
+          - "dd mmmm, yyy",
+          - "dd/mm/yyyy",
+          - "dd.mm.yyyy".
+        - **color:** Choose the text color (options: black, blue, or red).
+        
+        3. **checkbox**
+        ```
+        {
+          "type": "checkbox",
+          "page": 1,
+          "x": 172,
+          "y": 630,
+          "w": 114,
+          "h": 21,
+          "options": {
+            "name": "checkbox",
+            "values": ["male", "female", "other"],
+            "response": ["male", "female"],
+            "hidelabel": false,
+            "color": "black",
+            "fontsize": 12
+          }
+        }
+        ```
+        - **values:** Provide options for the checkbox list.
+        - **response:** Provide values that need to be selected.
+        - **hidelabel:** Set to true if you want to hide labels of the checkbox. By default, it's false.
+        - **color:** Choose the text color (options: black, blue, or red).
+       
+        4. **radio button**
+        ```
+        {
+          "type": "radio button",
+          "page": 1,
+          "x": 173,
+          "y": 718,
+          "w": 114,
+          "h": 21,
+          "options": {
+            "name": "radio button",
+            "values": ["male", "female", "other"],
+            "response": "male",
+            "hidelabel": false,
+            "color": "black",
+            "fontsize": 12
+          } 
+        }
+        ```
+        - **values:** Provide options for the radio button list.
+        - **response:** Provide the value that needs to be selected. Only one value is accepted.
+        - **hidelabel:** Set to true if you want to hide labels of the radio button. By default, it's false.
+        - **color:** Choose the text color (options: black, blue, or red).
+        
+        5. **image**
+        ```
+        {
+          "type": "image",
+          "page": 1,
+          "x": 100,
+          "y": 95,
+          "w": 92,
+          "h": 55,
+          "options": {
+            "name": "image",
+            "response":"iVBORw0KGgoAAAANSUhEUgAAAmoAAA..."
+          }
+        }
+        ```
+        - **response:** Provide image in base64 format like iVBORw0KGgoAAAANSUhEUgA... or data:image/png;base64,iVBORw0KGgoAAAANSUhEUgA....
+        6. **dropdown**
+        ```
+        {
+          "type": "dropdown",
+          "page": 1,
+          "x": 327,
+          "y": 528,
+          "w": 114,
+          "h": 21,
+          "options": {
+            "name": "dropdown",
+            "values": ["male", "female", "other"],
+            "response": "female",
+            "color": "black",
+            "fontsize": 12
+          }
+        }
+        ```
+        - **values:** Provide options for the dropdown list.
+        - **response:** Provide the value that needs to be selected. Only one value is accepted.
+        - **color:** Choose the text color (options: black, blue, or red).        
       operationId: createtemplate
       requestBody:
         content:
@@ -2296,28 +2874,6 @@ paths:
         The Public Template API enables users to create templates, serving as blueprints for generating documents with predefined structures. Upon successful creation of a template, the API returns a **public_url** which can be used to generate documents based on the specified template and this url can be send to any user it's public accessiable to any user using url and but cannot edit the template just create and sign document using template. Additionally, unique **template_id**.
 
         Tip: Upload your PDF document to our [**Debug UI**](https://app.opensignlabs.com/debugpdf), where you can easily add widgets, then copy coordinates, page numbers, and more in a ready-to-use JSON format. Plus, you can directly copy the document's base64 string, making it quick to send to the API.
-
-        **When document is created  this webhook event will trigger**
-        ```
-        {
-          "event": "created",
-          "type": "DOCUMENT_TYPE",
-          "objectId": "DOCUMENT_ID",
-          "file": "DOCUMENT_URL",
-          "name": "DOCUMENT_NAME",
-          "note": "Please review and sign this document",
-          "description": "",
-          "signers": [
-            {
-              "name": "SIGNER_NAME",
-              "email": "SIGNER_EMAIL",
-              "phone": "SIGNER_PHONE",
-              "url": "SIGNING_URL"
-            }
-          ],
-          "createdAt": "TIMESTAMP"
-        }
-        ```
 
         **Supported Widgets:**
 
@@ -2605,6 +3161,148 @@ paths:
           }
         }
         ```
+        
+        **Prefill Widgets:** Prefill widgets are elements that are inserted into a document before it is shared with a user. Only the document creator has permission to add them.
+        
+        **List of widgets supported in Prefill**
+        1. **textbox**
+        ```
+        {
+          "type": "textbox",
+          "page": 1,
+          "x": 290,
+          "y": 165,
+          "w": 150,
+          "h": 20,
+          "options": {
+           "name": "textbox",
+           "response": "joe",
+           "color": "red",
+           "fontsize": 12
+           }
+        }
+        ```
+        - **response:** Enter the text you would like to display inside the textbox.
+        - **color:** Choose the text color (options: black, blue, or red).
+        
+        2. **date**
+        ```
+        {
+          "type": "date"
+          "page": 1
+          "x": 173
+          "y": 588
+          "w": 114
+          "h": 21
+          "options": {
+            "name": "date"
+            "response": "04/15/2024"
+            "format": "mm/dd/yyyy"
+            "color": "black"
+            "fontsize": 12
+          }  
+        }
+        ```
+        - **response:** Enter the date you would like to display inside the date box.
+        - **format:** Specify the date format of your choice from the options below.
+          - "mm/dd/yyyy",
+          - "dd-mm-yyyy",
+          - "yyyy-mm-dd",
+          - "mm.dd.yyyy",
+          - "mm-dd-yyyy",
+          - "mmm dd, yyyy",
+          - "mmmm dd, yyyy",
+          - "dd mmm, yyyy",
+          - "dd mmmm, yyy",
+          - "dd/mm/yyyy",
+          - "dd.mm.yyyy".
+        - **color:** Choose the text color (options: black, blue, or red).
+        
+        3. **checkbox**
+        ```
+        {
+          "type": "checkbox",
+          "page": 1,
+          "x": 172,
+          "y": 630,
+          "w": 114,
+          "h": 21,
+          "options": {
+            "name": "checkbox",
+            "values": ["male", "female", "other"],
+            "response": ["male", "female"],
+            "hidelabel": false,
+            "color": "black",
+            "fontsize": 12
+          }
+        }
+        ```
+        - **values:** Provide options for the checkbox list.
+        - **response:** Provide values that need to be selected.
+        - **hidelabel:** Set to true if you want to hide labels of the checkbox. By default, it's false.
+        - **color:** Choose the text color (options: black, blue, or red).
+       
+        4. **radio button**
+        ```
+        {
+          "type": "radio button",
+          "page": 1,
+          "x": 173,
+          "y": 718,
+          "w": 114,
+          "h": 21,
+          "options": {
+            "name": "radio button",
+            "values": ["male", "female", "other"],
+            "response": "male",
+            "hidelabel": false,
+            "color": "black",
+            "fontsize": 12
+          } 
+        }
+        ```
+        - **values:** Provide options for the radio button list.
+        - **response:** Provide the value that needs to be selected. Only one value is accepted.
+        - **hidelabel:** Set to true if you want to hide labels of the radio button. By default, it's false.
+        - **color:** Choose the text color (options: black, blue, or red).
+        
+        5. **image**
+        ```
+        {
+          "type": "image",
+          "page": 1,
+          "x": 100,
+          "y": 95,
+          "w": 92,
+          "h": 55,
+          "options": {
+            "name": "image",
+            "response":"iVBORw0KGgoAAAANSUhEUgAAAmoAAA..."
+          }
+        }
+        ```
+        - **response:** Provide image in base64 format like iVBORw0KGgoAAAANSUhEUgA... or data:image/png;base64,iVBORw0KGgoAAAANSUhEUgA....
+        6. **dropdown**
+        ```
+        {
+          "type": "dropdown",
+          "page": 1,
+          "x": 327,
+          "y": 528,
+          "w": 114,
+          "h": 21,
+          "options": {
+            "name": "dropdown",
+            "values": ["male", "female", "other"],
+            "response": "female",
+            "color": "black",
+            "fontsize": 12
+          }
+        }
+        ```
+        - **values:** Provide options for the dropdown list.
+        - **response:** Provide the value that needs to be selected. Only one value is accepted.
+        - **color:** Choose the text color (options: black, blue, or red).
       operationId: publictemplate
       requestBody:
         content:
