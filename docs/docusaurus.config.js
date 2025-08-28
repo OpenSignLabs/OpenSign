@@ -155,7 +155,7 @@ const config = {
               },
               {
                 label: 'APIs',
-                to: '/docs/API-docs/opensign-api-v-1',
+                to: '/docs/API-docs/v1.1',
               },
               {
                 label: 'Contribute',
