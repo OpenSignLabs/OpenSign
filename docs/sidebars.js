@@ -36,7 +36,7 @@ const sidebars = {
       label: 'v1',
       // Optional: clicking the category label goes to a “generated index”
       link: { type: 'generated-index', title: 'OpenSign API v1', slug: '/API-docs/v1' },
-      collapsed: false,
+      collapsed: true,
       items: apiV1Sidebar,
     }
   ],
