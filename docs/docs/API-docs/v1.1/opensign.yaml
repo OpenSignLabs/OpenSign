@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: OpenSign API v1.1
   description: |
-    Welcome to the OpenSign™ API documentation!
+    Welcome to the OpenSign™ API documentation v1.1!
 
     Our powerful and flexible API empowers you to seamlessly integrate digital signing capabilities into your applications. Whether you're a developer automating document workflows, a business enhancing security, or an enterprise streamlining contract management, OpenSign™ delivers robust solutions tailored to your needs.
 
@@ -12,6 +12,10 @@ info:
     - [OpenSign Website](https://www.opensignlabs.com)
     - [OpenSign GitHub Repository](https://github.com/opensignlabs/opensign)
     - [Generate x-api-token](https://docs.opensignlabs.com/docs/help/Settings/APIToken) – Learn how to securely generate and manage your API token for authenticating requests.
+
+    **Update in v1.1:**
+    - Public template: A public template can be created and shared via a link. Any user with the link can create and sign a document from it. However, users cannot edit the template itself.
+    - Prefill widget: Prefill widgets are embedded in a document before it is sent to users. They are available in the following endpoints: draft documents, document creation, document creation with a template, draft templates, and public templates. 
 
   x-api-token: 
     description: "refer docs to generate api token [APIToken help](https://docs.opensignlabs.com/docs/help/Settings/APIToken)"
