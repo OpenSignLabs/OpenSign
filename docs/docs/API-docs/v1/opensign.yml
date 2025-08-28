@@ -1,0 +1,4280 @@
+openapi: 3.0.3
+info:
+  title: OpenSign API v1
+  description: |
+    Welcome to the OpenSign™ API documentation!
+
+    Our powerful and flexible API empowers you to seamlessly integrate digital signing capabilities into your applications. Whether you're a developer automating document workflows, a business enhancing security, or an enterprise streamlining contract management, OpenSign™ delivers robust solutions tailored to your needs.
+
+    Explore our comprehensive guides, code samples, and best practices to unlock the full potential of OpenSign™ and transform your digital document processes.
+
+    **Useful Links:**
+    - [OpenSign Website](https://www.opensignlabs.com)
+    - [OpenSign GitHub Repository](https://github.com/opensignlabs/opensign)
+    - [Generate x-api-token](https://docs.opensignlabs.com/docs/help/Settings/APIToken) – Learn how to securely generate and manage your API token for authenticating requests.
+
+  x-api-token: 
+    description: "refer docs to generate api token [APIToken help](https://docs.opensignlabs.com/docs/help/Settings/APIToken)"
+  contact:
+    email: api@opensignlabs.com
+  termsOfService: http://www.opensignlabs.com/terms/
+  license:
+    name: AGPL v 3.0
+    url: http://github.com/opensignlabs/opensign/LICENSE
+  version: 1.0.0
+externalDocs:
+  description: Find out more about OpenSign
+  url: http://docs.opensignlabs.com
+servers:
+- url: https://sandbox.opensignlabs.com/api/v1
+- url: https://app.opensignlabs.com/api/v1
+- url: https://eu-app.opensignlabs.com/api/v1
+- url: https://staging-app.opensignlabs.com/api/v1
+tags:
+- name: OpenSign
+  description: OpenSource DocuSign alternative
+  externalDocs:
+    description: Find out more
+    url: http://www.opensignlabs.com
+- name: Github repo
+  description: Access the source code
+  externalDocs:
+    description: Visit github
+    url: http://github.com/opensignlabs/opensign
+- name: User
+  description: Access detailed user information with the OpenSign™ API. Retrieve and manage user details effortlessly to enhance your application’s functionality and user experience.
+- name: Contacts
+  description: "Utilize the OpenSign™ API to efficiently manage contacts in your OpenSign contact book. Seamlessly add, update, and organize your contacts for a streamlined digital signing experience."
+- name: Documents
+  description: "Streamline your document management with the OpenSign™ API. Easily upload, delete and organize your documents for efficient digital signing and seamless workflow integration."
+- name: Templates
+  description: "Optimize your document creation process with the OpenSign™ API for managing reusable templates. Create, update, and organize templates effortlessly to ensure consistency and efficiency in your digital signing workflows."
+- name: Webhook
+  description: "Enhance your application’s responsiveness with the OpenSign™ API for managing webhooks. Easily set up, update, and manage webhooks to receive real-time notifications and automate your digital signing processes."
+- name: Folder
+  description: "Organize your documents efficiently with the OpenSign™ API for managing folders in OpenSign Drive. Create, update and manage folders seamlessly to keep your digital signing files structured and easily accessible."
+paths:
+  /getuser:
+    get:
+      tags:
+      - User
+      summary: Get your account details
+      description: The Get User API enables you to get your own account details.
+      operationId: getUser
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user'
+        "404":
+          description: User not found!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_404'
+        "405":
+          description: Invalid API Token!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/invalidtoken'
+      security:
+      - x-api-token: []
+  /createcontact:
+    post:
+      tags:
+      - Contacts
+      summary: Create Contact
+      description: The Create Contact API allows you to effortlessly create new contacts that can act as signers for your important documents.
+      operationId: createcontact
+      requestBody:
+        description: Provide below parameter to create contact
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/createcontact_body'
+        required: true
+      responses:
+        "200":
+          description: Contact created successfully!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/contact'
+        "401":
+          description: Contact already exists!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_401_1'
+        "400":
+          description: "Something went wrong, please try again later!"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_400_1'
+        "405":
+          description: Invalid API Token!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/invalidtoken'
+      security:
+      - x-api-token: []
+  /contact/{contact_id}:
+    get:
+      tags:
+      - Contacts
+      summary: Get Contact
+      description: The Get Contact API allows you to retrieve details about a specific contact.
+      operationId: getcontact
+      parameters:
+      - name: contact_id
+        in: path
+        description: objectId of contact
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          format: string
+          example: pH1bhc2hpb
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/contact'
+        "400":
+          description: "Something went wrong, please try again later!"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_400_1'
+        "404":
+          description: Contact not found!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_404_2'
+        "405":
+          description: Invalid API Token!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/invalidtoken'
+      security:
+      - x-api-token: []
+    delete:
+      tags:
+      - Contacts
+      summary: Delete Contact
+      description: "The Delete Contact API allows you to remove a contact from your contactbook. If you no longer need a particular contact's information, this API makes it easy to delete their record."
+      operationId: deletecontact
+      parameters:
+      - name: contact_id
+        in: path
+        description: Provide objectId of contact to delete
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          format: string
+          example: ph2bh2asd
+      responses:
+        "200":
+          description: Contact deleted successfully!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/delete'
+        "400":
+          description: "Something went wrong, please try again later!"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_400_1'
+        "404":
+          description: Contact not found!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_404_2'
+        "405":
+          description: Invalid API Token!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/invalidtoken'
+      security:
+      - x-api-token: []
+  /contactlist:
+    get:
+      tags:
+      - Contacts
+      summary: Get Contact list
+      description: "The Contact List API empowers you to retrieve a list of contacts, providing a comprehensive view of all available contacts in your contactbook."
+      operationId: contactlist
+      parameters:
+      - name: limit
+        in: query
+        required: false
+        style: form
+        explode: true
+        schema:
+          maximum: 500
+          type: number
+        example: 10
+      - name: skip
+        in: query
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: number
+        example: 0
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200'
+        "400":
+          description: "Something went wrong, please try again later!"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_400_1'
+        "405":
+          description: Invalid API Token!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/invalidtoken'
+      security:
+      - x-api-token: []
+  /selfsign:
+    post:
+      tags:
+      - Documents
+      summary: Self Sign
+      description: |
+        The selfsign API generates a URL that enables freestyle signing of a document. You can also include optional pre-defined widgets, which the signer can edit or expand upon as needed. This provides a signing experience similar to the “Sign Yourself” flow in the OpenSign app.
+
+        Tip: Upload your PDF document to our [**Debug UI**](https://app.opensignlabs.com/debugpdf), where you can easily add widgets, then copy coordinates, page numbers, and more in a ready-to-use JSON format. Plus, you can directly copy the document's base64 string, making it quick to send to the API.
+
+        **Supported Widgets:**
+
+        Below are the common parameters that are required with all widgets:
+        - **type:** Indicates the type of widget.
+        - **page:** Specifies the page number on which you want to place the respective widget.
+        - **x, y:** Denotes the horizontal and vertical coordinates of the starting point of the widget. You can use the debug UI to determine these values.
+        - **w, h:** Represents the width and height of the widget. You can adjust these values using the debug UI.
+        - **required:** Set to false if you want to make the widget optional. By default, it's true. Not applicable for signature-type widgets.
+        - **name:** Provides a different name for widgets if you are providing more than one widget.
+        - **color:** Specifies the color of the widget content. Available options include black, blue, red, and yellow, with black as the default selection if no color is specified. This parameter is optional and is applicable to the following widgets: email, name, job title, company, date, textbox, checkbox.
+        - **fontsize:** Specifies the fontsize of the widget content. Available options include 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, and 28, with a default fontsize of 12 if not specified. This parameter is optional and is applicable to the following widgets: email, name, job title, company, date, textbox, checkbox.
+
+        **List of all supported widgets:**
+
+        1. **signature**
+        ```
+        {
+          "type": "signature",
+          "page": 1,
+          "x": 327,
+          "y": 628,
+          "w": 114,
+          "h": 21
+        }
+        ```
+
+        2. **stamp**
+        ```
+        {
+          "type": "stamp",
+          "page": 1,
+          "x": 327,
+          "y": 628,
+          "w": 114,
+          "h": 21,
+          "options": {
+            "required": true,
+            "name": "stamp"
+          }
+        }
+        ```
+
+        3. **initials**
+        ```
+        {
+          "type": "initials",
+          "page": 1,
+          "x": 327,
+          "y": 628,
+          "w": 114,
+          "h": 21,
+          "options": {
+            "required": true,
+            "name": "initials"
+          }
+        }
+        ```
+
+        4. **email**
+        ```
+        {
+          "type": "email",
+          "page": 1,
+          "x": 327,
+          "y": 628,
+          "w": 114,
+          "h": 21,
+          "options": {
+            "required": true,
+            "name": "email",
+            "color": "black",
+            "fontsize": 12
+          }
+        }
+        ```
+
+        5. **name**
+        ```
+        {
+          "type": "name",
+          "page": 1,
+          "x": 327,
+          "y": 628,
+          "w": 114,
+          "h": 21,
+          "options": {
+            "required": true,
+            "name": "name",
+            "color": "black",
+            "fontsize": 12
+          }
+        }
+        ```
+
+        6. **job Title**
+        ```
+        {
+          "type": "job title",
+          "page": 1,
+          "x": 327,
+          "y": 628,
+          "w": 114,
+          "h": 21,
+          "options": {
+            "required": true,
+            "name": "job title",
+            "color": "black",
+            "fontsize": 12
+          }
+        }
+        ```
+
+        7. **company**
+        ```
+        {
+          "type": "company",
+          "page": 1,
+          "x": 327,
+          "y": 628,
+          "w": 114,
+          "h": 21,
+          "options": {
+            "required": true,
+            "name": "company",
+            "color": "black",
+            "fontsize": 12
+          }
+        }
+        ```
+
+        8. **date**
+        ```
+        {
+          "type": "date",
+          "page": 1,
+          "x": 327,
+          "y": 628,
+          "w": 114,
+          "h": 21,
+          "options": {
+            "required": true,
+            "name": "date",
+            "default": "04-15-2024",
+            "format": "mm-dd-yyyy",
+            "color": "black",
+            "fontsize": 12
+          }
+        }
+        ```
+        - **default:**  Provide the date from which you want to start the date of the date widget. Must be provided in the specified format. By default, today's date provided.
+        - **format:** Specify the date format of your choice from the options below.
+          - "mm/dd/yyyy",
+          - "dd-mm-yyyy",
+          - "yyyy-mm-dd",
+          - "mm.dd.yyyy",
+          - "mm-dd-yyyy",
+          - "mmm dd, yyyy",
+          - "mmmm dd, yyyy",
+          - "dd mmm, yyyy",
+          - "dd mmmm, yyy",
+          - "dd/mm/yyyy",
+          - "dd.mm.yyyy".
+          
+        9. **textbox**
+        ```
+        {
+          "type": "textbox",
+          "page": 1,
+          "x": 327,
+          "y": 628,
+          "w": 114,
+          "h": 21,
+          "options": {
+            "name": "textbox",
+            "required": true,
+            "readonly": false,
+            "default": "name",
+            "hint": "provide name",
+            "regularexpression": "",
+            "color": "black",
+            "fontsize": 12
+          }
+        }
+        ```
+        - **default:** Provide a default value for the textbox (Optional).
+        - **hint:** Provide a hint for the textbox (Optional).
+        - **regularexpression:** A custom regex pattern for validation - for example, /^\d+$/ to permit only digits, /^[A-Z]+$/ to permit only uppercase letters, etc. [help](https://www.w3schools.com/jsref/jsref_obj_regexp.asp) (Optional).
+        - **readonly:** Set to true if you want to set the textbox as readonly. By default, it's false.
+
+        10. **checkbox**
+        ```
+        {
+          "type": "checkbox",
+          "page": 1,
+          "x": 327,
+          "y": 628,
+          "w": 114,
+          "h": 21,
+          "options": {
+            "required": true,
+            "name": "checkbox",
+            "values": ["male", "female", "other"],
+            "selectedvalues": ["male", "female"],
+            "readonly": false,
+            "hidelabel": false,
+            "color": "black",
+            "fontsize": 12,
+            "layout": "vertical",
+            "validation": {
+              "minselections": 0,
+              "maxselections": 0
+            }
+          }
+        }
+        ```
+        - **values:** Provide options for the checkbox list.
+        - **selectedvalues:** Provide values that need to be selected by default (Optional).
+        - **readonly:** Set to true if you want to set the checkbox as readonly. By default, it's false.
+        - **hidelabel:** Set to true if you want to hide labels of the checkbox. By default, it's false.
+        - **minselections:** Provide the minimum number of checkboxes that must be selected by the user.
+        - **maxselections:** Provide the maximum number of checkboxes that can be selected by the user.
+
+        11. **image**
+        ```
+        {
+          "type": "image",
+          "page": 1,
+          "x": 327,
+          "y": 628,
+          "w": 114,
+          "h": 21,
+          "options": {
+            "required": true,
+            "name": "image"
+          }
+        }
+        ```
+      operationId: selfsign
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/selfsigndocument_body'
+        required: true
+      responses:
+        "200":
+          description: Document created successfully!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_1'
+        "400":
+          description: "Something went wrong, please try again later!"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_400_1'
+        "405":
+          description: Invalid API Token!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/invalidtoken'
+      security:
+      - x-api-token: []
+  /draftdocument:
+    post:
+      tags:
+      - Documents
+      summary: Draft Document
+      description: |
+        The Draft Document API allows users to generate new documents by providing data with a base64 encoded file.
+
+        Tip: Upload your PDF document to our [**Debug UI**](https://app.opensignlabs.com/debugpdf), where you can easily add widgets, then copy coordinates, page numbers, and more in a ready-to-use JSON format. Plus, you can directly copy the document's base64 string, making it quick to send to the API.
+
+        **Supported Widgets:**
+
+        Below are the common parameters that are required with all widgets:
+        - **type:** Indicates the type of widget.
+        - **page:** Specifies the page number on which you want to place the respective widget.
+        - **x, y:** Denotes the horizontal and vertical coordinates of the starting point of the widget. You can use the debug UI to determine these values.
+        - **w, h:** Represents the width and height of the widget. You can adjust these values using the debug UI.
+        - **required:** Set to false if you want to make the widget optional. By default, it's true. Not applicable for signature-type widgets.
+        - **name:** Provides a different name for widgets if you are providing more than one widget.
+        - **color:** Specifies the color of the widget content. Available options include black, blue, red, and yellow, with black as the default selection if no color is specified. This parameter is optional and is applicable to the following widgets: email, name, job title, company, date, textbox, checkbox, radio button, and dropdown.
+        - **fontsize:** Specifies the fontsize of the widget content. Available options include 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, and 28, with a default fontsize of 12 if not specified. This parameter is optional and is applicable to the following widgets: email, name, job title, company, date, textbox, checkbox, radio button, and dropdown.
+
+        **List of all supported widgets:**
+
+        1. **signature**
+        ```
+        {
+          "type": "signature",
+          "page": 1,
+          "x": 327,
+          "y": 628,
+          "w": 114,
+          "h": 21
+        }
+        ```
+
+        2. **stamp**
+        ```
+        {
+          "type": "stamp",
+          "page": 1,
+          "x": 327,
+          "y": 628,
+          "w": 114,
+          "h": 21,
+          "options": {
+            "required": true,
+            "name": "stamp"
+          }
+        }
+        ```
+
+        3. **initials**
+        ```
+        {
+          "type": "initials",
+          "page": 1,
+          "x": 327,
+          "y": 628,
+          "w": 114,
+          "h": 21,
+          "options": {
+            "required": true,
+            "name": "initials"
+          }
+        }
+        ```
+
+        4. **email**
+        ```
+        {
+          "type": "email",
+          "page": 1,
+          "x": 327,
+          "y": 628,
+          "w": 114,
+          "h": 21,
+          "options": {
+            "required": true,
+            "name": "email",
+            "color": "black",
+            "fontsize": 12
+          }
+        }
+        ```
+
+        5. **name**
+        ```
+        {
+          "type": "name",
+          "page": 1,
+          "x": 327,
+          "y": 628,
+          "w": 114,
+          "h": 21,
+          "options": {
+            "required": true,
+            "name": "name",
+            "color": "black",
+            "fontsize": 12
+          }
+        }
+        ```
+
+        6. **job Title**
+        ```
+        {
+          "type": "job title",
+          "page": 1,
+          "x": 327,
+          "y": 628,
+          "w": 114,
+          "h": 21,
+          "options": {
+            "required": true,
+            "name": "job title",
+            "color": "black",
+            "fontsize": 12
+          }
+        }
+        ```
+
+        7. **company**
+        ```
+        {
+          "type": "company",
+          "page": 1,
+          "x": 327,
+          "y": 628,
+          "w": 114,
+          "h": 21,
+          "options": {
+            "required": true,
+            "name": "company",
+            "color": "black",
+            "fontsize": 12
+          }
+        }
+        ```
+
+        8. **date**
+        ```
+        {
+          "type": "date",
+          "page": 1,
+          "x": 327,
+          "y": 628,
+          "w": 114,
+          "h": 21,
+          "options": {
+            "required": true,
+            "name": "date",
+            "default": "04-15-2024",
+            "format": "mm-dd-yyyy",
+            "color": "black",
+            "fontsize": 12
+          }
+        }
+        ```
+        - **default:**  Provide the date from which you want to start the date of the date widget. Must be provided in the specified format. By default, today's date provided.
+        - **format:** Specify the date format of your choice from the options below.
+          - "mm/dd/yyyy",
+          - "dd-mm-yyyy",
+          - "yyyy-mm-dd",
+          - "mm.dd.yyyy",
+          - "mm-dd-yyyy",
+          - "mmm dd, yyyy",
+          - "mmmm dd, yyyy",
+          - "dd mmm, yyyy",
+          - "dd mmmm, yyy",
+          - "dd/mm/yyyy",
+          - "dd.mm.yyyy".
+
+        9. **textbox**
+        ```
+        {
+          "type": "textbox",
+          "page": 1,
+          "x": 327,
+          "y": 628,
+          "w": 114,
+          "h": 21,
+          "options": {
+            "name": "textbox",
+            "required": true,
+            "readonly": false,
+            "default": "name",
+            "hint": "provide name",
+            "regularexpression": "",
+            "color": "black",
+            "fontsize": 12
+          }
+        }
+        ```
+        - **default:** Provide a default value for the textbox (Optional).
+        - **hint:** Provide a hint for the textbox (Optional).
+        - **regularexpression:** A custom regex pattern for validation - for example, /^\d+$/ to permit only digits, /^[A-Z]+$/ to permit only uppercase letters, etc. [help](https://www.w3schools.com/jsref/jsref_obj_regexp.asp) (Optional).
+        - **readonly:** Set to true if you want to set the textbox as readonly. By default, it's false.
+
+        10. **checkbox**
+        ```
+        {
+          "type": "checkbox",
+          "page": 1,
+          "x": 327,
+          "y": 628,
+          "w": 114,
+          "h": 21,
+          "options": {
+            "required": true,
+            "name": "checkbox",
+            "values": ["male", "female", "other"],
+            "selectedvalues": ["male", "female"],
+            "readonly": false,
+            "hidelabel": false,
+            "color": "black",
+            "fontsize": 12,
+            "layout": "vertical",
+            "validation": {
+              "minselections": 0,
+              "maxselections": 0
+            }
+          }
+        }
+        ```
+        - **values:** Provide options for the checkbox list.
+        - **selectedvalues:** Provide values that need to be selected by default (Optional).
+        - **readonly:** Set to true if you want to set the checkbox as readonly. By default, it's false.
+        - **hidelabel:** Set to true if you want to hide labels of the checkbox. By default, it's false.
+        - **minselections:** Provide the minimum number of checkboxes that must be selected by the user.
+        - **maxselections:** Provide the maximum number of checkboxes that can be selected by the user.
+
+        11. **dropdown**
+        ```
+        {
+          "type": "dropdown",
+          "page": 1,
+          "x": 327,
+          "y": 628,
+          "w": 114,
+          "h": 21,
+          "options": {
+            "required": true,
+            "name": "dropdown",
+            "readonly": false,
+            "values": ["male", "female", "other"],
+            "default": "",
+            "color": "black",
+            "fontsize": 12
+          }
+        }
+        ```
+        - **values:** Provide options for the dropdown list.
+        - **default:** Provide the value that needs to be selected by default. Only one value is accepted. (Optional).
+        - **readonly:** Set to true if you want to set the dropdown as readonly. By default, it's false.
+
+        12. **radio Button**
+        ```
+        {
+          "type": "radio button",
+          "page": 1,
+          "x": 327,
+          "y": 628,
+          "w": 114,
+          "h": 21,
+          "options": {
+            "required": true,
+            "name": "radio button",
+            "readonly": false,
+            "values": ["male", "female", "other"],
+            "default": "male",
+            "color": "black",
+            "fontsize": 12,
+            "layout": "vertical"
+          }
+        }
+        ```
+        - **values:** Provide options for the radio button list.
+        - **default:** Provide the value that needs to be selected by default. Only one value is accepted. (Optional).
+        - **readonly:** Set to true if you want to set the radio button as readonly. By default, it's false.
+
+        13. **image**
+        ```
+        {
+          "type": "image",
+          "page": 1,
+          "x": 327,
+          "y": 628,
+          "w": 114,
+          "h": 21,
+          "options": {
+            "required": true,
+            "name": "image"
+          }
+        }
+        ```
+      operationId: draftdocument
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/draftdocument_body'
+        required: true
+      responses:
+        "200":
+          description: Document created successfully!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_draft_doc_res_200_1'
+        "400":
+          description: "Something went wrong, please try again later!"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_400_1'
+        "405":
+          description: Invalid API Token!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/invalidtoken'
+      security:
+      - x-api-token: []
+  /createdocument:
+    post:
+      tags:
+      - Documents
+      summary: Create Document
+      description: |
+        The Create Document API allows users to generate new documents by providing data with base64 encoded file.
+
+        Tip: Upload your PDF document to our [**Debug UI**](https://app.opensignlabs.com/debugpdf), where you can easily add widgets, then copy coordinates, page numbers, and more in a ready-to-use JSON format. Plus, you can directly copy the document's base64 string, making it quick to send to the API.
+
+        **Supported Widgets:**
+
+        Below are the common parameters that are required with all widgets:
+        - **type:** Indicates the type of widget.
+        - **page:** Specifies the page number on which you want to place the respective widget.
+        - **x, y:** Denotes the horizontal and vertical coordinates of the starting point of the widget. You can use the debug UI to determine these values.
+        - **w, h:** Represents the width and height of the widget. You can adjust these values using the debug UI.
+        - **required:** Set to false if you want to make the widget optional. By default, it's true. Not applicable for signature-type widgets.
+        - **name:** Provides a different name for widgets if you are providing more than one widget.
+        - **color:** Specifies the color of the widget content. Available options include black, blue, red, and yellow, with black as the default selection if no color is specified. This parameter is optional and is applicable to the following widgets: email, name, job title, company, date, textbox, checkbox, radio button, and dropdown.
+        - **fontsize:** Specifies the fontsize of the widget content. Available options include 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, and 28, with a default fontsize of 12 if not specified. This parameter is optional and is applicable to the following widgets: email, name, job title, company, date, textbox, checkbox, radio button, and dropdown.
+
+        **List of all supported widgets:**
+
+        1. **signature**
+        ```
+        {
+          "type": "signature",
+          "page": 1,
+          "x": 327,
+          "y": 628,
+          "w": 114,
+          "h": 21
+        }
+        ```
+
+        2. **stamp**
+        ```
+        {
+          "type": "stamp",
+          "page": 1,
+          "x": 327,
+          "y": 628,
+          "w": 114,
+          "h": 21,
+          "options": {
+            "required": true,
+            "name": "stamp"
+          }
+        }
+        ```
+
+        3. **initials**
+        ```
+        {
+          "type": "initials",
+          "page": 1,
+          "x": 327,
+          "y": 628,
+          "w": 114,
+          "h": 21,
+          "options": {
+            "required": true,
+            "name": "initials"
+          }
+        }
+        ```
+
+        4. **email**
+        ```
+        {
+          "type": "email",
+          "page": 1,
+          "x": 327,
+          "y": 628,
+          "w": 114,
+          "h": 21,
+          "options": {
+            "required": true,
+            "name": "email",
+            "color": "black",
+            "fontsize": 12
+          }
+        }
+        ```
+
+        5. **name**
+        ```
+        {
+          "type": "name",
+          "page": 1,
+          "x": 327,
+          "y": 628,
+          "w": 114,
+          "h": 21,
+          "options": {
+            "required": true,
+            "name": "name",
+            "color": "black",
+            "fontsize": 12
+          }
+        }
+        ```
+
+        6. **job Title**
+        ```
+        {
+          "type": "job title",
+          "page": 1,
+          "x": 327,
+          "y": 628,
+          "w": 114,
+          "h": 21,
+          "options": {
+            "required": true,
+            "name": "job title",
+            "color": "black",
+            "fontsize": 12
+          }
+        }
+        ```
+
+        7. **company**
+        ```
+        {
+          "type": "company",
+          "page": 1,
+          "x": 327,
+          "y": 628,
+          "w": 114,
+          "h": 21,
+          "options": {
+            "required": true,
+            "name": "company",
+            "color": "black",
+            "fontsize": 12
+          }
+        }
+        ```
+
+        8. **date**
+        ```
+        {
+          "type": "date",
+          "page": 1,
+          "x": 327,
+          "y": 628,
+          "w": 114,
+          "h": 21,
+          "options": {
+            "required": true,
+            "name": "date",
+            "default": "04-15-2024",
+            "format": "mm-dd-yyyy",
+            "color": "black",
+            "fontsize": 12
+          }
+        }
+        ```
+        - **default:**  Provide the date from which you want to start the date of the date widget. Must be provided in the specified format. By default, today's date provided.
+        - **format:** Specify the date format of your choice from the options below.
+          - "mm/dd/yyyy",
+          - "dd-mm-yyyy",
+          - "yyyy-mm-dd",
+          - "mm.dd.yyyy",
+          - "mm-dd-yyyy",
+          - "mmm dd, yyyy",
+          - "mmmm dd, yyyy",
+          - "dd mmm, yyyy",
+          - "dd mmmm, yyy",
+          - "dd/mm/yyyy",
+          - "dd.mm.yyyy".
+
+        9. **textbox**
+        ```
+        {
+          "type": "textbox",
+          "page": 1,
+          "x": 327,
+          "y": 628,
+          "w": 114,
+          "h": 21,
+          "options": {
+            "name": "textbox",
+            "required": true,
+            "readonly": false,
+            "default": "name",
+            "hint": "provide name",
+            "regularexpression": "",
+            "color": "black",
+            "fontsize": 12
+          }
+        }
+        ```
+        - **default:** Provide a default value for the textbox (Optional).
+        - **hint:** Provide a hint for the textbox (Optional).
+        - **regularexpression:** A custom regex pattern for validation - for example, /^\d+$/ to permit only digits, /^[A-Z]+$/ to permit only uppercase letters, etc. [help](https://www.w3schools.com/jsref/jsref_obj_regexp.asp) (Optional).
+        - **readonly:** Set to true if you want to set the textbox as readonly. By default, it's false.
+
+        10. **checkbox**
+        ```
+        {
+          "type": "checkbox",
+          "page": 1,
+          "x": 327,
+          "y": 628,
+          "w": 114,
+          "h": 21,
+          "options": {
+            "required": true,
+            "name": "checkbox",
+            "values": ["male", "female", "other"],
+            "selectedvalues": ["male", "female"],
+            "readonly": false,
+            "hidelabel": false,
+            "color": "black",
+            "fontsize": 12,
+            "layout": "vertical",
+            "validation": {
+              "minselections": 0,
+              "maxselections": 0
+            }
+          }
+        }
+        ```
+        - **values:** Provide options for the checkbox list.
+        - **selectedvalues:** Provide values that need to be selected by default (Optional).
+        - **readonly:** Set to true if you want to set the checkbox as readonly. By default, it's false.
+        - **hidelabel:** Set to true if you want to hide labels of the checkbox. By default, it's false.
+        - **minselections:** Provide the minimum number of checkboxes that must be selected by the user.
+        - **maxselections:** Provide the maximum number of checkboxes that can be selected by the user.
+
+        11. **dropdown**
+        ```
+        {
+          "type": "dropdown",
+          "page": 1,
+          "x": 327,
+          "y": 628,
+          "w": 114,
+          "h": 21,
+          "options": {
+            "required": true,
+            "name": "dropdown",
+            "readonly": false,
+            "values": ["male", "female", "other"],
+            "default": "",
+            "color": "black",
+            "fontsize": 12
+          }
+        }
+        ```
+        - **values:** Provide options for the dropdown list.
+        - **default:** Provide the value that needs to be selected by default. Only one value is accepted. (Optional).
+        - **readonly:** Set to true if you want to set the dropdown as readonly. By default, it's false.
+
+        12. **radio button**
+        ```
+        {
+          "type": "radio button",
+          "page": 1,
+          "x": 327,
+          "y": 628,
+          "w": 114,
+          "h": 21,
+          "options": {
+            "required": true,
+            "name": "radio button",
+            "readonly": false,
+            "values": ["male", "female", "other"],
+            "default": "male",
+            "color": "black",
+            "fontsize": 12,
+            "layout": "vertical"
+          }
+        }
+        ```
+        - **values:** Provide options for the radio button list.
+        - **default:** Provide the value that needs to be selected by default. Only one value is accepted. (Optional).
+        - **readonly:** Set to true if you want to set the radio button as readonly. By default, it's false.
+
+        13. **image**
+        ```
+        {
+          "type": "image",
+          "page": 1,
+          "x": 327,
+          "y": 628,
+          "w": 114,
+          "h": 21,
+          "options": {
+            "required": true,
+            "name": "image"
+          }
+        }
+        ```
+      operationId: createdocument
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/createdocument_body'
+        required: true
+      responses:
+        "200":
+          description: Document created successfully!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_doc'
+        "400":
+          description: "Something went wrong, please try again later!"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_400_1'
+        "405":
+          description: Invalid API Token!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/invalidtoken'
+      security:
+      - x-api-token: []
+  /createdocument/{template_id}:
+    post:
+      tags:
+      - Documents
+      summary: Create Document from Template
+      description: |
+        The Create Document from template API allows you to generate new documents by just providing template_id instead of uploading a new file(in the form of base64 or binary) every time you need to create a document. Templates for repeatedly used files can be created from user interface at [**Debug UI**](https://app.opensignlabs.com/debugpdf) or using the Create Template API.
+
+        You can provide default value for all widgets based on their name all widgets support except signature, stamp, initials, image.
+        1. **email**
+        ```
+        {
+          "name": "email",
+          "readonly": false,
+          "default": "email@example.com"
+        }
+        ```
+
+        2. **name**
+        ```
+        {
+          "name": "name",
+          "readonly": false,
+          "default": "joe"
+        }
+        ```
+
+        3. **job Title**
+        ```
+        {
+          "name": "job title",
+          "readonly": false,
+          "default": "ceo"
+        }
+        ```
+
+        4. **company**
+        ```
+        {
+          "name": "company",
+          "readonly": false,
+          "default": "example pvt ltd"
+        }
+        ```
+
+        5. **date**
+        ```
+        {
+          "name": "date",
+          "readonly": false,
+          "default": "11-05-2025"
+        }
+        ```
+
+        6. **textbox**
+        ```
+        {
+          "name": "textbox",
+          "readonly": false,
+          "default": "my text"
+        }
+        ```
+
+        7. **checkbox**
+        ```
+        {
+          "name": "checkbox",
+          "readonly": false,
+          "default": ["option-2"]
+        }
+        ```
+        - **default:** You can have one or more than one value that needs to be selected by default.
+
+        8. **dropdown**
+        ```
+        {
+          "name": "dropdown",
+          "readonly": false,
+          "default": "option1"
+        }
+        ```
+
+        9. **radio button**
+        ```
+        {
+          "name": "radio",
+          "readonly": false,
+          "default": "option1"
+        }
+        ```
+      operationId: createdocumentwithtemplateid
+      parameters:
+      - name: template_id
+        in: path
+        description: objectId of Template
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          format: string
+          example: pH1bhc2hpb
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/createdocument_template_id_body'
+        required: true
+      responses:
+        "200":
+          description: Document created successfully!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_doc'
+        "400":
+          description: If you haven't add widgets and signers in template or not provide signers along with their roles in body
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_400_cc'
+        "405":
+          description: Invalid API Token!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/invalidtoken'
+      security:
+      - x-api-token: []
+  /document/{document_id}:
+    get:
+      tags:
+      - Documents
+      summary: Get Document
+      description: The Get Document API enables you to retrieve details about a specific document.
+      operationId: getdocument
+      parameters:
+      - name: document_id
+        in: path
+        description: objectId of Document
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          format: string
+          example: pH1bhc2hpb
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/documentwithstatus'
+        "400":
+          description: "Something went wrong, please try again later!"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_400_1'
+        "404":
+          description: Document not found!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_404_3'
+        "405":
+          description: Invalid API Token!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/invalidtoken'
+      security:
+      - x-api-token: []
+    put:
+      tags:
+      - Documents
+      summary: Update Document
+      description: "The Update Document API allows users to modify and update the details of a specific document. Note that this API only allows to update a few parameters, you cannot change the file once it the document is created."
+      operationId: updateDocument
+      parameters:
+      - name: document_id
+        in: path
+        description: ID of the document that needs to be updated
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          format: string
+      requestBody:
+        description: Provide below parameter to update templates (at least one parameter required)
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/document_document_id_body'
+      responses:
+        "200":
+          description: Document updated successfully!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_3'
+        "400":
+          description: Please provide valid field names!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_400'
+        "404":
+          description: Document not found!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_404_4'
+        "405":
+          description: Invalid API Token!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/invalidtoken'
+      security:
+      - x-api-token: []
+    post:
+      tags:
+      - Documents
+      summary: Revoke Document
+      description: The Revoke document API allows you to revoke specific document from your documents.
+      operationId: revokedocument
+      parameters:
+      - name: document_id
+        in: path
+        description: Provide objectId of document to revoke
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          format: string
+          example: ph2bh2asd
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/revokedocument'
+      responses:
+        "200":
+          description: Document revoked successfully!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/revoke'
+        "400":
+          description: "Something went wrong, please try again later!"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_400_1'
+        "404":
+          description: Document not found!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_404_3'
+        "405":
+          description: Invalid API Token!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/invalidtoken'
+      security:
+      - x-api-token: []
+    delete:
+      tags:
+      - Documents
+      summary: Delete Document
+      description: The Delete document API allows you to remove specific document from your documents.
+      operationId: deletedocument
+      parameters:
+      - name: document_id
+        in: path
+        description: Provide objectId of document to delete
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          format: string
+          example: ph2bh2asd
+      responses:
+        "200":
+          description: Document deleted successfully!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/delete'
+        "400":
+          description: "Something went wrong, please try again later!"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_400_1'
+        "404":
+          description: Document not found!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_404_3'
+        "405":
+          description: Invalid API Token!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/invalidtoken'
+      security:
+      - x-api-token: []
+  /documentlist/{doctype}:
+    get:
+      tags:
+      - Documents
+      summary: Get Document list from status
+      description: |
+        ### Document Types:
+        Retrieve a list of documents based on type
+
+        1. **Draft Documents:**
+            - Documents that are currently in draft status.
+
+        2. **In-Progress Documents:**
+            - Documents that are currently in progress.
+
+        3. **Completed Documents:**
+            - Documents that have been successfully completed with all required signatures.
+
+        4. **Expired Documents:**
+            - Documents that have expired and are no longer accessible.
+
+        5. **Declined Documents:**
+            - Documents that have been declined by the user.
+      operationId: getdocumentlist
+      parameters:
+      - name: doctype
+        in: path
+        description: The type of documents to retrieve
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          enum:
+          - draft
+          - inprogress
+          - completed
+          - expired
+          - declined
+      - name: limit
+        in: query
+        required: false
+        style: form
+        explode: true
+        schema:
+          maximum: 500
+          type: number
+        example: 10
+      - name: skip
+        in: query
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: number
+        example: 0
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_4'
+        "404":
+          description: Report not available!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_404_5'
+        "405":
+          description: Invalid API Token!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/invalidtoken'
+      security:
+      - x-api-token: []
+  /resendmail:
+    post:
+      tags:
+      - Documents
+      summary: Resend request mail
+      description: |
+        Resend request mail to user for signing document.
+      operationId: Resendrequestmail
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/resendmail_body'
+        required: true
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_10'
+        "400":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_400_2'
+        "404":
+          description: |
+            - document not found if document id is not correct.
+            - user not found if provided user email is not present in signer list of document
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_404_1'
+        "405":
+          description: Invalid API Token!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/invalidtoken'
+      security:
+      - x-api-token: []
+  /drafttemplate:
+    post:
+      tags:
+      - Templates
+      summary: Draft Template
+      description: |
+        The Template Drafting API enables users to create customizable templates, serving as blueprints for generating documents with predefined structures. Upon successful creation of a template, the API returns a unique **objectId** (designated as template_id), which can be used to generate documents based on the specified template. Additionally, a **url** is provided, which offers a user interface for editing the template and facilitating document distribution.
+
+        Tip: Upload your PDF document to our [**Debug UI**](https://app.opensignlabs.com/debugpdf), where you can easily add widgets, then copy coordinates, page numbers, and more in a ready-to-use JSON format. Plus, you can directly copy the document's base64 string, making it quick to send to the API.
+
+        **When document is created  this webhook event will trigger**
+        ```
+        {
+          "event": "created",
+          "type": "DOCUMENT_TYPE",
+          "objectId": "DOCUMENT_ID",
+          "file": "DOCUMENT_URL",
+          "name": "DOCUMENT_NAME",
+          "note": "Please review and sign this document",
+          "description": "",
+          "signers": [
+            {
+              "name": "SIGNER_NAME",
+              "email": "SIGNER_EMAIL",
+              "phone": "SIGNER_PHONE",
+              "url": "SIGNING_URL"
+            }
+          ],
+          "createdAt": "TIMESTAMP"
+        }
+        ```
+
+        **Supported Widgets:**
+
+        Below are the common parameters that are required with all widgets:
+        - **type:** Indicates the type of widget.
+        - **page:** Specifies the page number on which you want to place the respective widget.
+        - **x, y:** Denotes the horizontal and vertical coordinates of the starting point of the widget. You can use the debug UI to determine these values.
+        - **w, h:** Represents the width and height of the widget. You can adjust these values using the debug UI.
+        - **required:** Set to false if you want to make the widget optional. By default, it's true. Not applicable for signature-type widgets.
+        - **name:** Provides a different name for widgets if you are providing more than one widget.
+        - **color:** Specifies the color of the widget content. Available options include black, blue, red, and yellow, with black as the default selection if no color is specified. This parameter is optional and is applicable to the following widgets: email, name, job title, company, date, textbox, checkbox, radio button, and dropdown.
+        - **fontsize:** Specifies the fontsize of the widget content. Available options include 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, and 28, with a default fontsize of 12 if not specified. This parameter is optional and is applicable to the following widgets: email, name, job title, company, date, textbox, checkbox, radio button, and dropdown.
+
+        **List of all supported widgets:**
+
+        1. **signature**
+        ```
+        {
+          "type": "signature",
+          "page": 1,
+          "x": 327,
+          "y": 628,
+          "w": 114,
+          "h": 21
+        }
+        ```
+
+        2. **stamp**
+        ```
+        {
+          "type": "stamp",
+          "page": 1,
+          "x": 327,
+          "y": 628,
+          "w": 114,
+          "h": 21,
+          "options": {
+            "required": true,
+            "name": "stamp"
+          }
+        }
+        ```
+
+        3. **initials**
+        ```
+        {
+          "type": "initials",
+          "page": 1,
+          "x": 327,
+          "y": 628,
+          "w": 114,
+          "h": 21,
+          "options": {
+            "required": true,
+            "name": "initials"
+          }
+        }
+        ```
+
+        4. **email**
+        ```
+        {
+          "type": "email",
+          "page": 1,
+          "x": 327,
+          "y": 628,
+          "w": 114,
+          "h": 21,
+          "options": {
+            "required": true,
+            "name": "email",
+            "color": "black",
+            "fontsize": 12
+          }
+        }
+        ```
+
+        5. **name**
+        ```
+        {
+          "type": "name",
+          "page": 1,
+          "x": 327,
+          "y": 628,
+          "w": 114,
+          "h": 21,
+          "options": {
+            "required": true,
+            "name": "name",
+            "color": "black",
+            "fontsize": 12
+          }
+        }
+        ```
+
+        6. **job Title**
+        ```
+        {
+          "type": "job title",
+          "page": 1,
+          "x": 327,
+          "y": 628,
+          "w": 114,
+          "h": 21,
+          "options": {
+            "required": true,
+            "name": "job title",
+            "color": "black",
+            "fontsize": 12
+          }
+        }
+        ```
+
+        7. **company**
+        ```
+        {
+          "type": "company",
+          "page": 1,
+          "x": 327,
+          "y": 628,
+          "w": 114,
+          "h": 21,
+          "options": {
+            "required": true,
+            "name": "company",
+            "color": "black",
+            "fontsize": 12
+          }
+        }
+        ```
+
+        8. **date**
+        ```
+        {
+          "type": "date",
+          "page": 1,
+          "x": 327,
+          "y": 628,
+          "w": 114,
+          "h": 21,
+          "options": {
+            "required": true,
+            "name": "date",
+            "default": "04-15-2024",
+            "format": "mm-dd-yyyy",
+            "color": "black",
+            "fontsize": 12
+          }
+        }
+        ```
+        - **default:**  Provide the date from which you want to start the date of the date widget. Must be provided in the specified format. By default, today's date provided.
+        - **format:** Specify the date format of your choice from the options below.
+          - "mm/dd/yyyy",
+          - "dd-mm-yyyy",
+          - "yyyy-mm-dd",
+          - "mm.dd.yyyy",
+          - "mm-dd-yyyy",
+          - "mmm dd, yyyy",
+          - "mmmm dd, yyyy",
+          - "dd mmm, yyyy",
+          - "dd mmmm, yyy",
+          - "dd/mm/yyyy",
+          - "dd.mm.yyyy".
+
+        9. **textbox**
+        ```
+        {
+          "type": "textbox",
+          "page": 1,
+          "x": 327,
+          "y": 628,
+          "w": 114,
+          "h": 21,
+          "options": {
+            "name": "textbox",
+            "required": true,
+            "readonly": false,
+            "default": "name",
+            "hint": "provide name",
+            "regularexpression": "",
+            "color": "black",
+            "fontsize": 12
+          }
+        }
+        ```
+        - **default:** Provide a default value for the textbox (Optional).
+        - **hint:** Provide a hint for the textbox (Optional).
+        - **regularexpression:** A custom regex pattern for validation - for example, /^\d+$/ to permit only digits, /^[A-Z]+$/ to permit only uppercase letters, etc. [help](https://www.w3schools.com/jsref/jsref_obj_regexp.asp) (Optional).
+        - **readonly:** Set to true if you want to set the textbox as readonly. By default, it's false.
+
+        10. **checkbox**
+        ```
+        {
+          "type": "checkbox",
+          "page": 1,
+          "x": 327,
+          "y": 628,
+          "w": 114,
+          "h": 21,
+          "options": {
+            "required": true,
+            "name": "checkbox",
+            "values": ["male", "female", "other"],
+            "selectedvalues": ["male", "female"],
+            "readonly": false,
+            "hidelabel": false,
+            "color": "black",
+            "fontsize": 12,
+            "layout": "vertical",
+            "validation": {
+              "minselections": 0,
+              "maxselections": 0
+            }
+          }
+        }
+        ```
+        - **values:** Provide options for the checkbox list.
+        - **selectedvalues:** Provide values that need to be selected by default (Optional).
+        - **readonly:** Set to true if you want to set the checkbox as readonly. By default, it's false.
+        - **hidelabel:** Set to true if you want to hide labels of the checkbox. By default, it's false.
+        - **minselections:** Provide the minimum number of checkboxes that must be selected by the user.
+        - **maxselections:** Provide the maximum number of checkboxes that can be selected by the user.
+
+        11. **dropdown**
+        ```
+        {
+          "type": "dropdown",
+          "page": 1,
+          "x": 327,
+          "y": 628,
+          "w": 114,
+          "h": 21,
+          "options": {
+            "required": true,
+            "name": "dropdown",
+            "readonly": false,
+            "values": ["male", "female", "other"],
+            "default": "",
+            "color": "black",
+            "fontsize": 12
+          }
+        }
+        ```
+        - **values:** Provide options for the dropdown list.
+        - **default:** Provide the value that needs to be selected by default. Only one value is accepted. (Optional).
+        - **readonly:** Set to true if you want to set the dropdown as readonly. By default, it's false.
+
+        12. **radio button**
+        ```
+        {
+          "type": "radio button",
+          "page": 1,
+          "x": 327,
+          "y": 628,
+          "w": 114,
+          "h": 21,
+          "options": {
+            "required": true,
+            "name": "radio button",
+            "readonly": false,
+            "values": ["male", "female", "other"],
+            "default": "male",
+            "color": "black",
+            "fontsize": 12,
+            "layout": "vertical"
+          }
+        }
+        ```
+        - **values:** Provide options for the radio button list.
+        - **default:** Provide the value that needs to be selected by default. Only one value is accepted. (Optional).
+        - **readonly:** Set to true if you want to set the radio button as readonly. By default, it's false.
+
+        13. **image**
+        ```
+        {
+          "type": "image",
+          "page": 1,
+          "x": 327,
+          "y": 628,
+          "w": 114,
+          "h": 21,
+          "options": {
+            "required": true,
+            "name": "image"
+          }
+        }
+        ```
+      operationId: drafttemplate
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/createtemplate_body'
+        required: true
+      responses:
+        "200":
+          description: Template created successfully!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_draft_200'
+        "400":
+          description: "Something went wrong, please try again later!"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_400_1'
+        "405":
+          description: Invalid API Token!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/invalidtoken'
+      security:
+      - x-api-token: []
+  /createtemplate:
+    post:
+      tags:
+      - Templates
+      summary: Create Template
+      description: |
+        The Template Creation API allows users to create customizable templates, which serve as blueprints for generating documents with predefined structures. Upon successful template creation, the API returns a unique **template_id** that can be used to generate documents based on the specified template.
+
+        Tip: Upload your PDF document to our [**Debug UI**](https://app.opensignlabs.com/debugpdf), where you can easily add widgets, then copy coordinates, page numbers, and more in a ready-to-use JSON format. Plus, you can directly copy the document's base64 string, making it quick to send to the API.
+
+        **Supported Widgets:**
+
+        Below are the common parameters that are required with all widgets:
+        - **type:** Indicates the type of widget.
+        - **page:** Specifies the page number on which you want to place the respective widget.
+        - **x, y:** Denotes the horizontal and vertical coordinates of the starting point of the widget. You can use the debug UI to determine these values.
+        - **w, h:** Represents the width and height of the widget. You can adjust these values using the debug UI.
+        - **required:** Set to false if you want to make the widget optional. By default, it's true. Not applicable for signature-type widgets.
+        - **name:** Provides a different name for widgets if you are providing more than one widget.
+        - **color:** Specifies the color of the widget content. Available options include black, blue, red, and yellow, with black as the default selection if no color is specified. This parameter is optional and is applicable to the following widgets: email, name, job title, company, date, textbox, checkbox, radio button, and dropdown.
+        - **fontsize:** Specifies the fontsize of the widget content. Available options include 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, and 28, with a default fontsize of 12 if not specified. This parameter is optional and is applicable to the following widgets: email, name, job title, company, date, textbox, checkbox, radio button, and dropdown.
+
+        **List of all supported widgets:**
+
+        1. **signature**
+        ```
+        {
+          "type": "signature",
+          "page": 1,
+          "x": 327,
+          "y": 628,
+          "w": 114,
+          "h": 21
+        }
+        ```
+
+        2. **stamp**
+        ```
+        {
+          "type": "stamp",
+          "page": 1,
+          "x": 327,
+          "y": 628,
+          "w": 114,
+          "h": 21,
+          "options": {
+            "required": true,
+            "name": "stamp"
+          }
+        }
+        ```
+
+        3. **initials**
+        ```
+        {
+          "type": "initials",
+          "page": 1,
+          "x": 327,
+          "y": 628,
+          "w": 114,
+          "h": 21,
+          "options": {
+            "required": true,
+            "name": "initials"
+          }
+        }
+        ```
+
+        4. **email**
+        ```
+        {
+          "type": "email",
+          "page": 1,
+          "x": 327,
+          "y": 628,
+          "w": 114,
+          "h": 21,
+          "options": {
+            "required": true,
+            "name": "email",
+            "color": "black",
+            "fontsize": 12
+          }
+        }
+        ```
+
+        5. **name**
+        ```
+        {
+          "type": "name",
+          "page": 1,
+          "x": 327,
+          "y": 628,
+          "w": 114,
+          "h": 21,
+          "options": {
+            "required": true,
+            "name": "name",
+            "color": "black",
+            "fontsize": 12
+          }
+        }
+        ```
+
+        6. **job Title**
+        ```
+        {
+          "type": "job title",
+          "page": 1,
+          "x": 327,
+          "y": 628,
+          "w": 114,
+          "h": 21,
+          "options": {
+            "required": true,
+            "name": "job title",
+            "color": "black",
+            "fontsize": 12
+          }
+        }
+        ```
+
+        7. **company**
+        ```
+        {
+          "type": "company",
+          "page": 1,
+          "x": 327,
+          "y": 628,
+          "w": 114,
+          "h": 21,
+          "options": {
+            "required": true,
+            "name": "company",
+            "color": "black",
+            "fontsize": 12
+          }
+        }
+        ```
+
+        8. **date**
+        ```
+        {
+          "type": "date",
+          "page": 1,
+          "x": 327,
+          "y": 628,
+          "w": 114,
+          "h": 21,
+          "options": {
+            "required": true,
+            "name": "date",
+            "default": "04-15-2024",
+            "format": "mm-dd-yyyy",
+            "color": "black",
+            "fontsize": 12
+          }
+        }
+        ```
+        - **default:**  Provide the date from which you want to start the date of the date widget. Must be provided in the specified format. By default, today's date provided.
+        - **format:** Specify the date format of your choice from the options below.
+          - "mm/dd/yyyy",
+          - "dd-mm-yyyy",
+          - "yyyy-mm-dd",
+          - "mm.dd.yyyy",
+          - "mm-dd-yyyy",
+          - "mmm dd, yyyy",
+          - "mmmm dd, yyyy",
+          - "dd mmm, yyyy",
+          - "dd mmmm, yyy",
+          - "dd/mm/yyyy",
+          - "dd.mm.yyyy".
+
+        9. **textbox**
+        ```
+        {
+          "type": "textbox",
+          "page": 1,
+          "x": 327,
+          "y": 628,
+          "w": 114,
+          "h": 21,
+          "options": {
+            "name": "textbox",
+            "required": true,
+            "readonly": false,
+            "default": "name",
+            "hint": "provide name",
+            "regularexpression": "",
+            "color": "black",
+            "fontsize": 12
+          }
+        }
+        ```
+        - **default:** Provide a default value for the textbox (Optional).
+        - **hint:** Provide a hint for the textbox (Optional).
+        - **regularexpression:** A custom regex pattern for validation - for example, /^\d+$/ to permit only digits, /^[A-Z]+$/ to permit only uppercase letters, etc. [help](https://www.w3schools.com/jsref/jsref_obj_regexp.asp) (Optional).
+        - **readonly:** Set to true if you want to set the textbox as readonly. By default, it's false.
+
+        10. **checkbox**
+        ```
+        {
+          "type": "checkbox",
+          "page": 1,
+          "x": 327,
+          "y": 628,
+          "w": 114,
+          "h": 21,
+          "options": {
+            "required": true,
+            "name": "checkbox",
+            "values": ["male", "female", "other"],
+            "selectedvalues": ["male", "female"],
+            "readonly": false,
+            "hidelabel": false,
+            "color": "black",
+            "fontsize": 12,
+            "layout": "vertical",
+            "validation": {
+              "minselections": 0,
+              "maxselections": 0
+            }
+          }
+        }
+        ```
+        - **values:** Provide options for the checkbox list.
+        - **selectedvalues:** Provide values that need to be selected by default (Optional).
+        - **readonly:** Set to true if you want to set the checkbox as readonly. By default, it's false.
+        - **hidelabel:** Set to true if you want to hide labels of the checkbox. By default, it's false.
+        - **minselections:** Provide the minimum number of checkboxes that must be selected by the user.
+        - **maxselections:** Provide the maximum number of checkboxes that can be selected by the user.
+
+        11. **dropdown**
+        ```
+        {
+          "type": "dropdown",
+          "page": 1,
+          "x": 327,
+          "y": 628,
+          "w": 114,
+          "h": 21,
+          "options": {
+            "required": true,
+            "name": "dropdown",
+            "readonly": false,
+            "values": ["male", "female", "other"],
+            "default": "",
+            "color": "black",
+            "fontsize": 12
+          }
+        }
+        ```
+        - **values:** Provide options for the dropdown list.
+        - **default:** Provide the value that needs to be selected by default. Only one value is accepted. (Optional).
+        - **readonly:** Set to true if you want to set the dropdown as readonly. By default, it's false.
+
+        12. **radio button**
+        ```
+        {
+          "type": "radio button",
+          "page": 1,
+          "x": 327,
+          "y": 628,
+          "w": 114,
+          "h": 21,
+          "options": {
+            "required": true,
+            "name": "radio button",
+            "readonly": false,
+            "values": ["male", "female", "other"],
+            "default": "male",
+            "color": "black",
+            "fontsize": 12,
+            "layout": "vertical"
+          }
+        }
+        ```
+        - **values:** Provide options for the radio button list.
+        - **default:** Provide the value that needs to be selected by default. Only one value is accepted. (Optional).
+        - **readonly:** Set to true if you want to set the radio button as readonly. By default, it's false.
+
+        13. **image**
+        ```
+        {
+          "type": "image",
+          "page": 1,
+          "x": 327,
+          "y": 628,
+          "w": 114,
+          "h": 21,
+          "options": {
+            "required": true,
+            "name": "image"
+          }
+        }
+        ```
+      operationId: createtemplate
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/createtemplate_body'
+        required: true
+      responses:
+        "200":
+          description: Template created successfully!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_5'
+        "400":
+          description: "Something went wrong, please try again later!"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_400_1'
+        "405":
+          description: Invalid API Token!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/invalidtoken'
+      security:
+      - x-api-token: []
+  /template/{template_id}:
+    get:
+      tags:
+      - Templates
+      summary: Get Template
+      description: The Get Template API allows you to retrieve details about a specific template. Templates serve as blueprints for creating documents with predefined structures.
+      operationId: getTemplate
+      parameters:
+      - name: template_id
+        in: path
+        description: ID of template that needs to be fetched
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          format: strng
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/template'
+        "400":
+          description: "Something went wrong, please try again later!"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_400_1'
+        "404":
+          description: Template not found!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_404_6'
+        "405":
+          description: Invalid API Token!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/invalidtoken'
+      security:
+      - x-api-token: []
+    put:
+      tags:
+      - Templates
+      summary: Update Template
+      description: The Update Template API enables you to modify and update the details of a specific template.
+      operationId: updateTemplate
+      parameters:
+      - name: template_id
+        in: path
+        description: ID of the template that needs to be updated
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          format: string
+      requestBody:
+        description: Provide below parameter to update templates (at least one parameter required)
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/template_template_id_body'
+      responses:
+        "200":
+          description: Template updated successfully!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_3'
+        "400":
+          description: Please provide valid field names!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_400'
+        "404":
+          description: Template not found!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_404_7'
+        "405":
+          description: Invalid API Token!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/invalidtoken'
+      security:
+      - x-api-token: []
+    delete:
+      tags:
+      - Templates
+      summary: Delete Template
+      description: The Delete Template API provides you with the ability to remove a specific template from the templates. If a template is no longer needed
+      operationId: deleteTemplate
+      parameters:
+      - name: template_id
+        in: path
+        description: ID of the template that needs to be deleted
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          format: string
+      responses:
+        "200":
+          description: Template deleted successfully!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/delete'
+        "400":
+          description: "Something went wrong, please try again later!"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_400_1'
+        "404":
+          description: Template not found!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_404_6'
+        "405":
+          description: Invalid API Token!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/invalidtoken'
+      security:
+      - x-api-token: []
+  /templatelist:
+    get:
+      tags:
+      - Templates
+      summary: Get Template list
+      description: "The Get Template List API allows you to retrieve a list of available templates. This functionality provides an overview of all templates, enabling users to choose from existing templates when creating documents."
+      operationId: gettemplatelist
+      parameters:
+      - name: limit
+        in: query
+        required: false
+        style: form
+        explode: true
+        schema:
+          maximum: 500
+          type: number
+        example: 10
+      - name: skip
+        in: query
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: number
+        example: 0
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_6'
+        "405":
+          description: Invalid API Token!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/invalidtoken'
+      security:
+      - x-api-token: []
+  /webhook:
+    get:
+      tags:
+      - Webhook
+      summary: Get Webhook
+      description: The Get Webhook API allow you to get webhook url
+      operationId: getWebhook
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_7'
+        "404":
+          description: User not found!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_404'
+        "405":
+          description: Invalid API Token!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/invalidtoken'
+      security:
+      - x-api-token: []
+    post:
+      tags:
+      - Webhook
+      summary: Save or Update Webhook
+      description: |
+        The save or update Webhook API allows you to save a webhook URL which is used to trigger events.
+
+        ### Events:
+
+        **1. viewed:**
+        - When a signer views a document, this event will trigger.
+        ```
+        {
+          "event": "viewed",
+          "type": "DOCUMENT_TYPE",
+          "objectId": "DOCUMENT_ID",
+          "file": "DOCUMENT_URL",
+          "name": "DOCUMENT_NAME",
+          "note": "Please review and sign this document",
+          "description": "",
+          "signers": [
+            {
+              "name": "SIGNER_NAME",
+              "email": "SIGNER_EMAIL",
+              "phone": "SIGNER_PHONE"
+            }
+          ],
+          "viewedBy": "SIGNER_EMAIL",
+          "viewedAt": "TIMESTAMP",
+          "createdAt": "TIMESTAMP"
+        }
+        ```
+
+        **2. created:**
+        - When a document is created, this event will trigger.
+        ```
+        {
+          "event": "created",
+          "type": "DOCUMENT_TYPE",
+          "objectId": "DOCUMENT_ID",
+          "file": "DOCUMENT_URL",
+          "name": "DOCUMENT_NAME",
+          "note": "Please review and sign this document",
+          "description": "",
+          "signers": [
+            {
+              "name": "SIGNER_NAME",
+              "email": "SIGNER_EMAIL",
+              "phone": "SIGNER_PHONE"
+            }
+          ],
+          "createdAt": "TIMESTAMP"
+        }
+        ```
+        - When a document is created through the draft template API, this event will trigger.
+        ```
+        {
+          "event": "created",
+          "type": "DOCUMENT_TYPE",
+          "objectId": "DOCUMENT_ID",
+          "file": "DOCUMENT_URL",
+          "name": "DOCUMENT_NAME",
+          "note": "Please review and sign this document",
+          "description": "",
+          "signers": [
+            {
+              "name": "SIGNER_NAME",
+              "email": "SIGNER_EMAIL",
+              "phone": "SIGNER_PHONE",
+              "url": "SIGNING_URL"
+            }
+          ],
+          "createdAt": "TIMESTAMP"
+        }
+        ```
+
+        **3. signed:**
+        - When a document is signed by a signer, this event will trigger.
+        ```
+        {
+          "event": "signed",
+          "type": "DOCUMENT_TYPE",
+          "objectId": "DOCUMENT_ID",
+          "file": "DOCUMENT_URL",
+          "name": "DOCUMENT_NAME",
+          "note": "Please review and sign this document",
+          "description": "",
+          "signer": {
+            "name": "SIGNER_NAME",
+            "email": "SIGNER_EMAIL",
+            "phone": "SIGNER_PHONE"
+          },
+          "signedAt": "TIMESTAMP",
+          "createdAt": "TIMESTAMP"
+        }
+        ```
+
+        **4. completed:**
+        - When a document is signed by all signers, this event will trigger.
+        ```
+        {
+          "event": "completed",
+          "type": "DOCUMENT_TYPE",
+          "objectId": "DOCUMENT_ID",
+          "file": "DOCUMENT_URL",
+          "name": "DOCUMENT_NAME",
+          "note": "Please review and sign this document",
+          "description": "",
+          "signers": [
+            {
+              "name": "SIGNER_NAME",
+              "email": "SIGNER_EMAIL",
+              "phone": "SIGNER_PHONE"
+            }
+          ],
+          "certificate": "CERTIFICATE_URL",
+          "completedAt": "TIMESTAMP",
+          "createdAt": "TIMESTAMP"
+        }
+        ```
+
+        **5. declined:**
+        - When a document is declined by a signer, this event will trigger.
+        ```
+        {
+          "event": "declined",
+          "type": "DOCUMENT_TYPE",
+          "objectId": "DOCUMENT_ID",
+          "file": "DOCUMENT_URL",
+          "name": "DOCUMENT_NAME",
+          "note": "Please review and sign this document",
+          "description": "",
+          "signers": [
+            {
+              "name": "SIGNER_NAME",
+              "email": "SIGNER_EMAIL",
+              "phone": "SIGNER_PHONE"
+            }
+          ],
+          "declinedBy": "SIGNER_EMAIL",
+          "declinedAt": "TIMESTAMP",
+          "createdAt": "TIMESTAMP"
+        }
+        ```
+      operationId: save&updateWebhook
+      requestBody:
+        description: Provide url to create Webhook
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/webhook_body'
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_8'
+        "400":
+          description: "Something went wrong, please try again later!"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_400_1'
+        "401":
+          description: Webhook url already exists!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_401_w'
+        "404":
+          description: User not found!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_404'
+        "405":
+          description: Invalid API Token!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/invalidtoken'
+      security:
+      - x-api-token: []
+    delete:
+      tags:
+      - Webhook
+      summary: Delete Webhook
+      description: The Delete Webhook API allow you to delete webhook url
+      operationId: deleteWebhook
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_9'
+        "404":
+          description: User not found!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_404'
+        "405":
+          description: Invalid API Token!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/invalidtoken'
+      security:
+      - x-api-token: []
+  /createfolder:
+    post:
+      tags:
+      - Folder
+      summary: Create Folder
+      description: The Create Folder API allows you to create folder.
+      operationId: createfolder
+      requestBody:
+        description: Provide below parameter to create folder
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/folder_body'
+        required: true
+      responses:
+        "200":
+          description: folder created successfully!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/folder'
+        "400":
+          description: "Something went wrong, please try again later!"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_400_1'
+        "405":
+          description: Invalid API Token!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/invalidtoken'
+      security:
+      - x-api-token: []
+  /folder/{folder_id}:
+    get:
+      tags:
+      - Folder
+      summary: Get Folder
+      description: The Get Folder API allows you to retrieve details about a specific folder.
+      operationId: getfolder
+      parameters:
+      - name: folder_id
+        in: path
+        description: objectId of folder
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          format: string
+          example: pH1bhc2hpb
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/folder_res'
+        "400":
+          description: "Something went wrong, please try again later!"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_400_1'
+        "404":
+          description: folder not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_404_8'
+        "405":
+          description: Invalid API Token!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/invalidtoken'
+      security:
+      - x-api-token: []
+    put:
+      tags:
+      - Folder
+      summary: Update Folder
+      description: The Update Folder API allows you to uodate folder name as well as parentFolderId.
+      operationId: updatefolder
+      parameters:
+      - name: folder_id
+        in: path
+        description: objectId of folder
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          format: string
+          example: bK1cfd2hpb
+      requestBody:
+        description: Provide below parameter to create folder
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/folder_body'
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_11'
+        "400":
+          description: "Something went wrong, please try again later!"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_400_1'
+        "404":
+          description: folder not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_404_8'
+        "405":
+          description: Invalid API token!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/invalidtoken'
+      security:
+      - x-api-token: []
+    delete:
+      tags:
+      - Folder
+      summary: Delete Folder
+      description: The delete Folder API allows you to delete folder.
+      operationId: deletefolder
+      parameters:
+      - name: folder_id
+        in: path
+        description: objectId of folder
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          format: string
+          example: bK1cfd2hpb
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_12'
+        "400":
+          description: |
+            - folder is not empty, contains document or folder.
+            - Something went wrong, please try again later!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_400_3'
+        "404":
+          description: folder not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_404_8'
+        "405":
+          description: Invalid API token!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/invalidtoken'
+      security:
+      - x-api-token: []
+  /folderlist:
+    get:
+      tags:
+      - Folder
+      summary: Get folder list
+      description: The Folder List API empowers you to retrieve a list of folder with or without parentFolderId
+      operationId: folderlist
+      parameters:
+      - name: parentFolderId
+        in: query
+        description: objectId of folder
+        required: false
+        style: form
+        explode: false
+        schema:
+          type: string
+          format: string
+          example: ""
+      - name: limit
+        in: query
+        required: false
+        style: form
+        explode: true
+        schema:
+          maximum: 500
+          type: number
+        example: 10
+      - name: skip
+        in: query
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: number
+        example: 0
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_13'
+        "400":
+          description: "Something went wrong, please try again later!"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_400_1'
+        "405":
+          description: Invalid API Token!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/invalidtoken'
+      security:
+      - x-api-token: []
+components:
+  schemas:
+    date:
+      type: string
+      example: 2023-10-07T16:49:56.000Z
+      xml:
+        name: date
+    template:
+      type: object
+      properties:
+        objectId:
+          type: string
+          format: string
+          example: x1Hbnms2Pg
+        title:
+          type: string
+          example: sample template
+        note:
+          type: string
+          example: template note
+        folder:
+          $ref: '#/components/schemas/template_folder'
+        file:
+          type: string
+          example: https://templateuser.com
+        owner:
+          type: string
+          example: template creator name
+        signers:
+          type: array
+          items:
+            $ref: '#/components/schemas/template_Signers'
+        sendInOrder:
+          type: boolean
+          example: true
+        createdAt:
+          $ref: '#/components/schemas/date'
+        updatedAt:
+          $ref: '#/components/schemas/date'
+        enableTour:
+          type: boolean
+          example: true
+        redirect_url:
+          type: string
+          format: string
+          example: ""
+        allow_modifications:
+          type: boolean
+          example: false
+        auto_reminder:
+          type: boolean
+          example: false
+        remind_once_in_every:
+          type: number
+          example: 0          
+      xml:
+        name: template
+    contact:
+      type: object
+      properties:
+        objectId:
+          type: string
+          format: string
+          example: ph1bhx2jp
+        name:
+          type: string
+          format: string
+          example: joe bee
+        email:
+          type: string
+          format: string
+          example: joebee@example.com
+        phone:
+          type: string
+          format: string
+          example: "4131231231"
+        createdAt:
+          $ref: '#/components/schemas/date'
+        updatedAt:
+          $ref: '#/components/schemas/date'
+      xml:
+        name: contactdetails
+    folder:
+      type: object
+      properties:
+        objectId:
+          type: string
+          format: string
+          example: ph1bhx2jp
+        folderName:
+          type: string
+          format: string
+          example: new folder
+        parentFolderId:
+          type: string
+          format: string
+          example: J2nas5kiPe
+        createdAt:
+          $ref: '#/components/schemas/date'
+        updatedAt:
+          $ref: '#/components/schemas/date'
+      xml:
+        name: folderdetails
+    folder_res:
+      type: object
+      properties:
+        objectId:
+          type: string
+          format: string
+          example: ph1bhx2jp
+        folderName:
+          type: string
+          format: string
+          example: new folder
+        parentFolderId:
+          type: string
+          format: string
+          example: J2nas5kiPe
+        parentFolderName:
+          type: string
+          format: string
+          example: new sub folder
+        createdAt:
+          $ref: '#/components/schemas/date'
+        updatedAt:
+          $ref: '#/components/schemas/date'
+    user:
+      type: object
+      properties:
+        objectId:
+          type: string
+          format: string
+          example: FGik23bhUJ
+        name:
+          type: string
+          format: string
+          example: Joe Bee
+        email:
+          type: string
+          format: string
+          example: joebee@example.com
+        phone:
+          type: string
+          format: string
+          example: "4567832123"
+        jobTitle:
+          type: string
+          format: string
+          example: dev
+        company:
+          type: string
+          format: string
+          example: opensign
+        createdAt:
+          $ref: '#/components/schemas/date'
+        updatedAt:
+          $ref: '#/components/schemas/date'
+      xml:
+        name: user
+    documentwithstatus:
+      type: object
+      properties:
+        status:
+          type: string
+          format: string
+          example: in-progress
+        objectId:
+          type: string
+          format: string
+          example: FGik23bhUJ
+        file:
+          type: string
+          format: string
+          example: https://exampleurl.com
+        certificate:
+          type: string
+          format: string
+          example: https://certificateurl.com
+        title:
+          type: string
+          format: string
+          example: sample doc
+        note:
+          type: string
+          format: string
+          example: please sign document
+        folder:
+          $ref: '#/components/schemas/document_folder'
+        owner:
+          type: string
+          format: string
+          example: joe bee
+        signers:
+          type: array
+          items:
+            $ref: '#/components/schemas/template_Signers'
+        sendInOrder:
+          type: boolean
+          example: true
+        createdAt:
+          $ref: '#/components/schemas/date'
+        updatedAt:
+          $ref: '#/components/schemas/date'
+        enableTour:
+          type: boolean
+          example: true
+        redirect_url:
+          type: string
+          format: string
+          example: ""
+        allow_modifications:
+          type: boolean
+          example: false
+        audit_trail:
+          type: array
+          items:
+            $ref: '#/components/schemas/documentwithstatus_audit_trail'
+        template_id:
+          type: string
+          example: template_id is only available when the document is created from a template.
+        auto_reminder:
+          type: boolean
+          example: false
+        remind_once_in_every:
+          type: number
+          example: 0  
+      xml:
+        name: documentwithstatus
+    document:
+      type: object
+      properties:
+        objectId:
+          type: string
+          format: string
+          example: FGik23bhUJ
+        file:
+          type: string
+          format: string
+          example: https://exampleurl.com
+        title:
+          type: string
+          format: string
+          example: sample doc
+        note:
+          type: string
+          format: string
+          example: please sign document
+        folder:
+          $ref: '#/components/schemas/document_folder'
+        owner:
+          type: string
+          format: string
+          example: joe bee
+        signers:
+          type: array
+          items:
+            $ref: '#/components/schemas/template_Signers'
+        sendInOrder:
+          type: boolean
+          example: true
+        createdAt:
+          $ref: '#/components/schemas/date'
+        updatedAt:
+          $ref: '#/components/schemas/date'
+        enableTour:
+          type: boolean
+          example: true
+        redirect_url:
+          type: string
+          format: string
+          example: ""
+        allow_modifications:
+          type: boolean
+          example: false
+        template_id:
+          type: string
+          example: template_id is only available when the document is created from a template.
+        auto_reminder:
+          type: boolean
+          description: "Set to true to enable automatic reminders. Set to false to disable them (default behavior)."
+          example: false
+        remind_once_in_every:
+          type: number
+          description: "Number of days between reminders. This is only applicable when auto_reminder is set to true."  
+          example: 0          
+      xml:
+        name: document
+    invalidtoken:
+      type: object
+      properties:
+        error:
+          type: string
+          example: Invalid API token!
+      xml:
+        name: invalidtoken
+    delete:
+      type: object
+      properties:
+        objectId:
+          type: string
+          example: Bxh2aspHp3
+        deletedAt:
+          $ref: '#/components/schemas/date'
+      xml:
+        name: delete
+    revoke:
+      type: object
+      properties:
+        objectId:
+          type: string
+          example: Bxh2aspHp3
+        revokedAt:
+          $ref: '#/components/schemas/date'
+      xml:
+        name: revoke
+    inline_response_404:
+      type: object
+      properties:
+        error:
+          type: string
+          example: User not found!
+    createcontact_body:
+      required:
+      - email
+      - name
+      type: object
+      properties:
+        name:
+          type: string
+          format: string
+          example: joe bee
+        email:
+          type: string
+          format: string
+          example: joebee@example.com
+        phone:
+          type: string
+          format: string
+          example: "1232131321"
+    folder_body:
+      required:
+      - foldername
+      type: object
+      properties:
+        folderName:
+          type: string
+          format: string
+          example: new folder
+        parentFolderId:
+          type: string
+          format: string
+          example: ""
+    inline_response_401_1:
+      type: object
+      properties:
+        error:
+          type: string
+          example: Contact already exists!
+    inline_response_400_1:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Something went wrong, please try again later!"
+    inline_response_401_w:
+      type: object
+      properties:
+        error:
+          type: string
+          example: Webhook url already exists!
+    inline_response_404_2:
+      type: object
+      properties:
+        error:
+          type: string
+          example: Contact not found!
+    inline_response_200:
+      type: object
+      properties:
+        result:
+          type: array
+          items:
+            $ref: '#/components/schemas/contact'
+    selfsigndocument_body:
+      required:
+      - file
+      - signers
+      - title
+      type: object
+      properties:
+        file:
+          type: string
+          format: base64
+          example: base64 encoded pdf
+        title:
+          type: string
+          format: string
+          example: sample document
+        note:
+          type: string
+          format: string
+          example: sample Note
+        description:
+          type: string
+          format: string
+          example: sample Description
+        timeToCompleteDays:
+          type: number
+          description: time to complete days is used to calculate expiry date of your document
+          format: number
+          example: 15
+        signer:
+          $ref: '#/components/schemas/selfsigndocument_body_signer'
+        folderId:
+          type: string
+          example: ""
+        send_email:
+          type: boolean
+          description: "This parameter allows you to specify whether you want emails to be sent to signers. The default value is \"true\". If the value of this parameter is \"true\" and no 'email_subject'/'email_body' parameters are specified default email templates will be used.          \n"
+          example: true
+        email_subject:
+          type: string
+          description: "Custom mail subject for signature request. Can include the following  {{document_title}} {{sender_name}}, {{sender_mail}}, {{sender_phone}}, {{receiver_name}}, {{receiver_email}}, {{receiver_phone}}, {{expiry_date}}, {{company_name}}, {{signing_url}}, {{note}}."
+          example: "{{sender_name}} has requested you to sign {{document_title}}"
+        email_body:
+          type: string
+          description: "Custom signature request email body. Can include the following  {{document_title}} {{sender_name}}, {{sender_mail}}, {{sender_phone}}, {{receiver_name}}, {{receiver_email}}, {{receiver_phone}}, {{expiry_date}}, {{company_name}}, {{signing_url}}, {{note}}."
+          example: "<p>Hi {{receiver_name}},</p><p>We hope this email finds you well. <strong>{{sender_name}}</strong> has requested you to review and sign <strong>{{document_title}}</strong>.</p><p>Your signature is crucial to proceed with the next steps as it signifies your agreement and authorization.</p><p><a href='{{signing_url}}'>Sign here</a></p><p>If you have any questions or need further clarification, please contact the sender.</p><p>Thanks,<br>Team OpenSign™</p>"
+        enableTour:
+          type: boolean
+          description: "true - this option will enable a guided tour for signers, providing instructions during the signing process. false - disable the guided tour, ensuring a faster, uninterrupted signing experience."
+          example: false
+        redirect_url:
+          type: string
+          description: Specifies the URL where the signer will be redirected upon completing the document signing process.
+          example: ""
+        sender_name:
+          type: string
+          description: The name of the person or organization on whose behalf the email is being sent.
+          example: opensign™
+        sender_email:
+          type: string
+          description: The email address of the person or organization that users can reply to.
+          example: mailer@opensignlabs.com
+    draftdocument_body:
+      required:
+      - file
+      - title
+      type: object
+      properties:
+        file:
+          type: string
+          format: base64
+          example: base64 encoded pdf
+        title:
+          type: string
+          format: string
+          example: sample document
+        note:
+          type: string
+          format: string
+          example: sample Note
+        description:
+          type: string
+          format: string
+          example: sample Description
+        timeToCompleteDays:
+          type: number
+          description: time to complete days is used to calculate expiry date of your document
+          format: number
+          example: 15
+        signers:
+          type: array
+          items:
+            $ref: '#/components/schemas/createdocument_body_signers'
+        folderId:
+          type: string
+          example: ""
+        send_email:
+          type: boolean
+          description: "This parameter allows you to specify whether you want emails to be sent to signers. The default value is \"true\". If the value of this parameter is \"true\" and no 'email_subject'/'email_body' parameters are specified default email templates will be used.          \n"
+          example: true
+        email_subject:
+          type: string
+          description: "Custom mail subject for signature request. Can include the following  {{document_title}} {{sender_name}}, {{sender_mail}}, {{sender_phone}}, {{receiver_name}}, {{receiver_email}}, {{receiver_phone}}, {{expiry_date}}, {{company_name}}, {{signing_url}}, {{note}}."
+          example: "{{sender_name}} has requested you to sign {{document_title}}"
+        email_body:
+          type: string
+          description: "Custom signature request email body. Can include the following  {{document_title}} {{sender_name}}, {{sender_mail}}, {{sender_phone}}, {{receiver_name}}, {{receiver_email}}, {{receiver_phone}}, {{expiry_date}}, {{company_name}}, {{signing_url}}, {{note}}."
+          example: "<p>Hi {{receiver_name}},</p><p>We hope this email finds you well. <strong>{{sender_name}}</strong> has requested you to review and sign <strong>{{document_title}}</strong>.</p><p>Your signature is crucial to proceed with the next steps as it signifies your agreement and authorization.</p><p><a href='{{signing_url}}'>Sign here</a></p><p>If you have any questions or need further clarification, please contact the sender.</p><p>Thanks,<br>Team OpenSign™</p>"
+        sendInOrder:
+          type: boolean
+          description: "If set to 'true', only the first signer will receive the signature request email initially. Emails to subsequent signers will be triggered sequentially, with each sent only after the previous signer has completed their signing. By default, sendInOrder is set to 'true'."
+          example: true
+        enableOTP:
+          type: boolean
+          description: "true - this option will enable OTP verification. Users will receive a verification code via email, which they must enter to sign the document. false -  this option will disable OTP verification, allowing users to sign the document directly without additional steps."
+          example: false
+        enableTour:
+          type: boolean
+          description: "true - this option will enable a guided tour for signers, providing instructions during the signing process. false - disable the guided tour, ensuring a faster, uninterrupted signing experience."
+          example: false
+        redirect_url:
+          type: string
+          description: Specifies the URL where the signer will be redirected upon completing the document signing process.
+          example: ""
+        sender_name:
+          type: string
+          description: The name of the person or organization on whose behalf the email is being sent.
+          example: opensign™
+        sender_email:
+          type: string
+          description: The email address of the person or organization that users can reply to.
+          example: mailer@opensignlabs.com
+        allow_modifications:
+          type: boolean
+          description: "true - Permits signers to add elements such as signatures, initials, stamps, or text on top of existing widgets in the document. false - Restricts signers from adding any additional elements to the document. This is the default value."
+          example: false
+        auto_reminder:
+          type: boolean
+          description: "Set to true to enable automatic reminders. Set to false to disable them (default behavior)."
+          example: false
+        remind_once_in_every:
+          type: number
+          description: "Number of days between reminders. This is only applicable when auto_reminder is set to true."
+          example: 5
+    createdocument_body:
+      required:
+      - file
+      - signers
+      - title
+      type: object
+      properties:
+        file:
+          type: string
+          format: base64
+          example: base64 encoded pdf
+        title:
+          type: string
+          format: string
+          example: sample document
+        note:
+          type: string
+          format: string
+          example: sample Note
+        description:
+          type: string
+          format: string
+          example: sample Description
+        timeToCompleteDays:
+          type: number
+          description: time to complete days is used to calculate expiry date of your document
+          format: number
+          example: 15
+        signers:
+          type: array
+          items:
+            $ref: '#/components/schemas/createdocument_body_signers'
+        folderId:
+          type: string
+          example: ""
+        send_email:
+          type: boolean
+          description: "This parameter allows you to specify whether you want emails to be sent to signers. The default value is \"true\". If the value of this parameter is \"true\" and no 'email_subject'/'email_body' parameters are specified default email templates will be used.          \n"
+          example: true
+        email_subject:
+          type: string
+          description: "Custom mail subject for signature request. Can include the following  {{document_title}} {{sender_name}}, {{sender_mail}}, {{sender_phone}}, {{receiver_name}}, {{receiver_email}}, {{receiver_phone}}, {{expiry_date}}, {{company_name}}, {{signing_url}}, {{note}}."
+          example: "{{sender_name}} has requested you to sign {{document_title}}"
+        email_body:
+          type: string
+          description: "Custom signature request email body. Can include the following  {{document_title}} {{sender_name}}, {{sender_mail}}, {{sender_phone}}, {{receiver_name}}, {{receiver_email}}, {{receiver_phone}}, {{expiry_date}}, {{company_name}}, {{signing_url}}, {{note}}."
+          example: "<p>Hi {{receiver_name}},</p><p>We hope this email finds you well. <strong>{{sender_name}}</strong> has requested you to review and sign <strong>{{document_title}}</strong>.</p><p>Your signature is crucial to proceed with the next steps as it signifies your agreement and authorization.</p><p><a href='{{signing_url}}'>Sign here</a></p><p>If you have any questions or need further clarification, please contact the sender.</p><p>Thanks,<br>Team OpenSign™</p>"
+        sendInOrder:
+          type: boolean
+          description: "If set to 'true', only the first signer will receive the signature request email initially. Emails to subsequent signers will be triggered sequentially, with each sent only after the previous signer has completed their signing. By default, sendInOrder is set to 'true'."
+          example: true
+        enableOTP:
+          type: boolean
+          description: "true - this option will enable OTP verification. Users will receive a verification code via email, which they must enter to sign the document. false -  this option will disable OTP verification, allowing users to sign the document directly without additional steps."
+          example: false
+        enableTour:
+          type: boolean
+          description: "true - this option will enable a guided tour for signers, providing instructions during the signing process. false - disable the guided tour, ensuring a faster, uninterrupted signing experience."
+          example: false
+        redirect_url:
+          type: string
+          description: Specifies the URL where the signer will be redirected upon completing the document signing process.
+          example: ""
+        sender_name:
+          type: string
+          description: The name of the person or organization on whose behalf the email is being sent.
+          example: opensign™
+        sender_email:
+          type: string
+          description: The email address of the person or organization that users can reply to.
+          example: mailer@opensignlabs.com
+        allow_modifications:
+          type: boolean
+          description: "true - Permits signers to add elements such as signatures, initials, stamps, or text on top of existing widgets in the document. false - Restricts signers from adding any additional elements to the document. This is the default value."
+          example: false
+        auto_reminder:
+          type: boolean
+          description: "Set to true to enable automatic reminders. Set to false to disable them (default behavior)."
+          example: false
+        remind_once_in_every:
+          type: number
+          description: "Number of days between reminders. This is only applicable when auto_reminder is set to true."
+          example: 5
+    inline_response_200_1:
+      type: object
+      properties:
+        objectId:
+          type: string
+          format: string
+          example: hji2zxcv2P
+        url:
+          type: string
+          format: string
+          example: https://url-to-sign-document.com
+    inline_response_doc:
+      type: object
+      properties:
+        objectId:
+          type: string
+          format: string
+          example: hji2zxcv2P
+        signurl:
+          type: array
+          items:
+            $ref: '#/components/schemas/inline_response_doc_signurl'
+        message:
+          type: string
+          format: string
+          example: Document sent successfully!
+    inline_draft_doc_res_200_1:
+      type: object
+      properties:
+        document_id:
+          type: string
+          format: string
+          example: hji2zxcv2P
+        url:
+          type: string
+          format: string
+          example: https://url-to-send-document.com
+    createdocumenttemplate_id_Signers:
+      type: object
+      properties:
+        role:
+          type: string
+          example: Accoutnant
+        email:
+          type: string
+          format: mail
+          example: joe@example.com
+        name:
+          type: string
+          example: joe bee
+        phone:
+          type: string
+          example: "123123131"
+        widgets:
+          type: array
+          items:
+            $ref: '#/components/schemas/createdocumenttemplate_id_Signers_widgets'
+    createdocument_template_id_body:
+      required:
+      - signers
+      type: object
+      properties:
+        title:
+          type: string
+          format: string
+          example: New document title
+          description: |
+            An optional parameter specifying the title for the newly created document. If omitted, the template’s title will be used by default.
+        signers:
+          type: array
+          items:
+            $ref: '#/components/schemas/createdocumenttemplate_id_Signers'
+        folderId:
+          type: string
+          example: ""
+        send_email:
+          type: boolean
+          description: |
+            This parameter allows you to specify whether you want emails to be sent to signers. The default value is "true". If the value of this parameter is "true" and no 'email_subject'/'email_body' parameters are specified default email templates will be used.
+          example: true
+        email_subject:
+          type: string
+          description: "Custom mail subject for signature request. Can include the following  {{document_title}} {{sender_name}}, {{sender_mail}}, {{sender_phone}}, {{receiver_name}}, {{receiver_email}}, {{receiver_phone}}, {{expiry_date}}, {{company_name}}, {{signing_url}}, {{note}}."
+          example: "{{sender_name}} has requested you to sign {{document_title}}"
+        email_body:
+          type: string
+          description: "Custom signature request email body. Can include the following  {{document_title}} {{sender_name}}, {{sender_mail}}, {{sender_phone}}, {{receiver_name}}, {{receiver_email}}, {{receiver_phone}}, {{expiry_date}}, {{company_name}}, {{signing_url}}, {{note}}."
+          example: "<p>Hi {{receiver_name}},</p><p>We hope this email finds you well. <strong>{{sender_name}}</strong> has requested you to review and sign <strong>{{document_title}}</strong>.</p><p>Your signature is crucial to proceed with the next steps as it signifies your agreement and authorization.</p><p><a href='{{signing_url}}'>Sign here</a></p><p>If you have any questions or need further clarification, please contact the sender.</p><p>Thanks,<br>Team OpenSign™</p>"
+        sendInOrder:
+          type: boolean
+          description: "If set to 'true', only the first signer will receive the signature request email initially. Emails to subsequent signers will be triggered sequentially, with each sent only after the previous signer has completed their signing. By default, sendInOrder is set to 'true'."
+          example: true
+        timeToCompleteDays:
+          type: number
+          description: time to complete days is used to calculate expiry date of your document
+          format: number
+          example: 15
+        enableOTP:
+          type: boolean
+          description: "true - this option will enable OTP verification. Users will receive a verification code via email, which they must enter to sign the document. false -  this option will disable OTP verification, allowing users to sign the document directly without additional steps."
+          example: false
+        enableTour:
+          type: boolean
+          description: "true - this option will enable a guided tour for signers, providing instructions during the signing process. false - disable the guided tour, ensuring a faster, uninterrupted signing experience."
+          example: false
+        sender_name:
+          type: string
+          description: The name of the person or organization on whose behalf the email is being sent.
+          example: opensign™
+        sender_email:
+          type: string
+          description: The email address of the person or organization that users can reply to.
+          example: mailer@opensignlabs.com
+        allow_modifications:
+          type: boolean
+          description: "true - Permits signers to add elements such as signatures, initials, stamps, or text on top of existing widgets in the document. false - Restricts signers from adding any additional elements to the document. This is the default value."
+          example: false
+        file:
+          type: string
+          description: You may provide the base64 encoded PDF file to replace the existing one
+          format: base64
+          example: ""
+        auto_reminder:
+          type: boolean
+          description: "Set to true to enable automatic reminders. Set to false to disable them (default behavior)."
+          example: false
+        remind_once_in_every:
+          type: number
+          description: "Number of days between reminders. This is only applicable when auto_reminder is set to true."
+          example: 5        
+    revokedocument:
+      type: object
+      properties:
+        reason:
+          type: string
+          example: ""
+    resendmail_body:
+      required:
+      - document_id
+      - email
+      type: object
+      properties:
+        document_id:
+          type: string
+          example: provide document id
+        email:
+          type: string
+          description: |
+            provide user mail from signers to re-send request mail.
+          example: user@example.com
+        email_subject:
+          type: string
+          description: "Custom signature request email subject in text/html format. Can include following variables  {{document_title}} {{sender_name}}, {{sender_mail}}, {{sender_phone}}, {{receiver_name}}, {{receiver_email}}, {{receiver_phone}}, {{expiry_date}}, {{company_name}}, {{signing_url}}, {{note}}."
+          example: "{{sender_name}} has requested you to sign {{document_title}}"
+        email_body:
+          type: string
+          description: "Custom signature request email body in text/html format. Can include following variables  {{document_title}} {{sender_name}}, {{sender_mail}}, {{sender_phone}}, {{receiver_name}}, {{receiver_email}}, {{receiver_phone}}, {{expiry_date}}, {{company_name}}, {{signing_url}}, {{note}}."
+          example: "<p>Hi {{receiver_name}},</p><p>We hope this email finds you well. <strong>{{sender_name}}</strong> has requested you to review and sign <strong>{{document_title}}</strong>.</p><p>Your signature is crucial to proceed with the next steps as it signifies your agreement and authorization.</p><p><a href='{{signing_url}}'>Sign here</a></p><p>If you have any questions or need further clarification, please contact the sender.</p><p>Thanks,<br>Team OpenSign™</p>"
+    inline_response_404_3:
+      type: object
+      properties:
+        error:
+          type: string
+          example: Document not found!
+    document_document_id_body:
+      type: object
+      properties:
+        name:
+          type: string
+          format: string
+          example: sample document
+        note:
+          type: string
+          format: string
+          example: Please review and sign this document
+        description:
+          type: string
+          format: string
+          example: document description
+        folderId:
+          type: string
+          example: ""
+        enableOTP:
+          type: boolean
+          description: "true - this option will enable OTP verification. Users will receive a verification code via email, which they must enter to sign the document. false -  this option will disable OTP verification, allowing users to sign the document directly without additional steps."
+          example: false
+        enableTour:
+          type: boolean
+          description: "true - this option will enable a guided tour for signers, providing instructions during the signing process. false - disable the guided tour, ensuring a faster, uninterrupted signing experience."
+          example: false
+        allow_modifications:
+          type: boolean
+          description: "true - Permits signers to add elements such as signatures, initials, stamps, or text on top of existing widgets in the document. false - Restricts signers from adding any additional elements to the document. This is the default value."
+          example: false
+        redirect_url:
+          type: string
+          description: Specifies the URL where the signer will be redirected upon completing the document signing process. 
+          example: ""
+        auto_reminder:
+          type: boolean
+          description: "Set to true to enable automatic reminders. Set to false to disable them (default behavior)."
+          example: false
+        remind_once_in_every:
+          type: number
+          description: "Number of days between reminders. This is only applicable when auto_reminder is set to true."
+          example: 5
+    inline_response_200_3:
+      type: object
+      properties:
+        objectId:
+          type: string
+          example: asd2HsP4Hp
+        updatedAt:
+          $ref: '#/components/schemas/date'
+    inline_response_400:
+      type: object
+      properties:
+        error:
+          type: string
+          format: string
+          example: Please provide valid field names!
+    inline_response_404_4:
+      type: object
+      properties:
+        error:
+          type: string
+          format: string
+          example: Document not found!
+    inline_response_200_4:
+      type: object
+      properties:
+        result:
+          type: array
+          items:
+            $ref: '#/components/schemas/document'
+    inline_response_404_5:
+      type: object
+      properties:
+        error:
+          type: string
+          example: Report not available!
+    createtemplate_body:
+      required:
+      - file
+      - signers
+      - title
+      type: object
+      properties:
+        file:
+          type: string
+          format: base64
+          example: base64 encoded pdf
+        title:
+          type: string
+          format: string
+          example: sample template
+        note:
+          type: string
+          format: string
+          example: sample note
+        description:
+          type: string
+          format: string
+          example: sample description
+        signers:
+          type: array
+          description: You can provide signer optionally if you it as default signer
+          items:
+            $ref: '#/components/schemas/createtemplate_body_signers'
+        sendInOrder:
+          type: boolean
+          description: "If set to 'true', only the first signer will receive the signature request email initially. Emails to subsequent signers will be triggered sequentially, with each sent only after the previous signer has completed their signing. By default, sendInOrder is set to 'true'."
+          example: true
+        enableOTP:
+          type: boolean
+          description: "true - this option will enable OTP verification. Users will receive a verification code via email, which they must enter to sign the document. false -  this option will disable OTP verification, allowing users to sign the document directly without additional steps."
+          example: false
+        enableTour:
+          type: boolean
+          description: "true - this option will enable a guided tour for signers, providing instructions during the signing process. false - disable the guided tour, ensuring a faster, uninterrupted signing experience."
+          example: false
+        redirect_url:
+          type: string
+          description: Specifies the URL where the signer will be redirected upon completing the document signing process.
+          example: ""
+        sender_name:
+          type: string
+          description: The name of the person or organization on whose behalf the email is being sent.
+          example: opensign™
+        sender_email:
+          type: string
+          description: The email address of the person or organization that users can reply to.
+          example: mailer@opensignlabs.com
+        allow_modifications:
+          type: boolean
+          description: "true - Permits signers to add elements such as signatures, initials, stamps, or text on top of existing widgets in the document. false - Restricts signers from adding any additional elements to the document. This is the default value."
+          example: false
+        auto_reminder:
+          type: boolean
+          description: "Set to true to enable automatic reminders. Set to false to disable them (default behavior)."
+          example: false
+        remind_once_in_every:
+          type: number
+          description: "Number of days between reminders. This is only applicable when auto_reminder is set to true."
+          example: 5          
+    inline_response_draft_200:
+      type: object
+      properties:
+        objectId:
+          type: string
+          example: Bh2Hspnmch
+        url:
+          type: string
+          example: https://app.opensignlabs.com/drafttemplate/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2VtYWlsIjoicHJhZnVsbC5uYXZrYXIrYWRtaW5AbnhnbGFicy5jb20iLCJ0ZW1wbGF0ZV9pZCI6IkF0Zkk0cmNCbnAiLCJpYXQiOjE3MzEzMTExMzl9.aNqjCxc9MkE6-ZIr-MObKjqtpR5d3NXi68eMeWnT0Lc
+    inline_response_200_5:
+      type: object
+      properties:
+        objectId:
+          type: string
+          example: Bh2Hspnmch
+        message:
+          type: string
+          example: Template created successfully!
+    inline_response_404_6:
+      type: object
+      properties:
+        error:
+          type: string
+          example: Template not found!
+    template_template_id_body:
+      type: object
+      properties:
+        name:
+          type: string
+          format: string
+          example: sample template
+        note:
+          type: string
+          format: string
+          example: Please review and sign this document
+        description:
+          type: string
+          format: string
+          example: template description
+        folderId:
+          type: string
+          example: ""
+        enableOTP:
+          type: boolean
+          description: "true - this option will enable OTP verification. Users will receive a verification code via email, which they must enter to sign the document. false -  this option will disable OTP verification, allowing users to sign the document directly without additional steps."
+          example: false
+        enableTour:
+          type: boolean
+          description: "true - this option will enable a guided tour for signers, providing instructions during the signing process. false - disable the guided tour, ensuring a faster, uninterrupted signing experience."
+          example: false
+        allow_modifications:
+          type: boolean
+          description: "true - Permits signers to add elements such as signatures, initials, stamps, or text on top of existing widgets in the document. false - Restricts signers from adding any additional elements to the document. This is the default value."
+          example: false
+        file:
+          type: string
+          description: You may provide the base64 encoded PDF file to replace the existing one
+          format: base64
+          example: ""
+        redirect_url:
+          type: string
+          description: Specifies the URL where the signer will be redirected upon completing the document signing process.
+          example: ""
+        auto_reminder:
+          type: boolean
+          description: "Set to true to enable automatic reminders. Set to false to disable them (default behavior)."
+          example: false
+        remind_once_in_every:
+          type: number
+          description: "Number of days between reminders. This is only applicable when auto_reminder is set to true."  
+          example: 5  
+    inline_response_404_7:
+      type: object
+      properties:
+        error:
+          type: string
+          format: string
+          example: Template not found!
+    inline_response_200_6:
+      type: object
+      properties:
+        result:
+          type: array
+          items:
+            $ref: '#/components/schemas/template'
+    inline_response_200_7:
+      type: object
+      properties:
+        webhook:
+          type: string
+          example: https://your-webhook-url@example.com
+    webhook_body:
+      required:
+      - Url
+      type: object
+      properties:
+        url:
+          type: string
+          format: string
+          example: https://your-webhook-url@example.com
+    inline_response_200_8:
+      type: object
+      properties:
+        result:
+          type: string
+          example: Webhook updated successfully!
+    inline_response_200_9:
+      type: object
+      properties:
+        result:
+          type: string
+          example: Webhook deleted successfully!
+    template_Signers:
+      type: object
+      properties:
+        role:
+          type: string
+          example: ceo
+        name:
+          type: string
+          example: joe bee
+        email:
+          type: string
+          example: joebee@example.com
+        phone:
+          type: string
+          example: "456213871"
+        widgets:
+          type: array
+          items:
+            $ref: '#/components/schemas/template_Signers_widgets'
+    inline_response_400_cc:
+      type: object
+      properties:
+        error:
+          type: string
+          format: string
+          example: Please setup template properly!
+    createdocument_body_widgets:
+      type: object
+      properties:
+        type:
+          type: string
+          description: "Allowed values - signature, stamp."
+          format: string
+          example: signature
+        page:
+          type: number
+          description: "The page number on which the widget should appear. use our [**Debug UI**](https://app.opensignlabs.com/debugpdf) to calculate the value."
+          format: number
+          example: 1
+        x:
+          type: number
+          description: "x co-ordinate (left upper corner) from which widget should appear. use our [**Debug UI**](https://app.opensignlabs.com/debugpdf) to calculate the value."
+          format: number
+          example: 244
+        "y":
+          type: number
+          description: "y co-ordinate (left upper corner) from which widget should appear. use our [**Debug UI**](https://app.opensignlabs.com/debugpdf) to calculate the value."
+          format: number
+          example: 71
+        w:
+          type: number
+          description: "Width of widget. use our [**Debug UI**](https://app.opensignlabs.com/debugpdf) to calculate the value."
+          format: number
+          example: 38
+        h:
+          type: number
+          description: "Height of widget. use our [**Debug UI**](https://app.opensignlabs.com/debugpdf) to calculate the value."
+          format: number
+          example: 46
+    createdocument_body_signers:
+      type: object
+      properties:
+        role:
+          type: string
+          format: string
+          example: ceo
+        email:
+          type: string
+          format: string
+          example: joebee@example.com
+        name:
+          type: string
+          format: string
+          example: joe bee
+        phone:
+          type: string
+          format: string
+          example: "123121312"
+        widgets:
+          type: array
+          items:
+            $ref: '#/components/schemas/createdocument_body_widgets'
+    createtemplate_body_widgets:
+      type: object
+      properties:
+        type:
+          type: string
+          description: "Allowed values - signature, stamp."
+          format: string
+          example: signature
+        page:
+          type: number
+          description: "The page number on which the widget should appear. use our [**Debug UI**](https://app.opensignlabs.com/debugpdf) to calculate the value."
+          format: number
+          example: 1
+        x:
+          type: number
+          description: "x co-ordinate (left upper corner) from which widget should appear. use our [**Debug UI**](https://app.opensignlabs.com/debugpdf) to calculate the value."
+          format: number
+          example: 244
+        "y":
+          type: number
+          description: "y co-ordinate (left upper corner) from which widget should appear. use our [**Debug UI**](https://app.opensignlabs.com/debugpdf) to calculate the value."
+          format: number
+          example: 71
+        w:
+          type: number
+          description: "Width of widget. use our [**Debug UI**](https://app.opensignlabs.com/debugpdf) to calculate the value."
+          format: number
+          example: 38
+        h:
+          type: number
+          description: "Height of widget. use our [**Debug UI**](https://app.opensignlabs.com/debugpdf) to calculate the value."
+          format: number
+          example: 46
+    createtemplate_body_signers:
+      type: object
+      properties:
+        role:
+          type: string
+          format: string
+          example: ceo
+        email:
+          type: string
+          format: string
+          example: ""
+        name:
+          type: string
+          format: string
+          example: ""
+        phone:
+          type: string
+          format: string
+          example: ""
+        widgets:
+          type: array
+          items:
+            $ref: '#/components/schemas/createtemplate_body_widgets'
+    template_folder:
+      type: object
+      properties:
+        objectId:
+          type: string
+          format: string
+          example: x1Hbnms2Pg
+        name:
+          type: string
+          example: folder name
+    document_folder:
+      type: object
+      properties:
+        objectId:
+          type: string
+          format: string
+          example: FGik23bhUJ
+        name:
+          type: string
+          format: string
+          example: folder name
+    template_Signers_widgets:
+      type: object
+      properties:
+        type:
+          type: string
+          format: string
+          example: textbox
+        page:
+          type: number
+          format: number
+          example: 1          
+        x:
+          type: number
+          format: number
+          example: 244
+        y:
+          type: number
+          format: number
+          example: 71
+        w:
+          type: number
+          format: number
+          example: 38
+        h:
+          type: number
+          format: number
+          example: 46
+        options:
+          type: object
+          properties:
+            name:
+              type: string
+              format: string
+              example: "textbox"
+    inline_response_200_10:
+      type: object
+      properties:
+        result:
+          type: string
+          format: string
+          example: mail sent successfully.
+    inline_response_400_2:
+      type: object
+      properties:
+        error:
+          type: string
+          format: string
+          example: Something went wrong.
+    inline_response_404_1:
+      type: object
+      properties:
+        error:
+          type: string
+          format: string
+          example: document not found or user not found.
+    inline_response_404_8:
+      type: object
+      properties:
+        error:
+          type: string
+          format: string
+          example: folder not found.
+    inline_response_200_11:
+      type: object
+      properties:
+        objectId:
+          type: string
+          format: string
+          example: Hks2JpewIp
+        updatedAt:
+          $ref: '#/components/schemas/date'
+    inline_response_200_12:
+      type: object
+      properties:
+        objectId:
+          type: string
+          format: string
+          example: Hks2JpewIp
+        deletedAt:
+          $ref: '#/components/schemas/date'
+    inline_response_400_3:
+      type: object
+      oneOf:
+      - properties:
+          error:
+            type: string
+            example: "folder is not empty, contains document or folder."
+      - properties:
+          error:
+            type: string
+            example: "Something went wrong, please try again later!"
+    inline_response_200_13:
+      type: object
+      properties:
+        result:
+          type: array
+          items:
+            $ref: '#/components/schemas/folder_res'
+    selfsigndocument_body_signer:
+      type: object
+      properties:
+        role:
+          type: string
+          format: string
+          example: ceo
+        email:
+          type: string
+          format: string
+          example: joebee@example.com
+        name:
+          type: string
+          format: string
+          example: joe bee
+        phone:
+          type: string
+          format: string
+          example: "123121312"
+        widgets:
+          type: array
+          items:
+            $ref: '#/components/schemas/createdocument_body_widgets'
+    inline_response_doc_signurl:
+      type: object
+      properties:
+        email:
+          type: string
+          format: string
+          example: mail@example.com
+        url:
+          type: string
+          format: string
+          example: https://url-to-sign-document.com
+    createdocumenttemplate_id_Signers_widgets:
+      type: object
+      properties:
+        name:
+          type: string
+          example: textbox_1
+        readonly:
+          type: boolean
+          example: false
+        default:
+          type: string
+          example: my textbox
+    documentwithstatus_audit_trail:
+      type: object
+      properties:
+        email:
+          type: string
+          example: joebee@example.com
+        viewed:
+          $ref: '#/components/schemas/date'
+        signed:
+          $ref: '#/components/schemas/date'
+  securitySchemes:
+    x-api-token:
+      type: apiKey
+      name: x-api-token
+      in: header
