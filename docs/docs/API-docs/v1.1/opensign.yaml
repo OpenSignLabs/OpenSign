@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: OpenSign API v1.1
   description: |
-    Welcome to the OpenSign™ API documentation v1.1!
+    Welcome to the **OpenSign™ API v1.1** documentation.
 
     Our powerful and flexible API empowers you to seamlessly integrate digital signing capabilities into your applications. Whether you're a developer automating document workflows, a business enhancing security, or an enterprise streamlining contract management, OpenSign™ delivers robust solutions tailored to your needs.
 
