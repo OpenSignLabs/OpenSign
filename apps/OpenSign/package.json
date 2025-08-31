@@ -11,6 +11,7 @@
     "@reduxjs/toolkit": "^2.8.2",
     "axios": "^1.10.0",
     "date-fns-tz": "^3.2.0",
+    "env-cmd": "",
     "file-saver": "^2.0.5",
     "i18next": "^25.3.0",
     "i18next-browser-languagedetector": "^8.2.0",
@@ -57,7 +58,7 @@
     "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz"
   },
   "scripts": {
-    "build": "npm run version && NODE_OPTIONS=\"--max-old-space-size=8192\" vite build",
+    "build": "env-cmd -f .env npm run version && NODE_OPTIONS=\"--max-old-space-size=8192\" vite build",
     "start-dev": "vite",
     "dev": "vite",
     "preview": "vite preview",
