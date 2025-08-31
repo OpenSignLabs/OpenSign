@@ -58,7 +58,7 @@
     "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz"
   },
   "scripts": {
-    "build": "env-cmd -f .env npm run version && NODE_OPTIONS=\"--max-old-space-size=8192\" vite build",
+    "build": "npm run version && NODE_OPTIONS=\"--max-old-space-size=8192\" env-cmd -f .env vite build",
     "start-dev": "vite",
     "dev": "vite",
     "preview": "vite preview",
