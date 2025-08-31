@@ -1,4 +1,4 @@
-import { defineConfig, splitVendorChunkPlugin } from "vite";
+import { defineConfig, splitVendorChunkPlugin, searchForWorkspaceRoot } from "vite";
 import react from "@vitejs/plugin-react";
 import svgr from "vite-plugin-svgr";
 import { resolve } from "path";
@@ -41,7 +41,13 @@ export default defineConfig(({ command, mode }) => {
       }
     },
     server: {
-      port: process.env.PORT || 3000, // Same port as CRA
+    fs: {
+      allow: [
+        searchForWorkspaceRoot(process.cwd()),
+        '/opt/opensign',
+      ],
+    },
+    port: process.env.PORT || 3000, // Same port as CRA
       open: true
     },
     test: {
