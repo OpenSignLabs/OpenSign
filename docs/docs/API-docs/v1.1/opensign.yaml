@@ -26,7 +26,7 @@ info:
   license:
     name: AGPL v3.0
     url: http://github.com/opensignlabs/opensign/LICENSE
-  version: 1.1.0
+  version: 1.0.0
 externalDocs:
   description: Find out more about OpenSign
   url: http://docs.opensignlabs.com
@@ -4059,6 +4059,14 @@ components:
           type: string
           format: string
           example: "4131231231"
+        company:
+          type: string
+          format: string
+          example: opensign
+        job_title:
+          type: string
+          format: string
+          example: dev          
         createdAt:
           $ref: '#/components/schemas/date'
         updatedAt:
@@ -4322,6 +4330,14 @@ components:
           type: string
           format: string
           example: "1232131321"
+        company:
+          type: string
+          format: string
+          example: opensign
+        job_title:
+          type: string
+          format: string
+          example: dev      
     folder_body:
       required:
       - foldername
@@ -4649,6 +4665,14 @@ components:
         phone:
           type: string
           example: "123123131"
+        company:
+          type: string
+          format: string
+          example: opensign
+        job_title:
+          type: string
+          format: string
+          example: dev   
         widgets:
           type: array
           items:
@@ -5107,6 +5131,14 @@ components:
           type: string
           format: string
           example: "123121312"
+        company:
+          type: string
+          format: string
+          example: opensign
+        job_title:
+          type: string
+          format: string
+          example: dev             
         widgets:
           type: array
           items:
@@ -5163,6 +5195,14 @@ components:
           type: string
           format: string
           example: ""
+        company:
+          type: string
+          format: string
+          example: ""
+        job_title:
+          type: string
+          format: string
+          example: ""             
         widgets:
           type: array
           items:
@@ -5305,6 +5345,14 @@ components:
           type: string
           format: string
           example: "123121312"
+        company:
+          type: string
+          format: string
+          example: opensign
+        job_title:
+          type: string
+          format: string
+          example: dev          
         widgets:
           type: array
           items:
