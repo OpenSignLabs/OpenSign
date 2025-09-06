@@ -104,7 +104,7 @@ paths:
         
         **total_credits:** The sum of **plan_credits** and **addon_credits**. This represents the total credits currently available for use.
         
-      operationId: getUcredits
+      operationId: getcredits
       responses:
         "200":
           description: Successful operation
