@@ -87,6 +87,56 @@ paths:
                 $ref: '#/components/schemas/invalidtoken'
       security:
       - x-api-token: []
+  /getcredits:
+    get:
+      tags:
+      - User
+      summary: Get your API credits
+      description: |
+        The Get Credits API returns details about the credits available to your account:
+        
+        **plan_credits:** Credits included with your subscription plan. These reset at the start of each new billing cycle.
+          Example: If your plan provides 100 credits per month and you end
+          the cycle with 50 remaining, your balance resets to 100 at the
+          start of the next cycle.
+          
+        **addon_credits:** Credits purchased separately from Settings → API Token → Buy Premium Credits. Add-on credits do not expire and are only used once all plan credits are consumed.
+        
+        **total_credits:** The sum of **plan_credits** and **addon_credits**. This represents the total credits currently available for use.
+        
+      operationId: getUcredits
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/credits_res'
+        "400":
+          description: Subscription not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Subscription not found!
+                  
+        "404":
+          description: User not found!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_404'
+        "405":
+          description: Invalid API Token!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/invalidtoken'
+      security:
+      - x-api-token: []    
   /createcontact:
     post:
       tags:
@@ -5444,6 +5494,18 @@ components:
                   fontsize: 
                     type: number
                     example: 12    
+    credits_res: 
+      type: object
+      properties:
+        plan_credits:
+          type: number
+          example: 0
+        addon_credits:
+          type: number
+          example: 0
+        total_credits:
+          type: number
+          example: 0
   securitySchemes:
     x-api-token:
       type: apiKey
