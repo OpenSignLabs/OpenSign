@@ -6,8 +6,7 @@ import { Navigate, useNavigate } from "react-router";
 import Parse from "parse";
 import { SaveFileSize } from "../constant/saveFileSize";
 import dp from "../assets/images/dp.png";
-import Title from "../components/Title";
-import sanitizeFileName from "../primitives/sanitizeFileName";
+import { sanitizeFileName } from "../utils";
 import axios from "axios";
 import Tooltip from "../primitives/Tooltip";
 import {
@@ -22,8 +21,12 @@ import SelectLanguage from "../components/pdf/SelectLanguage";
 function UserProfile() {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  let UserProfile = JSON.parse(localStorage.getItem("UserInformation"));
-  let extendUser = JSON.parse(localStorage.getItem("Extand_Class"));
+  let UserProfile =
+    localStorage.getItem("UserInformation") &&
+    JSON.parse(localStorage.getItem("UserInformation"));
+  let extendUser =
+    localStorage.getItem("Extand_Class") &&
+    JSON.parse(localStorage.getItem("Extand_Class"));
   const [parseBaseUrl] = useState(localStorage.getItem("baseUrl"));
   const [parseAppId] = useState(localStorage.getItem("parseAppId"));
   const [editmode, setEditMode] = useState(false);
@@ -42,6 +45,9 @@ function UserProfile() {
   const [otp, setOtp] = useState("");
   const [otpLoader, setOtpLoader] = useState(false);
   const [isEmailVerified, setIsEmailVerified] = useState(false);
+  const [isdeleteModal, setIsdeleteModal] = useState(false);
+  const [deleteUserRes, setDeleteUserRes] = useState("");
+  const [isDelLoader, setIsDelLoader] = useState(false);
   useEffect(() => {
     getUserDetail();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -183,7 +189,8 @@ function UserProfile() {
           setImage(fileRes?.url);
           setpercentage(0);
           const tenantId = localStorage.getItem("TenantId");
-          SaveFileSize(size, fileRes?.url, tenantId);
+          const userId = extendUser?.[0]?.UserId?.objectId;
+          SaveFileSize(size, fileRes?.url, tenantId, userId);
           return fileRes?.url;
         }
       }
@@ -249,9 +256,37 @@ function UserProfile() {
     setJobTitle(extendUser?.[0]?.JobTitle);
   };
 
+  const handleDeleteAccountBtn = () => {
+    const isAdmin = extendUser?.[0]?.UserRole === "contracts_Admin";
+    if (!isAdmin) {
+      setDeleteUserRes(t("delete-action-prohibited"));
+    }
+    setIsdeleteModal(true);
+  };
+
+  const handleDeleteAccount = async (e) => {
+    e.preventDefault();
+    setIsDelLoader(true);
+    try {
+      await Parse.Cloud.run("senddeleterequest", {
+        userId: Parse.User.current().id
+      });
+      setDeleteUserRes(t("account-deletion-request-sent-via-mail"));
+    } catch (err) {
+      setDeleteUserRes(err.message);
+      console.log("Err in deleteuser acc", err);
+    } finally {
+      setIsDelLoader(false);
+    }
+  };
+
+  const handleCloseDeleteModal = () => {
+    setIsdeleteModal(false);
+    setDeleteUserRes("");
+  };
+
   return (
     <React.Fragment>
-      <Title title={"Profile"} />
       {isLoader ? (
         <div className="h-[100vh] flex justify-center items-center">
           <Loader />
@@ -383,15 +418,15 @@ function UserProfile() {
                 <span className="font-semibold">{t("is-email-verified")}:</span>{" "}
                 <span>
                   {isEmailVerified ? (
-                    "Verified"
+                    t("verified")
                   ) : (
                     <span>
-                      Not verified(
+                      {t("not-verified")} (
                       <span
                         onClick={() => handleVerifyBtn()}
                         className="hover:underline text-blue-600 cursor-pointer"
                       >
-                        verify
+                        {t("verify")}
                       </span>
                       )
                     </span>
@@ -410,13 +445,13 @@ function UserProfile() {
                 />
               </li>
             </ul>
-            <div className="flex justify-center gap-2 pt-2 pb-3 md:pt-3 md:pb-4">
+            <div className="flex flex-col md:flex-row justify-center gap-2 pt-2 pb-3 md:pt-3 md:pb-4 mx-2 md:mx-0">
               <button
                 type="button"
                 onClick={(e) => {
                     editmode ? handleSubmit(e) : setEditMode(true);
                 }}
-                className="op-btn op-btn-primary w-[100px]"
+                className="op-btn op-btn-primary md:w-[100px]"
               >
                 {editmode ? t("save") : t("edit")}
               </button>
@@ -431,8 +466,55 @@ function UserProfile() {
               >
                 {editmode ? t("cancel") : t("change-password")}
               </button>
+              <button
+                onClick={() => handleDeleteAccountBtn()}
+                className="op-link op-link-accent text-sm mx-2"
+              >
+                {t("delete-account")}
+              </button>
             </div>
           </div>
+          {isdeleteModal && (
+            <ModalUi
+              isOpen
+              title={t("delete-account")}
+              handleClose={handleCloseDeleteModal}
+            >
+              {isDelLoader ? (
+                <div className="h-[100px] flex justify-center items-center">
+                  <Loader />
+                </div>
+              ) : (
+                <>
+                  {deleteUserRes ? (
+                    <div className="h-[100px] p-[20px] flex justify-center items-center text-sm md:text-base">
+                      {deleteUserRes}
+                    </div>
+                  ) : (
+                    <form onSubmit={(e) => handleDeleteAccount(e)}>
+                      <div className="px-6 py-3 text-base-content text-sm md:text-base">
+                        {t("delete-account-que")}
+                      </div>
+                      <div className="px-6 mb-3">
+                        <button
+                          type="submit"
+                          className="op-btn op-btn-primary w-[100px]"
+                        >
+                          {t("yes")}
+                        </button>
+                        <button
+                          className="op-btn op-btn-secondary ml-2 w-[100px]"
+                          onClick={handleCloseDeleteModal}
+                        >
+                          {t("cancel")}
+                        </button>
+                      </div>
+                    </form>
+                  )}
+                </>
+              )}
+            </ModalUi>
+          )}
           {isVerifyModal && (
             <ModalUi
               isOpen

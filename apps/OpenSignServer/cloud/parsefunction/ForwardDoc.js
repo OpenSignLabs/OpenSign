@@ -26,7 +26,6 @@ export default async function forwardDoc(request) {
       }
       const _docRes = docRes?.toJSON();
       const docName = _docRes.Name;
-      const fileAdapterId = _docRes?.FileAdapterId || '';
       const extUserId = _docRes?.ExtUserPtr?.objectId;
       const TenantAppName = appName;
       const from = _docRes?.ExtUserPtr?.Email;

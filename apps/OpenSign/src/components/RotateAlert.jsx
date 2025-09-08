@@ -26,7 +26,7 @@ function RotateAlert(props) {
               props.setShowRotateAlert({ status: false, degree: 0 })
             }
             type="button"
-            className="op-btn op-btn-ghost shadow-md"
+            className="op-btn op-btn-ghost text-base-content shadow-md"
           >
             {t("no")}
           </button>

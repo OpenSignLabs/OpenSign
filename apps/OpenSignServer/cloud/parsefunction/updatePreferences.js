@@ -57,6 +57,9 @@ export default async function updatePreferences(request) {
         if (request.params.IsLTVEnabled !== undefined) {
           newOrg.set('IsLTVEnabled', request.params.IsLTVEnabled);
         }
+        if (request.params.DownloadFilenameFormat) {
+          newOrg.set('DownloadFilenameFormat', request.params.DownloadFilenameFormat);
+        }
         const updateUserRes = await newOrg.save(null, { useMasterKey: true });
         if (updateUserRes) {
           const _updateUserRes = JSON.parse(JSON.stringify(updateUserRes));

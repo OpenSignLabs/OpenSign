@@ -1,35 +1,27 @@
-import { defineConfig, splitVendorChunkPlugin } from "vite";
+import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react";
 import svgr from "vite-plugin-svgr";
 import { resolve } from "path";
-import dotenv from "dotenv";
-
-// Load env file based on mode
-dotenv.config();
 
 // https://vitejs.dev/config/
-export default defineConfig(({ command, mode }) => {
+export default defineConfig(({ mode }) => {
+  // Load ALL env vars (no prefix filter)
+  const env = loadEnv(mode, process.cwd(), "");
+
   return {
     plugins: [
       react(),
-      svgr(), // Transform SVGs into React components
-      splitVendorChunkPlugin()
+      svgr() // Transform SVGs into React components
     ],
-    resolve: {
-      alias: {
-        // Add any path aliases here if needed
-      }
-    },
+    resolve: { alias: {} }, // Add any necessary aliases here
     define: {
       // Replace process.env.REACT_APP_* with import.meta.env.VITE_*
-      "process.env": {
-        ...Object.keys(process.env).reduce((env, key) => {
-          if (key.startsWith("REACT_APP_")) {
-            env[key] = process.env[key];
-          }
-          return env;
-        }, {})
-      }
+      "process.env": Object.entries(env).reduce((acc, [key, value]) => {
+        if (key.startsWith("REACT_APP_")) {
+          acc[key] = value;
+        }
+        return acc;
+      }, {})
     },
     build: {
       outDir: "build", // Keep the same output directory as CRA for compatibility
@@ -41,7 +33,7 @@ export default defineConfig(({ command, mode }) => {
       }
     },
     server: {
-      port: process.env.PORT || 3000, // Same port as CRA
+      port: env.PORT || 3000, // Same port as CRA
       open: true
     },
     test: {

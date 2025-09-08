@@ -23,7 +23,7 @@ const ValidateSession = ({ children }) => {
   ) : (
     <ModalUi showHeader={false} isOpen={true} showClose={false}>
       <div className="flex flex-col justify-center items-center py-4 md:py-5 gap-5">
-        <p className="text-xl font-medium">Your session has expired.</p>
+        <p className="text-xl font-medium">{t("session-expired")}</p>
         <button onClick={handleLoginBtn} className="op-btn op-btn-neutral">
           {t("login")}
         </button>

@@ -1,4 +1,4 @@
-import React, { forwardRef, useEffect, useRef, useState } from "react";
+import { forwardRef, useEffect, useRef, useState } from "react";
 import ModalUi from "../../primitives/ModalUi";
 import { useTranslation } from "react-i18next";
 import { removeBackground } from "@imgly/background-removal";
@@ -19,32 +19,30 @@ import {
   textWidget,
   years,
   convertTextToImg,
-  convertJpegToPng
+  convertJpegToPng,
+  convertBase64ToFile,
+  generatePdfName
 } from "../../constant/Utils";
 import CellsWidget from "./CellsWidget";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import SignatureCanvas from "react-signature-canvas";
-import Parse from "parse";
-import {
-  generateTitleFromFilename,
-  getBase64FromUrl,
-  getSecureUrl
-} from "../../constant/Utils";
-import sanitizeFileName from "../../primitives/sanitizeFileName";
-import { SaveFileSize } from "../../constant/saveFileSize";
 import moment from "moment";
 import {
   setSaveSignCheckbox,
   setDefaultSignImg,
   setIsShowModal,
   setMyInitial,
-  setLastIndex
+  setLastIndex,
+  setScrollTriggerId,
+  setPrefillImg,
+  setPrefillImgLoad
 } from "../../redux/reducers/widgetSlice";
 import { useDispatch, useSelector } from "react-redux";
 import Loader from "../../primitives/Loader";
 import { emailRegex } from "../../constant/const";
 import RegexParser from "regex-parser";
+import { saveToMySign } from "../../utils/widgetUtils";
 
 //function to get default format
 const getDefaultFormat = (dateFormat) => dateFormat || "MM/dd/yyyy";
@@ -76,9 +74,8 @@ const isTabCls = "bg-[#002864] text-white rounded-[15px] px-[10px] py-[4px]";
 
 function WidgetsValueModal(props) {
   const dispatch = useDispatch();
-  const saveSignCheckbox = useSelector(
-    (state) => state.widget.saveSignCheckbox
-  );
+  const prefillImg = useSelector((state) => state.widget.prefillImg);
+  const mysign = useSelector((state) => state.widget.saveSignCheckbox);
   const defaultSignImg = useSelector((state) => state.widget.defaultSignImg);
   const myInitial = useSelector((state) => state.widget.myInitial);
   const lastWidget = useSelector((state) => state.widget.lastIndex);
@@ -92,8 +89,6 @@ function WidgetsValueModal(props) {
     currWidgetsDetails,
     setXyPosition,
     isSave,
-    setUniqueId,
-    tempSignerId,
     signatureTypes,
     setCellCount,
     allowCellResize = true
@@ -124,6 +119,8 @@ function WidgetsValueModal(props) {
   const senderUser = localStorage.getItem(
     `Parse/${localStorage.getItem("parseAppId")}/currentUser`
   );
+  const kiosk_signer =
+    props?.kiosk_signer || JSON.parse(localStorage.getItem("kiosk_signer"));
   const jsonSender = senderUser && JSON.parse(senderUser);
   const currentUserName = jsonSender && jsonSender?.name;
   const widgetTypeTranslation = t(`widgets-name.${currWidgetsDetails?.type}`);
@@ -140,7 +137,12 @@ function WidgetsValueModal(props) {
       "";
     return Array.from({ length: count }, (_, i) => val[i] || "");
   });
+  const isSignOrInitials = ["signature", "initials"].includes(
+    currWidgetsDetails?.type
+  );
+  const isImageOrStamp = ["image", "stamp"].includes(currWidgetsDetails?.type);
   const cellRefs = useRef([]);
+  const widgetRef = useRef(null);
   // keep track of the first empty cell to automatically focus it after updates
   useEffect(() => {
     const index = cellsValue.findIndex((v) => !v);
@@ -173,6 +175,18 @@ function WidgetsValueModal(props) {
         )
       : new Date()
   );
+  useEffect(() => {
+    dispatch(setScrollTriggerId(currWidgetsDetails?.key));
+    return () => dispatch(setScrollTriggerId());
+  }, []);
+
+  // below useEffect is used to focus text widgets when user open modal
+  useEffect(() => {
+    if (widgetRef?.current) {
+      const clearFocus = setTimeout(() => widgetRef?.current.focus(), 10);
+      return () => clearTimeout(clearFocus);
+    }
+  }, [widgetRef.current]);
 
   useEffect(() => {
     if (
@@ -190,7 +204,7 @@ function WidgetsValueModal(props) {
       } else {
         setHint(currWidgetsDetails?.type);
       }
-    } else if (["signature", "initials"].includes(currWidgetsDetails?.type)) {
+    } else if (isSignOrInitials) {
       setIsTab(currWidgetsDetails?.signatureType);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -234,7 +248,7 @@ function WidgetsValueModal(props) {
     //`onChangeInput` is used to save data related to date in a placeholder field
     onChangeInput(
       date,
-      currWidgetsDetails?.key,
+      currWidgetsDetails,
       xyPosition,
       props.index,
       setXyPosition,
@@ -251,7 +265,7 @@ function WidgetsValueModal(props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [signatureTypes]);
   //function for image upload or update
-  const onImageChange = (event) => {
+  const onImageChange = async (event) => {
     if (event.target.files && event.target.files[0]) {
       const file = event.target.files[0];
       setOriginalImage(null); // Reset original image when a new file is selected
@@ -260,11 +274,42 @@ function WidgetsValueModal(props) {
       compressedFileSize(file, setImage);
     }
   };
+  const handleSavePrefillImg = async () => {
+    setIsLoader(true);
+    try {
+      dispatch(
+        setPrefillImg({
+          id: currWidgetsDetails?.key,
+          base64: image?.src
+        })
+      );
+      const imageName = generatePdfName(16);
+      const imageUrl = await convertBase64ToFile(
+        imageName,
+        image.src,
+        image.imgType
+      );
+      setIsLoader(false);
+      if (imageUrl) {
+        return imageUrl;
+      }
+    } catch (e) {
+      console.log("error in handleSavePrefillImg function ", e);
+    }
+  };
   //function is used to save image,stamp widgets data
-  const handleSaveImage = (signatureType) => {
+  const handleSaveImage = async (signatureType) => {
     const widgetsType = currWidgetsDetails?.type;
     //`isApplyAll` is used when user edit stamp then updated signature apply all existing drawn signatures
     const isApplyAll = true;
+    let imgUrl;
+    const isPrefill = xyPosition.some(
+      (x) => x.Id === uniqueId && x?.Role === "prefill"
+    );
+    if (isPrefill) {
+      dispatch(setPrefillImgLoad({ [currWidgetsDetails?.key]: true }));
+      imgUrl = await handleSavePrefillImg();
+    }
     //check condition signyour-self or other flow
     if (uniqueId) {
       setXyPosition((prev) =>
@@ -275,7 +320,6 @@ function WidgetsValueModal(props) {
           const index = signer.placeHolder.findIndex(
             (x) => x.pageNumber === pageNumber
           );
-
           // Get updated placeholder list
           const updatedPlaceholders = onSaveImage(
             signatureType,
@@ -285,7 +329,8 @@ function WidgetsValueModal(props) {
             image,
             isAutoSign,
             widgetsType,
-            isApplyAll
+            isApplyAll,
+            isPrefill && imgUrl
           );
 
           return {
@@ -294,6 +339,7 @@ function WidgetsValueModal(props) {
           };
         })
       );
+      dispatch(setPrefillImgLoad({}));
     } else {
       const index = props?.xyPosition?.findIndex((object) => {
         return object.pageNumber === pageNumber;
@@ -379,7 +425,10 @@ function WidgetsValueModal(props) {
         isTypeText,
         typedSignature,
         false,
-        widgetsType
+        widgetsType,
+        false,
+        fontSelect,
+        penColor
       );
       setXyPosition(getUpdatePosition);
     }
@@ -388,47 +437,49 @@ function WidgetsValueModal(props) {
 
   //function to handle allowed tab in signature pad
   function handleTab() {
-    const signtypes = signatureTypes || [];
-    const defaultIndex = signtypes?.findIndex(
-      (x) =>
-        x.name === "default" &&
-        x.enabled === true &&
-        defaultSignImg &&
-        currWidgetsDetails?.type !== "image" &&
-        currWidgetsDetails?.type !== "stamp"
-    );
-    const getIndex =
-      defaultIndex !== -1 // Check if the default index exists
-        ? defaultIndex // If found, use it
-        : signtypes?.findIndex((x) => x.enabled === true);
+    if (["signature", "initials"].includes(currWidgetsDetails.type)) {
+      const signtypes = signatureTypes || [];
+      const defaultIndex = signtypes?.findIndex(
+        (x) =>
+          x.name === "default" &&
+          x.enabled === true &&
+          defaultSignImg &&
+          currWidgetsDetails?.type !== "image" &&
+          currWidgetsDetails?.type !== "stamp"
+      );
+      const getIndex =
+        defaultIndex !== -1 // Check if the default index exists
+          ? defaultIndex // If found, use it
+          : signtypes?.findIndex((x) => x.enabled === true);
 
-    if (getIndex !== -1) {
-      setIsSignTypes(true);
-      const tab = signatureTypes?.[getIndex].name;
-      if (currWidgetsDetails?.signatureType === "type") {
-        setIsTab("type");
-      } else if (tab === "draw") {
-        setIsTab("draw");
-      } else if (tab === "upload") {
-        setIsImageSelect(true);
-        setIsTab("uploadImage");
-      } else if (tab === "typed") {
-        setIsTab("type");
-      } else if (tab === "default") {
-        if (
-          (currWidgetsDetails?.type === "initials" && myInitial) ||
-          (currWidgetsDetails?.type !== "initials" && defaultSignImg)
-        ) {
-          setIsDefaultSign(true);
-          setIsTab("mysignature");
-        } else {
+      if (getIndex !== -1) {
+        setIsSignTypes(true);
+        const tab = signatureTypes?.[getIndex].name;
+        if (currWidgetsDetails?.signatureType === "type") {
+          setIsTab("type");
+        } else if (tab === "draw") {
           setIsTab("draw");
+        } else if (tab === "upload") {
+          setIsImageSelect(true);
+          setIsTab("uploadImage");
+        } else if (tab === "typed") {
+          setIsTab("type");
+        } else if (tab === "default") {
+          if (
+            (currWidgetsDetails?.type === "initials" && myInitial) ||
+            (currWidgetsDetails?.type !== "initials" && defaultSignImg)
+          ) {
+            setIsDefaultSign(true);
+            setIsTab("mysignature");
+          } else {
+            setIsTab("draw");
+          }
+        } else {
+          setIsTab(true);
         }
       } else {
-        setIsTab(true);
+        setIsSignTypes(false);
       }
-    } else {
-      setIsSignTypes(false);
     }
   }
   function isTabEnabled(tabName) {
@@ -463,7 +514,7 @@ function WidgetsValueModal(props) {
         setWidgetValue(combined);
         onChangeInput(
           combined,
-          currWidgetsDetails?.key,
+          currWidgetsDetails,
           xyPosition,
           props.index,
           setXyPosition,
@@ -473,7 +524,7 @@ function WidgetsValueModal(props) {
         setWidgetValue("");
         onChangeInput(
           "",
-          currWidgetsDetails?.key,
+          currWidgetsDetails,
           xyPosition,
           props.index,
           setXyPosition,
@@ -486,126 +537,40 @@ function WidgetsValueModal(props) {
   const handleSignatureChange = (data) => {
     setSignature(data);
   };
-  function base64StringtoFile(base64String, filename) {
-    let arr = base64String.split(","),
-      // type of uploaded image
-      mime = arr[0].match(/:(.*?);/)[1],
-      // decode base64
-      bstr = atob(arr[1]),
-      n = bstr.length,
-      u8arr = new Uint8Array(n);
-    while (n--) {
-      u8arr[n] = bstr.charCodeAt(n);
-    }
-    const ext = mime.split("/").pop();
-    const name = `${filename}.${ext}`;
-    return new File([u8arr], name, { type: mime });
-  }
-
-  const uploadFile = async (file) => {
-    try {
-      const parseFile = new Parse.File(file.name, file);
-      const response = await parseFile.save();
-      if (response?.url()) {
-        const fileRes = await getSecureUrl(response.url());
-        if (fileRes.url) {
-          const tenantId = localStorage.getItem("TenantId");
-          SaveFileSize(file.size, fileRes.url, tenantId);
-          return fileRes?.url;
-        } else {
-          alert(`${t("something-went-wrong-mssg")}`);
-          return false;
-        }
-      } else {
-        alert(`${t("something-went-wrong-mssg")}`);
-        return false;
-      }
-    } catch (err) {
-      console.log("sign upload err", err);
-      alert(`${err.message}`);
-      return false;
-    }
-  };
-
-  // `handlesavesign` is used to save signature, initials, stamp as a default
-  const handleSaveSign = async () => {
+  // `handleSaveToMySign` is used to save signature, initials, stamp as a default
+  const handleSaveToMySign = async () => {
     if (signature || image?.src) {
       setIsLoader(true);
       try {
-        const User = Parse?.User?.current();
-        const sanitizename = generateTitleFromFilename(User?.get("name"));
-        const replaceSpace = sanitizeFileName(sanitizename);
-        let file;
-        if (signature) {
-          file = base64StringtoFile(signature, `${replaceSpace}__sign`);
-        } else {
-          file = base64StringtoFile(image?.src, `${replaceSpace}__sign`);
+        const mySignRes = await saveToMySign({
+          type: currWidgetsDetails?.type,
+          base64: signature || image?.src,
+          defaultSignId: mysign?.signId
+        });
+        if (mysign?.signId) {
+          dispatch(setSaveSignCheckbox({ ...mysign, signId: mySignRes?.id }));
         }
-        const imageUrl = await uploadFile(file);
-        const userId = {
-          __type: "Pointer",
-          className: "_User",
-          objectId: User?.id
-        };
-        if (imageUrl) {
-          // below code is used to save or update default signature, initials, stamp
-          try {
-            const signCls = new Parse.Object("contracts_Signature");
-            if (saveSignCheckbox?.signId) {
-              signCls.id = saveSignCheckbox.signId;
-            }
-            if (currWidgetsDetails?.type === "initials") {
-              signCls.set("Initials", imageUrl);
-            } else if (currWidgetsDetails?.type === "signature") {
-              signCls.set("ImageURL", imageUrl);
-            }
-            signCls.set("UserId", userId);
-            const signRes = await signCls.save();
-            if (signRes) {
-              // props.saveSignCheckbox.signId;
-              dispatch(
-                setSaveSignCheckbox({
-                  ...saveSignCheckbox,
-                  signId: signRes?.id
-                })
-              );
-              const _signRes = JSON.parse(JSON.stringify(signRes));
-              if (currWidgetsDetails?.type === "signature") {
-                const defaultSign = await getBase64FromUrl(
-                  _signRes?.ImageURL,
-                  true
-                );
-                dispatch(setDefaultSignImg(defaultSign));
-              } else if (currWidgetsDetails?.type === "initials") {
-                const defaultInitials = await getBase64FromUrl(
-                  _signRes?.Initials,
-                  true
-                );
-                dispatch(setMyInitial(defaultInitials));
-              }
-              alert(t("saved-successfully"));
-            }
-            return signRes;
-          } catch (err) {
-            console.log(err);
-            alert(`${err.message}`);
-          } finally {
-            setIsLoader(false);
-          }
+        if (currWidgetsDetails?.type === "signature") {
+          dispatch(setDefaultSignImg(mySignRes.base64File));
+        } else if (currWidgetsDetails?.type === "initials") {
+          dispatch(setMyInitial(mySignRes.base64File));
         }
-      } catch (err) {
-        console.log("Err while saving signature", err);
+        alert(t("saved-successfully"));
+      } catch (error) {
+        console.log("error while save to my sign", error?.message);
+        alert(`${error.message}`);
+      } finally {
+        setIsLoader(false);
       }
     }
   };
 
   const handleSaveBtn = async () => {
+    // if User checked save signature or save initials checkbox
     if (accesstoken && isSavedSign) {
-      await handleSaveSign();
-      resetToDefault();
-    } else {
-      resetToDefault();
+      await handleSaveToMySign();
     }
+    resetToDefault();
   };
   const resetToDefault = () => {
     props?.setCurrWidgetsDetails({});
@@ -681,8 +646,8 @@ function WidgetsValueModal(props) {
 
   useEffect(() => {
     if (currWidgetsDetails?.options?.response) {
-      const url = currWidgetsDetails?.options?.response;
-      if (["signature", "initials"].includes(currWidgetsDetails?.type)) {
+      let url = currWidgetsDetails?.options?.response;
+      if (isSignOrInitials) {
         if (isTab === "draw" && currWidgetsDetails?.signatureType === "draw") {
           setSignature(url);
           // Load the default signature after the component mounts
@@ -692,7 +657,16 @@ function WidgetsValueModal(props) {
         } else if (isTab === "uploadImage" && currWidgetsDetails?.ImageType) {
           setImage({ imgType: currWidgetsDetails?.ImageType, src: url });
         }
-      } else if (["image", "stamp"].includes(currWidgetsDetails?.type)) {
+      } else if (isImageOrStamp) {
+        const isPrefill = xyPosition.some(
+          (x) => x.Id === uniqueId && x?.Role === "prefill"
+        );
+        if (isPrefill) {
+          const getPrefillImg = prefillImg?.find(
+            (x) => x.id === currWidgetsDetails?.key
+          );
+          url = getPrefillImg?.base64;
+        }
         setImage({ imgType: currWidgetsDetails?.ImageType, src: url });
       }
     }
@@ -700,9 +674,15 @@ function WidgetsValueModal(props) {
       //trim user name or typed name value to show in initial signature
       const trimmedName = typedSignature
         ? typedSignature?.trim()
-        : currentUserName?.trim();
+        : props?.journey === "kiosk-signing" && kiosk_signer
+          ? kiosk_signer[0]?.Name?.trim()
+          : currentUserName?.trim();
       //get full name of user
-      const fullUserName = typedSignature || currentUserName;
+      const fullUserName =
+        typedSignature ||
+        (props?.journey === "kiosk-signing" && kiosk_signer
+          ? kiosk_signer[0]?.Name
+          : currentUserName);
       const firstCharacter = trimmedName?.charAt(0);
       const userName =
         currWidgetsDetails?.type === "initials" ? firstCharacter : fullUserName;
@@ -728,15 +708,17 @@ function WidgetsValueModal(props) {
     return (
       <div className="flex flex-row items-center m-[5px] gap-3">
         <span className="text-base-content">{t("options")}</span>
-        {allColor.map((data, key) => {
+        {allColor.map((color) => {
+          const borderColor = penColor === color ? color : "white";
           return (
             <i
-              key={key}
+              key={color}
               onClick={() => {
-                convertToImg(fontSelect, typedSignature, data);
-                setPenColor(allColor[key]);
+                convertToImg(fontSelect, typedSignature, color);
+                setPenColor(color);
               }}
-              className={`border-b-[2px] cursor-pointer ${key === 0 && penColor === "blue" ? "border-blue-600" : key === 1 && penColor === "red" ? "border-red-500" : key === 2 && penColor === "black" ? "border-black" : "border-white"} text-[${data}] text-[16px] fa-light fa-pen-nib`}
+              style={{ borderBottom: `2px solid ${borderColor}` }}
+              className={`border-b-[2px] cursor-pointer text-[${color}] text-[16px] fa-light fa-pen-nib`}
             ></i>
           );
         })}
@@ -746,11 +728,7 @@ function WidgetsValueModal(props) {
 
   // Effect to store original image and apply initial BG removal if enabled
   useEffect(() => {
-    if (
-      image?.src &&
-      !originalImage &&
-      (isImageSelect || ["image", "stamp"].includes(currWidgetsDetails?.type))
-    ) {
+    if (image?.src && !originalImage && (isImageSelect || isImageOrStamp)) {
       // If there's an image, and we haven't stored an original for it yet,
       // and we are in a relevant tab/widget type for uploads
       setOriginalImage(image); // Store the current image as original
@@ -761,7 +739,7 @@ function WidgetsValueModal(props) {
           .then((blob) => {
             const reader = new FileReader();
             reader.onloadend = () => {
-              setImage({ src: reader.result, imgType: blob.type });
+              // setImage({ src: reader.result, imgType: blob.type });
             };
             reader.onerror = () => {
               console.error(
@@ -791,10 +769,7 @@ function WidgetsValueModal(props) {
 
   // Effect for toggling BG removal ON/OFF
   useEffect(() => {
-    if (
-      !originalImage?.src ||
-      !(isImageSelect || ["image", "stamp"].includes(currWidgetsDetails?.type))
-    ) {
+    if (!originalImage?.src || !(isImageSelect || isImageOrStamp)) {
       // No original image to process or not in a relevant upload state
       return;
     }
@@ -866,7 +841,7 @@ function WidgetsValueModal(props) {
     }
     onChangeInput(
       checkedList ? checkedList : updateSelectedCheckbox,
-      currWidgetsDetails?.key,
+      currWidgetsDetails,
       xyPosition,
       props.index,
       setXyPosition,
@@ -884,7 +859,7 @@ function WidgetsValueModal(props) {
     setWidgetValue(data);
     onChangeInput(
       data,
-      currWidgetsDetails?.key,
+      currWidgetsDetails,
       xyPosition,
       props.index,
       setXyPosition,
@@ -916,7 +891,7 @@ function WidgetsValueModal(props) {
     setWidgetValue(e.target.value);
     onChangeInput(
       e.target.value,
-      currWidgetsDetails?.key,
+      currWidgetsDetails,
       xyPosition,
       props.index,
       setXyPosition,
@@ -934,14 +909,13 @@ function WidgetsValueModal(props) {
     );
     onChangeInput(
       combined,
-      currWidgetsDetails?.key,
+      currWidgetsDetails,
       xyPosition,
       props.index,
       setXyPosition,
       uniqueId
     );
   };
-
   const handleCellsInput = (e, idx) => {
     setIsShowValidation(false);
     const val = e.target.value.slice(0, 1);
@@ -1024,7 +998,7 @@ function WidgetsValueModal(props) {
                                 }}
                                 className={`${
                                   isTab === "mysignature" && `${isTabCls}`
-                                }   ml-[2px] cursor-pointer`}
+                                } ml-[2px] cursor-pointer`}
                               >
                                 {t("my-initials")}
                               </span>
@@ -1043,7 +1017,7 @@ function WidgetsValueModal(props) {
                               }}
                               className={`${
                                 isTab === "draw" && `${isTabCls}`
-                              }   ml-[2px] cursor-pointer`}
+                              } ml-[2px] cursor-pointer`}
                             >
                               {t("draw")}
                             </span>
@@ -1055,11 +1029,12 @@ function WidgetsValueModal(props) {
                               onClick={() => {
                                 setIsDefaultSign(false);
                                 setIsImageSelect(true);
+                                setTypedSignature("");
                                 setIsTab("uploadImage");
                               }}
                               className={`${
                                 isTab === "uploadImage" && `${isTabCls}`
-                              }  ml-[2px] cursor-pointer`}
+                              } ml-[2px] cursor-pointer`}
                             >
                               {t("upload-image")}
                             </span>
@@ -1193,34 +1168,31 @@ function WidgetsValueModal(props) {
                         </div>
                         {/* Shared container for autoSignAll and removeBackground when image is displayed for upload/stamp/image */}
                         {(uniqueId ||
-                          (image &&
-                            (isImageSelect ||
-                              ["image", "stamp"].includes(
-                                currWidgetsDetails?.type
-                              )))) && (
-                          <div className="flex justify-center items-center gap-x-2 my-2">
+                          (image && (isImageSelect || isImageOrStamp))) && (
+                          <div className="flex flex-wrap flex-row sm:justify-center items-center gap-x-3 my-2">
                             {uniqueId && autoSignAll}
-                            {image &&
-                              (isImageSelect ||
-                                ["image", "stamp"].includes(
-                                  currWidgetsDetails?.type
-                                )) && (
-                                <label
-                                  htmlFor={`removeBgToggleModal-${currWidgetsDetails?.key}`}
-                                  className="mb-0 cursor-pointer flex items-center text-sm"
-                                >
-                                  <input
-                                    type="checkbox"
-                                    id={`removeBgToggleModal-${currWidgetsDetails?.key}`} // Unique ID
-                                    className="mr-2 op-checkbox op-checkbox-xs md:op-checkbox-sm"
-                                    checked={removeBgEnabled}
-                                    onChange={() =>
-                                      setRemoveBgEnabled(!removeBgEnabled)
-                                    }
-                                  />
-                                  {t("remove-background")}
-                                </label>
-                              )}
+                            {image && (isImageSelect || isImageOrStamp) && (
+                              <label
+                                htmlFor={`removeBgToggleModal-${currWidgetsDetails?.key}`}
+                                className="mb-0 cursor-pointer flex items-center text-sm"
+                              >
+                                <input
+                                  type="checkbox"
+                                  id={`removeBgToggleModal-${currWidgetsDetails?.key}`} // Unique ID
+                                  className="mr-2 op-checkbox op-checkbox-xs md:op-checkbox-sm"
+                                  checked={removeBgEnabled}
+                                  onChange={() =>
+                                    setRemoveBgEnabled(!removeBgEnabled)
+                                  }
+                                />
+                                {t("remove-background")}
+                              </label>
+                            )}
+                            {accesstoken && isSignOrInitials && (
+                              <div className="flex justify-start my-1">
+                                {mysign?.isVisible && savesigncheckbox}
+                              </div>
+                            )}
                           </div>
                         )}
                         <div className="flex justify-end"></div>
@@ -1250,7 +1222,9 @@ function WidgetsValueModal(props) {
                           value={typedSignature}
                           onChange={(e) => {
                             setTypedSignature(e.target.value);
-                            convertToImg(fontSelect, e.target.value);
+                            if (e.target.value?.trim()?.length > 0) {
+                              convertToImg(fontSelect, e.target.value);
+                            }
                           }}
                         />
                       </div>
@@ -1296,7 +1270,7 @@ function WidgetsValueModal(props) {
                         )}
                         {accesstoken && (
                           <div className="flex justify-start my-1">
-                            {saveSignCheckbox?.isVisible && savesigncheckbox}
+                            {mysign?.isVisible && savesigncheckbox}
                           </div>
                         )}
                       </div>
@@ -1331,7 +1305,7 @@ function WidgetsValueModal(props) {
                         )}
                         {accesstoken && (
                           <div className="flex justify-start my-1">
-                            {saveSignCheckbox?.isVisible && savesigncheckbox}
+                            {mysign?.isVisible && savesigncheckbox}
                           </div>
                         )}
                       </div>
@@ -1364,8 +1338,8 @@ function WidgetsValueModal(props) {
             {currWidgetsDetails?.options?.values?.map((data, ind) => (
               <div key={ind} className="text-base-content select-none-cls">
                 <label
-                  htmlFor={`checkbox-${currWidgetsDetails?.key + ind}`}
-                  className="text-xs flex items-center gap-1"
+                  // htmlFor={`checkbox-${currWidgetsDetails?.key + ind}`}
+                  className="text-xs flex items-center gap-1 cursor-pointer"
                 >
                   <input
                     id={`checkbox-${currWidgetsDetails?.key + ind}`}
@@ -1405,6 +1379,7 @@ function WidgetsValueModal(props) {
       case textInputWidget:
         return (
           <input
+            ref={widgetRef}
             placeholder={hint || t("widgets-name.text")}
             value={widgetValue ?? ""} // ensures it's always a string
             onBlur={handleInputBlur}
@@ -1432,7 +1407,7 @@ function WidgetsValueModal(props) {
       case "dropdown":
         return (
           <select
-            className="op-select op-select-bordered op-select-sm focus:outline-none hover:border-base-content w-full text-xs"
+            className="op-select op-select-bordered op-select-sm focus:outline-none hover:border-base-content text-base-content w-full text-xs"
             id="myDropdown"
             value={widgetValue}
             onChange={(e) => handleOnchangeTextBox(e)}
@@ -1456,6 +1431,7 @@ function WidgetsValueModal(props) {
       case "name":
         return (
           <input
+            ref={widgetRef}
             type="text"
             placeholder={hint || widgetTypeTranslation}
             value={widgetValue}
@@ -1467,6 +1443,7 @@ function WidgetsValueModal(props) {
       case "company":
         return (
           <input
+            ref={widgetRef}
             placeholder={hint || widgetTypeTranslation}
             value={widgetValue}
             type="text"
@@ -1478,6 +1455,7 @@ function WidgetsValueModal(props) {
       case "job title":
         return (
           <input
+            ref={widgetRef}
             type="text"
             onBlur={handleInputBlur}
             placeholder={hint || widgetTypeTranslation}
@@ -1540,6 +1518,7 @@ function WidgetsValueModal(props) {
         return (
           <>
             <input
+              ref={widgetRef}
               type="email"
               onBlur={handleInputBlur}
               placeholder={hint || widgetTypeTranslation}
@@ -1565,7 +1544,7 @@ function WidgetsValueModal(props) {
             {currWidgetsDetails?.options?.values.map((data, ind) => (
               <div key={ind} className="text-base-content select-none-cls">
                 <label
-                  htmlFor={`radio-${currWidgetsDetails?.key + ind}`}
+                  // htmlFor={`radio-${currWidgetsDetails?.key + ind}`}
                   className="cursor-pointer flex items-center text-sm gap-1"
                 >
                   <input
@@ -1587,6 +1566,7 @@ function WidgetsValueModal(props) {
       case textWidget:
         return (
           <input
+            ref={widgetRef}
             type="text"
             placeholder={t("widgets-name.text")}
             value={widgetValue ?? ""} //use an empty string "" as a default
@@ -1721,7 +1701,8 @@ function WidgetsValueModal(props) {
         break;
     }
   };
-  // console.log("currwidgetdetails ", currWidgetsDetails )
+
+  // focusNextWidget(currWidgetsDetails?.key, xyPosition)
   //function too use on click on next/finish button then update modal UI according to current widgets
   const handleClickOnNext = (isFinishDoc) => {
     if (
@@ -1792,20 +1773,27 @@ function WidgetsValueModal(props) {
           currWidgetsDetails?.type
         )
       ) {
-        if (
-          ((currWidgetsDetails?.type === "stamp" ||
-            currWidgetsDetails?.type === "image") &&
-            image) ||
-          (isTab === "draw" && signature) ||
-          (isTab === "uploadImage" && (signature || image)) ||
-          (isTab === "image" && image) ||
-          (isTab === "mysignature" && defaultSignImg) ||
-          (isTab === "type" && typedSignature)
-        ) {
-          return false;
-        } else {
-          return true;
+        const { type } = currWidgetsDetails || {};
+        //conditions based on widget type or active tab
+        const conditions = {
+          stamp: !image, // Stamp requires an image
+          image: !image, // Image widget also requires an image
+          draw: !signature, // Draw tab requires a drawn signature
+          uploadImage: !image, // Upload tab requires an image
+          mysignature: !defaultSignImg, // My Signature tab requires a saved/default signature
+          type: !(typedSignature?.trim()?.length > 0) // Type tab requires non-empty typed signature
+        };
+
+        // First check conditions based on widget type
+        if (type && conditions.hasOwnProperty(type)) {
+          return conditions[type];
         }
+        //If type doesn't match, check based on active tab
+        if (isTab && conditions.hasOwnProperty(isTab)) {
+          return conditions[isTab];
+        }
+
+        return true; // default
       } else if (
         currWidgetsDetails?.type === "checkbox" &&
         selectedCheckbox?.length > 0
@@ -1828,9 +1816,6 @@ function WidgetsValueModal(props) {
     }
     dispatch(setIsShowModal({}));
     dispatch(setLastIndex(""));
-    if (currWidgetsDetails?.type === textWidget && uniqueId) {
-      setUniqueId(tempSignerId);
-    }
   };
   //function is used to execute the finish button functionality
   const handleFinish = () => {
@@ -1894,6 +1879,11 @@ function WidgetsValueModal(props) {
         position="bottom"
       >
         <div className="h-[100%] p-[18px]">
+          {isLoader && (
+            <div className="absolute w-full h-full inset-0 flex justify-center items-center bg-base-content/30 z-50">
+              <Loader />
+            </div>
+          )}
           {isFinish ? (
             <>
               <div className="p-1 mt-3">
@@ -1956,7 +1946,7 @@ function WidgetsValueModal(props) {
                 ) : (
                   <button
                     type="button"
-                    className="op-btn op-btn-ghost op-btn-sm mr-1 cursor-default"
+                    className="op-btn op-btn-ghost text-base-content op-btn-sm mr-1 cursor-default"
                   ></button>
                 )}
                 <div className="flex items-center gap-2">

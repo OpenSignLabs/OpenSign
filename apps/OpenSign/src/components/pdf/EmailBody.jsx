@@ -18,7 +18,13 @@ export function EmailBody(props) {
           onInvalid={(e) => e.target.setCustomValidity(t("input-required"))}
           onInput={(e) => e.target.setCustomValidity("")}
           value={props.requestSubject}
-          onChange={(e) => props.setRequestSubject(e.target.value)}
+          onChange={(e) => {
+            props?.setRequestSubject(e.target.value);
+            props?.setCustomizeMail((prev) => ({
+              ...prev,
+              subject: e.target.value
+            }));
+          }}
           placeholder='${senderName} has requested you to sign "${documentName}"'
           className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
         />

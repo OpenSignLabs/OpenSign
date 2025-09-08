@@ -1,8 +1,9 @@
-import React, { Suspense, lazy } from "react";
+import React, { Suspense } from "react";
+import { lazyWithRetry } from "../../utils";
 import { useTranslation } from "react-i18next";
-const DashboardButton = lazy(() => import("./DashboardButton"));
-const DashboardCard = lazy(() => import("./DashboardCard"));
-const DashboardReport = lazy(() => import("./DashboardReport"));
+const DashboardButton = lazyWithRetry(() => import("./DashboardButton"));
+const DashboardCard = lazyWithRetry(() => import("./DashboardCard"));
+const DashboardReport = lazyWithRetry(() => import("./DashboardReport"));
 const buttonList = [
   {
     label: "Sign yourself",

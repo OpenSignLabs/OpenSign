@@ -217,6 +217,7 @@ const SignersInput = (props) => {
           {isModal && (
             <AddContact
               isDisableTitle
+              isAddYourSelfCheckbox={props?.isAddYourSelfCheckbox}
               details={handleNewDetails}
               closePopup={handleModalCloseClick}
             />

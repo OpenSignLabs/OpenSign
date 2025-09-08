@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Parse from "parse";
 import { appInfo } from "../constant/appinfo";
 import { NavLink, useNavigate } from "react-router";
@@ -11,7 +11,6 @@ import {
 import { useDispatch } from "react-redux";
 import { showTenant } from "../redux/reducers/ShowTenant";
 import Loader from "../primitives/Loader";
-import Title from "../components/Title";
 import { useTranslation } from "react-i18next";
 import { emailRegex } from "../constant/const";
 
@@ -73,6 +72,7 @@ const AddAdmin = () => {
     const defaultmenuid = localStorage.getItem("defaultmenuid");
     const PageLanding = localStorage.getItem("PageLanding");
     const userSettings = localStorage.getItem("userSettings");
+    const favicon = localStorage.getItem("favicon");
 
     localStorage.clear();
     saveLanguageInLocal(i18n);
@@ -84,12 +84,13 @@ const AddAdmin = () => {
     localStorage.setItem("userSettings", userSettings);
     localStorage.setItem("baseUrl", baseUrl);
     localStorage.setItem("parseAppId", appid);
+    localStorage.setItem("favicon", favicon);
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     if (!emailRegex.test(email)) {
-      alert("Please enter a valid email address.");
+      alert(t("valid-email-alert"));
     } else {
       if (lengthValid && caseDigitValid && specialCharValid) {
         clearStorage();
@@ -265,7 +266,6 @@ const AddAdmin = () => {
   };
   return (
     <div className="h-screen flex justify-center">
-      <Title title="Add admin" />
       {state.loading ? (
         <div className="text-[grey] flex justify-center items-center text-lg md:text-2xl">
           <Loader />

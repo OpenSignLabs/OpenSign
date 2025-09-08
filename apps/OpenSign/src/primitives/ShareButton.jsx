@@ -69,7 +69,7 @@ export default function ShareButton({ title, text, url, className, children }) {
           isOpen
           title={
             <>
-              <i class="fa-solid fa-share-from-square"></i> Share
+              <i className="fa-solid fa-share-from-square"></i> Share
             </>
           }
           handleClose={() => setPopupOpen(false)}

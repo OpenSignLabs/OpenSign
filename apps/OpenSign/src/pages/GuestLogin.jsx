@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router";
 import axios from "axios";
 import {
@@ -14,7 +14,6 @@ import Parse from "parse";
 import { useTranslation } from "react-i18next";
 import SelectLanguage from "../components/pdf/SelectLanguage";
 import LoaderWithMsg from "../primitives/LoaderWithMsg";
-import Title from "../components/Title";
 import ModalUi from "../primitives/ModalUi";
 import Loader from "../primitives/Loader";
 
@@ -36,8 +35,14 @@ function GuestLogin() {
   const [documentId, setDocumentId] = useState(id);
   const [contactId, setContactId] = useState(contactBookId);
   const [sendmail, setSendmail] = useState();
-  const [contact, setContact] = useState({ name: "", phone: "", email: "" });
-
+  const [contact, setContact] = useState({
+    name: "",
+    phone: "",
+    email: "",
+    jobTitle: "",
+    company: ""
+  });
+  const [isOptionalDetails, setIsOptionalDetails] = useState(false);
 
   const navigateToDoc = async (docId, contactId) => {
     try {
@@ -72,8 +77,10 @@ function GuestLogin() {
   //function generate serverUrl and parseAppId from url and save it in local storage
   const handleServerUrl = async () => {
       setAppLogo(logo);
+    const favicon = localStorage.getItem("favicon");
 
     localStorage.clear(); // Clears everything
+    localStorage.setItem("favicon", favicon);
     localStorage.setItem(
       "appname",
         "OpenSign™"
@@ -214,7 +221,7 @@ function GuestLogin() {
   const handleUserData = async (e) => {
     e.preventDefault();
     if (!emailRegex.test(contact.email?.toLowerCase()?.replace(/\s/g, ""))) {
-      alert("Please enter a valid email address.");
+      alert(t("valid-email-alert"));
     } else {
       const params = { ...contact, docId: documentId };
       try {
@@ -253,7 +260,6 @@ function GuestLogin() {
 
   return (
     <div>
-      <Title title="Request Sign" />
 
       {/* OTP Verification Modal */}
       {EnterOTP && (
@@ -356,7 +362,7 @@ function GuestLogin() {
                   <div className="mb-2">
                     <label
                       htmlFor="name"
-                      className="block text-xs text-gray-700 font-semibold"
+                      className="block text-xs font-semibold"
                     >
                       {t("name")}
                       <span className="text-[red] text-[13px]"> *</span>
@@ -378,7 +384,7 @@ function GuestLogin() {
                   <div className="mb-2">
                     <label
                       htmlFor="email"
-                      className="block text-xs text-gray-700 font-semibold"
+                      className="block text-xs font-semibold"
                     >
                       {t("email")}
                       <span className="text-[red] text-[13px]"> *</span>
@@ -393,23 +399,74 @@ function GuestLogin() {
                       disabled
                     />
                   </div>
-                  <div className="mt-2.5">
-                    <label
-                      htmlFor="phone"
-                      className="block text-xs text-gray-700 font-semibold"
-                    >
-                      {t("phone")}
-                    </label>
-                    <input
-                      type="text"
-                      name="phone"
-                      value={contact.phone}
-                      onChange={handleInputChange}
-                      className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
-                      disabled={loading}
-                      placeholder={t("phone-optional")}
-                    />
-                  </div>
+                  {isOptionalDetails && (
+                    <>
+                      <div className="mb-2">
+                        <label
+                          htmlFor="phone"
+                          className="block text-xs font-semibold"
+                        >
+                          {t("phone")}
+                        </label>
+                        <input
+                          type="text"
+                          name="phone"
+                          value={contact.phone}
+                          onChange={handleInputChange}
+                          className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
+                          disabled={loading}
+                          placeholder={t("phone-optional")}
+                        />
+                      </div>
+                      <div className="mb-2">
+                        <label
+                          htmlFor="company"
+                          className="block text-xs font-semibold"
+                        >
+                          {t("company")}
+                        </label>
+                        <input
+                          type="text"
+                          id="company"
+                          name="company"
+                          value={contact.company}
+                          onChange={handleInputChange}
+                          className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
+                          disabled={loading}
+                          placeholder={t("phone-optional")}
+                        />
+                      </div>
+                      <div className="mb-2">
+                        <label
+                          htmlFor="jobTitle"
+                          className="block text-xs font-semibold"
+                        >
+                          {t("job-title")}
+                        </label>
+                        <input
+                          type="text"
+                          id="jobTitle"
+                          name="jobTitle"
+                          value={contact.jobTitle}
+                          onChange={handleInputChange}
+                          className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
+                          disabled={loading}
+                          placeholder={t("phone-optional")}
+                        />
+                      </div>
+                    </>
+                  )}
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setIsOptionalDetails(!isOptionalDetails);
+                    }}
+                    className="op-link op-link-secondary max-w-fit text-xs"
+                  >
+                    {isOptionalDetails
+                      ? t("hide-optional-details")
+                      : t("optional-details")}
+                  </button>
                   <div className="mt-2 flex justify-start">
                     <button
                       type="submit"
