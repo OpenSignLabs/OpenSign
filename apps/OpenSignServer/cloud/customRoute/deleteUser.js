@@ -254,8 +254,8 @@ export async function deleteUser(userId, adminId) {
 export const deleteUserGet = async (req, res) => {
   const { userId } = req.params;
 
-  const extUserQuery = new Parse.Query('Contracts_Users');
-  extUserQuery.equalTo('userId', { __type: 'Pointer', className: '_User', objectId: userId });
+  const extUserQuery = new Parse.Query('contracts_Users');
+  extUserQuery.equalTo('UserId', { __type: 'Pointer', className: '_User', objectId: userId });
   const extUser = await extUserQuery.first({ useMasterKey: true });
   if (!extUser) {
     const errorMessage = 'User not found.';
@@ -373,8 +373,8 @@ export const deleteUserPost = async (req, res) => {
       // return res.status(404).send(errorMessage);
       return res.send(errorMessage);
     }
-    const extUserQuery = new Parse.Query('Contracts_Users');
-    extUserQuery.equalTo('userId', { __type: 'Pointer', className: '_User', objectId: userId });
+    const extUserQuery = new Parse.Query('contracts_Users');
+    extUserQuery.equalTo('UserId', { __type: 'Pointer', className: '_User', objectId: userId });
     const extUser = await extUserQuery.first({ useMasterKey: true });
     if (!extUser) {
       const errorMessage = 'User not found.';
