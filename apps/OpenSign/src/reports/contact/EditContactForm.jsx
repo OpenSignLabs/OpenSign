@@ -1,11 +1,17 @@
-import React, { useEffect, useState } from "react";
-import Loader from "../primitives/Loader";
+import { useEffect, useState } from "react";
+import Loader from "../../primitives/Loader";
 import { useTranslation } from "react-i18next";
 import Parse from "parse";
 const EditContactForm = (props) => {
   const { t } = useTranslation();
   const [isLoader, setIsLoader] = useState(false);
-  const [formData, setFormData] = useState({ Name: "", Email: "", Phone: "" });
+  const [formData, setFormData] = useState({
+    Name: "",
+    Email: "",
+    Phone: "",
+    Company: "",
+    JobTitle: ""
+  });
   useEffect(() => {
     if (props.contact?.Email) {
       setFormData((prev) => ({ ...prev, ...props.contact }));
@@ -31,7 +37,9 @@ const EditContactForm = (props) => {
           contactId: props.contact.objectId,
           name: formData.Name,
           email: formData.Email,
-          phone: formData.Phone,
+          phone: formData?.Phone,
+          company: formData?.Company,
+          jobTitle: formData?.JobTitle,
           tenantId: localStorage.getItem("TenantId")
         };
         const res = await Parse.Cloud.run("editcontact", params);
@@ -39,7 +47,9 @@ const EditContactForm = (props) => {
           ...res,
           Name: formData.Name,
           Email: formData.Email,
-          Phone: formData.Phone
+          Phone: formData?.Phone,
+          Company: formData?.Company,
+          JobTitle: formData?.JobTitle
         };
         props.handleEditContact(updateContact);
       } catch (err) {
@@ -107,6 +117,34 @@ const EditContactForm = (props) => {
               id="phone"
               name="Phone"
               value={formData.Phone}
+              onChange={(e) => handleChange(e)}
+              className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
+              placeholder={t("phone-optional")}
+            />
+          </div>
+          <div className="mb-3">
+            <label htmlFor="Company" className="block text-xs font-semibold">
+              {t("company")}
+            </label>
+            <input
+              type="text"
+              id="Company"
+              name="Company"
+              value={formData.Company}
+              onChange={(e) => handleChange(e)}
+              className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
+              placeholder={t("phone-optional")}
+            />
+          </div>
+          <div className="mb-3">
+            <label htmlFor="JobTitle" className="block text-xs font-semibold">
+              {t("job-title")}
+            </label>
+            <input
+              type="text"
+              id="JobTitle"
+              name="JobTitle"
+              value={formData.JobTitle}
               onChange={(e) => handleChange(e)}
               className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
               placeholder={t("phone-optional")}

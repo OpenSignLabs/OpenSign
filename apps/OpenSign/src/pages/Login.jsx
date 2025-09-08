@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Parse from "parse";
 import { useDispatch } from "react-redux";
 import axios from "axios";
-import Title from "../components/Title";
 import { NavLink, useNavigate, useLocation } from "react-router";
 import login_img from "../assets/images/login_img.svg";
 import { useWindowSize } from "../hook/useWindowSize";
@@ -128,14 +127,14 @@ function Login() {
       if (error?.code === 1001) {
         showToast("danger", t("action-prohibited"));
       } else {
-        showToast("danger", "Invalid username/password or region");
+        showToast("danger", t("invalid-username-password-region"));
       }
     }
   };
   const handleLoginBtn = async (event) => {
     event.preventDefault();
     if (!emailRegex.test(state.email)) {
-      alert("Please enter a valid email address.");
+      alert(t("valid-email-alert"));
       return;
     }
     await handleLogin();
@@ -333,6 +332,7 @@ function Login() {
     let PageLanding = localStorage.getItem("PageLanding");
     let baseUrl = localStorage.getItem("baseUrl");
     let appid = localStorage.getItem("parseAppId");
+    let favicon = localStorage.getItem("favicon");
 
     localStorage.clear();
     saveLanguageInLocal(i18n);
@@ -343,6 +343,7 @@ function Login() {
     localStorage.setItem("userSettings", appdata);
     localStorage.setItem("baseUrl", baseUrl);
     localStorage.setItem("parseAppId", appid);
+    localStorage.setItem("favicon", favicon);
   };
 
   const continueLoginFlow = async () => {
@@ -407,8 +408,7 @@ function Login() {
       {errMsg}
     </div>
   ) : (
-    <div>
-      <Title title="Login" />
+    <>
       {state.loading && (
         <div
           aria-live="assertive"
@@ -543,7 +543,7 @@ function Login() {
                 <label
                   htmlFor="Company"
                   style={{ display: "flex" }}
-                  className="block text-xs text-gray-700 font-semibold"
+                  className="block text-xs font-semibold"
                 >
                   {t("company")}{" "}
                   <span className="text-[red] text-[13px]">*</span>
@@ -570,7 +570,7 @@ function Login() {
                 <label
                   htmlFor="JobTitle"
                   style={{ display: "flex" }}
-                  className="block text-xs text-gray-700 font-semibold"
+                  className="block text-xs font-semibold"
                 >
                   {t("job-title")}
                   <span className="text-[red] text-[13px]">*</span>
@@ -603,7 +603,7 @@ function Login() {
                 </button>
                 <button
                   type="button"
-                  className="op-btn op-btn-ghost"
+                  className="op-btn op-btn-ghost text-base-content"
                   onClick={logOutUser}
                 >
                   {t("cancel")}
@@ -620,7 +620,7 @@ function Login() {
           <Loader />
         </div>
       )}
-    </div>
+    </>
   );
 }
 export default Login;

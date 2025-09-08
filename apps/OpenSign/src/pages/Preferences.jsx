@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useRef } from "react";
-import Title from "../components/Title";
 import Alert from "../primitives/Alert";
 import { useTranslation } from "react-i18next";
 import Loader from "../primitives/Loader";
@@ -12,7 +11,6 @@ import {
 } from "../constant/Utils";
 import Parse from "parse";
 import { Tooltip as ReactTooltip } from "react-tooltip";
-import TimezoneSelector from "../components/shared/fields/TimezoneSelector";
 import ReactQuill from "react-quill-new";
 import "../styles/quill.css";
 import EditorToolbar, {
@@ -20,7 +18,9 @@ import EditorToolbar, {
   module2,
   formats
 } from "../components/pdf/EditorToolbar";
-import DateFormatSelector from "../components/shared/fields/DateFormatSelector";
+import TimezoneSelector from "../components/preferences/TimezoneSelector";
+import DateFormatSelector from "../components/preferences/DateFormatSelector";
+import FilenameFormatSelector from "../components/preferences/FilenameFormatSelector";
 
 const Preferences = () => {
   const appName =
@@ -60,6 +60,7 @@ const Preferences = () => {
     requestMail: false,
     completionMail: false
   });
+  const [fileNameFormat, setFileNameFormat] = useState("DOCNAME");
   useEffect(() => {
     fetchSignType();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -125,6 +126,9 @@ const Preferences = () => {
         const isLTVEnabled =
           _getUser?.IsLTVEnabled !== undefined ? _getUser?.IsLTVEnabled : false;
         setIsLTVEnabled(isLTVEnabled);
+        const downloadFilenameFormat =
+          _getUser?.DownloadFilenameFormat || "DOCNAME";
+        setFileNameFormat(downloadFilenameFormat);
       }
     } catch (err) {
       console.log("err while getting user details", err);
@@ -164,11 +168,17 @@ const Preferences = () => {
             type: "danger",
             msg: t("at-least-one-signature-type")
           });
+          setIsLoader(false);
+          setTimeout(() => setIsAlert({ type: "success", msg: "" }), 2000);
+          return;
         } else if (isDefaultSignTypeOnly) {
           setIsAlert({
             type: "danger",
-            msg: t("expect-default-one-more-signature-type")
+            msg: t("expect-default-one-signature-type")
           });
+          setIsLoader(false);
+          setTimeout(() => setIsAlert({ type: "success", msg: "" }), 2000);
+          return;
         } else {
           params = { ...params, SignatureType: signatureType };
         }
@@ -183,7 +193,8 @@ const Preferences = () => {
           IsTourEnabled: isTourEnabled,
           DateFormat: dateFormat,
           Is12HourTime: is12HourTime,
-          IsLTVEnabled: isLTVEnabled
+          IsLTVEnabled: isLTVEnabled,
+          DownloadFilenameFormat: fileNameFormat
         };
         const updateRes = await Parse.Cloud.run("updatepreferences", params);
         if (updateRes) {
@@ -197,6 +208,7 @@ const Preferences = () => {
             extUser.IsTourEnabled = isTourEnabled;
             extUser.DateFormat = dateFormat;
             extUser.Is12HourTime = is12HourTime;
+            extUser.DownloadFilenameFormat = fileNameFormat;
             const _extUser = JSON.parse(JSON.stringify(extUser));
             localStorage.setItem("Extand_Class", JSON.stringify([_extUser]));
           }
@@ -389,7 +401,6 @@ const Preferences = () => {
   };
   return (
     <React.Fragment>
-      <Title title={t("Preferences")} />
       {isalert.msg && <Alert type={isalert.type}>{isalert.msg}</Alert>}
       {isTopLoader ? (
         <div className="flex justify-center items-center h-screen">
@@ -759,6 +770,12 @@ const Preferences = () => {
                           is12HourTime={is12HourTime}
                           setIs12HourTime={setIs12HourTime}
                           setDateFormat={setDateFormat}
+                        />
+                      </div>
+                      <div className="mb-6">
+                        <FilenameFormatSelector
+                          fileNameFormat={fileNameFormat}
+                          setFileNameFormat={setFileNameFormat}
                         />
                       </div>
                     </div>

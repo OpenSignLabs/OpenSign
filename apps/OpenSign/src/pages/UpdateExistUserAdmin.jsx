@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Loader from "../primitives/Loader";
 import Parse from "parse";
 import { NavLink, useNavigate } from "react-router";
 import Alert from "../primitives/Alert";
-import Title from "../components/Title";
 import { useTranslation } from "react-i18next";
 import { emailRegex } from "../constant/const";
 const UpdateExistUserAdmin = () => {
@@ -39,7 +38,7 @@ const UpdateExistUserAdmin = () => {
     e.preventDefault();
     e.stopPropagation();
     if (!emailRegex.test(formdata.email)) {
-      alert("Please enter a valid email address.");
+      alert(t("valid-email-alert"));
     } else {
       setIsSubmitLoading(true);
       try {
@@ -73,7 +72,6 @@ const UpdateExistUserAdmin = () => {
   };
   return (
     <div className="h-screen flex justify-center">
-      <Title title={"Add Admin"} />
       {isAlert.msg && <Alert type={isAlert.type}>{isAlert.msg}</Alert>}
       {loader ? (
         <div className="text-[grey] flex justify-center items-center text-lg md:text-2xl">

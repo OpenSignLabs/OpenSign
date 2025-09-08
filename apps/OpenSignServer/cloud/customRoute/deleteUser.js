@@ -1,0 +1,464 @@
+import axios from 'axios';
+import { cloudServerUrl, generateId, serverAppId } from '../../Utils.js';
+import sendmailtoSupport from './sendMailToSupport.js';
+import { deleteContactsInBatch, deleteDataFiles, deleteInBatches } from './deleteFileUrl.js';
+const serverUrl = cloudServerUrl;
+const appId = serverAppId;
+
+const deleteSessionsAndUser = async (userPointer, userId) => {
+  const Session = Parse.Object.extend('_Session');
+  const sessionQuery = new Parse.Query(Session);
+  sessionQuery.equalTo('user', userPointer);
+  const sessions = await sessionQuery.find({ useMasterKey: true });
+  if (sessions?.length > 0) await Parse.Object.destroyAll(sessions, { useMasterKey: true });
+
+  const userObj = await new Parse.Query(Parse.User).get(userId, { useMasterKey: true });
+  if (userObj) await userObj.destroy({ useMasterKey: true });
+};
+
+const resetPasswordAndDeleteSession = async userId => {
+  const password = generateId(16);
+  const user = await new Parse.Query(Parse.User).get(userId, { useMasterKey: true });
+  user.set('password', password);
+  user.set('emailVerified', false);
+  user.unset('ProfilePic');
+  await user.save(null, { useMasterKey: true });
+
+  // Optional: revoke all existing sessions (forces logout everywhere)
+  const sessionQuery = new Parse.Query('_Session');
+  sessionQuery.equalTo('user', user);
+  const sessions = await sessionQuery.find({ useMasterKey: true });
+  if (sessions.length) {
+    await Parse.Object.destroyAll(sessions, { useMasterKey: true });
+  }
+};
+export async function deleteUser(userId, adminId) {
+  const userPointer = { __type: 'Pointer', className: '_User', objectId: userId };
+  let userDetails = {
+    UserRole: 'not found',
+    Name: 'not found',
+    Email: 'not found',
+    UserId: userId || 'not found',
+    objectId: 'not found',
+    TenantId: 'not found',
+  };
+  try {
+    // STEP 1: contracts_Users lookup
+    const Users = Parse.Object.extend('contracts_Users');
+    const userQuery = new Parse.Query(Users);
+    userQuery.equalTo('UserId', userPointer);
+    if (adminId) {
+      userQuery.equalTo('CreatedBy', { __type: 'Pointer', className: '_User', objectId: adminId });
+    }
+    const userResult = await userQuery.first({ useMasterKey: true });
+    userDetails = { ...userDetails, UserId: userId };
+    if (!userResult) {
+      const errorMessage = 'User not found.';
+      sendmailtoSupport(userDetails, errorMessage);
+      return { code: 400, message: errorMessage };
+    }
+    const contractsUserId = userResult.id;
+    const tenantId = userResult.get('TenantId')?.id;
+    const teamIds = userResult.get('TeamIds') || [];
+    const organizationId = userResult.get('OrganizationId')?.id;
+    const isAdmin = userResult?.get('UserRole') === 'contracts_Admin' ? true : false;
+    userDetails = {
+      ...userDetails,
+      UserRole: userResult?.get('UserRole'),
+      Name: userResult?.get('Name'),
+      Email: userResult?.get('Email'),
+      UserId: userResult?.get('UserId')?.id,
+      objectId: userResult?.id,
+      TenantId: userResult?.get('TenantId')?.id,
+    };
+    if (adminId && isAdmin) {
+      const errorMessage = 'An error occurred while deleting your account.';
+      sendmailtoSupport(userDetails, errorMessage);
+      return { code: 400, message: errorMessage };
+    }
+
+    // STEP 2: contracts_Document & contracts_Template
+    try {
+      for (const className of ['contracts_Document', 'contracts_Template']) {
+        await deleteInBatches(className, userPointer);
+      }
+    } catch (err) {
+      console.error('Failed during contracts_Template cleanup:', err);
+      const errorMessage = 'Failed during contracts_Template cleanup:' + err?.message;
+      sendmailtoSupport(userDetails, errorMessage);
+      return { code: 400, message: errorMessage };
+    }
+
+    // STEP 3: delete Contacts created by user from contactbook class
+    try {
+      await deleteContactsInBatch('contracts_Contactbook', userPointer);
+    } catch (err) {
+      console.error('Failed during contactbook cleanup:', err);
+      const errorMessage = 'Failed during contactbook cleanup:' + err?.message;
+      sendmailtoSupport(userDetails, errorMessage);
+      return { code: 400, message: errorMessage };
+    }
+
+    try {
+      // Check if any rows remain for this UserId
+      const Contactbook = Parse.Object.extend('contracts_Contactbook');
+      const remainingCount = await new Parse.Query(Contactbook)
+        .equalTo('UserId', userPointer)
+        .count({ useMasterKey: true });
+
+      // If no record remains delete from _User class
+      if (remainingCount === 0) {
+        await deleteSessionsAndUser(userPointer, userId);
+      } else {
+        await resetPasswordAndDeleteSession(userId);
+      }
+    } catch (err) {
+      console.error('Failed during contactbook current user cleanup:', err);
+      const errorMessage =
+        'Failed during contactbook current user cleanup: ' + (err?.message || err);
+      sendmailtoSupport(userDetails, errorMessage);
+      return { code: 400, message: errorMessage };
+    }
+
+    // STEP 4: appToken
+    try {
+      const AppToken = Parse.Object.extend('appToken');
+      const query = new Parse.Query(AppToken);
+      query.equalTo('UserId', userPointer);
+      const tokens = await query.find({ useMasterKey: true });
+      if (tokens?.length) await Parse.Object.destroyAll(tokens, { useMasterKey: true });
+    } catch (err) {
+      console.error('Failed to delete appToken entries:', err);
+      const errorMessage = 'Failed to delete appToken entries:' + err?.message;
+      sendmailtoSupport(userDetails, errorMessage);
+      return { code: 400, message: errorMessage };
+    }
+
+    // STEP 5: partner_DataFiles
+    try {
+      await deleteDataFiles('partners_DataFiles', userPointer);
+    } catch (err) {
+      console.error('Failed during partners_DataFiles cleanup:', err);
+      const errorMessage = 'Failed during partners_DataFiles cleanup:' + err?.message;
+      sendmailtoSupport(userDetails, errorMessage);
+      return { code: 400, message: errorMessage };
+    }
+
+    if (isAdmin) {
+      // STEP 6: contracts_Organizations
+      try {
+        if (organizationId) {
+          const Org = Parse.Object.extend('contracts_Organizations');
+          const query = new Parse.Query(Org);
+          const object = await query.get(organizationId, { useMasterKey: true });
+          await object.destroy({ useMasterKey: true });
+        }
+      } catch (err) {
+        console.error('Failed to delete contracts_Organizations entry:', err);
+        const errorMessage = 'Failed to delete contracts_Organizations entry:' + err?.message;
+        sendmailtoSupport(userDetails, errorMessage);
+        return { code: 400, message: errorMessage };
+      }
+      // STEP 7: Delete each entry in contracts_Teams by objectId from teamIds
+      try {
+        if (teamIds.length > 0) {
+          const Teams = Parse.Object.extend('contracts_Teams');
+          for (const team of teamIds) {
+            try {
+              const teamObj = await new Parse.Query(Teams).get(team.id, { useMasterKey: true });
+              if (teamObj) await teamObj.destroy({ useMasterKey: true });
+            } catch (teamErr) {
+              console.error(`Failed to delete team with ID ${team.id}:`, teamErr);
+              const errorMessage = `Failed to delete team with ID ${team.id}` + teamErr?.message;
+              sendmailtoSupport(userDetails, errorMessage);
+              return { code: 400, message: errorMessage };
+            }
+          }
+        }
+      } catch (err) {
+        console.error('Failed during contracts_Teams deletion loop:', err);
+        const errorMessage = 'Failed during contracts_Teams deletion loop:' + err?.message;
+        sendmailtoSupport(userDetails, errorMessage);
+        return { code: 400, message: errorMessage };
+      }
+
+      // STEP 8 : partners_Tenant cleanup
+      try {
+        if (tenantId) {
+          const Tenant = Parse.Object.extend('partners_Tenant');
+          const query = new Parse.Query(Tenant);
+          const tenantObj = await query.get(tenantId, { useMasterKey: true });
+          await tenantObj.destroy({ useMasterKey: true });
+        }
+      } catch (err) {
+        const msg = `Failed during partners_Tenant ${'cleanup:'} `;
+        console.error(msg, err);
+        const errorMessage = msg + err?.message;
+        sendmailtoSupport(userDetails, errorMessage);
+        return { code: 400, message: errorMessage };
+      }
+
+      // STEP 9: partners_TenantCredits cleanup
+      try {
+        if (tenantId) {
+          const tenantCredits = Parse.Object.extend('partners_TenantCredits');
+          const subsByTenant = new Parse.Query(tenantCredits);
+          subsByTenant.equalTo('PartnersTenant', {
+            __type: 'Pointer',
+            className: 'partners_Tenant',
+            objectId: tenantId,
+          });
+          const subs = await subsByTenant.find({ useMasterKey: true });
+          await Parse.Object.destroyAll(subs, { useMasterKey: true });
+        }
+      } catch (err) {
+        console.error('Failed during partners_TenantCredits cleanup:', err);
+        const errorMessage = 'Failed during partners_TenantCredits cleanup:' + err?.message;
+        sendmailtoSupport(userDetails, errorMessage);
+        return { code: 400, message: errorMessage };
+      }
+    }
+    // STEP 10: contracts_Signature
+    try {
+      const Signature = Parse.Object.extend('contracts_Signature');
+      const sigQuery = new Parse.Query(Signature);
+      sigQuery.equalTo('UserId', userPointer);
+      const sigResults = await sigQuery.find({ useMasterKey: true });
+      if (sigResults?.length > 0) await Parse.Object.destroyAll(sigResults, { useMasterKey: true });
+    } catch (err) {
+      console.error('Failed during contracts_Signature cleanup:', err);
+      const errorMessage = 'Failed during contracts_Signature cleanup:' + err?.message;
+      sendmailtoSupport(userDetails, errorMessage);
+      return { code: 400, message: errorMessage };
+    }
+
+    // STEP 11: contracts_Users
+    try {
+      await userResult.destroy({ useMasterKey: true });
+    } catch (err) {
+      console.error('Failed to delete contracts_Users entry:', err);
+      const errorMessage = 'Failed to delete contracts_Users entry:' + err?.message;
+      sendmailtoSupport(userDetails, errorMessage);
+      return { code: 400, message: errorMessage };
+    }
+    return { code: 200, message: 'User and all associated data deleted successfully.' };
+  } catch (error) {
+    console.error('User deletion process failed:', error);
+    const errorMessage = `User deletion failed: ${error.message || error}`;
+    sendmailtoSupport(userDetails, errorMessage);
+    return { code: 400, message: errorMessage };
+  }
+}
+
+// 1. HTML Password Prompt Page
+export const deleteUserGet = async (req, res) => {
+  const { userId } = req.params;
+
+  const extUserQuery = new Parse.Query('Contracts_Users');
+  extUserQuery.equalTo('userId', { __type: 'Pointer', className: '_User', objectId: userId });
+  const extUser = await extUserQuery.first({ useMasterKey: true });
+  if (!extUser) {
+    const errorMessage = 'User not found.';
+    return res.send(errorMessage);
+  }
+  const routePath = process?.env?.SERVER_URL?.includes?.('api') ? '/api' : '';
+  const htmlForm = `
+<html>
+<head>
+  <title>Delete Account</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f8f9fa;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      background-color: #ffffff;
+      padding: 40px;
+      border-radius: 8px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+    }
+
+    h2 {
+      color: #dc3545;
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+
+    input[type="password"] {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 20px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 16px;
+    }
+
+    button {
+      background-color: #d9534f;
+      color: #ffffff;
+      border: none;
+      padding: 12px 20px;
+      font-size: 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #c9302c;
+    }
+
+    .warning {
+      color: #6c757d;
+      font-size: 14px;
+      margin-top: -10px;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Confirm Account Deletion</h2>
+    <p class="warning">This action is irreversible. Please confirm by entering your password.</p>
+    <form method="POST" action="${routePath}/delete-account/${userId}">
+      <label for="password">Password</label>
+      <input type="password" name="password" id="password" placeholder="Please provide your password" required />
+      <button type="submit">Delete My Account</button>
+    </form>
+  </div>
+</body>
+</html>
+  `;
+  res.send(htmlForm);
+};
+
+// 2. Handle Password Verification and Deletion
+export const deleteUserPost = async (req, res) => {
+  const { userId } = req.params;
+  const routePath = process?.env?.SERVER_URL?.includes?.('api') ? '/api' : '';
+  const { password } = req.body;
+  let userDetails = {
+    UserRole: 'not found',
+    Name: 'not found',
+    Email: 'not found',
+    UserId: userId || 'not found',
+    objectId: 'not found',
+    TenantId: 'not found',
+  };
+  if (!userId) return res.status(404).send('Missing userId parameter.');
+
+  try {
+    // 1. Get the user
+    const userQuery = new Parse.Query(Parse.User);
+    userQuery.equalTo('objectId', userId);
+    const user = await userQuery.first({ useMasterKey: true });
+    if (!user) {
+      const errorMessage = 'User not found.';
+      // sendmailtoSupport(userDetails, errorMessage);
+      // return res.status(404).send(errorMessage);
+      return res.send(errorMessage);
+    }
+    const extUserQuery = new Parse.Query('Contracts_Users');
+    extUserQuery.equalTo('userId', { __type: 'Pointer', className: '_User', objectId: userId });
+    const extUser = await extUserQuery.first({ useMasterKey: true });
+    if (!extUser) {
+      const errorMessage = 'User not found.';
+      return res.send(errorMessage);
+    }
+    // 2. Attempt login to verify password
+    const username = user.get('username'); // assuming 'username' is used for login
+    try {
+      // await Parse.User.logIn(username, password); // Will throw if password invalid
+      // Use REST login to avoid mutating the global Parse current user
+      // Will throw if password invalid
+      const res = await axios.get(serverUrl + '/login', {
+        params: { username, password },
+        headers: { 'X-Parse-Application-Id': appId },
+      });
+      console.log('Res ', res?.data);
+    } catch (err) {
+      console.log('err while validating password: ', err?.response?.data || err);
+      const errorMessage = `Invalid password. <a href="${routePath}/delete-account/${userId}">Try again</a>`;
+      sendmailtoSupport(userDetails, errorMessage);
+      return res.status(401).send(errorMessage);
+    }
+
+    const response = await deleteUser(userId);
+    const code = response?.code || 500;
+    const message = response?.message || 'An error occurred while deleting your account.';
+    return res.status(code).send(message);
+  } catch (error) {
+    console.error('Account deletion error:', error);
+    const errorMessage = error?.message || 'An error occurred while deleting your account.';
+    sendmailtoSupport(userDetails, errorMessage);
+    return res.status(500).send(errorMessage);
+  }
+};
+
+// 2. Handle Password Verification and Deletion
+export const deleteUserByAdmin = async (req, res) => {
+  const sessiontoken = req.headers.sessiontoken;
+  const userId = req.params.userId;
+  let userDetails = {
+    UserRole: 'not found',
+    Name: 'not found',
+    Email: 'not found',
+    UserId: userId || 'not found',
+    objectId: 'not found',
+    TenantId: 'not found',
+  };
+  if (!sessiontoken) return res.status(400).json({ message: 'unauthorized.' });
+  if (!userId || userId === ':userId') {
+    return res.status(400).json({ message: 'Missing userId parameter.' });
+  }
+  try {
+    const axiosRes = await axios.get(serverUrl + '/users/me', {
+      headers: {
+        'X-Parse-Application-Id': appId,
+        'X-Parse-Session-Token': sessiontoken,
+      },
+    });
+    const adminId = axiosRes?.data && axiosRes.data?.objectId;
+
+    if (!adminId) {
+      return res.status(400).json({ message: 'Unauthorized.' });
+    }
+    // 1. Get the user
+    const userQuery = new Parse.Query(Parse.User);
+    userQuery.equalTo('objectId', userId);
+    const user = await userQuery.first({ useMasterKey: true });
+    if (!user) {
+      const errorMessage = 'User not found.';
+      sendmailtoSupport(userDetails, errorMessage);
+      return res.status(400).json({ message: errorMessage });
+    }
+    const response = await deleteUser(userId, adminId);
+    const code = response?.code || 400;
+    const message = response?.message || 'An error occurred while deleting your account.';
+    return res.status(code).json({ message: message });
+  } catch (error) {
+    const code = error?.response?.data?.code || 400;
+    const errorMessage =
+      error?.response?.data?.error ||
+      error?.message ||
+      'An error occurred while deleting your account.';
+    console.error(`Account deletion error:`, errorMessage);
+    sendmailtoSupport(userDetails, errorMessage);
+    return res.status(code).json({ message: errorMessage });
+  }
+};

@@ -12,31 +12,42 @@ import {
 } from "../constant/Utils";
 import { useTranslation } from "react-i18next";
 import { appInfo } from "../constant/appinfo";
+import { useDispatch } from "react-redux";
+import { toggleSidebar } from "../redux/reducers/sidebarReducer.js";
 
-const Header = ({ showSidebar, setIsMenu, isConsole }) => {
+const Header = ({ isConsole, setIsLoggingOut }) => {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const { width } = useWindowSize();
+  const dispatch = useDispatch();
   const username = localStorage.getItem("username") || "";
   const image = localStorage.getItem("profileImg") || dp;
-  const isAdmin =
-    localStorage.getItem("Extand_Class") &&
-    JSON.parse(localStorage.getItem("Extand_Class"))?.[0]?.UserRole ===
-      "contracts_Admin";
   const [isOpen, setIsOpen] = useState(false);
   const [applogo, setAppLogo] = useState("");
   const [isDarkTheme, setIsDarkTheme] = useState();
 
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
-    if (width <= 768) {
-      setIsMenu(false);
+    closeSidebar();
+  };
+  const closeSidebar = () => {
+    if (width && width <= 768) {
+      dispatch(toggleSidebar(false));
     }
   };
+
   useEffect(() => {
     initializeHead();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    closeSidebar();
+  }, [width]);
+
+  const showSidebar = () => {
+    dispatch(toggleSidebar());
+  };
 
 
   async function initializeHead() {
@@ -49,8 +60,9 @@ const Header = ({ showSidebar, setIsMenu, isConsole }) => {
       }
   }
 
-  const closeDropdown = async () => {
+  const handleLogout = async () => {
     setIsOpen(false);
+    setIsLoggingOut(true);
     try {
       await Parse.User.logOut();
     } catch (err) {
@@ -62,6 +74,7 @@ const Header = ({ showSidebar, setIsMenu, isConsole }) => {
     let PageLanding = localStorage.getItem("PageLanding");
     let baseUrl = localStorage.getItem("baseUrl");
     let appid = localStorage.getItem("parseAppId");
+    let favicon = localStorage.getItem("favicon");
 
     localStorage.clear();
     saveLanguageInLocal(i18n);
@@ -71,7 +84,8 @@ const Header = ({ showSidebar, setIsMenu, isConsole }) => {
     localStorage.setItem("userSettings", appdata);
     localStorage.setItem("baseUrl", baseUrl);
     localStorage.setItem("parseAppId", appid);
-
+    localStorage.setItem("favicon", favicon);
+    setIsLoggingOut(false);
     navigate("/");
   };
 
@@ -113,7 +127,7 @@ const Header = ({ showSidebar, setIsMenu, isConsole }) => {
   }, []);
 
   return (
-    <div>
+    <>
       <div className="op-navbar bg-base-100 shadow touch-none">
         <div className="flex-none">
           <button
@@ -237,7 +251,7 @@ const Header = ({ showSidebar, setIsMenu, isConsole }) => {
                   </li>
                 </>
               )}
-              <li onClick={closeDropdown}>
+              <li onClick={handleLogout}>
                 <span>
                   <i className="fa-light fa-arrow-right-from-bracket"></i>{" "}
                   {t("log-out")}
@@ -247,7 +261,7 @@ const Header = ({ showSidebar, setIsMenu, isConsole }) => {
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

@@ -61,14 +61,14 @@ export default function PageReorderModal({
             </span>
             <div className="flex gap-1">
               <button
-                className="op-btn op-btn-xs op-btn-ghost"
+                className="op-btn op-btn-xs op-btn-ghost text-base-content"
                 disabled={i === 0}
                 onClick={() => move(i, -1)}
               >
                 <i className="fa-light fa-arrow-up"></i>
               </button>
               <button
-                className="op-btn op-btn-xs op-btn-ghost"
+                className="op-btn op-btn-xs op-btn-ghost text-base-content"
                 disabled={i === order.length - 1}
                 onClick={() => move(i, 1)}
               >
@@ -84,7 +84,7 @@ export default function PageReorderModal({
         <button
           onClick={handleClose}
           type="button"
-          className="op-btn op-btn-ghost ml-1"
+          className="op-btn op-btn-ghost text-base-content ml-1"
         >
           {t("close")}
         </button>

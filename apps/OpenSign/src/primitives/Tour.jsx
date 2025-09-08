@@ -6,7 +6,7 @@ export default function Tour({
   rounded,
   className,
   showNumber,
-  closeWithMask,
+  closeWithMask = false,
   onRequestClose,
   showNavigation,
   showCloseButton,

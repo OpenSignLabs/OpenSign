@@ -35,8 +35,7 @@ export default async function getSigners(request) {
       searchObj.CreatedBy = { __type: 'Pointer', className: '_User', objectId: request?.user?.id };
       searchObj.sessionToken = request.user.getSessionToken();
       return await getContacts(searchObj);
-    }
-    else {
+    } else {
       throw new Parse.Error(Parse.Error.INVALID_SESSION_TOKEN, 'Invalid session token');
     }
   } catch (err) {

@@ -1,4 +1,3 @@
-
 export default async function isUserInContactBook(request) {
   try {
     if (request.user) {

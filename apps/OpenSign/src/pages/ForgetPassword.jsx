@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from "react";
-import Title from "../components/Title";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import login_img from "../assets/images/login_img.svg";
 import Parse from "parse";
@@ -40,7 +39,7 @@ function ForgotPassword() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     if (!emailRegex.test(state.email)) {
-      alert("Please enter a valid email address.");
+      alert(t("valid-email-alert"));
     } else {
       setIsLoading(true);
       localStorage.setItem("appLogo", appInfo.applogo);
@@ -87,7 +86,6 @@ function ForgotPassword() {
           <Loader />
         </div>
       )}
-      <Title title="Forgot password" />
       {toast?.message && <Alert type={toast.type}>{toast.message}</Alert>}
       <div className="md:p-10 lg:p-16">
         <div className="md:p-4 lg:p-10 p-4 bg-base-100 text-base-content op-card">

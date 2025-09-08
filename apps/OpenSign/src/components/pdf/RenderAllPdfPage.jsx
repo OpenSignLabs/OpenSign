@@ -17,7 +17,7 @@ function RenderAllPdfPage(props) {
   const mergePdfInputRef = useRef(null);
   const [signPageNumber, setSignPageNumber] = useState([]);
   const [bookmarkColor, setBookmarkColor] = useState("");
-  const isHeader = useSelector((state) => state.showHeader);
+  const isSidebar = useSelector((state) => state.sidebar.isOpen);
   const [pageWidth, setPageWidth] = useState("");
 
   //set all number of pages after load pdf
@@ -51,7 +51,7 @@ function RenderAllPdfPage(props) {
     const timer = setTimeout(updateSize, 100); // match the transition duration
 
     return () => clearTimeout(timer);
-  }, [isHeader, pageContainer, props?.containerWH]);
+  }, [isSidebar, pageContainer, props?.containerWH]);
   //'function `addSignatureBookmark` is used to display the page where the user's signature is located.
   const addSignatureBookmark = (index) => {
     const ispageNumber = signPageNumber.includes(index + 1);
@@ -78,11 +78,11 @@ function RenderAllPdfPage(props) {
   const handleFileUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) {
-      alert("Please upload a valid PDF file.");
+      alert(t("please-select-pdf"));
       return;
     }
     if (!file.type.includes("pdf")) {
-      alert("Only PDF files are allowed.");
+      alert(t("only-pdf-allowed"));
       return;
     }
     const mb = Math.round(file?.size / Math.pow(1024, 2));
@@ -114,18 +114,18 @@ function RenderAllPdfPage(props) {
                   // Upload the file to Parse Server
                 } catch (err) {
                   console.error("Incorrect password or decryption failed", err);
-                  alert("Incorrect password or decryption failed.");
+                  alert(t("incorrect-password-or-decryption-failed"));
                 }
               } else {
-                alert("Please provided Password.");
+                alert(t("provide-password"));
               }
             } else {
               console.log("Err ", err);
-              alert("error while uploading pdf.");
+              alert(t("error-uploading-pdf"));
             }
           }
         } else {
-          alert("error while uploading pdf.");
+          alert(t("error-uploading-pdf"));
         }
       }
       const uploadedPdfDoc = await PDFDocument.load(uploadedPdfBytes, {

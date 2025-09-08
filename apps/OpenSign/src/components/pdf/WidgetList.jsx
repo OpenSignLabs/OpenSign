@@ -1,10 +1,11 @@
-import React from "react";
-import { getWidgetType, isMobile } from "../../constant/Utils";
+import { isMobile } from "../../constant/Utils";
 import { useTranslation } from "react-i18next";
+import getWidgetType from "./getWidgetType";
 
 function WidgetList(props) {
   const { t } = useTranslation();
-  return props.updateWidgets.map((item, ind) => {
+  const getWidgetList = props.updateWidgets();
+  return getWidgetList?.map((item, ind) => {
     return (
       <div className="2xl:p-1 mb-[5px]" key={ind}>
         <div

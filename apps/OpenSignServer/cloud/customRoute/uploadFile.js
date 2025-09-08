@@ -4,7 +4,7 @@ import multerS3 from 'multer-s3';
 import aws from 'aws-sdk';
 import dotenv from 'dotenv';
 import { cloudServerUrl, serverAppId, useLocal } from '../../Utils.js';
-dotenv.config();
+dotenv.config({ quiet: true });
 
 function sanitizeFileName(fileName) {
   // Remove spaces and invalid characters

@@ -31,15 +31,15 @@ const WidgetNameModal = (props) => {
     const type = props.defaultdata?.type;
 
     if (type === "signature") {
-      return "Draw signature";
+      return t("draw-signature");
     } else if (type === "stamp" || type === "image") {
-      return `Upload ${type}`;
+      return type === "stamp" ? t("upload-stamp-image") : t("upload-image");
     } else if (type === "initials") {
-      return "Draw initial";
+      return t("draw-initials");
     } else if (type === textInputWidget) {
-      return "Enter text";
+      return t("enter-text");
     } else {
-      return `Enter ${type}`;
+      return t("enter-widgettype", { widgetType: type });
     }
   };
   useEffect(() => {
@@ -81,7 +81,7 @@ const WidgetNameModal = (props) => {
         if (enabledSignTypes.length === 0) {
           alert(t("at-least-one-signature-type"));
         } else if (isDefaultSignTypeOnly) {
-          alert(t("expect-default-one-more-signature-type"));
+          alert(t("expect-default-one-signature-type"));
         } else {
           const data = { ...formdata, signatureType };
           props.handleData(data, props.defaultdata?.type);
@@ -231,101 +231,105 @@ const WidgetNameModal = (props) => {
             />
           </div>
         )}
-        {[textInputWidget, cellsWidget].includes(props.defaultdata?.type) && (
-          <>
-            <div className="mb-[0.75rem]">
-              <label htmlFor="name" className="text-[13px]">
-                {t("default-value")}
-              </label>
-              <input
-                className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
-                name="defaultValue"
-                value={formdata.defaultValue}
-                onChange={(e) => handledefaultChange(e)}
-                autoComplete="off"
-                maxLength={
-                  props.defaultdata?.type === cellsWidget
-                    ? formdata.cellCount
-                    : undefined
-                }
-                onBlur={() => {
-                  if (isValid === false) {
-                    setFormdata({ ...formdata, defaultValue: "" });
-                    setIsValid(true);
+        {[textInputWidget, cellsWidget].includes(props.defaultdata?.type) &&
+          props?.roleName !== "prefill" && (
+            <>
+              <div className="mb-[0.75rem]">
+                <label htmlFor="name" className="text-[13px]">
+                  {t("default-value")}
+                </label>
+                <input
+                  className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
+                  name="defaultValue"
+                  value={formdata.defaultValue}
+                  onChange={(e) => handledefaultChange(e)}
+                  autoComplete="off"
+                  maxLength={
+                    props.defaultdata?.type === cellsWidget
+                      ? formdata.cellCount
+                      : undefined
                   }
-                }}
-              />
-              {isValid === false && (
-                <div
-                  className="warning defaultvalueWarning"
-                  style={{ fontSize: 12 }}
-                >
-                  <i
-                    className="fa-light fa-exclamation-circle text-[15px]"
-                    style={{ color: "#fab005" }}
-                  ></i>
-                  {t("invalid-default-value")}
-                </div>
-              )}
-            </div>
-          </>
-        )}
-        {!["signature", "initials", textWidget].includes(
-          props.defaultdata?.type
-        ) && (
-          <div className="mb-[0.75rem]">
-            <div className="flex flex-row gap-[10px] mb-[0.5rem]">
-              {statusArr.map((data, ind) => {
-                return (
+                  onBlur={() => {
+                    if (isValid === false) {
+                      setFormdata({ ...formdata, defaultValue: "" });
+                      setIsValid(true);
+                    }
+                  }}
+                />
+                {isValid === false && (
                   <div
-                    key={ind}
-                    className="flex flex-row gap-[5px] items-center"
+                    className="warning defaultvalueWarning"
+                    style={{ fontSize: 12 }}
                   >
+                    <i
+                      className="fa-light fa-exclamation-circle text-[15px]"
+                      style={{ color: "#fab005" }}
+                    ></i>
+                    {t("invalid-default-value")}
+                  </div>
+                )}
+              </div>
+            </>
+          )}
+        {!["signature", "initials"].includes(props.defaultdata?.type) &&
+          props?.roleName !== "prefill" && (
+            <div className="mb-[0.75rem]">
+              <div className="flex flex-row gap-[10px] mb-[0.5rem]">
+                {statusArr.map((data, ind) => {
+                  return (
+                    <div
+                      key={ind}
+                      className="flex flex-row gap-[5px] items-center"
+                    >
+                      <input
+                        className="mr-[2px] op-radio op-radio-xs"
+                        type="radio"
+                        name="status"
+                        onChange={() =>
+                          setFormdata({
+                            ...formdata,
+                            status: data.toLowerCase()
+                          })
+                        }
+                        checked={
+                          formdata.status.toLowerCase() === data.toLowerCase()
+                        }
+                      />
+                      <div className="text-[13px] font-medium">
+                        {t(`widget-status.${data}`)}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+              {[textInputWidget, cellsWidget].includes(
+                props.defaultdata?.type
+              ) &&
+                props?.roleName !== "prefill" && (
+                  <div className="flex items-center">
                     <input
-                      className="mr-[2px] op-radio op-radio-xs"
-                      type="radio"
-                      name="status"
+                      id="isReadOnly"
+                      name="isReadOnly"
+                      type="checkbox"
+                      checked={formdata.isReadOnly}
+                      className="op-checkbox op-checkbox-xs"
                       onChange={() =>
-                        setFormdata({ ...formdata, status: data.toLowerCase() })
-                      }
-                      checked={
-                        formdata.status.toLowerCase() === data.toLowerCase()
+                        setFormdata((prev) => ({
+                          ...formdata,
+                          isReadOnly: !prev.isReadOnly
+                        }))
                       }
                     />
-                    <div className="text-[13px] font-medium">
-                      {t(`widget-status.${data}`)}
-                    </div>
+                    <label
+                      className="ml-1.5 mb-0 capitalize text-[13px]"
+                      htmlFor="isreadonly"
+                    >
+                      {t("read-only")}
+                    </label>
                   </div>
-                );
-              })}
+                )}
             </div>
-            {[textInputWidget, cellsWidget].includes(
-              props.defaultdata?.type
-            ) && (
-              <div className="flex items-center">
-                <input
-                  id="isReadOnly"
-                  name="isReadOnly"
-                  type="checkbox"
-                  checked={formdata.isReadOnly}
-                  className="op-checkbox op-checkbox-xs"
-                  onChange={() =>
-                    setFormdata((prev) => ({
-                      ...formdata,
-                      isReadOnly: !prev.isReadOnly
-                    }))
-                  }
-                />
-                <label
-                  className="ml-1.5 mb-0 capitalize text-[13px]"
-                  htmlFor="isreadonly"
-                >
-                  {t("read-only")}
-                </label>
-              </div>
-            )}
-          </div>
-        )}
+          )}
         {["signature", "initials"].includes(props.defaultdata?.type) && (
           <div className="mb-[0.75rem]">
             <label htmlFor="signaturetype" className="text-[14px] mb-[0.7rem]">
@@ -354,7 +358,7 @@ const WidgetNameModal = (props) => {
             </div>
           </div>
         )}
-        {props.defaultdata?.type !== textWidget && (
+        {props?.roleName !== "prefill" && (
           <div className="mb-[0.75rem]">
             <label htmlFor="hint" className="text-[13px]">
               {t("hint")}

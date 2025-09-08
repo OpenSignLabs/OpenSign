@@ -17,6 +17,7 @@ const BulkSendUi = (props) => {
   const [isLoader, setIsLoader] = useState(false);
   const [signers, setSigners] = useState([]);
   const [emails, setEmails] = useState([]);
+  const [isPrefillExist, setIsPrefillExist] = useState(false);
   useEffect(() => {
     signatureExist();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -24,9 +25,14 @@ const BulkSendUi = (props) => {
 
   //function to check at least one signature field exist
   const signatureExist = async () => {
+    const isPrefill = props?.Placeholders.some((x) => x?.Role === "prefill");
+    if (isPrefill) {
+      setIsPrefillExist(isPrefill);
+    }
       setIsDisableBulkSend(false);
       const getPlaceholder = props?.Placeholders;
-      const checkIsSignatureExistt = getPlaceholder?.every((placeholderObj) =>
+      const removePrefill = getPlaceholder.filter((x) => x?.Role !== "prefill");
+      const checkIsSignatureExistt = removePrefill?.every((placeholderObj) =>
         placeholderObj?.placeHolder?.some((holder) =>
           holder?.pos?.some((posItem) => posItem?.type === "signature")
         )
@@ -216,7 +222,11 @@ const BulkSendUi = (props) => {
               <Loader />
             </div>
           )}
-          {!isDisableBulkSend ? (
+          {isPrefillExist ? (
+            <div className="text-black p-3 bg-white w-full text-sm md:text-base flex justify-center items-center">
+              {t("prefill-bulk-error")}
+            </div>
+          ) : !isDisableBulkSend ? (
             <>
               {props.Placeholders?.length > 0 ? (
                 isSignatureExist ? (

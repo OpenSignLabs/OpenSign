@@ -6,6 +6,12 @@ const saveRoleContact = async contact => {
   if (contact?.Phone) {
     contactQuery.set('Phone', contact.Phone);
   }
+  if (contact?.JobTitle) {
+    contactQuery.set('JobTitle', contact.JobTitle);
+  }
+  if (contact?.Company) {
+    contactQuery.set('Company', contact.Company);
+  }
   contactQuery.set('CreatedBy', contact.CreatedBy);
   contactQuery.set('UserId', contact.UserId);
   contactQuery.set('UserRole', 'contracts_Guest');
@@ -23,7 +29,7 @@ const saveRoleContact = async contact => {
   acl.setReadAccess(contact.UserId.objectId, true);
   acl.setWriteAccess(contact.UserId.objectId, true);
   contactQuery.setACL(acl);
-  const contactRes = await contactQuery.save();
+  const contactRes = await contactQuery.save(null, { useMasterKey: true });
   if (contactRes) {
     return contactRes;
   }
@@ -37,6 +43,8 @@ export default async function linkContactToDoc(req) {
   const docId = req.params.docId;
   const name = req.params.name;
   const phone = req.params.phone;
+  const jobTitle = req.params.jobTitle;
+  const company = req.params.company;
   try {
     if (docId) {
       // Execute the query to get the document with the specified 'docId'
@@ -110,6 +118,8 @@ export default async function linkContactToDoc(req) {
               UserId: _extUser.UserId,
               Name: _extUser.Name,
               Email: email,
+              JobTitle: _extUser?.JobTitle || '',
+              Company: _extUser?.Company || '',
               Phone: _extUser?.Phone ? _extUser.Phone : '',
               CreatedBy: _docRes.CreatedBy,
               TenantId: _docRes.ExtUserPtr?.TenantId?.objectId,
@@ -163,6 +173,8 @@ export default async function linkContactToDoc(req) {
                   Name: name,
                   Email: email,
                   Phone: phone,
+                  JobTitle: jobTitle,
+                  Company: company,
                   CreatedBy: _docRes.CreatedBy,
                   TenantId: _docRes.ExtUserPtr?.TenantId?.objectId,
                 };
@@ -220,6 +232,8 @@ export default async function linkContactToDoc(req) {
                   Name: name,
                   Email: email,
                   Phone: phone,
+                  JobTitle: jobTitle,
+                  Company: company,
                   CreatedBy: _docRes.CreatedBy,
                   TenantId: _docRes.ExtUserPtr?.TenantId?.objectId,
                 };

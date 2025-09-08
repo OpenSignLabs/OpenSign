@@ -1,19 +1,20 @@
-import React, { useEffect, useState, useRef } from "react";
-import ReportTable from "../primitives/GetReportDisplay";
+import { useEffect, useState, useRef } from "react";
 import Parse from "parse";
 import axios from "axios";
-import reportJson from "../json/ReportJson";
+import reportJson, { extraCols } from "../json/ReportJson";
 import { useParams } from "react-router";
-import Title from "../components/Title";
 import PageNotFound from "./PageNotFound";
-import TourContentWithBtn from "../primitives/TourContentWithBtn";
 import Loader from "../primitives/Loader";
-import { useTranslation } from "react-i18next";
+import Contactbook from "../reports/contact/Contactbook";
+import ColumnSelector from "../components/ColumnSelector";
+import TemplatesReport from "../reports/template/TemplatesReport";
+import DocumentsReport from "../reports/document/DocumentsReport";
+import { templateReportTour } from "../json/ReportTour";
 
 const Report = () => {
-  const { t } = useTranslation();
   const { id } = useParams();
-  const [List, setList] = useState([]);
+  const abortController = new AbortController();
+  const [list, setList] = useState([]);
   const [isLoader, setIsLoader] = useState(true);
   const [reportName, setReportName] = useState("");
   const [reporthelp, setReportHelp] = useState("");
@@ -21,16 +22,17 @@ const Report = () => {
   const [heading, setHeading] = useState([]);
   const [isNextRecord, setIsNextRecord] = useState(false);
   const [isMoreDocs, setIsMoreDocs] = useState(true);
-  const [form, setForm] = useState("");
   const [tourData, setTourData] = useState([]);
-  const [isDontShow, setIsDontShow] = useState(false);
-  const [isImport, setIsImport] = useState(false);
-  const abortController = new AbortController();
-  const docPerPage = 10;
   const [searchTerm, setSearchTerm] = useState("");
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
   const [isSearchResult, setIsSearchResult] = useState(false);
+  const [allColumns, setAllColumns] = useState([]);
+  const [visibleColumns, setVisibleColumns] = useState([]);
+  const [columnLabels, setColumnLabels] = useState({});
+  const [defaultColumns, setDefaultColumns] = useState([]);
+  const [isColumnModal, setIsColumnModal] = useState(false);
   const debounceTimer = useRef(null);
+  const docPerPage = 20;
 
   // below useEffect is call when id param change
   useEffect(() => {
@@ -38,6 +40,14 @@ const Report = () => {
     setList([]);
     setSearchTerm("");
     setMobileSearchOpen(false);
+    const saved = JSON.parse(localStorage.getItem("reportColumns") || "{}");
+    if (saved[id]) {
+      setVisibleColumns(saved[id].visible || saved[id]);
+      setColumnLabels(saved[id].labels || {});
+    } else {
+      setVisibleColumns([]);
+      setColumnLabels({});
+    }
     getReportData(0, docPerPage, "");
 
     // Function returned from useEffect is called on unmount
@@ -54,14 +64,10 @@ const Report = () => {
   // below useEffect call when isNextRecord state is true and fetch next record
   useEffect(() => {
     if (isNextRecord) {
-      getReportData(List.length, 20, searchTerm);
+      getReportData(list.length, 20, searchTerm);
     }
     // eslint-disable-next-line
   }, [isNextRecord]);
-
-  const handleDontShow = (isChecked) => {
-    setIsDontShow(isChecked);
-  };
 
   const handleSearchChange = async (e) => {
     const term = e.target.value.toLowerCase();
@@ -118,11 +124,21 @@ const Report = () => {
     const json = reportJson(id);
     if (json) {
       setActions(json.actions);
-      setHeading(json.heading);
+      const savedCols = JSON.parse(
+        localStorage.getItem("reportColumns") || "{}"
+      );
+      const visible = savedCols[id]?.visible || json.heading;
+      const labels = savedCols[id]?.labels || {};
+      if (!savedCols[id] || id === "contacts") {
+        savedCols[id] = { visible: json.heading, labels: {} };
+        localStorage.setItem("reportColumns", JSON.stringify(savedCols));
+      }
+      setVisibleColumns(visible);
+      setColumnLabels(labels);
+      setHeading(visible);
+      setDefaultColumns(json.heading);
       setReportName(json.reportName);
-      setForm(json.form);
       setReportHelp(json?.helpMsg);
-      setIsImport(json?.import || false);
       const currentUser = Parse.User.current().id;
 
       const headers = {
@@ -142,39 +158,11 @@ const Report = () => {
           headers: headers,
           signal: abortController.signal // is used to cancel fetch query
         });
+        const extraHeads =
+          id === "4Hhwbp482K" ? [...extraCols, "Expiry Date"] : extraCols;
+        setAllColumns(Array.from(new Set([...json.heading, ...extraHeads])));
         if (id === "6TeaPr321t") {
-          const tourConfig = [
-            {
-              selector: "[data-tut=reactourFirst]",
-              content: () => (
-                <TourContentWithBtn
-                  message={t("tour-mssg.report-1")}
-                  isChecked={handleDontShow}
-                />
-              ),
-              position: "top",
-              style: { fontSize: "13px" }
-            }
-          ];
-
-          if (res.data.result && res.data.result?.length > 0) {
-            json.actions.map((data) => {
-              const newConfig = {
-                selector: `[data-tut="${data?.selector}"]`,
-                content: () => (
-                  <TourContentWithBtn
-                    message={t(`tour-mssg.${data?.action}`)}
-                    isChecked={handleDontShow}
-                  />
-                ),
-                position: "top",
-                style: { fontSize: "13px" }
-              };
-              tourConfig.push(newConfig);
-            });
-          }
-
-          setTourData(tourConfig);
+          setTourData(templateReportTour);
         }
         if (id === "4Hhwbp482K") {
           const listData = res.data?.result.filter((x) => x.Signers.length > 0);
@@ -234,42 +222,66 @@ const Report = () => {
       setIsLoader(false);
     }
   };
+
+  const commonProps = {
+    ReportName: reportName,
+    List: list,
+    setList,
+    actions: actions,
+    heading: heading,
+    setIsNextRecord,
+    isMoreDocs,
+    docPerPage,
+    mobileSearchOpen,
+    setMobileSearchOpen,
+    searchTerm,
+    handleSearchChange,
+    handleSearchPaste,
+    isSearchResult,
+    columnLabels,
+    openColumnModal: () => setIsColumnModal(true)
+  };
   return (
     <>
-      <Title title={reportName} />
       {isLoader ? (
         <div className="h-[100vh] flex justify-center items-center">
           <Loader />
         </div>
       ) : (
         <>
-          {reportName ? (
-            <ReportTable
-              ReportName={reportName}
-              List={List}
-              setList={setList}
-              actions={actions}
-              heading={heading}
-              setIsNextRecord={setIsNextRecord}
-              isMoreDocs={isMoreDocs}
-              docPerPage={docPerPage}
-              form={form}
+          {id === "contacts" ? (
+            <Contactbook {...commonProps} />
+          ) : id === "6TeaPr321t" ? (
+            <TemplatesReport
+              {...commonProps}
               report_help={reporthelp}
               tourData={tourData}
-              isDontShow={isDontShow}
-              mobileSearchOpen={mobileSearchOpen}
-              setMobileSearchOpen={setMobileSearchOpen}
-              searchTerm={searchTerm}
-              handleSearchChange={handleSearchChange}
-              handleSearchPaste={handleSearchPaste}
-              isSearchResult={isSearchResult}
-              isImport={isImport}
             />
+          ) : reportName ? (
+            <DocumentsReport {...commonProps} report_help={reporthelp} />
           ) : (
             <PageNotFound prefix={"Report"} />
           )}
         </>
       )}
+      <ColumnSelector
+        isOpen={isColumnModal}
+        allColumns={allColumns}
+        visibleColumns={visibleColumns}
+        columnLabels={columnLabels}
+        defaultColumns={defaultColumns}
+        onApply={(cols, labels) => {
+          setVisibleColumns(cols);
+          setHeading(cols);
+          setColumnLabels(labels);
+          const saved = JSON.parse(
+            localStorage.getItem("reportColumns") || "{}"
+          );
+          saved[id] = { visible: cols, labels };
+          localStorage.setItem("reportColumns", JSON.stringify(saved));
+        }}
+        onClose={() => setIsColumnModal(false)}
+      />
     </>
   );
 };
