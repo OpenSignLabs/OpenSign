@@ -1,5 +1,5 @@
-import React from "react";
-import { getWidgetType, widgets } from "../../constant/Utils";
+import { widgets } from "../../constant/Utils";
+import getWidgetType from "./getWidgetType";
 
 function DragElement(item) {
   const getWidgets = widgets;

@@ -63,6 +63,10 @@ const SelectSigners = (props) => {
       if (props.closePopup) {
         props.closePopup();
       }
+    } else if (selected?.value) {
+      if (props.closePopup) {
+        props.closePopup();
+      }
     } else {
       setIsError(true);
       setTimeout(() => setIsError(false), 1000);

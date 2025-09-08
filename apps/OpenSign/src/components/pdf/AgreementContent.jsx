@@ -118,7 +118,7 @@ function AgreementContent(props) {
               {t("agrre-button")}
             </button>
             <button
-              className="op-btn op-btn-ghost"
+              className="op-btn op-btn-ghost text-base-content"
               onClick={() => props.setIsShowAgreeTerms(false)}
             >
               {t("close")}

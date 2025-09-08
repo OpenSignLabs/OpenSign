@@ -2,27 +2,21 @@ import AWS from 'aws-sdk';
 import { useLocal } from '../../Utils.js';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
-dotenv.config();
+dotenv.config({ quiet: true });
 
-export default function getPresignedUrl(
-  url,
-) {
+export default function getPresignedUrl(url) {
   if (url?.includes('files')) {
     return presignedlocalUrl(url);
   } else {
     const credentials = {
-      accessKeyId:
-        process.env.DO_ACCESS_KEY_ID,
-      secretAccessKey:
-        process.env.DO_SECRET_ACCESS_KEY,
+      accessKeyId: process.env.DO_ACCESS_KEY_ID,
+      secretAccessKey: process.env.DO_SECRET_ACCESS_KEY,
     };
     AWS.config.update({
       credentials: credentials,
-      region:
-        process.env.DO_REGION,
+      region: process.env.DO_REGION,
     });
-    const spacesEndpoint =
-      new AWS.Endpoint(process.env.DO_ENDPOINT);
+    const spacesEndpoint = new AWS.Endpoint(process.env.DO_ENDPOINT);
 
     const s3 = new AWS.S3({ endpoint: spacesEndpoint, signatureVersion: 'v4' });
 
@@ -35,8 +29,7 @@ export default function getPresignedUrl(
 
     // presignedGETURL return presignedUrl with expires time
     const presignedGETURL = s3.getSignedUrl('getObject', {
-      Bucket:
-        process.env.DO_SPACE,
+      Bucket: process.env.DO_SPACE,
       Key: filename, //filename
       Expires: 160, //time to expire in seconds
     });
@@ -53,35 +46,22 @@ export async function getSignedUrl(request) {
       try {
         if (url?.includes('files')) {
           return presignedlocalUrl(url);
-        } else if (
-          useLocal !== 'true'
-        ) {
+        } else if (useLocal !== 'true') {
           const query = new Parse.Query(docId ? 'contracts_Document' : 'contracts_Template');
           query.equalTo('objectId', docId ? docId : templateId);
           query.include('ExtUserPtr.TenantId');
           query.notEqualTo('IsArchive', true);
           const res = await query.first({ useMasterKey: true });
-          if (res) {
-            const _resDoc = JSON.parse(JSON.stringify(res));
-            if (_resDoc?.IsEnableOTP) {
-              if (!request?.user) {
-                throw new Parse.Error(
-                  Parse.Error.INVALID_SESSION_TOKEN,
-                  'User is not authenticated.'
-                );
-              } else {
-                const presignedUrl = getPresignedUrl(
-                  url,
-                );
-                return presignedUrl;
-              }
-            } else {
-              const presignedUrl = getPresignedUrl(
-                url,
-              );
-              return presignedUrl;
-            }
+          if (!res) return url;
+
+          const _resDoc = res?.toJSON();
+          // Ensure user is authenticated if OTP is required
+          if (_resDoc?.IsEnableOTP && !request?.user) {
+            throw new Parse.Error(Parse.Error.INVALID_SESSION_TOKEN, 'User is not authenticated.');
           }
+
+          const presignedUrl = getPresignedUrl(url);
+          return presignedUrl;
         } else {
           return url;
         }

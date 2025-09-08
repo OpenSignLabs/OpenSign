@@ -1,6 +1,6 @@
-import React, { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import Parse from "parse";
-import ReportTable from "../../primitives/GetReportDisplay";
+import DocumentsReport from "../../reports/document/DocumentsReport";
 import reportJson from "../../json/ReportJson";
 import axios from "axios";
 import Loader from "../../primitives/Loader";
@@ -198,7 +198,7 @@ function DashboardReport(props) {
       ) : (
         <>
           {reportName ? (
-            <ReportTable
+            <DocumentsReport
               ReportName={reportName}
               List={List}
               setList={setList}
@@ -215,9 +215,9 @@ function DashboardReport(props) {
               isSearchResult={isSearchResult}
             />
           ) : (
-            <div className="flex items-center justify-center h-[100px] w-full bg-white rounded">
-              <div className="text-center">
-                <p className="text-xl text-base-content">{t("report-not-found")}</p>
+            <div className="flex items-center justify-center h-[100px] w-full bg-white rounded-box">
+              <div className="text-center text-xl text-base-content">
+                {t("report-not-found")}
               </div>
             </div>
           )}

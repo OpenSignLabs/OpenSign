@@ -9,9 +9,12 @@ const AddContact = (props) => {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
+  const [jobTitle, setJobTitle] = useState("");
+  const [company, setCompany] = useState("");
   const [addYourself, setAddYourself] = useState(false);
   const [isLoader, setIsLoader] = useState(false);
   const [isUserExist, setIsUserExist] = useState(false);
+  const [isOptionalDetails, setIsOptionalDetails] = useState(false);
 
   useEffect(() => {
     checkUserExist();
@@ -26,6 +29,8 @@ const AddContact = (props) => {
       setName(savedUserDetails.name);
       setPhone(savedUserDetails?.phone || "");
       setEmail(savedUserDetails.email);
+      setJobTitle(savedUserDetails?.jobTitle || "");
+      setCompany(savedUserDetails?.company || "");
     }
   }, [addYourself]);
 
@@ -54,7 +59,7 @@ const AddContact = (props) => {
     e.preventDefault();
     e.stopPropagation();
     if (!emailRegex.test(email)) {
-      alert("Please enter a valid email address.");
+      alert(t("valid-email-alert"));
     } else {
       setIsLoader(true);
       const user = JSON.parse(
@@ -75,7 +80,7 @@ const AddContact = (props) => {
                 {
                   "X-Parse-Session-Token": localStorage.getItem("accesstoken")
                 };
-          const data = { name, email, phone, tenantId };
+          const data = { name, email, phone, tenantId, jobTitle, company };
           const headers = {
             "Content-Type": "application/json",
             "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
@@ -84,15 +89,12 @@ const AddContact = (props) => {
           const axiosRes = await axios.post(url, data, { headers });
           const contactRes = axiosRes?.data?.result || {};
           if (contactRes?.objectId) {
-            props.details(contactRes);
+            props.details(contactRes, props?.newContactId);
             if (props.closePopup) {
               props.closePopup();
               setIsLoader(false);
               // Reset the form fields
-              setAddYourself(false);
-              setName("");
-              setPhone("");
-              setEmail("");
+              handleReset();
             }
           }
         } catch (err) {
@@ -114,10 +116,7 @@ const AddContact = (props) => {
   // Define a function to handle the "add yourself" checkbox
   const handleAddYourselfChange = () => {
     if (addYourself) {
-      setAddYourself(false);
-      setName("");
-      setPhone("");
-      setEmail("");
+      handleReset();
     } else {
       setAddYourself(true);
     }
@@ -127,6 +126,8 @@ const AddContact = (props) => {
     setName("");
     setPhone("");
     setEmail("");
+    setJobTitle("");
+    setCompany("");
   };
 
   return (
@@ -140,7 +141,7 @@ const AddContact = (props) => {
         {!props?.isDisableTitle && (
           <div className="text-[14px] font-[700]">{t("add-contact")}</div>
         )}
-        {isUserExist && (
+        {isUserExist && props?.isAddYourSelfCheckbox && (
           <div className="mb-[0.75rem] flex items-center mt-1">
             <input
               type="checkbox"
@@ -194,20 +195,63 @@ const AddContact = (props) => {
               className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs lowercase"
             />
           </div>
-          <div className="mb-[0.75rem]">
-            <label htmlFor="phone" className="text-[13px]">
-              {t("phone")}
-            </label>
-            <input
-              type="text"
-              id="phone"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              disabled={addYourself}
-              className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
-              placeholder={t("phone-optional")}
-            />
-          </div>
+          {isOptionalDetails && (
+            <>
+              <div className="mb-[0.75rem]">
+                <label htmlFor="phone" className="text-[13px]">
+                  {t("phone")}
+                </label>
+                <input
+                  type="text"
+                  id="phone"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  // disabled={addYourself}
+                  className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
+                  placeholder={t("phone-optional")}
+                />
+              </div>
+              <div className="mb-[0.75rem]">
+                <label htmlFor="company" className="text-[13px]">
+                  {t("company")}
+                </label>
+                <input
+                  type="text"
+                  id="company"
+                  value={company}
+                  onChange={(e) => setCompany(e.target.value)}
+                  // disabled={addYourself}
+                  className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
+                  placeholder={t("phone-optional")}
+                />
+              </div>
+              <div className="mb-[0.75rem]">
+                <label htmlFor="jobTitle" className="text-[13px]">
+                  {t("job-title")}
+                </label>
+                <input
+                  type="text"
+                  id="jobTitle"
+                  value={jobTitle}
+                  onChange={(e) => setJobTitle(e.target.value)}
+                  // disabled={addYourself}
+                  className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
+                  placeholder={t("phone-optional")}
+                />
+              </div>
+            </>
+          )}
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              setIsOptionalDetails(!isOptionalDetails);
+            }}
+            className="op-link op-link-secondary no-underline hover:underline"
+          >
+            {isOptionalDetails
+              ? t("hide-optional-details")
+              : t("optional-details")}
+          </button>
 
           <div className="mt-6 flex justify-start gap-2">
             <button type="submit" className="op-btn op-btn-primary">

@@ -141,6 +141,11 @@ export default async function docxtopdf(req, res) {
               className: 'partners_Tenant',
               objectId: tenantId,
             },
+            UserId: {
+              __type: 'Pointer',
+              className: '_User',
+              objectId: userRes.data.objectId,
+            },
           },
           {
             headers: {

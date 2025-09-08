@@ -7,7 +7,7 @@ import fs from 'node:fs';
 import dotenv from 'dotenv';
 import GenerateCertificate from './pdf/GenerateCertificate.js';
 import { getSecureUrl } from '../../Utils.js';
-dotenv.config();
+dotenv.config({ quiet: true });
 const eSignName = 'OpenSign';
 const eSigncontact = 'hello@opensignlabs.com';
 

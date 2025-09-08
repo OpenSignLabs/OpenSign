@@ -1,10 +1,6 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import ModalUi from "../../primitives/ModalUi";
-import {
-  handleCopyNextToWidget,
-  randomId,
-  textWidget
-} from "../../constant/Utils";
+import { handleCopyNextToWidget, randomId } from "../../constant/Utils";
 import { useTranslation } from "react-i18next";
 
 function PlaceholderCopy(props) {
@@ -125,7 +121,13 @@ function PlaceholderCopy(props) {
       );
       for (let i = 0; i < props.allPages; i++) {
         const newId = randomId();
-        const newPlaceholder = { ...currentPlaceholder, key: newId };
+        const nameId = randomId(2)
+        const widgetName = `${currentPlaceholder?.options?.name}${nameId}`;
+        const newPlaceholder = {
+          ...currentPlaceholder,
+          key: newId,
+          options: { ...currentPlaceholder?.options, name: widgetName }
+        };
         //get exist placeholder position for particular page
         const existPlaceholder = filterSignerPosition[0].placeHolder.filter(
           (data) => data.pageNumber === newPageNumber
@@ -213,6 +215,7 @@ function PlaceholderCopy(props) {
 
   //function for getting selected type placeholder copy
   const handleApplyCopy = () => {
+    const newId = randomId();
     if (selectCopyType === 4) {
       const signerPosition = props.xyPosition;
       let currentXYposition;
@@ -230,8 +233,8 @@ function PlaceholderCopy(props) {
         );
         //function to create new widget next to just widget
         handleCopyNextToWidget(
+          newId,
           currentXYposition,
-          props.widgetType,
           props.xyPosition,
           props.pageNumber,
           props.setXyPosition,
@@ -248,8 +251,8 @@ function PlaceholderCopy(props) {
         );
         //function to create new widget next to just widget
         handleCopyNextToWidget(
+          newId,
           currentXYposition,
-          props.widgetType,
           props.xyPosition,
           getIndex,
           props.setXyPosition
@@ -260,11 +263,6 @@ function PlaceholderCopy(props) {
     }
   };
   const handleUniqueId = () => {
-    const signerId = props.signerObjId ? props.signerObjId : props.Id;
-    if (signerId && props.widgetType === textWidget && props.setTempSignerId) {
-      props.setUniqueId(props?.tempSignerId);
-      props.setTempSignerId("");
-    }
     props.setIsPageCopy(false);
     setSelectCopyType(1);
   };
@@ -306,7 +304,7 @@ function PlaceholderCopy(props) {
         </button>
         <button
           type="button"
-          className="op-btn op-btn-ghost ml-2"
+          className="op-btn op-btn-ghost text-base-content ml-2"
           onClick={() => handleUniqueId()}
         >
           {t("cancel")}

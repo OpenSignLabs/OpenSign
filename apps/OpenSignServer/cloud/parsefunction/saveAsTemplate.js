@@ -32,7 +32,6 @@ export default async function saveAsTemplate(request) {
       templateCls.set('EmailSenderName', _docRes?.EmailSenderName);
       templateCls.set('SenderName', _docRes?.SenderName);
       templateCls.set('SenderMail', _docRes?.SenderMail);
-      templateCls.set('FileAdapterId', _docRes?.FileAdapterId);
       templateCls.set('RequestBody', _docRes?.RequestBody);
       templateCls.set('RequestSubject', _docRes?.RequestSubject);
       templateCls.set('NextReminderDate', _docRes?.NextReminderDate);
@@ -56,6 +55,7 @@ export default async function saveAsTemplate(request) {
             ...pageItem,
             pos: pageItem.pos.map(p => ({
               ...p,
+              type: p.type === 'text' ? 'text input' : p.type,
               options: {
                 ...p.options,
                 status: 'required',
@@ -74,14 +74,14 @@ export default async function saveAsTemplate(request) {
           };
           templateCls.set('Placeholders', [placeHolders]);
         } else {
-          const placeHolders = _docRes?.Placeholders.map((signer, signerIndex) => ({
+          const removePrefill = _docRes?.Placeholders?.filter(x => x.Role !== 'prefill');
+          const placeHolders = removePrefill.map((signer, signerIndex) => ({
             // copy everything else, then overwrite these fields:
             ...signer,
             signerObjId: '',
             signerPtr: {},
-            Role: `Role ${signerIndex + 1}`,
+            Role: signer?.Role ? signer.Role : `Role ${signerIndex + 1}`,
             email: '',
-
             // rebuild placeHolder/pages
             placeHolder: (signer.placeHolder || []).map(page => ({
               ...page,

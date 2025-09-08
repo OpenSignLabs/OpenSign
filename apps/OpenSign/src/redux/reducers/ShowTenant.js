@@ -6,8 +6,8 @@ const showTenantSlice = createSlice({
   reducers: {
     showTenant: (state, action) => {
       return action.payload;
-    },
-  },
+    }
+  }
 });
 
 export const { showTenant } = showTenantSlice.actions;

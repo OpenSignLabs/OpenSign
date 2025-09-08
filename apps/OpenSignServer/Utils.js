@@ -1,15 +1,23 @@
 import dotenv from 'dotenv';
 import { format, toZonedTime } from 'date-fns-tz';
-import { getSignedLocalUrl } from './cloud/parsefunction/getSignedUrl.js';
-import { PDFDocument } from 'pdf-lib';
+import getPresignedUrl, { getSignedLocalUrl } from './cloud/parsefunction/getSignedUrl.js';
 import crypto from 'node:crypto';
-import axios from 'axios';
-dotenv.config();
+import { PDFDocument, rgb } from 'pdf-lib';
+
+dotenv.config({ quiet: true });
 
 export const cloudServerUrl = 'http://localhost:8080/app';
 export const serverAppId = process.env.APP_ID || 'opensign';
 export const appName = 'OpenSign™';
-
+export const prefillDraftDocWidget = ['date', 'textbox', 'checkbox', 'radio button', 'image'];
+export const prefillDraftTemWidget = [
+  'date',
+  'textbox',
+  'checkbox',
+  'radio button',
+  'image',
+  'dropdown',
+];
 export const MAX_NAME_LENGTH = 250;
 export const MAX_NOTE_LENGTH = 200;
 export const MAX_DESCRIPTION_LENGTH = 500;
@@ -28,6 +36,7 @@ export const color = [
   '#ffffcc',
 ];
 
+export const prefillBlockColor = 'transparent';
 export function replaceMailVaribles(subject, body, variables) {
   let replacedSubject = subject;
   let replacedBody = body;
@@ -49,12 +58,9 @@ export const saveFileUsage = async (size, fileUrl, userId) => {
   //checking server url and save file's size
   try {
     if (userId) {
+      const userPtr = { __type: 'Pointer', className: '_User', objectId: userId };
       const tenantQuery = new Parse.Query('partners_Tenant');
-      tenantQuery.equalTo('UserId', {
-        __type: 'Pointer',
-        className: '_User',
-        objectId: userId,
-      });
+      tenantQuery.equalTo('UserId', userPtr);
       const tenant = await tenantQuery.first({ useMasterKey: true });
       if (tenant) {
         const tenantPtr = { __type: 'Pointer', className: 'partners_Tenant', objectId: tenant.id };
@@ -78,7 +84,7 @@ export const saveFileUsage = async (size, fileUrl, userId) => {
         } catch (err) {
           console.log('err in save usage', err);
         }
-        saveDataFile(size, fileUrl, tenantPtr);
+        saveDataFile(size, fileUrl, tenantPtr, userPtr);
       }
     }
   } catch (err) {
@@ -87,12 +93,13 @@ export const saveFileUsage = async (size, fileUrl, userId) => {
 };
 
 //function for save fileUrl and file size in particular client db class partners_DataFiles
-const saveDataFile = async (size, fileUrl, tenantPtr) => {
+const saveDataFile = async (size, fileUrl, tenantPtr, UserId) => {
   try {
     const newDataFiles = new Parse.Object('partners_DataFiles');
     newDataFiles.set('FileUrl', fileUrl);
     newDataFiles.set('FileSize', size);
     newDataFiles.set('TenantPtr', tenantPtr);
+    newDataFiles.set('UserId', UserId);
     await newDataFiles.save(null, { useMasterKey: true });
   } catch (err) {
     console.log('error in save usage ', err);
@@ -225,6 +232,7 @@ export const flattenPdf = async pdfFile => {
     const flatPdf = await pdfDoc.save({ useObjectStreams: false });
     return flatPdf;
   } catch (err) {
+    console.log('err ', err);
     throw new Error('error in pdf');
   }
 };
@@ -303,39 +311,81 @@ export function formatDateTime(date, dateFormat, timeZone, is12Hour) {
     ? format(zonedDate, `${selectFormat(dateFormat)}, ${timeFormat} 'GMT' XXX`, { timeZone })
     : formatTimeInTimezone(date, timeZone);
 }
-
-// Utility: Convert base64 to buffer
-export const base64ToBuffer = base64 => Buffer.from(base64, 'base64');
-
-// Utility: Generate SHA-256 hash from PDF page metadata
-const getPdfMetadataHash = async pdfBytes => {
-  const pdfDoc = await PDFDocument.load(pdfBytes);
-  const metaString = pdfDoc
-    .getPages()
-    .map((page, index) => {
-      const { width, height } = page.getSize();
-      return `${index + 1}:${Math.round(width)}x${Math.round(height)}`;
-    })
-    .join('|');
-
-  return crypto.createHash('sha256').update(metaString).digest('hex');
+export const randomId = () => {
+  const randomBytes = crypto.getRandomValues(new Uint16Array(1));
+  const randomValue = randomBytes[0];
+  const randomDigit = 1000 + (randomValue % 9000);
+  return randomDigit;
 };
-// Utility: Validate if uploaded file matches original template PDF
-export const handleReplaceFileValidation = async (baseFileUrl, newFileBase64) => {
-  try {
-    const { data } = await axios.get(baseFileUrl, { responseType: 'arraybuffer' });
-    const basePdfBytes = Buffer.from(data);
-    const uploadedPdfBytes = base64ToBuffer(newFileBase64);
 
-    const baseHash = await getPdfMetadataHash(basePdfBytes);
-    const uploadedHash = await getPdfMetadataHash(uploadedPdfBytes);
+export const handleValidImage = async Placeholder => {
+  const updatedPlaceholders = [];
 
-    if (baseHash === uploadedHash) {
-      return { base64: newFileBase64 };
+  for (const placeholder of Placeholder || []) {
+    //Clean and format signerPtr
+    let signerPtr = placeholder.signerPtr;
+    // Check if signerPtr exists and has an id
+    if (signerPtr?.id) {
+      // Case 1: If signerPtr is a Parse Object instance
+      if (signerPtr instanceof Parse.Object) {
+        // If signerPtr has no attributes, it’s a plain pointer already
+        if (!signerPtr.attributes || Object.keys(signerPtr.attributes).length === 0) {
+          // Convert to a clean pointer using Parse’s built-in method
+          signerPtr = signerPtr.toPointer();
+        } else {
+          // If it has attributes, manually construct the pointer object
+          signerPtr = {
+            __type: 'Pointer',
+            className: signerPtr.className,
+            objectId: signerPtr.id,
+          };
+        }
+        // Case 2: If signerPtr is already a plain JS object resembling a pointer
+      } else if (typeof signerPtr === 'object' && signerPtr.className && signerPtr.objectId) {
+        // Normalize it to a valid Parse pointer object
+        signerPtr = {
+          __type: 'Pointer',
+          className: signerPtr.className,
+          objectId: signerPtr.objectId,
+        };
+      }
     }
-    return { error: 'PDFs do NOT match based on page number, width, and height' };
-  } catch (err) {
-    console.error('Validation Error:', err.message);
-    return { error: err.message };
+
+    //Process placeHolder if Role is 'prefill'
+    if (placeholder?.Role === 'prefill') {
+      const updatedRole = [];
+      for (const item of placeholder.placeHolder || []) {
+        const updatedPos = [];
+        for (const posItem of item.pos || []) {
+          if (posItem?.type === 'image' && posItem?.SignUrl) {
+            const validUrl = await getPresignedUrl(posItem?.SignUrl);
+            updatedPos.push({
+              ...posItem,
+              SignUrl: validUrl,
+              options: { ...posItem.options, response: validUrl },
+            });
+          } else {
+            updatedPos.push(posItem);
+          }
+        }
+        updatedRole.push({
+          ...item,
+          pos: updatedPos,
+        });
+      }
+
+      updatedPlaceholders.push({
+        ...placeholder,
+        signerPtr,
+        placeHolder: updatedRole,
+      });
+    } else {
+      // Not prefill role, just push as-is
+      updatedPlaceholders.push({
+        ...placeholder,
+        signerPtr,
+      });
+    }
   }
+  return updatedPlaceholders;
 };

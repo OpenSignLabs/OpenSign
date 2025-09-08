@@ -1,4 +1,3 @@
-
 async function getTenantByUserId(userId, contactId) {
   try {
     if (contactId) {
@@ -53,8 +52,7 @@ export default async function getTenant(request) {
 
   if (userId || contactId) {
     return await getTenantByUserId(userId, contactId);
-  }
-  else {
+  } else {
     return {};
   }
 }
