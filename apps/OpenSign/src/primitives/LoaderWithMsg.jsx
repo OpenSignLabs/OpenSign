@@ -5,7 +5,7 @@ function LoaderWithMsg({ isLoading }) {
   return (
     <div className="flex flex-col justify-center items-center h-[100vh]">
       <Loader />
-      <span className="text-[13px] text-base-cotent">{isLoading.message}</span>
+      <span className="text-[13px] text-base-content">{isLoading.message}</span>
     </div>
   );
 }

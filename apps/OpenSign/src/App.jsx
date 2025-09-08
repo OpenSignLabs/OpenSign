@@ -1,4 +1,5 @@
-import { useState, useEffect, lazy } from "react";
+import { useState, useEffect } from "react";
+import { lazyWithRetry, hideUpgradeProgress } from "./utils";
 import { Routes, Route, BrowserRouter } from "react-router";
 import { pdfjs } from "react-pdf";
 import Form from "./pages/Form";
@@ -13,24 +14,28 @@ import SignYourSelf from "./pages/SignyourselfPdf";
 import DraftDocument from "./components/pdf/DraftDocument";
 import PlaceHolderSign from "./pages/PlaceHolderSign";
 import PdfRequestFiles from "./pages/PdfRequestFiles";
-import LazyPage from "./primitives/LazyPage";
+import Lazy from "./primitives/LazyPage";
 import Loader from "./primitives/Loader";
 import UserList from "./pages/UserList";
 import { serverUrl_fn } from "./constant/appinfo";
 import DocSuccessPage from "./pages/DocSuccessPage";
 import ValidateSession from "./primitives/ValidateSession";
-const DebugPdf = lazy(() => import("./pages/DebugPdf"));
-const ForgetPassword = lazy(() => import("./pages/ForgetPassword"));
-const GuestLogin = lazy(() => import("./pages/GuestLogin"));
-const ChangePassword = lazy(() => import("./pages/ChangePassword"));
-const UserProfile = lazy(() => import("./pages/UserProfile"));
-const Opensigndrive = lazy(() => import("./pages/Opensigndrive"));
-const ManageSign = lazy(() => import("./pages/Managesign"));
-const AddAdmin = lazy(() => import("./pages/AddAdmin"));
-const UpdateExistUserAdmin = lazy(() => import("./pages/UpdateExistUserAdmin"));
-const Preferences = lazy(() => import("./pages/Preferences"));
-const Login = lazy(() => import("./pages/Login"));
-const VerifyDocument = lazy(() => import("./pages/VerifyDocument"));
+import DragProvider from "./components/DragProivder";
+import Title from "./components/Title";
+const DebugPdf = lazyWithRetry(() => import("./pages/DebugPdf"));
+const ForgetPassword = lazyWithRetry(() => import("./pages/ForgetPassword"));
+const GuestLogin = lazyWithRetry(() => import("./pages/GuestLogin"));
+const ChangePassword = lazyWithRetry(() => import("./pages/ChangePassword"));
+const UserProfile = lazyWithRetry(() => import("./pages/UserProfile"));
+const Opensigndrive = lazyWithRetry(() => import("./pages/Opensigndrive"));
+const ManageSign = lazyWithRetry(() => import("./pages/Managesign"));
+const AddAdmin = lazyWithRetry(() => import("./pages/AddAdmin"));
+const UpdateExistUserAdmin = lazyWithRetry(
+  () => import("./pages/UpdateExistUserAdmin")
+);
+const Preferences = lazyWithRetry(() => import("./pages/Preferences"));
+const Login = lazyWithRetry(() => import("./pages/Login"));
+const VerifyDocument = lazyWithRetry(() => import("./pages/VerifyDocument"));
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/legacy/build/pdf.worker.min.mjs`;
 const AppLoader = () => {
   return (
@@ -42,22 +47,14 @@ const AppLoader = () => {
 function App() {
   const [isloading, setIsLoading] = useState(true);
   useEffect(() => {
-    handleCredentials();
+    // initialize creds
+    const id = process.env.REACT_APP_APPID ?? "opensign";
+    localStorage.setItem("parseAppId", id);
+    localStorage.setItem("baseUrl", `${serverUrl_fn()}/`);
+    hideUpgradeProgress();
+    localStorage.removeItem("showUpgradeProgress");
+    setIsLoading(false);
   }, []);
-
-  const handleCredentials = () => {
-    const appId = process.env.REACT_APP_APPID
-      ? process.env.REACT_APP_APPID
-      : "opensign";
-    const baseurl = serverUrl_fn();
-    try {
-      localStorage.setItem("baseUrl", `${baseurl}/`);
-      localStorage.setItem("parseAppId", appId);
-      setIsLoading(false);
-    } catch (error) {
-      console.log("err ", error);
-    }
-  };
 
   return (
     <div className="bg-base-200">
@@ -65,50 +62,31 @@ function App() {
         <AppLoader />
       ) : (
         <BrowserRouter>
+          <Title />
           <Routes>
             <Route element={<ValidateRoute />}>
-              <Route exact path="/" element={<LazyPage Page={Login} />} />
-                  <Route
-                    path="/addadmin"
-                    element={<LazyPage Page={AddAdmin} />}
-                  />
+              <Route exact path="/" element={<Lazy Page={Login} />} />
+                  <Route path="/addadmin" element={<Lazy Page={AddAdmin} />} />
                   <Route
                     path="/upgrade-2.1"
-                    element={<LazyPage Page={UpdateExistUserAdmin} />}
+                    element={<Lazy Page={UpdateExistUserAdmin} />}
                   />
             </Route>
             <Route element={<Validate />}>
               <Route
-                path="/load/template/:templateId"
-                element={<TemplatePlaceholder />}
-              />
-              <Route
-                exact
-                path="/load/placeholdersign/:docId"
-                element={<PlaceHolderSign />}
-              />
-              <Route
                 exact
                 path="/load/recipientSignPdf/:docId/:contactBookId"
-                element={<PdfRequestFiles />}
+                element={<DragProvider Page={PdfRequestFiles} />}
               />
             </Route>
             <Route
-              path="/loadmf/signmicroapp/login/:id/:userMail/:contactBookId/:serverUrl"
-              element={<LazyPage Page={GuestLogin} />}
-            />
-            <Route
-              path="/login/:id/:userMail/:contactBookId/:serverUrl"
-              element={<LazyPage Page={GuestLogin} />}
-            />
-            <Route
               path="/login/:base64url"
-              element={<LazyPage Page={GuestLogin} />}
+              element={<Lazy Page={GuestLogin} />}
             />
-            <Route path="/debugpdf" element={<LazyPage Page={DebugPdf} />} />
+            <Route path="/debugpdf" element={<Lazy Page={DebugPdf} />} />
               <Route
                 path="/forgetpassword"
-                element={<LazyPage Page={ForgetPassword} />}
+                element={<Lazy Page={ForgetPassword} />}
               />
             <Route
               element={
@@ -117,62 +95,52 @@ function App() {
                 </ValidateSession>
               }
             >
-                <Route
-                  path="/changepassword"
-                  element={<LazyPage Page={ChangePassword} />}
-                />
+                  <Route path="/users" element={<UserList />} />
+                  <Route
+                    path="/changepassword"
+                    element={<Lazy Page={ChangePassword} />}
+                  />
               <Route path="/form/:id" element={<Form />} />
               <Route path="/report/:id" element={<Report />} />
               <Route path="/dashboard/:id" element={<Dashboard />} />
-              <Route
-                path="/profile"
-                element={<LazyPage Page={UserProfile} />}
-              />
-              <Route
-                path="/drive"
-                element={<LazyPage Page={Opensigndrive} />}
-              />
-              <Route
-                path="/managesign"
-                element={<LazyPage Page={ManageSign} />}
-              />
+              <Route path="/profile" element={<Lazy Page={UserProfile} />} />
+              <Route path="/drive" element={<Lazy Page={Opensigndrive} />} />
+              <Route path="/managesign" element={<Lazy Page={ManageSign} />} />
               <Route
                 path="/template/:templateId"
-                element={<TemplatePlaceholder />}
+                element={<DragProvider Page={TemplatePlaceholder} />}
               />
               {/* signyouself route with no rowlevel data using docId from url */}
-              <Route path="/signaturePdf/:docId" element={<SignYourSelf />} />
+              <Route
+                path="/signaturePdf/:docId"
+                element={<DragProvider Page={SignYourSelf} />}
+              />
               {/* draft document route to handle and navigate route page according to document status */}
-              <Route path="/draftDocument" element={<DraftDocument />} />
+              <Route
+                path="/draftDocument"
+                element={<DragProvider Page={DraftDocument} />}
+              />
               {/* recipient placeholder set route with no rowlevel data using docId from url*/}
               <Route
                 path="/placeHolderSign/:docId"
-                element={<PlaceHolderSign />}
-              />
-              {/* for user signature (need your sign route) with row level data */}
-              <Route path="/pdfRequestFiles" element={<PdfRequestFiles />} />
-              {/* for user signature (need your sign route) with no row level data */}
-              <Route
-                path="/pdfRequestFiles/:docId"
-                element={<PdfRequestFiles />}
+                element={<DragProvider Page={PlaceHolderSign} />}
               />
               {/* recipient signature route with no rowlevel data using docId from url */}
               <Route
                 path="/recipientSignPdf/:docId/:contactBookId"
-                element={<PdfRequestFiles />}
+                element={<DragProvider Page={PdfRequestFiles} />}
               />
               <Route
                 path="/recipientSignPdf/:docId"
-                element={<PdfRequestFiles />}
+                element={<DragProvider Page={PdfRequestFiles} />}
               />
-                <Route path="/users" element={<UserList />} />
               <Route
                 path="/verify-document"
-                element={<LazyPage Page={VerifyDocument} />}
+                element={<Lazy Page={VerifyDocument} />}
               />
               <Route
                 path="/preferences"
-                element={<LazyPage Page={Preferences} />}
+                element={<Lazy Page={Preferences} />}
               />
             </Route>
             <Route path="/success" element={<DocSuccessPage />} />

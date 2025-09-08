@@ -5,7 +5,6 @@ import Parse from "parse";
 import Alert from "../primitives/Alert";
 import SelectFolder from "../components/shared/fields/SelectFolder";
 import SignersInput from "../components/shared/fields/SignersInput";
-import Title from "../components/Title";
 import PageNotFound from "./PageNotFound";
 import { SaveFileSize } from "../constant/saveFileSize";
 import {
@@ -195,7 +194,9 @@ const Forms = (props) => {
                       setIsDecrypting(false);
                       setfileload(false);
                       removeFile(e);
-                      alert(`Incorrect password for file: ${file.name}`);
+                      alert(
+                        t("incorrect-password-for-file", { file: file.name })
+                      );
                     }
                   } else {
                     console.error("password not provided");
@@ -273,9 +274,8 @@ const Forms = (props) => {
             setfileload(false);
             removeFile(e);
             console.log("err in docx to pdf ", err);
-            const error = isOpenSignDomain
-              ? `${t("docx-error")} ${t("docx-error-contact")}`
-              : t("docx-error");
+            const error =
+                  t("docx-error");
             alert(error);
             return;
           }
@@ -321,7 +321,8 @@ const Forms = (props) => {
         }
       if (uploadedUrl) {
         const tenantId = localStorage.getItem("TenantId");
-        SaveFileSize(pdfBytes.byteLength, uploadedUrl, tenantId);
+        const userId = extUserData?.UserId?.objectId;
+        SaveFileSize(pdfBytes.byteLength, uploadedUrl, tenantId, userId);
         setFileUpload(uploadedUrl);
         setfileload(false);
         const title = generateTitleFromFilename(filesNameArr?.[0]);
@@ -555,6 +556,8 @@ const Forms = (props) => {
     e.preventDefault();
     setIsPassword(false);
     setfileload(true);
+    const tenantId = localStorage.getItem("TenantId");
+    const userId = extUserData?.UserId?.objectId;
     try {
       const size = formData?.file?.size;
       const name = generatePdfName(16);
@@ -579,8 +582,7 @@ const Forms = (props) => {
             removeFile();
             const title = generateTitleFromFilename(formData?.file?.name);
             setFormData((obj) => ({ ...obj, password: "", Name: title }));
-            const tenantId = localStorage.getItem("TenantId");
-            SaveFileSize(size, fileRes.url, tenantId);
+            SaveFileSize(size, fileRes?.url, tenantId, userId);
             return fileRes.url;
           } else {
             removeFile();
@@ -630,7 +632,6 @@ const Forms = (props) => {
 
   return (
     <div className="shadow-md rounded-box my-[2px] p-3 bg-base-100 text-base-content">
-      <Title title={props?.title} />
       {isAlert?.message && <Alert type={isAlert.type}>{isAlert.message}</Alert>}
       {isSubmit ? (
         <div className="h-[300px] flex justify-center items-center">
@@ -680,9 +681,7 @@ const Forms = (props) => {
           </ModalUi>
           <form onSubmit={handleSubmit}>
             <div className="mb-[11px]">
-              <h1 className="text-[20px] font-semibold">
-                {t(`form-name.${props?.title}`)}
-              </h1>
+              <h1 className="text-[20px] font-semibold">{t(props?.title)}</h1>
               {props.title === "Sign Yourself" && (
                 <div className="text-gray-500 text-xs mt-1">
                   {t("signyour-self-description")}
@@ -793,6 +792,7 @@ const Forms = (props) => {
                 onChange={handleSigners}
                 isReset={isReset}
                 helptextZindex={50}
+                isAddYourSelfCheckbox
                 required
               />
             )}
@@ -1029,6 +1029,7 @@ const Forms = (props) => {
                           helptextZindex={50}
                           helpText={t("bcc-help")}
                           isCaptureAllData
+                          isAddYourSelfCheckbox
                         />
                       )}
                     </>
@@ -1223,7 +1224,7 @@ const Forms = (props) => {
                 {t("next")}
               </button>
               <div
-                className="op-btn op-btn-ghost"
+                className="op-btn op-btn-ghost text-base-content"
                 onClick={() => handleCancel()}
               >
                 {t("cancel")}

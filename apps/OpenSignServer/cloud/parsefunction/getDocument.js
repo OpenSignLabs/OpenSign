@@ -3,6 +3,7 @@ import { cloudServerUrl, serverAppId } from '../../Utils.js';
 export default async function getDocument(request) {
   const serverUrl = cloudServerUrl; //process.env.SERVER_URL;
   const docId = request.params.docId;
+  const include = request?.params?.include || '';
   const sessiontoken = request?.headers?.sessiontoken || '';
   try {
     if (docId) {
@@ -17,6 +18,9 @@ export default async function getDocument(request) {
         query.include('Placeholders');
         query.include('DeclineBy');
         query.notEqualTo('IsArchive', true);
+        if (include) {
+          query?.include(include);
+        }
         const res = await query.first({ useMasterKey: true });
         if (res) {
           const IsEnableOTP = res?.get('IsEnableOTP') || false;

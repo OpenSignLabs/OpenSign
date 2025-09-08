@@ -6,10 +6,10 @@ import { appInfo } from "./appinfo";
 import { saveAs } from "file-saver";
 import printModule from "print-js";
 import fontkit from "@pdf-lib/fontkit";
-import {
-  themeColor
-} from "./const";
+import { themeColor } from "./const";
 import { format, toZonedTime } from "date-fns-tz";
+import i18n from "../i18n";
+import { buildDownloadFilename } from "../utils";
 
 export const fontsizeArr = [2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28];
 export const fontColorArr = ["red", "black", "blue", "yellow"];
@@ -24,7 +24,25 @@ export const cellsWidget = "cells";
 export function getEnv() {
   return window?.RUNTIME_ENV || {};
 }
+const appName = "OpenSign™";
 
+export const defaultMailBody = `<p>Hi {{receiver_name}},</p><br><p>We hope this email finds you well. {{sender_name}}&nbsp;has requested you to review and sign&nbsp;{{document_title}}.</p><p>Your signature is crucial to proceed with the next steps as it signifies your agreement and authorization.</p><br><p><a href='{{signing_url}}' rel='noopener noreferrer' target='_blank'>Sign here</a></p><br><br><p>If you have any questions or need further clarification regarding the document or the signing process,  please contact the sender.</p><br><p>Thanks</p><p> Team ${appName}</p><br>`;
+export const defaultMailSubject = `{{sender_name}} has requested you to sign {{document_title}}`;
+
+export const randomId = (digit = 8) => {
+  // 1. Grab a cryptographically-secure 32-bit random value
+  // Use crypto for stronger randomness
+  const randomBytes = crypto.getRandomValues(new Uint32Array(1));
+  const raw = randomBytes[0]; // 0 … 4,294,967,295
+
+  // Calculate the min and max for the given digit length
+  const min = Math.pow(10, digit - 1); // e.g., digit=3 → 100
+  const max = Math.pow(10, digit) - 1; // e.g., digit=3 → 999
+  const range = max - min + 1;
+
+  // Collapse random value into the range and shift
+  return min + (raw % range);
+};
 //function for create list of year for date widget
 export const range = (start, end, step) => {
   const range = [];
@@ -200,15 +218,12 @@ export const pdfNewWidthFun = (divRef) => {
 };
 
 //`contractUsers` function is used to get contract_User details
-export const contractUsers = async (
-) => {
+export const contractUsers = async () => {
   try {
     const url = `${localStorage.getItem("baseUrl")}functions/getUserDetails`;
     const parseAppId = localStorage.getItem("parseAppId");
-    const accesstoken =
-      localStorage.getItem("accesstoken");
-    const token =
-          { "X-Parse-Session-Token": accesstoken };
+    const accesstoken = localStorage.getItem("accesstoken");
+    const token = { "X-Parse-Session-Token": accesstoken };
     const headers = {
       headers: {
         "Content-Type": "application/json",
@@ -308,12 +323,12 @@ export const widgets = [
   { type: "signature", icon: "fa-light fa-pen-nib", iconSize: "20px" },
   { type: "stamp", icon: "fa-light fa-stamp", iconSize: "19px" },
   { type: "initials", icon: "fa-light fa-signature", iconSize: "15px" },
+  { type: textInputWidget, icon: "fa-light fa-font", iconSize: "21px" },
   { type: "name", icon: "fa-light fa-user", iconSize: "21px" },
   { type: "job title", icon: "fa-light fa-address-card", iconSize: "17px" },
   { type: "company", icon: "fa-light fa-building", iconSize: "25px" },
   { type: "date", icon: "fa-light fa-calendar-days", iconSize: "20px" },
   { type: textWidget, icon: "fa-light fa-text-width", iconSize: "20px" },
-  { type: textInputWidget, icon: "fa-light fa-font", iconSize: "21px" },
   { type: cellsWidget, icon: "fa-light fa-table-cells", iconSize: "20px" },
   { type: "checkbox", icon: "fa-light fa-square-check", iconSize: "22px" },
   {
@@ -361,7 +376,7 @@ export const selectFormat = (data) => {
     case "DD MMMM, YYYY":
       return "dd MMMM, yyyy";
     case "DD.MM.YYYY":
-      return "dd.MM.yyyy";  
+      return "dd.MM.yyyy";
     default:
       return "MM/dd/yyyy";
   }
@@ -390,54 +405,65 @@ export const changeDateToMomentFormat = (format) => {
     case "dd MMMM, yyyy":
       return "DD MMMM, YYYY";
     case "dd.MM.yyyy":
-      return"DD.MM.YYYY";
+      return "DD.MM.YYYY";
     default:
       return "L";
   }
 };
-export const addWidgetOptions = (type, signer, widgetValue) => {
-  const status = { status: "required" };
+export const addWidgetOptions = (type, signer, placeholder, widgetValue) => {
+  let defaultOpt;
+  //condition to handle widgets name field
+  if (placeholder) {
+    const countSameWidget = placeholder?.reduce((count, page) => {
+      return count + page.pos.filter((item) => item.type === type).length;
+    }, 0);
+    const count = countSameWidget + 1;
+    defaultOpt = {
+      name: `${type}-${count}`,
+      status: "required"
+    };
+  } else {
+    defaultOpt = {
+      name: `${type}-1`,
+      status: "required"
+    };
+  }
   switch (type) {
     case "signature":
-      return { ...status, name: "Signature" };
+      return defaultOpt;
     case "stamp":
-      return { ...status, name: "Upload stamp" };
+      return defaultOpt;
     case "checkbox":
       return {
-        ...status,
-        name: "Checkbox",
+        ...defaultOpt,
         isReadOnly: false,
         isHideLabel: false
       };
     case textInputWidget:
-      return { ...status, name: "Text", isReadOnly: false };
+      return { ...defaultOpt, isReadOnly: false };
     case cellsWidget:
       return {
-        ...status,
-        name: "Cells",
+        ...defaultOpt,
         cellCount: 5,
         defaultValue: "",
         validation: { type: "", pattern: "" },
         isReadOnly: false
       };
     case "initials":
-      return { ...status, name: "Initials" };
+      return defaultOpt;
     case "name":
       return {
-        ...status,
-        name: "Name",
+        ...defaultOpt,
         defaultValue: widgetValue ? widgetValue : ""
       };
     case "company":
       return {
-        ...status,
-        name: "Company",
+        ...defaultOpt,
         defaultValue: widgetValue ? widgetValue : ""
       };
     case "job title":
       return {
-        ...status,
-        name: "Job title",
+        ...defaultOpt,
         defaultValue: widgetValue ? widgetValue : ""
       };
     case "date": {
@@ -445,73 +471,92 @@ export const addWidgetOptions = (type, signer, widgetValue) => {
         ? selectFormat(signer?.DateFormat)
         : "MM/dd/yyyy";
       return {
-        ...status,
-        name: "Date",
+        ...defaultOpt,
         response: getDate(signer?.DateFormat),
         validation: { format: dateFormat, type: "date-format" }
       };
     }
     case "image":
-      return { ...status, name: "Upload image" };
+      return defaultOpt;
     case "email":
       return {
-        ...status,
-        name: "Email",
+        ...defaultOpt,
         validation: { type: "email", pattern: "" },
         defaultValue: widgetValue ? widgetValue : ""
       };
     case "dropdown":
-      return { ...status, name: "Choose one" };
+      return defaultOpt;
     case radioButtonWidget:
       return {
-        ...status,
-        name: "Radio button",
+        ...defaultOpt,
         values: [],
         isReadOnly: false,
         isHideLabel: false
       };
     case textWidget:
-      return { ...status, name: "Text" };
+      return defaultOpt;
     default:
       return {};
   }
 };
 
-export const addWidgetSelfsignOptions = (type, getWidgetValue, owner) => {
+export const addWidgetSelfsignOptions = (
+  type,
+  getWidgetValue,
+  owner,
+  placeholder
+) => {
+  let defaultOpt;
+  //condition to handle widgets name field
+  if (placeholder) {
+    const countSameWidget = placeholder?.reduce((count, page) => {
+      return count + page.pos.filter((item) => item.type === type).length;
+    }, 0);
+    const count = countSameWidget + 1;
+    defaultOpt = {
+      name: `${type}-${count}`,
+      status: "required"
+    };
+  } else {
+    defaultOpt = {
+      name: `${type}-1`,
+      status: "required"
+    };
+  }
   switch (type) {
     case "signature":
-      return { name: "Signature" };
+      return defaultOpt;
     case "stamp":
-      return { name: "Upload stamp" };
+      return defaultOpt;
     case "checkbox":
-      return { name: "Checkbox" };
+      return defaultOpt;
     case textWidget:
-      return { name: "Text" };
+      return defaultOpt;
     case cellsWidget:
       return {
-        name: "Cells",
+        ...defaultOpt,
         cellCount: 5,
         defaultValue: "",
         validation: { type: "", pattern: "" },
         isReadOnly: false
       };
     case "initials":
-      return { name: "Initials" };
+      return defaultOpt;
     case "name":
       return {
-        name: "Name",
+        ...defaultOpt,
         defaultValue: getWidgetValue(type),
         validation: { type: "text", pattern: "" }
       };
     case "company":
       return {
-        name: "Company",
+        ...defaultOpt,
         defaultValue: getWidgetValue(type),
         validation: { type: "text", pattern: "" }
       };
     case "job title":
       return {
-        name: "Job title",
+        ...defaultOpt,
         defaultValue: getWidgetValue(type),
         validation: { type: "text", pattern: "" }
       };
@@ -520,39 +565,22 @@ export const addWidgetSelfsignOptions = (type, getWidgetValue, owner) => {
         ? selectFormat(owner?.DateFormat)
         : "MM/dd/yyyy";
       return {
-        name: "Date",
+        ...defaultOpt,
         response: getDate(owner?.DateFormat),
         validation: { format: dateFormat, type: "date-format" }
       };
     }
     case "image":
-      return { name: "Upload image" };
+      return defaultOpt;
     case "email":
       return {
-        name: "Email",
+        ...defaultOpt,
         defaultValue: getWidgetValue(type),
         validation: { type: "email", pattern: "" }
       };
     default:
       return {};
   }
-};
-export const getWidgetType = (item, widgetName) => {
-  return (
-    <div className="op-btn w-fit md:w-[100%] op-btn-primary op-btn-outline op-btn-sm focus:outline-none outline outline-[1.5px] ml-[6px] md:ml-0 p-0 overflow-hidden">
-      <div className="w-full h-full flex md:justify-between items-center">
-        <div className="flex justify-start items-center text-[13px] ml-1">
-          {!isMobile && <i className="fa-light fa-grip-vertical ml-[3px]"></i>}
-          <span className="md:inline-block text-center text-[15px] ml-[5px] font-semibold pr-1 md:pr-0">
-            {widgetName}
-          </span>
-        </div>
-        <div className="text-[20px] op-btn op-btn-primary rounded-none w-[40px] h-full flex justify-center items-center">
-          <i className={item.icon}></i>
-        </div>
-      </div>
-    </div>
-  );
 };
 
 export const defaultWidthHeight = (type) => {
@@ -591,7 +619,6 @@ export const defaultWidthHeight = (type) => {
       return { width: 150, height: 60 };
   }
 };
-
 export async function getBase64FromUrl(url, autosign) {
   const data = await fetch(url);
   const blob = await data.blob();
@@ -718,7 +745,7 @@ export const signPdfFun = async (
   documentId,
   signerObjectId,
   objectId,
-  widgets,
+  widgets
 ) => {
   let isCustomCompletionMail = false;
   try {
@@ -727,14 +754,10 @@ export const signPdfFun = async (
     if (tenantDetails && tenantDetails === "user does not exist!") {
       return { status: "error", message: "User does not exist." };
     } else {
-      if (
-        tenantDetails?.CompletionBody &&
-        tenantDetails?.CompletionSubject
-      ) {
+      if (tenantDetails?.CompletionBody && tenantDetails?.CompletionSubject) {
         isCustomCompletionMail = true;
       }
     }
-
     // below for loop is used to get first signature of user to send if to signpdf
     // for adding it in completion certificate
     let getSignature;
@@ -749,7 +772,7 @@ export const signPdfFun = async (
       }
     }
 
-    let base64Sign = getSignature.SignUrl;
+    let base64Sign = getSignature?.SignUrl;
     //check https type signature (default signature exist) then convert in base64
     const isUrl = base64Sign.includes("https");
     if (isUrl) {
@@ -791,26 +814,27 @@ export const signPdfFun = async (
     }
   }
 };
-
-export const randomId = () => {
-  // 1. Grab a cryptographically-secure 32-bit random value
-  const randomBytes = crypto.getRandomValues(new Uint32Array(1));
-  const raw = randomBytes[0]; // 0 … 4 294 967 295
-
-  // 2. Collapse into a 90 000 000-wide band (0…89 999 999), then shift to 10 000 000…99 999 999
-  const eightDigit = 10_000_000 + (raw % 90_000_000);
-
-  return eightDigit;
-};
-
 export const createDocument = async (
   template,
   placeholders,
   signerData,
-  pdfUrl
+  SignedUrl,
+  isSendDoc
 ) => {
   if (template && template.length > 0) {
     const Doc = template[0];
+    let extUserId = Doc.ExtUserPtr.objectId;
+    let creatorId = Doc.CreatedBy.objectId;
+    const Extand_Class = localStorage.getItem("Extand_Class");
+    const extClass = Extand_Class && JSON.parse(Extand_Class);
+    if (extClass && extClass.length > 0) {
+      if (Doc.ExtUserPtr?.objectId !== extClass?.[0]?.objectId) {
+        if (extClass && extClass.length > 0) {
+          extUserId = extClass[0].objectId;
+          creatorId = extClass[0]?.UserId.objectId;
+        }
+      }
+    }
     let placeholdersArr = [];
     if (placeholders?.length > 0) {
       placeholdersArr = placeholders;
@@ -831,9 +855,10 @@ export const createDocument = async (
     const SignatureType = Doc?.SignatureType
       ? { SignatureType: Doc?.SignatureType }
       : {};
-    const NotifyOnSignatures = Doc?.NotifyOnSignatures
-      ? { NotifyOnSignatures: Doc?.NotifyOnSignatures }
-      : {};
+    const NotifyOnSignatures =
+      Doc?.NotifyOnSignatures !== undefined
+        ? { NotifyOnSignatures: Doc?.NotifyOnSignatures }
+        : {};
     const Bcc = Doc?.Bcc?.length > 0 ? { Bcc: Doc?.Bcc } : {};
     const RedirectUrl = Doc?.RedirectUrl
       ? { RedirectUrl: Doc?.RedirectUrl }
@@ -849,8 +874,8 @@ export const createDocument = async (
       : {};
     const data = {
       Name: Doc.Name,
-      URL: pdfUrl,
-      SignedUrl: Doc.SignedUrl,
+      URL: SignedUrl ? SignedUrl : Doc?.URL,
+      SignedUrl: isSendDoc ? SignedUrl : Doc.SignedUrl,
       SentToOthers: Doc.SentToOthers,
       Description: Doc.Description,
       Note: Doc.Note,
@@ -858,12 +883,12 @@ export const createDocument = async (
       ExtUserPtr: {
         __type: "Pointer",
         className: "contracts_Users",
-        objectId: Doc.ExtUserPtr.objectId
+        objectId: extUserId
       },
       CreatedBy: {
         __type: "Pointer",
         className: "_User",
-        objectId: Doc.CreatedBy.objectId
+        objectId: creatorId
       },
       Signers: signers,
       SendinOrder: Doc?.SendinOrder || false,
@@ -899,7 +924,7 @@ export const createDocument = async (
         }
       );
       if (res) {
-        return { status: "success", id: res.data.objectId };
+        return { status: "success", id: res.data.objectId, data: res.data };
       }
     } catch (err) {
       console.log("axois err ", err);
@@ -965,7 +990,7 @@ export const addZIndex = (signerPos, key, setZIndex) => {
 //function for save widgets value on onchange function
 export const onChangeInput = (
   value,
-  signKey,
+  currentPosition,
   xyPosition,
   index,
   setXyPosition,
@@ -976,7 +1001,9 @@ export const onChangeInput = (
   fontColor,
   isDateReadOnly
 ) => {
-  const isSigners = xyPosition.some((data) => data.signerPtr);
+  const isSigners = xyPosition.some(
+    (data) => data.signerPtr || data.Role === "prefill"
+  );
   let filterSignerPos;
   if (isSigners) {
     if (userId) {
@@ -992,9 +1019,12 @@ export const onChangeInput = (
       );
       if (getPageNumer.length > 0) {
         const getXYdata = getPageNumer[0].pos;
-        const getPosData = getXYdata;
-        const addSignPos = getPosData.map((position) => {
-          if (position.key === signKey) {
+        const addSignPos = getXYdata.map((position) => {
+          if (
+            (position?.options?.name === currentPosition?.options?.name &&
+              filterSignerPos[0].Role === "prefill") ||
+            position.key === currentPosition.key
+          ) {
             if (dateFormat) {
               return {
                 ...position,
@@ -1043,7 +1073,7 @@ export const onChangeInput = (
   } else {
     let getXYdata = xyPosition[index].pos;
     const updatePosition = getXYdata.map((positionData) => {
-      if (positionData.key === signKey) {
+      if (positionData.key === currentPosition.key) {
         if (dateFormat) {
           return {
             ...positionData,
@@ -1227,8 +1257,7 @@ export const addInitialData = (signerPos, setXyPosition, value, userId) => {
 
 //function for embed document id
 export const embedDocId = async (pdfOriginalWH, pdfDoc, documentId) => {
-  const appName =
-    "OpenSign™";
+  const appName = "OpenSign™";
   // `fontBytes` is used to embed custom font in pdf
   const fontBytes = await fileasbytes(
     "https://cdn.opensignlabs.com/webfonts/times.ttf"
@@ -1238,8 +1267,7 @@ export const embedDocId = async (pdfOriginalWH, pdfDoc, documentId) => {
   //pdfOriginalWH contained all pdf's pages width and height
   for (let i = 0; i < pdfOriginalWH?.length; i++) {
     const fontSize = 10;
-    const textContent =
-          documentId && `${appName} DocumentId: ${documentId} `;
+    const textContent = documentId && `${appName} DocumentId: ${documentId} `;
     const pages = pdfDoc.getPages();
     const page = pages[i];
     const getSize = pdfOriginalWH[i];
@@ -1318,15 +1346,14 @@ export function convertTextToImg(fontStyle, text, color, widgetDims) {
   return dataUrl;
 }
 
-//function for save button to save signature or image url
+// `onSaveSign` trigger on save button to save for signature, initials widget for type: draw, typed, default
 export function onSaveSign(
   type,
   xyPosition,
   index,
   signKey,
   signatureImg,
-  defaultImgWH,
-  isDefaultSign,
+  updatedImgWH,
   isTypeText,
   typedSignature,
   isAutoSign,
@@ -1341,27 +1368,11 @@ export function onSaveSign(
     widgetsType && ["signature", "initials"].includes(widgetsType);
   const updateXYData = getXYdata.map((position) => {
     if (position.key === signKey) {
-      if (isDefaultSign === "initials") {
-        let imgWH = { width: position.Width, height: position.Height };
-        getIMGWH = calculateImgAspectRatio(imgWH, position);
-      } else if (isDefaultSign === "default") {
-        getIMGWH = calculateImgAspectRatio(defaultImgWH, position);
-      } else if (isTypeText) {
+      if (isTypeText) {
         getIMGWH = {
-          newWidth: defaultImgWH.width,
-          newHeight: defaultImgWH.height
+          newWidth: updatedImgWH.width,
+          newHeight: updatedImgWH.height
         };
-      } else {
-        const defaultWidth = defaultWidthHeight(position?.type).width;
-        const defaultHeight = defaultWidthHeight(position?.type).height;
-
-        getIMGWH = calculateImgAspectRatio(
-          {
-            width: defaultWidth ? defaultWidth : 150,
-            height: defaultHeight ? defaultHeight : 60
-          },
-          position
-        );
       }
       posWidth = getIMGWH ? getIMGWH.newWidth : 150;
       posHeight = getIMGWH ? getIMGWH.newHeight : 60;
@@ -1371,8 +1382,8 @@ export function onSaveSign(
         : signatureImg;
       return {
         ...position,
-        Width: posWidth,
-        Height: posHeight,
+        ...(type === "type" ? { Width: posWidth } : {}),
+        ...(type === "type" ? { Height: posHeight } : {}),
         SignUrl: signImg,
         ...(isSignOrInitials && { signatureType: type || "" }),
         options: { ...position.options, response: signImg },
@@ -1392,7 +1403,7 @@ export function onSaveSign(
     }
     return obj;
   });
-  //condition  when draw/upload signature/initials then apply it all related to widgets (signature,image,typed signature or default signature)
+  //condition  when draw/upload signature/initials then apply it all related to widgets (draw, typed signature or default signature)
   if (isApplyAll || isAutoSign) {
     const updatedArray = updateXYposition.map((page) => ({
       ...page,
@@ -1404,9 +1415,6 @@ export function onSaveSign(
             : signatureImg;
           return {
             ...item,
-            // Only copy signature content, keep existing dimensions
-            // Width: posWidth,
-            // Height: posHeight,
             SignUrl: signImg,
             ...(isSignOrInitials && { signatureType: type || "" }),
             options: { ...item.options, response: signImg },
@@ -1424,6 +1432,56 @@ export function onSaveSign(
   } else {
     return updateXYposition;
   }
+}
+
+/**
+ * Scales and centers a base64‐encoded image into a fixed‐size widget
+ * and returns a new base64 PNG.
+ *
+ * @param {string} base64Image  A data-URL (e.g. "data:image/png;base64,…")
+ * @param {{ Width: number, Height: number }} widgetDims
+ * @returns {Promise<string>}  A Promise that resolves to a data-URL of the new image
+ */
+export async function convertBase64ToImg(base64Image, widgetDims) {
+  const { Width: maxWidth, Height: maxHeight } = widgetDims;
+
+  // Detect input format from data URL
+  const match = base64Image.match(/^data:(image\/(png|jpeg|jpg|webp));base64,/);
+  const inputMime = match ? match[1] : "image/png"; // fallback to PNG if unknown
+
+  // 1. Load the image off-DOM
+  const img = new Image();
+  img.src = base64Image;
+  await new Promise((resolve, reject) => {
+    img.onload = resolve;
+    img.onerror = reject;
+  });
+
+  // 2. Compute scale to fit within widget (preserving aspect ratio)
+  const { naturalWidth: imgW, naturalHeight: imgH } = img;
+  const scale = Math.min(maxWidth / imgW, maxHeight / imgH, 1);
+  const drawW = imgW * scale;
+  const drawH = imgH * scale;
+
+  // 3. Prepare a high-DPI canvas
+  const pxRatio = (window.devicePixelRatio || 1) * 2;
+  const canvas = document.createElement("canvas");
+  canvas.width = Math.ceil(maxWidth * pxRatio);
+  canvas.height = Math.ceil(maxHeight * pxRatio);
+  const ctx = canvas.getContext("2d");
+  ctx.scale(pxRatio, pxRatio);
+  ctx.clearRect(0, 0, maxWidth, maxHeight);
+
+  // 4. Center the image in the widget rectangle
+  const x = (maxWidth - drawW) / 2;
+  const y = (maxHeight - drawH) / 2;
+  ctx.drawImage(img, x, y, drawW, drawH);
+  // 5. Return new base64 in same format as input
+  // const quality =
+  //   inputMime.includes("jpeg") || inputMime.includes("jpg") ? 0.9 : undefined;
+  // return canvas.toDataURL(inputMime, quality);
+  // 5. Always return PNG (lossless, no quality param needed)
+  return canvas.toDataURL("image/png");
 }
 
 //function to use After setting the signature URL for the first signature widget, clicking on subsequent
@@ -1488,57 +1546,54 @@ export const calculateImgAspectRatio = (imgWH, pos) => {
   return { newHeight, newWidth };
 };
 
-//function for upload stamp or image
+// `onSaveImage` trigger for upload image through stamp, image, signature, initials widgets
 export function onSaveImage(
+  signatureType,
   xyPosition,
   index,
   signKey,
-  imgWH,
   image,
   isAutoSign,
   widgetsType,
-  isApplyAll
+  isApplyAll,
+  imgUrl
 ) {
-  let getIMGWH;
-
+  // let getIMGWH;
+  const isSignOrInitials =
+    widgetsType && ["signature", "initials"].includes(widgetsType);
   //get current page position
   const getXYData = xyPosition[index].pos;
   const updateXYData = getXYData.map((position) => {
     if (position.key === signKey) {
-      getIMGWH = calculateImgAspectRatio(imgWH, position);
-
       return {
         ...position,
-        Width: getIMGWH.newWidth,
-        Height: getIMGWH.newHeight,
-        SignUrl: image.src,
+        SignUrl: imgUrl || image.src,
         ImageType: image.imgType,
+        ...(isSignOrInitials && { signatureType: signatureType || "" }),
         options: {
           ...position.options,
-          response: image.src
+          response: imgUrl || image.src
         }
       };
     }
     return position;
   });
-
   const updateXYposition = xyPosition.map((obj, ind) => {
     if (ind === index) {
       return { ...obj, pos: updateXYData };
     }
     return obj;
   });
-  //condition  when user upload(stamp) then apply it all related to widgets
+  // condition when user upload(stamp) then apply it all related to widgets
   if (isApplyAll || isAutoSign) {
     const updatedArray = updateXYposition.map((page) => ({
       ...page,
       pos: page.pos.map(
         (item) =>
+          // below condition to exclude apply all for image widget
           item.type === widgetsType && item.type !== "image"
             ? {
                 ...item,
-                // Width: getIMGWH.newWidth,
-                // Height: getIMGWH.newHeight,
                 SignUrl: image.src,
                 ImageType: image.imgType,
                 options: {
@@ -1556,7 +1611,7 @@ export function onSaveImage(
 }
 
 //function for select image and upload image
-export const onImageSelect = (setImgWH, setImage, file) => {
+export const onImageSelect = (setImage, file) => {
   const reader = new FileReader();
   reader.readAsDataURL(file);
   reader.onloadend = function (e) {
@@ -1575,13 +1630,12 @@ export const onImageSelect = (setImgWH, setImage, file) => {
         width = 184 * imgR;
         height = 184;
       }
-      setImgWH({ width: width, height: height });
     };
     image.src = reader.result;
     setImage({ src: image.src, imgType: file.type });
   };
 };
-export const compressedFileSize = (file, setImgWH, setImage) => {
+export const compressedFileSize = (file, setImage) => {
   // Create a new FileReader instance to read the uploaded file
   const reader = new FileReader();
 
@@ -1606,7 +1660,7 @@ export const compressedFileSize = (file, setImgWH, setImage) => {
       // Draw the image onto the canvas with the specified dimensions
       ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
       // Get the original file type (default to "image/png" if not recognized)
-      const fileType = file.type || "image/png";
+      const fileType = "image/png"; //file.type || "image/png"
       // Compress the image and convert it into a Blob
       canvas.toBlob(
         (blob) => {
@@ -1616,7 +1670,7 @@ export const compressedFileSize = (file, setImgWH, setImage) => {
             lastModified: Date.now() // Update the last modified timestamp
           });
           // Pass the compressed file to a custom function for further processing
-          onImageSelect(setImgWH, setImage, compressedFile);
+          onImageSelect(setImage, compressedFile);
         },
         fileType, // Output format for the compressed image
         0.3 // Compression quality (30%)
@@ -1684,8 +1738,19 @@ const getWidgetsFontColor = (type) => {
       return rgb(0, 0, 0);
   }
 };
-//function for embed multiple signature using pdf-lib
-export const multiSignEmbed = async (widgets, pdfDoc, signyourself, scale) => {
+export const isBase64 = (str) => {
+  const base64Pattern =
+    /^data:([a-zA-Z0-9]+\/[a-zA-Z0-9-.+]+)?;base64,[A-Za-z0-9+/=]+$/;
+  return base64Pattern.test(str);
+};
+//function for embed all type widgets in document using pdf-lib
+export const embedWidgetsToDoc = async (
+  widgets,
+  pdfDoc,
+  signyourself,
+  scale,
+  prefillImg
+) => {
   // `fontBytes` is used to embed custom font in pdf
   const fontBytes = await fileasbytes(
     "https://cdn.opensignlabs.com/webfonts/times.ttf"
@@ -1736,21 +1801,37 @@ export const multiSignEmbed = async (widgets, pdfDoc, signyourself, scale) => {
     // This is equivalent to `react-pdf`'s `page.view` array: [x0, y0, x1, y1]
     const { _, y, width, height } = page.getCropBox();
     const originalHeight = height + y;
+    let images;
     const getSize = { height: originalHeight, width: width };
-    const images = await Promise.all(
-      widgetsPositionArr.map(async (widget) => {
-        // `SignUrl` this is wrong nomenclature and maintain for older code in this options we save base64 of signature image from sign pad
-        let signbase64 = widget.SignUrl && widget.SignUrl;
-        if (signbase64) {
-          let arr = signbase64.split(","),
-            mime = arr[0].match(/:(.*?);/)[1];
-          const res = await fetch(signbase64);
-          const arrayBuffer = await res.arrayBuffer();
-          const obj = { mimetype: mime, arrayBuffer: arrayBuffer };
-          return obj;
-        }
-      })
-    );
+    try {
+      images = await Promise.all(
+        widgetsPositionArr.map(async (widget) => {
+          // `SignUrl` this is wrong nomenclature and maintain for older code in this options we save base64 of signature image from sign pad
+          let signbase64 = widget.SignUrl && widget.SignUrl;
+          const widgetDims = { Width: widget.Width, Height: widget.Height };
+          if (signbase64) {
+            if (!isBase64(signbase64) && prefillImg) {
+              const imgData = prefillImg?.find((x) => x?.id === widget?.key);
+              signbase64 = imgData?.base64;
+            }
+
+            // let arr = signbase64.split(",");
+            // const mime = arr[0].match(/:(.*?);/)[1];
+            const signatureImg = await convertBase64ToImg(
+              signbase64,
+              widgetDims
+            );
+            const mime = signatureImg?.split(",")?.[0]?.match(/:(.*?);/)?.[1];
+            const res = await fetch(signatureImg);
+            const arrayBuffer = await res.arrayBuffer();
+            const obj = { mimetype: mime, arrayBuffer: arrayBuffer };
+            return obj;
+          }
+        })
+      );
+    } catch (e) {
+      console.log("error in image", e);
+    }
     for (let [id, position] of widgetsPositionArr.entries()) {
       if (hasError) break; // Stop the inner loop if an error occurred
       try {
@@ -1840,7 +1921,7 @@ export const multiSignEmbed = async (widgets, pdfDoc, signyourself, scale) => {
           const checkboxTextGapFromLeft = fontSize + 3.4; // gap between box and its label
           const verticalGap = fontSize + 3.4; // gap between two rows (vertical layout)
           let horizontalGap = 0; // will compute after drawing each label
-          if (position?.options?.values.length > 0) {
+          if (position?.options?.values?.length > 0) {
             position.options.values.forEach((item, ind) => {
               // 1. Advance the “cursor” on second+ iteration
               if (ind > 0) {
@@ -1854,7 +1935,7 @@ export const multiSignEmbed = async (widgets, pdfDoc, signyourself, scale) => {
               let isCheck = false;
               if (
                 position.options.response &&
-                position.options.response.length > 0
+                position.options.response?.length > 0
               ) {
                 isCheck = position.options.response.includes(ind);
               } else if (position.options.defaultValue) {
@@ -2065,7 +2146,7 @@ export const multiSignEmbed = async (widgets, pdfDoc, signyourself, scale) => {
           const isHorizontal =
             position?.options?.layout === "horizontal" ? true : false;
           // Loop through each option in the group
-          if (position?.options?.values.length > 0) {
+          if (position?.options?.values?.length > 0) {
             position.options.values.forEach((item, ind) => {
               // 1. Advance cursor on second+ iteration
               if (ind > 0) {
@@ -2139,11 +2220,12 @@ export const multiSignEmbed = async (widgets, pdfDoc, signyourself, scale) => {
           page.drawImage(img, imageOptions);
         }
       } catch (err) {
-        console.log("Err in embed widget on page ", pageNo, err?.message);
+        console.log("Err in embed widget on page ", pageNo, err);
         hasError = true; // Set the flag to stop both loops
         break; // Exit inner loop
       }
     }
+    form?.flatten();
   }
   if (!hasError) {
     const pdfBytes = await pdfDoc.saveAsBase64({ useObjectStreams: false });
@@ -2169,7 +2251,6 @@ export function urlValidator(url) {
 export const placeholderWidth = (pos) => {
   const defaultWidth = defaultWidthHeight(pos.type).width;
   const posWidth = pos.Width || defaultWidth;
-
   //condition to handle old data saved from mobile view to get widthh
   if (pos.isMobile && pos.scale) {
     if (pos.IsResize) {
@@ -2201,9 +2282,7 @@ export const placeholderHeight = (pos) => {
 };
 
 //function for getting contracts_contactbook details
-export const contactBook = async (
-  objectId,
-) => {
+export const contactBook = async (objectId) => {
   const result = await axios
     .get(
       `${localStorage.getItem(
@@ -2213,8 +2292,7 @@ export const contactBook = async (
         headers: {
           "Content-Type": "application/json",
           "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
-          "X-Parse-Session-Token":
-            localStorage.getItem("accesstoken")
+          "X-Parse-Session-Token": localStorage.getItem("accesstoken")
         }
       }
     )
@@ -2232,12 +2310,9 @@ export const contactBook = async (
 };
 
 //function for getting document details from contract_Documents class
-export const contractDocument = async (
-  documentId,
-) => {
-  const data = { docId: documentId };
-  const token =
-        { sessionToken: localStorage.getItem("accesstoken") };
+export const contractDocument = async (documentId, include) => {
+  const data = { docId: documentId, include: include };
+  const token = { sessionToken: localStorage.getItem("accesstoken") };
   const documentDeatils = await axios
     .post(`${localStorage.getItem("baseUrl")}functions/getDocument`, data, {
       headers: {
@@ -2272,28 +2347,25 @@ export const addDefaultSignatureImg = (xyPosition, defaultSignImg, type) => {
   const img = new Image();
   img.src = defaultSignImg;
   if (img.complete) {
-    imgWH = {
-      width: img.width,
-      height: img.height
-    };
+    imgWH = { width: img.width, height: img.height };
   }
 
   let xyDefaultPos = [];
   for (let i = 0; i < xyPosition.length; i++) {
-    let getIMGWH;
+    // let getIMGWH;
     const getXYdata = xyPosition[i].pos;
     const getPageNo = xyPosition[i].pageNumber;
     const getPosData = getXYdata;
 
     const addSign = getPosData.map((position) => {
-      getIMGWH = calculateImgAspectRatio(imgWH, position);
+      // getIMGWH = calculateImgAspectRatio(imgWH, position);
       if (position.type) {
         if (position?.type === type) {
           return {
             ...position,
             SignUrl: defaultSignImg,
-            Width: getIMGWH.newWidth,
-            Height: getIMGWH.newHeight,
+            // Width: getIMGWH.newWidth,
+            // Height: getIMGWH.newHeight,
             ImageType: "default",
             options: {
               ...position.options,
@@ -2305,8 +2377,8 @@ export const addDefaultSignatureImg = (xyPosition, defaultSignImg, type) => {
         return {
           ...position,
           SignUrl: defaultSignImg,
-          Width: getIMGWH.newWidth,
-          Height: getIMGWH.newHeight,
+          // Width: getIMGWH.newWidth,
+          // Height: getIMGWH.newHeight,
           ImageType: "default",
           options: {
             ...position.options,
@@ -2331,11 +2403,10 @@ export const getMonth = (date) => {
   const newMonth = new Date(date).getMonth();
   return newMonth;
 };
-
 //function to create/copy widget next to already dropped widget
 export const handleCopyNextToWidget = (
+  newId,
   position,
-  widgetType,
   xyPosition,
   index,
   setXyPosition,
@@ -2347,18 +2418,18 @@ export const handleCopyNextToWidget = (
   let newposition = position;
   const calculateXPosition = parseInt(position.xPosition) + 10;
   const calculateYPosition = parseInt(position.yPosition) + 10;
-
-  const newId = randomId();
+  const widgetName = `${newposition?.options?.name}${randomId(2)}`;
   newposition = {
     ...newposition,
     xPosition: calculateXPosition,
     yPosition: calculateYPosition,
-    key: newId
+    key: newId,
+    options: { ...newposition?.options, name: widgetName }
   };
   //if condition to create widget in request-sign flow
   if (userId) {
-    filterSignerPos = xyPosition.filter((data) => data.Id === userId);
-    const getPlaceHolder = filterSignerPos && filterSignerPos[0]?.placeHolder;
+    filterSignerPos = xyPosition.find((data) => data.Id === userId);
+    const getPlaceHolder = filterSignerPos && filterSignerPos?.placeHolder;
     const getPageNumer = getPlaceHolder?.filter(
       (data) => data.pageNumber === index
     );
@@ -2407,36 +2478,36 @@ export const getFileName = (fileUrl) => {
 
 //fetch tenant app logo from `partners_Tenant` class by domain name
 export const getAppLogo = async () => {
-    const domain = window.location.host;
-    try {
-      const tenant = await Parse.Cloud.run("getlogobydomain", {
-        domain: domain
-      });
-      if (tenant) {
-          localStorage.setItem("appname", "OpenSign™");
-        return { logo: tenant?.logo, user: tenant?.user };
-      }
-    } catch (err) {
-      console.log("err in getlogo ", err);
-      if (err?.message?.includes("valid JSON")) {
-        return { logo: appInfo.applogo, user: "exist", error: "invalid_json" };
-      } else {
-        return { logo: appInfo.applogo, user: "exist" };
-      }
+  const domain = window.location.host;
+  try {
+    const tenant = await Parse.Cloud.run("getlogobydomain", {
+      domain: domain
+    });
+    if (tenant) {
+      localStorage.setItem("appname", "OpenSign™");
+      localStorage.setItem("favicon", appInfo.fev_Icon);
+      return {
+        logo: tenant?.logo,
+        user: tenant?.user
+      };
     }
+  } catch (err) {
+    console.log("err in getlogo ", err);
+    localStorage.setItem("favicon", appInfo.fev_Icon);
+    if (err?.message?.includes("valid JSON")) {
+      return { logo: appInfo.applogo, user: "exist", error: "invalid_json" };
+    } else {
+      return { logo: appInfo.applogo, user: "exist" };
+    }
+  }
 };
-export const getTenantDetails = async (
-  objectId,
-  contactId
-) => {
+export const getTenantDetails = async (objectId, contactId) => {
   try {
     const url = `${localStorage.getItem("baseUrl")}functions/gettenant`;
     const parseAppId = localStorage.getItem("parseAppId");
     const accesstoken = localStorage.getItem("accesstoken");
-    const token =
-          { "X-Parse-Session-Token": accesstoken };
-    const data =
-          { userId: objectId, contactId: contactId };
+    const token = { "X-Parse-Session-Token": accesstoken };
+    const data = { userId: objectId, contactId: contactId };
     const res = await axios.post(url, data, {
       headers: {
         "Content-Type": "application/json",
@@ -2517,34 +2588,29 @@ export const handleSendOTP = async (email) => {
       "X-Parse-Application-Id": localStorage.getItem("parseAppId")
     };
     const body = {
-      email: email,
+      email: email
     };
     await axios.post(url, body, { headers: headers });
   } catch (error) {
     alert(error.message);
   }
 };
-export const fetchUrl = async (url, pdfName) => {
-  const appName =
-    "OpenSign™";
+export const fetchUrl = async (url, fileName) => {
   try {
     const response = await fetch(url);
     if (!response.ok) {
-      alert("something went wrong, refreshing this page may solve this issue.");
+      alert(i18n.t("something-went-wrong-mssg"));
       throw new Error("Network response was not ok");
     }
     const blob = await response.blob();
-    saveAs(blob, `${sanitizeFileName(pdfName)}_signed_by_${appName}.pdf`);
+    saveAs(blob, fileName);
   } catch (error) {
-    alert("something went wrong, refreshing this page may solve this issue.");
+    alert(i18n.t("something-went-wrong-mssg"));
     console.error("Error downloading the file:", error);
   }
 };
-export const getSignedUrl = async (
-  pdfUrl,
-  docId,
-  templateId
-) => {
+
+export const getSignedUrl = async (pdfUrl, docId, templateId) => {
   //use only axios here due to public template sign
   const axiosRes = await axios.post(
     `${localStorage.getItem("baseUrl")}/functions/getsignedurl`,
@@ -2597,32 +2663,36 @@ export const handleDownloadPdf = async (
     pdfDetails?.[0]?.Name?.length > 100
       ? pdfDetails?.[0]?.Name?.slice(0, 100)
       : pdfDetails?.[0]?.Name || "Document";
+  const isCompleted = pdfDetails?.[0]?.IsCompleted || false;
+  const formatId = pdfDetails?.[0]?.ExtUserPtr?.DownloadFilenameFormat;
+  const docName = buildDownloadFilename(formatId, {
+    docName: pdfName,
+    email: pdfDetails?.[0]?.ExtUserPtr?.Email,
+    isSigned: isCompleted
+  });
   if (pdfBase64) {
-    await fetchBase64(pdfBase64, pdfName);
+    await fetchBase64(pdfBase64, docName);
     setIsDownloading && setIsDownloading("");
   } else {
     const pdfUrl = pdfDetails?.[0]?.SignedUrl || pdfDetails?.[0]?.URL;
     setIsDownloading && setIsDownloading("pdf");
     const docId = pdfDetails?.[0]?.objectId || "";
     try {
-      const url = await getSignedUrl(
-        pdfUrl,
-        docId,
-      );
-      await fetchUrl(url, pdfName);
+      const url = await getSignedUrl(pdfUrl, docId);
+      await fetchUrl(url, docName);
       setIsDownloading && setIsDownloading("");
     } catch (err) {
       console.log("err in getsignedurl", err);
       setIsDownloading("");
-      alert("something went wrong, refreshing this page may solve this issue.");
+      alert(i18n.t("something-went-wrong-mssg"));
     }
   }
 };
 
-export const sanitizeFileName = (pdfName) => {
+export function fileNameWithUnderscore(pdfName) {
   // Replace spaces with underscore
   return pdfName.replace(/ /g, "_");
-};
+}
 //function for print digital sign pdf
 export const handleToPrint = async (event, setIsDownloading, pdfDetails) => {
   event.preventDefault();
@@ -2638,7 +2708,7 @@ export const handleToPrint = async (event, setIsDownloading, pdfDetails) => {
       `${localStorage.getItem("baseUrl")}/functions/getsignedurl`,
       {
         url: pdfUrl,
-        docId: docId,
+        docId: docId
       },
       {
         headers: {
@@ -2672,7 +2742,7 @@ export const handleToPrint = async (event, setIsDownloading, pdfDetails) => {
   } catch (err) {
     setIsDownloading("");
     console.log("err in getsignedurl", err);
-    alert("something went wrong, refreshing this page may solve this issue.");
+    alert(i18n.t("something-went-wrong-mssg"));
   }
 };
 
@@ -2682,8 +2752,7 @@ export const handleDownloadCertificate = async (
   setIsDownloading,
   isZip
 ) => {
-  const appName =
-    "OpenSign™";
+  const appName = "OpenSign™";
   if (pdfDetails?.length > 0 && pdfDetails[0]?.CertificateUrl) {
     try {
       await fetch(pdfDetails[0] && pdfDetails[0]?.CertificateUrl);
@@ -2759,7 +2828,7 @@ export const handleDownloadCertificate = async (
     } catch (err) {
       setIsDownloading("certificate_err");
       console.log("err in download in certificate", err);
-      alert("something went wrong, refreshing this page may solve this issue.");
+      alert(i18n.t("something-went-wrong-mssg"));
     }
   }
 };
@@ -2767,14 +2836,13 @@ export const handleDownloadCertificate = async (
 export function escapeRegExp(string) {
   return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); // Escape special characters
 }
-export async function findContact(
-  value,
-) {
+export async function findContact(value) {
   try {
     const baseURL = localStorage.getItem("baseUrl");
     const url = `${baseURL}functions/getsigners`;
-    const token =
-          { "X-Parse-Session-Token": localStorage.getItem("accesstoken") };
+    const token = {
+      "X-Parse-Session-Token": localStorage.getItem("accesstoken")
+    };
     const headers = {
       "Content-Type": "application/json",
       "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
@@ -2874,7 +2942,6 @@ function getWidgetPosition(page, image, sizeRatio, getSize) {
   if (!image?.hasOwnProperty("vpWidth")) {
     image["vpWidth"] = pageWidth;
   }
-
   const pageRatio = pageWidth / (image.vpWidth * sizeRatio);
   const imageWidth = image.width * sizeRatio * pageRatio;
   const imageHeight = image.height * sizeRatio * pageRatio;
@@ -2985,24 +3052,28 @@ export function base64ToArrayBuffer(base64) {
   // Return the ArrayBuffer
   return bytes.buffer;
 }
+export function removeBase64Prefix(base64String) {
+  return base64String.replace(/^data:.*;base64,/, "");
+}
 
-export const convertBase64ToFile = async (
-  pdfName,
-  pdfBase64,
-) => {
-  const fileName = sanitizeFileName(pdfName) + ".pdf";
-    try {
-        const pdfFile = new Parse.File(fileName, { base64: pdfBase64 });
-        // Save the Parse File if needed
-        const pdfData = await pdfFile.save();
-        const pdfUrl = pdfData.url();
-        const fileRes = await getSecureUrl(pdfUrl);
-        if (fileRes?.url) {
-          return fileRes.url;
-        }
-    } catch (e) {
-      console.log("error in convertbase64tofile", e);
+export const convertBase64ToFile = async (pdfName, pdfBase64, imgType) => {
+  let base64Str = pdfBase64;
+  const mime = imgType && imgType?.split("/")?.pop();
+  let fileName =
+    fileNameWithUnderscore(pdfName) + (imgType ? `.${mime}` : ".pdf");
+  try {
+    fileName = imgType ? pdfName : fileName;
+    const pdfFile = new Parse.File(fileName, { base64: base64Str });
+    // Save the Parse File if needed
+    const pdfData = await pdfFile.save();
+    const pdfUrl = pdfData.url();
+    const fileRes = await getSecureUrl(pdfUrl);
+    if (fileRes?.url) {
+      return fileRes.url;
     }
+  } catch (e) {
+    console.log("error in convertbase64tofile", e);
+  }
 };
 export const onClickZoomIn = (scale, zoomPercent, setScale, setZoomPercent) => {
   const newPercent = zoomPercent + 10;
@@ -3307,14 +3378,10 @@ export const flattenPdf = async (pdfFile) => {
 };
 
 export const mailTemplate = (param) => {
-  const appName =
-    "OpenSign™";
-  const logo =
-        `<div style='padding:10px'><img src='https://qikinnovation.ams3.digitaloceanspaces.com/logo.png' height='50' /></div>`;
+  const appName = "OpenSign™";
+  const logo = `<div style='padding:10px'><img src='https://qikinnovation.ams3.digitaloceanspaces.com/logo.png' height='50' /></div>`;
 
-  const opurl =
-        ` <a href='https://www.opensignlabs.com' target=_blank>here</a>.</p></div></div></body></html>`;
-
+  const opurl = ` <a href='https://www.opensignlabs.com' target=_blank>here</a>.</p></div></div></body></html>`;
   const subject = `${param.senderName} has requested you to sign "${param.title}"`;
   const body =
     "<html><head><meta http-equiv='Content-Type' content='text/html;charset=UTF-8' /></head><body><div style='background-color:#f5f5f5;padding:20px'><div style='background:white;padding-bottom:20px'>" +
@@ -3356,13 +3423,20 @@ export function formatDateTime(date, dateFormat, timeZone, is12Hour) {
     : formatTimeInTimezone(date, timeZone);
 }
 
-export const updateDateWidgetsRes = (documentData, signerId, journey) => {
-  const extUser =
-        localStorage.getItem("Extand_Class");
+export const updateDateWidgetsRes = (
+  documentData,
+  signerId,
+  journey,
+  isRemovePrefill
+) => {
+  const extUser = localStorage.getItem("Extand_Class");
   const contactUser = documentData?.Signers.find(
     (data) => data.objectId === signerId
   );
-  const placeHolders = documentData?.Placeholders;
+  let placeHolders = documentData?.Placeholders;
+  if (isRemovePrefill) {
+    placeHolders = placeHolders?.filter((x) => x.Role !== "prefill");
+  }
   const userDetails = extUser ? JSON.parse(extUser)[0] : contactUser;
   return placeHolders?.map((item) => {
     if (item?.signerObjId === signerId) {
@@ -3650,3 +3724,310 @@ export function getFileAsArrayBuffer(file) {
     reader.readAsArrayBuffer(file);
   });
 }
+
+export const sendEmailToSigners = async (
+  pdfDetails,
+  signersdata,
+  customizeMail,
+  defaultMail,
+  isCustomize
+) => {
+  let htmlReqBody;
+  const owner = pdfDetails?.[0]?.ExtUserPtr;
+  let sendMail;
+  const getDocumentExpDate = pdfDetails?.[0]?.ExpiryDate?.iso;
+  const getTemplateExpDate = new Date(pdfDetails[0]?.createdAt);
+  getTemplateExpDate.setDate(
+    getTemplateExpDate.getDate() + (pdfDetails[0]?.TimeToCompleteDays || 15)
+  );
+  const expireDate = getDocumentExpDate
+    ? getDocumentExpDate
+    : getTemplateExpDate;
+  const newDate = new Date(expireDate);
+  const localExpireDate = newDate.toLocaleDateString("en-US", {
+    day: "numeric",
+    month: "long",
+    year: "numeric"
+  });
+
+  let senderEmail = pdfDetails?.[0]?.ExtUserPtr?.Email;
+  let senderPhone = pdfDetails?.[0]?.ExtUserPtr?.Phone;
+  let signerMail = signersdata.slice();
+  if (pdfDetails?.[0]?.SendinOrder && pdfDetails?.[0]?.SendinOrder === true) {
+    signerMail.splice(1);
+  }
+  for (let i = 0; i < signerMail.length; i++) {
+    try {
+      let url = `${localStorage.getItem("baseUrl")}functions/sendmailv3`;
+      const headers = {
+        "Content-Type": "application/json",
+        "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
+        sessionToken: localStorage.getItem("accesstoken")
+      };
+      const objectId = signerMail[i].objectId;
+      const hostUrl = window.location.origin;
+      //encode this url value `${pdfDetails?.[0].objectId}/${signerMail[i].Email}/${objectId}` to base64 using `btoa` function
+      const encodeBase64 = btoa(
+        `${pdfDetails[0]?.objectId}/${signerMail[i].Email}/${objectId}`
+      );
+      let signPdf = `${hostUrl}/login/${encodeBase64}`;
+      const orgName = pdfDetails[0]?.ExtUserPtr.Company
+        ? pdfDetails[0].ExtUserPtr.Company
+        : "";
+      const senderName = pdfDetails?.[0]?.ExtUserPtr.Name;
+      const documentName = `${pdfDetails?.[0].Name}`;
+      let replaceVar;
+
+      if (customizeMail && isCustomize) {
+        const replacedRequestBody = customizeMail?.body.replace(/"/g, "'");
+        htmlReqBody =
+          "<html><head><meta http-equiv='Content-Type' content='text/html; charset=UTF-8' /></head><body>" +
+          replacedRequestBody +
+          "</body> </html>";
+
+        const variables = {
+          document_title: documentName,
+          note: pdfDetails?.[0]?.Note,
+          sender_name: senderName,
+          sender_mail: senderEmail,
+          sender_phone: senderPhone || "",
+          receiver_name: signerMail[i]?.Name || "",
+          receiver_email: signerMail[i].Email,
+          receiver_phone: signerMail[i]?.Phone || "",
+          expiry_date: localExpireDate,
+          company_name: orgName,
+          signing_url: signPdf
+        };
+        replaceVar = replaceMailVaribles(
+          customizeMail.subject,
+          htmlReqBody,
+          variables
+        );
+      } else if (defaultMail) {
+        const mailBody = defaultMail?.body;
+        const mailSubject = defaultMail.subject;
+        const replacedRequestBody = mailBody.replace(/"/g, "'");
+        const htmlReqBody =
+          "<html><head><meta http-equiv='Content-Type' content='text/html; charset=UTF-8' /></head><body>" +
+          replacedRequestBody +
+          "</body> </html>";
+        const variables = {
+          document_title: documentName,
+          note: pdfDetails?.[0]?.Note,
+          sender_name: senderName,
+          sender_mail: senderEmail,
+          sender_phone: senderPhone || "",
+          receiver_name: signerMail[i]?.Name || "",
+          receiver_email: signerMail[i].Email,
+          receiver_phone: signerMail[i]?.Phone || "",
+          expiry_date: localExpireDate,
+          company_name: orgName,
+          signing_url: signPdf
+        };
+        replaceVar = replaceMailVaribles(mailSubject, htmlReqBody, variables);
+      }
+      const mailparam = {
+        senderName: senderName,
+        note: pdfDetails?.[0]?.Note || "",
+        senderMail: senderEmail,
+        title: documentName,
+        organization: orgName,
+        localExpireDate: localExpireDate,
+        signingUrl: signPdf
+      };
+      let params = {
+        extUserId: owner?.objectId,
+        recipient: signerMail[i].Email,
+        subject: replaceVar?.subject
+          ? replaceVar?.subject
+          : mailTemplate(mailparam).subject,
+        replyto: senderEmail,
+        from: senderEmail,
+        html: replaceVar?.body ? replaceVar?.body : mailTemplate(mailparam).body
+      };
+
+      sendMail = await axios.post(url, params, { headers: headers });
+    } catch (error) {
+      console.log("error", error);
+    }
+  }
+  if (sendMail?.data?.result?.status === "success") {
+    const sessiontoken = localStorage.getItem("accesstoken");
+    if (pdfDetails[0]?.objectId && sessiontoken) {
+      try {
+        let data;
+        if (customizeMail && isCustomize) {
+          data = {
+            RequestBody: customizeMail?.body,
+            RequestSubject: customizeMail.subject,
+            SendMail: true
+          };
+        } else if (defaultMail?.body && defaultMail?.subject) {
+          data = {
+            RequestBody: defaultMail?.body,
+            RequestSubject: defaultMail?.subject,
+            SendMail: true
+          };
+        } else {
+          data = { SendMail: true };
+        }
+        try {
+          await axios.put(
+            `${localStorage.getItem("baseUrl")}classes/contracts_Document/${
+              pdfDetails[0]?.objectId
+            }`,
+            data,
+            {
+              headers: {
+                "Content-Type": "application/json",
+                "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
+                "X-Parse-Session-Token": sessiontoken
+              }
+            }
+          );
+        } catch (err) {
+          console.log("axois err ", err);
+        }
+      } catch (e) {
+        console.log("error", e);
+      }
+    }
+    return { status: "success" };
+  } else {
+    return { status: sendMail?.data?.result?.status };
+  }
+};
+/**
+ * Converts a JPEG/JPG File/Blob into a PNG File.
+ *
+ * @param {string} base64Image  - A data-URL (e.g. "data:image/jpeg;base64,…")
+ * @param {string} filename     - Desired filename (e.g. "input").
+ * @returns {Promise<File>}     - A promise that resolves with a new PNG File.
+ */
+export function convertJpegToPng(base64Image, filename) {
+  const arr = base64Image.split(",");
+  const mimeMatch = arr[0].match(/:(.*?);/);
+  if (!mimeMatch) throw new Error("Invalid dataURL");
+  const mime = mimeMatch[1];
+  const type = mime.split("/")[1];
+  if (type === "png") {
+    return base64Image;
+  } else {
+    const bstr = atob(arr[1]);
+    let n = bstr.length;
+    const u8arr = new Uint8Array(n);
+    while (n--) u8arr[n] = bstr.charCodeAt(n);
+    const inputFile = new File([u8arr], `${filename}.${type}`, { type: mime });
+    return new Promise((resolve, reject) => {
+      // ensure it’s JPEG/JPG (you can remove this check if not needed)
+      if (!/image\/jpe?g/.test(inputFile.type)) {
+        return reject(new Error("Input must be a JPEG or JPG image"));
+      }
+
+      // Read the file as a data URL
+      const reader = new FileReader();
+      reader.onerror = () => reject(new Error("Failed to read the file"));
+      reader.onload = () => {
+        const img = new Image();
+        img.onerror = () => reject(new Error("Failed to load image"));
+        img.onload = () => {
+          // draw image onto a canvas
+          const canvas = document.createElement("canvas");
+          canvas.width = img.width;
+          canvas.height = img.height;
+          const ctx = canvas.getContext("2d");
+          ctx.drawImage(img, 0, 0);
+
+          // directly get PNG as base64 data URL
+          try {
+            const pngDataUrl = canvas.toDataURL("image/png");
+            resolve(pngDataUrl);
+          } catch (err) {
+            reject(new Error("Failed to convert canvas to PNG"));
+          }
+        };
+        img.src = reader.result;
+      };
+      reader.readAsDataURL(inputFile);
+    });
+  }
+}
+//function is used to get assigned signer's email
+export const getSignerEmail = (data, signers) => {
+  const getEmail =
+    signers?.length > 0 &&
+    signers.find((x) => x.objectId === data.signerObjId)?.Email;
+  return getEmail;
+};
+
+//function is used to delete widgets
+export const handleDeleteWidget = (key, Id, pageNumber, signerPos) => {
+  const updateData = [];
+
+  const filterSignerPos = signerPos.filter((data) => data.Id === Id);
+
+  if (filterSignerPos.length > 0) {
+    const getPlaceHolder = filterSignerPos[0].placeHolder;
+
+    const getPageNumer = getPlaceHolder.filter(
+      (data) => data.pageNumber === pageNumber
+    );
+
+    if (getPageNumer.length > 0) {
+      const getXYdata = getPageNumer[0].pos.filter((data) => data.key !== key);
+
+      if (getXYdata.length > 0) {
+        updateData.push(getXYdata);
+        const newUpdatePos = getPlaceHolder.map((obj) => {
+          if (obj.pageNumber === pageNumber) {
+            return { ...obj, pos: updateData[0] };
+          }
+          return obj;
+        });
+
+        const newUpdateSigner = signerPos.map((obj) => {
+          if (obj.Id === Id) {
+            return { ...obj, placeHolder: newUpdatePos };
+          }
+          return obj;
+        });
+        return newUpdateSigner;
+      } else {
+        const getRemainPage = filterSignerPos[0].placeHolder.filter(
+          (data) => data.pageNumber !== pageNumber
+        );
+        //condition to check placeholder length is greater than 1 do not need to remove whole placeholder
+        //array only resove particular widgets
+        if (getRemainPage && getRemainPage.length > 0) {
+          const newUpdatePos = filterSignerPos.map((obj) => {
+            if (obj.Id === Id) {
+              return { ...obj, placeHolder: getRemainPage };
+            }
+            return obj;
+          });
+          let signerupdate = [];
+          signerupdate = signerPos.filter((data) => data.Id !== Id);
+          signerupdate.push(newUpdatePos[0]);
+
+          return signerupdate;
+        } else {
+          const updatedData = signerPos
+            .map((item) => {
+              if (item.Id === Id && item?.Role === "prefill") {
+                return null; // mark this item to remove
+              }
+              if (item.Id === Id) {
+                const updatedItem = { ...item };
+                delete updatedItem.placeHolder;
+                return updatedItem;
+              }
+              return item;
+            })
+            .filter(Boolean); // remove nulls (deleted items)
+
+          return updatedData;
+        }
+      }
+    }
+  }
+};

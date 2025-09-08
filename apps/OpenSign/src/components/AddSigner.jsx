@@ -49,7 +49,7 @@ const AddSigner = (props) => {
     e.preventDefault();
     e.stopPropagation();
     if (!emailRegex.test(email)) {
-      alert("Please enter a valid email address.");
+      alert(t("valid-email-alert"));
     } else {
       setIsLoader(true);
       if (localStorage.getItem("TenantId")) {

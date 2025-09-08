@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Parse from "parse";
-import Title from "./Title";
 import Loader from "../primitives/Loader";
 import {
   copytoData,
@@ -72,7 +71,7 @@ const AddUser = (props) => {
     e.preventDefault();
     e.stopPropagation();
     if (!emailRegex.test(formdata.email)) {
-      alert("Please enter a valid email address.");
+      alert(t("valid-email-alert"));
     } else {
       const localUser = JSON.parse(localStorage.getItem("Extand_Class"))?.[0];
       setIsFormLoader(true);
@@ -100,7 +99,6 @@ const AddUser = (props) => {
             };
             const res = await Parse.Cloud.run("adduser", params);
             const parseData = JSON.parse(JSON.stringify(res));
-            console.log("parseData ", parseData);
             if (props.closePopup) {
               props.closePopup();
             }
@@ -155,7 +153,6 @@ const AddUser = (props) => {
   };
   return (
     <div className="shadow-md rounded-box my-[1px] p-3 bg-base-100 relative">
-      <Title title={t("add-user")} />
       {isFormLoader && (
         <div className="absolute w-full h-full inset-0 flex justify-center items-center bg-base-content/30 z-50">
           <Loader />
@@ -166,7 +163,7 @@ const AddUser = (props) => {
                       <div className="mb-3">
                         <label
                           htmlFor="name"
-                          className="block text-xs text-gray-700 font-semibold"
+                          className="block text-xs font-semibold"
                         >
                           {t("name")}
                           <span className="text-[red] text-[13px]"> *</span>
@@ -187,7 +184,7 @@ const AddUser = (props) => {
                       <div className="mb-3">
                         <label
                           htmlFor="email"
-                          className="block text-xs text-gray-700 font-semibold"
+                          className="block text-xs font-semibold"
                         >
                           {t("email")}
                           <span className="text-[red] text-[13px]"> *</span>
@@ -206,7 +203,7 @@ const AddUser = (props) => {
                         />
                       </div>
                       <div className="mb-3">
-                        <label className="block text-xs text-gray-700 font-semibold">
+                        <label className="block text-xs font-semibold">
                           {t("password")}
                         </label>
                         <div className="flex justify-between items-center op-input op-input-bordered op-input-sm text-base-content w-full h-full text-[13px]">
@@ -223,7 +220,7 @@ const AddUser = (props) => {
                       <div className="mb-3">
                         <label
                           htmlFor="phone"
-                          className="block text-xs text-gray-700 font-semibold"
+                          className="block text-xs font-semibold"
                         >
                           {t("phone")}
                           {/* <span className="text-[red] text-[13px]"> *</span> */}
@@ -240,7 +237,7 @@ const AddUser = (props) => {
                       <div className="mb-3">
                         <label
                           htmlFor="phone"
-                          className="block text-xs text-gray-700 font-semibold"
+                          className="block text-xs font-semibold"
                         >
                           {t("Role")}
                           <span className="text-[red] text-[13px]"> *</span>

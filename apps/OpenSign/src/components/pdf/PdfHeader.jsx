@@ -23,9 +23,6 @@ import { maxFileSize } from "../../constant/const";
 
 function Header(props) {
   const { t } = useTranslation();
-  const filterPrefill =
-    props?.signerPos &&
-    props?.signerPos?.filter((data) => data.Role !== "prefill");
   const isMobile = window.innerWidth < 767;
   const [isDownloading, setIsDownloading] = useState("");
   const [isDeletePage, setIsDeletePage] = useState(false);
@@ -71,14 +68,13 @@ function Header(props) {
   const handleFileUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) {
-      alert("Please upload a valid PDF file.");
+      alert(t("please-select-pdf"));
       return;
     }
     if (!file.type.includes("pdf")) {
-      alert("Only PDF files are allowed.");
+      alert(t("only-pdf-allowed"));
       return;
     }
-
     const mb = Math.round(file?.size / Math.pow(1024, 2));
     if (mb > maxFileSize) {
       alert(`${t("file-alert-1")} ${maxFileSize} MB`);
@@ -108,18 +104,18 @@ function Header(props) {
                   // Upload the file to Parse Server
                 } catch (err) {
                   console.error("Incorrect password or decryption failed", err);
-                  alert("Incorrect password or decryption failed.");
+                  alert(t("incorrect-password-or-decryption-failed"));
                 }
               } else {
-                alert("Please provided Password.");
+                alert(t("provide-password"));
               }
             } else {
               console.log("Err ", err);
-              alert("error while uploading pdf.");
+              alert(t("error-uploading-pdf"));
             }
           }
         } else {
-          alert("error while uploading pdf.");
+          alert(t("error-uploading-pdf"));
         }
       }
       const uploadedPdfDoc = await PDFDocument.load(uploadedPdfBytes, {
@@ -162,6 +158,21 @@ function Header(props) {
     }
     setIsReorderModal(false);
   };
+
+  const handleDownloadDoc = async () => {
+    await handleDownloadPdf(
+      props?.pdfDetails,
+      setIsDownloading,
+      props.pdfBase64
+    );
+  };
+  const handleDownloadBtn = async () => {
+    if (props?.isCompleted) {
+      props?.setIsDownloadModal(true);
+    } else {
+      await handleDownloadDoc();
+    }
+  };
   return (
     <div className="flex py-[5px]">
       {isMobile && props?.isShowHeader ? (
@@ -201,17 +212,7 @@ function Header(props) {
                   >
                     <DropdownMenu.Item
                       className="DropdownMenuItem"
-                      onClick={() => {
-                        if (props?.isCompleted) {
-                          props?.setIsDownloadModal(true);
-                        } else {
-                          handleDownloadPdf(
-                            props?.pdfDetails,
-                            setIsDownloading,
-                            props.pdfBase64
-                          );
-                        }
-                      }}
+                      onClick={() => handleDownloadBtn()}
                     >
                       <div className="flex flex-row">
                         <i
@@ -290,7 +291,7 @@ function Header(props) {
                       <div
                         onClick={() => {
                           if (!props?.isMailSend) {
-                            props?.alertSendEmail();
+                            props?.handleSaveDoc();
                           }
                         }}
                         className={`${
@@ -348,13 +349,7 @@ function Header(props) {
                           )}
                           <DropdownMenu.Item
                             className="DropdownMenuItem"
-                            onClick={() =>
-                              handleDownloadPdf(
-                                props?.pdfDetails,
-                                setIsDownloading,
-                                props.pdfBase64
-                              )
-                            }
+                            onClick={() => handleDownloadDoc()}
                           >
                             <div className="flex flex-row">
                               <i
@@ -474,42 +469,21 @@ function Header(props) {
           />
           {props?.isPlaceholder ? (
             <>
-              <div className="flex mx-[100px] lg:mx-0 order-last lg:order-none">
-                {!props?.isMailSend &&
-                  props?.signersdata.length > 0 &&
-                  props?.signersdata.length !== filterPrefill.length && (
-                    <div>
-                      {filterPrefill.length === 0 ? (
-                        <span className="text-[13px] text-[#f5405e]">
-                          {t("add")}{" "}
-                          {props?.signersdata.length - filterPrefill.length}{" "}
-                          {t("recipients")} {t("widgets-name.signature")}
-                        </span>
-                      ) : (
-                        <span className="text-[13px] text-[#f5405e]">
-                          {t("add")}{" "}
-                          {props?.signersdata.length - filterPrefill.length}{" "}
-                          {t("more")}
-                          {t("recipients")} {t("widgets-name.signature")}
-                        </span>
-                      )}
-                    </div>
-                  )}
-              </div>
+              <div className="flex mx-[100px] lg:mx-0 order-last lg:order-none"></div>
               <div className="flex">
                 {props?.setIsEditTemplate && (
                   <button
                     onClick={() => props?.setIsEditTemplate(true)}
                     className="outline-none border-none text-center mr-[3px]"
                   >
-                    <i className="fa-light fa-gear fa-lg"></i>
+                    <i className="fa-light fa-gear fa-lg text-base-content"></i>
                   </button>
                 )}
                 {enabledBackBtn && (
                   <button
                     onClick={() => window.history.go(-2)}
                     type="button"
-                    className="op-btn op-btn-ghost op-btn-sm mr-[3px]"
+                    className="op-btn op-btn-ghost text-base-content op-btn-sm mr-[3px]"
                   >
                     {t("back")}
                   </button>
@@ -518,7 +492,7 @@ function Header(props) {
                   disabled={props?.isMailSend && true}
                   data-tut="headerArea"
                   className="op-btn op-btn-primary op-btn-sm mr-[3px]"
-                  onClick={() => props?.alertSendEmail()}
+                  onClick={() => props?.handleSaveDoc()}
                 >
                   {props?.completeBtnTitle
                     ? props?.completeBtnTitle
@@ -565,17 +539,7 @@ function Header(props) {
                 <button
                   type="button"
                   className="op-btn op-btn-primary op-btn-sm mr-[3px] shadow"
-                  onClick={() => {
-                    if (props?.isCompleted) {
-                      props?.setIsDownloadModal(true);
-                    } else {
-                      handleDownloadPdf(
-                        props?.pdfDetails,
-                        setIsDownloading,
-                        props.pdfBase64
-                      );
-                    }
-                  }}
+                  onClick={() => handleDownloadBtn()}
                 >
                   <i
                     className="fa-light fa-download py-[3px]"
@@ -590,15 +554,9 @@ function Header(props) {
                   <>
                     {props?.templateId && (
                       <button
-                        onClick={() =>
-                          handleDownloadPdf(
-                            props?.pdfDetails,
-                            setIsDownloading,
-                            props.pdfBase64
-                          )
-                        }
+                        onClick={() => handleDownloadDoc()}
                         type="button"
-                        className="op-btn op-btn-ghost op-btn-sm mr-[3px]"
+                        className="op-btn op-btn-ghost text-base-content op-btn-sm mr-[3px]"
                       >
                         <span className="hidden lg:block">{t("download")}</span>
                       </button>
@@ -614,14 +572,8 @@ function Header(props) {
                     {!props?.templateId && (
                       <button
                         type="button"
-                        className="op-btn op-btn-ghost op-btn-sm mr-[3px]"
-                        onClick={() =>
-                          handleDownloadPdf(
-                            props?.pdfDetails,
-                            setIsDownloading,
-                            props.pdfBase64
-                          )
-                        }
+                        className="op-btn op-btn-ghost text-base-content op-btn-sm mr-[3px]"
+                        onClick={() => handleDownloadDoc()}
                       >
                         <i className="fa-light fa-arrow-down font-semibold lg:hidden"></i>
                         <span className="hidden lg:block">{t("download")}</span>
@@ -699,7 +651,7 @@ function Header(props) {
               <button
                 onClick={() => window.history.go(-2)}
                 type="button"
-                className="op-btn op-btn-ghost op-btn-sm mr-[3px]"
+                className="op-btn op-btn-ghost text-base-content op-btn-sm mr-[3px]"
               >
                 {t("back")}
               </button>
@@ -744,8 +696,8 @@ function Header(props) {
         handleClose={() => setIsDeletePage(false)}
       >
         <div className="h-[100%] p-[20px]">
-          <p className="font-medium">{t("delete-alert-2")}</p>
-          <p className="pt-3">{t("delete-note")}</p>
+          <p className="font-medium text-base-content">{t("delete-alert-2")}</p>
+          <p className="pt-3 text-base-content">{t("delete-note")}</p>
           <div className="h-[1px] bg-[#9f9f9f] w-full my-[15px]"></div>
           <button
             onClick={() => handleDetelePage()}
@@ -757,7 +709,7 @@ function Header(props) {
           <button
             onClick={() => setIsDeletePage(false)}
             type="button"
-            className="op-btn op-btn-ghost"
+            className="op-btn op-btn-ghost text-base-content"
           >
             {t("no")}
           </button>

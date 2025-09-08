@@ -4,7 +4,6 @@ import RecipientList from "./RecipientList";
 import { useDrag } from "react-dnd";
 import WidgetList from "./WidgetList";
 import {
-  color,
   isMobile,
   radioButtonWidget,
   textInputWidget,
@@ -88,12 +87,12 @@ function WidgetComponent(props) {
       signature,
       stamp,
       initials,
+      textInput,
       name,
       jobTitle,
       company,
       date,
       text,
-      textInput,
       cells,
       checkbox,
       dropdown,
@@ -110,6 +109,7 @@ function WidgetComponent(props) {
     // eslint-disable-next-line
   }, []);
 
+  //allow only (signature,stamp,initials,text,name, job title, company,email) widget when isAllowModification true and user have session token
   const modifiedWidgets = widget.filter(
     (data) =>
       ![
@@ -121,6 +121,7 @@ function WidgetComponent(props) {
         "checkbox"
       ].includes(data.type)
   );
+  //allow only (signature,stamp,initials,text) widget when isAllowModification true and user does not have session token
   const unlogedInUserWidgets = widget.filter(
     (data) =>
       ![
@@ -136,25 +137,37 @@ function WidgetComponent(props) {
         "company"
       ].includes(data.type)
   );
-  const filterWidgets = widget.filter(
+  const selfSignWidgets = widget.filter(
     (data) =>
-      !["dropdown", radioButtonWidget, textInputWidget].includes(
-        data.type
-      )
+      !["dropdown", radioButtonWidget, textInputWidget].includes(data.type)
   );
-  const textWidgetData = widget.filter((data) => data.type !== textWidget);
-  const updateWidgets = props.isSignYourself
-    ? filterWidgets
-    : props.isTemplateFlow
-      ? textWidgetData
-      : props.isAlllowModify
-        ? userInformation
-          ? modifiedWidgets
-          : unlogedInUserWidgets
-        : widget;
-
+  //if user select prefill role then allow only date,image,text,checkbox,radio,dropdownAdd commentMore actions
+  //dropdown widget should only be show in template flow
+  const prefillAllowWidgets = widget.filter((data) =>
+    (props.isPrefillDropdown ? ["dropdown"] : [])
+      .concat([radioButtonWidget, textWidget, "date", "image", "checkbox"])
+      .includes(data.type)
+  );
+  //function to show widget on the base of conditionAdd commentMore actions
+  const handleWidgetType = () => {
+    if (props.isSignYourself) {
+      return selfSignWidgets;
+    } else if (props?.roleName === "prefill") {
+      return prefillAllowWidgets;
+    } else if (props.isAlllowModify) {
+      if (userInformation) {
+        return modifiedWidgets;
+      } else {
+        return unlogedInUserWidgets;
+      }
+    } else if (props?.roleName !== "prefill") {
+      return widget.filter((data) => ![textWidget].includes(data.type));
+    }
+  };
   const handleSelectRecipient = () => {
-    if (
+    if (props?.roleName === "prefill") {
+      return "Prefill by owner";
+    } else if (
       props.signersdata[props.isSelectListId]?.Email ||
       props.signersdata[props.isSelectListId]?.Role
     ) {
@@ -180,9 +193,10 @@ function WidgetComponent(props) {
                     className="w-full op-select op-select-bordered  pointer-events-none"
                     value={handleSelectRecipient()}
                     style={{
-                      backgroundColor: props.blockColor
-                        ? props.blockColor
-                        : color[0]
+                      backgroundColor:
+                        props.roleName === "prefill"
+                          ? "#edf6fc"
+                          : props?.blockColor || "#edf6fc"
                     }}
                   >
                     <option value={handleSelectRecipient()}>
@@ -221,7 +235,7 @@ function WidgetComponent(props) {
             >
               <div className="flex whitespace-nowrap overflow-x-scroll pt-[10px] pb-[5px] pr-[5px]">
                 <WidgetList
-                  updateWidgets={updateWidgets}
+                  updateWidgets={handleWidgetType}
                   handleDivClick={props.handleDivClick}
                   handleMouseLeave={props.handleMouseLeave}
                   signRef={signRef}
@@ -240,12 +254,18 @@ function WidgetComponent(props) {
           } hidden md:block h-full bg-base-100`}
         >
           <div className="mx-2 pr-2 pt-2 pb-1 text-[15px] text-base-content font-semibold border-b-[1px] border-base-300">
-            <span>{t("fields")}</span>
+            <span>
+              {t("widgets")}
+              {props?.isSignYourself && (
+                <sup onClick={() => props.setIsTour && props.setIsTour(true)}>
+                  <i className="ml-1 cursor-pointer fa-light fa-question rounded-full border-[1px] border-base-content text-[11px] py-[1px] px-[3px]"></i>
+                </sup>
+              )}
+            </span>
           </div>
-
           <div className="p-[15px] flex flex-col pt-4" data-tut="addWidgets">
             <WidgetList
-              updateWidgets={updateWidgets}
+              updateWidgets={handleWidgetType}
               handleDivClick={props.handleDivClick}
               handleMouseLeave={props.handleMouseLeave}
               signRef={signRef}
@@ -260,7 +280,7 @@ function WidgetComponent(props) {
           isOpen={isSignersModal}
           handleClose={handleModal}
         >
-          {props.signersdata.length > 0 ? (
+          {props.signersdata.length > 0 || props.prefillSigner.length > 0 ? (
             <div className="max-h-[600px] overflow-auto pb-1">
               <RecipientList
                 signerPos={props.signerPos}
@@ -278,6 +298,7 @@ function WidgetComponent(props) {
                 setBlockColor={props.setBlockColor}
                 uniqueId={props.uniqueId}
                 setSignerPos={props.setSignerPos}
+                prefillSigner={props.prefillSigner}
               />
             </div>
           ) : (

@@ -5,8 +5,6 @@ import Parse from "parse";
 import Confetti from "react-confetti";
 import axios from "axios";
 import RenderAllPdfPage from "../components/pdf/RenderAllPdfPage";
-import { DndProvider } from "react-dnd";
-import { HTML5Backend } from "react-dnd-html5-backend";
 import { useDrop } from "react-dnd";
 import EmailComponent from "../components/pdf/EmailComponent";
 import WidgetComponent from "../components/pdf/WidgetComponent";
@@ -14,7 +12,7 @@ import {
   getTenantDetails,
   contractDocument,
   embedDocId,
-  multiSignEmbed,
+  embedWidgetsToDoc,
   calculateInitialWidthHeight,
   defaultWidthHeight,
   contractUsers,
@@ -47,12 +45,11 @@ import Signedby from "../components/pdf/Signedby";
 import Header from "../components/pdf/PdfHeader";
 import RenderPdf from "../components/pdf/RenderPdf";
 import PlaceholderCopy from "../components/pdf/PlaceholderCopy";
-import Title from "../components/Title";
 import DropdownWidgetOption from "../components/pdf/DropdownWidgetOption";
 import { useDispatch, useSelector } from "react-redux";
 import TextFontSetting from "../components/pdf/TextFontSetting";
 import VerifyEmail from "../components/pdf/VerifyEmail";
-import PdfZoom from "../components/pdf/PdfZoom";
+import PdfTools from "../components/pdf/PdfTools";
 import { useTranslation } from "react-i18next";
 import RotateAlert from "../components/RotateAlert";
 import DownloadPdfZip from "../primitives/DownloadPdfZip";
@@ -77,9 +74,6 @@ function SignYourSelf() {
   const { docId } = useParams();
   const dispatch = useDispatch();
   const isShowModal = useSelector((state) => state.widget.isShowModal);
-  const saveSignCheckbox = useSelector(
-    (state) => state.widget.saveSignCheckbox
-  );
   const appName =
     "OpenSign™";
   const divRef = useRef(null);
@@ -127,7 +121,7 @@ function SignYourSelf() {
   const openCellsSettingModal = () => setIsCellsSetting(true);
   const [pdfLoad, setPdfLoad] = useState(false);
   const [isAlert, setIsAlert] = useState({ isShow: false, alertMessage: "" });
-  const [isDontShow, setIsDontShow] = useState(false);
+  const [isDontShow, setIsDontShow] = useState(true);
   const [isCompleted, setIsCompleted] = useState(false);
   const [isCelebration, setIsCelebration] = useState(false);
   const [pdfArrayBuffer, setPdfArrayBuffer] = useState("");
@@ -135,7 +129,7 @@ function SignYourSelf() {
   const [isVerifyModal, setIsVerifyModal] = useState(false);
   const [otp, setOtp] = useState("");
   const [zoomPercent, setZoomPercent] = useState(0);
-  const isHeader = useSelector((state) => state.showHeader);
+  const isSidebar = useSelector((state) => state.sidebar.isOpen);
   const [scale, setScale] = useState(1);
   const [pdfBase64Url, setPdfBase64Url] = useState("");
   const [showRotateAlert, setShowRotateAlert] = useState({
@@ -198,7 +192,7 @@ function SignYourSelf() {
     const timer = setTimeout(updateSize, 100); // match the transition duration
     return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [divRef.current, isHeader]);
+  }, [divRef.current, isSidebar]);
 
   //function for get document details for perticular signer with signer'object id
   const getDocumentDetails = async (showComplete) => {
@@ -268,13 +262,14 @@ function SignYourSelf() {
       if (defaultSignRes?.status === "success") {
         dispatch(
           setSaveSignCheckbox({
-            ...saveSignCheckbox,
             isVisible: true,
             signId: defaultSignRes?.res?.id
           })
         );
         dispatch(setDefaultSignImg(defaultSignRes?.res?.defaultSignature));
         dispatch(setMyInitial(defaultSignRes?.res?.defaultInitial));
+      } else {
+        dispatch(setSaveSignCheckbox({ isVisible: true }));
       }
       const contractUsersRes = await contractUsers();
       if (contractUsersRes === "Error: Something went wrong!") {
@@ -283,20 +278,14 @@ function SignYourSelf() {
       } else if (contractUsersRes[0] && contractUsersRes.length > 0) {
         setContractName("_Users");
         setSignerUserId(contractUsersRes[0].objectId);
-        dispatch(setSaveSignCheckbox({ ...saveSignCheckbox, isVisible: true }));
-
-        const tourstatuss =
-          contractUsersRes[0].TourStatus && contractUsersRes[0].TourStatus;
-        if (tourstatuss && tourstatuss.length > 0 && !isCompleted) {
-          setTourStatus(tourstatuss);
-          const checkTourRecipients = tourstatuss.filter(
-            (data) => data.signyourself
-          );
-          if (checkTourRecipients && checkTourRecipients.length > 0) {
-            setCheckTourStatus(checkTourRecipients[0].signyourself);
-          }
+        const tourstatus = contractUsersRes?.[0]?.TourStatus || [];
+        if (tourstatus && tourstatus.length > 0 && !isCompleted) {
+          setTourStatus(tourstatus);
+          const tour = tourstatus?.some((data) => data.signyourself) || false;
+          setSignTour(!tour);
+          setCheckTourStatus(tour);
         } else {
-          setCheckTourStatus(false);
+          setSignTour(true);
         }
         setIsLoading({ isLoad: false });
       } else if (contractUsersRes.length === 0) {
@@ -304,28 +293,19 @@ function SignYourSelf() {
         if (contractContactBook && contractContactBook.length > 0) {
           setContractName("_Contactbook");
           setSignerUserId(contractContactBook[0].objectId);
-          const tourstatuss =
-            contractContactBook[0].TourStatus &&
-            contractContactBook[0].TourStatus;
-
-          if (tourstatuss && tourstatuss.length > 0 && !isCompleted) {
-            setTourStatus(tourstatuss);
-            const checkTourRecipients = tourstatuss.filter(
-              (data) => data.signyourself
-            );
-            if (checkTourRecipients && checkTourRecipients.length > 0) {
-              setCheckTourStatus(checkTourRecipients[0].signyourself);
-            }
+          const tourstatus = contractContactBook?.[0]?.TourStatus || [];
+          if (tourstatus && tourstatus.length > 0 && !isCompleted) {
+            setTourStatus(tourstatus);
+            const tour = tourstatus?.some((data) => data.signyourself) || false;
+            setSignTour(!tour);
+            setCheckTourStatus(tour);
           } else {
-            setCheckTourStatus(true);
+            setSignTour(true);
           }
         } else {
           setHandleError(t("no-data-avaliable"));
         }
-        const loadObj = {
-          isLoad: false
-        };
-        setIsLoading(loadObj);
+        setIsLoading({ isLoad: false });
       }
     } catch (err) {
       console.log("Error: error in getDocumentDetails", err);
@@ -351,7 +331,6 @@ function SignYourSelf() {
         return "";
     }
   };
-
   //function for setting position after drop signature button over pdf
   const addPositionOfSignature = (item, monitor) => {
     setCurrWidgetsDetails({});
@@ -398,7 +377,12 @@ function SignYourSelf() {
         scale: containerScale,
         Width: getWidth,
         Height: getHeight,
-        options: addWidgetSelfsignOptions(dragTypeValue, getWidgetValue, owner)
+        options: addWidgetSelfsignOptions(
+          dragTypeValue,
+          getWidgetValue,
+          owner,
+          xyPosition
+        )
       };
       dropData.push(dropObj);
     } else {
@@ -427,7 +411,12 @@ function SignYourSelf() {
         type: dragTypeValue,
         Width: getWidth / (containerScale * scale),
         Height: getHeight / (containerScale * scale),
-        options: addWidgetSelfsignOptions(dragTypeValue, getWidgetValue, owner),
+        options: addWidgetSelfsignOptions(
+          dragTypeValue,
+          getWidgetValue,
+          owner,
+          xyPosition
+        ),
         scale: containerScale
       };
       dropData.push(dropObj);
@@ -506,7 +495,10 @@ function SignYourSelf() {
   };
   useEffect(() => {
     const timer = setTimeout(() => {
-      if (!pdfDetails?.[0]?.IsCompleted) {
+      if (
+        !pdfDetails?.[0]?.IsCompleted &&
+        pdfDetails?.[0]?.CreatedBy?.objectId === jsonSender?.objectId
+      ) {
         autosavedetails();
       }
     }, 2000);
@@ -647,7 +639,7 @@ function SignYourSelf() {
               await embedDocId(pdfOriginalWH, pdfDoc, documentId);
             }
             //embed all widgets in document
-            const pdfBytes = await multiSignEmbed(
+            const pdfBytes = await embedWidgetsToDoc(
               xyPosition,
               pdfDoc,
               isSignYourSelfFlow,
@@ -839,7 +831,7 @@ function SignYourSelf() {
     setSignBtnPosition([xySignature]);
   };
   //function for delete signature block
-  const handleDeleteSign = (key) => {
+  const handleDeleteWidget = (key) => {
     setCurrWidgetsDetails({});
     const updateResizeData = [];
     let filterData = xyPosition[index].pos.filter((data) => data.key !== key);
@@ -876,6 +868,7 @@ function SignYourSelf() {
       content: () => (
         <TourContentWithBtn
           message={t("tour-mssg.signyour-self-1")}
+          isDontShowCheckbox={!checkTourStatus}
           isChecked={handleDontShow}
         />
       ),
@@ -887,6 +880,19 @@ function SignYourSelf() {
       content: () => (
         <TourContentWithBtn
           message={t("tour-mssg.signyour-self-2")}
+          isDontShowCheckbox={!checkTourStatus}
+          isChecked={handleDontShow}
+        />
+      ),
+      position: "top",
+      style: { fontSize: "13px" }
+    },
+    {
+      selector: '[data-tut="pdftools"]',
+      content: () => (
+        <TourContentWithBtn
+          message={t("pdf-tools-tour")}
+          isDontShowCheckbox={!checkTourStatus}
           isChecked={handleDontShow}
         />
       ),
@@ -898,7 +904,8 @@ function SignYourSelf() {
   //function for update TourStatus
   const closeTour = async () => {
     setSignTour(false);
-    if (isDontShow) {
+    setIsDontShow(true);
+    if (!checkTourStatus && isDontShow) {
       let updatedTourStatus = [];
       if (tourStatus.length > 0) {
         updatedTourStatus = [...tourStatus];
@@ -1046,12 +1053,18 @@ function SignYourSelf() {
 
   const setCellCount = (key, newCount) => {
     setXyPosition((prev) => {
-      const getPageNumer = prev.filter((data) => data.pageNumber === pageNumber);
+      const getPageNumer = prev.filter(
+        (data) => data.pageNumber === pageNumber
+      );
       if (getPageNumer.length > 0) {
         const updatePos = getPageNumer[0].pos.map((p) =>
-          p.key === key ? { ...p, options: { ...p.options, cellCount: newCount } } : p
+          p.key === key
+            ? { ...p, options: { ...p.options, cellCount: newCount } }
+            : p
         );
-        return prev.map((obj, ind) => (ind === index ? { ...obj, pos: updatePos } : obj));
+        return prev.map((obj, ind) =>
+          ind === index ? { ...obj, pos: updatePos } : obj
+        );
       }
       return prev;
     });
@@ -1082,7 +1095,8 @@ function SignYourSelf() {
                 cellCount: count,
                 defaultValue: (defaultdata?.defaultValue || "").slice(0, count),
                 fontSize: newFontSize || position.options?.fontSize || 12,
-                fontColor: newFontColor || position.options?.fontColor || "black"
+                fontColor:
+                  newFontColor || position.options?.fontColor || "black"
               }
             };
           } else {
@@ -1181,22 +1195,13 @@ function SignYourSelf() {
     setShowRotateAlert({ status: false, degree: 0 });
   };
   return (
-    <DndProvider backend={HTML5Backend}>
-      <Title title={"Signyourself"} />
+    <>
       {isLoading.isLoad ? (
         <LoaderWithMsg isLoading={isLoading} />
       ) : handleError ? (
         <HandleError handleError={handleError} />
       ) : (
         <div>
-          {isUiLoading && (
-            <div className="absolute h-[100vh] w-full z-[999] flex flex-col justify-center items-center bg-[#e6f2f2] bg-opacity-80">
-              <Loader />
-              <span style={{ fontSize: "13px", fontWeight: "bold" }}>
-                {t("loader")}
-              </span>
-            </div>
-          )}
           {isCelebration && (
             <div className="relative z-[1000]">
               <Confetti
@@ -1208,6 +1213,12 @@ function SignYourSelf() {
             </div>
           )}
           <div className="relative op-card overflow-hidden flex flex-col md:flex-row justify-between bg-base-300">
+            {isUiLoading && (
+              <div className="absolute h-full w-full z-[999] flex flex-col justify-center items-center bg-[#e6f2f2]/80">
+                <Loader />
+                <span className="text-[13px]">{t("loader")}</span>
+              </div>
+            )}
             {!isEmailVerified && (
               <VerifyEmail
                 isVerifyModal={isVerifyModal}
@@ -1221,18 +1232,14 @@ function SignYourSelf() {
               />
             )}
             {/* this component used for UI interaction and show their functionality */}
-            {pdfLoad && !checkTourStatus && !isCompleted && (
+            {pdfLoad && !isCompleted && (
               <Tour
                 onRequestClose={closeTour}
                 steps={tourConfig}
                 isOpen={signTour}
-                rounded={5}
-                closeWithMask={false}
               />
             )}
-
             {/* this component used to render all pdf pages in left side */}
-
             <RenderAllPdfPage
               allPages={allPages}
               setAllPages={setAllPages}
@@ -1248,8 +1255,8 @@ function SignYourSelf() {
               pdfArrayBuffer={pdfArrayBuffer}
               isMergePdfBtn={!pdfDetails?.[0]?.IsCompleted}
             />
-            <div className=" w-full md:w-[57%] flex mr-4">
-              <PdfZoom
+            <div className="w-full md:w-[57%] flex mr-4">
+              <PdfTools
                 clickOnZoomIn={clickOnZoomIn}
                 clickOnZoomOut={clickOnZoomOut}
                 handleRotationFun={handleRotationFun}
@@ -1277,7 +1284,6 @@ function SignYourSelf() {
                     <p>{isAlert.alertMessage}</p>
                   </div>
                 </ModalUi>
-
                 {/* this modal is used show this document is already sign */}
                 <ModalUi
                   isOpen={showAlreadySignDoc.status}
@@ -1288,7 +1294,7 @@ function SignYourSelf() {
                     <p>{showAlreadySignDoc.mssg}</p>
                     <div className="h-[1px] w-full my-[15px] bg-[#9f9f9f]"></div>
                     <button
-                      className="op-btn op-btn-ghost shadow-md"
+                      className="op-btn op-btn-ghost text-base-content shadow-md"
                       onClick={() => setShowAlreadySignDoc({ status: false })}
                     >
                       {t("close")}
@@ -1367,7 +1373,7 @@ function SignYourSelf() {
                       handleTabDrag={handleTabDrag}
                       handleStop={handleStop}
                       isDragging={isDragging}
-                      handleDeleteSign={handleDeleteSign}
+                      handleDeleteWidget={handleDeleteWidget}
                       pdfDetails={pdfDetails}
                       setIsDragging={setIsDragging}
                       xyPosition={xyPosition}
@@ -1398,6 +1404,7 @@ function SignYourSelf() {
                       setIsResize={setIsResize}
                       divRef={divRef}
                       currWidgetsDetails={currWidgetsDetails}
+                      isShowModal={isShowModal}
                     />
                   )}
                 </div>
@@ -1406,21 +1413,18 @@ function SignYourSelf() {
             <div className="w-full md:w-[23%] bg-base-100 overflow-y-auto hide-scrollbar">
               <div className={`max-h-screen`}>
                 {!isCompleted ? (
-                  <div>
-                    <WidgetComponent
-                      pdfUrl={pdfUrl}
-                      handleDivClick={handleDivClick}
-                      handleMouseLeave={handleMouseLeave}
-                      xyPosition={xyPosition}
-                      isSignYourself={true}
-                      addPositionOfSignature={addPositionOfSignature}
-                      isMailSend={false}
-                    />
-                  </div>
+                  <WidgetComponent
+                    pdfUrl={pdfUrl}
+                    handleDivClick={handleDivClick}
+                    handleMouseLeave={handleMouseLeave}
+                    xyPosition={xyPosition}
+                    isSignYourself={true}
+                    addPositionOfSignature={addPositionOfSignature}
+                    isMailSend={false}
+                    setIsTour={setSignTour}
+                  />
                 ) : (
-                  <div>
-                    <Signedby pdfDetails={pdfDetails[0]} />
-                  </div>
+                  <Signedby pdfDetails={pdfDetails[0]} />
                 )}
               </div>
             </div>
@@ -1481,7 +1485,7 @@ function SignYourSelf() {
         handleSaveFontSize={handleSaveFontSize}
         currWidgetsDetails={currWidgetsDetails}
       />
-    </DndProvider>
+    </>
   );
 }
 

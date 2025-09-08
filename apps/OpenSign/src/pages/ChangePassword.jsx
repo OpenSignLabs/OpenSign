@@ -1,7 +1,6 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import Parse from "parse";
 import { Navigate } from "react-router";
-import Title from "../components/Title";
 import { useTranslation } from "react-i18next";
 
 function ChangePassword() {
@@ -56,7 +55,6 @@ function ChangePassword() {
   }
   return (
     <div className="w-full bg-base-100 text-base-content shadow rounded-box p-2">
-      <Title title="Change Password" />
       <div className="text-xl font-bold border-b-[1px] border-gray-300">
         {t("change-password")}
       </div>

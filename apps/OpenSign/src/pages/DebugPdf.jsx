@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import RenderAllPdfPage from "../components/pdf/RenderAllPdfPage";
-import Title from "../components/Title";
 import RenderDebugPdf from "../components/RenderDebugPdf";
 import { pdfjs } from "react-pdf";
 import ModalUi from "../primitives/ModalUi";
 import Alert from "../primitives/Alert";
 import HandleError from "../primitives/HandleError";
 import { useWindowSize } from "../hook/useWindowSize";
+import { useTranslation } from "react-i18next";
 
 function processDimensions(x, y, width, height) {
   if (width < 0) {
@@ -27,6 +27,7 @@ function processDimensions(x, y, width, height) {
   };
 }
 const DebugPdf = () => {
+  const {t} = useTranslation()
   const { width } = useWindowSize();
   const [pdf, setPdf] = useState("");
   const [isModal, setIsModal] = useState(true);
@@ -215,8 +216,7 @@ const DebugPdf = () => {
   };
   return (
     <div>
-      {copied && <Alert type="success">Copied</Alert>}
-      <Title title={"Debug Pdf"} />
+      {copied && <Alert type="success">{t("copied")}</Alert>}
       {width < 800 ? (
         <HandleError handleError={"Debug PDF only availble for PC"} />
       ) : (

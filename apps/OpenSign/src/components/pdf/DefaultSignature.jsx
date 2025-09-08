@@ -3,43 +3,39 @@ import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
 function DefaultSignature(props) {
   const { t } = useTranslation();
-   const defaultSignImg = useSelector((state) => state.widget.defaultSignImg);
-   const myInitial = useSelector((state) => state.widget.myInitial)
+  const defaultSignImg = useSelector((state) => state.widget.defaultSignImg);
+  const myInitial = useSelector((state) => state.widget.myInitial);
   const tabName = ["my-signature", "my-initials"];
   const [activeTab, setActiveTab] = useState(0);
   const confirmToaddDefaultSign = (type) => {
-    if (!props.isAgree) {
-      props.setIsAgreeTour(true);
-    } else {
-      if (props?.xyPosition.length > 0) {
-        //check signature or initial widgets exist or not for auto signing
-        const getCurrentSignerXY = props?.xyPosition.filter(
-          (data) => data.Id === props.uniqueId
-        );
-        const checkIsSignInitialExist = getCurrentSignerXY?.every(
-          (placeholderObj) =>
-            placeholderObj?.placeHolder?.some((placeholder) =>
-              placeholder?.pos?.some((posItem) => posItem?.type === type)
-            )
-        );
-        if (checkIsSignInitialExist) {
-          props?.setDefaultSignAlert({
-            isShow: true,
-            alertMessage: t("default-sign-alert", { widgetsType: type }),
-            type: type
-          });
-        } else {
-          props?.setDefaultSignAlert({
-            isShow: true,
-            alertMessage: t("defaultSign-alert", { widgetsType: type })
-          });
-        }
+    if (props?.xyPosition.length > 0) {
+      //check signature or initial widgets exist or not for auto signing
+      const getCurrentSignerXY = props?.xyPosition.filter(
+        (data) => data.Id === props.uniqueId
+      );
+      const checkIsSignInitialExist = getCurrentSignerXY?.every(
+        (placeholderObj) =>
+          placeholderObj?.placeHolder?.some((placeholder) =>
+            placeholder?.pos?.some((posItem) => posItem?.type === type)
+          )
+      );
+      if (checkIsSignInitialExist) {
+        props?.setDefaultSignAlert({
+          isShow: true,
+          alertMessage: t("default-sign-alert", { widgetsType: type }),
+          type: type
+        });
       } else {
         props?.setDefaultSignAlert({
           isShow: true,
-          alertMessage: t("please-select-position!")
+          alertMessage: t("defaultSign-alert", { widgetsType: type })
         });
       }
+    } else {
+      props?.setDefaultSignAlert({
+        isShow: true,
+        alertMessage: t("please-select-position!")
+      });
     }
   };
 

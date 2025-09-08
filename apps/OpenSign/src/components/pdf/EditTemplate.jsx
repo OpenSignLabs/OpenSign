@@ -28,6 +28,7 @@ const EditTemplate = ({
   onSuccess,
   setPdfArrayBuffer,
   setPdfBase64Url,
+  isAddYourSelfCheckbox,
 }) => {
   const appName =
     "OpenSign™";
@@ -71,7 +72,7 @@ const EditTemplate = ({
       handleReplaceFileValdition(file);
       // You can handle the file here
     } else {
-      alert("Only pdf files are allowed.");
+      alert(t("only-pdf-allowed"));
       if (inputFileRef.current) inputFileRef.current.value = "";
     }
   };
@@ -181,7 +182,8 @@ const EditTemplate = ({
         localStorage.getItem("TenantId") ||
         template?.ExtUserPtr?.TenantId?.objectId;
       const buffer = atob(uploadPdf.base64);
-      SaveFileSize(buffer.length, pdfUrl, tenantId);
+      const userId = template?.ExtUserPtr?.UserId?.objectId;
+      SaveFileSize(buffer.length, pdfUrl, tenantId, userId);
     }
     const isChecked = formData.SendinOrder === "true" ? true : false;
     const isTourEnabled = formData?.IsTourEnabled === "false" ? false : true;
@@ -286,7 +288,7 @@ const EditTemplate = ({
                   htmlFor="fileUpload"
                   className="cursor-pointer text-center mb-0"
                 >
-                  Browse or drag & drop a new file to replace the existng one
+                  {t("browse-or-drag-to-replace-existing-file")}
                 </label>
               </div>
               <input
@@ -490,10 +492,11 @@ const EditTemplate = ({
                 helptextZindex={50}
                 helpText={t("bcc-help")}
                 isCaptureAllData
+                isAddYourSelfCheckbox={isAddYourSelfCheckbox}
               />
             </div>
             <div className="text-xs mt-2">
-              <label className="block">Redirect Url</label>
+              <label className="block">{t("redirect-url")}</label>
               <input
                 name="RedirectUrl"
                 className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"

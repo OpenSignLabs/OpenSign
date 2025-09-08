@@ -21,6 +21,7 @@ function DropdownWidgetOption(props) {
   const [layout, setLayout] = useState("vertical");
   const statusArr = ["required", "optional"];
   const layoutArr = ["vertical", "horizontal"];
+  const isPrefillExist = props?.roleName === "prefill";
 
   const resetState = () => {
     setDropdownOptionList(["Option-1", "Option-2"]);
@@ -87,7 +88,7 @@ function DropdownWidgetOption(props) {
     const deleteOption = true;
     const addOption = false;
     const getUpdatedOptions = dropdownOptionList.filter(
-      (data, index) => index !== ind
+      (_, index) => index !== ind
     );
     setDropdownOptionList(getUpdatedOptions);
     props.handleSaveWidgetsOptions(
@@ -102,6 +103,14 @@ function DropdownWidgetOption(props) {
   };
 
   const handleSaveOption = () => {
+    if (["checkbox", radioButtonWidget, "dropdown"].includes(props.type)) {
+      const allUnique =
+        new Set(dropdownOptionList).size === dropdownOptionList.length;
+      if (!allUnique) {
+        alert("Please remove duplicate option");
+        return;
+      }
+    }
     const defaultData =
       defaultCheckbox && defaultCheckbox.length > 0
         ? defaultCheckbox
@@ -228,37 +237,40 @@ function DropdownWidgetOption(props) {
                   ></i>
                 </div>
               ))}
-              <i
-                onClick={handleAddInput}
-                className="fa-light fa-square-plus text-[25px] ml-[10px] op-text-primary cursor-pointer"
-              ></i>
+              <div>
+                <i
+                  className="fa-light fa-square-plus text-[25px] ml-[10px] op-text-primary cursor-pointer"
+                  aria-label="Add option"
+                  onClick={handleAddInput}
+                ></i>
+              </div>
             </div>
-            {["dropdown", radioButtonWidget].includes(props.type) && (
-              <>
-                <label className="text-[13px] font-semibold mt-[5px]">
-                  {t("default-value")}
-                </label>
-                <select
-                  onChange={(e) => setDefaultValue(e.target.value)}
-                  className="op-select op-select-bordered op-select-sm focus:outline-none hover:border-base-content w-full text-xs"
-                  name="defaultvalue"
-                  value={defaultValue}
-                  placeholder="select default value"
-                >
-                  <option value="" disabled hidden className="text-[13px]">
-                    {t("select")}...
-                  </option>
-                  {dropdownOptionList.map((data, ind) => {
-                    return (
-                      <option className="text-[13px]" key={ind} value={data}>
-                        {data}
-                      </option>
-                    );
-                  })}
-                </select>
-              </>
-            )}
-            {props.type !== "checkbox" && (
+            {["dropdown", radioButtonWidget].includes(props.type) &&
+              !isPrefillExist && (
+                <>
+                  <label className="text-[13px] font-semibold mt-[5px]">
+                    {t("default-value")}
+                  </label>
+                  <select
+                    value={defaultValue}
+                    onChange={(e) => setDefaultValue(e.target.value)}
+                    className="op-select op-select-bordered op-select-sm focus:outline-none hover:border-base-content w-full text-xs"
+                    name="defaultvalue"
+                  >
+                    <option value="" disabled hidden className="text-[13px]">
+                      {t("select")}...
+                    </option>
+                    {dropdownOptionList.map((data, ind) => {
+                      return (
+                        <option className="text-[13px]" key={ind} value={data}>
+                          {data}
+                        </option>
+                      );
+                    })}
+                  </select>
+                </>
+              )}
+            {props.type !== "checkbox" && !isPrefillExist && (
               <div className="flex flex-row gap-[10px] mt-[0.5rem]">
                 {statusArr.map((data, ind) => (
                   <div
@@ -332,7 +344,7 @@ function DropdownWidgetOption(props) {
               props.type
             ) && (
               <div className="flex flex-row gap-5 my-2 items-center text-center">
-                {props.isShowAdvanceFeature && (
+                {props.isShowAdvanceFeature && !isPrefillExist && (
                   <div className="flex items-center">
                     <input
                       id="isreadonly"
@@ -416,7 +428,7 @@ function DropdownWidgetOption(props) {
           {props.currWidgetsDetails?.options?.values?.length > 0 && (
             <button
               type="submit"
-              className="op-btn op-btn-ghost ml-1"
+              className="op-btn op-btn-ghost text-base-content ml-1"
               onClick={() => {
                 props.handleClose && props.handleClose();
                 resetState();

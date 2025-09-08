@@ -9,7 +9,6 @@ function AgreementContent(props) {
   const h2Style = "text-base-content font-medium text-lg";
   const ulStyle = "list-disc px-4 py-3";
   const handleOnclick = () => {
-    props.setIsAgreeTour(false);
     props.setIsAgree(true);
     props.setIsShowAgreeTerms(false);
     props.showFirstWidget();
@@ -119,7 +118,7 @@ function AgreementContent(props) {
               {t("agrre-button")}
             </button>
             <button
-              className="op-btn op-btn-ghost"
+              className="op-btn op-btn-ghost text-base-content"
               onClick={() => props.setIsShowAgreeTerms(false)}
             >
               {t("close")}

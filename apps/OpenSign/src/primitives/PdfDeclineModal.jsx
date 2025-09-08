@@ -34,7 +34,7 @@ function CustomModal(props) {
       <dialog className="op-modal op-modal-open absolute z-[448]">
         <div className="w-[95%] md:w-[60%] lg:w-[40%] op-modal-box p-0 overflow-y-auto hide-scrollbar text-sm">
           {props?.isLoader && (
-            <div className="absolute h-full w-full flex flex-col justify-center items-center z-[999] bg-[#e6f2f2] bg-opacity-80">
+            <div className="absolute h-full w-full flex flex-col justify-center items-center z-[999] bg-[#e6f2f2]/80">
               <Loader />
             </div>
           )}
@@ -43,7 +43,9 @@ function CustomModal(props) {
           </h3>
           {!isExtendExpiry && (
             <div className="p-[10px] px-[20px]">
-              <p className="text-[15px] text-base-content">{props.bodyMssg && props.bodyMssg}</p>
+              <p className="text-[15px] text-base-content">
+                {props.bodyMssg && props.bodyMssg}
+              </p>
             </div>
           )}
           {!isExtendExpiry && (
@@ -68,7 +70,7 @@ function CustomModal(props) {
           )}
           {props.footerMessage && (
             <>
-              <div className="mx-3  text-base-content">
+              <div className="mx-3 text-base-content">
                 <textarea
                   rows={3}
                   placeholder="Reason (optional)"
@@ -103,12 +105,17 @@ function CustomModal(props) {
           )}
           {isExtendExpiry && (
             <form className="mx-3 mb-3" onSubmit={handleUpdateExpiry}>
-              <label className="ml-2 mt-2">
+              <label
+                htmlFor="expiryDate"
+                className="ml-2 mt-2 text-base-content"
+              >
                 {t("expiry-date")} {"(dd-mm-yyyy)"}
               </label>
               <input
+                id="expiryDate"
                 type="date"
-                className="rounded-full bg-base-300 w-full px-4 py-2 text-base-content border-2 hover:border-spacing-2"
+                onClick={(e) => e?.currentTarget?.showPicker?.()}
+                className="rounded-full w-full px-4 op-input op-input-bordered op-input-md text-base-content focus:outline-none hover:border-base-content"
                 defaultValue={props?.doc?.ExpiryDate?.iso?.split("T")?.[0]}
                 onChange={(e) => setExpiryDate(e.target.value)}
               />

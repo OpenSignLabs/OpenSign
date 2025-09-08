@@ -1,4 +1,5 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
+import { lazyWithRetry } from "../utils";
 import "../styles/opensigndrive.css";
 import {
   getThemeIconColor,
@@ -7,7 +8,6 @@ import {
   getDrive
 } from "../constant/Utils";
 import { useNavigate } from "react-router";
-import Title from "../components/Title";
 import Parse from "parse";
 import ModalUi from "../primitives/ModalUi";
 import TourContentWithBtn from "../primitives/TourContentWithBtn";
@@ -16,7 +16,7 @@ import axios from "axios";
 import Loader from "../primitives/Loader";
 import { useTranslation } from "react-i18next";
 
-const DriveBody = React.lazy(
+const DriveBody = lazyWithRetry(
   () => import("../components/opensigndrive/DriveBody")
 );
 const dropdowncss =
@@ -35,6 +35,8 @@ function Opensigndrive() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const scrollRef = useRef(null);
+  // Create a ref for the "sentinel" element at the bottom of the list
+  const bottomRef = useRef(null);
   const [isList, setIsList] = useState(false);
   const [selectedSort, setSelectedSort] = useState("Date");
   const [sortingOrder, setSortingOrder] = useState("Descending");
@@ -60,7 +62,7 @@ function Opensigndrive() {
   const [loading, setLoading] = useState(false);
   const sortOrder = ["Ascending", "Descending"];
   const sortingValue = ["Name", "Date"];
-  const [isDontShow, setIsDontShow] = useState(false);
+  const [isDontShow, setIsDontShow] = useState(true);
   const [tourData, setTourData] = useState();
   const [showTourFirstTIme, setShowTourFirstTime] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -221,39 +223,38 @@ function Opensigndrive() {
     }
   };
 
-  //function to fetch drive details list on scroll bottom
-  const handleScroll = () => {
-    //get document of render openSign-drive component using id
-    const documentList = document.getElementById("renderList");
-    const { scrollTop, clientHeight, scrollHeight } = documentList;
-    const scrolled = Math.ceil(scrollTop + clientHeight); // ceil return e.g 3.14 => 4
-    const totalHeight = Math.floor(scrollHeight); // floor return e.g 3.14 => 3
-
-    // clientHeight property returns the height of an element's content area, including padding but not including borders, margins, or scrollbars.
-    // scrollHeight property returns the entire height of an element,including the parts that are not visible due to overflow..
-    // scrollTop property show height of element, how much the content has been scrolled from the top.
-    // When the sum of scrollTop and clientHeight is equal to scrollHeight, it means that the user has scrolled to the bottom of the div.
-
-    if (scrolled >= totalHeight) {
-      //disableLoading is used disable initial loader
-      const disableLoading = true;
-      // If the fetched data length is less than the limit, it means there's no more data to fetch
-      if (!loading && pdfData.length % 50 === 0) {
-        getPdfDocumentList(disableLoading);
-      }
+  // Memoize the loader function so it only changes when deps change
+  const loadMore = useCallback(() => {
+    // Only fetch if we're not already loading and we've got a full "page" (50 items)
+    if (!loading && pdfData.length % 50 === 0) {
+      // Pass `true` to disable the initial loader UI
+      getPdfDocumentList(true);
     }
-  };
-  //useEffect is used to call handleScroll function on scrolling event
+  }, [loading, pdfData.length, getPdfDocumentList]);
+
   useEffect(() => {
-    const documentList = document.getElementById("renderList");
-    if (documentList) {
-      documentList.addEventListener("scroll", handleScroll);
-      return () => {
-        documentList.removeEventListener("scroll", handleScroll);
-      };
-    }
-    // eslint-disable-next-line
-  }, [loading, sortingOrder, selectedSort]); // Add/remove scroll event listener when loading changes
+    const container = document.getElementById("renderList") || null;
+    if (!container) return;
+    // Set up the IntersectionObserver
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        // 5. When the sentinel comes fully into view, trigger loadMore()
+        if (entry.isIntersecting) loadMore();
+      },
+      {
+        root: container, // Determine the scroll container (null = viewport)
+        rootMargin: "0px", // no extra margin
+        threshold: 1.0 // fire when 100% of sentinel is visible
+      }
+    );
+    // Start observing the sentinel DOM node
+    if (bottomRef.current) observer.observe(bottomRef.current);
+    // Clean up on unmount or if loadMore changes
+    return () => {
+      if (bottomRef.current) observer.unobserve(bottomRef.current);
+      observer.disconnect();
+    };
+  }, [loadMore]);
 
   //function for handle folder name path
   const handleRoute = (index, folderData) => {
@@ -554,9 +555,27 @@ function Opensigndrive() {
     };
   }, []);
 
+  const handleHighlightClick = () => {
+    setIsTour(false);
+    setShowTourFirstTime(false);
+  };
+
+  const handleFolderOptions = () => {
+    setIsOptions(!isOptions);
+    handleHighlightClick();
+  };
+
+  const handleSortOptions = () => {
+    setIsShowSort(!isShowSort);
+    handleHighlightClick();
+  };
+
+  const handleViewOption = () => {
+    setIsList(!isList);
+    handleHighlightClick();
+  };
   return (
     <div className="bg-base-100 text-base-content rounded-box w-full shadow-md">
-      <Title title={`${drivename} Drive`} drive={true} />
       <ModalUi
         isOpen={isAlert.isShow}
         title={t("alert")}
@@ -614,7 +633,7 @@ function Opensigndrive() {
                 </button>
                 <button
                   type="button"
-                  className="op-btn op-btn-ghost ml-1"
+                  className="op-btn op-btn-ghost text-base-content ml-1"
                   onClick={oncloseFolder}
                 >
                   {t("close")}
@@ -643,14 +662,13 @@ function Opensigndrive() {
                 onRequestClose={closeTour}
                 steps={tourData}
                 isOpen={isTour}
-                closeWithMask={false}
                 scrollOffset={-100}
-                rounded={5}
               />
             )}
             <div
               data-tut="reactourFirst"
               onMouseEnter={(e) => handleMouseEnter(e)}
+              onClick={handleHighlightClick}
               ref={scrollRef}
               className="w-full whitespace-nowrap cursor-pointer select-none overflow-x-auto"
             >
@@ -682,7 +700,7 @@ function Opensigndrive() {
               <div
                 id="folder-menu"
                 className={`${isOptions ? "dropdown show dropDownStyle" : "dropdown"} hidden md:block cursor-pointer hover:bg-gray-200 p-2 rounded-md`}
-                onClick={() => setIsOptions(!isOptions)}
+                onClick={handleFolderOptions}
               >
                 <div data-tut="reactourSecond">
                   <i
@@ -712,14 +730,14 @@ function Opensigndrive() {
                       onClick={() => navigate("/form/sHAnZphf69")}
                     >
                       <i className="fa-light fa-pen-nib mr-[5px]"></i>
-                      {t("form-name.Sign Yourself")}
+                      {t("Sign Yourself")}
                     </span>
                     <span
                       className="dropdown-item text-[10px] md:text-[13px]"
                       onClick={() => navigate("/form/8mZzFxbG1z")}
                     >
                       <i className="fa-light fa-file-signature mr-[5px]"></i>
-                      {t("form-name.Request Signatures")}
+                      {t("Request Signatures")}
                     </span>
                   </div>
                 </div>
@@ -727,7 +745,7 @@ function Opensigndrive() {
               <div
                 id="menu-container"
                 className={isShowSort ? "dropdown show" : "dropdown"}
-                onClick={() => setIsShowSort(!isShowSort)}
+                onClick={handleSortOptions}
               >
                 <div
                   data-tut="reactourThird"
@@ -739,7 +757,12 @@ function Opensigndrive() {
                     aria-hidden="true"
                     style={{ color: `${getThemeIconColor()}` }}
                   ></i>
-                  <span style={{ fontSize: "15px", color: `${getThemeIconColor()}` }}>
+                  <span
+                    style={{
+                      fontSize: "15px",
+                      color: `${getThemeIconColor()}`
+                    }}
+                  >
                     {selectedSort}
                   </span>
                 </div>
@@ -796,7 +819,7 @@ function Opensigndrive() {
               <div
                 className="cursor-pointer p-2 hover:bg-gray-200 rounded-md flex justify-center items-center"
                 data-tut="reactourForth"
-                onClick={() => setIsList(!isList)}
+                onClick={handleViewOption}
               >
                 <i
                   className={`${isList ? "fa-light fa-th-large" : "fa-light fa-list"} text-[20px]`}
@@ -840,14 +863,14 @@ function Opensigndrive() {
                       onClick={() => navigate("/form/sHAnZphf69")}
                     >
                       <i className="fa-light fa-pen-nib mr-[5px]"></i>
-                      {t("form-name.Sign Yourself")}
+                      {t("Sign Yourself")}
                     </span>
                     <span
                       className="dropdown-item text-[10px] md:text-[13px]"
                       onClick={() => navigate("/form/8mZzFxbG1z")}
                     >
                       <i className="fa-light fa-file-signature mr-[5px]"></i>
-                      {t("form-name.Request Signatures")}
+                      {t("Request Signatures")}
                     </span>
                   </div>
                 </div>
@@ -891,6 +914,8 @@ function Opensigndrive() {
                   setSkip={setSkip}
                   sortingData={sortingData}
                 />
+                {/* sentinel */}
+                <div ref={bottomRef} className="h-1" />
                 {loading && (
                   <div className="text-center pb-[20px]">{t("loading")}</div>
                 )}

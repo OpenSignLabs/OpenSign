@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { formatDateTime } from "../../../constant/Utils";
+import { formatDateTime } from "../../constant/Utils";
 import { useTranslation } from "react-i18next";
 
 const DateFormatSelector = (props) => {
@@ -17,7 +17,9 @@ const DateFormatSelector = (props) => {
     "YYYY-MM-DD",
     "MM-DD-YYYY",
     "MM.DD.YYYY",
-    "MMM DD, YYYY"
+    "MMM DD, YYYY",
+    "DD.MM.YYYY",
+    "DD/MM/YYYY"
   ];
 
   // Handle format change

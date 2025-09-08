@@ -15,8 +15,7 @@ export default async function updateTourStatus(request) {
       const msg = err?.message || 'Something went wrong.';
       throw new Parse.Error(code, msg);
     }
-  }
-  else {
+  } else {
     throw new Parse.Error(Parse.Error.INVALID_SESSION_TOKEN, 'User is not authenticated.');
   }
 }

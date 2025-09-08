@@ -1,4 +1,4 @@
-import React, { useEffect, useState, forwardRef } from "react";
+import { useEffect, useState, forwardRef } from "react";
 import {
   getMonth,
   getYear,
@@ -9,21 +9,25 @@ import {
   months,
   years,
   selectCheckbox,
-  checkRegularExpress
+  checkRegularExpress,
+  isBase64
 } from "../../constant/Utils";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import "../../styles/signature.css";
 import { useTranslation } from "react-i18next";
 import CellsWidget from "./CellsWidget";
+import { useSelector } from "react-redux";
+import Loader from "../../primitives/Loader";
 const textWidgetCls =
-  "w-full h-full md:min-w-full md:min-h-full z-[999] text-[12px] rounded-[2px] border-[1px] border-[#007bff] overflow-hidden resize-none outline-none text-base-content item-center whitespace-pre-wrap";
-const selectWidgetCls =
-  "w-full h-full absolute left-0 top-0 border-[1px] border-[#007bff] rounded-[2px] focus:outline-none text-base-content";
+  "w-full h-full md:min-w-full md:min-h-full z-[999] text-[12px] overflow-hidden resize-none outline-none text-base-content item-center whitespace-pre-wrap";
 const widgetCls =
   "select-none-cls overflow-hidden w-full h-full text-black flex flex-col justify-center items-center";
 function PlaceholderType(props) {
+  const selectWidgetCls = `w-full h-full absolute left-0 top-0 focus:outline-none text-base-content`;
   const { t } = useTranslation();
+  const prefillImg = useSelector((state) => state.widget.prefillImg);
+  const prefillImgLoad = useSelector((state) => state.widget.prefillImgLoad);
   const type = props?.pos?.type;
   const iswidgetEnable =
     props.isSignYourself ||
@@ -39,6 +43,7 @@ function PlaceholderType(props) {
   const [widgetValue, setwidgetValue] = useState();
   const [selectedCheckbox, setSelectedCheckbox] = useState([]);
   const [hint, setHint] = useState("");
+  const [imgUrl, setImgUrl] = useState("");
   const fontSize = props.calculateFont(props.pos.options?.fontSize);
   const fontColor = props.pos.options?.fontColor || "black";
   const textWidgetStyle = {
@@ -51,7 +56,6 @@ function PlaceholderType(props) {
     display: "flex",
     height: "100%"
   };
-
   useEffect(() => {
     if (type !== "date") {
       if (type && type === "checkbox") {
@@ -100,6 +104,26 @@ function PlaceholderType(props) {
       return false;
     }
   };
+  //function is used to get prefill image's signedUrl after expired
+  useEffect(() => {
+    const loadImage = async () => {
+      const isBase64Url = isBase64(props?.pos?.SignUrl);
+      if (
+        props.pos.SignUrl &&
+        props.pos.type === "image" &&
+        props?.data?.Role === "prefill" &&
+        !isBase64Url
+      ) {
+        const getPrefillImg = prefillImg?.find((x) => x.id === props.pos.key);
+        if (getPrefillImg) {
+          setImgUrl(getPrefillImg?.base64);
+        }
+      } else {
+        setImgUrl(props.pos.SignUrl);
+      }
+    };
+    loadImage();
+  }, [props.pos.SignUrl]);
 
   switch (type) {
     case "signature":
@@ -108,7 +132,7 @@ function PlaceholderType(props) {
           alt="signature"
           draggable="false"
           src={props.pos.SignUrl}
-          className="w-full h-full select-none-cls "
+          className={`${props.pos.signatureType !== "type" ? "object-contain" : ""} w-full h-full select-none-cls`}
         />
       ) : (
         <div className={widgetCls}>
@@ -132,7 +156,7 @@ function PlaceholderType(props) {
           alt="stamp"
           draggable="false"
           src={props.pos.SignUrl}
-          className="w-full h-full select-none-cls"
+          className="w-full h-full select-none-cls object-contain"
         />
       ) : (
         <div className={widgetCls}>
@@ -154,9 +178,9 @@ function PlaceholderType(props) {
       const checkBoxLayout = props.pos.options?.layout || "vertical";
       const isMultipleCheckbox =
         props.pos.options?.values?.length > 0 ? true : false;
-      const checkBoxWrapperClass = `flex items-start ${
+      const checkBoxWrapperClass = `flex items-start whitespace-pre-wrap ${
         checkBoxLayout === "horizontal"
-          ? `flex-row flex-wrap ${isMultipleCheckbox ? "gap-x-2" : ""}`
+          ? `flex-row flex-wrap lg:py-[1.6px] ${isMultipleCheckbox ? "gap-x-2" : ""}`
           : `flex-col ${isMultipleCheckbox ? "gap-y-[3px]" : ""}`
       }`; // Using gap-y-1 for consistency, adjust if needed
 
@@ -229,7 +253,7 @@ function PlaceholderType(props) {
           height={height}
           value={cells.join("")}
           editable={isEditable}
-          resizable={isEditable}
+          resizable={props?.isAllowModify}
           fontSize={fontSize}
           fontColor={fontColor}
           hint={hint}
@@ -253,7 +277,7 @@ function PlaceholderType(props) {
           alt="initials"
           draggable="false"
           src={props.pos.SignUrl}
-          className="w-full h-full select-none-cls"
+          className={`${props.pos.signatureType !== "type" ? "object-contain" : ""} w-full h-full select-none-cls`}
         />
       ) : (
         <div className={widgetCls}>
@@ -338,7 +362,7 @@ function PlaceholderType(props) {
         </div>
       );
     case "date":
-      return iswidgetEnable ? (
+      return iswidgetEnable || props?.data?.Role === "prefill" ? (
         <DatePicker
           renderCustomHeader={({ date, changeYear, changeMonth }) => (
             <div className="flex justify-start ml-2 ">
@@ -397,12 +421,16 @@ function PlaceholderType(props) {
         </div>
       );
     case "image":
-      return props.pos.SignUrl ? (
+      return prefillImgLoad[props.pos?.key] ? (
+        <div className="absolute w-full h-full inset-0 flex justify-center items-center bg-white/30 z-50">
+          <Loader />
+        </div>
+      ) : imgUrl ? (
         <img
           alt="image"
           draggable="false"
-          src={props.pos.SignUrl}
-          className="w-full h-full select-none-cls"
+          src={imgUrl}
+          className="w-full h-full select-none-cls object-contain"
         />
       ) : (
         <div className={widgetCls}>
@@ -445,9 +473,9 @@ function PlaceholderType(props) {
     case radioButtonWidget:
       const radioLayout = props.pos.options?.layout || "vertical";
       const isOnlyOneBtn = props.pos.options?.values?.length > 0 ? true : false;
-      const radioWrapperClass = `flex items-start ${
+      const radioWrapperClass = `flex items-start whitespace-pre-wrap ${
         radioLayout === "horizontal"
-          ? `flex-row flex-wrap ${isOnlyOneBtn ? "gap-x-[10px]" : ""}`
+          ? `flex-row flex-wrap lg:py-[1.6px] ${isOnlyOneBtn ? "gap-x-[10px]" : ""}`
           : `flex-col ${isOnlyOneBtn ? "gap-y-[5px]" : ""}`
       }`; // Using gap-y-1 for consistency, adjust if needed
       return (

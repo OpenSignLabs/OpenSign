@@ -14,6 +14,7 @@ import { pdflibAddPlaceholder } from '@signpdf/placeholder-pdf-lib';
 import { Placeholder } from './Placeholder.js';
 import { SignPdf } from '@signpdf/signpdf';
 import { P12Signer } from '@signpdf/signer-p12';
+import { buildDownloadFilename } from '../../../utils/fileUtils.js';
 
 const serverUrl = cloudServerUrl; // process.env.SERVER_URL;
 const APPID = serverAppId;
@@ -79,7 +80,10 @@ async function updateDoc(docId, url, userId, ipAddress, data, className, sign) {
     const auditTrail = updateAuditTrail.filter(x => x.Activity === 'Signed');
     let isCompleted = false;
     if (data.Signers && data.Signers.length > 0) {
-      if (auditTrail.length === data.Placeholders.length) {
+      //'removePrefill' is used to remove prefill role from placeholders filed then compare length to change status of document
+      const removePrefill =
+        data.Placeholders.length > 0 && data.Placeholders.filter(x => x.Role !== 'prefill');
+      if (auditTrail.length === removePrefill?.length) {
         isCompleted = true;
       }
     } else {
@@ -108,9 +112,11 @@ async function sendNotifyMail(doc, signUser, mailProvider, publicUrl) {
       "<img src='https://qikinnovation.ams3.digitaloceanspaces.com/logo.png' height='50' style='padding:20px'/>";
     const opurl = ` <a href=www.opensignlabs.com target=_blank>here</a>`;
     const auditTrailCount = doc?.AuditTrail?.filter(x => x.Activity === 'Signed')?.length || 0;
-    const signersCount = doc?.Placeholders?.length;
-    const remaingsign = signersCount - auditTrailCount;
-    if (remaingsign > 1 && doc?.NotifyOnSignatures) {
+    const removePrefill =
+      doc?.Placeholders?.length > 0 && doc?.Placeholders?.filter(x => x?.Role !== 'prefill');
+    const signersCount = removePrefill?.length;
+    const remainingSign = signersCount - auditTrailCount;
+    if (remainingSign > 1 && doc?.NotifyOnSignatures) {
       const sender = doc.ExtUserPtr;
       const pdfName = doc.Name;
       const creatorName = doc.ExtUserPtr.Name;
@@ -227,6 +233,13 @@ async function sendCompletedMail(obj) {
   }
   const Bcc = doc?.Bcc?.length > 0 ? doc.Bcc.map(x => x.Email) : [];
   const updatedBcc = doc?.SenderMail ? [...Bcc, doc?.SenderMail] : Bcc;
+  const formatId = doc?.ExtUserPtr?.DownloadFilenameFormat;
+  const filename = pdfName?.length > 100 ? pdfName?.slice(0, 100) : pdfName;
+  const docName = buildDownloadFilename(formatId, {
+    docName: filename,
+    email: doc?.ExtUserPtr?.Email,
+    isSigned: true,
+  });
   const params = {
     extUserId: sender.objectId,
     url: url,
@@ -239,7 +252,7 @@ async function sendCompletedMail(obj) {
     mailProvider: obj.mailProvider,
     bcc: updatedBcc?.length > 0 ? updatedBcc : '',
     certificatePath: `./exports/signed_certificate_${doc.objectId}.pdf`,
-    filename: obj?.filename,
+    filename: docName,
   };
   try {
     const res = await axios.post(serverUrl + '/functions/sendmailv3', params, {

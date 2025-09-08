@@ -10,7 +10,10 @@ const initialState = {
   signatureTypes: null,
   defaultSignImg: null,
   myInitial: null,
-  lastIndex: ""
+  lastIndex: "",
+  scrollTriggerId: "",
+  prefillImg: [],
+  prefillImgLoad: {}
 };
 
 const widgetSlice = createSlice({
@@ -35,6 +38,27 @@ const widgetSlice = createSlice({
     setLastIndex: (state, action) => {
       state.lastIndex = action.payload;
     },
+    setScrollTriggerId: (state, action) => {
+      state.scrollTriggerId = action.payload;
+    },
+    setPrefillImg: (state, action) => {
+      const existingIndex = state.prefillImg.findIndex(
+        (img) => img.id === action.payload.id
+      );
+      if (existingIndex !== -1) {
+        // Replace the existing object with updated URL
+        state.prefillImg[existingIndex] = {
+          ...state.prefillImg[existingIndex],
+          ...action.payload
+        };
+      } else {
+        // Add new object
+        state.prefillImg.push(action.payload);
+      }
+    },
+    setPrefillImgLoad: (state, action) => {
+      state.prefillImgLoad = action.payload;
+    },
     resetWidgetState: () => initialState
   }
 });
@@ -46,7 +70,10 @@ export const {
   setMyInitial,
   resetWidgetState,
   setDefaultSignImg,
-  setLastIndex
+  setLastIndex,
+  setScrollTriggerId,
+  setPrefillImg,
+  setPrefillImgLoad
 } = widgetSlice.actions;
 
 export default widgetSlice.reducer;

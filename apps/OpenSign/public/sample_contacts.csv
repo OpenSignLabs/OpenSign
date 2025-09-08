@@ -1,4 +1,4 @@
-Name,Email,Phone
-John Doe,john@example.com,1234567890
-Jane Smith,jane@example.com,9876543210
-Foo Bar,foo@example.com,5555555555
+Name,Email,Phone,Company,JobTitle
+John Doe,john@example.com,1234567890,abc firm,dev
+Jane Smith,jane@example.com,9876543210,xyz firm,manager
+Foo Bar,foo@example.com,5555555555,xyz firm,director
