@@ -1,16 +1,14 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import Sidebar from "../components/sidebar/Sidebar";
-import { useWindowSize } from "../hook/useWindowSize";
 import Tour from "../primitives/Tour";
 import axios from "axios";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import Parse from "parse";
 import ModalUi from "../primitives/ModalUi";
 import { useNavigate, useLocation, Outlet } from "react-router";
 import Loader from "../primitives/Loader";
-import { showHeader } from "../redux/reducers/showHeader";
 import { useTranslation } from "react-i18next";
 
 const HomeLayout = () => {
@@ -19,9 +17,6 @@ const HomeLayout = () => {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
-  const dispatch = useDispatch();
-  const { width } = useWindowSize();
-  const [isOpen, setIsOpen] = useState(true);
   const arr = useSelector((state) => state.TourSteps);
   const [isUserValid, setIsUserValid] = useState(true);
   const [isLoader, setIsLoader] = useState(true);
@@ -29,7 +24,7 @@ const HomeLayout = () => {
   const [isTour, setIsTour] = useState(false);
   const [tourStatusArr, setTourStatusArr] = useState([]);
   const [tourConfigs, setTourConfigs] = useState([]);
-
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const tenantId = localStorage.getItem("TenantId");
 
   useEffect(() => {
@@ -67,15 +62,6 @@ const HomeLayout = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tenantId]);
 
-  const showSidebar = () => {
-    setIsOpen((value) => !value);
-    dispatch(showHeader(!isOpen));
-  };
-  useEffect(() => {
-    if (width && width <= 768) {
-      setIsOpen(false);
-    }
-  }, [width]);
 
   useEffect(() => {
     if (arr && arr.length > 0) {
@@ -87,6 +73,7 @@ const HomeLayout = () => {
   }, [arr]);
 
   const handleDynamicSteps = () => {
+    const github = "https://github.com/OpenSignLabs/OpenSign";
     if (arr && arr.length > 0) {
       // const resArr = arr;
       const resArr = arr.map((obj, index) => {
@@ -105,7 +92,7 @@ const HomeLayout = () => {
         {
           selector: '[data-tut="nonpresentmask"]',
           content: t("tour-mssg.home-layout-1"),
-          position: "center",
+          position: "center"
         },
         {
           selector: '[data-tut="tourbutton"]',
@@ -115,8 +102,23 @@ const HomeLayout = () => {
         ...resArr,
         {
           selector: '[data-tut="nonpresentmask"]',
-          content: t("tour-mssg.home-layout-3", { appName }),
-          position: "center",
+          content: () => (
+            <div>
+              {t("tour-mssg.home-layout-3", { appName })}
+              <p className="mt-[3px]">
+                ⭐ Star us on
+                <a
+                  href={github}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline font-medium pl-1 cursor-pointer"
+                >
+                  GitHub
+                </a>
+              </p>
+            </div>
+          ),
+          position: "center"
         }
       ]);
       checkTourStatus();
@@ -146,19 +148,11 @@ const HomeLayout = () => {
       updatedTourStatus = [{ loginTour: true }];
     }
 
-    // console.log("updatedTourStatus ", updatedTourStatus);
     await axios.put(
       serverUrl + "classes/contracts_Users/" + extUserId,
-      {
-        TourStatus: updatedTourStatus
-      },
-      {
-        headers: {
-          "X-Parse-Application-Id": appId
-        }
-      }
+      { TourStatus: updatedTourStatus },
+      { headers: { "X-Parse-Application-Id": appId } }
     );
-    // console.log("updatedRes ", updatedRes);
   };
 
   async function checkTourStatus() {
@@ -175,12 +169,6 @@ const HomeLayout = () => {
     }
   }
 
-  const closeSidebar = () => {
-    if (width <= 1023) {
-      setIsOpen(false);
-    }
-  };
-
   const handleLoginBtn = async () => {
     try {
       await Parse?.User?.logOut();
@@ -192,12 +180,11 @@ const HomeLayout = () => {
     }
   };
   return (
-    <div>
-      <div className="sticky top-0 z-[501]">
-        {!isLoader && (
-          <Header showSidebar={showSidebar} setIsMenu={setIsOpen} />
-        )}
-      </div>
+    <div className="flex flex-col h-screen overflow-hidden">
+      {/* HEADER */}
+      <header className="z-[501]">
+        {!isLoader && <Header setIsLoggingOut={setIsLoggingOut} />}
+      </header>
       {isUserValid ? (
         <>
           {isLoader ? (
@@ -206,27 +193,37 @@ const HomeLayout = () => {
             </div>
           ) : (
             <>
-              <div className="flex md:flex-row flex-col z-50">
-                <Sidebar isOpen={isOpen} closeSidebar={closeSidebar} />
-                <div
-                  id="renderList"
-                  className="relative h-screen flex flex-col justify-between w-full overflow-y-auto"
-                >
-                  <div className="bg-base-200 p-3">{<Outlet />}</div>
-                  <div className="z-30">
-                    <Footer />
-                  </div>
+              {isLoggingOut && (
+                <div className="inset-0 bg-black/30 z-[1000] fixed flex justify-center items-center">
+                  <Loader />
                 </div>
+              )}
+              {/* BODY */}
+              <div className="flex flex-1 overflow-hidden">
+                {/* SIDEBAR with width animation */}
+                <Sidebar />
+                {/* MAIN (includes both content + footer in one scrollable column) */}
+                <main
+                  id="renderList"
+                  className="flex-1 overflow-auto transition-all duration-300 ease-in-out"
+                >
+                  <div className="flex flex-col min-h-full">
+                    {/* your page content */}
+                    <div className="p-3">{<Outlet />}</div>
+                    {/* sticky-but-scrollable footer */}
+                    <div className="mt-auto z-30">
+                      <Footer />
+                    </div>
+                  </div>
+                </main>
               </div>
               <Tour
                 onRequestClose={closeTour}
                 steps={tourConfigs}
                 isOpen={isTour}
-                closeWithMask={false}
                 disableKeyboardNavigation={["esc"]}
                 // disableInteraction={true}
                 scrollOffset={-100}
-                rounded={5}
                 showCloseButton={isCloseBtn}
               />
             </>
@@ -235,7 +232,7 @@ const HomeLayout = () => {
       ) : (
         <ModalUi showHeader={false} isOpen={true} showClose={false}>
           <div className="flex flex-col justify-center items-center py-4 md:py-5 gap-5">
-            <p className="text-xl font-medium">Your session has expired.</p>
+            <p className="text-xl font-medium">{t("session-expired")}</p>
             <button onClick={handleLoginBtn} className="op-btn op-btn-neutral">
               {t("login")}
             </button>

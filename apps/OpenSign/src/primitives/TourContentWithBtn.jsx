@@ -1,8 +1,13 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
-export default function TourContentWithBtn({ message, isChecked, video }) {
+export default function TourContentWithBtn({
+  message,
+  isChecked,
+  video,
+  isDontShowCheckbox = true
+}) {
   const { t } = useTranslation();
-  const [isCheck, setIsCheck] = useState(false);
+  const [isCheck, setIsCheck] = useState(true);
 
   const handleCheck = () => {
     setIsCheck(!isCheck);
@@ -24,15 +29,17 @@ export default function TourContentWithBtn({ message, isChecked, video }) {
           ></iframe>
         </div>
       )}
-      <label className="flex items-center justify-center mt-3 mb-0">
-        <input
-          type="checkbox"
-          className="op-checkbox op-checkbox-xs mr-1"
-          checked={isCheck}
-          onChange={handleCheck}
-        />
-        <span className="#787878 text-[12px]">{t("tour-content")}</span>
-      </label>
+      {isDontShowCheckbox && (
+        <label className="flex items-center justify-center mt-3 mb-0">
+          <input
+            type="checkbox"
+            className="op-checkbox op-checkbox-xs mr-1"
+            checked={isCheck}
+            onChange={handleCheck}
+          />
+          <span className="#787878 text-[12px]">{t("tour-content")}</span>
+        </label>
+      )}
     </div>
   );
 }

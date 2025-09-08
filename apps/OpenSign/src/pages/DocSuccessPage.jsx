@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import Confetti from "react-confetti"; // Import the confetti library
 import {
@@ -10,7 +10,6 @@ import {
 import ModalUi from "../primitives/ModalUi";
 import Loader from "../primitives/Loader";
 import DownloadPdfZip from "../primitives/DownloadPdfZip";
-import Title from "../components/Title";
 import CheckCircle from "../primitives/CheckCircle";
 
 const DocSuccessPage = () => {
@@ -62,7 +61,6 @@ const DocSuccessPage = () => {
 
   return (
     <>
-      <Title title="Success" />
       {/* Confetti Effect */}
       {showConfetti && (
         <Confetti width={window.innerWidth} height={window.innerHeight} />

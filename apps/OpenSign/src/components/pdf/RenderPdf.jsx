@@ -1,4 +1,10 @@
-import React, { useState, useRef } from "react";
+import React, {
+  useState,
+  useRef,
+  useCallback,
+  useLayoutEffect,
+  useEffect
+} from "react";
 import RSC from "react-scrollbars-custom";
 import { Document, Page } from "react-pdf";
 import {
@@ -12,21 +18,29 @@ import Placeholder from "./Placeholder";
 import Alert from "../../primitives/Alert";
 import { useTranslation } from "react-i18next";
 import usePdfPinchZoom from "../../hook/usePdfPinchZoom";
+import { useDispatch, useSelector } from "react-redux";
+import Guidelines from "./Guidelines";
+import { useGuidelinesContext } from "../../context/GuidelinesContext";
+import { toggleSidebar } from "../../redux/reducers/sidebarReducer";
 
 function RenderPdf(props) {
   const { t } = useTranslation();
+  const dispatch = useDispatch();
   const [scaledHeight, setScaledHeight] = useState();
-  const [guideline, setGuideline] = useState({
-    show: false,
-    x1: 0,
-    x2: 0,
-    y1: 0,
-    y2: 0
-  });
+  const { guideline } = useGuidelinesContext();
   //check isGuestSigner is present in local if yes than handle login flow header in mobile view
   const isGuestSigner = localStorage.getItem("isGuestSigner");
-
+  const scrollTriggerId = useSelector((state) => state.widget.scrollTriggerId);
+  const isOpen = useSelector((state) => state.sidebar.isOpen);
+  const scrollRef = useRef(null);
   const pdfContainerRef = useRef(null);
+
+  useEffect(() => {
+    dispatch(toggleSidebar(false));
+    return () => {
+      dispatch(toggleSidebar(true));
+    };
+  }, []);
 
   // enable pinch to zoom only on actual pdf wrapper
   usePdfPinchZoom(
@@ -35,20 +49,6 @@ function RenderPdf(props) {
     props.setScale,
     props.setZoomPercent
   );
-
-  const handleGuideline = (isShow, x = 0, y = 0, width = 0, height = 0) => {
-    if (isShow) {
-      setGuideline({
-        show: true,
-        x1: x,
-        x2: x + width,
-        y1: y,
-        y2: y + height
-      });
-    } else {
-      setGuideline({ show: false, x1: 0, x2: 0, y1: 0, y2: 0 });
-    }
-  };
 
   // handle signature block width and height according to screen
   const posWidth = (pos, signYourself) => {
@@ -111,6 +111,98 @@ function RenderPdf(props) {
     }
   };
 
+  // `smoothScrollTo` is used to provide smooth scrolling while focus on widget
+  const smoothScrollTo = (targetY, duration = 500) => {
+    const sb = scrollRef.current;
+    if (!sb) return;
+    const start = sb.scrollTop;
+    const change = targetY - start;
+    const startTime = performance.now();
+
+    const animate = (now) => {
+      const elapsed = now - startTime;
+      const t = Math.min(1, elapsed / duration);
+      // easeInOutQuad
+      const ease = t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+      sb.scrollTo(sb.scrollLeft, start + change * ease);
+      if (t < 1) requestAnimationFrame(animate);
+    };
+
+    requestAnimationFrame(animate);
+  };
+
+  // `scrollToTarget` is used to focus on widget and scroll to top
+  const scrollToTarget = useCallback(() => {
+    // Get the scrollbar container ref
+    const sb = scrollRef.current;
+    // If there's no content element or no widget details, bail out
+    if (!sb?.contentElement || !props.currWidgetsDetails) return;
+
+    // The absolute Y position (relative to the document) where we want to scroll
+    const yPosition = props?.currWidgetsDetails?.yPosition || 0;
+    const containerScale = getContainerScale(
+      props.pdfOriginalWH,
+      props.pageNumber,
+      props.containerWH
+    );
+
+    const targetTop = yPosition * containerScale * props.scale;
+    // The Y offset of the scrollable content container itself
+    const { offsetTop } = sb.contentElement;
+
+    // Account for the header height + a little extra padding
+    // Different header height if user is a guest signer
+    const headerOffset = isGuestSigner ? 10 : 79;
+    // Compute the scroll position inside the container
+    const positionTop = targetTop - offsetTop - headerOffset;
+
+    const pageNumber = props.pageNumber > 0 ? props.pageNumber - 1 : 0;
+    const ogH = props.pdfOriginalWH[pageNumber]?.height;
+    // If the modal for this widget is open, we may need to expand the PDF container
+    if (props.isShowModal[scrollTriggerId]) {
+      // Original PDF height for this page
+      if (pdfContainerRef?.current) {
+        // Increase container height to include the area up to the target
+        pdfContainerRef.current.style.height = `${ogH + (targetTop - offsetTop)}px`;
+      }
+    } else {
+      // Otherwise, reset any inline height override
+      if (pdfContainerRef?.current) {
+        pdfContainerRef.current.style.height = "";
+      }
+    }
+    // Actually perform the scroll: keep the same horizontal scroll, scroll vertically
+    if (targetTop > ogH * 0.75 && !isGuestSigner && isOpen) {
+      smoothScrollTo(positionTop - 300);
+    } else if (targetTop > ogH * 0.75 && !isGuestSigner && !isOpen) {
+      smoothScrollTo(positionTop - 100);
+    } else {
+      smoothScrollTo(positionTop);
+    }
+
+    // Highlight only the target widget; reset others to default border
+    document.querySelectorAll(".signYourselfBlock").forEach((w) => {
+      w.style.border =
+        w.id === String(scrollTriggerId)
+          ? "1.5px solid red" // active widget in red
+          : "1.5px solid #007bff"; // others in blue
+    });
+  }, [
+    scrollTriggerId,
+    props.currWidgetsDetails?.yPosition,
+    props.isShowModal,
+    props.pdfOriginalWH,
+    props.pageNumber
+  ]);
+
+  useLayoutEffect(() => {
+    // Whenever scrollTriggerId changes, fire off the scroll in the next rAF
+    // to ensure the DOM has painted/layout is stable before scrolling
+    if (scrollTriggerId) {
+      scrollToTarget();
+    }
+  }, [scrollTriggerId, scrollToTarget]);
+
   // function for render placeholder block over pdf document (all signing flow)
   const checkSignedSigners = (data) => {
     let checkSign = [];
@@ -147,7 +239,6 @@ function RenderPdf(props) {
                       isSignYourself={false}
                       posWidth={posWidth}
                       posHeight={posHeight}
-                      showGuidelines={handleGuideline}
                       isDragging={props.isDragging}
                       pdfDetails={props.pdfDetails}
                       unSignedWidgetId={props.unSignedWidgetId}
@@ -164,7 +255,7 @@ function RenderPdf(props) {
                       handleStop={props.handleStop}
                       setUniqueId={props.setUniqueId}
                       setIsSelectId={props.setIsSelectId}
-                      handleDeleteSign={props.handleDeleteSign}
+                      handleDeleteWidget={props.handleDeleteWidget}
                       setIsPageCopy={props.setIsPageCopy}
                       handleTextSettingModal={props.handleTextSettingModal}
                       handleCellSettingModal={props.handleCellSettingModal}
@@ -172,16 +263,14 @@ function RenderPdf(props) {
                       isFreeResize={props.isSelfSign ? true : false}
                       isOpenSignPad={true}
                       assignedWidgetId={props.assignedWidgetId}
-                      isApplyAll={true}
                       setCellCount={props.setCellCount}
                       setFontSize={props.setFontSize}
                       fontSize={props.fontSize}
                       fontColor={props.fontColor}
                       setFontColor={props.setFontColor}
-                      setRequestSignTour={props.setRequestSignTour}
+                      setIsReqSignTourDisabled={props.setIsReqSignTourDisabled}
                       calculateFontsize={calculateFontsize}
                       currWidgetsDetails={props?.currWidgetsDetails}
-                      setTempSignerId={props.setTempSignerId}
                     />
                   </React.Fragment>
                 )
@@ -218,6 +307,7 @@ function RenderPdf(props) {
         <Alert type={"success"}>{t("success-email-alert")}</Alert>
       )}
       <RSC
+        ref={scrollRef}
         style={{
           position: "relative",
           boxShadow: "rgba(17, 12, 46, 0.15) 0px 48px 100px 0px",
@@ -271,8 +361,8 @@ function RenderPdf(props) {
                                       <Placeholder
                                         pos={pos}
                                         setIsPageCopy={props.setIsPageCopy}
-                                        handleDeleteSign={
-                                          props.handleDeleteSign
+                                        handleDeleteWidget={
+                                          props.handleDeleteWidget
                                         }
                                         handleTabDrag={props.handleTabDrag}
                                         handleStop={props.handleStop}
@@ -292,7 +382,6 @@ function RenderPdf(props) {
                                         isSignYourself={false}
                                         posWidth={posWidth}
                                         posHeight={posHeight}
-                                        showGuidelines={handleGuideline}
                                         isDragging={props.isDragging}
                                         setIsValidate={props.setIsValidate}
                                         setIsRadio={props.setIsRadio}
@@ -301,7 +390,6 @@ function RenderPdf(props) {
                                           props.setCurrWidgetsDetails
                                         }
                                         handleNameModal={props.handleNameModal}
-                                        setTempSignerId={props.setTempSignerId}
                                         uniqueId={props.uniqueId}
                                         handleTextSettingModal={
                                           props.handleTextSettingModal
@@ -328,6 +416,11 @@ function RenderPdf(props) {
                                         currWidgetsDetails={
                                           props?.currWidgetsDetails
                                         }
+                                        setRoleName={props?.setRoleName}
+                                        pdfDetails={props.pdfDetails}
+                                        setIsReqSignTourDisabled={
+                                          props.setIsReqSignTourDisabled
+                                        }
                                       />
                                     </React.Fragment>
                                   ))}
@@ -346,7 +439,9 @@ function RenderPdf(props) {
                                     key={id}
                                     pos={pos}
                                     setIsPageCopy={props.setIsPageCopy}
-                                    handleDeleteSign={props.handleDeleteSign}
+                                    handleDeleteWidget={
+                                      props.handleDeleteWidget
+                                    }
                                     handleTabDrag={props.handleTabDrag}
                                     handleStop={props.handleStop}
                                     handleSignYourselfImageResize={
@@ -360,8 +455,6 @@ function RenderPdf(props) {
                                     isSignYourself={true}
                                     posWidth={posWidth}
                                     posHeight={posHeight}
-                                    showGuidelines={handleGuideline}
-                                    pdfDetails={props.pdfDetails[0]}
                                     isDragging={props.isDragging}
                                     setIsCheckbox={props.setIsCheckbox}
                                     setCurrWidgetsDetails={
@@ -387,6 +480,9 @@ function RenderPdf(props) {
                                     calculateFontsize={calculateFontsize}
                                     currWidgetsDetails={
                                       props?.currWidgetsDetails
+                                    }
+                                    setIsReqSignTourDisabled={
+                                      props.setIsReqSignTourDisabled
                                     }
                                   />
                                 )
@@ -426,28 +522,12 @@ function RenderPdf(props) {
             />
           </Document>
           {guideline.show && (
-            <>
-              {/* top guide */}
-              <div
-                className="absolute pointer-events-none z-[1000] left-0 w-full border-t-[1px] border-dashed border-[#3b82f6]"
-                style={{ top: guideline.y1 }}
-              />
-              {/* bottom guide */}
-              <div
-                className="absolute pointer-events-none z-[1000] left-0 w-full border-t-[1px] border-dashed border-[#3b82f6]"
-                style={{ top: guideline.y2 }}
-              />
-              {/* left guide */}
-              <div
-                className="absolute pointer-events-none z-[1000] top-0 h-full border-l-[1px] border-dashed border-[#3b82f6]"
-                style={{ left: guideline.x1 }}
-              />
-              {/* right guide */}
-              <div
-                className="absolute pointer-events-none z-[1000] top-0 h-full border-l-[1px] border-dashed border-[#3b82f6]"
-                style={{ left: guideline.x2 }}
-              />
-            </>
+            <Guidelines
+              x1={guideline.x1}
+              x2={guideline.x2}
+              y1={guideline.y1}
+              y2={guideline.y2}
+            />
           )}
         </div>
       </RSC>

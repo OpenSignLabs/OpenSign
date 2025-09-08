@@ -32,6 +32,7 @@ const ValidateRoute = () => {
     let PageLanding = localStorage.getItem("PageLanding");
     let baseUrl = localStorage.getItem("baseUrl");
     let appid = localStorage.getItem("parseAppId");
+    let favicon = localStorage.getItem("favicon");
 
     localStorage.clear();
     saveLanguageInLocal(i18n);
@@ -42,8 +43,9 @@ const ValidateRoute = () => {
     localStorage.setItem("userSettings", appdata);
     localStorage.setItem("baseUrl", baseUrl);
     localStorage.setItem("parseAppId", appid);
+    localStorage.setItem("favicon", favicon);
   };
-  return <div>{<Outlet />}</div>;
+  return <>{<Outlet />}</>;
 };
 
 export default ValidateRoute;

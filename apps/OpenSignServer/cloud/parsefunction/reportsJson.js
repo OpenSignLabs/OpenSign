@@ -1,15 +1,41 @@
-export default function reportJson(id, userId) {
-  const currentUserId = userId;
+export default function reportJson(id, currentUserId) {
   const commanKeys = [
+    'IsSignyourself',
     'URL',
     'Name',
+    'Note',
+    'SignedUrl',
+    'AuditTrail',
+    'Folder.Name',
     'ExtUserPtr.Name',
+    'ExtUserPtr.Email',
+    'ExtUserPtr.DownloadFilenameFormat',
     'Signers.Name',
     'Signers.Email',
     'Signers.Phone',
     'Placeholders',
     'TemplateId',
+    'ExpiryDate',
   ];
+  const inProgressKeys = [
+    ...commanKeys,
+    'AuditTrail.UserPtr',
+    'SendMail',
+    'RequestBody',
+    'RequestSubject',
+    'ExtUserPtr.TenantId.RequestBody',
+    'ExtUserPtr.TenantId.RequestSubject',
+  ];
+  const filterKeys = [
+    'TimeToCompleteDays',
+    'AllowModifications',
+    'IsEnableOTP',
+    'IsTourEnabled',
+    'NotifyOnSignatures',
+    'RedirectUrl',
+    'SendinOrder',
+  ];
+  const needYourSignKeys = [...commanKeys, 'Signers.UserId'];
   switch (id) {
     // draft documents report
     case 'ByHuevtCFY':
@@ -23,7 +49,7 @@ export default function reportJson(id, userId) {
           SignedUrl: { $exists: false },
           CreatedBy: { __type: 'Pointer', className: '_User', objectId: currentUserId },
         },
-        keys: [...commanKeys, 'Note', 'Folder.Name', 'IsSignyourself'],
+        keys: [...commanKeys, ...filterKeys],
       };
     // Need your sign report
     case '4Hhwbp482K':
@@ -44,16 +70,7 @@ export default function reportJson(id, userId) {
             },
           },
         },
-        keys: [
-          ...commanKeys,
-          'Note',
-          'Folder.Name',
-          'ExtUserPtr.Email',
-          'Signers.UserId',
-          'AuditTrail',
-          'SignedUrl',
-          'ExpiryDate',
-        ],
+        keys: [...needYourSignKeys, ...filterKeys],
       };
     // In progress report
     case '1MwEuxLEkF':
@@ -69,21 +86,7 @@ export default function reportJson(id, userId) {
           CreatedBy: { __type: 'Pointer', className: '_User', objectId: currentUserId },
           ExpiryDate: { $gt: { __type: 'Date', iso: new Date().toISOString() } },
         },
-        keys: [
-          ...commanKeys,
-          'Note',
-          'Folder.Name',
-          'ExtUserPtr.Email',
-          'AuditTrail',
-          'AuditTrail.UserPtr',
-          'ExpiryDate',
-          'SendMail',
-          'SignedUrl',
-          'RequestBody',
-          'RequestSubject',
-          'ExtUserPtr.TenantId.RequestBody',
-          'ExtUserPtr.TenantId.RequestSubject',
-        ],
+        keys: [...inProgressKeys, ...filterKeys],
       };
     // completed documents report
     case 'kQUoW4hUXz':
@@ -115,17 +118,7 @@ export default function reportJson(id, userId) {
             },
           ],
         },
-        keys: [
-          ...commanKeys,
-          'Note',
-          'Folder.Name',
-          'SignedUrl',
-          'TimeToCompleteDays',
-          'IsSignyourself',
-          'IsCompleted',
-          'ExpiryDate',
-          'IsSignyourself',
-        ],
+        keys: [...commanKeys, ...filterKeys, 'IsCompleted'],
       };
     //  declined documents report
     case 'UPr2Fm5WY3':
@@ -137,7 +130,7 @@ export default function reportJson(id, userId) {
           IsDeclined: true,
           CreatedBy: { __type: 'Pointer', className: '_User', objectId: currentUserId },
         },
-        keys: [...commanKeys, 'Note', 'Folder.Name', 'DeclineReason', 'SignedUrl'],
+        keys: [...commanKeys, 'DeclineReason'],
       };
     //  Expired Documents report
     case 'zNqBHXHsYH':
@@ -152,7 +145,7 @@ export default function reportJson(id, userId) {
           ExpiryDate: { $lt: { __type: 'Date', iso: new Date().toISOString() } },
           CreatedBy: { __type: 'Pointer', className: '_User', objectId: currentUserId },
         },
-        keys: [...commanKeys, 'Note', 'Folder.Name', 'SignedUrl', 'ExpiryDate'],
+        keys: [...commanKeys, ...filterKeys],
       };
     //  Recently sent for signatures report show on dashboard
     case 'd9k3UfYHBc':
@@ -168,19 +161,7 @@ export default function reportJson(id, userId) {
           CreatedBy: { __type: 'Pointer', className: '_User', objectId: currentUserId },
           ExpiryDate: { $gt: { __type: 'Date', iso: new Date().toISOString() } },
         },
-        keys: [
-          ...commanKeys,
-          'Folder.Name',
-          'ExtUserPtr.Email',
-          'AuditTrail',
-          'AuditTrail.UserPtr',
-          'ExpiryDate',
-          'SignedUrl',
-          'RequestBody',
-          'RequestSubject',
-          'ExtUserPtr.TenantId.RequestBody',
-          'ExtUserPtr.TenantId.RequestSubject',
-        ],
+        keys: inProgressKeys,
       };
     //  Recent signature requests report show on dashboard
     case '5Go51Q7T8r':
@@ -201,14 +182,7 @@ export default function reportJson(id, userId) {
             },
           },
         },
-        keys: [
-          ...commanKeys,
-          'ExtUserPtr.Email',
-          'Signers.UserId',
-          'AuditTrail',
-          'SignedUrl',
-          'ExpiryDate',
-        ],
+        keys: needYourSignKeys,
       };
     // Drafts report show on dashboard
     case 'kC5mfynCi4':
@@ -222,7 +196,7 @@ export default function reportJson(id, userId) {
           SignedUrl: { $exists: false },
           CreatedBy: { __type: 'Pointer', className: '_User', objectId: currentUserId },
         },
-        keys: [...commanKeys, 'Note', 'Folder.Name'],
+        keys: commanKeys,
       };
     // contact book report
     case 'contacts':
@@ -233,7 +207,7 @@ export default function reportJson(id, userId) {
           CreatedBy: { __type: 'Pointer', className: '_User', objectId: currentUserId },
           IsDeleted: { $ne: true },
         },
-        keys: ['Name', 'Email', 'Phone'],
+        keys: ['Name', 'Email', 'Phone', 'JobTitle', 'Company'],
       };
     // Templates report
     case '6TeaPr321t':
@@ -243,8 +217,7 @@ export default function reportJson(id, userId) {
         params: { Type: { $ne: 'Folder' }, IsArchive: { $ne: true } },
         keys: [
           ...commanKeys,
-          'Note',
-          'Folder.Name',
+          ...filterKeys,
           'IsPublic',
           'SharedWith.Name',
           'SendinOrder',

@@ -28,7 +28,7 @@ function AgreementSign(props) {
             <button
               onClick={() => {
                 props.setIsAgree(true);
-                props.showFirstWidget()
+                props.showFirstWidget();
               }}
               className="op-btn op-btn-primary op-btn-sm w-full md:w-auto"
             >

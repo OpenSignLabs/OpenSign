@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import SignatureCanvas from "react-signature-canvas";
 import "../styles/managesign.css";
 import "../styles/signature.css";
@@ -12,8 +12,7 @@ import { SaveFileSize } from "../constant/saveFileSize";
 import Alert from "../primitives/Alert";
 import Loader from "../primitives/Loader";
 import { useTranslation } from "react-i18next";
-import sanitizeFileName from "../primitives/sanitizeFileName";
-import Title from "../components/Title";
+import { sanitizeFileName } from "../utils";
 const ManageSign = () => {
   const { t } = useTranslation();
   const [penColor, setPenColor] = useState("blue");
@@ -206,7 +205,8 @@ const ManageSign = () => {
         const fileRes = await getSecureUrl(response?.url());
         if (fileRes?.url) {
           const tenantId = localStorage.getItem("TenantId");
-          SaveFileSize(file.size, fileRes?.url, tenantId);
+          const userId = Parse?.User?.current()?.id;
+          SaveFileSize(file.size, fileRes?.url, tenantId, userId);
           return fileRes?.url;
         } else {
           alert(t("something-went-wrong-mssg"));
@@ -298,7 +298,6 @@ const ManageSign = () => {
   };
   return (
     <div className="relative h-full bg-base-100 text-base-content flex shadow-md rounded-box overflow-auto">
-      <Title title="My signature" />
       {isLoader && (
         <div className="absolute bg-black bg-opacity-30 z-50 w-full h-full flex justify-center items-center">
           <Loader />
@@ -325,7 +324,7 @@ const ManageSign = () => {
               />
               <div className="relative">
                 {image ? (
-                  <div className="mysignatureCanvas  relative border-[2px] border-[#888] rounded-box overflow-hidden">
+                  <div className="mysignatureCanvas relative border-[2px] border-[#888] rounded-box overflow-hidden">
                     <img
                       alt="signature"
                       src={image}

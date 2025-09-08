@@ -1,5 +1,7 @@
 export default async function editContact(request) {
   const { contactId, name, email, phone, tenantId } = request.params;
+  const company = request.params?.company;
+  const jobTitle = request.params?.jobTitle;
   if (!request?.user) {
     throw new Parse.Error(Parse.Error.INVALID_SESSION_TOKEN, 'User is not authenticated.');
   }
@@ -24,6 +26,12 @@ export default async function editContact(request) {
       contactQuery.set('Name', name);
       if (phone) {
         contactQuery.set('Phone', phone);
+      }
+      if (company) {
+        contactQuery.set('Company', company);
+      }
+      if (jobTitle) {
+        contactQuery.set('JobTitle', jobTitle);
       }
       contactQuery.set('Email', email?.toLowerCase()?.replace(/\s/g, ''));
       contactQuery.set('UserRole', 'contracts_Guest');
@@ -55,7 +63,7 @@ export default async function editContact(request) {
           acl.setWriteAccess(createdBy.objectId, true);
           contactQuery.setACL(acl);
 
-          const res = await contactQuery.save();
+          const res = await contactQuery.save(null, { useMasterKey: true });
           const parseData = JSON.parse(JSON.stringify(res));
           return parseData;
         }
@@ -76,7 +84,7 @@ export default async function editContact(request) {
           acl.setReadAccess(createdBy.objectId, true);
           acl.setWriteAccess(createdBy.objectId, true);
           contactQuery.setACL(acl);
-          const res = await contactQuery.save();
+          const res = await contactQuery.save(null, { useMasterKey: true });
           const parseData = JSON.parse(JSON.stringify(res));
           return parseData;
         }

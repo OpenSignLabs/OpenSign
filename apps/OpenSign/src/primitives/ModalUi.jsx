@@ -12,13 +12,17 @@ const ModalUi = ({
   position
 }) => {
   const width = reduceWidth;
-  const isBottom = position === "bottom" ? "items-end pb-2" : "";
+  const isBottom = position === "bottom" ? "items-end pb-2 !bg-black/10" : "";
   return (
     <>
       {isOpen && (
         <dialog
           id="selectSignerModal"
           className={`${isBottom} op-modal op-modal-open`}
+          style={{
+            overlay: { zIndex: 1000 },
+            content: { zIndex: 1001, overflow: "visible" } // Ensure modal doesn’t clip content
+          }}
         >
           <div
             className={`${
@@ -28,7 +32,7 @@ const ModalUi = ({
             {showHeader && (
               <>
                 {title && (
-                  <h3 className="text-base-content font-bold text-lg pt-[15px] px-[20px]">
+                  <h3 className="text-base-content text-left font-bold text-lg pt-[15px] px-[20px]">
                     {title}
                   </h3>
                 )}

@@ -14,7 +14,7 @@ import { PDFDocument } from "pdf-lib";
 import { maxFileSize } from "../../constant/const";
 import PageReorderModal from "./PageReorderModal";
 
-function PdfZoom(props) {
+function PdfTools(props) {
   const { t } = useTranslation();
   const mergePdfInputRef = useRef(null);
   const [isDeletePage, setIsDeletePage] = useState(false);
@@ -57,13 +57,14 @@ function PdfZoom(props) {
   };
 
   const handleFileUpload = async (e) => {
+    props.setIsTour && props.setIsTour(false);
     const file = e.target.files[0];
     if (!file) {
-      alert("Please upload a valid PDF file.");
+      alert(t("please-select-pdf"));
       return;
     }
     if (!file.type.includes("pdf")) {
-      alert("Only PDF files are allowed.");
+      alert(t("only-pdf-allowed"));
       return;
     }
     const mb = Math.round(file?.size / Math.pow(1024, 2));
@@ -95,18 +96,18 @@ function PdfZoom(props) {
                   // Upload the file to Parse Server
                 } catch (err) {
                   console.error("Incorrect password or decryption failed", err);
-                  alert("Incorrect password or decryption failed.");
+                  alert(t("incorrect-password-or-decryption-failed"));
                 }
               } else {
-                alert("Please provided Password.");
+                alert(t("provide-password"));
               }
             } else {
               console.log("Err ", err);
-              alert("error while uploading pdf.");
+              alert(t("error-uploading-pdf"));
             }
           }
         } else {
-          alert("error while uploading pdf.");
+          alert(t("error-uploading-pdf"));
         }
       }
       const uploadedPdfDoc = await PDFDocument.load(uploadedPdfBytes, {
@@ -150,13 +151,42 @@ function PdfZoom(props) {
     setIsReorderModal(false);
   };
 
+  const handleDeletePage = () => {
+    setIsDeletePage(true);
+    props.setIsTour && props.setIsTour(false);
+  };
+
+  const handleReorderPages = () => {
+    setIsReorderModal(true);
+    props.setIsTour && props.setIsTour(false);
+  };
+
+  const handleZoomIn = () => {
+    props.clickOnZoomIn();
+    props.setIsTour && props.setIsTour(false);
+  };
+  const handleZoomOut = () => {
+    props.clickOnZoomOut();
+    props.setIsTour && props.setIsTour(false);
+  };
+  const handleRotate = () => {
+    props.handleRotationFun(90);
+    props.setIsTour && props.setIsTour(false);
+  };
+  const handleAntiRotate = () => {
+    props.handleRotationFun(-90);
+    props.setIsTour && props.setIsTour(false);
+  };
   return (
     <>
-      <span className="hidden md:flex flex-col gap-1 text-center md:w-[5%] mt-[42px]">
+      <span
+        data-tut="pdftools"
+        className="hidden h-max md:flex flex-col gap-1 text-center md:w-[5%] mt-[42px]"
+      >
         {!props.isDisableEditTools && (
           <>
             <span
-              className="bg-gray-50 px-[4px]  2xl:py-[10px] cursor-pointer"
+              className="bg-gray-50 px-[4px] 2xl:py-[10px] cursor-pointer"
               onClick={() => mergePdfInputRef.current.click()}
               title={t("add-pages")}
             >
@@ -170,15 +200,15 @@ function PdfZoom(props) {
               <i className="fa-light fa-plus text-gray-500 2xl:text-[25px]"></i>
             </span>
             <span
-              className="bg-gray-50 px-[4px]  2xl:py-[10px] cursor-pointer"
-              onClick={() => setIsDeletePage(true)}
+              className="bg-gray-50 px-[4px] 2xl:py-[10px] cursor-pointer"
+              onClick={handleDeletePage}
               title={t("delete-page")}
             >
               <i className="fa-light fa-trash text-gray-500 2xl:text-[25px]"></i>
             </span>
             <span
-              className="bg-gray-50 px-[4px]  2xl:py-[10px] cursor-pointer"
-              onClick={() => setIsReorderModal(true)}
+              className="bg-gray-50 px-[4px] 2xl:py-[10px] cursor-pointer"
+              onClick={handleReorderPages}
               title={t("reorder-pages")}
             >
               <i className="fa-light fa-list-ol text-gray-500 2xl:text-[25px]"></i>
@@ -187,7 +217,7 @@ function PdfZoom(props) {
         )}
         <span
           className="bg-gray-50 px-[4px] 2xl:py-[10px] cursor-pointer"
-          onClick={() => props.clickOnZoomIn()}
+          onClick={handleZoomIn}
           title={t("zoom-in")}
         >
           <i className="fa-light fa-magnifying-glass-plus text-gray-500 2xl:text-[25px]"></i>
@@ -197,7 +227,7 @@ function PdfZoom(props) {
           <>
             <span
               className="bg-gray-50 px-[4px] 2xl:py-[10px] cursor-pointer"
-              onClick={() => props.handleRotationFun(90)}
+              onClick={handleRotate}
               title={t("rotate-right")}
             >
               <i className="fa-light fa-rotate-right text-gray-500 2xl:text-[25px]"></i>
@@ -205,18 +235,15 @@ function PdfZoom(props) {
             <span
               className="bg-gray-50 px-[4px] 2xl:py-[10px] cursor-pointer"
               title={t("rotate-left")}
-              onClick={() => props.handleRotationFun(-90)}
+              onClick={handleAntiRotate}
             >
               <i className="fa-light fa-rotate-left text-gray-500 2xl:text-[25px]"></i>
             </span>
           </>
         )}
         <span
-          className="bg-gray-50 px-[4px]  2xl:py-[10px]"
-          onClick={() => props.clickOnZoomOut()}
-          style={{
-            cursor: props.zoomPercent > 0 ? "pointer" : "default"
-          }}
+          className="bg-gray-50 px-[4px] 2xl:py-[10px] cursor-pointer"
+          onClick={handleZoomOut}
           title={t("zoom-out")}
         >
           <i className="fa-light fa-magnifying-glass-minus text-gray-500 2xl:text-[30px]"></i>
@@ -229,8 +256,8 @@ function PdfZoom(props) {
         handleClose={() => setIsDeletePage(false)}
       >
         <div className="h-[100%] p-[20px]">
-          <p className="font-medium">{t("delete-alert-2")}</p>
-          <p className="pt-3">{t("delete-note")}</p>
+          <p className="font-medium text-base-content">{t("delete-alert-2")}</p>
+          <p className="pt-3 text-base-content">{t("delete-note")}</p>
           <div className="h-[1px] bg-[#9f9f9f] w-full my-[15px]"></div>
           <button
             onClick={() => handleDetelePage()}
@@ -242,7 +269,7 @@ function PdfZoom(props) {
           <button
             onClick={() => setIsDeletePage(false)}
             type="button"
-            className="op-btn op-btn-ghost ml-1"
+            className="op-btn op-btn-ghost text-base-content ml-1"
           >
             {t("no")}
           </button>
@@ -258,4 +285,4 @@ function PdfZoom(props) {
   );
 }
 
-export default PdfZoom;
+export default PdfTools;

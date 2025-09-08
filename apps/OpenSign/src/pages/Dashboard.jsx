@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import GetDashboard from "../components/dashboard/GetDashboard";
 import { useNavigate, useParams } from "react-router";
-import Title from "../components/Title";
 import { useDispatch } from "react-redux";
 import { saveTourSteps } from "../redux/reducers/TourStepsReducer";
 import dashboardJson from "../json/dashboardJson";
@@ -57,7 +56,6 @@ const Dashboard = () => {
 
   return (
     <React.Fragment>
-      <Title title="Dashboard" />
       {loading ? (
         <div className="h-[300px] w-full bg-white flex justify-center items-center rounded-md">
           <Loader />

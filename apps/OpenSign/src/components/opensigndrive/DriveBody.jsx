@@ -366,14 +366,14 @@ function DriveBody(props) {
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 512 512"
-              className="w-[26px] h-[26px] fill-current op-text-secondary"
+              className="w-[26px] h-[26px] fill-current"
             >
               <path d="M64 480H448c35.3 0 64-28.7 64-64V160c0-35.3-28.7-64-64-64H288c-10.1 0-19.6-4.7-25.6-12.8L243.2 57.6C231.1 41.5 212.1 32 192 32H64C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64z" />
             </svg>
             <span className="text-[12px] font-medium">{data.Name}</span>
           </td>
           <td>_</td>
-          <td>Folder</td>
+          <td>{t("folder")}</td>
           <td>_</td>
           <td>_</td>
         </tr>
@@ -390,7 +390,7 @@ function DriveBody(props) {
             <span className="text-[12px] font-medium">{data.Name}</span>
           </td>
           <td>{createddate}</td>
-          <td>Pdf</td>
+          <td>{t("pdf")}</td>
           <td>{t(`drive-document-status.${status}`)}</td>
           <td>
             <i
@@ -421,7 +421,7 @@ function DriveBody(props) {
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 512 512"
-                className="w-[100px] h-[100px] fill-current op-text-secondary"
+                className="w-[100px] h-[100px] fill-current"
               >
                 <path d="M64 480H448c35.3 0 64-28.7 64-64V160c0-35.3-28.7-64-64-64H288c-10.1 0-19.6-4.7-25.6-12.8L243.2 57.6C231.1 41.5 212.1 32 192 32H64C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64z" />
               </svg>
@@ -458,14 +458,14 @@ function DriveBody(props) {
                 className="ContextMenuItem"
               >
                 <i className="fa-light fa-font mr-[8px]"></i>
-                <span>Rename</span>
+                <span>{t(`context-menu.Rename`)}</span>
               </ContextMenu.Item>
               <ContextMenu.Item
                 onClick={() => handleMenuItemClick("Delete", data, data.Type)}
                 className="ContextMenuItem"
               >
                 <i className="fa-light fa-trash mr-[8px]"></i>
-                <span>Delete</span>
+                <span>{t(`context-menu.Delete`)}</span>
               </ContextMenu.Item>
             </ContextMenu.Content>
           </ContextMenu.Portal>
@@ -550,7 +550,6 @@ function DriveBody(props) {
                   )
                 )}
               </div>
-
               <ContextMenu.Portal>
                 <ContextMenu.Content
                   className="ContextMenuContent"
@@ -603,7 +602,6 @@ function DriveBody(props) {
                 {signersName()}
               </>
             )}
-
             <HoverCard.Arrow className="HoverCardArrow" />
           </HoverCard.Content>
         </HoverCard.Portal>
@@ -627,21 +625,21 @@ function DriveBody(props) {
               </tr>
             </thead>
             <tbody>
-              {props?.pdfData?.map((data, ind) => {
-                return (
-                  <React.Fragment key={ind}>
-                    {handleFolderData(data, ind, "table")}
-                  </React.Fragment>
-                );
-              })}
+              {props?.pdfData?.map((data, ind) => (
+                <React.Fragment key={ind}>
+                  {handleFolderData(data, ind, "table")}
+                </React.Fragment>
+              ))}
             </tbody>
           </Table>
         </div>
       ) : (
         <div className="flex flex-row flex-wrap items-center mt-1 pb-[20px] mx-[5px]">
-          {props.pdfData.map((data, ind) => {
-            return <React.Fragment key={ind}>{handleFolderData(data, ind, "list")}</React.Fragment>;
-          })}
+          {props?.pdfData?.map((data, ind) => (
+            <React.Fragment key={ind}>
+              {handleFolderData(data, ind, "list")}
+            </React.Fragment>
+          ))}
         </div>
       )}
 

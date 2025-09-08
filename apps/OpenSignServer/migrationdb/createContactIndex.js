@@ -1,7 +1,7 @@
 import dotenv from 'dotenv';
 import { MongoClient } from 'mongodb';
 import { generateId } from '../Utils.js';
-dotenv.config();
+dotenv.config({ quiet: true });
 
 export default async function createContactIndex() {
   // Provide the complete MongoDB connection URL with the database name

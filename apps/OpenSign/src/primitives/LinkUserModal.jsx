@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import SelectSigners from "../components/shared/fields/SelectSigners";
 import AddContact from "./AddContact";
 import ModalUi from "./ModalUi";
@@ -26,7 +26,6 @@ const LinkUserModal = (props) => {
     >
       <SelectSigners
         {...props}
-        closePopup={props.closePopup}
         isContact={isContact}
         setIsContact={setIsContact}
         isExistSigner={isExistSigner}
@@ -36,10 +35,7 @@ const LinkUserModal = (props) => {
           <div className="op-divider text-base-content mx-[25%] my-1">
             {t("or")}
           </div>
-          <AddContact
-            details={props.handleAddUser}
-            closePopup={props.closePopup}
-          />
+          <AddContact {...props} details={props.handleAddUser} />
         </>
       )}
     </ModalUi>
