@@ -90,6 +90,7 @@ const DocumentsReport = (props) => {
   const [documentId, setDocumentId] = useState("");
   const [isNewContact, setIsNewContact] = useState({ status: false, id: "" });
   const [isPrefillModal, setIsPrefillModal] = useState({});
+  const [isSubmit, setIsSubmit] = useState(false);
   const [error, setError] = useState("");
   const [isMailModal, setIsMailModal] = useState(false);
   const [customizeMail, setCustomizeMail] = useState({ body: "", subject: "" });
@@ -495,7 +496,9 @@ const DocumentsReport = (props) => {
     const docId = props?.ReportName !== "Templates" && item.objectId;
     if (url) {
       try {
-        if (isCompleted) {
+        if (
+          isCompleted
+        ) {
           setIsDownloadModal({ [item.objectId]: true });
         } else {
           const signedUrl = await getSignedUrl(
@@ -920,6 +923,7 @@ const DocumentsReport = (props) => {
   };
   //`handlePrefillWidgetCreateDoc` is used to embed prefill all widgets on document, create document, and send document
   const handlePrefillWidgetCreateDoc = async () => {
+    setIsSubmit(true);
     const scale = 1;
     const key = Object.keys(isPrefillModal)[0];
     setActLoader({ [key]: true });
@@ -957,6 +961,7 @@ const DocumentsReport = (props) => {
         alert(t("user-not-exist"));
       }
     }
+    setIsSubmit(false);
     setActLoader({});
   };
   const handleRecipientSign = (documentId, currentId) => {
@@ -1027,10 +1032,10 @@ const DocumentsReport = (props) => {
     if (isPrefill) {
       return (
         <span className="flex text-sm mt-3 text-red-500">
-         {t("save-as-temp-warn")}
+          {t("save-as-temp-warn")}
         </span>
       );
-    } 
+    }
   };
   return (
     <div className="relative">
@@ -1367,6 +1372,7 @@ const DocumentsReport = (props) => {
                           setIsNewContact={setIsNewContact}
                           isNewContact={isNewContact}
                           docId={item.objectId}
+                          isSubmit={isSubmit}
                         />
                       )}
                       {isModal["extendexpiry_" + item.objectId] && (

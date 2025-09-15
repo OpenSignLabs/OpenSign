@@ -823,6 +823,8 @@ export const createDocument = async (
 ) => {
   if (template && template.length > 0) {
     const Doc = template[0];
+    const date = new Date();
+    const isoDate = date.toISOString();
     let extUserId = Doc.ExtUserPtr.objectId;
     let creatorId = Doc.CreatedBy.objectId;
     const Extand_Class = localStorage.getItem("Extand_Class");
@@ -898,6 +900,7 @@ export const createDocument = async (
       IsTourEnabled: Doc?.IsTourEnabled || false,
       AllowModifications: Doc?.AllowModifications || false,
       TimeToCompleteDays: parseInt(Doc?.TimeToCompleteDays) || 15,
+      DocSentAt: { __type: "Date", iso: isoDate },
       ...SignatureType,
       ...NotifyOnSignatures,
       ...Bcc,
@@ -3429,10 +3432,10 @@ export const updateDateWidgetsRes = (
   journey,
   isRemovePrefill
 ) => {
-  const extUser = localStorage.getItem("Extand_Class");
-  const contactUser = documentData?.Signers.find(
+  const contactUser = documentData?.Signers?.find(
     (data) => data.objectId === signerId
   );
+  const extUser = JSON.stringify([contactUser]);
   let placeHolders = documentData?.Placeholders;
   if (isRemovePrefill) {
     placeHolders = placeHolders?.filter((x) => x.Role !== "prefill");

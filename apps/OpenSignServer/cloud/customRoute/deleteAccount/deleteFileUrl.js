@@ -1,7 +1,7 @@
 import { S3Client, DeleteObjectCommand } from '@aws-sdk/client-s3';
 import fs from 'node:fs/promises';
 import pLimit from 'p-limit';
-import { serverAppId } from '../../Utils.js';
+import { serverAppId } from '../../../Utils.js';
 
 // === Configuration ===
 const serverHost = new URL(process.env.SERVER_URL).hostname;

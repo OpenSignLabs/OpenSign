@@ -165,6 +165,7 @@ const TemplatePlaceholder = () => {
   const [currUserId, setCurrUserId] = useState(false);
   const [documentDetails, setDocumentDetails] = useState();
   const [copied, setCopied] = useState(false);
+  const [isUseTemplate, setIsUseTemplate] = useState(false);
   const currentUser = localStorage.getItem(
     `Parse/${localStorage.getItem("parseAppId")}/currentUser`
   );
@@ -931,6 +932,7 @@ const TemplatePlaceholder = () => {
     }
   };
   const handleCreateDocument = async () => {
+    setIsUseTemplate(true);
     try {
       setIsUiLoading(true);
       const res = await utils?.handleCheckPrefillCreateDoc(
@@ -974,6 +976,7 @@ const TemplatePlaceholder = () => {
     } catch (e) {
       console.log("error in create document function", e);
     }
+    setIsUseTemplate(false);
   };
   const navigatePageToDoc = async () => {
     try {
@@ -2138,6 +2141,7 @@ const TemplatePlaceholder = () => {
           isNewContact={isNewContact}
           documentFlow={"template"}
           docId={pdfDetails[0]?.objectId}
+          isSubmit={isUseTemplate}
         />
       )}
       {isShowModal[currWidgetsDetails?.key] && (

@@ -41,7 +41,7 @@ const DocSuccessPage = () => {
         objectId: docId,
         SignedUrl: docUrl,
         CertificateUrl: certificate,
-        IsCompleted: completed
+        IsCompleted: completed,
       };
       setPdfDetails([details]);
       const base64Pdf = await getBase64FromUrl(docUrl);
@@ -52,7 +52,9 @@ const DocSuccessPage = () => {
   };
 
   const handleDownload = () => {
-    if (pdfDetails?.[0]?.IsCompleted) {
+    if (
+      pdfDetails?.[0]?.IsCompleted
+    ) {
       setIsDownloadModal(true);
     } else {
       handleDownloadPdf(pdfDetails, setIsDownloading, pdfBase64Url);
@@ -99,21 +101,26 @@ const DocSuccessPage = () => {
                   <span>{t("download")}</span>
                 </button>
 
-                {pdfDetails?.[0]?.IsCompleted && (
-                  <button
-                    type="button"
-                    onClick={() =>
-                      handleDownloadCertificate(pdfDetails, setIsDownloading)
-                    }
-                    className="font-medium text-sm md:text-[13px] md:px-4 py-2 op-btn op-btn-secondary"
-                  >
-                    <i
-                      className="fa-light fa-award mx-[3px] md:mx-0"
-                      aria-hidden="true"
-                    ></i>
-                    <span>{t("certificate")}</span>
-                  </button>
-                )}
+                {
+                    pdfDetails?.[0]?.IsCompleted && (
+                      <button
+                        type="button"
+                        onClick={() =>
+                          handleDownloadCertificate(
+                            pdfDetails,
+                            setIsDownloading
+                          )
+                        }
+                        className="font-medium text-sm md:text-[13px] md:px-4 py-2 op-btn op-btn-secondary"
+                      >
+                        <i
+                          className="fa-light fa-award mx-[3px] md:mx-0"
+                          aria-hidden="true"
+                        ></i>
+                        <span>{t("certificate")}</span>
+                      </button>
+                    )
+                }
                 <button
                   onClick={(e) =>
                     handleToPrint(e, setIsDownloading, pdfDetails)

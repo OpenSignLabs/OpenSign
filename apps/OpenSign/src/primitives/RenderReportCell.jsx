@@ -138,6 +138,12 @@ export const RenderReportCell = ({
           {rowData?.ExpiryDate ? formatDate(rowData?.ExpiryDate?.iso) : "-"}
         </td>
       );
+    case "Sent Date":
+      return (
+        <td key={col} className="p-2 text-center">
+          {rowData?.DocSentAt ? formatDate(rowData?.DocSentAt?.iso) : "-"}
+        </td>
+      );
     case "Signers":
       return (
         <SignerCell

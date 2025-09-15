@@ -67,7 +67,7 @@ const Forms = (props) => {
     NotifyOnSignatures: "",
     Bcc: [],
     RedirectUrl: "",
-    AllowModifications: false
+    AllowModifications: false,
   });
   const [fileupload, setFileUpload] = useState("");
   const [selectedFiles, setSelectedFiles] = useState([]);
@@ -461,7 +461,7 @@ const Forms = (props) => {
             IsEnableOTP: "false",
             IsTourEnabled: istourenabled,
             RedirectUrl: "",
-            AllowModifications: false
+            AllowModifications: false,
           });
           setFileUpload("");
           setSelectedFiles([]);
@@ -541,7 +541,7 @@ const Forms = (props) => {
       IsTourEnabled: istourenabled,
       NotifyOnSignatures: notifySign,
       RedirectUrl: "",
-      AllowModifications: false
+      AllowModifications: false,
     };
     setFormData(obj);
     removeFile();
@@ -1047,7 +1047,7 @@ const Forms = (props) => {
                   ></div>
                 )}
                 {isAdvanceOpt && (
-                  <div className="card bg-base-100 rounded-box  p-3 flex-grow ">
+                  <div className="card bg-base-100 rounded-box p-3 flex-grow ">
                     {formData?.autoreminder === true &&
                       props.title !== "New Template" && (
                         <div className="text-xs mt-2">

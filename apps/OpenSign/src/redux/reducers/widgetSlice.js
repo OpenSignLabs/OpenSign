@@ -13,7 +13,8 @@ const initialState = {
   lastIndex: "",
   scrollTriggerId: "",
   prefillImg: [],
-  prefillImgLoad: {}
+  prefillImgLoad: {},
+  typedSignFont: "Fasthand"
 };
 
 const widgetSlice = createSlice({
@@ -40,6 +41,9 @@ const widgetSlice = createSlice({
     },
     setScrollTriggerId: (state, action) => {
       state.scrollTriggerId = action.payload;
+    },
+    setTypedSignFont: (state, action) => {
+      state.typedSignFont = action.payload;
     },
     setPrefillImg: (state, action) => {
       const existingIndex = state.prefillImg.findIndex(
@@ -73,7 +77,8 @@ export const {
   setLastIndex,
   setScrollTriggerId,
   setPrefillImg,
-  setPrefillImgLoad
+  setPrefillImgLoad,
+  setTypedSignFont
 } = widgetSlice.actions;
 
 export default widgetSlice.reducer;

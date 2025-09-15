@@ -11,7 +11,7 @@ export const extraCols = [
 export default function reportJson(id) {
   const head = ["Title", "Note", "Folder", "File", "Owner", "Signers"];
   const declineHead = ["Title", "Reason", "Folder", "File", "Owner", "Signers"];
-  const iphead = ["Title", "Note", "Folder", "File", "Signers"];
+  const iphead = ["Title", "Note", "Folder", "File", "Signers", "Sent Date"];
   const contactbook = ["Name", "Email", "Phone", "Company", "JobTitle"];
   const dashboardReportHead = ["Title", "File", "Owner", "Signers"];
   const templateReport = ["Title", "File", "Owner", "Signers"];
@@ -38,25 +38,6 @@ export default function reportJson(id) {
             redirectUrl: "",
             action: "delete"
           }
-          // {
-          //   btnId: "22534",
-          //   hoverLabel: "option",
-          //   btnColor: "",
-          //   restrictBtn: true,
-          //   textColor: "black",
-          //   btnIcon: "fa-light fa-ellipsis-vertical fa-lg",
-          //   action: "option",
-          //   subaction: [
-          //     {
-          //       btnId: "1630",
-          //       btnLabel: "Save as template",
-          //       hoverLabel: "Save as template",
-          //       btnIcon: "fa-light fa-envelope",
-          //       redirectUrl: "",
-          //       action: "saveastemplate"
-          //     }
-          //   ]
-          // }
         ],
         helpMsg:
           "These are documents you have started but have not finalized for sending."
@@ -429,25 +410,6 @@ export default function reportJson(id) {
             redirectUrl: "",
             action: "delete"
           }
-          // {
-          //   btnId: "55534",
-          //   hoverLabel: "option",
-          //   btnColor: "",
-          //   restrictBtn: true,
-          //   textColor: "black",
-          //   btnIcon: "fa-light fa-ellipsis-vertical fa-lg",
-          //   action: "option",
-          //   subaction: [
-          //     {
-          //       btnId: "6630",
-          //       btnLabel: "Save as template",
-          //       hoverLabel: "Save as template",
-          //       btnIcon: "fa-light fa-envelope",
-          //       redirectUrl: "",
-          //       action: "saveastemplate"
-          //     }
-          //   ]
-          // }
         ]
       };
     // contactbook report
