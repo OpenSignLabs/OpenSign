@@ -174,6 +174,7 @@ const AddContact = (props) => {
               required
               disabled={addYourself}
               className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
+              placeholder={t("enter-name")}
             />
           </div>
           <div className="mb-[0.75rem]">
@@ -193,6 +194,7 @@ const AddContact = (props) => {
               required
               disabled={addYourself}
               className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs lowercase"
+              placeholder={t("enter-email")}
             />
           </div>
           {isOptionalDetails && (

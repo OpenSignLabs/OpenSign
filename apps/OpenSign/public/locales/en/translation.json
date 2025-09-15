@@ -8,7 +8,7 @@
   "dark-mode": "Dark mode",
   "name": "Name",
   "phone": "Phone",
-  "phone-optional": "optional",
+  "phone-optional": "Optional",
   "email": "Email",
   "company": "Company",
   "job-title": "Job title",
@@ -1211,5 +1211,12 @@
   "otp-email":"We’ve sent a verification code to",
   "save-as-temp-warn":"Note: This document includes prefilled widgets, which will be automatically removed as they are already incorporated into the base document.",
   "edit-document": "Edit document",
-  "otp-email":"We've sent a verification code to"
+  "modify": "Modify",
+  "merge-certificate-to-pdf": "Merge Certificate to PDF",
+  "merge-cc-to-pdf-help": {
+    "p1": "This will ensure that the completion certificate is included in the final PDF document. However, please note that once merged, the certificate cannot be separated from the main document.",
+    "p2": "If you choose not to merge, the completion certificate will be provided as a separate PDF file along with the signed document."
+  },
+  "enter-name": "Enter name",
+  "enter-email": "Enter email"
 }

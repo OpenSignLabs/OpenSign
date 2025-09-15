@@ -52,7 +52,7 @@ const EditTemplate = ({
     Bcc: template?.Bcc,
     RedirectUrl: template?.RedirectUrl || "",
     AllowModifications: template?.AllowModifications || false,
-    TimeToCompleteDays: template?.TimeToCompleteDays || 15
+    TimeToCompleteDays: template?.TimeToCompleteDays || 15,
   });
   const [isUpdate, setIsUpdate] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
@@ -244,6 +244,7 @@ const EditTemplate = ({
     setShowConfirm(false);
     handleClose();
   };
+
   return (
     <ModalUi
       isOpen

@@ -96,8 +96,8 @@ function DownloadPdfZip(props) {
       handleClose={() => props.setIsDownloadModal(false)}
     >
       <div className="p-[20px] h-full text-base-content">
-        {downloadType.map((data, ind) => {
-          return (
+        {downloadType
+          .map((data, ind) => (
             <label
               key={ind}
               className="flex items-center gap-1 mb-2 cursor-pointer"
@@ -111,8 +111,7 @@ function DownloadPdfZip(props) {
               />
               {data.label}
             </label>
-          );
-        })}
+          ))}
         <div className="h-[1px] w-full my-[15px] bg-[#9f9f9f]"></div>
         <button
           onClick={() => handleDownload()}

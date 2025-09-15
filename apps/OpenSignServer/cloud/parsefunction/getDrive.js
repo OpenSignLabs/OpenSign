@@ -46,7 +46,7 @@ export default async function getDrive(request) {
       return { error: 'Please provide required parameter!' };
     }
   } catch (err) {
-    console.log('err', err);
+    console.log('err', err?.response?.data || err);
     if (err.code == 209) {
       return { error: 'Invalid session token' };
     } else {
