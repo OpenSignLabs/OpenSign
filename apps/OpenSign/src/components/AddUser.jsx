@@ -179,6 +179,7 @@ const AddUser = (props) => {
                           onInput={(e) => e.target.setCustomValidity("")}
                           required
                           className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
+                          placeholder={t("enter-name")}
                         />
                       </div>
                       <div className="mb-3">
@@ -200,6 +201,7 @@ const AddUser = (props) => {
                           }
                           onInput={(e) => e.target.setCustomValidity("")}
                           className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
+                          placeholder={t("enter-email")}
                         />
                       </div>
                       <div className="mb-3">

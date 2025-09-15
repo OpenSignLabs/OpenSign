@@ -441,14 +441,12 @@ function PrefillWidgetModal(props) {
                       handleCheckboxValue(e.target.checked, ind, position);
                     }}
                   />
-                  {!position.options?.isHideLabel && (
-                    <label
-                      htmlFor={`checkbox-${position.key + ind}`}
-                      className="text-xs mb-0 text-center ml-[3px] cursor-pointer"
-                    >
-                      {data}
-                    </label>
-                  )}
+                  <label
+                    htmlFor={`checkbox-${position.key + ind}`}
+                    className="text-xs mb-0 text-center ml-[3px] cursor-pointer"
+                  >
+                    {data}
+                  </label>
                 </div>
               ))}
             </div>
@@ -560,14 +558,12 @@ function PrefillWidgetModal(props) {
                       handleWidgetDetails(position, data);
                     }}
                   />
-                  {!position.options?.isHideLabel && (
-                    <label
-                      htmlFor={`radio-${position.key + ind}`}
-                      className="text-xs mb-0 ml-[2px] cursor-pointer"
-                    >
-                      {data}
-                    </label>
-                  )}
+                  <label
+                    htmlFor={`radio-${position.key + ind}`}
+                    className="text-xs mb-0 ml-[2px] cursor-pointer"
+                  >
+                    {data}
+                  </label>
                 </div>
               ))}
             </div>
@@ -591,8 +587,8 @@ function PrefillWidgetModal(props) {
     }
   };
 
-  const handleEmbedPrefill = (item) => {
-      props.handleCreateDocument();
+  const handleEmbedPrefill = async (item) => {
+      await props.handleCreateDocument();
   };
   //`loadOptions` function to use show all list of signer in dropdown
   const loadOptions = async (inputValue) => {
@@ -654,7 +650,7 @@ function PrefillWidgetModal(props) {
         handleClose={props.handleClosePrefillModal}
       >
         <div className="relative">
-          {loading && (
+          {(props?.isSubmit || loading) && (
             <div className="absolute inset-0 flex items-center justify-center bg-white/70 z-[9999]">
               <Loader />
             </div>
@@ -733,7 +729,7 @@ function PrefillWidgetModal(props) {
           </div>
           <div className="flex gap-2 mx-4 mb-3">
             <button
-              disabled={isAnyLoaderActive}
+              disabled={isAnyLoaderActive || props?.isSubmit}
               className="op-btn op-btn-primary op-btn-sm w-[80px]"
               onClick={() => handleEmbedPrefill(props?.item)}
             >

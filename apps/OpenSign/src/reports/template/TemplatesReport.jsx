@@ -85,6 +85,7 @@ const TemplatesReport = (props) => {
   const [documentId, setDocumentId] = useState("");
   const [isNewContact, setIsNewContact] = useState({ status: false, id: "" });
   const [isPrefillModal, setIsPrefillModal] = useState({});
+  const [isSubmit, setIsSubmit] = useState(false);
   const startIndex = (currentPage - 1) * props.docPerPage;
   const { isMoreDocs, setIsNextRecord } = props;
   const [isMailModal, setIsMailModal] = useState(false);
@@ -871,6 +872,7 @@ const TemplatesReport = (props) => {
   };
   //`handlePrefillWidgetCreateDoc` is used to embed prefill all widgets on document, create document, and send document
   const handlePrefillWidgetCreateDoc = async () => {
+    setIsSubmit(true);
     const scale = 1;
     const res = await utils?.handleCheckPrefillCreateDoc(
       xyPosition,
@@ -940,6 +942,7 @@ const TemplatesReport = (props) => {
         alert(t("user-not-exist"));
       }
     }
+    setIsSubmit(false);
   };
   //function show signer list and share link to share signUrl
   const handleShareList = () => {
@@ -1257,6 +1260,7 @@ const TemplatesReport = (props) => {
                           setIsNewContact={setIsNewContact}
                           isNewContact={isNewContact}
                           docId={item.objectId}
+                          isSubmit={isSubmit}
                         />
                       )}
                       {isShareWith[item.objectId] && (

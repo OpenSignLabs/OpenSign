@@ -8,7 +8,7 @@
   "dark-mode": "Mode sombre",
   "name": "Nom et Prénom",
   "phone": "Téléphone",
-  "phone-optional": "(facultatif)",
+  "phone-optional": "Optionnel",
   "email": "E-mail",
   "company": "Organisation",
   "job-title": "Votre Fonction",
@@ -1210,5 +1210,12 @@
   "otp-email": "Nous avons envoyé un code de vérification",
   "save-as-temp-warn": "Remarque : Ce document contient des widgets préremplis, qui seront automatiquement supprimés car ils sont déjà intégrés dans le document de base.",
   "edit-document": "Modifier le document",
-  "otp-email": "Nous avons envoyé un code de vérification"
+  "modify": "Modifier",
+  "merge-certificate-to-pdf": "Fusionner le certificat avec le PDF",
+  "merge-cc-to-pdf-help": {
+    "p1": "Cela garantira que le certificat de finalisation est inclus dans le document PDF final. Cependant, veuillez noter qu'une fois fusionné, le certificat ne peut plus être séparé du document principal.",
+    "p2": "Si vous choisissez de ne pas fusionner, le certificat de finalisation sera fourni sous forme de fichier PDF distinct accompagné du document signé."
+  },
+  "enter-name": "Saisir le nom",
+  "enter-email": "Saisir l'e-mail"
 }

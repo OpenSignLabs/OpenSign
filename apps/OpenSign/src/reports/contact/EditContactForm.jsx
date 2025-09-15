@@ -88,6 +88,7 @@ const EditContactForm = (props) => {
               onInput={(e) => e.target.setCustomValidity("")}
               onInvalid={(e) => e.target.setCustomValidity(t("input-required"))}
               className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
+              placeholder={t("enter-name")}
               required
             />
           </div>
@@ -105,6 +106,7 @@ const EditContactForm = (props) => {
               onInput={(e) => e.target.setCustomValidity("")}
               onInvalid={(e) => e.target.setCustomValidity(t("input-required"))}
               className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
+              placeholder={t("enter-email")}
               required
             />
           </div>

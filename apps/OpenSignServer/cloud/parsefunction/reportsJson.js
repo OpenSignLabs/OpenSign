@@ -25,6 +25,7 @@ export default function reportJson(id, currentUserId) {
     'RequestSubject',
     'ExtUserPtr.TenantId.RequestBody',
     'ExtUserPtr.TenantId.RequestSubject',
+    'DocSentAt',
   ];
   const filterKeys = [
     'TimeToCompleteDays',

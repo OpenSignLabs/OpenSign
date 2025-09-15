@@ -8,7 +8,7 @@
   "dark-mode": "Dunkelmodus",
   "name": "Name",
   "phone": "Telefon",
-  "phone-optional": "optional",
+  "phone-optional": "Optional",
   "email": "E-Mail",
   "company": "Unternehmen",
   "job-title": "Berufsbezeichnung",
@@ -1210,5 +1210,12 @@
   "otp-email": "Wir haben einen Bestätigungscode gesendet",
   "save-as-temp-warn": "Hinweis: Dieses Dokument enthält vorausgefüllte Widgets, die automatisch entfernt werden, da sie bereits im Basisdokument integriert sind.",
   "edit-document": "Dokument bearbeiten",
-  "otp-email": "Wir haben einen Bestätigungscode gesendet"
+  "modify": "Ändern",
+  "merge-certificate-to-pdf": "Zertifikat mit PDF zusammenführen",
+  "merge-cc-to-pdf-help": {
+    "p1": "Dies stellt sicher, dass das Abschlusszertifikat im endgültigen PDF-Dokument enthalten ist. Bitte beachten Sie jedoch, dass das Zertifikat nach dem Zusammenführen nicht mehr vom Hauptdokument getrennt werden kann.",
+    "p2": "Wenn Sie sich entscheiden, nicht zusammenzuführen, wird das Abschlusszertifikat als separate PDF-Datei zusammen mit dem unterzeichneten Dokument bereitgestellt."
+  },
+  "enter-name": "Name eingeben",
+  "enter-email": "E-Mail eingeben"
 }

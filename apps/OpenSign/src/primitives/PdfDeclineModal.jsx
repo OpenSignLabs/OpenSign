@@ -63,7 +63,7 @@ function CustomModal(props) {
                   className="op-btn op-btn-secondary ml-[10px] mb-3 mt-1"
                   onClick={() => props.handleDownloadBtn()}
                 >
-                  Download
+                  {t("download")}
                 </button>
               )}
             </div>
