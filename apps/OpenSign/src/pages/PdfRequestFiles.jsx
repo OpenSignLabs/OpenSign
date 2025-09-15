@@ -14,8 +14,9 @@ import {
   setMyInitial,
   setDefaultSignImg,
   resetWidgetState,
-  setPrefillImg
-} from "../redux/reducers/widgetSlice.js";
+  setPrefillImg,
+  setTypedSignFont
+} from "../redux/reducers/widgetSlice";
 import {
   contractDocument,
   embedWidgetsToDoc,
@@ -736,6 +737,7 @@ function PdfRequestFiles(
                   widgets
                 );
                 if (resSign && resSign.status === "success") {
+                  dispatch(setTypedSignFont("Fasthand"));
                   setPdfUrl(resSign.data);
                   setIsSigned(true);
                   setSignedSigners([]);
@@ -884,7 +886,8 @@ function PdfRequestFiles(
                       ?.IsCompleted
                       ? `&completed=true`
                       : "";
-                    const params = `docid=${updatedDoc.updatedPdfDetails[0].objectId}&docurl=${encodeURIComponent(url)}${isCompleted}${fileAdapter}`;
+                    const params =
+                          `docid=${updatedDoc.updatedPdfDetails[0].objectId}&docurl=${encodeURIComponent(url)}${isCompleted}${fileAdapter}`;
                     window.location.href = `/success?${params}`;
                   }
                 } else {
@@ -1714,6 +1717,10 @@ function PdfRequestFiles(
     }
     return email;
   };
+  const handleDownload = async () => {
+      setIsCompleted((prev) => ({ ...prev, isModal: false }));
+      setIsDownloadModal(true);
+  };
   return (
     <>
           {isLoading.isLoad ? (
@@ -1925,34 +1932,28 @@ function PdfRequestFiles(
                                   {t("print")}
                                 </span>
                               </button>
-                              <button
-                                type="button"
-                                onClick={() =>
-                                  handleDownloadCertificate(
-                                    pdfDetails,
-                                    setIsDownloading
-                                  )
-                                }
-                                className="font-[500] text-[13px] mr-[5px] op-btn op-btn-secondary"
-                              >
-                                <i
-                                  className="fa-light fa-award mx-[3px] lg:mx-0"
-                                  aria-hidden="true"
-                                ></i>
-                                <span className="hidden lg:block">
-                                  {t("certificate")}
-                                </span>
-                              </button>
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    handleDownloadCertificate(
+                                      pdfDetails,
+                                      setIsDownloading
+                                    )
+                                  }
+                                  className="font-[500] text-[13px] mr-[5px] op-btn op-btn-secondary"
+                                >
+                                  <i
+                                    className="fa-light fa-award mx-[3px] lg:mx-0"
+                                    aria-hidden="true"
+                                  ></i>
+                                  <span className="hidden lg:block">
+                                    {t("certificate")}
+                                  </span>
+                                </button>
                               <button
                                 type="button"
                                 className="font-[500] text-[13px] mr-[5px] op-btn op-btn-primary"
-                                onClick={() => {
-                                  setIsCompleted((prev) => ({
-                                    ...prev,
-                                    isModal: false
-                                  }));
-                                  setIsDownloadModal(true);
-                                }}
+                                onClick={handleDownload}
                               >
                                 <i
                                   className="fa-light fa-download"

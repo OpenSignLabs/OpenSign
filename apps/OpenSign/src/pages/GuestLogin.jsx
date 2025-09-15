@@ -378,6 +378,7 @@ function GuestLogin() {
                         e.target.setCustomValidity(t("input-required"))
                       }
                       onInput={(e) => e.target.setCustomValidity("")}
+                      placeholder={t("enter-name")}
                       required
                     />
                   </div>
@@ -395,6 +396,7 @@ function GuestLogin() {
                       value={contact.email}
                       onChange={handleInputChange}
                       className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
+                      placeholder={t("enter-email")}
                       required
                       disabled
                     />

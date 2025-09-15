@@ -63,8 +63,9 @@ import {
   setMyInitial,
   setDefaultSignImg,
   setIsShowModal,
-  resetWidgetState
-} from "../redux/reducers/widgetSlice.js";
+  resetWidgetState,
+  setTypedSignFont
+} from "../redux/reducers/widgetSlice";
 import WidgetsValueModal from "../components/pdf/WidgetsValueModal";
 import WidgetNameModal from "../components/pdf/WidgetNameModal";
 import CellsSettingModal from "../components/pdf/CellsSettingModal";
@@ -745,6 +746,7 @@ function SignYourSelf() {
     if (resSignPdf) {
       const signedpdf = JSON.parse(JSON.stringify(resSignPdf));
       setPdfUrl(signedpdf);
+      dispatch(setTypedSignFont("Fasthand"));
       getDocumentDetails(false);
     }
   };

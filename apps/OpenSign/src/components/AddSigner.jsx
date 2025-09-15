@@ -244,6 +244,7 @@ const AddSigner = (props) => {
               onInvalid={(e) => e.target.setCustomValidity(t("input-required"))}
               onInput={(e) => e.target.setCustomValidity("")}
               className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
+              placeholder={t("enter-name")}
             />
           </div>
           <div className="mb-3">
@@ -263,6 +264,7 @@ const AddSigner = (props) => {
               onInput={(e) => e.target.setCustomValidity("")}
               disabled={addYourself}
               className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
+              placeholder={t("enter-email")}
             />
           </div>
           <div className="mb-3">

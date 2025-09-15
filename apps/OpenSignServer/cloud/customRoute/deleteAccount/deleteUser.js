@@ -1,7 +1,8 @@
 import axios from 'axios';
-import { cloudServerUrl, generateId, serverAppId } from '../../Utils.js';
-import sendmailtoSupport from './sendMailToSupport.js';
+import { cloudServerUrl, generateId, serverAppId } from '../../../Utils.js';
+import sendmailtoSupport from '../sendMailToSupport.js';
 import { deleteContactsInBatch, deleteDataFiles, deleteInBatches } from './deleteFileUrl.js';
+import { MAX_ATTEMPTS } from './deleteUtils.js';
 const serverUrl = cloudServerUrl;
 const appId = serverAppId;
 
@@ -250,108 +251,10 @@ export async function deleteUser(userId, adminId) {
   }
 }
 
-// 1. HTML Password Prompt Page
-export const deleteUserGet = async (req, res) => {
-  const { userId } = req.params;
-
-  const extUserQuery = new Parse.Query('contracts_Users');
-  extUserQuery.equalTo('UserId', { __type: 'Pointer', className: '_User', objectId: userId });
-  const extUser = await extUserQuery.first({ useMasterKey: true });
-  if (!extUser) {
-    const errorMessage = 'User not found.';
-    return res.send(errorMessage);
-  }
-  const routePath = process?.env?.SERVER_URL?.includes?.('api') ? '/api' : '';
-  const htmlForm = `
-<html>
-<head>
-  <title>Delete Account</title>
-  <style>
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #f8f9fa;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
-
-    .container {
-      background-color: #ffffff;
-      padding: 40px;
-      border-radius: 8px;
-      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-      width: 100%;
-      max-width: 400px;
-      text-align: center;
-    }
-
-    h2 {
-      color: #dc3545;
-      margin-bottom: 20px;
-    }
-
-    label {
-      display: block;
-      margin-bottom: 10px;
-      font-weight: 600;
-    }
-
-    input[type="password"] {
-      width: 100%;
-      padding: 12px;
-      margin-bottom: 20px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      font-size: 16px;
-    }
-
-    button {
-      background-color: #d9534f;
-      color: #ffffff;
-      border: none;
-      padding: 12px 20px;
-      font-size: 16px;
-      border-radius: 4px;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-    }
-
-    button:hover {
-      background-color: #c9302c;
-    }
-
-    .warning {
-      color: #6c757d;
-      font-size: 14px;
-      margin-top: -10px;
-      margin-bottom: 20px;
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <h2>Confirm Account Deletion</h2>
-    <p class="warning">This action is irreversible. Please confirm by entering your password.</p>
-    <form method="POST" action="${routePath}/delete-account/${userId}">
-      <label for="password">Password</label>
-      <input type="password" name="password" id="password" placeholder="Please provide your password" required />
-      <button type="submit">Delete My Account</button>
-    </form>
-  </div>
-</body>
-</html>
-  `;
-  res.send(htmlForm);
-};
-
 // 2. Handle Password Verification and Deletion
 export const deleteUserPost = async (req, res) => {
   const { userId } = req.params;
-  const routePath = process?.env?.SERVER_URL?.includes?.('api') ? '/api' : '';
-  const { password } = req.body;
+  const { otp } = req.body;
   let userDetails = {
     UserRole: 'not found',
     Name: 'not found',
@@ -375,27 +278,51 @@ export const deleteUserPost = async (req, res) => {
     }
     const extUserQuery = new Parse.Query('contracts_Users');
     extUserQuery.equalTo('UserId', { __type: 'Pointer', className: '_User', objectId: userId });
+
     const extUser = await extUserQuery.first({ useMasterKey: true });
     if (!extUser) {
       const errorMessage = 'User not found.';
       return res.send(errorMessage);
     }
-    // 2. Attempt login to verify password
-    const username = user.get('username'); // assuming 'username' is used for login
+
+    // Get stored OTP info
+    const savedOtp = extUser.get('DeleteOTP') || '';
+    const expiry = extUser.get('DeleteOTPExpiry');
+    const tries = Number(extUser.get('DeleteOTPTries') || 0);
+
+    if (tries >= MAX_ATTEMPTS) {
+      return res.status(429).send('Too many invalid attempts. Please resend OTP and try again.');
+    }
+    if (!otp || typeof otp !== 'string') {
+      // Count attempt
+      extUser.set('DeleteOTPTries', tries + 1);
+      await extUser.save(null, { useMasterKey: true });
+      return res.status(400).send('OTP is required.');
+    }
+    if (!savedOtp) {
+      return res.status(400).send('No OTP found. Please request a new OTP.');
+    }
+    if (expiry && Date.now() > expiry.getTime()) {
+      return res.status(400).send('OTP has expired. Please request a new OTP.');
+    }
+    if (otp !== savedOtp) {
+      // Increment tries on mismatch
+      extUser.set('DeleteOTPTries', tries + 1);
+      await extUser.save(null, { useMasterKey: true });
+      return res.status(400).send('Invalid OTP.');
+    }
+
+    // 2. Remove OTP related data
     try {
-      // await Parse.User.logIn(username, password); // Will throw if password invalid
-      // Use REST login to avoid mutating the global Parse current user
-      // Will throw if password invalid
-      const res = await axios.get(serverUrl + '/login', {
-        params: { username, password },
-        headers: { 'X-Parse-Application-Id': appId },
-      });
-      console.log('Res ', res?.data);
+      extUser.unset('DeleteOTP');
+      extUser.unset('DeleteOTPExpiry');
+      extUser.unset('DeleteOTPSentAt');
+      extUser.unset('DeleteOTPTries');
+      await extUser.save(null, { useMasterKey: true });
     } catch (err) {
       console.log('err while validating password: ', err?.response?.data || err);
-      const errorMessage = `Invalid password. <a href="${routePath}/delete-account/${userId}">Try again</a>`;
-      sendmailtoSupport(userDetails, errorMessage);
-      return res.status(401).send(errorMessage);
+      // sendmailtoSupport(userDetails, errorMessage);
+      // return res.status(401).send(errorMessage);
     }
 
     const response = await deleteUser(userId);

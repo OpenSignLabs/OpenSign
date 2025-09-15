@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import Parse from "parse";
 import getReplacedHashQuery from "../../constant/getReplacedHashQuery";
@@ -168,25 +168,21 @@ const DashboardCard = (props) => {
                 }
               }
               setresponse(arr.length);
-              setLoading(false);
             });
         } else {
           await axios.get(url, { headers: headers }).then((res) => {
-            if (res.data.results.length > 0) {
-              setLoading(false);
-              if (props.Data.key !== "count") {
-                setresponse(res.data.results[0][props.Data.key]);
-              } else {
-                setresponse(res.data[props.Data.key]);
-              }
+            if (res?.data?.[props.Data.key]) {
+              setresponse(parseInt(res.data[props.Data.key]));
+            } else if (res?.data?.results?.length > 0) {
+              setresponse(res.data.results.length);
             } else {
               setresponse(0);
-              setLoading(false);
             }
           });
         }
       } catch (e) {
         console.error("Problem", e);
+      } finally {
         setLoading(false);
       }
     }
