@@ -104,6 +104,8 @@ paths:
         
         **total_credits:** The sum of **plan_credits** and **addon_credits**. This represents the total credits currently available for use.
         
+        **renewal_date:** The Subscription renewal date
+        
       operationId: getcredits
       responses:
         "200":
@@ -4493,6 +4495,14 @@ components:
           type: string
           description: The email address of the person or organization that users can reply to.
           example: mailer@opensignlabs.com
+        merge_certificate: 
+          type: boolean
+          description: |
+            true - This will ensure that the completion certificate is included in the final PDF document. However, please note that once merged, the certificate cannot be separated from the main document.
+            
+            false - If you choose not to merge, the completion certificate will be provided as a separate PDF file along with the signed document.
+            
+            If nothing is set, it will use the owner’s preferences. If the owner’s preferences are also not set, it will default to false.  
     draftdocument_body:
       required:
       - file
@@ -4574,9 +4584,18 @@ components:
         remind_once_in_every:
           type: number
           description: "Number of days between reminders. This is only applicable when auto_reminder is set to true."
-          example: 5
+          example: 5,
+        merge_certificate: 
+          type: boolean
+          description: |
+            true - This will ensure that the completion certificate is included in the final PDF document. However, please note that once merged, the certificate cannot be separated from the main document.
+            
+            false - If you choose not to merge, the completion certificate will be provided as a separate PDF file along with the signed document.
+            
+            If nothing is set, it will use the owner’s preferences. If the owner’s preferences are also not set, it will default to false.
+          example: false
         prefill: 
-          $ref: '#/components/schemas/prefill'  
+          $ref: '#/components/schemas/prefill'
     createdocument_body:
       required:
       - file
@@ -4660,6 +4679,14 @@ components:
           type: number
           description: "Number of days between reminders. This is only applicable when auto_reminder is set to true."
           example: 5
+        merge_certificate: 
+          type: boolean
+          description: |
+            true - This will ensure that the completion certificate is included in the final PDF document. However, please note that once merged, the certificate cannot be separated from the main document.
+            
+            false - If you choose not to merge, the completion certificate will be provided as a separate PDF file along with the signed document.
+            
+            If nothing is set, it will use the owner’s preferences. If the owner’s preferences are also not set, it will default to false.  
         prefill: 
           $ref: '#/components/schemas/prefill'  
     inline_response_200_1:
@@ -4799,7 +4826,15 @@ components:
         remind_once_in_every:
           type: number
           description: "Number of days between reminders. This is only applicable when auto_reminder is set to true."
-          example: 5
+          example: 5,
+        merge_certificate: 
+          type: boolean
+          description: |
+            true - This will ensure that the completion certificate is included in the final PDF document. However, please note that once merged, the certificate cannot be separated from the main document.
+            
+            false - If you choose not to merge, the completion certificate will be provided as a separate PDF file along with the signed document.
+            
+            If nothing is set, it will use the owner’s preferences. If the owner’s preferences are also not set, it will default to false.  
         prefill: 
           $ref: '#/components/schemas/prefill'  
     revokedocument:
@@ -4976,7 +5011,15 @@ components:
         remind_once_in_every:
           type: number
           description: "Number of days between reminders. This is only applicable when auto_reminder is set to true."
-          example: 5         
+          example: 5,
+        merge_certificate: 
+          type: boolean
+          description: |
+            true - This will ensure that the completion certificate is included in the final PDF document. However, please note that once merged, the certificate cannot be separated from the main document.
+            
+            false - If you choose not to merge, the completion certificate will be provided as a separate PDF file along with the signed document.
+            
+            If nothing is set, it will use the owner’s preferences. If the owner’s preferences are also not set, it will default to false.  
         prefill: 
           $ref: '#/components/schemas/prefill'          
     inline_response_draft_200:
@@ -5506,6 +5549,10 @@ components:
         total_credits:
           type: number
           example: 0
+        renewal_date:
+          type: string
+          format: date
+          example: '2026-09-17T00:00:00.000Z'  
   securitySchemes:
     x-api-token:
       type: apiKey
