@@ -32,7 +32,10 @@ const Report = () => {
   const [defaultColumns, setDefaultColumns] = useState([]);
   const [isColumnModal, setIsColumnModal] = useState(false);
   const debounceTimer = useRef(null);
-  const docPerPage = 20;
+  // Number of documents to display per page (should always be half of docLimit for proper pagination)
+  const docPerPage = 10;
+  // Number of documents to fetch per API call
+  const docLimit = 20;
 
   // below useEffect is call when id param change
   useEffect(() => {
@@ -48,7 +51,7 @@ const Report = () => {
       setVisibleColumns([]);
       setColumnLabels({});
     }
-    getReportData(0, docPerPage, "");
+    getReportData(0, docLimit, "");
 
     // Function returned from useEffect is called on unmount
     return () => {
@@ -64,7 +67,7 @@ const Report = () => {
   // below useEffect call when isNextRecord state is true and fetch next record
   useEffect(() => {
     if (isNextRecord) {
-      getReportData(list.length, 20, searchTerm);
+      getReportData(list?.length, docLimit, searchTerm);
     }
     // eslint-disable-next-line
   }, [isNextRecord]);

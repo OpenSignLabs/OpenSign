@@ -61,6 +61,7 @@ const Preferences = () => {
     completionMail: false
   });
   const [fileNameFormat, setFileNameFormat] = useState("DOCNAME");
+
   useEffect(() => {
     fetchSignType();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -194,7 +195,7 @@ const Preferences = () => {
           DateFormat: dateFormat,
           Is12HourTime: is12HourTime,
           IsLTVEnabled: isLTVEnabled,
-          DownloadFilenameFormat: fileNameFormat
+          DownloadFilenameFormat: fileNameFormat,
         };
         const updateRes = await Parse.Cloud.run("updatepreferences", params);
         if (updateRes) {
@@ -804,7 +805,7 @@ const Preferences = () => {
                                   onClick={() => handleModifyMail("request")}
                                   className="op-btn op-btn-primary shadow-lg"
                                 >
-                                  Modify
+                                  {t("modify")}
                                 </button>
                               </div>
                             )
@@ -880,7 +881,7 @@ const Preferences = () => {
                                   onClick={() => handleModifyMail("completion")}
                                   className="op-btn op-btn-primary shadow-lg"
                                 >
-                                  Modify
+                                  {t("modify")}
                                 </button>
                               </div>
                             )

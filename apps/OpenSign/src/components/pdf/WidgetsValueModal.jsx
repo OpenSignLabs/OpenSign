@@ -36,7 +36,8 @@ import {
   setLastIndex,
   setScrollTriggerId,
   setPrefillImg,
-  setPrefillImgLoad
+  setPrefillImgLoad,
+  setTypedSignFont
 } from "../../redux/reducers/widgetSlice";
 import { useDispatch, useSelector } from "react-redux";
 import Loader from "../../primitives/Loader";
@@ -79,6 +80,7 @@ function WidgetsValueModal(props) {
   const defaultSignImg = useSelector((state) => state.widget.defaultSignImg);
   const myInitial = useSelector((state) => state.widget.myInitial);
   const lastWidget = useSelector((state) => state.widget.lastIndex);
+  const typedSignFont = useSelector((state) => state.widget.typedSignFont);
   const { t } = useTranslation();
   const canvasRef = useRef(null);
   const imageRef = useRef(null);
@@ -278,10 +280,7 @@ function WidgetsValueModal(props) {
     setIsLoader(true);
     try {
       dispatch(
-        setPrefillImg({
-          id: currWidgetsDetails?.key,
-          base64: image?.src
-        })
+        setPrefillImg({ id: currWidgetsDetails?.key, base64: image?.src })
       );
       const imageName = generatePdfName(16);
       const imageUrl = await convertBase64ToFile(
@@ -630,11 +629,12 @@ function WidgetsValueModal(props) {
   useEffect(() => {
     const loadFont = async () => {
       try {
-        await document.fonts.load(`20px ${fontSelect}`);
-        const selectFontSTyle = fontOptions.find(
-          (font) => font.value === fontSelect
+        const selectedFont = typedSignFont || fontSelect;
+        await document.fonts.load(`20px ${selectedFont}`);
+        const selectFontStyle = fontOptions.find(
+          (font) => font.value === selectedFont
         );
-        setFontSelect(selectFontSTyle?.value || fontOptions[0].value);
+        setFontSelect(selectFontStyle?.value || fontOptions[0].value);
       } catch (error) {
         console.error("Error loading font:", error);
       }
@@ -697,12 +697,13 @@ function WidgetsValueModal(props) {
     const maxWidth = currWidgetsDetails?.Width;
     const maxHeight = currWidgetsDetails?.Height;
     const widgetDims = { Width: maxWidth, Height: maxHeight };
-    const fontFamily = fontStyle || fontSelect || "Fasthand";
+    const fontFamily = fontStyle || typedSignFont || fontSelect || "Fasthand";
     const fillColor = color || penColor;
     const dataUrl = convertTextToImg(fontFamily, text, fillColor, widgetDims);
     setSignature(dataUrl);
     setTextWidth(maxWidth);
     setTextHeight(maxHeight);
+    dispatch(setTypedSignFont(fontFamily));
   };
   const PenColorComponent = () => {
     return (

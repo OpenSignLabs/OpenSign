@@ -21,6 +21,12 @@ const APPID = serverAppId;
 const masterKEY = process.env.MASTER_KEY;
 const eSignName = 'OpenSign';
 const eSigncontact = 'hello@opensignlabs.com';
+const docUrl = `${serverUrl}/classes/contracts_Document`;
+const headers = {
+  'Content-Type': 'application/json',
+  'X-Parse-Application-Id': APPID,
+  'X-Parse-Master-Key': masterKEY,
+};
 
 async function unlinkFile(path) {
   if (fs.existsSync(path)) {
@@ -90,13 +96,7 @@ async function updateDoc(docId, url, userId, ipAddress, data, className, sign) {
       isCompleted = true;
     }
     const body = { SignedUrl: url, AuditTrail: updateAuditTrail, IsCompleted: isCompleted };
-    const signedRes = await axios.put(serverUrl + '/classes/contracts_Document/' + docId, body, {
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Parse-Application-Id': APPID,
-        'X-Parse-Master-Key': masterKEY,
-      },
-    });
+    const signedRes = await axios.put(`${docUrl}/${docId}`, body, { headers });
     return { isCompleted: isCompleted, message: 'success', AuditTrail: updateAuditTrail };
   } catch (err) {
     console.log('update doc err ', err);
@@ -141,13 +141,7 @@ async function sendNotifyMail(doc, signUser, mailProvider, publicUrl) {
         html: body,
         mailProvider: mailProvider,
       };
-      await axios.post(serverUrl + '/functions/sendmailv3', params, {
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Parse-Application-Id': APPID,
-          'X-Parse-Master-Key': masterKEY,
-        },
-      });
+      await axios.post(serverUrl + '/functions/sendmailv3', params, { headers });
     }
   } catch (err) {
     console.log('err in sendnotifymail', err);
@@ -255,13 +249,7 @@ async function sendCompletedMail(obj) {
     filename: docName,
   };
   try {
-    const res = await axios.post(serverUrl + '/functions/sendmailv3', params, {
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Parse-Application-Id': APPID,
-        'X-Parse-Master-Key': masterKEY,
-      },
-    });
+    const res = await axios.post(serverUrl + '/functions/sendmailv3', params, { headers });
     // console.log('res', res.data.result);
     if (res.data?.result?.status !== 'success') {
       unlinkFile(`./exports/signed_certificate_${doc.objectId}.pdf`);
@@ -298,13 +286,7 @@ async function sendMailsaveCertifcate(doc, pfx, isCustomMail, mailProvider, file
   fs.writeFileSync(certificatePath, signedCertificate);
   const file = await uploadFile('certificate.pdf', certificatePath);
   const body = { CertificateUrl: file.imageUrl };
-  await axios.put(serverUrl + '/classes/contracts_Document/' + doc.objectId, body, {
-    headers: {
-      'Content-Type': 'application/json',
-      'X-Parse-Application-Id': APPID,
-      'X-Parse-Master-Key': masterKEY,
-    },
-  });
+  await axios.put(`${docUrl}/${doc.objectId}`, body, { headers });
   // used in API only
   if (doc.IsSendMail === false) {
     console.log("don't send mail");
@@ -313,6 +295,41 @@ async function sendMailsaveCertifcate(doc, pfx, isCustomMail, mailProvider, file
   }
   saveFileUsage(CertificateBuffer.length, file.imageUrl, doc?.CreatedBy?.objectId);
   unlinkFile(pfx.name);
+  return file.imageUrl;
+}
+
+/**
+ * Process a PDF for signing:
+ * - updates audit trail, generates certificate.
+ * - Optionally inserts a signature placeholder (Placeholder()).
+ * - Otherwise (no merge + no placeholder), it flattens forms for finalization.
+ *
+ * @param {Object} _resDoc - Document details (expects AuditTrail, etc.)
+ * @param {Buffer|Uint8Array} pdfBytes - Original PDF bytes
+ * @param {string} [options.reason] - Reason text used in placeholder
+ * @param {string} [options.UserPtr] -  user pointer (for audit trail)
+ * @param {string} [options.ipAddress] - IP (for audit trail)
+ * @param {string} [options.Signature] - Signature (for audit trail)
+ * @returns {Promise<Buffer>} merged PDF Buffer
+ */
+async function processPdf(_resDoc, PdfBuffer, reason) {
+  // No CC merge; operate directly on the original PDF
+  const pdfDoc = await PDFDocument.load(PdfBuffer);
+  const form = pdfDoc.getForm();
+  // Updates the field appearances to ensure visual changes are reflected.
+  form.updateFieldAppearances();
+  // Flattens the form, converting all form fields into non-editable, static content
+  form.flatten();
+  Placeholder({
+    pdfDoc: pdfDoc,
+    reason: `Digitally signed by ${eSignName} for ${reason}`,
+    location: 'n/a',
+    name: eSignName,
+    contactInfo: eSigncontact,
+    signatureLength: 16000,
+  });
+  const pdfWithPlaceholderBytes = await pdfDoc.save();
+  return Buffer.from(pdfWithPlaceholderBytes);
 }
 /**
  *
@@ -389,7 +406,11 @@ async function PDF(req) {
       const auditTrail = updateAuditTrail.filter(x => x.Activity === 'Signed');
       let isCompleted = false;
       if (_resDoc.Signers && _resDoc.Signers.length > 0) {
-        if (auditTrail.length === _resDoc.Signers.length) {
+        const removePrefill =
+          _resDoc?.Placeholders?.length > 0 &&
+          _resDoc?.Placeholders?.filter(x => x?.Role !== 'prefill');
+        if (auditTrail.length === removePrefill?.length) {
+          // if (auditTrail.length === _resDoc.Signers.length) {
           isCompleted = true;
         }
       } else {
@@ -408,24 +429,9 @@ async function PDF(req) {
           signersName && signersName.length > 0
             ? signersName?.join(', ')
             : username + ' <' + userEmail + '>';
-        const pdfDoc = await PDFDocument.load(PdfBuffer);
-        const form = pdfDoc.getForm();
-        // Updates the field appearances to ensure visual changes are reflected.
-        form.updateFieldAppearances();
-        // Flattens the form, converting all form fields into non-editable, static content
-        form.flatten();
         const p12Cert = new P12Signer(P12Buffer, { passphrase: passphrase || null });
         signedFilePath = `./exports/signed_${name}`;
-        Placeholder({
-          pdfDoc: pdfDoc,
-          reason: `Digitally signed by ${eSignName} for ${reason}`,
-          location: 'n/a',
-          name: eSignName,
-          contactInfo: eSigncontact,
-          signatureLength: 16000,
-        });
-        const pdfWithPlaceholderBytes = await pdfDoc.save();
-        PdfBuffer = Buffer.from(pdfWithPlaceholderBytes);
+        PdfBuffer = await processPdf(_resDoc, PdfBuffer, reason, UserPtr, userIP, sign);
         //`new signPDF` create new instance of pdfBuffer and p12Buffer
         const OBJ = new SignPdf();
         // `signedDocs` is used to signpdf digitally
@@ -484,9 +490,7 @@ async function PDF(req) {
     console.log('Err in signpdf', err);
     const body = { DebugginLog: err?.message };
     try {
-      await axios.put(serverUrl + '/classes/contracts_Document/' + docId, body, {
-        headers: { 'X-Parse-Application-Id': APPID, 'X-Parse-Master-Key': masterKEY },
-      });
+      await axios.put(`${docUrl}/${docId}`, body, { headers });
     } catch (err) {
       console.log('err in saving debugginglog', err);
     }

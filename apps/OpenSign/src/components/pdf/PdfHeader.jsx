@@ -167,7 +167,9 @@ function Header(props) {
     );
   };
   const handleDownloadBtn = async () => {
-    if (props?.isCompleted) {
+    if (
+      props?.isCompleted
+    ) {
       props?.setIsDownloadModal(true);
     } else {
       await handleDownloadDoc();
@@ -222,25 +224,27 @@ function Header(props) {
                         {t("download")}
                       </div>
                     </DropdownMenu.Item>
-                    {props?.isCompleted && (
-                      <DropdownMenu.Item
-                        className="DropdownMenuItem"
-                        onClick={() =>
-                          handleDownloadCertificate(
-                            props?.pdfDetails,
-                            setIsDownloading
-                          )
-                        }
-                      >
-                        <div className="border-none bg-[#fff]">
-                          <i
-                            className="fa-light fa-award mr-[3px]"
-                            aria-hidden="true"
-                          ></i>
-                          {t("certificate")}
-                        </div>
-                      </DropdownMenu.Item>
-                    )}
+                    {
+                        props?.isCompleted && (
+                          <DropdownMenu.Item
+                            className="DropdownMenuItem"
+                            onClick={() =>
+                              handleDownloadCertificate(
+                                props?.pdfDetails,
+                                setIsDownloading
+                              )
+                            }
+                          >
+                            <div className="border-none bg-[#fff]">
+                              <i
+                                className="fa-light fa-award mr-[3px]"
+                                aria-hidden="true"
+                              ></i>
+                              {t("certificate")}
+                            </div>
+                          </DropdownMenu.Item>
+                        )
+                    }
                     {props?.isSignYourself && (
                       <DropdownMenu.Item
                         className="DropdownMenuItem"
@@ -518,24 +522,28 @@ function Header(props) {
                   ></i>
                   <span className="hidden lg:block">{t("print")}</span>
                 </button>
-                {props?.isCompleted && (
-                  <button
-                    type="button"
-                    onClick={() =>
-                      handleDownloadCertificate(
-                        props?.pdfDetails,
-                        setIsDownloading
-                      )
-                    }
-                    className="op-btn op-btn-secondary op-btn-sm mr-[3px] shadow"
-                  >
-                    <i
-                      className="fa-light fa-award py-[3px]"
-                      aria-hidden="true"
-                    ></i>
-                    <span className="hidden lg:block">{t("certificate")}</span>
-                  </button>
-                )}
+                {
+                    props?.isCompleted && (
+                      <button
+                        type="button"
+                        onClick={() =>
+                          handleDownloadCertificate(
+                            props?.pdfDetails,
+                            setIsDownloading
+                          )
+                        }
+                        className="op-btn op-btn-secondary op-btn-sm mr-[3px] shadow"
+                      >
+                        <i
+                          className="fa-light fa-award py-[3px]"
+                          aria-hidden="true"
+                        ></i>
+                        <span className="hidden lg:block">
+                          {t("certificate")}
+                        </span>
+                      </button>
+                    )
+                }
                 <button
                   type="button"
                   className="op-btn op-btn-primary op-btn-sm mr-[3px] shadow"
@@ -592,23 +600,25 @@ function Header(props) {
             )
           ) : props?.isCompleted ? (
             <div className="flex flex-row">
-              {props?.isCompleted && (
-                <button
-                  type="button"
-                  onClick={() =>
-                    handleDownloadCertificate(
-                      props?.pdfDetails,
-                      setIsDownloading
-                    )
-                  }
-                  className="op-btn op-btn-secondary op-btn-sm gap-0 font-medium text-[12px] mr-[3px] shadow"
-                >
-                  <i className="fa-light fa-award" aria-hidden="true"></i>
-                  <span className="hidden lg:block ml-1">
-                    {t("certificate")}
-                  </span>
-                </button>
-              )}
+              {
+                  props?.isCompleted && (
+                    <button
+                      type="button"
+                      onClick={() =>
+                        handleDownloadCertificate(
+                          props?.pdfDetails,
+                          setIsDownloading
+                        )
+                      }
+                      className="op-btn op-btn-secondary op-btn-sm gap-0 font-medium text-[12px] mr-[3px] shadow"
+                    >
+                      <i className="fa-light fa-award" aria-hidden="true"></i>
+                      <span className="hidden lg:block ml-1">
+                        {t("certificate")}
+                      </span>
+                    </button>
+                  )
+              }
               <button
                 onClick={(e) =>
                   handleToPrint(e, setIsDownloading, props?.pdfDetails)
@@ -622,7 +632,8 @@ function Header(props) {
               <button
                 type="button"
                 className="op-btn op-btn-primary op-btn-sm gap-0 font-medium text-[12px] mr-[3px] shadow"
-                onClick={() => props?.setIsDownloadModal(true)}
+                // onClick={() => props?.setIsDownloadModal(true)}
+                onClick={() => handleDownloadBtn()}
               >
                 <i className="fa-light fa-download" aria-hidden="true"></i>
                 <span className="hidden lg:block ml-1">{t("download")}</span>

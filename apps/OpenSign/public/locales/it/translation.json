@@ -8,7 +8,7 @@
   "dark-mode": "Modalità scura",
   "name": "Nome",
   "phone": "Telefono",
-  "phone-optional": "facoltativo",
+  "phone-optional": "Opzionale",
   "email": "Email",
   "company": "Azienda",
   "job-title": "Titolo professionale",
@@ -1210,5 +1210,12 @@
   "otp-email": "Abbiamo inviato un codice di verifica",
   "save-as-temp-warn": "Nota: Questo documento include widget precompilati, che verranno automaticamente rimossi poiché sono già incorporati nel documento di base.",
   "edit-document": "Modifica documento",
-  "otp-email": "Abbiamo inviato un codice di verifica"
+  "modify": "Modifica",
+  "merge-certificate-to-pdf": "Unisci certificato al PDF",
+  "merge-cc-to-pdf-help": {
+    "p1": "Questo garantirà che il certificato di completamento sia incluso nel documento PDF finale. Tuttavia, si noti che una volta unito, il certificato non può essere separato dal documento principale.",
+    "p2": "Se scegli di non unire, il certificato di completamento sarà fornito come file PDF separato insieme al documento firmato."
+  },
+  "enter-name": "Inserisci nome",
+  "enter-email": "Inserisci e-mail"
 }

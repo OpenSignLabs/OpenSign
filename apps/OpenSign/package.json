@@ -51,7 +51,7 @@
     "reactour": "^1.19.4",
     "redux": "^5.0.1",
     "regex-parser": "^2.3.1",
-    "serve": "^14.2.4",
+    "serve": "^14.2.5",
     "styled-components": "^5.3.11",
     "web-vitals": "^5.1.0",
     "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz"

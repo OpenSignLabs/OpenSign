@@ -2,10 +2,11 @@ import { useEffect, useMemo } from "react";
 
 export function useManifestUrl(appName, logo) {
   const url = useMemo(() => {
+    const start_url = window.location.origin || ".";
     const manifest = {
       short_name: appName,
       name: appName,
-      start_url: ".",
+      start_url: start_url,
       display: "standalone",
       theme_color: "#000000",
       background_color: "#ffffff",
