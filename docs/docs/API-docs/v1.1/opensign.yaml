@@ -4498,11 +4498,12 @@ components:
         merge_certificate: 
           type: boolean
           description: |
-            true - This will ensure that the completion certificate is included in the final PDF document. However, please note that once merged, the certificate cannot be separated from the main document.
+            **true** - This will ensure that the completion certificate is included in the completed PDF document. However, please note that once merged, the certificate cannot be separated from the main document.
             
-            false - If you choose not to merge, the completion certificate will be provided as a separate PDF file along with the signed document.
+            **false** - If you choose not to merge, the completion certificate will be provided as a separate signed PDF file along with the signed document.
             
-            If nothing is set, it will use the owner’s preferences. If the owner’s preferences are also not set, it will default to false.  
+            If nothing is set, it will use the owner’s preferences. If the owner’s preferences are also not set, it will default to false.
+          example: false 
     draftdocument_body:
       required:
       - file
@@ -4588,9 +4589,9 @@ components:
         merge_certificate: 
           type: boolean
           description: |
-            true - This will ensure that the completion certificate is included in the final PDF document. However, please note that once merged, the certificate cannot be separated from the main document.
+            **true** - This will ensure that the completion certificate is included in the completed PDF document. However, please note that once merged, the certificate cannot be separated from the main document.
             
-            false - If you choose not to merge, the completion certificate will be provided as a separate PDF file along with the signed document.
+            **false** - If you choose not to merge, the completion certificate will be provided as a separate signed PDF file along with the signed document.
             
             If nothing is set, it will use the owner’s preferences. If the owner’s preferences are also not set, it will default to false.
           example: false
@@ -4682,11 +4683,12 @@ components:
         merge_certificate: 
           type: boolean
           description: |
-            true - This will ensure that the completion certificate is included in the final PDF document. However, please note that once merged, the certificate cannot be separated from the main document.
+            **true** - This will ensure that the completion certificate is included in the completed PDF document. However, please note that once merged, the certificate cannot be separated from the main document.
             
-            false - If you choose not to merge, the completion certificate will be provided as a separate PDF file along with the signed document.
+            **false** - If you choose not to merge, the completion certificate will be provided as a separate signed PDF file along with the signed document.
             
-            If nothing is set, it will use the owner’s preferences. If the owner’s preferences are also not set, it will default to false.  
+            If nothing is set, it will use the owner’s preferences. If the owner’s preferences are also not set, it will default to false.
+          example: false  
         prefill: 
           $ref: '#/components/schemas/prefill'  
     inline_response_200_1:
@@ -4830,11 +4832,12 @@ components:
         merge_certificate: 
           type: boolean
           description: |
-            true - This will ensure that the completion certificate is included in the final PDF document. However, please note that once merged, the certificate cannot be separated from the main document.
+            **true** - This will ensure that the completion certificate is included in the completed PDF document. However, please note that once merged, the certificate cannot be separated from the main document.
             
-            false - If you choose not to merge, the completion certificate will be provided as a separate PDF file along with the signed document.
+            **false** - If you choose not to merge, the completion certificate will be provided as a separate signed PDF file along with the signed document.
             
-            If nothing is set, it will use the owner’s preferences. If the owner’s preferences are also not set, it will default to false.  
+            If nothing is set, it will use the owner’s preferences. If the owner’s preferences are also not set, it will default to false.
+          example: false  
         prefill: 
           $ref: '#/components/schemas/prefill'  
     revokedocument:
@@ -5015,11 +5018,12 @@ components:
         merge_certificate: 
           type: boolean
           description: |
-            true - This will ensure that the completion certificate is included in the final PDF document. However, please note that once merged, the certificate cannot be separated from the main document.
+            **true** - This will ensure that the completion certificate is included in the completed PDF document. However, please note that once merged, the certificate cannot be separated from the main document.
             
-            false - If you choose not to merge, the completion certificate will be provided as a separate PDF file along with the signed document.
+            **false** - If you choose not to merge, the completion certificate will be provided as a separate signed PDF file along with the signed document.
             
-            If nothing is set, it will use the owner’s preferences. If the owner’s preferences are also not set, it will default to false.  
+            If nothing is set, it will use the owner’s preferences. If the owner’s preferences are also not set, it will default to false.
+          example: false  
         prefill: 
           $ref: '#/components/schemas/prefill'          
     inline_response_draft_200:
