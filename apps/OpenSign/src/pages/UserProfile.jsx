@@ -487,7 +487,7 @@ function UserProfile() {
               ) : (
                 <>
                   {deleteUserRes ? (
-                    <div className="h-[100px] p-[20px] flex justify-center items-center text-sm md:text-base">
+                    <div className="h-[100px] p-[20px] flex justify-center items-center text-base-content text-sm md:text-base">
                       {deleteUserRes}
                     </div>
                   ) : (
