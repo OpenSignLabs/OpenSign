@@ -671,18 +671,21 @@ function WidgetsValueModal(props) {
       }
     }
     if (isTab === "type") {
+      const signerName = localStorage.getItem("signer")
+        ? JSON.parse(localStorage.getItem("signer"))?.Name
+        : currentUserName;
       //trim user name or typed name value to show in initial signature
       const trimmedName = typedSignature
         ? typedSignature?.trim()
         : props?.journey === "kiosk-signing" && kiosk_signer
           ? kiosk_signer[0]?.Name?.trim()
-          : currentUserName?.trim();
+          : signerName?.trim();
       //get full name of user
       const fullUserName =
         typedSignature ||
         (props?.journey === "kiosk-signing" && kiosk_signer
           ? kiosk_signer[0]?.Name
-          : currentUserName);
+          : signerName);
       const firstCharacter = trimmedName?.charAt(0);
       const userName =
         currWidgetsDetails?.type === "initials" ? firstCharacter : fullUserName;
@@ -1201,8 +1204,8 @@ function WidgetsValueModal(props) {
                     )
                   ) : isTab === "type" ? (
                     <>
-                      <div className="flex justify-between items-center tabWidth">
-                        <span className="mr-[5px] text-[12px]">
+                      <div className="flex justify-between items-center tabWidth rounded-[4px]">
+                        <span className="ml-[5px] text-[12px] text-base-content">
                           {currWidgetsDetails?.type === "initials"
                             ? t("initial-teb")
                             : t("signature-tab")}
@@ -1229,7 +1232,7 @@ function WidgetsValueModal(props) {
                           }}
                         />
                       </div>
-                      <div className="border-[1px] border-[#d6d3d3] mt-[10px] ml-[5px]">
+                      <div className="border-[1px] border-[#d6d3d3] mt-[10px] rounded-[4px]">
                         {fontOptions.map((font, ind) => {
                           return (
                             <div
@@ -1252,7 +1255,7 @@ function WidgetsValueModal(props) {
                               >
                                 {typedSignature
                                   ? typedSignature
-                                  : "Your signature"}
+                                  : t("Your-Signature")}
                               </div>
                             </div>
                           );
@@ -1656,7 +1659,7 @@ function WidgetsValueModal(props) {
       }
     }, []);
     return (
-      <span className="text-center text-[12px]">
+      <span className="text-center text-[12px] text-base-content">
         {t("required-mssg", { leftRequiredWidget, totalWidget })}
       </span>
     );
@@ -1888,15 +1891,15 @@ function WidgetsValueModal(props) {
           {isFinish ? (
             <>
               <div className="p-1 mt-3">
-                <span className="text-base">{t("finish-mssg")}</span>
+                <span className="text-base text-base-content">
+                  {t("finish-mssg")}
+                </span>
               </div>
               <div className="flex gap-3 items-center mt-4">
                 <button
                   type="button"
                   className="op-btn op-btn-primary op-btn-sm px-4"
-                  onClick={() => {
-                    handleFinish();
-                  }}
+                  onClick={() => handleFinish()}
                 >
                   {t("finish")}
                 </button>
@@ -1956,9 +1959,7 @@ function WidgetsValueModal(props) {
                     <button
                       type="button"
                       className="op-btn op-btn-primary op-btn-sm"
-                      onClick={() => {
-                        handleClickOnNext();
-                      }}
+                      onClick={() => handleClickOnNext()}
                       disabled={handleDisable()}
                     >
                       {t("save")}
@@ -1968,10 +1969,7 @@ function WidgetsValueModal(props) {
                       type="button"
                       className="op-btn op-btn-primary op-btn-sm"
                       disabled={handleDisable()}
-                      onClick={() => {
-                        const isFinishDoc = true;
-                        handleClickOnNext(isFinishDoc);
-                      }}
+                      onClick={() => handleClickOnNext(true)} // isFinishDoc
                     >
                       {t("done")}
                     </button>
@@ -1979,9 +1977,7 @@ function WidgetsValueModal(props) {
                     <button
                       type="button"
                       className="op-btn op-btn-primary op-btn-sm text-xs md:text-sm"
-                      onClick={() => {
-                        handleClickOnNext();
-                      }}
+                      onClick={() => handleClickOnNext()}
                       disabled={handleDisable()}
                     >
                       {t("next-field")}

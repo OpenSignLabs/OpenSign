@@ -631,10 +631,12 @@ const Forms = (props) => {
   };
 
   return (
-    <div className="shadow-md rounded-box my-[2px] p-3 bg-base-100 text-base-content">
+    <div
+      className={`${isSubmit ? "" : "shadow-md rounded-box my-[2px] p-3 bg-base-100 text-base-content"}`}
+    >
       {isAlert?.message && <Alert type={isAlert.type}>{isAlert.message}</Alert>}
       {isSubmit ? (
-        <div className="h-[300px] flex justify-center items-center">
+        <div className="flex flex-col justify-center items-center h-[100vh]">
           <Loader />
         </div>
       ) : (
