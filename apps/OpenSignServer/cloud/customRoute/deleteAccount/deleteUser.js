@@ -1,6 +1,5 @@
 import axios from 'axios';
 import { cloudServerUrl, generateId, serverAppId } from '../../../Utils.js';
-import sendmailtoSupport from '../sendMailToSupport.js';
 import { deleteContactsInBatch, deleteDataFiles, deleteInBatches } from './deleteFileUrl.js';
 import { MAX_ATTEMPTS } from './deleteUtils.js';
 const serverUrl = cloudServerUrl;
@@ -55,7 +54,6 @@ export async function deleteUser(userId, adminId) {
     userDetails = { ...userDetails, UserId: userId };
     if (!userResult) {
       const errorMessage = 'User not found.';
-      sendmailtoSupport(userDetails, errorMessage);
       return { code: 400, message: errorMessage };
     }
     const contractsUserId = userResult.id;
@@ -74,7 +72,6 @@ export async function deleteUser(userId, adminId) {
     };
     if (adminId && isAdmin) {
       const errorMessage = 'An error occurred while deleting your account.';
-      sendmailtoSupport(userDetails, errorMessage);
       return { code: 400, message: errorMessage };
     }
 
@@ -86,7 +83,6 @@ export async function deleteUser(userId, adminId) {
     } catch (err) {
       console.error('Failed during contracts_Template cleanup:', err);
       const errorMessage = 'Failed during contracts_Template cleanup:' + err?.message;
-      sendmailtoSupport(userDetails, errorMessage);
       return { code: 400, message: errorMessage };
     }
 
@@ -96,7 +92,6 @@ export async function deleteUser(userId, adminId) {
     } catch (err) {
       console.error('Failed during contactbook cleanup:', err);
       const errorMessage = 'Failed during contactbook cleanup:' + err?.message;
-      sendmailtoSupport(userDetails, errorMessage);
       return { code: 400, message: errorMessage };
     }
 
@@ -117,7 +112,6 @@ export async function deleteUser(userId, adminId) {
       console.error('Failed during contactbook current user cleanup:', err);
       const errorMessage =
         'Failed during contactbook current user cleanup: ' + (err?.message || err);
-      sendmailtoSupport(userDetails, errorMessage);
       return { code: 400, message: errorMessage };
     }
 
@@ -131,7 +125,6 @@ export async function deleteUser(userId, adminId) {
     } catch (err) {
       console.error('Failed to delete appToken entries:', err);
       const errorMessage = 'Failed to delete appToken entries:' + err?.message;
-      sendmailtoSupport(userDetails, errorMessage);
       return { code: 400, message: errorMessage };
     }
 
@@ -141,7 +134,6 @@ export async function deleteUser(userId, adminId) {
     } catch (err) {
       console.error('Failed during partners_DataFiles cleanup:', err);
       const errorMessage = 'Failed during partners_DataFiles cleanup:' + err?.message;
-      sendmailtoSupport(userDetails, errorMessage);
       return { code: 400, message: errorMessage };
     }
 
@@ -157,7 +149,6 @@ export async function deleteUser(userId, adminId) {
       } catch (err) {
         console.error('Failed to delete contracts_Organizations entry:', err);
         const errorMessage = 'Failed to delete contracts_Organizations entry:' + err?.message;
-        sendmailtoSupport(userDetails, errorMessage);
         return { code: 400, message: errorMessage };
       }
       // STEP 7: Delete each entry in contracts_Teams by objectId from teamIds
@@ -171,7 +162,6 @@ export async function deleteUser(userId, adminId) {
             } catch (teamErr) {
               console.error(`Failed to delete team with ID ${team.id}:`, teamErr);
               const errorMessage = `Failed to delete team with ID ${team.id}` + teamErr?.message;
-              sendmailtoSupport(userDetails, errorMessage);
               return { code: 400, message: errorMessage };
             }
           }
@@ -179,7 +169,6 @@ export async function deleteUser(userId, adminId) {
       } catch (err) {
         console.error('Failed during contracts_Teams deletion loop:', err);
         const errorMessage = 'Failed during contracts_Teams deletion loop:' + err?.message;
-        sendmailtoSupport(userDetails, errorMessage);
         return { code: 400, message: errorMessage };
       }
 
@@ -195,7 +184,6 @@ export async function deleteUser(userId, adminId) {
         const msg = `Failed during partners_Tenant ${'cleanup:'} `;
         console.error(msg, err);
         const errorMessage = msg + err?.message;
-        sendmailtoSupport(userDetails, errorMessage);
         return { code: 400, message: errorMessage };
       }
 
@@ -215,7 +203,6 @@ export async function deleteUser(userId, adminId) {
       } catch (err) {
         console.error('Failed during partners_TenantCredits cleanup:', err);
         const errorMessage = 'Failed during partners_TenantCredits cleanup:' + err?.message;
-        sendmailtoSupport(userDetails, errorMessage);
         return { code: 400, message: errorMessage };
       }
     }
@@ -229,7 +216,6 @@ export async function deleteUser(userId, adminId) {
     } catch (err) {
       console.error('Failed during contracts_Signature cleanup:', err);
       const errorMessage = 'Failed during contracts_Signature cleanup:' + err?.message;
-      sendmailtoSupport(userDetails, errorMessage);
       return { code: 400, message: errorMessage };
     }
 
@@ -239,14 +225,12 @@ export async function deleteUser(userId, adminId) {
     } catch (err) {
       console.error('Failed to delete contracts_Users entry:', err);
       const errorMessage = 'Failed to delete contracts_Users entry:' + err?.message;
-      sendmailtoSupport(userDetails, errorMessage);
       return { code: 400, message: errorMessage };
     }
     return { code: 200, message: 'User and all associated data deleted successfully.' };
   } catch (error) {
     console.error('User deletion process failed:', error);
     const errorMessage = `User deletion failed: ${error.message || error}`;
-    sendmailtoSupport(userDetails, errorMessage);
     return { code: 400, message: errorMessage };
   }
 }
@@ -272,8 +256,6 @@ export const deleteUserPost = async (req, res) => {
     const user = await userQuery.first({ useMasterKey: true });
     if (!user) {
       const errorMessage = 'User not found.';
-      // sendmailtoSupport(userDetails, errorMessage);
-      // return res.status(404).send(errorMessage);
       return res.send(errorMessage);
     }
     const extUserQuery = new Parse.Query('contracts_Users');
@@ -321,8 +303,6 @@ export const deleteUserPost = async (req, res) => {
       await extUser.save(null, { useMasterKey: true });
     } catch (err) {
       console.log('err while validating password: ', err?.response?.data || err);
-      // sendmailtoSupport(userDetails, errorMessage);
-      // return res.status(401).send(errorMessage);
     }
 
     const response = await deleteUser(userId);
@@ -332,7 +312,6 @@ export const deleteUserPost = async (req, res) => {
   } catch (error) {
     console.error('Account deletion error:', error);
     const errorMessage = error?.message || 'An error occurred while deleting your account.';
-    sendmailtoSupport(userDetails, errorMessage);
     return res.status(500).send(errorMessage);
   }
 };
@@ -371,7 +350,6 @@ export const deleteUserByAdmin = async (req, res) => {
     const user = await userQuery.first({ useMasterKey: true });
     if (!user) {
       const errorMessage = 'User not found.';
-      sendmailtoSupport(userDetails, errorMessage);
       return res.status(400).json({ message: errorMessage });
     }
     const response = await deleteUser(userId, adminId);
@@ -385,7 +363,6 @@ export const deleteUserByAdmin = async (req, res) => {
       error?.message ||
       'An error occurred while deleting your account.';
     console.error(`Account deletion error:`, errorMessage);
-    sendmailtoSupport(userDetails, errorMessage);
     return res.status(code).json({ message: errorMessage });
   }
 };
