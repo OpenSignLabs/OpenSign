@@ -63,6 +63,19 @@ To add a new user:
   - **Deactivated users** will not be able to log in to OpenSign until reactivated.
 
 ---
+## 🔁 Delete Users  
+
+- OpenSign allows **admins** to delete users when needed.  
+- Once a user is deleted, their account and all associated data are **permanently removed**. OpenSign does **not** keep deleted user records and restoration is **not possible**.  
+- To delete a user:  
+  1. Click the **Delete** button next to the user you want to remove.  
+  2. A confirmation popup will appear.  
+  3. Enter the user’s email in the input box and click **Delete**.  
+- After deletion, the user (and all related data) will be permanently erased.  
+
+> ⚡ **Note:** Once a user is deleted, your **available user count will automatically increase**.  
+
+---
 
 ## 🔐 Permissions by Role
 
