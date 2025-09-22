@@ -8,13 +8,13 @@ import ReactPlayer from 'react-player';
 
 The **Profile ** in OpenSign allows users to manage their personal and account-related details. You can update your information, verify your email, and set up a public profile.  
 
-<img width="861" height="408" alt="Profile Menu" src="https://github.com/user-attachments/assets/8bfff942-222a-4e16-ac2d-cc07df1429de" />
+<img width="861" alt="Profile Menu" src="https://github.com/user-attachments/assets/8bfff942-222a-4e16-ac2d-cc07df1429de" />
 
 ---
 
 ## 📌 Profile Information  
 
-<img width="1722" height="814" alt="Profile Information" src="https://github.com/user-attachments/assets/8745e89d-4faa-4921-9ada-57253a8d4293" />
+<img width="1722" alt="Profile Information" src="https://github.com/user-attachments/assets/8745e89d-4faa-4921-9ada-57253a8d4293" />
 
 ### 🔐 Roles  
 
@@ -89,9 +89,9 @@ Click **Edit** to update user information, including:
 - Tagline  
 - Enable/disable DocumentId 
 
-<img width="861" height="408" alt="Edit Personal information" src="https://github.com/user-attachments/assets/c8c93c33-193f-4e1d-bfba-a8d7447d1007" />
+<img width="861"  alt="Edit Personal information" src="https://github.com/user-attachments/assets/c8c93c33-193f-4e1d-bfba-a8d7447d1007" />
 
-<img width="861" height="408" alt="Edit profile" src="https://github.com/user-attachments/assets/2f40254d-fd68-4a86-a018-7ac4f7ebf1f5" />
+<img width="861"  alt="Edit profile" src="https://github.com/user-attachments/assets/2f40254d-fd68-4a86-a018-7ac4f7ebf1f5" />
 
 # ❌ Delete User (Admin Account)
 
