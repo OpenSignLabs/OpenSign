@@ -66,7 +66,7 @@ Passkeys are cryptographic credentials tied to your device and identity, replaci
 #### 📹 Watch the Setup Tutorial:
 
 <div>
-    <ReactPlayer  playing controls url='https://www.youtube.com/watch?v=lLfcu9oSbew' />
+    <ReactPlayer playing={false} controls url="https://www.youtube.com/watch?v=lLfcu9oSbew" />
 </div>
 
 #### 🧾 Managing Your Passkeys
