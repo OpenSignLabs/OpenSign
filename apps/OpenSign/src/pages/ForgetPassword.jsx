@@ -13,6 +13,18 @@ import { useTranslation } from "react-i18next";
 import Loader from "../primitives/Loader";
 
 function ForgotPassword() {
+  const [lengthValid, setLengthValid] = useState(false);
+  const [caseDigitValid, setCaseDigitValid] = useState(false);
+  const [specialCharValid, setSpecialCharValid] = useState(false);
+  const handlePasswordChange = (event) => {
+    let value = event.target.value;
+    setState({ ...state, password: value });
+    setLengthValid(value.length >= 8);
+    setCaseDigitValid(
+      /[a-z]/.test(value) && /[A-Z]/.test(value) && /\d/.test(value)
+    );
+    setSpecialCharValid(/[!@#$%^&*()\-_=+{};:,<.>?]/.test(value));
+  };
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -124,6 +136,28 @@ function ForgotPassword() {
                   </div>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-center text-xs font-bold">
+                <input
+                  type="password"
+                  name="password"
+                  className="op-input op-input-bordered op-input-sm w-full mt-2"
+                  value={state.password}
+                  onChange={handlePasswordChange}
+                  placeholder="New password"
+                  required
+                />
+                {state.password.length > 0 && (
+                  <div className="mt-1 text-[11px]">
+                    <p className={lengthValid ? "text-green-600" : "text-red-600"}>
+                      {lengthValid ? "✓" : "✗"} Password length ≥ 8
+                    </p>
+                    <p className={caseDigitValid ? "text-green-600" : "text-red-600"}>
+                      {caseDigitValid ? "✓" : "✗"} Uppercase, lowercase, and number
+                    </p>
+                    <p className={specialCharValid ? "text-green-600" : "text-red-600"}>
+                      {specialCharValid ? "✓" : "✗"} Special character
+                    </p>
+                  </div>
+                )}
                   <button type="submit" className="op-btn op-btn-primary">
                     {t("submit")}
                   </button>
