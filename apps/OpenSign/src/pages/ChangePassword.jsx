@@ -4,6 +4,18 @@ import { Navigate } from "react-router";
 import { useTranslation } from "react-i18next";
 
 function ChangePassword() {
+  const [lengthValid, setLengthValid] = useState(false);
+  const [caseDigitValid, setCaseDigitValid] = useState(false);
+  const [specialCharValid, setSpecialCharValid] = useState(false);
+  const handlePasswordChange = (e) => {
+    const value = e.target.value;
+    setnewpassword(value);
+    setLengthValid(value.length >= 8);
+    setCaseDigitValid(
+      /[a-z]/.test(value) && /[A-Z]/.test(value) && /\d/.test(value)
+    );
+    setSpecialCharValid(/[!@#$%^&*()\-_=+{};:,<.>?]/.test(value));
+  };
   const { t } = useTranslation();
   const [currentpassword, setCurrentPassword] = useState("");
   const [newpassword, setnewpassword] = useState("");
@@ -84,13 +96,26 @@ function ChangePassword() {
               type="password"
               name="newpassword"
               value={newpassword}
-              onChange={(e) => setnewpassword(e.target.value)}
+              onChange={handlePasswordChange}
               className="op-input op-input-bordered op-input-sm text-xs w-full"
               placeholder={t("new-password")}
               onInvalid={(e) => e.target.setCustomValidity(t("input-required"))}
               onInput={(e) => e.target.setCustomValidity("")}
               required
             />
+            {newpassword.length > 0 && (
+              <div className="mt-1 text-[11px]">
+                <p className={lengthValid ? "text-green-600" : "text-red-600"}>
+                  {lengthValid ? "✓" : "✗"} Password length ≥ 8
+                </p>
+                <p className={caseDigitValid ? "text-green-600" : "text-red-600"}>
+                  {caseDigitValid ? "✓" : "✗"} Uppercase, lowercase, and number
+                </p>
+                <p className={specialCharValid ? "text-green-600" : "text-red-600"}>
+                  {specialCharValid ? "✓" : "✗"} Special character
+                </p>
+              </div>
+            )}
           </div>
           <div>
             <label htmlFor="newpassword" className="text-xs block ml-1">

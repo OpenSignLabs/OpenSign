@@ -253,7 +253,7 @@ const AddAdmin = () => {
         /[A-Z]/.test(newPassword) &&
         /\d/.test(newPassword)
     );
-    setSpecialCharValid(/[!@#$%^&*()\-_=+{};:,<.>]/.test(newPassword));
+  setSpecialCharValid(/[!@#$%^&*()\-_=+{};:,<.>?]/.test(newPassword));
   };
   const subscribeNewsletter = async () => {
     try {

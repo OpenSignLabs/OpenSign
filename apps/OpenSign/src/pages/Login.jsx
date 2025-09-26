@@ -23,6 +23,18 @@ import { useTranslation } from "react-i18next";
 import SelectLanguage from "../components/pdf/SelectLanguage";
 
 function Login() {
+  const [lengthValid, setLengthValid] = useState(false);
+  const [caseDigitValid, setCaseDigitValid] = useState(false);
+  const [specialCharValid, setSpecialCharValid] = useState(false);
+  const handlePasswordChange = (event) => {
+    let value = event.target.value;
+    setState({ ...state, password: value });
+    setLengthValid(value.length >= 8);
+    setCaseDigitValid(
+      /[a-z]/.test(value) && /[A-Z]/.test(value) && /\d/.test(value)
+    );
+    setSpecialCharValid(/[!@#$%^&*()\-_=+{};:,<.>?]/.test(value));
+  };
   const appName =
     "OpenSign™";
   const { t, i18n } = useTranslation();
@@ -474,7 +486,7 @@ function Login() {
                                 name="password"
                                 value={state.password}
                                 autoComplete="current-password"
-                                onChange={handleChange}
+                                onChange={handlePasswordChange}
                                 onInvalid={(e) =>
                                   e.target.setCustomValidity(
                                     t("input-required")
@@ -495,6 +507,19 @@ function Login() {
                               </span>
                             </div>
                           <div className="relative mt-1">
+                          {state.password.length > 0 && (
+                            <div className="mt-1 text-[11px]">
+                              <p className={lengthValid ? "text-green-600" : "text-red-600"}>
+                                {lengthValid ? "✓" : "✗"} Password length ≥ 8
+                              </p>
+                              <p className={caseDigitValid ? "text-green-600" : "text-red-600"}>
+                                {caseDigitValid ? "✓" : "✗"} Uppercase, lowercase, and number
+                              </p>
+                              <p className={specialCharValid ? "text-green-600" : "text-red-600"}>
+                                {specialCharValid ? "✓" : "✗"} Special character
+                              </p>
+                            </div>
+                          )}
                             <NavLink
                               to="/forgetpassword"
                               className="text-[13px] op-link op-link-primary underline-offset-1 focus:outline-none ml-1"
