@@ -1,21 +1,27 @@
 ## 📂 Max File Upload Size FAQ
 
-### ❓ What is the default maximum file size if nothing is set?
-- For Selfhost User the maximum allowed file size is **80 MB**.
-- For Cloud User the maximum allowed file size is **10 MB**.
-*(Note: There is an extra +10 MB added in limit to prevent unexpected signing failures)*
+### ❓ What is the default maximum file size?
+
+- **Self-Hosted Users:** Maximum file size is **80 MB**
+- **Cloud Users:** Maximum file size is **10 MB**  
+  *(Includes an additional +10 MB buffer to prevent signing failures)*
 
 ---
 
-### ❓ Can the file size limit be increased for specific users?
-Yes. On demand, the maximum upload size can be increased **up to 90 MB**.  
-*(Note: There is a hard restriction of **100 MB** at the server level.)*
+### ❓ Can the file size limit be increased?
+
+- **Cloud Hosting:** Yes — on request, the limit can be increased **up to 90 MB**  
+- **Self-Hosting:** No — the limit is fixed at **80 MB** and cannot be modified  
+
+> ⚠️ **Note:** There is a hard server-side limit of **100 MB**, which cannot be exceeded.
 
 ---
 
-### ❓ What happens if a file exceeds the max size?
-If a file exceeds the allowed size:
-- The upload is rejected.
-- An appropriate validation error is returned to the user.
+### ❓ What happens if a file exceeds the maximum size?
+
+If a file exceeds the allowed limit:
+
+- The upload is **rejected**
+- A **validation error message** is returned to the user
 
 ---
