@@ -1,5 +1,3 @@
-## 🗑️ User Deletion – FAQ
-
 ### ❓ Who can delete users?
 
 Only users with the role of **Admin** or **Org Admin** can delete users, with some restrictions outlined below.
