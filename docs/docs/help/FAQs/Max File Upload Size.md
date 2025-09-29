@@ -1,6 +1,6 @@
 ## 📂 Max File Upload Size FAQ
 
-### ❓ What is the default validation size if nothing is set?
+### ❓ What is the default maximum file size if nothing is set?
 - For Selfhost User the maximum allowed file size is **80 MB**.
 - For Cloud User the maximum allowed file size is **10 MB**.
 *(Note: There is an extra +10 MB added in limit to prevent unexpected signing failures)*
