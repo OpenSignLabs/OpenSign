@@ -18,8 +18,8 @@
     "watch": "nodemon index.js"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.888.0",
-    "@aws-sdk/s3-request-presigner": "^3.888.0",
+    "@aws-sdk/client-s3": "^3.891.0",
+    "@aws-sdk/s3-request-presigner": "^3.891.0",
     "@parse/fs-files-adapter": "^3.0.0",
     "@parse/s3-files-adapter": "^4.2.0",
     "@pdf-lib/fontkit": "^1.1.1",
@@ -52,7 +52,7 @@
     "posthog-node": "^5.8.4",
     "qrcode": "^1.5.4",
     "rate-limiter-flexible": "^7.3.1",
-    "sharp": "^0.34.3",
+    "sharp": "^0.34.4",
     "speakeasy": "^2.0.0",
     "ws": "^8.18.3"
   },

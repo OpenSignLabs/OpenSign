@@ -30,7 +30,7 @@ import "../../styles/quill.css";
 import BulkSendUi from "../../components/BulkSendUi";
 import Loader from "../../primitives/Loader";
 import { serverUrl_fn } from "../../constant/appinfo";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import { useElSize } from "../../hook/useElSize";
 import LottieWithLoader from "../../primitives/DotLottieReact";
 import PrefillWidgetModal from "../../components/pdf/PrefillWidgetsModal";
@@ -67,7 +67,7 @@ const TemplatesReport = (props) => {
   const [userDetails, setUserDetails] = useState({});
   const [isNextStep, setIsNextStep] = useState({});
   const [isBulkSend, setIsBulkSend] = useState({});
-  const [templateDeatils, setTemplateDetails] = useState({});
+  const [templateDetails, setTemplateDetails] = useState({});
   const [placeholders, setPlaceholders] = useState([]);
   const [isLoader, setIsLoader] = useState({});
   const [isShareWith, setIsShareWith] = useState({});
@@ -239,9 +239,8 @@ const TemplatesReport = (props) => {
         );
         if (checkIsSignatureExist) {
           setActLoader({ [`${item.objectId}_${act.btnId}`]: true });
-          const templateDeatils = await fetchTemplate(item.objectId);
-          const templateData =
-            templateDeatils.data && templateDeatils.data.result;
+          const template = await fetchTemplate(item.objectId);
+          const templateData = template.data && template.data.result;
           if (!templateData.error) {
             setXyPosition(templateData?.Placeholders);
             const signer = utils.handleSignersList(templateData);
@@ -284,7 +283,7 @@ const TemplatesReport = (props) => {
           }
         }
       );
-      if (axiosRes) {
+      if (axiosRes?.data) {
         return axiosRes;
       }
     } catch (e) {
@@ -297,10 +296,10 @@ const TemplatesReport = (props) => {
   const navigatePageToDoc = async (templateRes, placeholder, signer) => {
     setIsPrefillModal({});
     const res = await createDocument(
-      [templateRes || templateDeatils],
+      [templateRes || templateDetails],
       placeholder || xyPosition,
       signer || signerList,
-      templateRes?.URL || templateDeatils?.URL
+      templateRes?.URL || templateDetails?.URL
     );
     if (res.status === "success") {
       navigate(`/placeHolderSign/${res.id}`, {
@@ -879,8 +878,8 @@ const TemplatesReport = (props) => {
       signerList,
       setIsPrefillModal,
       scale,
-      templateDeatils?.URL,
-      [templateDeatils],
+      templateDetails?.URL,
+      [templateDetails],
       prefillImg,
       extClass?.[0]?.UserId?.objectId,
     );
@@ -1332,7 +1331,7 @@ const TemplatesReport = (props) => {
                           ) : (
                             <BulkSendUi
                               Placeholders={placeholders}
-                              item={templateDeatils}
+                              item={templateDetails}
                               handleClose={handleQuickSendClose}
                               signatureType={signatureType}
                             />

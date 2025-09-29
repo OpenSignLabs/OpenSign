@@ -902,6 +902,10 @@
   "thanks-for-feedback": "Thanks for your feedback 🙏",
   "share-your-feedback": "Share your feedback",
   "share-your-review": "Share your review",
+  "please-select-rating": "Please select a rating",
+  "feedback-optional": "Feedback (Optional)",
+  "feedback-saved": "Feedback has been saved.",
+  "feedback-save-error": "Unable to save feedback, please try again.",
   "date-format": "Date format",
   "document-deleted": "The document has been deleted or you don't have access. Please contact the sender.",
   "save-as-template-?": "Are you sure you want to save this document as template?",
@@ -1208,8 +1212,8 @@
   "enter-region-of-space": "Enter region of space",
   "enter-access-key": "Enter access key",
   "enter-secret-access-key": "Enter secret access key",
-  "otp-email":"We’ve sent a verification code to",
-  "save-as-temp-warn":"Note: This document includes prefilled widgets, which will be automatically removed as they are already incorporated into the base document.",
+  "otp-email": "We've sent a verification code to",
+  "save-as-temp-warn": "Note: This document includes prefilled widgets, which will be automatically removed as they are already incorporated into the base document.",
   "edit-document": "Edit document",
   "modify": "Modify",
   "merge-certificate-to-pdf": "Merge Certificate to PDF",
@@ -1217,6 +1221,15 @@
     "p1": "This will ensure that the completion certificate is included in the final PDF document. However, please note that once merged, the certificate cannot be separated from the main document.",
     "p2": "If you choose not to merge, the completion certificate will be provided as a separate PDF file along with the signed document."
   },
+  "read-only-date-error": "Read-only date widget must have a default date.",
+  "set-date": "Set Date",
+  "set-today": "Signing Date",
   "enter-name": "Enter name",
-  "enter-email": "Enter email"
+  "enter-email": "Enter email",
+  "subscribe-to-opensign-msg": "Subscribe to {{appName}} and enjoy unlimited free digital signatures.",
+  "duplicate-subscribe-msg": "Duplicate lets you create an exact copy of the selected template, allowing you to reuse or modify it without affecting the original.",
+  "save-as-template-msg": "Save this document as a reusable template that you can use again for future documents.",
+  "public-credit-alert": "Signing through this link consumes your free email credits. As a Free user, you are allotted 15 email credits per month to prevent spammers from abusing our systems. To enjoy higher limits and uninterrupted access, Subscribe to <1>OpenSign™ Paid plans.</1>",
+  "know-more-about": "Know more about",
+  "free-unlimited-signatures": "Free Unlimited Signatures"
 }

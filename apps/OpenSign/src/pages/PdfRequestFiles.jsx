@@ -1512,6 +1512,7 @@ function PdfRequestFiles(
             dragTypeValue,
             owner,
             filterSignerPos?.placeHolder,
+            null,
             widgetValue
           ),
           Width: widgetWidth / (containerScale * scale),
@@ -1548,6 +1549,7 @@ function PdfRequestFiles(
             dragTypeValue,
             owner,
             filterSignerPos?.placeHolder,
+            null,
             widgetValue
           ),
           Width: widgetWidth / (containerScale * scale),

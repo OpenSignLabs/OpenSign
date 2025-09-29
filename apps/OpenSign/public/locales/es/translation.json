@@ -902,6 +902,10 @@
   "thanks-for-feedback": "Gracias por su comentario 🙏",
   "share-your-feedback": "Comparta sus comentarios",
   "share-your-review": "Comparta su reseña",
+  "please-select-rating": "Por favor seleccione una calificación",
+  "feedback-optional": "Comentarios (opcional)",
+  "feedback-saved": "Los comentarios han sido guardados.",
+  "feedback-save-error": "No se pudieron guardar los comentarios, inténtelo de nuevo.",
   "date-format": "Formato de fecha",
   "document-deleted": "El documento ha sido eliminado o no tiene acceso. Por favor, contacte al remitente.",
   "save-as-template-?": "¿Está seguro de que desea guardar este documento como plantilla?",
@@ -1217,6 +1221,15 @@
     "p1": "Esto garantizará que el certificado de finalización esté incluido en el documento PDF final. Sin embargo, tenga en cuenta que una vez combinado, el certificado no se podrá separar del documento principal.",
     "p2": "Si elige no combinar, el certificado de finalización se proporcionará como un archivo PDF separado junto con el documento firmado."
   },
+  "read-only-date-error": "El widget de fecha de solo lectura debe tener una fecha predeterminada.",
+  "set-date": "Establecer fecha",
+  "set-today": "Fecha de firma",
   "enter-name": "Ingrese nombre",
-  "enter-email": "Ingrese correo electrónico"
+  "enter-email": "Ingrese correo electrónico",
+  "subscribe-to-opensign-msg": "Suscríbase a {{appName}} y disfrute de firmas digitales gratuitas ilimitadas.",
+  "duplicate-subscribe-msg": "Duplicar le permite crear una copia exacta de la plantilla seleccionada, lo que le permite reutilizarla o modificarla sin afectar al original.",
+  "save-as-template-msg": "Guarde este documento como una plantilla reutilizable que podrá usar nuevamente para futuros documentos.",
+  "public-credit-alert": "Firmar a través de este enlace consumirá sus créditos de correo electrónico gratuitos. Como usuario gratuito, se le asignan 15 créditos de correo electrónico por mes para evitar que los spammers abusen de nuestros sistemas. Para disfrutar de límites más altos y acceso ininterrumpido, suscríbase a los planes de pago de <1>OpenSign™.</1>",
+  "know-more-about": "Saber más sobre",
+  "free-unlimited-signatures": "¿Firmas ilimitadas gratis"
 }
