@@ -21,7 +21,9 @@ import {
   convertTextToImg,
   convertJpegToPng,
   convertBase64ToFile,
-  generatePdfName
+  generatePdfName,
+  getDefaultDate,
+  getDefaultFormat
 } from "../../constant/Utils";
 import CellsWidget from "./CellsWidget";
 import DatePicker from "react-datepicker";
@@ -45,22 +47,6 @@ import { emailRegex } from "../../constant/const";
 import RegexParser from "regex-parser";
 import { saveToMySign } from "../../utils/widgetUtils";
 
-//function to get default format
-const getDefaultFormat = (dateFormat) => dateFormat || "MM/dd/yyyy";
-//function to convert formatted date to new Date() format
-const getDefaultDate = (dateStr, format) => {
-  //get valid date format for moment to convert formatted date to new Date() format
-  const formats = changeDateToMomentFormat(format);
-  const parsedDate = moment(dateStr, formats);
-  let date;
-  if (parsedDate.isValid()) {
-    date = new Date(parsedDate.toISOString());
-    return date;
-  } else {
-    date = new Date();
-    return date;
-  }
-};
 const fontOptions = [
   { value: "Fasthand" },
   { value: "Dancing Script" },
@@ -175,7 +161,7 @@ function WidgetsValueModal(props) {
           currWidgetsDetails?.options?.response,
           currWidgetsDetails?.options?.validation?.format
         )
-      : new Date()
+      : ""
   );
   useEffect(() => {
     dispatch(setScrollTriggerId(currWidgetsDetails?.key));
@@ -256,9 +242,7 @@ function WidgetsValueModal(props) {
       setXyPosition,
       uniqueId,
       false,
-      data?.format,
-      currWidgetsDetails?.options?.fontSize || 12,
-      currWidgetsDetails?.options?.fontColor || "black"
+      data?.format
     );
     setSelectDate({ date: date, format: data?.format });
   };
@@ -880,13 +864,14 @@ function WidgetsValueModal(props) {
       onClick={onClick}
       ref={ref}
     >
-      {value}
+      {value ? value : "Select date"}
       <i className="fa-light fa-calendar ml-[5px]"></i>
     </div>
   ));
   ExampleCustomInput.displayName = "ExampleCustomInput";
   //function to set onchange date
   const handleOnDateChange = (date) => {
+    setWidgetValue(date);
     setStartDate(date);
   };
   const handleOnchangeTextBox = (e) => {
@@ -1470,52 +1455,59 @@ function WidgetsValueModal(props) {
         );
       case "date":
         return (
-          <div
-            className={`border-[1px] text-base-content data-[theme=opensigndark]:border-base-content data-[theme=opensigncss]:border-gray-300 rounded-[2px] p-1 px-3`}
-          >
-            <DatePicker
-              renderCustomHeader={({ date, changeYear, changeMonth }) => (
-                <div className="flex justify-start ml-2 ">
-                  <select
-                    className="bg-transparent outline-none"
-                    value={months[getMonth(date)]}
-                    onChange={({ target: { value } }) =>
-                      changeMonth(months.indexOf(value))
-                    }
-                  >
-                    {months.map((option) => (
-                      <option key={option} value={option}>
-                        {option}
-                      </option>
-                    ))}
-                  </select>
-                  <select
-                    className="bg-transparent outline-none"
-                    value={getYear(date)}
-                    onChange={({ target: { value } }) => changeYear(value)}
-                  >
-                    {years.map((option) => (
-                      <option key={option} value={option}>
-                        {option}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              )}
-              closeOnScroll={true}
-              selected={startDate}
-              onChange={(date) => handleOnDateChange(date)}
-              popperPlacement="top-end"
-              customInput={<ExampleCustomInput />}
-              dateFormat={
-                selectDate
-                  ? selectDate?.format
-                  : currWidgetsDetails?.options?.validation?.format
-                    ? currWidgetsDetails?.options?.validation?.format
-                    : "MM/dd/yyyy"
-              }
-              portalId="root-portal"
-            />
+          <div className="flex flex-col">
+            <div
+              className={`border-[1px] text-base-content data-[theme=opensigndark]:border-base-content data-[theme=opensigncss]:border-gray-300 rounded-[2px] p-1 px-3`}
+            >
+              <DatePicker
+                renderCustomHeader={({ date, changeYear, changeMonth }) => (
+                  <div className="flex justify-start ml-2 ">
+                    <select
+                      className="bg-transparent outline-none"
+                      value={months[getMonth(date)]}
+                      onChange={({ target: { value } }) =>
+                        changeMonth(months.indexOf(value))
+                      }
+                    >
+                      {months.map((option) => (
+                        <option key={option} value={option}>
+                          {option}
+                        </option>
+                      ))}
+                    </select>
+                    <select
+                      className="bg-transparent outline-none"
+                      value={getYear(date)}
+                      onChange={({ target: { value } }) => changeYear(value)}
+                    >
+                      {years.map((option) => (
+                        <option key={option} value={option}>
+                          {option}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+                closeOnScroll={true}
+                selected={startDate}
+                onChange={(date) => handleOnDateChange(date)}
+                popperPlacement="top-end"
+                customInput={<ExampleCustomInput />}
+                dateFormat={
+                  selectDate
+                    ? selectDate?.format
+                    : currWidgetsDetails?.options?.validation?.format
+                      ? currWidgetsDetails?.options?.validation?.format
+                      : "MM/dd/yyyy"
+                }
+                portalId="root-portal"
+              />
+            </div>
+            <div className="flex justify-center">
+              <span className="text-gray-300">
+                {currWidgetsDetails?.options?.validation?.format}
+              </span>
+            </div>
           </div>
         );
       case "email":
@@ -1595,9 +1587,6 @@ function WidgetsValueModal(props) {
     const isCheckBox =
       !currWidgetsDetails.options?.isReadOnly &&
       currWidgetsDetails.type === "checkbox";
-    const isRadio =
-      !currWidgetsDetails?.options?.isReadOnly &&
-      currWidgetsDetails?.type === radioButtonWidget;
     if (isCheckBox) {
       //get minimum required count if  exist
       const minCount =

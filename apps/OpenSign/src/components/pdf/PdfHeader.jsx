@@ -75,9 +75,12 @@ function Header(props) {
       alert(t("only-pdf-allowed"));
       return;
     }
-    const mb = Math.round(file?.size / Math.pow(1024, 2));
-    if (mb > maxFileSize) {
-      alert(`${t("file-alert-1")} ${maxFileSize} MB`);
+    const fileSize =
+      maxFileSize;
+    const pdfsize = file?.size;
+    const fileSizeBytes = fileSize * 1024 * 1024;
+    if (pdfsize > fileSizeBytes) {
+      alert(`${t("file-alert-1")} ${fileSize} MB`);
       removeFile(e);
       return;
     }
@@ -134,6 +137,13 @@ function Header(props) {
         useObjectStreams: false
       });
       const pdfBuffer = base64ToArrayBuffer(pdfBase64);
+      const pdfsize = pdfBuffer?.byteLength;
+      const fileSizeBytes = fileSize * 1024 * 1024;
+      if (pdfsize > fileSizeBytes) {
+        alert(`${t("file-alert-1")} ${fileSize} MB`);
+        removeFile(e);
+        return;
+      }
       props.setPdfArrayBuffer(pdfBuffer);
       props.setPdfBase64Url(pdfBase64);
       props.setIsUploadPdf && props.setIsUploadPdf(true);

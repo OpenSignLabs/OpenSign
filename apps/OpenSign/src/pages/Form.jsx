@@ -98,6 +98,8 @@ const Forms = (props) => {
     extUserData?.IsTourEnabled === false
       ? "false"
       : "true";
+  const fileSize =
+    maxFileSize;
   useEffect(() => {
     handleReset();
     return () => abortController.abort();
@@ -136,11 +138,10 @@ const Forms = (props) => {
         return;
       }
       // setFormData((prev) => ({ ...prev, file: files[0] }));
-      const totalMb = Math.round(
-        files.reduce((sum, f) => sum + f.size, 0) / Math.pow(1024, 2)
-      );
-      if (totalMb > maxFileSize) {
-        alert(`${t("file-alert-1")} ${maxFileSize} MB`);
+      const totalBytes = Math.round(files.reduce((sum, f) => sum + f.size, 0)); // in bytes
+      const fileSizeBytes = fileSize * 1024 * 1024;
+      if (totalBytes > fileSizeBytes) {
+        alert(`${t("file-alert-1")} ${fileSize} MB`);
         setFileUpload("");
         setSelectedFiles([]);
         removeFile(e);
@@ -336,6 +337,7 @@ const Forms = (props) => {
     } catch (error) {
       alert(error.message);
       setSelectedFiles([]);
+      removeFile(e);
     }
   };
   // `isValidURL` is used to check valid webhook url

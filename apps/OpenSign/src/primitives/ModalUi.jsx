@@ -9,10 +9,12 @@ const ModalUi = ({
   showHeader = true,
   showClose = true,
   reduceWidth,
-  position
+  position,
+  crossColor
 }) => {
   const width = reduceWidth;
   const isBottom = position === "bottom" ? "items-end pb-2 !bg-black/10" : "";
+  const crossBtnColor = crossColor ?? "text-base-content";
   return (
     <>
       {isOpen && (
@@ -38,7 +40,7 @@ const ModalUi = ({
                 )}
                 {showClose && (
                   <button
-                    className="op-btn op-btn-sm op-btn-circle op-btn-ghost text-base-content absolute right-2 top-2"
+                    className={`${crossBtnColor} op-btn op-btn-sm op-btn-circle op-btn-ghost absolute right-2 top-2 z-40`}
                     onClick={() => handleClose && handleClose()}
                   >
                     ✕

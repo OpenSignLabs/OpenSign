@@ -330,6 +330,8 @@ const DocumentsReport = (props) => {
       setIsModal({ [`extendexpiry_${item.objectId}`]: true });
     }
   };
+
+
   // Get current list
   const indexOfLastDoc = currentPage * props.docPerPage;
   const indexOfFirstDoc = indexOfLastDoc - props.docPerPage;
@@ -792,6 +794,7 @@ const DocumentsReport = (props) => {
   };
 
   const handleCloseModal = () => {
+    setError("");
     setIsModal({});
   };
   const handleSaveAsTemplate = async (doc) => {

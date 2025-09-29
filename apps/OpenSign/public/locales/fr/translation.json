@@ -901,6 +901,10 @@
   "thanks-for-feedback": "Merci pour votre retour 🙏",
   "share-your-feedback": "Partagez votre avis",
   "share-your-review": "Partagez votre avis",
+  "please-select-rating": "Veuillez sélectionner une note",
+  "feedback-optional": "Retour (optionnel)",
+  "feedback-saved": "Le retour a été enregistré.",
+  "feedback-save-error": "Impossible d'enregistrer le retour, veuillez réessayer.",
   "date-format": "Format de date",
   "document-deleted": "Le document a été supprimé ou vous n'y avez pas accès. Veuillez contacter l'expéditeur.",
   "save-as-template-?": "Êtes-vous sûr de vouloir enregistrer ce document comme modèle ?",
@@ -1216,6 +1220,15 @@
     "p1": "Cela garantira que le certificat de finalisation est inclus dans le document PDF final. Cependant, veuillez noter qu'une fois fusionné, le certificat ne peut plus être séparé du document principal.",
     "p2": "Si vous choisissez de ne pas fusionner, le certificat de finalisation sera fourni sous forme de fichier PDF distinct accompagné du document signé."
   },
+  "read-only-date-error": "Le widget de date en lecture seule doit avoir une date par défaut.",
+  "set-date": "Définir la date",
+  "set-today": "Date de signature",
   "enter-name": "Saisir le nom",
-  "enter-email": "Saisir l'e-mail"
+  "enter-email": "Saisir l'e-mail",
+  "subscribe-to-opensign-msg": "Abonnez-vous à {{appName}} et profitez de signatures numériques gratuites illimitées.",
+  "duplicate-subscribe-msg": "Dupliquer vous permet de créer une copie exacte du modèle sélectionné, que vous pouvez réutiliser ou modifier sans affecter l'original.",
+  "save-as-template-msg": "Enregistrez ce document comme modèle réutilisable que vous pourrez utiliser à nouveau pour de futurs documents.",
+  "public-credit-alert": "Signer via ce lien consomme vos crédits e-mail gratuits. En tant qu'utilisateur gratuit, vous disposez de 15 crédits e-mail par mois afin d’empêcher les spammeurs d’abuser de nos systèmes. Pour profiter de limites plus élevées et d'un accès ininterrompu, abonnez-vous aux forfaits payants de <1>OpenSign™.</1>",
+  "know-more-about": "En savoir plus sur",
+  "free-unlimited-signatures": "Signatures illimitées gratuites"
 }

@@ -901,6 +901,10 @@
   "thanks-for-feedback": "Grazie per il tuo feedback 🙏",
   "share-your-feedback": "Condividi il tuo feedback",
   "share-your-review": "Condividi la tua recensione",
+  "please-select-rating": "Si prega di selezionare una valutazione",
+  "feedback-optional": "Feedback (opzionale)",
+  "feedback-saved": "Il feedback è stato salvato.",
+  "feedback-save-error": "Impossibile salvare il feedback, riprova.",
   "date-format": "Formato data",
   "document-deleted": "Il documento è stato eliminato o non hai accesso. Si prega di contattare il mittente.",
   "save-as-template-?": "Sei sicuro di voler salvare questo documento come modello?",
@@ -1216,6 +1220,15 @@
     "p1": "Questo garantirà che il certificato di completamento sia incluso nel documento PDF finale. Tuttavia, si noti che una volta unito, il certificato non può essere separato dal documento principale.",
     "p2": "Se scegli di non unire, il certificato di completamento sarà fornito come file PDF separato insieme al documento firmato."
   },
+  "read-only-date-error": "Il widget data di sola lettura deve avere una data predefinita.",
+  "set-date": "Imposta data",
+  "set-today": "Data di firma",
   "enter-name": "Inserisci nome",
-  "enter-email": "Inserisci e-mail"
+  "enter-email": "Inserisci e-mail",
+  "subscribe-to-opensign-msg": "Abbonati a {{appName}} e goditi firme digitali gratuite illimitate.",
+  "duplicate-subscribe-msg": "Duplicare consente di creare una copia esatta del modello selezionato, permettendoti di riutilizzarlo o modificarlo senza influire sull'originale.",
+  "save-as-template-msg": "Salva questo documento come modello riutilizzabile che potrai usare di nuovo per documenti futuri.",
+  "public-credit-alert": "Firmare tramite questo link consumerà i tuoi crediti e-mail gratuiti. Come utente gratuito, ti vengono assegnati 15 crediti e-mail al mese per impedire agli spammer di abusare dei nostri sistemi. Per usufruire di limiti più elevati e accesso ininterrotto, abbonati ai piani a pagamento di <1>OpenSign™.</1>",
+  "know-more-about": "Scopri di più su",
+  "free-unlimited-signatures": "Firme illimitate gratuite"
 }
