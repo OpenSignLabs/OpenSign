@@ -1,5 +1,3 @@
-## 📂 Max File Upload Size FAQ
-
 ### ❓ What is the default maximum file size?
 
 - **Self-Hosted Users:** Maximum file size is **80 MB**
