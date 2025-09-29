@@ -348,8 +348,8 @@ const TemplatePlaceholder = () => {
               setPrefillSigner([utils?.prefillObj()]);
             }
             setSignersData(updatedSigners);
-            setUniqueId(updatedSigners[0].Id);
-            setBlockColor(updatedSigners[0].blockColor);
+            setUniqueId(updatedSigners[0]?.Id);
+            setBlockColor(updatedSigners[0]?.blockColor);
             setIsSelectId(0);
           } else {
             const updatedSigners = documentData[0].Signers.map((x, index) => ({
@@ -358,8 +358,8 @@ const TemplatePlaceholder = () => {
               Role: "Role " + (index + 1)
             }));
             setSignersData(updatedSigners);
-            setUniqueId(updatedSigners[0].Id);
-            setBlockColor(updatedSigners[0].blockColor);
+            setUniqueId(updatedSigners[0]?.Id);
+            setBlockColor(updatedSigners[0]?.blockColor);
             setPrefillSigner([utils?.prefillObj()]);
           }
         } else {
@@ -437,7 +437,6 @@ const TemplatePlaceholder = () => {
   const addPositionOfSignature = (item, monitor) => {
     getSignerPos(item, monitor);
   };
-
   // `getSignerPos` is used to get placeholder position when user place it and save it in array
   const getSignerPos = (item, monitor) => {
     if (uniqueId) {
@@ -483,7 +482,8 @@ const TemplatePlaceholder = () => {
             options: addWidgetOptions(
               dragTypeValue,
               owner,
-              filterSignerPos?.placeHolder
+              filterSignerPos?.placeHolder,
+              roleName
             ),
             Width: widgetWidth / (containerScale * scale),
             Height: widgetHeight / (containerScale * scale)
@@ -517,7 +517,8 @@ const TemplatePlaceholder = () => {
             options: addWidgetOptions(
               dragTypeValue,
               owner,
-              filterSignerPos?.placeHolder
+              filterSignerPos?.placeHolder,
+              roleName
             ),
             Width: widgetWidth / (containerScale * scale),
             Height: widgetHeight / (containerScale * scale)
@@ -614,7 +615,6 @@ const TemplatePlaceholder = () => {
       setIsAddRole(true);
     }
   };
-
   const tourAddRole = [
     {
       selector: '[data-tut="reactourAddbtn"]',
@@ -1774,12 +1774,12 @@ const TemplatePlaceholder = () => {
             setSignBtnPosition={setSignBtnPosition}
             pageNumber={pageNumber}
             pdfBase64Url={pdfBase64Url}
-            signedUrl={pdfDetails?.[0]?.SignedUrl || ""}
             setPdfArrayBuffer={setPdfArrayBuffer}
             setPdfBase64Url={setPdfBase64Url}
             setIsUploadPdf={setIsUploadPdf}
             pdfArrayBuffer={pdfArrayBuffer}
             isMergePdfBtn={true}
+            pdfDetails={pdfDetails}
           />
 
           {/* pdf render view */}
@@ -1799,6 +1799,7 @@ const TemplatePlaceholder = () => {
               allPages={allPages}
               setAllPages={setAllPages}
               setPageNumber={setPageNumber}
+              pdfDetails={pdfDetails}
             />
             <div className="w-full md:w-[95%]">
               <ModalUi

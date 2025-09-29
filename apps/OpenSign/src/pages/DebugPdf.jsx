@@ -27,7 +27,7 @@ function processDimensions(x, y, width, height) {
   };
 }
 const DebugPdf = () => {
-  const {t} = useTranslation()
+  const { t } = useTranslation();
   const { width } = useWindowSize();
   const [pdf, setPdf] = useState("");
   const [isModal, setIsModal] = useState(true);

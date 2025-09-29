@@ -7,6 +7,7 @@ import fs from 'node:fs';
 import dotenv from 'dotenv';
 import GenerateCertificate from './pdf/GenerateCertificate.js';
 import { getSecureUrl } from '../../Utils.js';
+import { parseUploadFile } from '../../utils/fileUtils.js';
 dotenv.config({ quiet: true });
 const eSignName = 'OpenSign';
 const eSigncontact = 'hello@opensignlabs.com';
@@ -16,10 +17,14 @@ async function uploadFile(pdfName, filepath) {
   try {
     const filedata = fs.readFileSync(filepath);
     let fileUrl;
-    const file = new Parse.File(pdfName, [...filedata], 'application/pdf');
-    await file.save({ useMasterKey: true });
-    const fileRes = getSecureUrl(file.url());
-    fileUrl = fileRes.url;
+
+    // const file = new Parse.File(pdfName, [...filedata], 'application/pdf');
+    // await file.save({ useMasterKey: true });
+    // const fileRes = getSecureUrl(file.url());
+    // fileUrl = fileRes.url;
+
+    const fileRes = await parseUploadFile(pdfName, filedata, 'application/pdf');
+    fileUrl = getSecureUrl(fileRes?.url)?.url;
     return { imageUrl: fileUrl };
   } catch (err) {
     console.log('Err ', err);
@@ -52,7 +57,9 @@ export default async function generateCertificatebydocId(req) {
   const certificatePath = `./exports/certificate_${docId}.pdf`;
   try {
     const getDocument = new Parse.Query('contracts_Document');
-    getDocument.include('ExtUserPtr,Signers,AuditTrail.UserPtr,Placeholders,ExtUserPtr.TenantId');
+    getDocument.include(
+      'ExtUserPtr,Signers,AuditTrail.UserPtr,Placeholders,ExtUserPtr.TenantId,ExtUserPtr.UserId'
+    );
     const docRes = await getDocument.get(docId, { useMasterKey: true });
 
     if (docRes && docRes?.get('IsCompleted') && !docRes?.get('CertificateUrl')) {

@@ -20,22 +20,23 @@ async function getTenantByUserId(userId, contactId) {
       }
     } else {
       const query = new Parse.Query('contracts_Users');
-      query.equalTo('UserId', {
-        __type: 'Pointer',
-        className: '_User',
-        objectId: userId,
-      });
+      query.equalTo('UserId', { __type: 'Pointer', className: '_User', objectId: userId });
       const extuser = await query.first({ useMasterKey: true });
       if (extuser) {
+        const tenantId = extuser?.get('TenantId')?.id || '';
         const user = extuser?.get('CreatedBy')?.id || userId;
-        const tenantCreditsQuery = new Parse.Query('partners_Tenant');
-        tenantCreditsQuery.equalTo('UserId', {
-          __type: 'Pointer',
-          className: '_User',
-          objectId: user,
-        });
-        tenantCreditsQuery.exclude('FileAdapters,PfxFile');
-        const res = await tenantCreditsQuery.first({ useMasterKey: true });
+        const tenantQuery = new Parse.Query('partners_Tenant');
+        if (tenantId) {
+          tenantQuery.equalTo('objectId', tenantId);
+        } else {
+          tenantQuery.equalTo('UserId', {
+            __type: 'Pointer',
+            className: '_User',
+            objectId: user,
+          });
+        }
+        tenantQuery.exclude('FileAdapters,PfxFile');
+        const res = await tenantQuery.first({ useMasterKey: true });
         return res;
       } else {
         return {};

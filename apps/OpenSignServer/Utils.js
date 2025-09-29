@@ -3,6 +3,7 @@ import { format, toZonedTime } from 'date-fns-tz';
 import getPresignedUrl, { getSignedLocalUrl } from './cloud/parsefunction/getSignedUrl.js';
 import crypto from 'node:crypto';
 import { PDFDocument, rgb } from 'pdf-lib';
+import { parseUploadFile } from './utils/fileUtils.js';
 
 dotenv.config({ quiet: true });
 
