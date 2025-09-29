@@ -553,7 +553,8 @@ function PlaceHolderSign() {
             options: addWidgetOptions(
               dragTypeValue,
               owner,
-              filterSignerPos?.placeHolder
+              filterSignerPos?.placeHolder,
+              roleName
             ),
             Width: widgetWidth / (containerScale * scale),
             Height: widgetHeight / (containerScale * scale)
@@ -588,7 +589,8 @@ function PlaceHolderSign() {
             options: addWidgetOptions(
               dragTypeValue,
               owner,
-              filterSignerPos?.placeHolder
+              filterSignerPos?.placeHolder,
+              roleName
             ),
             Width: widgetWidth / (containerScale * scale),
             Height: widgetHeight / (containerScale * scale)
@@ -2045,12 +2047,12 @@ function PlaceHolderSign() {
             setSignBtnPosition={setSignBtnPosition}
             pageNumber={pageNumber}
             pdfBase64Url={pdfBase64Url}
-            signedUrl={pdfDetails?.[0]?.SignedUrl || ""}
             setPdfArrayBuffer={setPdfArrayBuffer}
             setPdfBase64Url={setPdfBase64Url}
             setIsUploadPdf={setIsUploadPdf}
             pdfArrayBuffer={pdfArrayBuffer}
             isMergePdfBtn={true}
+            pdfDetails={pdfDetails}
           />
           {/* pdf render view */}
           <div className="w-full md:w-[57%] flex mr-4">
@@ -2070,6 +2072,7 @@ function PlaceHolderSign() {
               setAllPages={setAllPages}
               setPageNumber={setPageNumber}
               setIsTour={setPlaceholderTour}
+              pdfDetails={pdfDetails}
             />
             <div className=" w-full md:w-[95%] ">
               {/* this modal is used show alert set placeholder for all signers before send mail */}

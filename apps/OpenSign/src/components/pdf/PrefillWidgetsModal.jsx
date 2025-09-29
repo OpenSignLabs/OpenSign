@@ -53,7 +53,6 @@ function PrefillWidgetModal(props) {
   const loadedSet = useRef(new Set());
   const initializedRef = useRef(false); // prevent rerun on state updates
   const prefillImg = useSelector((state) => state.widget.prefillImg);
-  const [uniqueWidget, setUniqueWidget] = useState([]);
   const [image, setImage] = useState(null);
   const [imageLoaders, setImageLoaders] = useState({});
   const [currentWidget, setCurrentWidget] = useState("");
@@ -68,7 +67,7 @@ function PrefillWidgetModal(props) {
   );
 
   // useMemo to memoize the calculation of unique widgets
-  const memoizedUniqueWidget = useMemo(() => {
+  const uniqueWidget = useMemo(() => {
     //functions to used remove duplicate name values across all pages
     if (!props.prefillData) return [];
     //This will help us track which name values have already been encountered across all pages.
@@ -118,10 +117,6 @@ function PrefillWidgetModal(props) {
     };
     savePrefillImg();
   }, [props.xyPosition]);
-
-  useEffect(() => {
-    setUniqueWidget(memoizedUniqueWidget);
-  }, [memoizedUniqueWidget]);
 
   useEffect(() => {
     if (totalImages > 0 && loadedImages === totalImages) {

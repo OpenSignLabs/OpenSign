@@ -1,3 +1,6 @@
+import axios from 'axios';
+import { cloudServerUrl, serverAppId } from '../Utils.js';
+
 function formatFixedDate(date = new Date()) {
   const dd = String(date.getDate()).padStart(2, '0');
   const months = [
@@ -74,4 +77,24 @@ export function buildDownloadFilename(formatId, ctx) {
 
   const safeExt = ext.replace(/\.+/g, '').toLowerCase() || 'pdf';
   return `${stem}.${safeExt}`;
+}
+
+export async function parseUploadFile(fileName, fileData, mimeType) {
+  try {
+    const res = await axios.post(`${cloudServerUrl}/files/${fileName}`, fileData, {
+      headers: {
+        'X-Parse-Application-Id': serverAppId,
+        'X-Parse-Master-Key': process.env.MASTER_KEY,
+        'Content-Type': mimeType,
+      },
+    });
+
+    // console.log('File uploaded:', res.data);
+    return res.data;
+  } catch (err) {
+    const errorMessage = err?.response?.data?.error || 'Unknown error';
+    const statusCode = err?.response?.status || 500;
+    console.log('Err in parseUploadFile', errorMessage);
+    throw { message: errorMessage, code: statusCode };
+  }
 }
