@@ -14,7 +14,7 @@ import { pdflibAddPlaceholder } from '@signpdf/placeholder-pdf-lib';
 import { Placeholder } from './Placeholder.js';
 import { SignPdf } from '@signpdf/signpdf';
 import { P12Signer } from '@signpdf/signer-p12';
-import { buildDownloadFilename } from '../../../utils/fileUtils.js';
+import { buildDownloadFilename, parseUploadFile } from '../../../utils/fileUtils.js';
 
 const serverUrl = cloudServerUrl; // process.env.SERVER_URL;
 const APPID = serverAppId;
@@ -43,10 +43,14 @@ async function uploadFile(pdfName, filepath) {
   try {
     const filedata = fs.readFileSync(filepath);
     let fileUrl;
-    const file = new Parse.File(pdfName, [...filedata], 'application/pdf');
-    await file.save({ useMasterKey: true });
-    const fileRes = getSecureUrl(file.url());
-    fileUrl = fileRes.url;
+
+    // const file = new Parse.File(pdfName, [...filedata], 'application/pdf');
+    // await file.save({ useMasterKey: true });
+    // const fileRes = getSecureUrl(file.url());
+    // fileUrl = fileRes.url;
+
+    const fileRes = await parseUploadFile(pdfName, filedata, 'application/pdf');
+    fileUrl = getSecureUrl(fileRes?.url)?.url;
 
     return { imageUrl: fileUrl };
   } catch (err) {
@@ -350,7 +354,7 @@ async function PDF(req) {
     const publicUrl = req.headers.public_url;
     // below bode is used to get info of docId
     const docQuery = new Parse.Query('contracts_Document');
-    docQuery.include('ExtUserPtr,Signers,ExtUserPtr.TenantId,Bcc');
+    docQuery.include('ExtUserPtr,Signers,ExtUserPtr.TenantId,Bcc,CreatedBy');
     docQuery.equalTo('objectId', docId);
     const resDoc = await docQuery.first({ useMasterKey: true });
     if (!resDoc) {

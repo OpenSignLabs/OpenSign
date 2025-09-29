@@ -34,8 +34,9 @@ function PlaceholderType(props) {
     ((props.isSelfSign || props.isNeedSign) &&
       props.data?.signerObjId === props.signerObjId);
   const isReadOnly =
-    props.pos.options?.isReadOnly ||
-    props.data?.signerObjId !== props.signerObjId;
+    props?.data?.Role !== "prefill" &&
+    (props.pos.options?.isReadOnly ||
+      props.data?.signerObjId !== props.signerObjId);
   // prefer the latest response value over any default value
   const widgetData =
     props.pos?.options?.response ?? props.pos?.options?.defaultValue ?? "";
@@ -83,8 +84,7 @@ function PlaceholderType(props) {
         color: fontColor,
         fontFamily: "Arial, sans-serif"
       }}
-      className={`${isReadOnly ? `select-none` : ``} ${selectWidgetCls} overflow-hidden`}
-      disabled={isReadOnly}
+      className={`${isReadOnly ? `select-none opacity-25` : ``} ${selectWidgetCls} overflow-hidden`}
       onClick={onClick}
       ref={ref}
     >
@@ -399,11 +399,9 @@ function PlaceholderType(props) {
           popperPlacement="top-end"
           customInput={<ExampleCustomInput />}
           dateFormat={
-            props.selectDate
-              ? props.selectDate?.format
-              : props.pos?.options?.validation?.format
-                ? props.pos?.options?.validation?.format
-                : "MM/dd/yyyy"
+            props?.selectDate?.format ||
+            props.pos?.options?.validation?.format ||
+            "MM/dd/yyyy"
           }
         />
       ) : (
@@ -412,11 +410,9 @@ function PlaceholderType(props) {
           className="select-none-cls overflow-hidden"
         >
           <span>
-            {props.selectDate
-              ? props.selectDate?.format
-              : props.pos?.options?.validation?.format
-                ? props.pos?.options?.validation?.format
-                : "MM/dd/yyyy"}
+            {props?.selectDate?.format ||
+              props.pos?.options?.validation?.format ||
+              "MM/dd/yyyy"}
           </span>
         </div>
       );

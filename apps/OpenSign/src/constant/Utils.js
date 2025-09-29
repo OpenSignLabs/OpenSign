@@ -410,9 +410,14 @@ export const changeDateToMomentFormat = (format) => {
       return "L";
   }
 };
-export const addWidgetOptions = (type, signer, placeholder, widgetValue) => {
+export const addWidgetOptions = (
+  type,
+  signer,
+  placeholder,
+  role,
+  widgetValue
+) => {
   let defaultOpt;
-  //condition to handle widgets name field
   if (placeholder) {
     const countSameWidget = placeholder?.reduce((count, page) => {
       return count + page.pos.filter((item) => item.type === type).length;
@@ -472,7 +477,7 @@ export const addWidgetOptions = (type, signer, placeholder, widgetValue) => {
         : "MM/dd/yyyy";
       return {
         ...defaultOpt,
-        response: getDate(signer?.DateFormat),
+        response: role === "prefill" ? getDate(signer?.DateFormat) : "",
         validation: { format: dateFormat, type: "date-format" }
       };
     }
@@ -1002,7 +1007,7 @@ export const onChangeInput = (
   dateFormat,
   fontSize,
   fontColor,
-  isDateReadOnly
+  dateDetails
 ) => {
   const isSigners = xyPosition.some(
     (data) => data.signerPtr || data.Role === "prefill"
@@ -1034,9 +1039,18 @@ export const onChangeInput = (
                 options: {
                   ...position.options,
                   response: value,
-                  fontSize: fontSize,
-                  fontColor: fontColor,
-                  isReadOnly: isDateReadOnly || false,
+                  fontSize: fontSize ? fontSize : position.options?.fontSize,
+                  fontColor: fontColor
+                    ? fontColor
+                    : position.options?.fontColor,
+                  isReadOnly:
+                    dateDetails?.isReadOnly !== "undefined"
+                      ? dateDetails?.isReadOnly
+                      : position.options?.isReadOnly,
+                  status:
+                    dateDetails?.status !== "undefined"
+                      ? dateDetails?.status
+                      : position.options?.status,
                   validation: {
                     type: "date-format",
                     format: dateFormat // This indicates the required date format explicitly.
@@ -1996,7 +2010,17 @@ export const embedWidgetsToDoc = async (
         } else if (isTextTypeWidget) {
           let textContent = "";
           if (position?.options?.response) {
-            textContent = position.options?.response;
+            if (
+              position.type === "date" &&
+              position.options?.response === "today"
+            ) {
+              const getFormat = changeDateToMomentFormat(
+                position?.options?.validation?.format
+              );
+              textContent = moment().format(getFormat);
+            } else {
+              textContent = position.options?.response;
+            }
           } else if (position?.options?.defaultValue) {
             textContent = position?.options?.defaultValue;
           }
@@ -3448,18 +3472,7 @@ export const updateDateWidgetsRes = (
         placeHolder: item?.placeHolder?.map((ph) => ({
           ...ph,
           pos: ph?.pos?.map((widget) => {
-            // only for date widgets *and* missing response
-            if (widget.type === "date" && !widget.options.response) {
-              return {
-                ...widget,
-                options: {
-                  ...widget.options,
-                  response: getDate(
-                    changeDateToMomentFormat(widget.options.validation.format)
-                  )
-                }
-              };
-            } else if (
+            if (
               ["name", "email", "job title", "company"].includes(widget.type) &&
               !widget.options.defaultValue &&
               !widget.options.response
@@ -3593,6 +3606,7 @@ export const handleCheckResponse = (checkUser, setminRequiredCount) => {
             //in `defaultValue` variable is used to get how many checkbox checked by default
             const defaultValue =
               requiredCheckbox[i].options?.defaultValue?.length;
+            const checkboxValue = response ? response : defaultValue;
             //condition to check  parseMin  and parseMax greater than 0  then consider it as a required check box
             if (
               parseMin > 0 &&
@@ -3607,7 +3621,10 @@ export const handleCheckResponse = (checkUser, setminRequiredCount) => {
               setminRequiredCount(parseMin);
             }
             //else condition to validate minimum required checkbox
-            else if (parseMin > 0 && (parseMin > response || !response)) {
+            else if (
+              parseMin > 0 &&
+              (parseMin > checkboxValue || !checkboxValue)
+            ) {
               if (!showAlert) {
                 showAlert = true;
                 widgetKey = requiredCheckbox[i].key;
@@ -3806,7 +3823,7 @@ export const sendEmailToSigners = async (
           htmlReqBody,
           variables
         );
-      } else if (defaultMail) {
+      } else if (defaultMail?.body && defaultMail?.subject) {
         const mailBody = defaultMail?.body;
         const mailSubject = defaultMail.subject;
         const replacedRequestBody = mailBody.replace(/"/g, "'");
@@ -4034,3 +4051,19 @@ export const handleDeleteWidget = (key, Id, pageNumber, signerPos) => {
     }
   }
 };
+//function to convert formatted date to new Date() format
+export const getDefaultDate = (dateStr, format) => {
+  //get valid date format for moment to convert formatted date to new Date() format
+  const formats = changeDateToMomentFormat(format);
+  const parsedDate = moment(dateStr, formats);
+  let date;
+  if (parsedDate.isValid()) {
+    date = new Date(parsedDate.toISOString());
+    return date;
+  } else if (dateStr === "today") {
+    date = new Date();
+    return date;
+  }
+};
+//function to get default format
+export const getDefaultFormat = (dateFormat) => dateFormat || "MM/dd/yyyy";

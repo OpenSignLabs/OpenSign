@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, forwardRef } from "react";
 import BorderResize from "./BorderResize";
 import { Rnd } from "react-rnd";
 import {
@@ -15,7 +15,13 @@ import {
   cellsWidget,
   textWidget,
   selectFormat,
-  randomId
+  randomId,
+  getYear,
+  getMonth,
+  months,
+  years,
+  getDefaultDate,
+  getDefaultFormat
 } from "../../constant/Utils";
 import PlaceholderType from "./PlaceholderType";
 import moment from "moment";
@@ -29,47 +35,34 @@ import {
 } from "../../redux/reducers/widgetSlice";
 import { themeColor } from "../../constant/const";
 import { useGuidelinesContext } from "../../context/GuidelinesContext";
-
-//function to get default format
-const getDefaultFormat = (dateFormat) => dateFormat || "MM/dd/yyyy";
-
-//function to convert formated date to new Date() format
-const getDefaultDate = (dateStr, format) => {
-  //get valid date format for moment to convert formated date to new Date() format
-  const formats = changeDateToMomentFormat(format);
-  const parsedDate = moment(dateStr, formats);
-  let date;
-  if (parsedDate.isValid()) {
-    date = new Date(parsedDate.toISOString());
-    return date;
-  } else {
-    date = new Date();
-    return date;
-  }
-};
+import DatePicker from "react-datepicker";
 
 function Placeholder(props) {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const prefillImg = useSelector((state) => state.widget.prefillImg);
   const { showGuidelines } = useGuidelinesContext();
+  const statusArr = ["Required", "Optional"];
   const widgetData =
     props.pos?.options?.defaultValue || props.pos?.options?.response;
   const [isDateModal, setIsDateModal] = useState(false);
   const [containerScale, setContainerScale] = useState();
   const [selectDate, setSelectDate] = useState({});
-  const [dateFormat, setDateFormat] = useState([]);
+  const [dateFormatList, setDateFormatList] = useState([]);
   const [clickonWidget, setClickonWidget] = useState({});
-  const [isDateReadOnly, setIsDateReadOnly] = useState(
-    props?.pos?.options?.isReadOnly || false
+  const [formdata, setFormdata] = useState({
+    status: props?.pos?.options?.status || "required",
+    isReadOnly: props?.pos?.options?.isReadOnly || false
+  });
+  const [isToday, setIsToday] = useState(
+    props.pos?.options?.response === "today" ? true : false
   );
   const startDate = props?.pos?.options?.response
     ? getDefaultDate(
         props?.pos?.options?.response,
         props.pos?.options?.validation?.format
       )
-    : new Date();
-
+    : "";
   useEffect(() => {
     const getPdfPageWidth = props.pdfOriginalWH.find(
       (data) => data.pageNumber === props.pageNumber
@@ -102,29 +95,87 @@ function Placeholder(props) {
     }
   }, [widgetData]);
 
+  //function is used to convert date according to selected format
+  const handleGetFormatDate = (data, isDateChange) => {
+    const isSpecialDateFormat =
+      data?.format &&
+      ["dd-MM-yyyy", "dd.MM.yyyy", "dd/MM/yyyy"].includes(data?.format);
+    let updateDate = data.date;
+    let date = "";
+    if (isSpecialDateFormat && updateDate) {
+      date = isDateChange
+        ? moment(updateDate).format(changeDateToMomentFormat(data.format))
+        : updateDate;
+    } else if (updateDate) {
+      //using moment package is used to change date as per the format provided in selectDate obj e.g. - MM/dd/yyyy -> 03/12/2024
+      const newDate = new Date(updateDate);
+      date = moment(newDate.getTime()).format(
+        changeDateToMomentFormat(data?.format)
+      );
+    }
+    setSelectDate({ date: date, format: data?.format });
+    return date;
+  };
+  const saveDateSetting = (data) => {
+    if (formdata?.isReadOnly && !selectDate.date && !isToday) {
+      alert(t("read-only-date-error"));
+      return;
+    }
+    handleSaveDate(data);
+    setIsDateModal(false);
+    props.setFontColor("");
+    props.setFontSize("");
+  };
+  //function to save date and format on local array onchange date and onclick format
+  const handleSaveDate = (data, isDateChange) => {
+    const date = isToday ? "today" : handleGetFormatDate(data, isDateChange);
+    //`onChangeInput` is used to save data related to date in a placeholder field
+    onChangeInput(
+      date,
+      props.pos,
+      props.xyPosition,
+      props.index,
+      props.setXyPosition,
+      props.data && props.data.Id,
+      false,
+      data?.format,
+      props.fontSize || props.pos?.options?.fontSize || 12,
+      props.fontColor || props.pos?.options?.fontColor || "black",
+      formdata
+    );
+  };
+
+  //Date-picker- accept date - Thu Dec 30 2025 00:00:00 GMT+0530 (India Standard Time)
+  //if date have in this format - "30/12/2025"
+  //then first need to be convert in this format - Tue Dec 30 2025 00:00:00 GMT+0530 (India Standard Time)
+  //Using moment -  moment("30/12/2025", "DD/MM/YYYY").toDate();
+
+  //moment package where we show date according to format in list
+  //it support date in this type - "2025-09-11"// ISO string, "2025-09-11T14:30:00" // ISO datetime
   //function change format array list with selected date and format
   const changeDateFormat = () => {
     const updateDate = [];
     dateFormatArr.map((data) => {
-      let date;
-      if (selectDate && selectDate.format === "dd-MM-yyyy") {
-        const [day, month, year] = selectDate.date.split("-");
+      let date = selectDate?.date || new Date();
+      const isString = typeof date === "string";
+      if (selectDate.format === "dd-MM-yyyy" && isString) {
+        const [day, month, year] = date.split("-");
         date = new Date(`${year}-${month}-${day}`);
-      } else if (selectDate && selectDate.format === "dd.MM.yyyy") {
-        const [day, month, year] = selectDate.date.split(".");
+      } else if (selectDate.format === "dd.MM.yyyy" && isString) {
+        const [day, month, year] = date.split(".");
         date = new Date(`${year}.${month}.${day}`);
-      } else if (selectDate && selectDate.format === "dd/MM/yyyy") {
-        const [day, month, year] = selectDate.date.split("/");
+      } else if (selectDate.format === "dd/MM/yyyy" && isString) {
+        const [day, month, year] = date.split("/");
         date = new Date(`${year}/${month}/${day}`);
       } else {
-        date = new Date(selectDate?.date);
+        date = selectDate?.date ? new Date(selectDate?.date) : new Date();
       }
       const milliseconds = date.getTime();
       const newDate = moment(milliseconds).format(data);
       const dateObj = { date: newDate, format: selectFormat(data) };
       updateDate.push(dateObj);
     });
-    setDateFormat(updateDate);
+    setDateFormatList(updateDate);
   };
 
   useEffect(() => {
@@ -285,41 +336,6 @@ function Placeholder(props) {
         );
       }
     }
-  };
-
-  //function to save date and format on local array onchange date and onclick format
-  const handleSaveDate = (data, isDateChange) => {
-    const isSpecialDateFormat =
-      data?.format &&
-      ["dd-MM-yyyy", "dd.MM.yyyy", "dd/MM/yyyy"].includes(data?.format);
-    let updateDate = data.date;
-    let date;
-    if (isSpecialDateFormat) {
-      date = isDateChange
-        ? moment(updateDate).format(changeDateToMomentFormat(data.format))
-        : updateDate;
-    } else {
-      //using moment package is used to change date as per the format provided in selectDate obj e.g. - MM/dd/yyyy -> 03/12/2024
-      const newDate = new Date(updateDate);
-      date = moment(newDate.getTime()).format(
-        changeDateToMomentFormat(data?.format)
-      );
-    }
-    //`onChangeInput` is used to save data related to date in a placeholder field
-    onChangeInput(
-      date,
-      props.pos,
-      props.xyPosition,
-      props.index,
-      props.setXyPosition,
-      props.data && props.data.Id,
-      false,
-      data?.format,
-      props.fontSize || props.pos?.options?.fontSize || 12,
-      props.fontColor || props.pos?.options?.fontColor || "black",
-      isDateReadOnly || false
-    );
-    setSelectDate({ date: date, format: data?.format });
   };
 
   const setCellCount = (key, newCount) => {
@@ -650,6 +666,40 @@ function Placeholder(props) {
       return false;
     }
   };
+  const ExampleCustomInput = forwardRef(({ value, onClick }, ref) => (
+    <div
+      className="border-gray-400 rounded-[50px] border-[1px] px-3 md:ml-2 text-xs py-2 focus:outline-none hover:border-base-content "
+      onClick={onClick}
+      ref={ref}
+    >
+      {value}
+      <i className="fa-light fa-calendar ml-[5px]"></i>
+    </div>
+  ));
+  ExampleCustomInput.displayName = "ExampleCustomInput";
+  const handleChangeFormat = (e) => {
+    const selectedIndex = e.target.value;
+    e.stopPropagation();
+    if (
+      props?.isPlaceholder &&
+      props?.data?.Role !== "prefill" &&
+      !selectDate?.date
+    ) {
+      setSelectDate((prev) => ({
+        ...prev,
+        format: dateFormatList[selectedIndex]?.format
+      }));
+    } else {
+      setSelectDate(dateFormatList[selectedIndex]);
+    }
+  };
+  const handleClearDate = () => {
+    setIsToday(false);
+    setSelectDate((prev) => ({
+      ...prev,
+      date: ""
+    }));
+  };
   return (
     <>
       {/*  Check if a text widget (prefill type) exists. Once the user enters a value and clicks outside or the widget becomes non-selectable, it should appear as plain text (just like embedded text in a document). When the user clicks on the text again, it should become editable. */}
@@ -889,10 +939,8 @@ function Placeholder(props) {
                 (props?.isAlllowModify &&
                   !props?.assignedWidgetId.includes(props.pos.key))
               }
-              setSelectDate={setSelectDate}
               selectDate={selectDate}
               startDate={startDate}
-              handleSaveDate={handleSaveDate}
               xPos={props.xPos}
               calculateFont={calculateFont}
               setCellCount={setCellCount}
@@ -902,22 +950,18 @@ function Placeholder(props) {
       )}
       <ModalUi isOpen={isDateModal} title={t("widget-info")} showClose={false}>
         <div className="text-base-content h-[100%] p-[20px]">
-          <div className="flex flex-col md:flex-row md:items-center gap-y-3">
-            <div className="flex flex-row items-center gap-x-1">
+          <div className="flex flex-col gap-3">
+            <div className="flex flex-col md:items-center md:flex-row gap-y-3">
               <span className="capitalize">{t("format")} :</span>
               <select
-                className="op-select op-select-bordered op-select-sm focus:outline-none hover:border-base-content text-xs"
+                className="op-select op-select-bordered op-select-sm focus:outline-none hover:border-base-content text-xs md:ml-4"
                 defaultValue={""}
-                onChange={(e) => {
-                  const selectedIndex = e.target.value;
-                  e.stopPropagation();
-                  setSelectDate(dateFormat[selectedIndex]);
-                }}
+                onChange={(e) => handleChangeFormat(e)}
               >
                 <option value="" disabled>
                   {t("select-date-format")}
                 </option>
-                {dateFormat.map((data, ind) => {
+                {dateFormatList.map((data, ind) => {
                   return (
                     <option className="text-[13px]" value={ind} key={ind}>
                       {data?.date ? data?.date : "nodata"}
@@ -925,79 +969,190 @@ function Placeholder(props) {
                   );
                 })}
               </select>
+              <span className="text-xs text-gray-400 ml-1">
+                {selectDate.format}
+              </span>
             </div>
-            <span className="text-xs text-gray-400 ml-1">
-              {selectDate.format}
-            </span>
-          </div>
-          <div className="flex flex-col md:flex-row gap-y-2 md:gap-y-0 gap-x-2 mt-3">
-            <div className="flex flex-row items-center">
-              <span className="capitalize">{t("font-size")} :</span>
-              <select
-                className="ml-[3px] md:ml:[7px] op-select op-select-bordered op-select-sm focus:outline-none hover:border-base-content text-xs"
-                value={props.fontSize || clickonWidget.options?.fontSize || 12}
-                onChange={(e) => props.setFontSize(parseInt(e.target.value))}
-              >
-                {fontsizeArr.map((size, ind) => (
-                  <option className="text-[13px]" value={size} key={ind}>
-                    {size}
-                  </option>
-                ))}
-              </select>
+            {props?.data?.Role !== "prefill" && props?.isPlaceholder && (
+              <>
+                <div className="flex flex-col md:flex-row md:items-center gap-2">
+                  <span>{t("set-date")} :</span>
+                  <DatePicker
+                    renderCustomHeader={({ date, changeYear, changeMonth }) => (
+                      <div className="flex justify-start md:ml-2 ">
+                        <select
+                          className="bg-transparent outline-none"
+                          value={months[getMonth(date)]}
+                          onChange={({ target: { value } }) =>
+                            changeMonth(months.indexOf(value))
+                          }
+                        >
+                          {months.map((option) => (
+                            <option key={option} value={option}>
+                              {option}
+                            </option>
+                          ))}
+                        </select>
+                        <select
+                          className="bg-transparent outline-none"
+                          value={getYear(date)}
+                          onChange={({ target: { value } }) =>
+                            changeYear(value)
+                          }
+                        >
+                          {years.map((option) => (
+                            <option key={option} value={option}>
+                              {option}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    )}
+                    closeOnScroll={true}
+                    selected={getDefaultDate(
+                      selectDate?.date,
+                      selectDate?.format
+                    )}
+                    popperPlacement="top-end"
+                    customInput={<ExampleCustomInput />}
+                    onChange={(date) => {
+                      setIsToday(false);
+                      const isDateChange = true;
+                      const dateObj = {
+                        date: date,
+                        format: selectDate.format
+                      };
+                      handleGetFormatDate(dateObj, isDateChange);
+                    }}
+                    dateFormat={
+                      selectDate
+                        ? selectDate?.format
+                        : props.pos?.options?.validation?.format
+                          ? props.pos?.options?.validation?.format
+                          : "MM/dd/yyyy"
+                    }
+                    portalId="root-portal"
+                  />
+                  <label className=" flex items-center gap-1 cursor-pointer">
+                    <input
+                      checked={isToday}
+                      type="checkbox"
+                      className="op-checkbox op-checkbox-xs"
+                      onClick={() => {
+                        setSelectDate((prev) => ({
+                          ...prev,
+                          date: ""
+                        }));
+                        setIsToday(!isToday);
+                      }}
+                    />
+                    <span className="ml-[2px]">{t("set-today")}</span>
+                  </label>
+                  <span
+                    onClick={() => handleClearDate()}
+                    className="underline text-blue-500 cursor-pointer md:ml-2"
+                  >
+                    {t("clear")}
+                  </span>
+                </div>
+                <div className="flex flex-row items-center gap-[10px]">
+                  {statusArr.map((data, ind) => {
+                    return (
+                      <div
+                        key={ind}
+                        className="flex flex-row gap-[5px] items-center"
+                      >
+                        <input
+                          className="mr-[2px] op-radio op-radio-xs"
+                          type="radio"
+                          name="status"
+                          onChange={() =>
+                            setFormdata({
+                              ...formdata,
+                              status: data.toLowerCase()
+                            })
+                          }
+                          checked={
+                            formdata.status.toLowerCase() === data.toLowerCase()
+                          }
+                        />
+                        <div className="text-[13px]">
+                          {t(`widget-status.${data}`)}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </>
+            )}
+
+            <div className="flex flex-col md:flex-row gap-y-2 md:gap-y-0 gap-x-2">
+              <div className="flex flex-row items-center">
+                <span className="capitalize">{t("font-size")} :</span>
+                <select
+                  className="ml-[3px] md:ml:[7px] op-select op-select-bordered op-select-sm focus:outline-none hover:border-base-content text-xs"
+                  value={
+                    props.fontSize || clickonWidget.options?.fontSize || 12
+                  }
+                  onChange={(e) => props.setFontSize(parseInt(e.target.value))}
+                >
+                  {fontsizeArr.map((size, ind) => (
+                    <option className="text-[13px]" value={size} key={ind}>
+                      {size}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="flex flex-row gap-1 items-center">
+                <span className="capitalize">{t("color")} :</span>
+                <select
+                  value={
+                    props.fontColor ||
+                    clickonWidget.options?.fontColor ||
+                    "black"
+                  }
+                  onChange={(e) => props.setFontColor(e.target.value)}
+                  className="ml-[4px] md:ml[7px] op-select op-select-bordered op-select-sm focus:outline-none hover:border-base-content text-xs"
+                >
+                  {fontColorArr.map((color, ind) => (
+                    <option value={color} key={ind}>
+                      {t(`color-type.${color}`)}
+                    </option>
+                  ))}
+                </select>
+                <span
+                  style={{
+                    background:
+                      props.fontColor || props.pos.options?.fontColor || "black"
+                  }}
+                  className="w-5 h-[19px] ml-1"
+                ></span>
+              </div>
             </div>
-            <div className="flex flex-row gap-1 items-center">
-              <span className="capitalize">{t("color")} :</span>
-              <select
-                value={
-                  props.fontColor || clickonWidget.options?.fontColor || "black"
-                }
-                onChange={(e) => props.setFontColor(e.target.value)}
-                className="ml-[4px] md:ml[7px] op-select op-select-bordered op-select-sm focus:outline-none hover:border-base-content text-xs"
-              >
-                {fontColorArr.map((color, ind) => (
-                  <option value={color} key={ind}>
-                    {t(`color-type.${color}`)}
-                  </option>
-                ))}
-              </select>
-              <span
-                style={{
-                  background:
-                    props.fontColor || props.pos.options?.fontColor || "black"
-                }}
-                className="w-5 h-[19px] ml-1"
-              ></span>
-            </div>
-          </div>
-          {props?.isPlaceholder && props?.data?.Role !== "prefill" && (
-            <div className="flex items-center mt-3">
-              <input
-                id="isReadOnly"
-                name="isReadOnly"
-                type="checkbox"
-                checked={
-                  isDateReadOnly || props.pos.options?.isReadOnly || false
-                }
-                className="op-checkbox op-checkbox-xs"
-                onChange={() => setIsDateReadOnly(!isDateReadOnly)}
-              />
-              <label
-                className="ml-1.5 mb-0 capitalize text-[13px]"
-                htmlFor="isreadonly"
-              >
-                {t("read-only")}
+            {props?.isPlaceholder && props?.data?.Role !== "prefill" && (
+              <label className="flex items-center gap-1 cursor-pointer">
+                <input
+                  name="isReadOnly"
+                  type="checkbox"
+                  checked={formdata?.isReadOnly}
+                  className="op-checkbox op-checkbox-xs"
+                  onChange={() =>
+                    setFormdata({
+                      ...formdata,
+                      isReadOnly: !formdata?.isReadOnly
+                    })
+                  }
+                />
+                <span className="capitalize ml-[2px]">{t("read-only")}</span>
               </label>
-            </div>
-          )}
+            )}
+          </div>
           <div className="h-[1px] w-full my-[15px] bg-[#9f9f9f]"></div>
           <button
             type="button"
             className="op-btn op-btn-primary"
             onClick={() => {
-              setIsDateModal(false);
-              handleSaveDate(selectDate);
-              props.setFontColor("");
-              props.setFontSize("");
+              saveDateSetting(selectDate);
             }}
           >
             {t("save")}

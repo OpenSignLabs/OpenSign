@@ -901,6 +901,10 @@
   "thanks-for-feedback": "Danke für Ihr Feedback 🙏",
   "share-your-feedback": "Teilen Sie Ihr Feedback",
   "share-your-review": "Teilen Sie Ihre Bewertung",
+  "please-select-rating": "Bitte wählen Sie eine Bewertung aus",
+  "feedback-optional": "Feedback (optional)",
+  "feedback-saved": "Feedback wurde gespeichert.",
+  "feedback-save-error": "Feedback konnte nicht gespeichert werden, bitte versuchen Sie es erneut.",
   "date-format": "Datumsformat",
   "document-deleted": "Das Dokument wurde gelöscht oder Sie haben keinen Zugriff. Bitte kontaktieren Sie den Absender.",
   "save-as-template-?": "Sind Sie sicher, dass Sie dieses Dokument als Vorlage speichern möchten?",
@@ -1216,6 +1220,15 @@
     "p1": "Dies stellt sicher, dass das Abschlusszertifikat im endgültigen PDF-Dokument enthalten ist. Bitte beachten Sie jedoch, dass das Zertifikat nach dem Zusammenführen nicht mehr vom Hauptdokument getrennt werden kann.",
     "p2": "Wenn Sie sich entscheiden, nicht zusammenzuführen, wird das Abschlusszertifikat als separate PDF-Datei zusammen mit dem unterzeichneten Dokument bereitgestellt."
   },
+  "read-only-date-error": "Das schreibgeschützte Datums-Widget muss ein Standarddatum haben.",
+  "set-date": "Datum festlegen",
+  "set-today": "Unterzeichnungsdatum",
   "enter-name": "Name eingeben",
-  "enter-email": "E-Mail eingeben"
+  "enter-email": "E-Mail eingeben",
+  "subscribe-to-opensign-msg": "Abonnieren Sie {{appName}} und genießen Sie unbegrenzt kostenlose digitale Signaturen.",
+  "duplicate-subscribe-msg": "Mit Duplizieren können Sie eine exakte Kopie der ausgewählten Vorlage erstellen, die Sie wiederverwenden oder ändern können, ohne das Original zu beeinflussen.",
+  "save-as-template-msg": "Speichern Sie dieses Dokument als wiederverwendbare Vorlage, die Sie für zukünftige Dokumente erneut nutzen können.",
+  "public-credit-alert": "Das Signieren über diesen Link verbraucht Ihre kostenlosen E-Mail-Credits. Als kostenloser Nutzer erhalten Sie 15 E-Mail-Credits pro Monat, um zu verhindern, dass Spammer unsere Systeme missbrauchen. Um höhere Limits und ununterbrochenen Zugriff zu genießen, abonnieren Sie die <1>OpenSign™-Bezahlpläne.</1>",
+  "know-more-about": "Mehr erfahren über",
+  "free-unlimited-signatures": "Kostenlose unbegrenzte Signaturen"
 }

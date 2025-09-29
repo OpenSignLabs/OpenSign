@@ -1250,12 +1250,12 @@ function SignYourSelf() {
               pageNumber={pageNumber}
               containerWH={containerWH}
               pdfBase64Url={pdfBase64Url}
-              signedUrl={pdfDetails?.[0]?.SignedUrl || ""}
               setPdfArrayBuffer={setPdfArrayBuffer}
               setPdfBase64Url={setPdfBase64Url}
               setIsUploadPdf={setIsUploadPdf}
               pdfArrayBuffer={pdfArrayBuffer}
               isMergePdfBtn={!pdfDetails?.[0]?.IsCompleted}
+              pdfDetails={pdfDetails}
             />
             <div className="w-full md:w-[57%] flex mr-4">
               <PdfTools
@@ -1273,6 +1273,7 @@ function SignYourSelf() {
                 setAllPages={setAllPages}
                 setPageNumber={setPageNumber}
                 isDisableEditTools={isCompleted}
+                pdfDetails={pdfDetails}
               />
               <div className="w-full md:w-[95%]">
                 <ModalUi
