@@ -90,6 +90,8 @@ Note: This feature is available exclusively on paid plans.
 
 The **Prefill Widgets** feature lets document creators prefill specific fields before sending a document for signature. This ensures that important details (such as date, name, email, images, checkboxes, radio buttons, or custom text) are already completed when recipients receive the document. By default, prefilled data cannot be edited by signers.  
 
+<img width="800" alt="Prfill" src="https://github.com/user-attachments/assets/4794b2a9-acc0-4ef8-8110-076f0d90cc57" />
+
 ---
 
 ## ✨ Key Benefits
@@ -120,8 +122,10 @@ The **Prefill Widgets** feature lets document creators prefill specific fields b
 
 ---
 
-<img width="800" alt="request signatures" src="https://github.com/user-attachments/assets/b4e6f257-e362-46a7-b809-546f0e5999fc" />
 **Add Widgets for Signers**
+
+<img width="800" alt="request signatures" src="https://github.com/user-attachments/assets/25997f4c-6fbf-4851-b8a8-a803c3343f87" />
+
 - **[1] Add signature widget**: Once your document is loaded in the document creation panel, you'll need to add a signature widget for each signer. OpenSign provides an intuitive interface for this task. Select the signer from the right side panel, click on the signature widget, and position it where the signature is required.
 Use the option on the right side to add recipients if you need to include additional signers. You can place multiple signature widgets for each signer, as required.
 
