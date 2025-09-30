@@ -253,7 +253,11 @@ const UserList = () => {
   };
   const handleBtnVisibility = (act, item) => {
     if (act.restrictAdmin) {
-      return item?.objectId !== extClass?.[0]?.objectId;
+      if (item?.UserRole === "contracts_Admin") {
+        return false;
+      } else {
+        return item?.objectId !== extClass?.[0]?.objectId;
+      }
     } else if (
       act.restrictBtn === true &&
       item?.objectId === extClass?.[0]?.objectId
@@ -261,6 +265,13 @@ const UserList = () => {
       return true;
     } else {
       return true;
+    }
+  };
+  const handleActiveToggleVisibility = (item) => {
+    if (item?.UserRole === "contracts_Admin") {
+      return false;
+    } else {
+      return item?.objectId !== extClass?.[0]?.objectId;
     }
   };
   return (
@@ -340,7 +351,7 @@ const UserList = () => {
                               <td className="px-4 py-2">
                                 {formatRow(item.TeamIds)}
                               </td>
-                              {item.UserRole !== "contracts_Admin" ? (
+                              {handleActiveToggleVisibility(item) ? (
                                 <td className="px-4 py-2 font-semibold">
                                   <label className="cursor-pointer relative block items-center mb-0">
                                     <input
