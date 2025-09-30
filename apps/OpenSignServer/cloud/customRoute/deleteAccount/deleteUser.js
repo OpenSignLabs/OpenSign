@@ -32,7 +32,7 @@ const resetPasswordAndDeleteSession = async userId => {
     await Parse.Object.destroyAll(sessions, { useMasterKey: true });
   }
 };
-export async function deleteUser(userId, adminId) {
+export async function deleteUser(userId, adminId, adminTenantId, isOrgAdmin, orgPtr) {
   const userPointer = { __type: 'Pointer', className: '_User', objectId: userId };
   let userDetails = {
     UserRole: 'not found',
@@ -47,13 +47,18 @@ export async function deleteUser(userId, adminId) {
     const Users = Parse.Object.extend('contracts_Users');
     const userQuery = new Parse.Query(Users);
     userQuery.equalTo('UserId', userPointer);
-    if (adminId) {
+    if (adminTenantId) {
+      userQuery.equalTo('TenantId', adminTenantId);
+      if (isOrgAdmin && orgPtr) {
+        userQuery.equalTo('OrganizationId', orgPtr);
+      }
+    } else if (adminId) {
       userQuery.equalTo('CreatedBy', { __type: 'Pointer', className: '_User', objectId: adminId });
     }
     const userResult = await userQuery.first({ useMasterKey: true });
     userDetails = { ...userDetails, UserId: userId };
     if (!userResult) {
-      const errorMessage = 'User not found.';
+      const errorMessage = isOrgAdmin ? 'Unauthorized.' : 'User not found.';
       return { code: 400, message: errorMessage };
     }
     const contractsUserId = userResult.id;
@@ -61,6 +66,10 @@ export async function deleteUser(userId, adminId) {
     const teamIds = userResult.get('TeamIds') || [];
     const organizationId = userResult.get('OrganizationId')?.id;
     const isAdmin = userResult?.get('UserRole') === 'contracts_Admin' ? true : false;
+    if (isOrgAdmin && isAdmin) {
+      const errorMessage = 'Unauthorized.';
+      return { code: 400, message: errorMessage };
+    }
     userDetails = {
       ...userDetails,
       UserRole: userResult?.get('UserRole'),
@@ -267,6 +276,21 @@ export const deleteUserPost = async (req, res) => {
       return res.send(errorMessage);
     }
 
+    if (extUser?.get('UserRole') !== 'contracts_Admin') {
+      const errorMessage =
+        'This action is not permitted. Kindly contact your administrator to request account deletion.';
+      return res.send(errorMessage);
+    }
+
+    const extUsers = new Parse.Query('contracts_Users');
+    extUsers.equalTo('TenantId', extUser?.get('TenantId'));
+    extUsers.notEqualTo('UserRole', 'contracts_Admin');
+    const isTeamUsers = await extUsers.first({ useMasterKey: true });
+    if (isTeamUsers) {
+      const errorMessage = `To delete this account, start by removing all team users associated with it. Once all users are removed, you'll be able to permanently delete the account.`;
+      return res.send(errorMessage);
+    }
+
     // Get stored OTP info
     const savedOtp = extUser.get('DeleteOTP') || '';
     const expiry = extUser.get('DeleteOTPExpiry');
@@ -352,7 +376,30 @@ export const deleteUserByAdmin = async (req, res) => {
       const errorMessage = 'User not found.';
       return res.status(400).json({ message: errorMessage });
     }
-    const response = await deleteUser(userId, adminId);
+
+    if (adminId === userId) {
+      return res.status(400).json({ message: 'You cannot delete your own account.' });
+    }
+    // 2. ext user details
+    const extUserQuery = new Parse.Query('contracts_Users');
+    extUserQuery.equalTo('UserId', { __type: 'Pointer', className: '_User', objectId: adminId });
+    const extUser = await extUserQuery.first({ useMasterKey: true });
+    if (!extUser) {
+      const errorMessage = 'User not found.';
+      return res.status(400).json({ message: errorMessage });
+    }
+    const isAdmin =
+      extUser?.get('UserRole') === 'contracts_Admin' ||
+      extUser?.get('UserRole') === 'contracts_OrgAdmin'
+        ? true
+        : false;
+    const isOrgAdmin = extUser?.get('UserRole') === 'contracts_OrgAdmin';
+    const tenantId = extUser?.get('TenantId');
+    const orgPtr = isOrgAdmin && extUser?.get('OrganizationId');
+    if (!isAdmin) {
+      return res.status(400).json({ message: 'Unauthorized.' });
+    }
+    const response = await deleteUser(userId, adminId, tenantId, isOrgAdmin, orgPtr);
     const code = response?.code || 400;
     const message = response?.message || 'An error occurred while deleting your account.';
     return res.status(code).json({ message: message });
