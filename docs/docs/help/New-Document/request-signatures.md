@@ -85,10 +85,43 @@ Note: This feature is available exclusively on paid plans.
 - **Next**: Once all the necessary fields are filled, click this button to proceed to create the document for signing.
 - **Cancel**: If you need to start over or make changes, click this button to clear the form.
   
-### Step 3: Document creation 
+### Step 3: Document Creation  
+**Prefill Widgets**  
+
+The **Prefill Widgets** feature lets document creators prefill specific fields before sending a document for signature. This ensures that important details (such as date, name, email, images, checkboxes, radio buttons, or custom text) are already completed when recipients receive the document. By default, prefilled data cannot be edited by signers.  
+
+---
+
+## ✨ Key Benefits
+- ✅ Save time by auto-filling repetitive information.  
+- ✅ Ensure accuracy for critical fields (e.g., company name, contract number).  
+- ✅ Maintain consistency across multiple signers and templates.  
+- ✅ Reduce signer effort for a smoother signing experience.  
+
+---
+
+## 🛠️ How It Works
+1. **Add Widgets to the Document**  
+   - Open the right-side panel, select **Prefill Widgets**, then drag and drop the required widgets (Text, Date, Checkbox, Dropdown, Image, etc.) onto the document.  
+
+2. **Enter Prefill Value**  
+   - Provide the default value (e.g., *"Company: OpenSign Labs"*, *Date: 30/09/2025*).  
+   - For option-based widgets (Dropdown, Radio, Checkbox), choose the option to be prefilled.  
+
+---
+
+## 📋 Supported Widgets for Prefill
+- **Text Field** – Names, job titles, company names, contract IDs  
+- **Date Field** – Default signing date or contract start date  
+- **Dropdown** – Preselect an option  
+- **Radio Button** – Prefill with a selected choice  
+- **Checkbox** – Prefill as checked or unchecked  
+- **Image** – Insert a default image (e.g., logo or stamp) 
+
+---
 
 <img width="800" alt="request signatures" src="https://github.com/user-attachments/assets/b4e6f257-e362-46a7-b809-546f0e5999fc" />
-
+**Add Widgets for Signers**
 - **[1] Add signature widget**: Once your document is loaded in the document creation panel, you'll need to add a signature widget for each signer. OpenSign provides an intuitive interface for this task. Select the signer from the right side panel, click on the signature widget, and position it where the signature is required.
 Use the option on the right side to add recipients if you need to include additional signers. You can place multiple signature widgets for each signer, as required.
 
