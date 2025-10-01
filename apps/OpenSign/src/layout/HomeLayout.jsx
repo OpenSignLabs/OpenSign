@@ -4,21 +4,22 @@ import Footer from "../components/Footer";
 import Sidebar from "../components/sidebar/Sidebar";
 import Tour from "../primitives/Tour";
 import axios from "axios";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Parse from "parse";
-import ModalUi from "../primitives/ModalUi";
-import { useNavigate, useLocation, Outlet } from "react-router";
+import { useNavigate, Outlet } from "react-router";
 import Loader from "../primitives/Loader";
 import { useTranslation } from "react-i18next";
+import { sessionStatus } from "../redux/reducers/userReducer";
+import SessionExpiredModal from "../primitives/SessionExpiredModal";
 
 const HomeLayout = () => {
   const appName =
     "OpenSign™";
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
-  const location = useLocation();
+  const dispatch = useDispatch();
   const arr = useSelector((state) => state.TourSteps);
-  const [isUserValid, setIsUserValid] = useState(true);
+  const isValidSession = useSelector((state) => state.user.isValidSession);
   const [isLoader, setIsLoader] = useState(true);
   const [isCloseBtn, setIsCloseBtn] = useState(true);
   const [isTour, setIsTour] = useState(false);
@@ -35,28 +36,31 @@ const HomeLayout = () => {
   }, []);
 
   useEffect(() => {
-    if (!tenantId) {
-      setIsUserValid(false);
-    } else {
-      (async () => {
-        try {
-          // Use the session token to validate the user
-          const userQuery = new Parse.Query(Parse.User);
-          const user = await userQuery.get(Parse?.User?.current()?.id, {
-            sessionToken: localStorage.getItem("accesstoken")
-          });
-          if (user) {
-            localStorage.setItem("profileImg", user.get("ProfilePic") || "");
-              setIsUserValid(true);
-              setIsLoader(false);
-          } else {
-            setIsUserValid(false);
+    if (localStorage.getItem("accesstoken")) {
+      if (!tenantId) {
+        dispatch(sessionStatus(false));
+      } else {
+        (async () => {
+          try {
+            // Use the session token to validate the user
+            const userQuery = new Parse.Query(Parse.User);
+            const user = await userQuery.get(Parse?.User?.current()?.id, {
+              sessionToken: localStorage.getItem("accesstoken")
+            });
+            if (user) {
+              localStorage.setItem("profileImg", user.get("ProfilePic") || "");
+                dispatch(sessionStatus(true));
+                setIsLoader(false);
+            } else {
+              dispatch(sessionStatus(true));
+            }
+          } catch (error) {
+            console.log("catch");
+            // Session token is invalid or there was an error
+            dispatch(sessionStatus(false));
           }
-        } catch (error) {
-          // Session token is invalid or there was an error
-          setIsUserValid(false);
-        }
-      })();
+        })();
+      }
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -169,77 +173,56 @@ const HomeLayout = () => {
     }
   }
 
-  const handleLoginBtn = async () => {
-    try {
-      await Parse?.User?.logOut();
-    } catch (err) {
-      console.log("err ", err);
-    } finally {
-      localStorage.removeItem("accesstoken");
-      navigate("/", { replace: true, state: { from: location } });
-    }
-  };
-  return (
+  return isValidSession && localStorage.getItem("accesstoken") ? (
     <div className="flex flex-col h-screen overflow-hidden">
       {/* HEADER */}
       <header className="z-[501]">
         {!isLoader && <Header setIsLoggingOut={setIsLoggingOut} />}
       </header>
-      {isUserValid ? (
+      {isLoader ? (
+        <div className="flex h-[100vh] justify-center items-center">
+          <Loader />
+        </div>
+      ) : (
         <>
-          {isLoader ? (
-            <div className="flex h-[100vh] justify-center items-center">
+          {isLoggingOut && (
+            <div className="inset-0 bg-black/30 z-[1000] fixed flex justify-center items-center">
               <Loader />
             </div>
-          ) : (
-            <>
-              {isLoggingOut && (
-                <div className="inset-0 bg-black/30 z-[1000] fixed flex justify-center items-center">
-                  <Loader />
-                </div>
-              )}
-              {/* BODY */}
-              <div className="flex flex-1 overflow-hidden">
-                {/* SIDEBAR with width animation */}
-                <Sidebar />
-                {/* MAIN (includes both content + footer in one scrollable column) */}
-                <main
-                  id="renderList"
-                  className="flex-1 overflow-auto transition-all duration-300 ease-in-out"
-                >
-                  <div className="flex flex-col min-h-full">
-                    {/* your page content */}
-                    <div className="p-3">{<Outlet />}</div>
-                    {/* sticky-but-scrollable footer */}
-                    <div className="mt-auto z-30">
-                      <Footer />
-                    </div>
-                  </div>
-                </main>
-              </div>
-              <Tour
-                onRequestClose={closeTour}
-                steps={tourConfigs}
-                isOpen={isTour}
-                disableKeyboardNavigation={["esc"]}
-                // disableInteraction={true}
-                scrollOffset={-100}
-                showCloseButton={isCloseBtn}
-              />
-            </>
           )}
-        </>
-      ) : (
-        <ModalUi showHeader={false} isOpen={true} showClose={false}>
-          <div className="flex flex-col justify-center items-center py-4 md:py-5 gap-5">
-            <p className="text-xl font-medium">{t("session-expired")}</p>
-            <button onClick={handleLoginBtn} className="op-btn op-btn-neutral">
-              {t("login")}
-            </button>
+          {/* BODY */}
+          <div className="flex flex-1 overflow-hidden">
+            {/* SIDEBAR with width animation */}
+            <Sidebar />
+            {/* MAIN (includes both content + footer in one scrollable column) */}
+            <main
+              id="renderList"
+              className="flex-1 overflow-auto transition-all duration-300 ease-in-out"
+            >
+              <div className="flex flex-col min-h-full">
+                {/* your page content */}
+                <div className="p-3">{<Outlet />}</div>
+                {/* sticky-but-scrollable footer */}
+                <div className="mt-auto z-30">
+                  <Footer />
+                </div>
+              </div>
+            </main>
           </div>
-        </ModalUi>
+          <Tour
+            onRequestClose={closeTour}
+            steps={tourConfigs}
+            isOpen={isTour}
+            disableKeyboardNavigation={["esc"]}
+            // disableInteraction={true}
+            scrollOffset={-100}
+            showCloseButton={isCloseBtn}
+          />
+        </>
       )}
     </div>
+  ) : (
+    <SessionExpiredModal />
   );
 };
 

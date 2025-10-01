@@ -165,7 +165,8 @@
     "daily-mail-quota": "Cuota diaria de correos electrónicos",
     "Save as template": "Guardar como plantilla",
     "Fix & resend": "Corregir y reenviar",
-    "Kiosk Mode": "Modo Kiosco"
+    "Kiosk Mode": "Modo Kiosco",
+    "Reset password": "Restablecer contraseña"
   },
   "report-heading": {
     "Sr.No": "Nº",
@@ -1231,5 +1232,16 @@
   "save-as-template-msg": "Guarde este documento como una plantilla reutilizable que podrá usar nuevamente para futuros documentos.",
   "public-credit-alert": "Firmar a través de este enlace consumirá sus créditos de correo electrónico gratuitos. Como usuario gratuito, se le asignan 15 créditos de correo electrónico por mes para evitar que los spammers abusen de nuestros sistemas. Para disfrutar de límites más altos y acceso ininterrumpido, suscríbase a los planes de pago de <1>OpenSign™.</1>",
   "know-more-about": "Saber más sobre",
-  "free-unlimited-signatures": "¿Firmas ilimitadas gratis"
+  "free-unlimited-signatures": "¿Firmas ilimitadas gratis",
+  "email-quota-updated": "La cuota diaria de correos se actualizó correctamente.",
+  "password-has-been-reset": "La contraseña ha sido restablecida.",
+  "Unauthorized to reset your own password.": "No está autorizado para restablecer su propia contraseña.",
+  "User not found or not allowed.": "Usuario no encontrado o no autorizado.",
+  "User not found.": "Usuario no encontrado.",
+  "Admin user tenant not found.": "Inquilino de usuario administrador no encontrado.",
+  "User is not authenticated.": "El usuario no está autenticado.",
+  "Please provide required parameters.": "Por favor, proporcione los parámetros requeridos.",
+  "reset-password": "Restablecer contraseña de usuario",
+  "enter-strong-password": "Ingrese una contraseña segura o genere una automáticamente.",
+  "autogenerate": "Generar automáticamente"
 }

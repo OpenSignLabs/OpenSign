@@ -19,7 +19,6 @@ import Loader from "./primitives/Loader";
 import UserList from "./pages/UserList";
 import { serverUrl_fn } from "./constant/appinfo";
 import DocSuccessPage from "./pages/DocSuccessPage";
-import ValidateSession from "./primitives/ValidateSession";
 import DragProvider from "./components/DragProivder";
 import Title from "./components/Title";
 const DebugPdf = lazyWithRetry(() => import("./pages/DebugPdf"));
@@ -88,13 +87,7 @@ function App() {
                 path="/forgetpassword"
                 element={<Lazy Page={ForgetPassword} />}
               />
-            <Route
-              element={
-                <ValidateSession>
-                  <HomeLayout />
-                </ValidateSession>
-              }
-            >
+            <Route element={<HomeLayout />}>
                   <Route path="/users" element={<UserList />} />
                   <Route
                     path="/changepassword"
