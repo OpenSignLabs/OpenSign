@@ -30,6 +30,8 @@ import ModalUi from "../primitives/ModalUi";
 import { Tooltip } from "react-tooltip";
 import Loader from "../primitives/Loader";
 import { useTranslation } from "react-i18next";
+import { useDispatch } from "react-redux";
+import { sessionStatus } from "../redux/reducers/userReducer";
 
 // `Form` render all type of Form on this basis of their provided in path
 function Form() {
@@ -50,6 +52,7 @@ const Forms = (props) => {
   const abortController = new AbortController();
   const inputFileRef = useRef(null);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [signers, setSigners] = useState([]);
   const [folder, setFolder] = useState({ ObjectId: "", Name: "" });
   const [formData, setFormData] = useState({
@@ -277,7 +280,11 @@ const Forms = (props) => {
             console.log("err in docx to pdf ", err);
             const error =
                   t("docx-error");
-            alert(error);
+            if (err?.code === 209) {
+              dispatch(sessionStatus(false));
+            } else {
+              alert(error);
+            }
             return;
           }
         }
@@ -335,7 +342,11 @@ const Forms = (props) => {
         setSelectedFiles([]);
       }
     } catch (error) {
-      alert(error.message);
+      if (error?.code === 209) {
+        dispatch(sessionStatus(false));
+      } else {
+        alert(error.message);
+      }
       setSelectedFiles([]);
       removeFile(e);
     }
@@ -472,7 +483,9 @@ const Forms = (props) => {
         }
       } catch (err) {
         console.log("err ", err);
-        if (err.message === "only 15 reminder allowed") {
+        if (err?.code === 209) {
+          dispatch(sessionStatus(false));
+        } else if (err.message === "only 15 reminder allowed") {
           setIsAlert({
             type: "danger",
             message: t("only-15-reminder-allowed")
@@ -604,7 +617,9 @@ const Forms = (props) => {
         }
     } catch (err) {
       removeFile();
-      if (err?.response?.status === 401) {
+      if (err?.code === 209) {
+        dispatch(sessionStatus(false));
+      } else if (err?.response?.status === 401) {
         setIsPassword(true);
         setIsCorrectPass(false);
       } else {

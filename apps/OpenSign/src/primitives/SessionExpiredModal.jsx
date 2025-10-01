@@ -1,26 +1,29 @@
-import React from "react";
 import { useTranslation } from "react-i18next";
-import ModalUi from "./ModalUi";
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
+import { useDispatch } from "react-redux";
+import { sessionStatus } from "../redux/reducers/userReducer";
 import Parse from "parse";
+import ModalUi from "./ModalUi";
 
-const ValidateSession = ({ children }) => {
+const SessionExpiredModal = () => {
   const { t } = useTranslation();
+  const location = useLocation();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const handleLoginBtn = async () => {
     try {
       await Parse?.User?.logOut();
     } catch (err) {
-      console.log("err ", err);
+      console.log(`err: ${err}`);
     } finally {
       localStorage.removeItem("accesstoken");
-      navigate("/", { replace: true });
+      dispatch(sessionStatus(true));
+      navigate("/", { replace: true, state: { from: location } });
     }
   };
-  return localStorage.getItem("accesstoken") ? (
-    children
-  ) : (
+
+  return (
     <ModalUi showHeader={false} isOpen={true} showClose={false}>
       <div className="flex flex-col justify-center items-center py-4 md:py-5 gap-5">
         <p className="text-xl font-medium">{t("session-expired")}</p>
@@ -32,4 +35,4 @@ const ValidateSession = ({ children }) => {
   );
 };
 
-export default ValidateSession;
+export default SessionExpiredModal;

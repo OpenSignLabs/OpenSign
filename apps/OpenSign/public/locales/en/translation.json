@@ -165,7 +165,8 @@
     "daily-mail-quota": "Daily Email Quota",
     "Save as template": "Save as template",
     "Fix & resend": "Fix & Resend",
-    "Kiosk Mode": "Kiosk Mode"
+    "Kiosk Mode": "Kiosk Mode",
+    "Reset password": "Reset password"
   },
   "report-heading": {
     "Sr.No": "Sr.No",
@@ -1231,5 +1232,16 @@
   "save-as-template-msg": "Save this document as a reusable template that you can use again for future documents.",
   "public-credit-alert": "Signing through this link consumes your free email credits. As a Free user, you are allotted 15 email credits per month to prevent spammers from abusing our systems. To enjoy higher limits and uninterrupted access, Subscribe to <1>OpenSign™ Paid plans.</1>",
   "know-more-about": "Know more about",
-  "free-unlimited-signatures": "Free Unlimited Signatures"
+  "free-unlimited-signatures": "Free Unlimited Signatures",
+  "email-quota-updated": "Daily email quota updated successfully.",
+  "password-has-been-reset": "Password has been reset.",
+  "Unauthorized to reset your own password.": "Unauthorized to reset your own password.",
+  "User not found or not allowed.": "User not found or not allowed.",
+  "User not found.": "User not found.",
+  "Admin user tenant not found.": "Admin user tenant not found.",
+  "User is not authenticated.": "User is not authenticated.",
+  "Please provide required parameters.": "Please provide required parameters.",
+  "reset-password": "Reset User Password",
+  "enter-strong-password": "Enter a strong password or auto-generate one.",
+  "autogenerate": "Autogenerate"
 }
