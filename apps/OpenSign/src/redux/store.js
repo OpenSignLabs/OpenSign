@@ -4,6 +4,7 @@ import ShowTenant from "./reducers/ShowTenant";
 import TourStepsReducer from "./reducers/TourStepsReducer";
 import widgetReducer from "./reducers/widgetSlice";
 import sidebarReducer from "./reducers/sidebarReducer";
+import userReducer from "./reducers/userReducer";
 
 export const store = configureStore({
   reducer: {
@@ -11,6 +12,7 @@ export const store = configureStore({
     TourSteps: TourStepsReducer,
     ShowTenant,
     widget: widgetReducer,
-    sidebar: sidebarReducer
+    sidebar: sidebarReducer,
+    user: userReducer
   }
 });

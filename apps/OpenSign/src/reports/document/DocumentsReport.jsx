@@ -106,6 +106,15 @@ const DocumentsReport = (props) => {
     }
   }, [props.isSearchResult]);
 
+  // Close dropdown when clicking outside or on button again
+  useEffect(() => {
+    const onDocClick = (e) => {
+      if (!e.target.closest('[data-dropdown-root="1"]')) setIsOption({});
+    };
+    document.addEventListener("click", onDocClick);
+    return () => document.removeEventListener("click", onDocClick);
+  }, []);
+
   const getPaginationRange = () => {
     const totalPageNumbers = 7; // Adjust this value to show more/less page numbers
     const pages = [];
@@ -1174,6 +1183,7 @@ const DocumentsReport = (props) => {
                             <React.Fragment key={index}>
                               {handleBtnVisibility(act, item) && (
                                 <div
+                                  data-dropdown-root="1"
                                   role="button"
                                   data-tut={act?.selector}
                                   onClick={() => handleActionBtn(act, item)}

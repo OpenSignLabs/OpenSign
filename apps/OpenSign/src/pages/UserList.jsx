@@ -12,6 +12,7 @@ import {
 } from "react-i18next";
 import DeleteUserModal from "../primitives/DeleteUserModal";
 import axios from "axios";
+import PasswordResetModal from "../primitives/PasswordResetModal";
 
 const actions = [
   {
@@ -21,6 +22,14 @@ const actions = [
     btnIcon: "fa-light fa-trash",
     redirectUrl: "",
     action: "delete",
+    restrictAdmin: true
+  },
+  {
+    btnId: "1910",
+    hoverLabel: "Reset password",
+    btnIcon: "fa-light fa-key",
+    redirectUrl: "",
+    action: "resetpassword",
     restrictAdmin: true
   },
 ];
@@ -208,9 +217,9 @@ const UserList = () => {
   };
 
   // `showAlert` handle show/hide alert
-  const showAlert = (type, msg) => {
+  const showAlert = (type, msg, timer = 1500) => {
     setIsAlert({ type, msg });
-    setTimeout(() => setIsAlert({ type: "success", msg: "" }), 1500);
+    setTimeout(() => setIsAlert({ type: "success", msg: "" }), timer);
   };
 
   const handleDeleteAccount = async (item) => {
@@ -247,9 +256,7 @@ const UserList = () => {
   };
 
   const handleActionBtn = async (act, item) => {
-    if (act.action === "delete") {
-      setIsActModal({ [`delete_${item.objectId}`]: true });
-    }
+      setIsActModal({ [`${act.action}_${item.objectId}`]: true });
   };
   const handleBtnVisibility = (act, item) => {
     if (act.restrictAdmin) {
@@ -274,6 +281,21 @@ const UserList = () => {
       return item?.objectId !== extClass?.[0]?.objectId;
     }
   };
+
+  async function submitPassword(userId, password) {
+    setIsLoader(true);
+    setIsActModal({});
+    try {
+      const params = { userId, password };
+      await Parse.Cloud.run("resetpassword", params);
+      showAlert("success", t("password-has-been-reset"));
+    } catch (err) {
+      console.log("err while reset password", err);
+      showAlert("danger", t(err.message), 2000);
+    } finally {
+      setIsLoader(false);
+    }
+  }
   return (
     <div className="relative">
       {isLoader && (
@@ -446,6 +468,17 @@ const UserList = () => {
                                             }
                                             deleteRes={deleteUserRes}
                                             handleClose={handleCloseModal}
+                                          />
+                                          <PasswordResetModal
+                                            isOpen={
+                                              isActModal[
+                                                "resetpassword_" + item.objectId
+                                              ]
+                                            }
+                                            userId={item?.UserId?.objectId}
+                                            onClose={handleCloseModal}
+                                            onSubmit={submitPassword}
+                                            showAlert={showAlert}
                                           />
                                         </React.Fragment>
                                       ))}
