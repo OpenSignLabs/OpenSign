@@ -165,7 +165,8 @@
     "daily-mail-quota": "Tägliches E-Mail-Kontingent",
     "Save as template": "Als Vorlage speichern",
     "Fix & resend": "Korrigieren und erneut senden",
-    "Kiosk Mode": "Kiosk Modus"
+    "Kiosk Mode": "Kiosk Modus",
+    "Reset password": "Passwort zurücksetzen"
   },
   "report-heading": {
     "Sr.No": "Nr.",
@@ -1230,5 +1231,16 @@
   "save-as-template-msg": "Speichern Sie dieses Dokument als wiederverwendbare Vorlage, die Sie für zukünftige Dokumente erneut nutzen können.",
   "public-credit-alert": "Das Signieren über diesen Link verbraucht Ihre kostenlosen E-Mail-Credits. Als kostenloser Nutzer erhalten Sie 15 E-Mail-Credits pro Monat, um zu verhindern, dass Spammer unsere Systeme missbrauchen. Um höhere Limits und ununterbrochenen Zugriff zu genießen, abonnieren Sie die <1>OpenSign™-Bezahlpläne.</1>",
   "know-more-about": "Mehr erfahren über",
-  "free-unlimited-signatures": "Kostenlose unbegrenzte Signaturen"
+  "free-unlimited-signatures": "Kostenlose unbegrenzte Signaturen",
+  "email-quota-updated": "Tägliches E-Mail-Kontingent erfolgreich aktualisiert.",
+  "password-has-been-reset": "Passwort wurde zurückgesetzt.",
+  "Unauthorized to reset your own password.": "Nicht berechtigt, Ihr eigenes Passwort zurückzusetzen.",
+  "User not found or not allowed.": "Benutzer nicht gefunden oder nicht erlaubt.",
+  "User not found.": "Benutzer nicht gefunden.",
+  "Admin user tenant not found.": "Admin-Benutzer-Tenant nicht gefunden.",
+  "User is not authenticated.": "Benutzer ist nicht authentifiziert.",
+  "Please provide required parameters.": "Bitte geben Sie die erforderlichen Parameter an.",
+  "reset-password": "Benutzerpasswort zurücksetzen",
+  "enter-strong-password": "Geben Sie ein sicheres Passwort ein oder generieren Sie eines automatisch.",
+  "autogenerate": "Automatisch generieren"
 }
