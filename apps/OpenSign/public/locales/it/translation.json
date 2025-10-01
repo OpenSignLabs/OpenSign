@@ -165,7 +165,8 @@
     "daily-mail-quota": "Quota e-mail giornaliera",
     "Save as template": "Salva come modello",
     "Fix & resend": "Correggi e reinvia",
-    "Kiosk Mode": "Modalità Kiosk"
+    "Kiosk Mode": "Modalità Kiosk",
+    "Reset password": "Reimposta password"
   },
   "report-heading": {
     "Sr.No": "Nr.",
@@ -1230,5 +1231,16 @@
   "save-as-template-msg": "Salva questo documento come modello riutilizzabile che potrai usare di nuovo per documenti futuri.",
   "public-credit-alert": "Firmare tramite questo link consumerà i tuoi crediti e-mail gratuiti. Come utente gratuito, ti vengono assegnati 15 crediti e-mail al mese per impedire agli spammer di abusare dei nostri sistemi. Per usufruire di limiti più elevati e accesso ininterrotto, abbonati ai piani a pagamento di <1>OpenSign™.</1>",
   "know-more-about": "Scopri di più su",
-  "free-unlimited-signatures": "Firme illimitate gratuite"
+  "free-unlimited-signatures": "Firme illimitate gratuite",
+  "email-quota-updated": "Quota e-mail giornaliera aggiornata con successo.",
+  "password-has-been-reset": "La password è stata reimpostata.",
+  "Unauthorized to reset your own password.": "Non sei autorizzato a reimpostare la tua password.",
+  "User not found or not allowed.": "Utente non trovato o non autorizzato.",
+  "User not found.": "Utente non trovato.",
+  "Admin user tenant not found.": "Tenant utente amministratore non trovato.",
+  "User is not authenticated.": "Utente non autenticato.",
+  "Please provide required parameters.": "Fornisci i parametri richiesti.",
+  "reset-password": "Reimposta password utente",
+  "enter-strong-password": "Inserisci una password sicura o generane una automaticamente.",
+  "autogenerate": "Genera automaticamente"
 }

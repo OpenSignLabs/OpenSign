@@ -200,7 +200,8 @@
     "daily-mail-quota": "Quota d'e-mails quotidien",
     "Save as template": "Enregistrer comme modèle",
     "Fix & resend": "Corriger et renvoyer",
-    "Kiosk Mode": "Mode Kiosque"
+    "Kiosk Mode": "Mode Kiosque",
+    "Reset password": "Réinitialiser le mot de passe"
   },
   "report-help": {
     "Draft Documents": "Il s'agit de documents que vous avez commencés mais que vous n'avez pas finalisés pour envoi.",
@@ -426,7 +427,7 @@
   "initial-alert": "Mon initiale est introuvable",
   "copy-title": "Copier le widget vers",
   "contact-delete-alert": "Êtes-vous sûr de vouloir supprimer ce contact ?",
-  "reset-password": "Le lien de réinitialisation du mot de passe a été envoyé à votre identifiant de messagerie",
+  "reset-password-alert-1": "Le lien de réinitialisation du mot de passe a été envoyé à votre identifiant de messagerie",
   "reset-password-alert-2": "Veuillez configurer l'adaptateur de messagerie",
   "reset-password-alert-3": "Réinitialisez votre mot de passe",
   "faild-animation": "Échec du chargement de l'animation",
@@ -1230,5 +1231,16 @@
   "save-as-template-msg": "Enregistrez ce document comme modèle réutilisable que vous pourrez utiliser à nouveau pour de futurs documents.",
   "public-credit-alert": "Signer via ce lien consomme vos crédits e-mail gratuits. En tant qu'utilisateur gratuit, vous disposez de 15 crédits e-mail par mois afin d’empêcher les spammeurs d’abuser de nos systèmes. Pour profiter de limites plus élevées et d'un accès ininterrompu, abonnez-vous aux forfaits payants de <1>OpenSign™.</1>",
   "know-more-about": "En savoir plus sur",
-  "free-unlimited-signatures": "Signatures illimitées gratuites"
+  "free-unlimited-signatures": "Signatures illimitées gratuites",
+  "email-quota-updated": "Quota quotidien d'e-mails mis à jour avec succès.",
+  "password-has-been-reset": "Le mot de passe a été réinitialisé.",
+  "Unauthorized to reset your own password.": "Non autorisé à réinitialiser votre propre mot de passe.",
+  "User not found or not allowed.": "Utilisateur introuvable ou non autorisé.",
+  "User not found.": "Utilisateur introuvable.",
+  "Admin user tenant not found.": "Locataire administrateur introuvable.",
+  "User is not authenticated.": "L'utilisateur n'est pas authentifié.",
+  "Please provide required parameters.": "Veuillez fournir les paramètres requis.",
+  "reset-password": "Réinitialiser le mot de passe utilisateur",
+  "enter-strong-password": "Entrez un mot de passe sécurisé ou générez-en un automatiquement.",
+  "autogenerate": "Générer automatiquement"
 }

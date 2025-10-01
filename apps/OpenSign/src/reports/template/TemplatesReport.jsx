@@ -165,6 +165,15 @@ const TemplatesReport = (props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Close dropdown when clicking outside or on button again
+  useEffect(() => {
+    const onDocClick = (e) => {
+      if (!e.target.closest('[data-dropdown-root="1"]')) setIsOption({});
+    };
+    document.addEventListener("click", onDocClick);
+    return () => document.removeEventListener("click", onDocClick);
+  }, []);
+
   // `fetchTeamList` is used to fetch team list for share with functionality
   const fetchTeamList = async () => {
     try {
@@ -1152,6 +1161,7 @@ const TemplatesReport = (props) => {
                                   role="button"
                                   data-tut={act?.selector}
                                   key={index}
+                                  data-dropdown-root="1"
                                   onClick={() => handleActionBtn(act, item)}
                                   title={t(`btnLabel.${act.hoverLabel}`)}
                                   className={

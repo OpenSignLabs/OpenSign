@@ -56,6 +56,7 @@ import loginUser from './parsefunction/loginUser.js';
 import addUser from './parsefunction/addUser.js';
 import filterDocs from './parsefunction/filterDocs.js';
 import sendDeleteUserMail from './parsefunction/sendDeleteUserMail.js';
+import resetPassword from './parsefunction/resetPassword.js';
 
 // This afterSave function triggers after an object is added or updated in the specified class, allowing for post-processing logic.
 Parse.Cloud.afterSave('contracts_Document', DocumentAftersave);
@@ -122,3 +123,4 @@ Parse.Cloud.define('loginuser', loginUser);
 Parse.Cloud.define('adduser', addUser);
 Parse.Cloud.define('filterdocs', filterDocs);
 Parse.Cloud.define('senddeleterequest', sendDeleteUserMail);
+Parse.Cloud.define('resetpassword', resetPassword);

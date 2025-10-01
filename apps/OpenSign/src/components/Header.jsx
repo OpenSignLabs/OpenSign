@@ -14,6 +14,7 @@ import { useTranslation } from "react-i18next";
 import { appInfo } from "../constant/appinfo";
 import { useDispatch } from "react-redux";
 import { toggleSidebar } from "../redux/reducers/sidebarReducer.js";
+import { sessionStatus } from "../redux/reducers/userReducer.js";
 
 const Header = ({ isConsole, setIsLoggingOut }) => {
   const { t, i18n } = useTranslation();
@@ -67,6 +68,8 @@ const Header = ({ isConsole, setIsLoggingOut }) => {
       await Parse.User.logOut();
     } catch (err) {
       console.log("Err while logging out", err);
+    } finally {
+      dispatch(sessionStatus(true));
     }
     let appdata = localStorage.getItem("userSettings");
     let applogo = localStorage.getItem("appLogo");
