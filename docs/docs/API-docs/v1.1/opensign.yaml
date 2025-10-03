@@ -913,17 +913,17 @@ paths:
         2. **date**
         ```
         {
-          "type": "date"
-          "page": 1
-          "x": 173
-          "y": 588
-          "w": 114
-          "h": 21
+          "type": "date",
+          "page": 1,
+          "x": 173,
+          "y": 588,
+          "w": 114,
+          "h": 21,
           "options": {
-            "name": "date"
-            "response": "04/15/2024"
-            "format": "mm/dd/yyyy"
-            "color": "black"
+            "name": "date",
+            "response": "04/15/2024",
+            "format": "mm/dd/yyyy",
+            "color": "black",
             "fontsize": 12
           }  
         }
@@ -1359,17 +1359,17 @@ paths:
         2. **date**
         ```
         {
-          "type": "date"
-          "page": 1
-          "x": 173
-          "y": 588
-          "w": 114
-          "h": 21
+          "type": "date",
+          "page": 1,
+          "x": 173,
+          "y": 588,
+          "w": 114,
+          "h": 21,
           "options": {
-            "name": "date"
-            "response": "04/15/2024"
-            "format": "mm/dd/yyyy"
-            "color": "black"
+            "name": "date",
+            "response": "04/15/2024",
+            "format": "mm/dd/yyyy",
+            "color": "black",
             "fontsize": 12
           }  
         }
@@ -2313,16 +2313,16 @@ paths:
         ```
         {
           "type": "date"
-          "page": 1
-          "x": 173
-          "y": 588
-          "w": 114
-          "h": 21
+          "page": 1,
+          "x": 173,
+          "y": 588,
+          "w": 114,
+          "h": 21,
           "options": {
-            "name": "date"
-            "response": "04/15/2024"
-            "format": "mm/dd/yyyy"
-            "color": "black"
+            "name": "date",
+            "response": "04/15/2024",
+            "format": "mm/dd/yyyy",
+            "color": "black",
             "fontsize": 12
           }  
         }
@@ -2779,17 +2779,17 @@ paths:
         2. **date**
         ```
         {
-          "type": "date"
-          "page": 1
-          "x": 173
-          "y": 588
-          "w": 114
-          "h": 21
+          "type": "date",
+          "page": 1,
+          "x": 173,
+          "y": 588,
+          "w": 114,
+          "h": 21,
           "options": {
-            "name": "date"
-            "response": "04/15/2024"
-            "format": "mm/dd/yyyy"
-            "color": "black"
+            "name": "date",
+            "response": "04/15/2024",
+            "format": "mm/dd/yyyy",
+            "color": "black",
             "fontsize": 12
           }  
         }
@@ -3245,17 +3245,17 @@ paths:
         2. **date**
         ```
         {
-          "type": "date"
-          "page": 1
-          "x": 173
-          "y": 588
-          "w": 114
-          "h": 21
+          "type": "date",
+          "page": 1,
+          "x": 173,
+          "y": 588,
+          "w": 114,
+          "h": 21,
           "options": {
-            "name": "date"
-            "response": "04/15/2024"
-            "format": "mm/dd/yyyy"
-            "color": "black"
+            "name": "date",
+            "response": "04/15/2024",
+            "format": "mm/dd/yyyy",
+            "color": "black",
             "fontsize": 12
           }  
         }
@@ -4839,7 +4839,18 @@ components:
             If nothing is set, it will use the owner’s preferences. If the owner’s preferences are also not set, it will default to false.
           example: false  
         prefill: 
-          $ref: '#/components/schemas/prefill'  
+          type: array
+          items:
+            type: object
+            properties:
+              name: 
+                type: string
+                format: string
+                example: textbox
+              response:
+                type: string
+                format: string
+                example: andrew bee
     revokedocument:
       type: object
       properties:
