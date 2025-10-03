@@ -5205,7 +5205,7 @@ components:
           description: "x co-ordinate (left upper corner) from which widget should appear. use our [**Debug UI**](https://app.opensignlabs.com/debugpdf) to calculate the value."
           format: number
           example: 244
-        "y":
+        y:
           type: number
           description: "y co-ordinate (left upper corner) from which widget should appear. use our [**Debug UI**](https://app.opensignlabs.com/debugpdf) to calculate the value."
           format: number
@@ -5269,7 +5269,7 @@ components:
           description: "x co-ordinate (left upper corner) from which widget should appear. use our [**Debug UI**](https://app.opensignlabs.com/debugpdf) to calculate the value."
           format: number
           example: 244
-        "y":
+        y:
           type: number
           description: "y co-ordinate (left upper corner) from which widget should appear. use our [**Debug UI**](https://app.opensignlabs.com/debugpdf) to calculate the value."
           format: number
@@ -5509,7 +5509,6 @@ components:
             properties:
               type:
                 type: string
-                description: "Allowed values - signature, stamp."
                 format: string
                 example: textbox
               page:
