@@ -887,7 +887,9 @@ paths:
         }
         ```
         
-        **Prefill Widgets:** Prefill widgets are elements that are inserted into a document before it is shared with a user. Only the document creator has permission to add them.
+        **Prefill Widgets:** Prefill widgets are elements that are inserted into a document **before** it is shared with a user. Only the document creator has permission to add them.
+        
+        **Note:** Responses for prefill widgets are **required**.
         
         **List of widgets supported in Prefill**
         1. **textbox**
@@ -1333,7 +1335,9 @@ paths:
         }
         ```
         
-        **Prefill Widgets:** Prefill widgets are elements that are inserted into a document before it is shared with a user. Only the document creator has permission to add them.
+        **Prefill Widgets:** Prefill widgets are elements that are inserted into a document **before** it is shared with a user. Only the document creator has permission to add them.
+        
+        **Note:** Responses for prefill widgets are **required**.
         
         **List of widgets supported in Prefill**
         1. **textbox**
@@ -1575,7 +1579,7 @@ paths:
         
         **Prefill Widgets:** Prefill widgets are elements that are inserted into a document before it is shared with a user. Only the document creator has permission to add them.
         
-        - **response:** Provide the value that should replace the existing response.
+        **response:** Provide the value that should replace the existing response.
         
         **List of widgets supported in Prefill**
         1. **textbox**
@@ -2286,7 +2290,9 @@ paths:
         }
         ```
         
-        **Prefill Widgets:** Prefill widgets are elements that are inserted into a document before it is shared with a user. Only the document creator has permission to add them.
+        **Prefill Widgets:** Prefill widgets are elements that are inserted into a document **before** it is shared with a user. Only the document creator has permission to add them.
+        
+        **Note:** Responses for prefill widgets are **required**.
         
         **List of widgets supported in Prefill**
         1. **textbox**
@@ -2312,7 +2318,7 @@ paths:
         2. **date**
         ```
         {
-          "type": "date"
+          "type": "date",
           "page": 1,
           "x": 173,
           "y": 588,
@@ -2753,7 +2759,9 @@ paths:
         }
         ```
         
-        **Prefill Widgets:** Prefill widgets are elements that are inserted into a document before it is shared with a user. Only the document creator has permission to add them.
+        **Prefill Widgets:** Prefill widgets are elements that are inserted into a document **before** it is shared with a user. Only the document creator has permission to add them.
+        
+        **Note:** Responses for prefill widgets are **required**.
         
         **List of widgets supported in Prefill**
         1. **textbox**
@@ -3219,7 +3227,9 @@ paths:
         }
         ```
         
-        **Prefill Widgets:** Prefill widgets are elements that are inserted into a document before it is shared with a user. Only the document creator has permission to add them.
+        **Prefill Widgets:** Prefill widgets are elements that are inserted into a document **before** it is shared with a user. Only the document creator has permission to add them.
+        
+        **Note:** Responses for prefill widgets are **required**.
         
         **List of widgets supported in Prefill**
         1. **textbox**
