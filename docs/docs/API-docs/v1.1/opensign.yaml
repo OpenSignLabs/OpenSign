@@ -1592,7 +1592,7 @@ paths:
         2. **date**
         ```
         {
-          "name": "date"
+          "name": "date",
           "response": "04/15/2024"
         }
         ```
@@ -1603,6 +1603,8 @@ paths:
           "response": ["male", "female"]
         }
         ```
+        - **response:** Must be chosen from the existing values of checkbox defined in the template.
+
         4. **radio button**
         ```
         {
@@ -1610,6 +1612,7 @@ paths:
           "response": "male"
         }
         ```
+        - **response:** Must be chosen from the existing values of radio button defined in the template.        
         5. **image**
         ```
         {
@@ -1625,6 +1628,7 @@ paths:
           "response": "female"
         }
         ```
+        - **response:** Must be chosen from the existing values of dropdown defined in the template. 
       operationId: createdocumentwithtemplateid
       parameters:
       - name: template_id
