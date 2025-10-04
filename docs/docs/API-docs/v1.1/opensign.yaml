@@ -4853,18 +4853,21 @@ components:
             If nothing is set, it will use the owner’s preferences. If the owner’s preferences are also not set, it will default to false.
           example: false  
         prefill: 
-          type: array
-          items:
-            type: object
-            properties:
-              name: 
-                type: string
-                format: string
-                example: textbox
-              response:
-                type: string
-                format: string
-                example: andrew bee
+          type: object
+          properties:
+            widgets:
+              type: array
+              items:
+                type: object
+                properties:
+                  name: 
+                    type: string
+                    format: string
+                    example: textbox
+                  response:
+                    type: string
+                    format: string
+                    example: andrew bee
     revokedocument:
       type: object
       properties:
