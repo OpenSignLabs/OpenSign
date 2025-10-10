@@ -240,6 +240,11 @@ Use the option on the right side to add recipients if you need to include additi
     - Add Signer/Change Signer: Clicking the first icon on the Email widget allows you to change the signer. You can choose from existing signers in the dropdown or add a new signer.
     - Copy : Clicking on this you can duplicate the email widget.
   ### 📄 Document Page Controls
+- **Navigating Between Pages in OpenSign™**
+  To navigate between pages of a document that you have uploaded either click on the previous page ∧ & V next page  buttons at the top or click on any of the page previews loaded on the left side.
+  
+  <img width="918" alt="OpenSign Page controls" src="https://github.com/user-attachments/assets/c577e165-f8ac-45c7-bc6f-d499c710a7ed" />
+
 - **Add Pages**  
   In the left-side panel, users will see an **"Add" button**. Clicking it allows users to select and merge new documents into the current one.
 
@@ -254,8 +259,6 @@ Use the option on the right side to add recipients if you need to include additi
 
 - **Rotate Page**  
   Options are provided to **rotate pages** in both **clockwise** and **counterclockwise** directions.
- 
-<img width="918" alt="OpenSign_Widgets" src="https://github.com/user-attachments/assets/36651043-6646-4a43-9fe3-2650c133a21e" />
       
 ### Step 4: Next:
 - **Next**: After adding the widgets and signatures, click the 'Next' button. The document will then be created.
