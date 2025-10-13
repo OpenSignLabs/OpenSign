@@ -31,6 +31,9 @@ externalDocs:
   description: Find out more about OpenSign
   url: http://docs.opensignlabs.com
 servers:
+# Added by API Auto Mocking Plugin
+- description: SwaggerHub API Auto Mocking
+  url: https://virtserver.swaggerhub.com/PrafullNavkar/open/1.0.0
 - url: https://sandbox.opensignlabs.com/api/v1.1
 - url: https://app.opensignlabs.com/api/v1.1
 - url: https://eu-app.opensignlabs.com/api/v1.1
@@ -328,6 +331,7 @@ paths:
         **Supported Widgets:**
 
         Below are the common parameters that are required with all widgets:
+        - **name:** Unique identifier for this widget.
         - **type:** Indicates the type of widget.
         - **page:** Specifies the page number on which you want to place the respective widget.
         - **x, y:** Denotes the horizontal and vertical coordinates of the starting point of the widget. You can use the debug UI to determine these values.
@@ -562,6 +566,32 @@ paths:
           }
         }
         ```
+        
+        12. **number**
+        ```
+        {
+          "type": "number",
+          "page": 1,
+          "x": 107,
+          "y": 528,
+          "w": 60,
+          "h": 21,
+          "options": {
+            "name": "number",
+            "required": true,
+            "readonly": false,
+            "default": 0,
+            "hint": "Enter number",
+            "formula": ""
+            "color": "black",
+            "fontsize": 12
+          }
+        }
+        ```
+        - **formula:** Compute the value from other number widgets using +, -, *, /, (, ). Reference widgets by their name in double curly braces, e.g. {{quantity}} * {{rate}}. to know more [visit here](https://docs.opensignlabs.com/docs/help/New-Document/widgets) (optional).
+        - **default:** Provide a default number (Optional).
+        - **hint:** Provide a hint for the number (Optional).
+        - **readonly:** Set to true if you want to set the textbox as readonly. By default, it's false.
       operationId: selfsign
       requestBody:
         content:
@@ -603,6 +633,7 @@ paths:
         **Supported Widgets:**
 
         Below are the common parameters that are required with all widgets:
+        - **name:** Unique identifier for this widget.
         - **type:** Indicates the type of widget.
         - **page:** Specifies the page number on which you want to place the respective widget.
         - **x, y:** Denotes the horizontal and vertical coordinates of the starting point of the widget. You can use the debug UI to determine these values.
@@ -887,6 +918,33 @@ paths:
         }
         ```
         
+        14. **number**
+        ```
+        {
+          "type": "number",
+          "page": 1,
+          "x": 107,
+          "y": 528,
+          "w": 60,
+          "h": 21,
+          "options": {
+            "name": "number",
+            "required": true,
+            "readonly": false,
+            "default": 0,
+            "hint": "Enter number",
+            "formula": ""
+            "color": "black",
+            "fontsize": 12
+          }
+        }
+        ```
+        - **formula:** Compute the value from other number widgets using +, -, *, /, (, ). Reference widgets by their name in double curly braces, e.g. {{quantity}} * {{rate}}. to know more [visit here](https://docs.opensignlabs.com/docs/help/New-Document/widgets) (optional).
+        - **default:** Provide a default number (Optional).
+        - **hint:** Provide a hint for the number (Optional).
+        - **readonly:** Set to true if you want to set the textbox as readonly. By default, it's false.
+        
+        
         **Prefill Widgets:** Prefill widgets are elements that are inserted into a document **before** it is shared with a user. Only the document creator has permission to add them.
         
         **Note:** Responses for prefill widgets are **required**.
@@ -1051,6 +1109,7 @@ paths:
         **Supported Widgets:**
 
         Below are the common parameters that are required with all widgets:
+        - **name:** Unique identifier for this widget.
         - **type:** Indicates the type of widget.
         - **page:** Specifies the page number on which you want to place the respective widget.
         - **x, y:** Denotes the horizontal and vertical coordinates of the starting point of the widget. You can use the debug UI to determine these values.
@@ -1334,6 +1393,32 @@ paths:
           }
         }
         ```
+  
+        14. **number**
+        ```
+        {
+          "type": "number",
+          "page": 1,
+          "x": 107,
+          "y": 528,
+          "w": 60,
+          "h": 21,
+          "options": {
+            "name": "number",
+            "required": true,
+            "readonly": false,
+            "default": 0,
+            "hint": "Enter number",
+            "formula": ""
+            "color": "black",
+            "fontsize": 12
+          }
+        }
+        ```
+        - **formula:** Compute the value from other number widgets using +, -, *, /, (, ). Reference widgets by their name in double curly braces, e.g. {{quantity}} * {{rate}}. to know more [visit here](https://docs.opensignlabs.com/docs/help/New-Document/widgets) (optional).
+        - **default:** Provide a default number (Optional).
+        - **hint:** Provide a hint for the number (Optional).
+        - **readonly:** Set to true if you want to set the textbox as readonly. By default, it's false.
         
         **Prefill Widgets:** Prefill widgets are elements that are inserted into a document **before** it is shared with a user. Only the document creator has permission to add them.
         
@@ -1458,6 +1543,7 @@ paths:
         ```
         - **response:** Provide image in base64 format like iVBORw0KGgoAAAANSUhEUgA... or data:image/png;base64,iVBORw0KGgoAAAANSUhEUgA....
         
+        
       operationId: createdocument
       requestBody:
         content:
@@ -1574,6 +1660,16 @@ paths:
           "name": "radio",
           "readonly": false,
           "default": "option1"
+        }
+        ```
+        
+        10. **number**
+        ```
+        {
+          "name": "number",
+          "readonly": false,
+          "default": 0,
+          "formula": ""
         }
         ```
         
@@ -2010,6 +2106,7 @@ paths:
         **Supported Widgets:**
 
         Below are the common parameters that are required with all widgets:
+        - **name:** Unique identifier for this widget.
         - **type:** Indicates the type of widget.
         - **page:** Specifies the page number on which you want to place the respective widget.
         - **x, y:** Denotes the horizontal and vertical coordinates of the starting point of the widget. You can use the debug UI to determine these values.
@@ -2293,6 +2390,33 @@ paths:
           }
         }
         ```
+        
+        14. **number**
+        ```
+        {
+          "type": "number",
+          "page": 1,
+          "x": 107,
+          "y": 528,
+          "w": 60,
+          "h": 21,
+          "options": {
+            "name": "number",
+            "required": true,
+            "readonly": false,
+            "default": 0,
+            "hint": "Enter number",
+            "formula": ""
+            "color": "black",
+            "fontsize": 12
+          }
+        }
+        ```
+        - **formula:** Compute the value from other number widgets using +, -, *, /, (, ). Reference widgets by their name in double curly braces, e.g. {{quantity}} * {{rate}}. to know more [visit here](https://docs.opensignlabs.com/docs/help/New-Document/widgets) (optional).
+        - **default:** Provide a default number (Optional).
+        - **hint:** Provide a hint for the number (Optional).
+        - **readonly:** Set to true if you want to set the textbox as readonly. By default, it's false.
+        
         
         **Prefill Widgets:** Prefill widgets are elements that are inserted into a document **before** it is shared with a user. Only the document creator has permission to add them.
         
@@ -2479,6 +2603,7 @@ paths:
         **Supported Widgets:**
 
         Below are the common parameters that are required with all widgets:
+        - **name:** Unique identifier for this widget.
         - **type:** Indicates the type of widget.
         - **page:** Specifies the page number on which you want to place the respective widget.
         - **x, y:** Denotes the horizontal and vertical coordinates of the starting point of the widget. You can use the debug UI to determine these values.
@@ -2762,6 +2887,33 @@ paths:
           }
         }
         ```
+        
+        14. **number**
+        ```
+        {
+          "type": "number",
+          "page": 1,
+          "x": 107,
+          "y": 528,
+          "w": 60,
+          "h": 21,
+          "options": {
+            "name": "number",
+            "required": true,
+            "readonly": false,
+            "default": 0,
+            "hint": "Enter number",
+            "formula": ""
+            "color": "black",
+            "fontsize": 12
+          }
+        }
+        ```
+        - **formula:** Compute the value from other number widgets using +, -, *, /, (, ). Reference widgets by their name in double curly braces, e.g. {{quantity}} * {{rate}}. to know more [visit here](https://docs.opensignlabs.com/docs/help/New-Document/widgets) (optional).
+        - **default:** Provide a default number (Optional).
+        - **hint:** Provide a hint for the number (Optional).
+        - **readonly:** Set to true if you want to set the textbox as readonly. By default, it's false.
+        
         
         **Prefill Widgets:** Prefill widgets are elements that are inserted into a document **before** it is shared with a user. Only the document creator has permission to add them.
         
@@ -2947,6 +3099,7 @@ paths:
         **Supported Widgets:**
 
         Below are the common parameters that are required with all widgets:
+        - **name:** Unique identifier for this widget.
         - **type:** Indicates the type of widget.
         - **page:** Specifies the page number on which you want to place the respective widget.
         - **x, y:** Denotes the horizontal and vertical coordinates of the starting point of the widget. You can use the debug UI to determine these values.
@@ -3230,6 +3383,33 @@ paths:
           }
         }
         ```
+        
+        14. **number**
+        ```
+        {
+          "type": "number",
+          "page": 1,
+          "x": 107,
+          "y": 528,
+          "w": 60,
+          "h": 21,
+          "options": {
+            "name": "number",
+            "required": true,
+            "readonly": false,
+            "default": 0,
+            "hint": "Enter number",
+            "formula": ""
+            "color": "black",
+            "fontsize": 12
+          }
+        }
+        ```
+        - **formula:** Compute the value from other number widgets using +, -, *, /, (, ). Reference widgets by their name in double curly braces, e.g. {{quantity}} * {{rate}}. to know more [visit here](https://docs.opensignlabs.com/docs/help/New-Document/widgets) (optional).
+        - **default:** Provide a default number (Optional).
+        - **hint:** Provide a hint for the number (Optional).
+        - **readonly:** Set to true if you want to set the textbox as readonly. By default, it's false.
+        
         
         **Prefill Widgets:** Prefill widgets are elements that are inserted into a document **before** it is shared with a user. Only the document creator has permission to add them.
         
