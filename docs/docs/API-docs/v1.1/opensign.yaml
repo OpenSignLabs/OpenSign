@@ -585,8 +585,6 @@ paths:
         ```
         - **formula:** Compute the value from other number widgets using +, -, *, /, (, ). Reference widgets by their name in double curly braces, e.g. {{quantity}} * {{rate}}. to know more [visit here](https://docs.opensignlabs.com/docs/help/New-Document/widgets) (optional).
         - **default:** Provide a default number (Optional).
-        - **hint:** Provide a hint for the number (Optional).
-        - **readonly:** Set to true if you want to set the textbox as readonly. By default, it's false.
       operationId: selfsign
       requestBody:
         content:
