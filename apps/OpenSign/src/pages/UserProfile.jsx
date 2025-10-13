@@ -48,6 +48,20 @@ function UserProfile() {
   const [isdeleteModal, setIsdeleteModal] = useState(false);
   const [deleteUserRes, setDeleteUserRes] = useState("");
   const [isDelLoader, setIsDelLoader] = useState(false);
+  const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
+  const [twoFactorSetup, setTwoFactorSetup] = useState({
+    qrCodeData: "",
+    secret: "",
+    otpauthUrl: "",
+  });
+  const [isTwoFactorModalOpen, setIsTwoFactorModalOpen] = useState(false);
+  const [twoFactorSetupCode, setTwoFactorSetupCode] = useState("");
+  const [twoFactorSetupError, setTwoFactorSetupError] = useState("");
+  const [twoFactorSetupLoading, setTwoFactorSetupLoading] = useState(false);
+  const [isDisableTwoFactorModalOpen, setIsDisableTwoFactorModalOpen] = useState(false);
+  const [twoFactorDisableCode, setTwoFactorDisableCode] = useState("");
+  const [twoFactorDisableError, setTwoFactorDisableError] = useState("");
+  const [twoFactorDisableLoading, setTwoFactorDisableLoading] = useState(false);
   useEffect(() => {
     getUserDetail();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -56,6 +70,7 @@ function UserProfile() {
     setIsLoader(true);
     const currentUser = JSON.parse(JSON.stringify(Parse.User.current()));
     let isEmailVerified = currentUser?.emailVerified || false;
+    setTwoFactorEnabled(Boolean(currentUser?.twoFactorEnabled));
     if (isEmailVerified) {
       setIsEmailVerified(isEmailVerified);
       setIsLoader(false);
@@ -68,6 +83,7 @@ function UserProfile() {
         if (user) {
           isEmailVerified = user?.get("emailVerified");
           setIsEmailVerified(isEmailVerified);
+          setTwoFactorEnabled(Boolean(user?.get("twoFactorEnabled")));
           setIsLoader(false);
         }
       } catch (e) {
@@ -285,6 +301,117 @@ function UserProfile() {
     setDeleteUserRes("");
   };
 
+  const updateStoredTwoFactorFlag = (enabled) => {
+    const storedUser = localStorage.getItem("UserInformation");
+    if (storedUser) {
+      try {
+        const parsed = JSON.parse(storedUser);
+        parsed.twoFactorEnabled = enabled;
+        localStorage.setItem("UserInformation", JSON.stringify(parsed));
+      } catch (error) {
+        console.log("Failed to update stored user info", error);
+      }
+    }
+  };
+
+  const handleStartTwoFactorSetup = async () => {
+    setTwoFactorSetupLoading(true);
+    setTwoFactorSetupError("");
+    setTwoFactorSetup({ qrCodeData: "", secret: "", otpauthUrl: "" });
+    try {
+      const response = await Parse.Cloud.run("generate2fasecret");
+      if (response) {
+        setTwoFactorSetup(response);
+        setTwoFactorSetupCode("");
+        setIsTwoFactorModalOpen(true);
+      }
+    } catch (error) {
+      console.log("Error generating 2FA secret", error);
+      alert(error?.message || t("something-went-wrong-mssg"));
+    } finally {
+      setTwoFactorSetupLoading(false);
+    }
+  };
+
+  const handleCloseTwoFactorModal = () => {
+    setIsTwoFactorModalOpen(false);
+    setTwoFactorSetupCode("");
+    setTwoFactorSetupError("");
+    setTwoFactorSetup({ qrCodeData: "", secret: "", otpauthUrl: "" });
+  };
+
+  const handleConfirmTwoFactorSetup = async (event) => {
+    event.preventDefault();
+    if (!twoFactorSetupCode) {
+      setTwoFactorSetupError(t("verification-code-required"));
+      return;
+    }
+    setTwoFactorSetupLoading(true);
+    setTwoFactorSetupError("");
+    try {
+      await Parse.Cloud.run("enable2fa", { token: twoFactorSetupCode });
+      setTwoFactorEnabled(true);
+      const currentParseUser = Parse.User.current();
+      if (currentParseUser) {
+        currentParseUser.set("twoFactorEnabled", true);
+      }
+      updateStoredTwoFactorFlag(true);
+      handleCloseTwoFactorModal();
+      alert(t("2fa-enabled-successfully"));
+    } catch (error) {
+      console.log("Error enabling 2FA", error);
+      if (error?.code === Parse.Error.VALIDATION_ERROR) {
+        setTwoFactorSetupError(t("verification-code-invalid"));
+      } else {
+        alert(error?.message || t("something-went-wrong-mssg"));
+      }
+    } finally {
+      setTwoFactorSetupLoading(false);
+    }
+  };
+
+  const handleOpenDisableTwoFactorModal = () => {
+    setTwoFactorDisableCode("");
+    setTwoFactorDisableError("");
+    setIsDisableTwoFactorModalOpen(true);
+  };
+
+  const handleCloseDisableTwoFactorModal = () => {
+    setIsDisableTwoFactorModalOpen(false);
+    setTwoFactorDisableCode("");
+    setTwoFactorDisableError("");
+  };
+
+  const handleDisableTwoFactor = async (event) => {
+    event.preventDefault();
+    if (!twoFactorDisableCode) {
+      setTwoFactorDisableError(t("verification-code-required"));
+      return;
+    }
+    setTwoFactorDisableLoading(true);
+    setTwoFactorDisableError("");
+    try {
+      await Parse.Cloud.run("disable2fa", { token: twoFactorDisableCode });
+      setTwoFactorEnabled(false);
+      const currentParseUser = Parse.User.current();
+      if (currentParseUser) {
+        currentParseUser.set("twoFactorEnabled", false);
+      }
+      updateStoredTwoFactorFlag(false);
+      handleCloseDisableTwoFactorModal();
+      alert(`${t("two-factor-authentication")}: ${t("saved-successfully")}`);
+    } catch (error) {
+      console.log("Error disabling 2FA", error);
+      if (error?.code === Parse.Error.VALIDATION_ERROR) {
+        setTwoFactorDisableError(t("verification-code-invalid"));
+      } else {
+        alert(error?.message || t("something-went-wrong-mssg"));
+      }
+    } finally {
+      setTwoFactorDisableLoading(false);
+    }
+  };
+
   return (
     <React.Fragment>
       {isLoader ? (
@@ -445,6 +572,63 @@ function UserProfile() {
                 />
               </li>
             </ul>
+            <div className="px-4 pb-2">
+              <div className="mt-3 border border-base-300 rounded-box p-4 bg-base-100">
+                <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+                  <div>
+                    <h3 className="font-semibold text-base">
+                      {t("two-factor-authentication")}
+                    </h3>
+                    <p className="text-xs text-base-content/70 mt-1">
+                      {twoFactorEnabled
+                        ? t("2fa-setup-complete-instructions")
+                        : t("2fa-setup-intro")}
+                    </p>
+                  </div>
+                  {twoFactorEnabled && (
+                    <span className="text-xs font-semibold uppercase text-success">
+                      {t("2fa-enabled")}
+                    </span>
+                  )}
+                </div>
+                <ul className="mt-3 list-disc pl-5 text-xs text-base-content/70 space-y-1">
+                  <li>{t("2fa-help-bullet1")}</li>
+                  <li>{t("2fa-help-bullet2")}</li>
+                  <li>{t("2fa-help-bullet3")}</li>
+                </ul>
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {twoFactorEnabled ? (
+                    <>
+                      <button
+                        type="button"
+                        className="op-btn op-btn-secondary op-btn-sm"
+                        onClick={handleStartTwoFactorSetup}
+                        disabled={twoFactorSetupLoading || twoFactorDisableLoading}
+                      >
+                        {t("setup-2fa-again")}
+                      </button>
+                      <button
+                        type="button"
+                        className="op-btn op-btn-ghost op-btn-sm"
+                        onClick={handleOpenDisableTwoFactorModal}
+                        disabled={twoFactorDisableLoading || twoFactorSetupLoading}
+                      >
+                        {t("disable")}
+                      </button>
+                    </>
+                  ) : (
+                    <button
+                      type="button"
+                      className="op-btn op-btn-primary op-btn-sm"
+                      onClick={handleStartTwoFactorSetup}
+                      disabled={twoFactorSetupLoading}
+                    >
+                      {t("setup-2fa")}
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
             <div className="flex flex-col md:flex-row justify-center gap-2 pt-2 pb-3 md:pt-3 md:pb-4 mx-2 md:mx-0">
               <button
                 type="button"
@@ -474,6 +658,121 @@ function UserProfile() {
               </button>
             </div>
           </div>
+          {isTwoFactorModalOpen && (
+            <ModalUi
+              isOpen
+              title={t("two-factor-authentication")}
+              handleClose={handleCloseTwoFactorModal}
+            >
+              {twoFactorSetupLoading ? (
+                <div className="h-[220px] flex justify-center items-center">
+                  <Loader />
+                </div>
+              ) : (
+                <form onSubmit={handleConfirmTwoFactorSetup} className="px-6 py-4 text-base-content text-sm">
+                  <p className="text-xs text-base-content/70">
+                    {t("2fa-help-text")}
+                  </p>
+                  {twoFactorSetup.qrCodeData && (
+                    <div className="mt-4 flex justify-center">
+                      <img
+                        src={twoFactorSetup.qrCodeData}
+                        alt={t("two-factor-authentication")}
+                        className="w-48 h-48"
+                      />
+                    </div>
+                  )}
+                  <p className="mt-4 text-xs text-base-content/70">
+                    {t("manual-setup-instructions")}
+                  </p>
+                  {twoFactorSetup.secret && (
+                    <div className="mt-2 p-2 rounded-box bg-base-200 text-xs font-mono break-all">
+                      {twoFactorSetup.secret}
+                    </div>
+                  )}
+                  <div className="mt-4">
+                    <label className="block text-xs font-semibold" htmlFor="twoFactorSetupCode">
+                      {t("verification-code")}
+                    </label>
+                    <input
+                      id="twoFactorSetupCode"
+                      type="text"
+                      inputMode="numeric"
+                      pattern="[0-9]{6}"
+                      maxLength={6}
+                      className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
+                      value={twoFactorSetupCode}
+                      onChange={(e) => setTwoFactorSetupCode(e.target.value.replace(/\s/g, ""))}
+                      onInvalid={(e) => e.target.setCustomValidity(t("verification-code-required"))}
+                      onInput={(e) => e.target.setCustomValidity("")}
+                      autoComplete="one-time-code"
+                      required
+                    />
+                    {twoFactorSetupError && (
+                      <p className="text-error text-xs mt-2">{twoFactorSetupError}</p>
+                    )}
+                  </div>
+                  <div className="mt-4 flex gap-2">
+                    <button type="submit" className="op-btn op-btn-primary" disabled={twoFactorSetupLoading}>
+                      {twoFactorSetupLoading ? t("loading") : t("verify")}
+                    </button>
+                    <button type="button" className="op-btn op-btn-ghost" onClick={handleCloseTwoFactorModal}>
+                      {t("cancel")}
+                    </button>
+                  </div>
+                </form>
+              )}
+            </ModalUi>
+          )}
+          {isDisableTwoFactorModalOpen && (
+            <ModalUi
+              isOpen
+              title={t("two-factor-verification")}
+              handleClose={handleCloseDisableTwoFactorModal}
+            >
+              {twoFactorDisableLoading ? (
+                <div className="h-[180px] flex justify-center items-center">
+                  <Loader />
+                </div>
+              ) : (
+                <form onSubmit={handleDisableTwoFactor} className="px-6 py-4 text-base-content text-sm">
+                  <p className="text-xs text-base-content/70">
+                    {t("enter-verification-code-instructions")}
+                  </p>
+                  <div className="mt-4">
+                    <label className="block text-xs font-semibold" htmlFor="twoFactorDisableCode">
+                      {t("verification-code")}
+                    </label>
+                    <input
+                      id="twoFactorDisableCode"
+                      type="text"
+                      inputMode="numeric"
+                      pattern="[0-9]{6}"
+                      maxLength={6}
+                      className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
+                      value={twoFactorDisableCode}
+                      onChange={(e) => setTwoFactorDisableCode(e.target.value.replace(/\s/g, ""))}
+                      onInvalid={(e) => e.target.setCustomValidity(t("verification-code-required"))}
+                      onInput={(e) => e.target.setCustomValidity("")}
+                      autoComplete="one-time-code"
+                      required
+                    />
+                    {twoFactorDisableError && (
+                      <p className="text-error text-xs mt-2">{twoFactorDisableError}</p>
+                    )}
+                  </div>
+                  <div className="mt-4 flex gap-2">
+                    <button type="submit" className="op-btn op-btn-primary" disabled={twoFactorDisableLoading}>
+                      {twoFactorDisableLoading ? t("loading") : t("verify")}
+                    </button>
+                    <button type="button" className="op-btn op-btn-ghost" onClick={handleCloseDisableTwoFactorModal}>
+                      {t("cancel")}
+                    </button>
+                  </div>
+                </form>
+              )}
+            </ModalUi>
+          )}
           {isdeleteModal && (
             <ModalUi
               isOpen
