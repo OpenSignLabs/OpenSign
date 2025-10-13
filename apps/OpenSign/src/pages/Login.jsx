@@ -22,6 +22,15 @@ import Loader from "../primitives/Loader";
 import { useTranslation } from "react-i18next";
 import SelectLanguage from "../components/pdf/SelectLanguage";
 
+const INITIAL_TWO_FACTOR_STATE = {
+  required: false,
+  pendingToken: "",
+  code: "",
+  verifying: false,
+  error: "",
+  userEmail: "",
+};
+
 function Login() {
   const appName =
     "OpenSign™";
@@ -46,6 +55,7 @@ function Login() {
   const [isModal, setIsModal] = useState(false);
   const [image, setImage] = useState();
   const [errMsg, setErrMsg] = useState();
+  const [twoFactor, setTwoFactor] = useState(INITIAL_TWO_FACTOR_STATE);
   useEffect(() => {
     checkUserExt();
     // eslint-disable-next-line
@@ -64,8 +74,8 @@ function Login() {
   };
 
   const showToast = (type, msg) => {
-    setState({ ...state, loading: false, alertType: type, alertMsg: msg });
-    setTimeout(() => setState({ ...state, alertMsg: "" }), 2000);
+    setState((prev) => ({ ...prev, loading: false, alertType: type, alertMsg: msg }));
+    setTimeout(() => setState((prev) => ({ ...prev, alertMsg: "" })), 2000);
   };
 
   const checkUserExt = async () => {
@@ -84,7 +94,7 @@ function Login() {
     }
     dispatch(fetchAppInfo());
     if (localStorage.getItem("accesstoken")) {
-      setState({ ...state, loading: true });
+      setState((prev) => ({ ...prev, loading: true }));
       GetLoginData();
     }
   };
@@ -93,35 +103,41 @@ function Login() {
     if (name === "email") {
       value = value?.toLowerCase()?.replace(/\s/g, "");
     }
-    setState({ ...state, [name]: value });
+    setState((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleLogin = async (
-  ) => {
-    const email = state?.email
-    const password = state?.password
+  const handleLogin = async () => {
+    const email = state?.email?.toLowerCase()?.replace(/\s/g, "");
+    const password = state?.password;
 
     if (!email || !password) {
       return;
     }
     localStorage.removeItem("accesstoken");
+    setTwoFactor(INITIAL_TWO_FACTOR_STATE);
+    setState((prev) => ({ ...prev, loading: true }));
     try {
-      setState({ ...state, loading: true });
       localStorage.setItem("appLogo", appInfo.applogo);
-      const _user = await Parse.Cloud.run("loginuser", { email, password });
-      if (!_user) {
-        setState({ ...state, loading: false });
+      const response = await Parse.Cloud.run("loginuser", { email, password });
+      if (!response) {
+        setState((prev) => ({ ...prev, loading: false }));
         return;
       }
-      // Get extended user data (including 2FA status) using cloud function
-      try {
-        await Parse.User.become(_user.sessionToken);
-        setLocalVar(_user);
-        await continueLoginFlow();
-      } catch (error) {
-        console.error("Error checking 2FA status:", error);
-        showToast("danger", t("something-went-wrong-mssg"));
+      if (response.twoFactorRequired) {
+        setState((prev) => ({ ...prev, loading: false }));
+        setTwoFactor({
+          ...INITIAL_TWO_FACTOR_STATE,
+          required: true,
+          pendingToken: response.pendingToken,
+          userEmail: response?.user?.email || email,
+        });
+        return;
       }
+
+      const user = response?.user || response;
+      await Parse.User.become(user.sessionToken);
+      setLocalVar(user);
+      await continueLoginFlow();
     } catch (error) {
       console.error("Error while logging in user", error);
       if (error?.code === 1001) {
@@ -129,6 +145,7 @@ function Login() {
       } else {
         showToast("danger", t("invalid-username-password-region"));
       }
+      setState((prev) => ({ ...prev, loading: false }));
     }
   };
   const handleLoginBtn = async (event) => {
@@ -140,8 +157,55 @@ function Login() {
     await handleLogin();
   };
 
+  const handleCloseTwoFactorModal = () => {
+    setTwoFactor(INITIAL_TWO_FACTOR_STATE);
+    setState((prev) => ({ ...prev, loading: false }));
+  };
+
+  const handleTwoFactorCodeChange = (event) => {
+    const value = event.target.value.replace(/\s/g, "");
+    setTwoFactor((prev) => ({ ...prev, code: value }));
+  };
+
+  const handleVerifyTwoFactor = async (event) => {
+    event.preventDefault();
+    if (!twoFactor.code) {
+      setTwoFactor((prev) => ({ ...prev, error: t("verification-code-required") }));
+      return;
+    }
+    setTwoFactor((prev) => ({ ...prev, verifying: true, error: "" }));
+    setState((prev) => ({ ...prev, loading: true }));
+    try {
+      const response = await Parse.Cloud.run("verify2falogin", {
+        pendingToken: twoFactor.pendingToken,
+        token: twoFactor.code,
+      });
+      if (response?.sessionToken && response?.user) {
+        await Parse.User.become(response.sessionToken);
+        setLocalVar(response.user);
+        setTwoFactor(INITIAL_TWO_FACTOR_STATE);
+        await continueLoginFlow();
+        return;
+      }
+      throw new Error("Invalid response");
+    } catch (error) {
+      console.error("Error verifying two-factor code", error);
+      if (error?.code === Parse.Error.INVALID_SESSION_TOKEN) {
+        showToast("danger", t("session-expired"));
+        setTwoFactor(INITIAL_TWO_FACTOR_STATE);
+      } else if (error?.code === Parse.Error.VALIDATION_ERROR) {
+        setTwoFactor((prev) => ({ ...prev, error: t("verification-code-invalid") }));
+      } else {
+        showToast("danger", t("something-went-wrong-mssg"));
+      }
+    } finally {
+      setState((prev) => ({ ...prev, loading: false }));
+      setTwoFactor((prev) => ({ ...prev, verifying: false }));
+    }
+  };
+
   const setThirdpartyLoader = (value) => {
-    setState({ ...state, thirdpartyLoader: value });
+    setState((prev) => ({ ...prev, thirdpartyLoader: value }));
   };
 
   const thirdpartyLoginfn = async (sessionToken) => {
@@ -190,7 +254,7 @@ function Login() {
               }
               localStorage.setItem("PageLanding", menu.pageId);
               localStorage.setItem("defaultmenuid", menu.menuId);
-              localStorage.setItem("pageType", menu.pageType);
+                localStorage.setItem("pageType", menu.pageType);
                 navigate(redirectUrl);
             } else {
               showToast("danger", t("role-not-found"));
@@ -205,8 +269,8 @@ function Login() {
           logOutUser();
         }
       } catch (error) {
-        console.error("err in fetching extUser", err);
-        showToast("danger", `${err.message}`);
+        console.error("err in fetching extUser", error);
+        showToast("danger", `${error.message}`);
         const payload = { sessionToken: _user.sessionToken };
         handleSubmitbtn(payload);
       } finally {
@@ -216,7 +280,7 @@ function Login() {
   };
 
   const GetLoginData = async () => {
-    setState({ ...state, loading: true });
+    setState((prev) => ({ ...prev, loading: true }));
     try {
       const user = await Parse.User.become(localStorage.getItem("accesstoken"));
       const _user = user.toJSON();
@@ -251,9 +315,9 @@ function Login() {
             localStorage.setItem("PageLanding", menu.pageId);
             localStorage.setItem("defaultmenuid", menu.menuId);
             localStorage.setItem("pageType", menu.pageType);
-              navigate(redirectUrl);
+            navigate(redirectUrl);
           } else {
-            setState({ ...state, loading: false });
+            setState((prev) => ({ ...prev, loading: false }));
             logOutUser();
           }
         } else {
@@ -271,7 +335,7 @@ function Login() {
   };
 
   const togglePasswordVisibility = () => {
-    setState({ ...state, passwordVisible: !state.passwordVisible });
+    setState((prev) => ({ ...prev, passwordVisible: !prev.passwordVisible }));
   };
 
   const handleSubmitbtn = async (e) => {
@@ -383,10 +447,10 @@ function Login() {
             localStorage.setItem("PageLanding", menu.pageId);
             localStorage.setItem("defaultmenuid", menu.menuId);
             localStorage.setItem("pageType", menu.pageType);
-              setState({ ...state, loading: false });
-              navigate(redirectUrl);
+            setState((prev) => ({ ...prev, loading: false }));
+            navigate(redirectUrl);
           } else {
-            setState({ ...state, loading: false });
+            setState((prev) => ({ ...prev, loading: false }));
             setIsModal(true);
           }
         } else {
@@ -533,6 +597,52 @@ function Login() {
               <Alert type={state.alertType}>{state.alertMsg}</Alert>
             )}
           </div>
+          <ModalUi
+            isOpen={twoFactor.required}
+            title={t("two-factor-verification")}
+            handleClose={handleCloseTwoFactorModal}
+          >
+            <form onSubmit={handleVerifyTwoFactor} className="px-6 py-4 text-base-content text-sm">
+              <p className="text-xs text-base-content/70">
+                {t("enter-verification-code-instructions")}
+              </p>
+              {twoFactor.userEmail && (
+                <p className="mt-2 text-xs break-all">
+                  {twoFactor.userEmail}
+                </p>
+              )}
+              <div className="mt-4">
+                <label className="block text-xs font-semibold" htmlFor="twoFactorCode">
+                  {t("verification-code")}
+                </label>
+                <input
+                  id="twoFactorCode"
+                  type="text"
+                  inputMode="numeric"
+                  pattern="[0-9]{6}"
+                  maxLength={6}
+                  className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
+                  value={twoFactor.code}
+                  onChange={handleTwoFactorCodeChange}
+                  onInput={(e) => e.target.setCustomValidity("")}
+                  onInvalid={(e) => e.target.setCustomValidity(t("verification-code-required"))}
+                  autoComplete="one-time-code"
+                  required
+                />
+                {twoFactor.error && (
+                  <p className="text-error text-xs mt-2">{twoFactor.error}</p>
+                )}
+              </div>
+              <div className="mt-4 flex gap-2">
+                <button type="submit" className="op-btn op-btn-primary">
+                  {twoFactor.verifying ? t("loading") : t("verify")}
+                </button>
+                <button type="button" className="op-btn op-btn-ghost" onClick={handleCloseTwoFactorModal}>
+                  {t("cancel")}
+                </button>
+              </div>
+            </form>
+          </ModalUi>
           <ModalUi
             isOpen={isModal}
             title={t("additional-info")}
