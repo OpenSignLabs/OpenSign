@@ -579,10 +579,8 @@ paths:
           "options": {
             "name": "number",
             "required": true,
-            "readonly": false,
             "default": 0,
-            "hint": "Enter number",
-            "formula": ""
+            "formula": "",
             "color": "black",
             "fontsize": 12
           }
@@ -933,7 +931,7 @@ paths:
             "readonly": false,
             "default": 0,
             "hint": "Enter number",
-            "formula": ""
+            "formula": "",
             "color": "black",
             "fontsize": 12
           }
@@ -1409,7 +1407,7 @@ paths:
             "readonly": false,
             "default": 0,
             "hint": "Enter number",
-            "formula": ""
+            "formula": "",
             "color": "black",
             "fontsize": 12
           }
@@ -2406,7 +2404,7 @@ paths:
             "readonly": false,
             "default": 0,
             "hint": "Enter number",
-            "formula": ""
+            "formula": "",
             "color": "black",
             "fontsize": 12
           }
@@ -2903,7 +2901,7 @@ paths:
             "readonly": false,
             "default": 0,
             "hint": "Enter number",
-            "formula": ""
+            "formula": "",
             "color": "black",
             "fontsize": 12
           }
@@ -3399,7 +3397,7 @@ paths:
             "readonly": false,
             "default": 0,
             "hint": "Enter number",
-            "formula": ""
+            "formula": "",
             "color": "black",
             "fontsize": 12
           }
