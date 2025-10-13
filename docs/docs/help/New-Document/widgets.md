@@ -108,9 +108,7 @@ Assume you have four number widgets named:
 | `({{number-1}} * {{number-2}} * {{number-3}}) / {{number-4}}` | Calculates a scaled ratio | (2 * 3 * 4) / 2 = 24 / 2 = **12** |
 | `({{number-1}} + {{number-2}} + {{number-3}} + {{number-4}}) / 4` | Finds the average of four widgets | (8 + 10 + 12 + 14) / 4 = **11** |
 | `{{number-1}} * ({{number-2}} + {{number-3}} - {{number-4}})` | Weighted total | 5 * (10 + 4 - 2) = 5 * 12 = **60** |
-| `({{number-1}} + {{number-2}})^2 / {{number-3}}` | Squares the sum and divides by another widget | (4 + 6)^2 / 5 = 100 / 5 = **20** |
 | `({{number-1}} * {{number-2}} + {{number-3}}) * {{number-4}}` | Compound operation using addition and multiplication | (3 * 4 + 2) * 5 = (12 + 2) * 5 = **70** |
-| `({{number-1}}^2 + {{number-2}}^2) / ({{number-3}} + {{number-4}})` | Sum of squares divided by total | (3² + 4²) / (2 + 1) = (9 + 16) / 3 = **8.33** |
 
 ---
 
