@@ -31,9 +31,6 @@ externalDocs:
   description: Find out more about OpenSign
   url: http://docs.opensignlabs.com
 servers:
-# Added by API Auto Mocking Plugin
-- description: SwaggerHub API Auto Mocking
-  url: https://virtserver.swaggerhub.com/PrafullNavkar/open/1.0.0
 - url: https://sandbox.opensignlabs.com/api/v1.1
 - url: https://app.opensignlabs.com/api/v1.1
 - url: https://eu-app.opensignlabs.com/api/v1.1
