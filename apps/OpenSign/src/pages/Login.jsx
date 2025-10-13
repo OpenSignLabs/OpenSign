@@ -94,7 +94,7 @@ function Login() {
     }
     dispatch(fetchAppInfo());
     if (localStorage.getItem("accesstoken")) {
-      setState({ ...state, loading: true });
+      setState((prev) => ({ ...prev, loading: true }));
       GetLoginData();
     }
   };
@@ -205,7 +205,7 @@ function Login() {
   };
 
   const setThirdpartyLoader = (value) => {
-    setState({ ...state, thirdpartyLoader: value });
+    setState((prev) => ({ ...prev, thirdpartyLoader: value }));
   };
 
   const thirdpartyLoginfn = async (sessionToken) => {
@@ -254,7 +254,7 @@ function Login() {
               }
               localStorage.setItem("PageLanding", menu.pageId);
               localStorage.setItem("defaultmenuid", menu.menuId);
-              localStorage.setItem("pageType", menu.pageType);
+                localStorage.setItem("pageType", menu.pageType);
                 navigate(redirectUrl);
             } else {
               showToast("danger", t("role-not-found"));
@@ -269,8 +269,8 @@ function Login() {
           logOutUser();
         }
       } catch (error) {
-        console.error("err in fetching extUser", err);
-        showToast("danger", `${err.message}`);
+        console.error("err in fetching extUser", error);
+        showToast("danger", `${error.message}`);
         const payload = { sessionToken: _user.sessionToken };
         handleSubmitbtn(payload);
       } finally {
@@ -280,7 +280,7 @@ function Login() {
   };
 
   const GetLoginData = async () => {
-    setState({ ...state, loading: true });
+    setState((prev) => ({ ...prev, loading: true }));
     try {
       const user = await Parse.User.become(localStorage.getItem("accesstoken"));
       const _user = user.toJSON();
@@ -315,7 +315,7 @@ function Login() {
             localStorage.setItem("PageLanding", menu.pageId);
             localStorage.setItem("defaultmenuid", menu.menuId);
             localStorage.setItem("pageType", menu.pageType);
-              navigate(redirectUrl);
+            navigate(redirectUrl);
           } else {
             setState((prev) => ({ ...prev, loading: false }));
             logOutUser();
@@ -447,10 +447,10 @@ function Login() {
             localStorage.setItem("PageLanding", menu.pageId);
             localStorage.setItem("defaultmenuid", menu.menuId);
             localStorage.setItem("pageType", menu.pageType);
-              setState({ ...state, loading: false });
-              navigate(redirectUrl);
+            setState((prev) => ({ ...prev, loading: false }));
+            navigate(redirectUrl);
           } else {
-            setState({ ...state, loading: false });
+            setState((prev) => ({ ...prev, loading: false }));
             setIsModal(true);
           }
         } else {
