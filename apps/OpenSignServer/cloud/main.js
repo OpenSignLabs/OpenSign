@@ -53,6 +53,12 @@ import saveAsTemplate from './parsefunction/saveAsTemplate.js';
 import updateTenant from './parsefunction/updateTenant.js';
 import recreateDocument from './parsefunction/recreateDocument.js';
 import loginUser from './parsefunction/loginUser.js';
+import {
+  generateTwoFactorSecret,
+  enableTwoFactor,
+  disableTwoFactor,
+  verifyTwoFactorLogin,
+} from './parsefunction/twoFactorAuth.js';
 import addUser from './parsefunction/addUser.js';
 import filterDocs from './parsefunction/filterDocs.js';
 import sendDeleteUserMail from './parsefunction/sendDeleteUserMail.js';
@@ -124,3 +130,7 @@ Parse.Cloud.define('adduser', addUser);
 Parse.Cloud.define('filterdocs', filterDocs);
 Parse.Cloud.define('senddeleterequest', sendDeleteUserMail);
 Parse.Cloud.define('resetpassword', resetPassword);
+Parse.Cloud.define('generate2fasecret', generateTwoFactorSecret);
+Parse.Cloud.define('enable2fa', enableTwoFactor);
+Parse.Cloud.define('disable2fa', disableTwoFactor);
+Parse.Cloud.define('verify2falogin', verifyTwoFactorLogin);

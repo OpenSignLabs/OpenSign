@@ -10,6 +10,11 @@ async function UserAfterFind(request) {
         if (ProfilePic) {
           obj.set('ProfilePic', getPresignedUrl(ProfilePic));
         }
+        obj.unset('twoFactorSecret');
+        obj.unset('twoFactorTempSecret');
+        obj.unset('twoFactorPendingToken');
+        obj.unset('twoFactorPendingSession');
+        obj.unset('twoFactorPendingExpires');
         return [obj];
       }
     }
@@ -21,6 +26,11 @@ async function UserAfterFind(request) {
         if (ProfilePic) {
           obj.set('ProfilePic', presignedlocalUrl(ProfilePic));
         }
+        obj.unset('twoFactorSecret');
+        obj.unset('twoFactorTempSecret');
+        obj.unset('twoFactorPendingToken');
+        obj.unset('twoFactorPendingSession');
+        obj.unset('twoFactorPendingExpires');
         return [obj];
       }
     }
