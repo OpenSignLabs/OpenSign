@@ -56,7 +56,7 @@ You can configure the following options for the **Number Widget**:
 
 | **Property** | **Description** |
 |---------------|-----------------|
-| **Name** | A unique identifier for this number widget. <br>• Example: `number-1`, `number-2` <br>• Must be unique within the document. <br>• Used in formulas as `{{number-1}}`. <br>🔸 *If you include a number widget in a formula, its name must be unique, since formulas rely on these identifiers.* |
+| **Name** | A unique identifier for this number widget. <br/>• Example: `number-1`, `number-2` <br/>• Must be unique within the document. <br/>• Used in formulas as `{{number-1}}`. <br/>🔸 *If you include a number widget in a formula, its name must be unique, since formulas rely on these identifiers.* |
 | **Default Value** | (Optional) Sets an initial numeric value for the widget. This value appears automatically unless changed by the signer or overridden by a formula. |
 | **Formula** | Defines a calculation using other number widgets.|
 | **Required / Optional** | Specifies whether the signer must complete the field before submission. |
