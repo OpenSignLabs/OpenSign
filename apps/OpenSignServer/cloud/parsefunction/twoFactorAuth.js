@@ -43,7 +43,10 @@ export const generateTwoFactorSecret = async request => {
   if (!request.user) {
     throw new Parse.Error(Parse.Error.INVALID_SESSION_TOKEN, 'User is not authenticated.');
   }
-  const user = await request.user.fetch({ useMasterKey: true });
+  const user = await request.user.fetch({
+    useMasterKey: true,
+    context: { preserveTwoFactorFields: true },
+  });
   const email = user.get('email') || user.get('username');
 
   const secret = speakeasy.generateSecret({
@@ -72,7 +75,10 @@ export const enableTwoFactor = async request => {
   if (!token) {
     throw new Parse.Error(Parse.Error.VALIDATION_ERROR, 'Verification code is required.');
   }
-  const user = await request.user.fetch({ useMasterKey: true });
+  const user = await request.user.fetch({
+    useMasterKey: true,
+    context: { preserveTwoFactorFields: true },
+  });
   const tempSecret = user.get('twoFactorTempSecret');
   if (!tempSecret) {
     throw new Parse.Error(Parse.Error.OBJECT_NOT_FOUND, 'Two-factor setup has not been initiated.');
@@ -102,7 +108,10 @@ export const disableTwoFactor = async request => {
   if (!token) {
     throw new Parse.Error(Parse.Error.VALIDATION_ERROR, 'Verification code is required.');
   }
-  const user = await request.user.fetch({ useMasterKey: true });
+  const user = await request.user.fetch({
+    useMasterKey: true,
+    context: { preserveTwoFactorFields: true },
+  });
   const secret = user.get('twoFactorSecret');
   if (!secret || !user.get('twoFactorEnabled')) {
     return { success: true };
@@ -136,7 +145,10 @@ export const verifyTwoFactorLogin = async request => {
   }
   const userQuery = new Parse.Query(Parse.User);
   userQuery.equalTo('twoFactorPendingToken', pendingToken);
-  const user = await userQuery.first({ useMasterKey: true });
+  const user = await userQuery.first({
+    useMasterKey: true,
+    context: { preserveTwoFactorFields: true },
+  });
   if (!user) {
     throw new Parse.Error(Parse.Error.INVALID_SESSION_TOKEN, 'Two-factor challenge not found.');
   }

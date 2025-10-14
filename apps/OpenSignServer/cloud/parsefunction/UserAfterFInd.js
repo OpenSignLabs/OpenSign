@@ -1,39 +1,35 @@
 import { useLocal } from '../../Utils.js';
 import getPresignedUrl, { presignedlocalUrl } from './getSignedUrl.js';
 
+const scrubTwoFactorFields = obj => {
+  obj.unset('twoFactorSecret');
+  obj.unset('twoFactorTempSecret');
+  obj.unset('twoFactorPendingToken');
+  obj.unset('twoFactorPendingSession');
+  obj.unset('twoFactorPendingExpires');
+  obj.unset('twoFactorTempSecretCreatedAt');
+};
+
 async function UserAfterFind(request) {
-  if (useLocal !== 'true') {
-    if (request.objects.length === 1) {
-      if (request.objects) {
-        const obj = request.objects[0];
-        const ProfilePic = obj?.get('ProfilePic') && obj?.get('ProfilePic');
-        if (ProfilePic) {
-          obj.set('ProfilePic', getPresignedUrl(ProfilePic));
-        }
-        obj.unset('twoFactorSecret');
-        obj.unset('twoFactorTempSecret');
-        obj.unset('twoFactorPendingToken');
-        obj.unset('twoFactorPendingSession');
-        obj.unset('twoFactorPendingExpires');
-        return [obj];
+  const shouldPreserveTwoFactorFields = request?.context?.preserveTwoFactorFields === true;
+
+  if (request.objects.length === 1 && request.objects) {
+    const obj = request.objects[0];
+    const profilePic = obj?.get('ProfilePic') && obj?.get('ProfilePic');
+
+    if (profilePic) {
+      if (useLocal !== 'true') {
+        obj.set('ProfilePic', getPresignedUrl(profilePic));
+      } else if (useLocal == 'true') {
+        obj.set('ProfilePic', presignedlocalUrl(profilePic));
       }
     }
-  } else if (useLocal == 'true') {
-    if (request.objects.length === 1) {
-      if (request.objects) {
-        const obj = request.objects[0];
-        const ProfilePic = obj?.get('ProfilePic') && obj?.get('ProfilePic');
-        if (ProfilePic) {
-          obj.set('ProfilePic', presignedlocalUrl(ProfilePic));
-        }
-        obj.unset('twoFactorSecret');
-        obj.unset('twoFactorTempSecret');
-        obj.unset('twoFactorPendingToken');
-        obj.unset('twoFactorPendingSession');
-        obj.unset('twoFactorPendingExpires');
-        return [obj];
-      }
+
+    if (!shouldPreserveTwoFactorFields) {
+      scrubTwoFactorFields(obj);
     }
+
+    return [obj];
   }
 }
 export default UserAfterFind;
