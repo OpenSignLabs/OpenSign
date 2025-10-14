@@ -86,7 +86,7 @@ Note: This feature is available exclusively on paid plans.
 - **Cancel**: If you need to start over or make changes, click this button to clear the form.
   
 ### Step 3: Document Creation  
-**Prefill Widgets**  
+## Prefill Widgets 
 
 The **Prefill Widgets** feature lets document creators prefill specific fields before sending a document for signature. This ensures that important details (such as date, name, email, images, checkboxes, radio buttons, or custom text) are already completed when recipients receive the document. By default, prefilled data cannot be edited by signers.  
 
@@ -94,7 +94,7 @@ The **Prefill Widgets** feature lets document creators prefill specific fields b
 
 ---
 
-## ✨ Key Benefits
+**✨ Key Benefits**
 - ✅ Save time by auto-filling repetitive information.  
 - ✅ Ensure accuracy for critical fields (e.g., company name, contract number).  
 - ✅ Maintain consistency across multiple signers and templates.  
@@ -102,7 +102,7 @@ The **Prefill Widgets** feature lets document creators prefill specific fields b
 
 ---
 
-## 🛠️ How It Works
+**🛠️ How It Works**
 1. **Add Widgets to the Document**  
    - Open the right-side panel, select **Prefill Widgets**, then drag and drop the required widgets (Text, Date, Checkbox, Dropdown, Image, etc.) onto the document.  
 
@@ -112,7 +112,7 @@ The **Prefill Widgets** feature lets document creators prefill specific fields b
 
 ---
 
-## 📋 Supported Widgets for Prefill
+**📋 Supported Widgets for Prefill**
 - **Text Field** – Names, job titles, company names, contract IDs  
 - **Date Field** – Default signing date or contract start date  
 - **Dropdown** – Preselect an option  
