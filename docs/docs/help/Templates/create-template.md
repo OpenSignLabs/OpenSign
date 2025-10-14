@@ -81,9 +81,45 @@ Note: This feature is available exclusively on paid plans.
 ## Step 2: 
 ### Template creation 
 
-<img width="828" alt="Create Template" src="https://github.com/user-attachments/assets/986a0068-e711-4367-91b6-349dc1db8c43" />
+## Prefill Widgets 
 
-- **[1] Define Roles**:
+The **Prefill Widgets** feature lets document creators prefill specific fields before sending a document for signature. This ensures that important details (such as date, name, email, images, checkboxes, radio buttons, or custom text) are already completed when recipients receive the document. By default, prefilled data cannot be edited by signers.  
+
+<img width="800" alt="Prefill" src="https://github.com/user-attachments/assets/6400469f-1c7e-4eda-b170-fa5b4ce9ebce" />
+
+---
+
+**✨ Key Benefits**
+- ✅ Save time by auto-filling repetitive information.  
+- ✅ Ensure accuracy for critical fields (e.g., company name, contract number).  
+- ✅ Maintain consistency across multiple signers and templates.  
+- ✅ Reduce signer effort for a smoother signing experience.  
+
+---
+
+**🛠️ How It Works**
+1. **Add Widgets to the Document**  
+   - Open the right-side panel, select **Prefill Widgets**, then drag and drop the required widgets (Text, Date, Checkbox, Dropdown, Image, etc.) onto the document.  
+
+2. **Enter Prefill Value**  
+   - Provide the default value (e.g., *"Company: OpenSign Labs"*, *Date: 30/09/2025*).  
+   - For option-based widgets (Dropdown, Radio, Checkbox), choose the option to be prefilled.  
+
+---
+
+**📋 Supported Widgets for Prefill**
+- **Text Field** – Names, job titles, company names, contract IDs  
+- **Date Field** – Default signing date or contract start date  
+- **Dropdown** – Preselect an option  
+- **Radio Button** – Prefill with a selected choice  
+- **Checkbox** – Prefill as checked or unchecked  
+- **Image** – Insert a default image (e.g., logo or stamp)
+
+  
+- **[1] Define roles and assign widgets.**:
+
+<img width="828" alt="Create Template" src="https://github.com/user-attachments/assets/9305bf0b-02d4-4110-bbbf-6496c9fd6f65" />
+
   - **Add Roles**: In the roles section on the right, click "+ Add role" to specify the roles involved in the document, such as Candidate, HR, and Manager.
 - **[2] Assign Widgets to Roles**: Click on each role to highlight it, then drag and drop the widget to assign it to that role.
   - **[1] Assign signature widget**: The signature widget is used to add a signature to the document. Each role must have at least one signature widget assigned.
