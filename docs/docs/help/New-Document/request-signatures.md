@@ -86,7 +86,7 @@ Note: This feature is available exclusively on paid plans.
 - **Cancel**: If you need to start over or make changes, click this button to clear the form.
   
 ### Step 3: Document Creation  
-## Prefill Widgets 
+### Prefill Widgets 
 
 The **Prefill Widgets** feature lets document creators prefill specific fields before sending a document for signature. This ensures that important details (such as date, name, email, images, checkboxes, radio buttons, or custom text) are already completed when recipients receive the document. By default, prefilled data cannot be edited by signers.  
 
@@ -122,7 +122,7 @@ The **Prefill Widgets** feature lets document creators prefill specific fields b
 
 ---
 
-**Add Widgets for Signers**
+### Add Widgets for Signers
 
 <img width="800" alt="request signatures" src="https://github.com/user-attachments/assets/25997f4c-6fbf-4851-b8a8-a803c3343f87" />
 
