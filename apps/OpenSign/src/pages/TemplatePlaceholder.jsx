@@ -662,9 +662,7 @@ const TemplatePlaceholder = () => {
             (data) => data.pageNumber === pageNumber
           );
           if (getPageNumer.length > 0) {
-            const getXYdata = getPageNumer[0].pos;
-            const getPosData = getXYdata;
-            const addSignPos = getPosData.map((url) => {
+            const addSignPos = getPageNumer?.[0]?.pos?.map((url) => {
               if (url.key === keyValue) {
                 return {
                   ...url,
@@ -756,7 +754,7 @@ const TemplatePlaceholder = () => {
     }
   };
   useEffect(() => {
-    if (pdfDetails?.[0]?.CreatedBy?.objectId !== user?.objectId) return;
+    if (pdfDetails?.[0]?.CreatedBy?.objectId !== user?.objectId || isPrefillModal) return;
     const timer = setTimeout(() => {
       autosavedetails();
     }, 2000);
@@ -1319,10 +1317,9 @@ const TemplatePlaceholder = () => {
       );
 
       if (getPageNumer.length > 0) {
-        const getXYdata = getPageNumer[0].pos;
-
-        const getPosData = getXYdata;
-        const addSignPos = getPosData.map((position) => {
+        const textSize = fontSize || currWidgetsDetails?.options?.fontSize;
+        const textColor = fontColor || currWidgetsDetails?.options?.fontColor;
+        const addSignPos = getPageNumer?.[0]?.pos?.map((position) => {
           if (position.key === currWidgetsDetails?.key) {
             if (currWidgetsDetails?.type === radioButtonWidget) {
               if (addOption) {
@@ -1351,12 +1348,8 @@ const TemplatePlaceholder = () => {
                     defaultValue: defaultValue,
                     isReadOnly: isReadOnly || false,
                     isHideLabel: isHideLabel || false,
-                    fontSize:
-                      fontSize || currWidgetsDetails?.options?.fontSize || 12,
-                    fontColor:
-                      fontColor ||
-                      currWidgetsDetails?.options?.fontColor ||
-                      "black"
+                    fontSize: textSize || 12,
+                    fontColor: textColor || "black"
                   }
                 };
               }
@@ -1390,12 +1383,8 @@ const TemplatePlaceholder = () => {
                     isReadOnly: isReadOnly || false,
                     defaultValue: defaultValue,
                     isHideLabel: isHideLabel || false,
-                    fontSize:
-                      fontSize || currWidgetsDetails?.options?.fontSize || 12,
-                    fontColor:
-                      fontColor ||
-                      currWidgetsDetails?.options?.fontColor ||
-                      "black"
+                    fontSize: textSize || 12,
+                    fontColor: textColor || "black"
                   }
                 };
               }
@@ -1408,12 +1397,8 @@ const TemplatePlaceholder = () => {
                   status: status,
                   values: dropdownOptions,
                   defaultValue: defaultValue,
-                  fontSize:
-                    fontSize || currWidgetsDetails?.options?.fontSize || 12,
-                  fontColor:
-                    fontColor ||
-                    currWidgetsDetails?.options?.fontColor ||
-                    "black",
+                  fontSize: textSize || 12,
+                  fontColor: textColor || "black",
                   ...(isReadOnly ? { isReadOnly: isReadOnly || false } : {})
                 }
               };
@@ -1428,9 +1413,11 @@ const TemplatePlaceholder = () => {
           }
           return obj;
         });
+        const recalculatedPlaceholders =
+          utils.applyNumberFormulasToPages(newUpdateSignPos);
         const newUpdateSigner = signerPos.map((obj) => {
           if (obj.Id === uniqueId) {
-            return { ...obj, placeHolder: newUpdateSignPos };
+            return { ...obj, placeHolder: recalculatedPlaceholders };
           }
           return obj;
         });
@@ -1463,9 +1450,9 @@ const TemplatePlaceholder = () => {
       );
 
       if (getPageNumer.length > 0) {
-        const getXYdata = getPageNumer[0].pos;
-        const getPosData = getXYdata;
-        const addSignPos = getPosData.map((position) => {
+        const textSize = fontSize || currWidgetsDetails?.options?.fontSize;
+        const textColor = fontColor || currWidgetsDetails?.options?.fontColor;
+        const addSignPos = getPageNumer?.[0]?.pos?.map((position) => {
           if (position.key === currWidgetsDetails?.key) {
             if (position.type === textInputWidget) {
               return {
@@ -1479,12 +1466,8 @@ const TemplatePlaceholder = () => {
                   isReadOnly: defaultdata?.isReadOnly || false,
                   validation:
                         {},
-                  fontSize:
-                    fontSize || currWidgetsDetails?.options?.fontSize || 12,
-                  fontColor:
-                    fontColor ||
-                    currWidgetsDetails?.options?.fontColor ||
-                    "black"
+                  fontSize: textSize || 12,
+                  fontColor: textColor || "black"
                 }
               };
             } else if (position.type === cellsWidget) {
@@ -1503,15 +1486,12 @@ const TemplatePlaceholder = () => {
                   validation:
                         {},
                   isReadOnly: defaultdata?.isReadOnly || false,
-                  fontSize:
-                    fontSize || currWidgetsDetails?.options?.fontSize || 12,
-                  fontColor:
-                    fontColor ||
-                    currWidgetsDetails?.options?.fontColor ||
-                    "black"
+                  fontSize: textSize || 12,
+                  fontColor: textColor || "black"
                 }
               };
-            } else if (["signature"].includes(position.type)) {
+            }
+            else if (["signature"].includes(position.type)) {
               return {
                 ...position,
                 options: {
@@ -1529,12 +1509,8 @@ const TemplatePlaceholder = () => {
                   status: defaultdata.status,
                   defaultValue: defaultdata.defaultValue,
                   hint: defaultdata?.hint || "",
-                  fontSize:
-                    fontSize || currWidgetsDetails?.options?.fontSize || 12,
-                  fontColor:
-                    fontColor ||
-                    currWidgetsDetails?.options?.fontColor ||
-                    "black"
+                  fontSize: textSize || 12,
+                  fontColor: textColor || "black"
                 }
               };
             }
@@ -2125,6 +2101,8 @@ const TemplatePlaceholder = () => {
         fontColor={fontColor}
         setFontColor={setFontColor}
         roleName={roleName}
+        widgetsSource={signerPos}
+        activeSignerId={uniqueId}
       />
       {isPrefillModal && (
         <PrefillWidgetModal
@@ -2140,7 +2118,6 @@ const TemplatePlaceholder = () => {
           navigatePageToDoc={navigatePageToDoc}
           setIsNewContact={setIsNewContact}
           isNewContact={isNewContact}
-          documentFlow={"template"}
           docId={pdfDetails[0]?.objectId}
           isSubmit={isUseTemplate}
         />

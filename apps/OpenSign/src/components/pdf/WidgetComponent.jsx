@@ -91,14 +91,14 @@ function WidgetComponent(props) {
       name,
       jobTitle,
       company,
+      email,
       date,
       text,
       cells,
       checkbox,
       dropdown,
       radioButton,
-      image,
-      email
+      image
     ];
     const getWidgetArray = widgets;
     const newUpdateSigner = getWidgetArray.map((obj, ind) => {
@@ -109,7 +109,7 @@ function WidgetComponent(props) {
     // eslint-disable-next-line
   }, []);
 
-  //allow only (signature,stamp,initials,text,name, job title, company,email) widget when isAllowModification true and user have session token
+  // allow only (signature, stamp, initials, text, name, job title, company, email, cells) widget when isAllowModification true and user have session token
   const modifiedWidgets = widget.filter(
     (data) =>
       ![
@@ -121,7 +121,7 @@ function WidgetComponent(props) {
         "checkbox"
       ].includes(data.type)
   );
-  //allow only (signature,stamp,initials,text) widget when isAllowModification true and user does not have session token
+  // allow only (signature, stamp, initials, text, cells) widget when isAllowModification true and user does not have session token
   const unlogedInUserWidgets = widget.filter(
     (data) =>
       ![
@@ -263,7 +263,12 @@ function WidgetComponent(props) {
               )}
             </span>
           </div>
-          <div className="p-[15px] flex flex-col pt-4" data-tut="addWidgets">
+          <div
+            className="p-[12px] grid lg:grid-cols-2 gap-x-2 lg:gap-y-1.5 pt-3"
+            data-tut="addWidgets"
+            role="list"
+            aria-label="Add widgets"
+          >
             <WidgetList
               updateWidgets={handleWidgetType}
               handleDivClick={props.handleDivClick}

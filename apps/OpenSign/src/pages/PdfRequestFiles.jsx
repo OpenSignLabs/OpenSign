@@ -49,7 +49,7 @@ import {
   widgetDataValue,
   getOriginalWH,
   handleCheckResponse,
-  convertJpegToPng
+  convertJpegToPng,
 } from "../constant/Utils";
 import Header from "../components/pdf/PdfHeader";
 import RenderPdf from "../components/pdf/RenderPdf";
