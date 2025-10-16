@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import ModalUi from "../../primitives/ModalUi";
 import "../../styles/AddUser.css";
 import RegexParser from "regex-parser";
@@ -21,11 +21,30 @@ const WidgetNameModal = (props) => {
     hint: "",
     textvalidate: "",
     isReadOnly: false,
-    cellCount: 5
+    cellCount: 5,
   });
   const [isValid, setIsValid] = useState(true);
   const statusArr = ["Required", "Optional"];
   const [signatureType, setSignatureType] = useState([]);
+  const type = props?.defaultdata?.type;
+  const isCellWidget = useMemo(() => type === cellsWidget, [type]);
+  const isSignOrInitials = useMemo(
+    () => ["signature", "initials"].includes(type),
+    [type]
+  );
+  const showFontControls = useMemo(
+    () =>
+      [
+        textInputWidget,
+        textWidget,
+        cellsWidget,
+        "name",
+        "company",
+        "job title",
+        "email"
+      ].includes(props.defaultdata?.type),
+    [type]
+  );
 
   const handleHint = () => {
     const type = props.defaultdata?.type;
@@ -54,13 +73,13 @@ const WidgetNameModal = (props) => {
             ? props.defaultdata?.options?.validation?.pattern
             : props.defaultdata?.options?.validation?.type || "",
         isReadOnly: props.defaultdata?.options?.isReadOnly || false,
-        cellCount: props.defaultdata?.options?.cellCount || 5
+        cellCount: props.defaultdata?.options?.cellCount || 5,
       });
     } else {
       setFormdata({
         ...formdata,
         name: props.defaultdata?.options?.name || "",
-        cellCount: props.defaultdata?.options?.cellCount || 5
+        cellCount: props.defaultdata?.options?.cellCount || 5,
       });
     }
 
@@ -68,12 +87,13 @@ const WidgetNameModal = (props) => {
       const defaultSignatureType = signTypes || [];
       setSignatureType(defaultSignatureType);
     }
-    // eslint-disable-next-line
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.defaultdata]);
+
   const handleSubmit = (e) => {
     e.preventDefault();
     if (props.handleData) {
-      if (["signature", "initials"].includes(props.defaultdata?.type)) {
+      if (isSignOrInitials) {
         const enabledSignTypes = signatureType?.filter((x) => x.enabled);
         const isDefaultSignTypeOnly =
           enabledSignTypes?.length === 1 &&
@@ -87,9 +107,11 @@ const WidgetNameModal = (props) => {
           props.handleData(data, props.defaultdata?.type);
         }
       } else {
-        const isTextInput = [textInputWidget, cellsWidget].includes(
-          props.defaultdata?.type
-        );
+
+        const isTextInput = [
+          textInputWidget,
+          cellsWidget,
+        ].includes(props.defaultdata?.type);
         const { isReadOnly, defaultValue, status } = formdata;
         // If it’s a text‐input widget, enforce that read-only fields have
         // either a defaultValue or an "optional" status.
@@ -110,7 +132,7 @@ const WidgetNameModal = (props) => {
         status: "required",
         hint: "",
         textvalidate: "",
-        cellCount: 5
+        cellCount: 5,
       });
       setSignatureType(signTypes);
     }
@@ -148,10 +170,11 @@ const WidgetNameModal = (props) => {
     } else {
       setIsValid(true);
     }
-    const val =
-      props.defaultdata?.type === cellsWidget
-        ? e.target.value.slice(0, formdata.cellCount)
-        : e.target.value;
+
+    const val = isCellWidget
+      ? e.target.value.slice(0, formdata.cellCount)
+      : e.target.value;
+
     setFormdata({ ...formdata, [e.target.name]: val });
   };
 
@@ -160,7 +183,7 @@ const WidgetNameModal = (props) => {
       case "email":
         return "/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,}$/";
       case "number":
-        return "/^\\d+$/";
+        return "^\\d+(?:\\.\\d+)?$"; // "/^\\d+$/";
       case "text":
         //allow space in text regex
         return "/^[a-zA-Z ]+$/";
@@ -184,23 +207,19 @@ const WidgetNameModal = (props) => {
     <ModalUi
       isOpen={props.isOpen}
       handleClose={props.handleClose && props.handleClose}
-      title={
-        ["signature", "initials"].includes(props.defaultdata?.type)
-          ? t("signature-setting")
-          : t("widget-info")
-      }
+      title={isSignOrInitials ? t("signature-setting") : t("widget-info")}
     >
       <form
         onSubmit={handleSubmit}
         className={`${
           [textInputWidget, cellsWidget].includes(props.defaultdata?.type)
             ? "pt-0"
-            : ["signature", "initials"].includes(props.defaultdata?.type)
+            : isSignOrInitials
               ? "pt-2"
               : ""
         } p-[20px] text-base-content`}
       >
-        {!["signature", "initials"].includes(props.defaultdata?.type) && (
+        {!isSignOrInitials && (
           <div className="mb-[0.75rem] text-[13px]">
             <label htmlFor="name">
               {t("name")}
@@ -217,7 +236,7 @@ const WidgetNameModal = (props) => {
             />
           </div>
         )}
-        {props.defaultdata?.type === cellsWidget && (
+        {isCellWidget && (
           <div className="mb-[0.75rem] text-[13px]">
             <label htmlFor="cellCount">{t("cell-count")}</label>
             <input
@@ -231,7 +250,10 @@ const WidgetNameModal = (props) => {
             />
           </div>
         )}
-        {[textInputWidget, cellsWidget].includes(props.defaultdata?.type) &&
+        {[
+          textInputWidget,
+          cellsWidget,
+        ].includes(props.defaultdata?.type) &&
           props?.roleName !== "prefill" && (
             <>
               <div className="mb-[0.75rem]">
@@ -244,11 +266,7 @@ const WidgetNameModal = (props) => {
                   value={formdata.defaultValue}
                   onChange={(e) => handledefaultChange(e)}
                   autoComplete="off"
-                  maxLength={
-                    props.defaultdata?.type === cellsWidget
-                      ? formdata.cellCount
-                      : undefined
-                  }
+                  maxLength={isCellWidget ? formdata.cellCount : undefined}
                   onBlur={() => {
                     if (isValid === false) {
                       setFormdata({ ...formdata, defaultValue: "" });
@@ -262,7 +280,7 @@ const WidgetNameModal = (props) => {
                     style={{ fontSize: 12 }}
                   >
                     <i
-                      className="fa-light fa-exclamation-circle text-[15px]"
+                      className="fa-light fa-exclamation-circle text-[15px] mr-1"
                       style={{ color: "#fab005" }}
                     ></i>
                     {t("invalid-default-value")}
@@ -271,7 +289,8 @@ const WidgetNameModal = (props) => {
               </div>
             </>
           )}
-        {!["signature", "initials"].includes(props.defaultdata?.type) &&
+        {!props?.isSelfSign &&
+          !isSignOrInitials &&
           props?.roleName !== "prefill" && (
             <div className="mb-[0.75rem]">
               <div className="flex flex-row gap-[10px] mb-[0.5rem]">
@@ -302,9 +321,10 @@ const WidgetNameModal = (props) => {
                   );
                 })}
               </div>
-              {[textInputWidget, cellsWidget].includes(
-                props.defaultdata?.type
-              ) &&
+              {[
+                textInputWidget,
+                cellsWidget,
+              ].includes(props.defaultdata?.type) &&
                 props?.roleName !== "prefill" && (
                   <div className="flex items-center">
                     <input
@@ -330,7 +350,7 @@ const WidgetNameModal = (props) => {
                 )}
             </div>
           )}
-        {["signature", "initials"].includes(props.defaultdata?.type) && (
+        {isSignOrInitials && (
           <div className="mb-[0.75rem]">
             <label htmlFor="signaturetype" className="text-[14px] mb-[0.7rem]">
               {t("allowed-signature-types")}
@@ -358,7 +378,7 @@ const WidgetNameModal = (props) => {
             </div>
           </div>
         )}
-        {props?.roleName !== "prefill" && (
+        {!props?.isSelfSign && props?.roleName !== "prefill" && (
           <div className="mb-[0.75rem]">
             <label htmlFor="hint" className="text-[13px]">
               {t("hint")}
@@ -372,15 +392,7 @@ const WidgetNameModal = (props) => {
             />
           </div>
         )}
-        {[
-          textInputWidget,
-          textWidget,
-          cellsWidget,
-          "name",
-          "company",
-          "job title",
-          "email"
-        ].includes(props.defaultdata?.type) && (
+        {showFontControls && (
           <div className="flex flex-col md:flex-row md:items-center gap-3 mb-3">
             <div className="flex items-center gap-2 ">
               <span className="whitespace-nowrap">{t("font-size")}: </span>

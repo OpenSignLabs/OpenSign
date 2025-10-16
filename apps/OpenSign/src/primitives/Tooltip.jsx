@@ -14,7 +14,7 @@ const Tooltip = ({
       onClick={() =>
         handleOnlickHelp ? handleOnlickHelp() : openInNewTab(url)
       }
-      className={"text-center cursor-pointer"}
+      className="text-center cursor-pointer focus:outline-none"
     >
       <sup>
         <i

@@ -1,6 +1,6 @@
 {
   "name": "open_sign",
-  "version": "2.26.0",
+  "version": "2.30.0",
   "private": true,
   "dependencies": {
     "@formkit/auto-animate": "^0.9.0",
@@ -110,7 +110,7 @@
     "concurrently": "^9.2.1",
     "css-loader": "^7.1.2",
     "daisyui": "^4.12.24",
-    "eslint": "^9.34.0",
+    "eslint": "^9.37.0",
     "eslint-plugin-prettier": "^5.5.4",
     "eslint-plugin-react": "^7.37.5",
     "jsdom": "^27.0.0",
