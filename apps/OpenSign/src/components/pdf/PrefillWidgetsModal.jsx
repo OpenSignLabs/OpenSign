@@ -28,6 +28,8 @@ import {
 } from "../../redux/reducers/widgetSlice";
 import * as utils from "../../utils";
 
+const widgetTitle = "font-medium";
+
 const ShowTextWidget = ({ position, handleWidgetDetails }) => {
   const inputRef = useRef(null);
   const [inputValue, setInputValue] = useState(position.options.response || "");
@@ -46,13 +48,77 @@ const ShowTextWidget = ({ position, handleWidgetDetails }) => {
   );
 };
 
+const ImageComponent = (props) => {
+  const { t } = useTranslation();
+  const prefillImg = useSelector((state) => state.widget.prefillImg);
+  const imageRefs = useRef({});
+
+  let imgUrl = "";
+  const isBase64Url = isBase64(props?.position?.SignUrl);
+  if (isBase64Url) {
+    imgUrl = props?.position?.SignUrl;
+  } else {
+    const getPrefillImg = prefillImg?.find(
+      (x) => x.id === props?.position?.key
+    );
+    imgUrl = getPrefillImg?.base64;
+  }
+
+  return (
+    <>
+      <span className={widgetTitle}>{props?.position.options?.name}</span>
+      {imgUrl ? (
+        <>
+          <div className="cursor-pointer op-card border-[1px] border-gray-400 flex flex-col w-full h-full justify-center items-center ">
+            <img
+              alt="print img"
+              ref={(el) => (imageRefs.current[props?.position.key] = el)} // Assign ref dynamicallys
+              src={imgUrl}
+              draggable="false"
+              className="object-contain h-full w-full aspect-[5/2]"
+              onLoad={() => props?.handleImageLoaded?.(props?.position.key)}
+              onError={() => props?.handleImageLoaded?.(props?.position.key)}
+            />
+          </div>
+          <span
+            onClick={() => props?.handleClearImage(props?.position)}
+            className="flex justify-start text-blue-500 underline cursor-pointer"
+          >
+            {t("clear")}
+          </span>
+        </>
+      ) : (
+        <div
+          className="cursor-pointer op-card border-[1px] op-border-hover flex flex-col overflow-hidden w-full h-full aspect-[5/2] justify-center items-center"
+          onClick={() => imageRefs.current[props?.position.key]?.click()}
+        >
+          {props?.imageLoaders[props?.position?.key] && (
+            <div className="absolute w-full h-full inset-0 flex justify-center items-center bg-white/30 z-50">
+              <Loader />
+            </div>
+          )}
+          <input
+            type="file"
+            onChange={(e) => props?.onImageChange?.(e, props?.position)}
+            className="filetype"
+            accept="image/png,image/jpeg"
+            ref={(el) => (imageRefs.current[props?.position.key] = el)} // Assign ref dynamically
+            hidden
+          />
+          <i className="fa-light text-base-content fa-cloud-upload-alt text-[25px]"></i>
+          <div className="text-[10px] text-base-content">{t("upload")}</div>
+        </div>
+      )}
+    </>
+  );
+};
+
 function PrefillWidgetModal(props) {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   // Track already loaded image keys so they don't increment multiple times
   const loadedSet = useRef(new Set());
   const initializedRef = useRef(false); // prevent rerun on state updates
-  const prefillImg = useSelector((state) => state.widget.prefillImg);
   const [image, setImage] = useState(null);
   const [imageLoaders, setImageLoaders] = useState({});
   const [currentWidget, setCurrentWidget] = useState("");
@@ -61,7 +127,6 @@ function PrefillWidgetModal(props) {
   const [loadedImages, setLoadedImages] = useState(0);
   const [loading, setLoading] = useState(false);
   const years = range(1950, getYear(new Date()) + 16, 1);
-  const widgetTitle = "font-medium";
   const isAnyLoaderActive = Object.values(imageLoaders).some(
     (val) => val === true
   );
@@ -93,6 +158,7 @@ function PrefillWidgetModal(props) {
 
     return flatArray || [];
   }, [props.prefillData]);
+
   useEffect(() => {
     dispatch(resetWidgetState([]));
   }, []);
@@ -163,67 +229,7 @@ function PrefillWidgetModal(props) {
     }
     return date;
   };
-  const ImageComponent = (props) => {
-    const imageRefs = useRef([]);
-    let imgUrl = "";
-    const isBase64Url = isBase64(props?.position?.SignUrl);
-    if (isBase64Url) {
-      imgUrl = props?.position?.SignUrl;
-    } else {
-      const getPrefillImg = prefillImg?.find(
-        (x) => x.id === props?.position?.key
-      );
-      imgUrl = getPrefillImg?.base64;
-    }
 
-    return (
-      <>
-        <span className={widgetTitle}>{props?.position.options?.name}</span>
-        {imgUrl ? (
-          <>
-            <div className="cursor-pointer op-card border-[1px] border-gray-400 flex flex-col w-full h-full justify-center items-center ">
-              <img
-                alt="print img"
-                ref={(el) => (imageRefs.current[props?.position.key] = el)} // Assign ref dynamicallys
-                src={imgUrl}
-                draggable="false"
-                className="object-contain h-full w-full aspect-[5/2]"
-                onLoad={() => handleImageLoaded?.(props?.position.key)}
-                onError={() => handleImageLoaded?.(props?.position.key)}
-              />
-            </div>
-            <span
-              onClick={() => handleClearImage(props?.position)}
-              className="flex justify-start text-blue-500 underline cursor-pointer"
-            >
-              {t("clear")}
-            </span>
-          </>
-        ) : (
-          <div
-            className="cursor-pointer op-card border-[1px] op-border-hover flex flex-col overflow-hidden w-full h-full aspect-[5/2] justify-center items-center"
-            onClick={() => imageRefs.current[props?.position.key]?.click()}
-          >
-            {imageLoaders[props?.position?.key] && (
-              <div className="absolute w-full h-full inset-0 flex justify-center items-center bg-white/30 z-50">
-                <Loader />
-              </div>
-            )}
-            <input
-              type="file"
-              onChange={(e) => onImageChange(e, props?.position)}
-              className="filetype"
-              accept="image/png,image/jpeg"
-              ref={(el) => (imageRefs.current[props?.position.key] = el)} // Assign ref dynamically
-              hidden
-            />
-            <i className="fa-light text-base-content fa-cloud-upload-alt text-[25px]"></i>
-            <div className="text-[10px] text-base-content">{t("upload")}</div>
-          </div>
-        )}
-      </>
-    );
-  };
   const ExampleCustomInput = forwardRef(({ value, onClick }, ref) => (
     <div
       style={{ fontFamily: "Arial, sans-serif" }}
@@ -273,7 +279,6 @@ function PrefillWidgetModal(props) {
         image.src,
         image.imgType
       );
-      setImageLoaders({});
       if (imageUrl) {
         return imageUrl;
       }
@@ -414,6 +419,7 @@ function PrefillWidgetModal(props) {
       // (tracks how many images have finished loading)
       setLoadedImages((prev) => prev + 1);
     }
+    setImageLoaders({});
   };
   const handleWidgetType = (position) => {
     switch (position?.type) {
@@ -432,9 +438,9 @@ function PrefillWidgetModal(props) {
                     className="mt-[2px] op-checkbox op-checkbox-xs"
                     type="checkbox"
                     checked={selectCheckbox(ind, position)}
-                    onChange={(e) => {
-                      handleCheckboxValue(e.target.checked, ind, position);
-                    }}
+                    onChange={(e) =>
+                      handleCheckboxValue(e.target.checked, ind, position)
+                    }
                   />
                   <label
                     htmlFor={`checkbox-${position.key + ind}`}
@@ -467,9 +473,7 @@ function PrefillWidgetModal(props) {
               value={
                 position?.options?.response || position?.options?.defaultValue
               }
-              onChange={(e) => {
-                handleWidgetDetails(position, e.target.value);
-              }}
+              onChange={(e) => handleWidgetDetails(position, e.target.value)}
             >
               {/* Default/Title option */}
               <option value="" disabled hidden>
@@ -519,9 +523,7 @@ function PrefillWidgetModal(props) {
               )}
               closeOnScroll={true}
               selected={handleDate(position)}
-              onChange={(date) => {
-                handleOnDateChange(date, position);
-              }}
+              onChange={(date) => handleOnDateChange(date, position)}
               customInput={<ExampleCustomInput />}
               dateFormat={position?.options?.validation?.format || "MM/dd/yyyy"}
             />
@@ -531,7 +533,10 @@ function PrefillWidgetModal(props) {
         return (
           <ImageComponent
             position={position}
-            docId={props?.docId}
+            imageLoaders={imageLoaders}
+            onImageChange={onImageChange}
+            handleImageLoaded={handleImageLoaded}
+            handleClearImage={handleClearImage}
           />
         );
       case radioButtonWidget:
@@ -549,9 +554,7 @@ function PrefillWidgetModal(props) {
                     className="mt-[2px] op-radio op-radio-xs"
                     type="radio"
                     checked={handleRadioCheck(data, position)}
-                    onChange={() => {
-                      handleWidgetDetails(position, data);
-                    }}
+                    onChange={() => handleWidgetDetails(position, data)}
                   />
                   <label
                     htmlFor={`radio-${position.key + ind}`}
@@ -697,9 +700,9 @@ function PrefillWidgetModal(props) {
                                 multiValueLabel: () => "mb-[2px]",
                                 menu: () =>
                                   "mt-1 shadow-md rounded-lg bg-base-200 text-base-content absolute z-9999",
-                                menuList: () => "shadow-md rounded-lg  ",
+                                menuList: () => "shadow-md rounded-lg",
                                 option: () =>
-                                  "bg-base-200 text-base-content rounded-lg m-1 hover:bg-base-300 p-2 ",
+                                  "bg-base-200 text-base-content rounded-lg m-1 hover:bg-base-300 p-2",
                                 noOptionsMessage: () =>
                                   "p-2 bg-base-200 rounded-lg m-1 p-2"
                               }}
@@ -710,7 +713,7 @@ function PrefillWidgetModal(props) {
                           </div>
                           <button
                             onClick={(e) => handleCreateNew(e, field.value)}
-                            className="op-btn op-btn-accent  op-btn-outline op-btn-sm  "
+                            className="op-btn op-btn-accent op-btn-outline op-btn-sm"
                           >
                             <i className="fa-light fa-plus"></i>
                           </button>

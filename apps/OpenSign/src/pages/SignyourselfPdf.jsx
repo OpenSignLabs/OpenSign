@@ -69,6 +69,7 @@ import {
 import WidgetsValueModal from "../components/pdf/WidgetsValueModal";
 import WidgetNameModal from "../components/pdf/WidgetNameModal";
 import CellsSettingModal from "../components/pdf/CellsSettingModal";
+import { applyNumberFormulasToPages } from "../utils";
 //For signYourself inProgress section signer can add sign and complete doc sign.
 function SignYourSelf() {
   const { t } = useTranslation();
@@ -140,6 +141,8 @@ function SignYourSelf() {
   const [isDownloadModal, setIsDownloadModal] = useState(false);
   const [isResize, setIsResize] = useState(false);
   const [isUploadPdf, setIsUploadPdf] = useState(false);
+  const [unSignedWidgetId, setUnSignedWidgetId] = useState("");
+  const [widgetsTour, setWidgetsTour] = useState(false);
 
   const [owner, setOwner] = useState({});
   const [, drop] = useDrop({
@@ -586,9 +589,23 @@ function SignYourSelf() {
     }
     if (!isEnableOTP || isEmailVerified) {
       let showAlert = false,
-        isSignatureExist = false;
+        widgetKey,
+        tourPageNumber;
       try {
+        const isSignatureExist = xyPosition?.some((p) =>
+          p?.pos?.some((x) => x?.type === "signature")
+        );
+        if (!isSignatureExist) {
+          setIsAlert({
+            header: t("fields-required"),
+            isShow: true,
+            alertMessage: t("signature-widget-alert-1")
+          });
+          return;
+        }
+
         for (let i = 0; i < xyPosition?.length; i++) {
+          tourPageNumber = xyPosition[i]?.pageNumber;
           const requiredWidgets = xyPosition[i].pos.filter(
             (position) => position.type !== "checkbox"
           );
@@ -597,34 +614,24 @@ function SignYourSelf() {
             for (let i = 0; i < requiredWidgets?.length; i++) {
               checkSigned = requiredWidgets[i]?.options?.response;
               if (!checkSigned) {
-                const checkSignUrl = requiredWidgets[i]?.pos?.SignUrl;
+                const checkSignUrl = requiredWidgets[i]?.SignUrl;
                 let checkDefaultSigned =
                   requiredWidgets[i]?.options?.defaultValue;
                 if (!checkSignUrl && !checkDefaultSigned && !showAlert) {
                   showAlert = true;
+                  widgetKey = requiredWidgets[i]?.key;
                 }
               }
             }
           }
-          //condition to check exist signature widget or not
-          if (!isSignatureExist) {
-            isSignatureExist = xyPosition[i].pos.some(
-              (data) => data?.type === "signature"
-            );
+          if (showAlert) {
+            break;
           }
         }
-        if (xyPosition.length === 0 || !isSignatureExist) {
-          setIsAlert({
-            header: t("fields-required"),
-            isShow: true,
-            alertMessage: t("signature-widget-alert-1")
-          });
-          return;
-        } else if (showAlert) {
-          setIsAlert({
-            isShow: true,
-            alertMessage: t("signature-widget-alert-2")
-          });
+        if (showAlert) {
+          setUnSignedWidgetId(widgetKey);
+          setPageNumber(tourPageNumber);
+          setWidgetsTour(true);
           return;
         } else {
           setIsUiLoading(true);
@@ -771,9 +778,7 @@ function SignYourSelf() {
           (data) => data.pageNumber === pageNumber
         );
         if (filterDropPos?.length > 0) {
-          const getXYdata = xyPosition[index].pos;
-          const getPosData = getXYdata;
-          const addSign = getPosData.map((url) => {
+          const addSign = xyPosition[index]?.pos?.map((url) => {
             if (url.key === dragKey) {
               return {
                 ...url,
@@ -958,11 +963,9 @@ function SignYourSelf() {
       (data) => data.pageNumber === pageNumber
     );
     if (getPageNumer.length > 0) {
-      const getXYdata = getPageNumer[0].pos;
-      const getPosData = getXYdata;
       const widgetLayout =
         currWidgetsDetails?.type === "checkbox" ? { layout: layout } : {};
-      const addSignPos = getPosData.map((position) => {
+      const addSignPos = getPageNumer?.[0]?.pos?.map((position) => {
         if (position.key === currWidgetsDetails?.key) {
           if (addOption) {
             return {
@@ -1024,9 +1027,7 @@ function SignYourSelf() {
       (data) => data.pageNumber === pageNumber
     );
     if (getPageNumer.length > 0) {
-      const getXYdata = getPageNumer[0].pos;
-      const getPosData = getXYdata;
-      const addSignPos = getPosData.map((position) => {
+      const addSignPos = getPageNumer?.[0]?.pos?.map((position) => {
         if (position.key === currWidgetsDetails?.key) {
           return {
             ...position,
@@ -1083,6 +1084,8 @@ function SignYourSelf() {
     );
     if (getPageNumer.length > 0) {
       const updatePos = getPageNumer[0].pos.map((position) => {
+        const textSize = newFontSize || position?.options?.fontSize;
+        const textColor = newFontColor || position?.options?.fontColor;
         if (position.key === currWidgetsDetails?.key) {
           if (position.type === cellsWidget) {
             const count = parseInt(
@@ -1096,20 +1099,19 @@ function SignYourSelf() {
                 name: defaultdata?.name || position.options?.name || "Cells",
                 cellCount: count,
                 defaultValue: (defaultdata?.defaultValue || "").slice(0, count),
-                fontSize: newFontSize || position.options?.fontSize || 12,
-                fontColor:
-                  newFontColor || position.options?.fontColor || "black"
+                fontSize: textSize || 12,
+                fontColor: textColor || "black"
               }
             };
-          } else {
+          }
+          else {
             return {
               ...position,
               options: {
                 ...position.options,
                 name: defaultdata?.name || position.options?.name,
-                fontSize: newFontSize || position.options?.fontSize || 12,
-                fontColor:
-                  newFontColor || position.options?.fontColor || "black"
+                fontSize: textSize || 12,
+                fontColor: textColor || "black"
               }
             };
           }
@@ -1119,7 +1121,7 @@ function SignYourSelf() {
       const updateXYposition = xyPosition.map((obj, ind) =>
         ind === index ? { ...obj, pos: updatePos } : obj
       );
-      setXyPosition(updateXYposition);
+      setXyPosition(applyNumberFormulasToPages(updateXYposition));
     }
     setFontSize();
     setFontColor();
@@ -1196,6 +1198,14 @@ function SignYourSelf() {
     setPdfBase64Url(urlDetails.base64);
     setShowRotateAlert({ status: false, degree: 0 });
   };
+  const WidgetTourConfig = [
+    {
+      selector: '[data-tut="IsSigned"]',
+      content: t("signature-validate-alert-2"),
+      position: "top",
+      style: { fontSize: "13px" }
+    }
+  ];
   return (
     <>
       {isLoading.isLoad ? (
@@ -1241,6 +1251,14 @@ function SignYourSelf() {
                 isOpen={signTour}
               />
             )}
+            <Tour
+              showNumber={false}
+              showNavigation={false}
+              showNavigationNumber={false}
+              onRequestClose={() => setWidgetsTour(false)}
+              steps={WidgetTourConfig}
+              isOpen={widgetsTour}
+            />
             {/* this component used to render all pdf pages in left side */}
             <RenderAllPdfPage
               allPages={allPages}
@@ -1408,6 +1426,7 @@ function SignYourSelf() {
                       divRef={divRef}
                       currWidgetsDetails={currWidgetsDetails}
                       isShowModal={isShowModal}
+                      unSignedWidgetId={unSignedWidgetId}
                     />
                   )}
                 </div>
@@ -1459,6 +1478,8 @@ function SignYourSelf() {
         setFontSize={setFontSize}
         fontColor={fontColor}
         setFontColor={setFontColor}
+        widgetsSource={xyPosition}
+        isSelfSign={true}
       />
       <CellsSettingModal
         isOpen={isCellsSetting}

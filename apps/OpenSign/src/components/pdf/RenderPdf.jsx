@@ -271,6 +271,7 @@ function RenderPdf(props) {
                       setIsReqSignTourDisabled={props.setIsReqSignTourDisabled}
                       calculateFontsize={calculateFontsize}
                       currWidgetsDetails={props?.currWidgetsDetails}
+                      handleNameModal={props?.handleNameModal}
                     />
                   </React.Fragment>
                 )
@@ -484,6 +485,8 @@ function RenderPdf(props) {
                                     setIsReqSignTourDisabled={
                                       props.setIsReqSignTourDisabled
                                     }
+                                    unSignedWidgetId={props.unSignedWidgetId}
+                                    handleNameModal={props.handleNameModal}
                                   />
                                 )
                             )}
