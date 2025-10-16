@@ -33,6 +33,9 @@ After login, you will be directed to the OpenSign dashboard. From the left-side 
 - **[3] Next**: After filling in all the required fields, click the "Next" button to proceed to the document creation panel.
   
 ### Step 4: Document creation and Signing
+
+<img width="918" alt="sign yourself" src="https://github.com/user-attachments/assets/b0475066-d3e3-4c67-a242-08704e2d11ba" />
+
 - **[1] Add signature widget**: Once your document is loaded in the document creation panel, you will need to add a signature widget. OpenSign provides an intuitive interface for this task. Click on the signature widget and position it where the signature is required. You can add multiple signature widgets if needed.
 After placing the Signature widget, a popup will appear for drawing the signature.
 In the "Draw Signature" popup, you have three options available:
@@ -60,15 +63,19 @@ In the "Draw Signature" popup, you have three options available:
      - **Date** :  Once you drop the date widget, you can choose from various date formats.
      - **Text**: Once you drop the text widget, you can write the text. Customization options such as setting the color or font are also provided. Additionally, there is a copy option available to duplicate the widget.
      - **Cells**: The Cells widget is ideal for documents that require input in a structured, table-like format, allowing the signer to fill in details within individual cells. After dragging and dropping the widget onto the document, a popup will appear allowing you to adjust the number of cells by moving the blue marker. This adjustment option is also available directly on the widget after it's placed. Additionally, the widget settings panel provides options to manually enter the number of cells, choose a color, and set the font size.
-      <img width="918" alt="cells widget" src="https://github.com/user-attachments/assets/039e2999-8c75-43b6-a742-bfb294aa52ee" />
+     
+  <img width="918" alt="cells widget" src="https://github.com/user-attachments/assets/7d124e00-2d7a-4045-9584-1397a84a882d" />
 
      - **Checkbox**: After dropping the checkbox widget, a popup will open allowing you to set the checkbox name and options. Once you click save, the checkbox will be created on the document. Additionally, a copy option will be available to duplicate the widget.
      - **Image** : After dragging and dropping the image widget, the "Upload Image" popup will appear, allowing you to upload an image from your file explorer. Once the image is uploaded, it will be displayed on the document. Additionally, there is an option to duplicate the image.
      - **Email**: Once you drop the email widget, you can edit the email. Customization options such as setting the color or font are also provided. Additionally, there is a copy option available to duplicate the widget.
 
-<img width="918" alt="OpenSign_Widgets" src="https://github.com/user-attachments/assets/8f61a30d-8c65-4343-bdb9-ed7c004c16db" />
-
 ### 📄 Document Page Controls
+- **Navigating Between Pages in OpenSign™**
+  To navigate between pages of a document that you have uploaded either click on the previous page ∧ & V next page  buttons at the top or click on any of the page previews loaded on the left side.
+
+  <img width="918" alt="OpenSign Page controls" src="https://github.com/user-attachments/assets/f0353d1a-c4ad-4d7c-af6b-2a5a368fad30" />
+
 - **Add Pages**  
   In the left-side panel, users will see an **"Add" button**. Clicking it allows users to select and merge new documents into the current one.
 
@@ -83,8 +90,6 @@ In the "Draw Signature" popup, you have three options available:
 
 - **Rotate Page**  
   Options are provided to **rotate pages** in both **clockwise** and **counterclockwise** directions.
-  
-<img width="918" alt="OpenSign_Widgets" src="https://github.com/user-attachments/assets/ae54ce3c-6373-49bf-b905-a4b734444a31" />
 
 ---
 
