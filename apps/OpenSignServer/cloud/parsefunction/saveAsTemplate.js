@@ -59,6 +59,7 @@ export default async function saveAsTemplate(request) {
               options: {
                 ...p.options,
                 status: 'required',
+                response: '',
                 ...(p?.options?.defaultValue ? { defaultValue: '' } : {}),
               },
             })),

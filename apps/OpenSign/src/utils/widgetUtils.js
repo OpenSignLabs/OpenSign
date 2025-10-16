@@ -1,4 +1,4 @@
-import { generateTitleFromFilename, getBase64FromUrl } from "../constant/Utils";
+import { generateTitleFromFilename } from "../constant/Utils";
 import { base64StringtoFile, uploadFile } from "./fileUtils";
 import { sanitizeFileName } from "./sanitizeFileName";
 import Parse from "parse";
@@ -41,3 +41,40 @@ export const hasSignatureWidget = (s) =>
   (s.placeHolder ?? []).some((ph) =>
     (ph?.pos ?? []).some((p) => p?.type === "signature")
   );
+
+/**
+ *
+ * @param {Array<object>} pages
+ *   Array of page objects. Each page is expected to have:
+ *     - pos: Array<Widget> where Widget has shape:
+ *         {
+ *           key: string,
+ *           type: string,
+ *           options?: {
+ *             response?: number|string,
+ *             defaultValue?: number|string,
+ *             formula?: string
+ *           }
+ *         }
+ *
+ * @returns {Array<object>}
+ */
+export const applyNumberFormulasToPages = (pages = []) => {
+  // Guard: if not an array or empty, just return as-is
+  if (!Array.isArray(pages) || pages.length === 0) {
+    return pages;
+  }
+
+  // Clone pages and each widget.options so we do not mutate caller's data.
+  // (Shallow clone is sufficient for our current usage since we only touch `options`.)
+  const clonedPages = pages.map((page) => ({
+    ...page,
+    pos: (page?.pos || []).map((widget) => ({
+      ...widget,
+      options: { ...widget.options }
+    }))
+  }));
+
+  // Return the cloned, updated pages
+  return clonedPages;
+};

@@ -267,7 +267,8 @@ function Placeholder(props) {
       (props.isSignYourself || props.isSelfSign)
     ) {
       props.handleTextSettingModal(true);
-    } else {
+    }
+    else {
       props?.handleNameModal && props?.handleNameModal(true);
     }
 
@@ -305,13 +306,7 @@ function Placeholder(props) {
     ) {
       props.setUniqueId(props?.data?.Id);
     }
-
-    //checking widget's type and open widget copy modal for required widgets
-    if (
-      ["signature", textInputWidget, textWidget, "stamp", "initials"].includes(
-        props.pos.type
-      )
-    ) {
+    if (props?.data?.Role !== "prefill") {
       props.setIsPageCopy(true);
       props.setCurrWidgetsDetails(props.pos);
     } else {
@@ -326,7 +321,7 @@ function Placeholder(props) {
         props.data && props.data?.Id
       );
       //condiiton is used to store copied prefill image base64 url in redux for display image
-      if (props?.data?.Role === "prefill") {
+      if (props?.pos?.type === "image") {
         const getPrefillImg = prefillImg?.find((x) => x.id === props.pos.key);
         dispatch(
           setPrefillImg({

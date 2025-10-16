@@ -9,7 +9,7 @@ import fontkit from "@pdf-lib/fontkit";
 import { themeColor } from "./const";
 import { format, toZonedTime } from "date-fns-tz";
 import i18n from "../i18n";
-import { buildDownloadFilename } from "../utils";
+import { applyNumberFormulasToPages, buildDownloadFilename } from "../utils";
 
 export const fontsizeArr = [2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28];
 export const fontColorArr = ["red", "black", "blue", "yellow"];
@@ -327,6 +327,7 @@ export const widgets = [
   { type: "name", icon: "fa-light fa-user", iconSize: "21px" },
   { type: "job title", icon: "fa-light fa-address-card", iconSize: "17px" },
   { type: "company", icon: "fa-light fa-building", iconSize: "25px" },
+  { type: "email", icon: "fa-light fa-envelope", iconSize: "20px" },
   { type: "date", icon: "fa-light fa-calendar-days", iconSize: "20px" },
   { type: textWidget, icon: "fa-light fa-text-width", iconSize: "20px" },
   { type: cellsWidget, icon: "fa-light fa-table-cells", iconSize: "20px" },
@@ -337,8 +338,7 @@ export const widgets = [
     iconSize: "19px"
   },
   { type: radioButtonWidget, icon: "fa-light fa-circle-dot", iconSize: "20px" },
-  { type: "image", icon: "fa-light fa-image", iconSize: "20px" },
-  { type: "email", icon: "fa-light fa-envelope", iconSize: "20px" }
+  { type: "image", icon: "fa-light fa-image", iconSize: "20px" }
 ];
 
 export const getDate = (dateformat) => {
@@ -410,6 +410,35 @@ export const changeDateToMomentFormat = (format) => {
       return "L";
   }
 };
+
+export const getSignerPages = (xyPosition = [], currentKey, signerId) => {
+  if (!Array.isArray(xyPosition)) {
+    return [];
+  }
+  const hasSigners = xyPosition.some((item) =>
+    Array.isArray(item?.placeHolder)
+  );
+  if (hasSigners) {
+    const candidates =
+      signerId !== undefined && signerId !== null && signerId !== ""
+        ? xyPosition.filter(
+            (item) => item.Id === signerId || item.signerObjId === signerId
+          )
+        : xyPosition;
+    for (const signer of candidates) {
+      const pages = signer?.placeHolder || [];
+      const ownsWidget = pages.some((page) =>
+        (page?.pos || []).some((widget) => widget?.key === currentKey)
+      );
+      if (ownsWidget) {
+        return pages;
+      }
+    }
+    return [];
+  }
+  return xyPosition;
+};
+
 export const addWidgetOptions = (
   type,
   signer,
@@ -423,15 +452,9 @@ export const addWidgetOptions = (
       return count + page.pos.filter((item) => item.type === type).length;
     }, 0);
     const count = countSameWidget + 1;
-    defaultOpt = {
-      name: `${type}-${count}`,
-      status: "required"
-    };
+    defaultOpt = { name: `${type}-${count}`, status: "required" };
   } else {
-    defaultOpt = {
-      name: `${type}-1`,
-      status: "required"
-    };
+    defaultOpt = { name: `${type}-1`, status: "required" };
   }
   switch (type) {
     case "signature":
@@ -439,11 +462,7 @@ export const addWidgetOptions = (
     case "stamp":
       return defaultOpt;
     case "checkbox":
-      return {
-        ...defaultOpt,
-        isReadOnly: false,
-        isHideLabel: false
-      };
+      return { ...defaultOpt, isReadOnly: false, isHideLabel: false };
     case textInputWidget:
       return { ...defaultOpt, isReadOnly: false };
     case cellsWidget:
@@ -457,20 +476,11 @@ export const addWidgetOptions = (
     case "initials":
       return defaultOpt;
     case "name":
-      return {
-        ...defaultOpt,
-        defaultValue: widgetValue ? widgetValue : ""
-      };
+      return { ...defaultOpt, defaultValue: widgetValue ? widgetValue : "" };
     case "company":
-      return {
-        ...defaultOpt,
-        defaultValue: widgetValue ? widgetValue : ""
-      };
+      return { ...defaultOpt, defaultValue: widgetValue ? widgetValue : "" };
     case "job title":
-      return {
-        ...defaultOpt,
-        defaultValue: widgetValue ? widgetValue : ""
-      };
+      return { ...defaultOpt, defaultValue: widgetValue ? widgetValue : "" };
     case "date": {
       const dateFormat = signer?.DateFormat
         ? selectFormat(signer?.DateFormat)
@@ -518,15 +528,9 @@ export const addWidgetSelfsignOptions = (
       return count + page.pos.filter((item) => item.type === type).length;
     }, 0);
     const count = countSameWidget + 1;
-    defaultOpt = {
-      name: `${type}-${count}`,
-      status: "required"
-    };
+    defaultOpt = { name: `${type}-${count}`, status: "required" };
   } else {
-    defaultOpt = {
-      name: `${type}-1`,
-      status: "required"
-    };
+    defaultOpt = { name: `${type}-1`, status: "required" };
   }
   switch (type) {
     case "signature":
@@ -1077,9 +1081,11 @@ export const onChangeInput = (
           return obj;
         });
 
+        const recalculatedPages = applyNumberFormulasToPages(newUpdateSignPos);
+
         const newUpdateSigner = xyPosition.map((obj) => {
           if (obj.Id === userId) {
-            return { ...obj, placeHolder: newUpdateSignPos };
+            return { ...obj, placeHolder: recalculatedPages };
           }
           return obj;
         });
@@ -1125,7 +1131,7 @@ export const onChangeInput = (
       }
       return obj;
     });
-    setXyPosition(updatePlaceholder);
+    setXyPosition(applyNumberFormulasToPages(updatePlaceholder));
   }
 };
 //function to increase height of text area on press enter
@@ -1220,13 +1226,13 @@ export const calculateInitialWidthHeight = (widgetData) => {
 export const widgetDataValue = (type, value) => {
   switch (type) {
     case "name":
-      return value?.Name;
+      return value?.Name || value?.name;
     case "company":
-      return value?.Company;
+      return value?.Company || value?.company;
     case "job title":
-      return value?.JobTitle;
+      return value?.JobTitle || value?.jobTitle;
     case "email":
-      return value?.Email;
+      return value?.Email || value?.email;
     default:
       return "";
   }
@@ -1850,6 +1856,16 @@ export const embedWidgetsToDoc = async (
       console.log("error in image", e);
     }
     for (let [id, position] of widgetsPositionArr.entries()) {
+      const isTextTypeWidget = [
+        textWidget,
+        textInputWidget,
+        cellsWidget,
+        "name",
+        "company",
+        "job title",
+        "date",
+        "email"
+      ].includes(position.type);
       if (hasError) break; // Stop the inner loop if an error occurred
       try {
         let img;
@@ -1898,33 +1914,13 @@ export const embedWidgetsToDoc = async (
               return y;
             }
           } else {
-            const WidgetsTypeTextExist = [
-              textWidget,
-              textInputWidget,
-              cellsWidget,
-              "name",
-              "company",
-              "job title",
-              "date",
-              "email"
-            ].includes(position.type);
-            const yPosition = WidgetsTypeTextExist ? resizePos + 6 : resizePos;
+            const yPosition = isTextTypeWidget ? resizePos + 6 : resizePos;
             return yPosition;
           }
         };
         const color = position?.options?.fontColor;
         const updateColorInRgb = getWidgetsFontColor(color);
         const fontSize = parseInt(position?.options?.fontSize || 12);
-        const isTextTypeWidget = [
-          textWidget,
-          textInputWidget,
-          cellsWidget,
-          "name",
-          "company",
-          "job title",
-          "date",
-          "email"
-        ].includes(position.type);
         if (position.type === "checkbox") {
           // Determine layout mode: 'vertical' (default) or 'horizontal'
           // const isHorizontal = position.layout === "horizontal";
@@ -2022,7 +2018,7 @@ export const embedWidgetsToDoc = async (
               textContent = position.options?.response;
             }
           } else if (position?.options?.defaultValue) {
-            textContent = position?.options?.defaultValue;
+            textContent = position?.options?.defaultValue?.toString();
           }
           if (position.type === cellsWidget) {
             const cellCount =
@@ -2049,15 +2045,16 @@ export const embedWidgetsToDoc = async (
               if (ch) page.drawText(ch, textPosition);
             }
           } else {
-            const fixedWidth = widgetWidth; // Set your fixed width
-            const isNewOnEnterLineExist = textContent.includes("\n");
+            const fixedWidth = widgetWidth; // Set your fixed
+            textContent = textContent?.toString();
+            const isNewOnEnterLineExist = textContent?.includes("\n");
 
             // Function to break text into lines based on the fixed width
             const NewbreakTextIntoLines = (textContent, width) => {
               const lines = [];
               let currentLine = "";
 
-              for (const word of textContent.split(" ")) {
+              for (const word of textContent?.split(" ")) {
                 //get text line width
                 const lineWidth = font.widthOfTextAtSize(
                   `${currentLine} ${word}`,
@@ -2242,7 +2239,6 @@ export const embedWidgetsToDoc = async (
             width: widgetWidth,
             height: widgetHeight
           };
-
           const imageOptions = getWidgetPosition(page, signature, 1, getSize);
           page.drawImage(img, imageOptions);
         }
@@ -2370,56 +2366,34 @@ export const contractDocument = async (documentId, include) => {
 
 //function for add default signature or image for all requested location
 export const addDefaultSignatureImg = (xyPosition, defaultSignImg, type) => {
-  let imgWH = { width: "", height: "" };
-  const img = new Image();
-  img.src = defaultSignImg;
-  if (img.complete) {
-    imgWH = { width: img.width, height: img.height };
-  }
-
   let xyDefaultPos = [];
   for (let i = 0; i < xyPosition.length; i++) {
-    // let getIMGWH;
     const getXYdata = xyPosition[i].pos;
     const getPageNo = xyPosition[i].pageNumber;
     const getPosData = getXYdata;
 
     const addSign = getPosData.map((position) => {
-      // getIMGWH = calculateImgAspectRatio(imgWH, position);
       if (position.type) {
         if (position?.type === type) {
           return {
             ...position,
             SignUrl: defaultSignImg,
-            // Width: getIMGWH.newWidth,
-            // Height: getIMGWH.newHeight,
             ImageType: "default",
-            options: {
-              ...position.options,
-              response: defaultSignImg
-            }
+            options: { ...position.options, response: defaultSignImg }
           };
         }
       } else if (position && !position.isStamp) {
         return {
           ...position,
           SignUrl: defaultSignImg,
-          // Width: getIMGWH.newWidth,
-          // Height: getIMGWH.newHeight,
           ImageType: "default",
-          options: {
-            ...position.options,
-            response: defaultSignImg
-          }
+          options: { ...position.options, response: defaultSignImg }
         };
       }
       return position;
     });
 
-    const newXypos = {
-      pageNumber: getPageNo,
-      pos: addSign
-    };
+    const newXypos = { pageNumber: getPageNo, pos: addSign };
     xyDefaultPos.push(newXypos);
   }
   return xyDefaultPos;
@@ -3359,10 +3333,7 @@ export const handleHeighlightWidget = (
         ...data,
         pos: data.pos.map((position) => {
           if (position.key === key) {
-            return {
-              ...position,
-              zIndex: highestZIndex + 1
-            };
+            return { ...position, zIndex: highestZIndex + 1 };
           }
           return position;
         })
