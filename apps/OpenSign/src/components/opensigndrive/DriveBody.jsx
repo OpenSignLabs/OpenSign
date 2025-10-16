@@ -71,11 +71,9 @@ function DriveBody(props) {
       });
       props.setPdfData(updatedData);
       props.sortingData(null, null, updatedData);
-      await axios
-        .put(
-          `${localStorage.getItem(
-            "baseUrl"
-          )}classes/contracts_Document/${docId}`,
+      try {
+        await axios.put(
+          `${localStorage.getItem("baseUrl")}classes/contracts_Document/${docId}`,
           updateName,
           {
             headers: {
@@ -84,18 +82,14 @@ function DriveBody(props) {
               "X-Parse-Session-Token": localStorage.getItem("accesstoken")
             }
           }
-        )
-        .then(() => {
-          // const res = result.data;
-          // console.log("res", res);
-        })
-        .catch((err) => {
-          console.log("Err ", err);
-          props.setIsAlert({
-            isShow: true,
-            alertMessage: t("something-went-wrong-mssg")
-          });
+        );
+      } catch (err) {
+        console.log("Err ", err);
+        props.setIsAlert({
+          isShow: true,
+          alertMessage: t("something-went-wrong-mssg")
         });
+      }
     }
   };
 
@@ -245,7 +239,6 @@ function DriveBody(props) {
         )
 
         .then((Listdata) => {
-          // console.log("Listdata ", Listdata);
           const res = Listdata.data;
           if (res) {
             const updatedData = props.pdfData.filter(

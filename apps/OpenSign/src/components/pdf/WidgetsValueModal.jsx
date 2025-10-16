@@ -1,4 +1,4 @@
-import { forwardRef, useEffect, useRef, useState } from "react";
+import { forwardRef, useEffect, useMemo, useRef, useState } from "react";
 import ModalUi from "../../primitives/ModalUi";
 import { useTranslation } from "react-i18next";
 import { removeBackground } from "@imgly/background-removal";
@@ -23,7 +23,8 @@ import {
   convertBase64ToFile,
   generatePdfName,
   getDefaultDate,
-  getDefaultFormat
+  getDefaultFormat,
+  getSignerPages
 } from "../../constant/Utils";
 import CellsWidget from "./CellsWidget";
 import DatePicker from "react-datepicker";
@@ -45,7 +46,9 @@ import { useDispatch, useSelector } from "react-redux";
 import Loader from "../../primitives/Loader";
 import { emailRegex } from "../../constant/const";
 import RegexParser from "regex-parser";
-import { saveToMySign } from "../../utils/widgetUtils";
+import {
+  saveToMySign
+} from "../../utils/widgetUtils";
 
 const fontOptions = [
   { value: "Fasthand" },
@@ -111,12 +114,28 @@ function WidgetsValueModal(props) {
     props?.kiosk_signer || JSON.parse(localStorage.getItem("kiosk_signer"));
   const jsonSender = senderUser && JSON.parse(senderUser);
   const currentUserName = jsonSender && jsonSender?.name;
+  const type = currWidgetsDetails?.type;
   const widgetTypeTranslation = t(`widgets-name.${currWidgetsDetails?.type}`);
-  const [widgetValue, setWidgetValue] = useState(
-    currWidgetsDetails.type !== "checkbox" &&
-      (currWidgetsDetails?.options?.response ||
-        currWidgetsDetails?.options?.defaultValue)
-  );
+
+  const [widgetValue, setWidgetValue] = useState(() => {
+    if (currWidgetsDetails.type === "checkbox") {
+      return undefined;
+    }
+    return (
+      currWidgetsDetails?.options?.response ||
+      currWidgetsDetails?.options?.defaultValue
+    );
+  });
+  const blocked = [
+    "checkbox",
+    "dropdown",
+    "date",
+    "radio",
+  ];
+
+  const showClearbtn =
+    !blocked.includes(type);
+
   const [cellsValue, setCellsValue] = useState(() => {
     const count = currWidgetsDetails?.options?.cellCount || 5;
     const val =
@@ -192,7 +211,8 @@ function WidgetsValueModal(props) {
       } else {
         setHint(currWidgetsDetails?.type);
       }
-    } else if (isSignOrInitials) {
+    }
+    else if (isSignOrInitials) {
       setIsTab(currWidgetsDetails?.signatureType);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -877,9 +897,10 @@ function WidgetsValueModal(props) {
   const handleOnchangeTextBox = (e) => {
     // hide any prior validation error while typing
     setIsShowValidation(false);
-    setWidgetValue(e.target.value);
+    let value = e.target.value;
+    setWidgetValue(value);
     onChangeInput(
-      e.target.value,
+      value,
       currWidgetsDetails,
       xyPosition,
       props.index,
@@ -1718,13 +1739,14 @@ function WidgetsValueModal(props) {
     } else if (!isSave) {
       const widgetsPosition = xyPosition?.find((data) => data.Id === uniqueId);
       let nextWidgetDetails = null;
-      const editableWidgets = widgetsPosition?.placeHolder.flatMap((page) =>
-        page.pos
-          .filter((widget) => !widget.options?.isReadOnly)
-          .map((widget) => ({
-            widget,
-            pageNumber: page.pageNumber
-          }))
+      const editableWidgets = (widgetsPosition?.placeHolder ?? []).flatMap(
+        ({ pos = [], pageNumber }) =>
+          pos
+            .filter(
+              ({ options }) =>
+                !options?.isReadOnly
+            )
+            .map((widget) => ({ widget, pageNumber }))
       );
       //get current index of widget
       const currentIndex = editableWidgets.findIndex(
@@ -1926,13 +1948,11 @@ function WidgetsValueModal(props) {
                 </div>
               </div>
               <div className="flex justify-between items-center text-center">
-                {!["checkbox", "dropdown", "date", "radio"].includes(
-                  currWidgetsDetails?.type
-                ) ? (
+                {showClearbtn ? (
                   <button
                     type="button"
                     className="op-btn op-btn-ghost op-btn-sm text-base-content mr-1"
-                    onClick={() => handleClear()}
+                    onClick={handleClear}
                   >
                     {t("clear")}
                   </button>

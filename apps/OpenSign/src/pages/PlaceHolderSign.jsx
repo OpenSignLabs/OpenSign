@@ -722,9 +722,7 @@ function PlaceHolderSign() {
             (data) => data.pageNumber === pageNumber
           );
           if (getPageNumer.length > 0) {
-            const getXYdata = getPageNumer[0].pos;
-            const getPosData = getXYdata;
-            const addSignPos = getPosData.map((url) => {
+            const addSignPos = getPageNumer?.[0]?.pos?.map((url) => {
               if (url.key === keyValue) {
                 return {
                   ...url,
@@ -1455,9 +1453,9 @@ function PlaceHolderSign() {
         (data) => data.pageNumber === pageNumber
       );
       if (getPageNumer.length > 0) {
-        const getXYdata = getPageNumer[0].pos;
-        const getPosData = getXYdata;
-        const addSignPos = getPosData.map((position) => {
+        const textSize = fontSize || currWidgetsDetails?.options?.fontSize;
+        const textColor = fontColor || currWidgetsDetails?.options?.fontColor;
+        const addSignPos = getPageNumer?.[0]?.pos?.map((position) => {
           if (position.key === currWidgetsDetails?.key) {
             if (currWidgetsDetails?.type === radioButtonWidget) {
               if (addOption) {
@@ -1486,12 +1484,8 @@ function PlaceHolderSign() {
                     isReadOnly: isReadOnly || false,
                     isHideLabel: isHideLabel || false,
                     defaultValue: defaultValue,
-                    fontSize:
-                      fontSize || currWidgetsDetails?.options?.fontSize || 12,
-                    fontColor:
-                      fontColor ||
-                      currWidgetsDetails?.options?.fontColor ||
-                      "black"
+                    fontSize: textSize || 12,
+                    fontColor: textColor || "black"
                   }
                 };
               }
@@ -1525,12 +1519,8 @@ function PlaceHolderSign() {
                     layout: layout,
                     isReadOnly: isReadOnly || false,
                     isHideLabel: isHideLabel || false,
-                    fontSize:
-                      fontSize || currWidgetsDetails?.options?.fontSize || 12,
-                    fontColor:
-                      fontColor ||
-                      currWidgetsDetails?.options?.fontColor ||
-                      "black"
+                    fontSize: textSize || 12,
+                    fontColor: textColor || "black"
                   }
                 };
               }
@@ -1543,12 +1533,8 @@ function PlaceHolderSign() {
                   status: status,
                   values: dropdownOptions,
                   defaultValue: defaultValue,
-                  fontSize:
-                    fontSize || currWidgetsDetails?.options?.fontSize || 12,
-                  fontColor:
-                    fontColor ||
-                    currWidgetsDetails?.options?.fontColor ||
-                    "black",
+                  fontSize: textSize || 12,
+                  fontColor: textColor || "black",
                   ...(isReadOnly ? { isReadOnly: isReadOnly || false } : {})
                 }
               };
@@ -1563,9 +1549,11 @@ function PlaceHolderSign() {
           }
           return obj;
         });
+        const recalculatedPlaceholders =
+          utils.applyNumberFormulasToPages(newUpdateSignPos);
         const newUpdateSigner = signerPos.map((obj) => {
           if (obj.Id === uniqueId) {
-            return { ...obj, placeHolder: newUpdateSignPos };
+            return { ...obj, placeHolder: recalculatedPlaceholders };
           }
           return obj;
         });
@@ -1597,9 +1585,9 @@ function PlaceHolderSign() {
       );
 
       if (getPageNumer.length > 0) {
-        const getXYdata = getPageNumer[0].pos;
-        const getPosData = getXYdata;
-        const addSignPos = getPosData.map((position) => {
+        const textSize = fontSize || currWidgetsDetails?.options?.fontSize;
+        const textColor = fontColor || currWidgetsDetails?.options?.fontColor;
+        const addSignPos = getPageNumer?.[0]?.pos?.map((position) => {
           if (position.key === currWidgetsDetails?.key) {
             if (position.type === textInputWidget) {
               return {
@@ -1612,12 +1600,8 @@ function PlaceHolderSign() {
                   defaultValue: defaultdata?.defaultValue || "",
                   validation:
                         {},
-                  fontSize:
-                    fontSize || currWidgetsDetails?.options?.fontSize || 12,
-                  fontColor:
-                    fontColor ||
-                    currWidgetsDetails?.options?.fontColor ||
-                    "black",
+                  fontSize: textSize || 12,
+                  fontColor: textColor || "black",
                   isReadOnly: defaultdata?.isReadOnly || false
                 }
               };
@@ -1636,16 +1620,13 @@ function PlaceHolderSign() {
                   ),
                   validation:
                         {},
-                  fontSize:
-                    fontSize || currWidgetsDetails?.options?.fontSize || 12,
-                  fontColor:
-                    fontColor ||
-                    currWidgetsDetails?.options?.fontColor ||
-                    "black",
+                  fontSize: textSize || 12,
+                  fontColor: textColor || "black",
                   isReadOnly: defaultdata?.isReadOnly || false
                 }
               };
-            } else if (["signature"].includes(position.type)) {
+            }
+            else if (["signature"].includes(position.type)) {
               return {
                 ...position,
                 options: {
@@ -1663,12 +1644,8 @@ function PlaceHolderSign() {
                   status: defaultdata.status,
                   defaultValue: defaultdata.defaultValue,
                   hint: defaultdata?.hint || "",
-                  fontSize:
-                    fontSize || currWidgetsDetails?.options?.fontSize || 12,
-                  fontColor:
-                    fontColor ||
-                    currWidgetsDetails?.options?.fontColor ||
-                    "black"
+                  fontSize: textSize || 12,
+                  fontColor: textColor || "black"
                 }
               };
             }
@@ -2535,6 +2512,8 @@ function PlaceHolderSign() {
         fontColor={fontColor}
         setFontColor={setFontColor}
         roleName={roleName}
+        widgetsSource={signerPos}
+        activeSignerId={uniqueId}
       />
       <RotateAlert
         showRotateAlert={showRotateAlert.status}

@@ -31,7 +31,6 @@ function EmailComponent({
     setIsLoading(true);
     const params = { docId: pdfDetails?.[0]?.objectId, recipients: emailList };
     const sendmail = await Parse.Cloud.run("forwarddoc", params);
-    console.log("sendmail ", sendmail);
     if (sendmail?.status === "success") {
       setSuccessEmail(true);
       setIsEmail(false);

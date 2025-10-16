@@ -1,4 +1,4 @@
-import { useEffect, useState, forwardRef } from "react";
+import { useEffect, useMemo, useState, forwardRef } from "react";
 import {
   getMonth,
   getYear,
@@ -10,7 +10,8 @@ import {
   years,
   selectCheckbox,
   checkRegularExpress,
-  isBase64
+  isBase64,
+  getSignerPages
 } from "../../constant/Utils";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -19,6 +20,7 @@ import { useTranslation } from "react-i18next";
 import CellsWidget from "./CellsWidget";
 import { useSelector } from "react-redux";
 import Loader from "../../primitives/Loader";
+
 const textWidgetCls =
   "w-full h-full md:min-w-full md:min-h-full z-[999] text-[12px] overflow-hidden resize-none outline-none text-base-content item-center whitespace-pre-wrap";
 const widgetCls =
@@ -65,18 +67,21 @@ function PlaceholderType(props) {
             props?.pos?.options?.defaultValue ||
             []
         );
-      } else {
+      }
+      else {
         // keep displayed value in sync with the stored response
         setwidgetValue(widgetData);
       }
       if (props.pos?.options?.hint) {
         setHint(props.pos?.options.hint);
       } else if (props.pos?.options?.validation?.type) {
-        checkRegularExpress(props.pos?.options?.validation?.type, setHint);
+          checkRegularExpress(props.pos?.options?.validation?.type, setHint);
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [props.pos]);
+  }, [props.pos, widgetData, type]);
+
+
   const ExampleCustomInput = forwardRef(({ value, onClick }, ref) => (
     <div
       style={{
