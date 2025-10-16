@@ -209,6 +209,16 @@ Even if a certificate becomes invalid in the future, the LTV-enabled signature r
 - Long-term archiving requirements
 
 ---
+### **Merge Certificate to PDF**
+
+You can access this option by navigating to **Settings → Preferences**.
+
+**Yes:** Selecting **Yes** will attach the completion certificate directly to the signed document, creating a single combined PDF file.  
+Please note that once merged, the certificate cannot be separated from the main document.  
+
+**No:** Selecting **No** will keep the completion certificate as a separate PDF file, which will be downloaded along with the signed document.  
+
+> **Note:** This feature is available only in the **paid plans** of OpenSign.
 
 ## 📧 Email Templates
 
