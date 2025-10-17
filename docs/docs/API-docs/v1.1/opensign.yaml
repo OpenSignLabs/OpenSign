@@ -578,6 +578,7 @@ paths:
             "required": true,
             "default": 0,
             "formula": "",
+            "decimalplaces": 2,
             "color": "black",
             "fontsize": 12
           }
@@ -585,6 +586,7 @@ paths:
         ```
         - **formula:** Compute the value from other number widgets using +, -, *, /, (, ). Reference widgets by their name in double curly braces, e.g. {{quantity}} * {{rate}}. to know more [visit here](https://docs.opensignlabs.com/docs/help/New-Document/widgets) (optional).
         - **default:** Provide a default number (Optional).
+        - **decimalplaces:** Number of digits to display after the decimal point. e.g: 2 => 12.00, 0 => 12 (default 2)
       operationId: selfsign
       requestBody:
         content:
@@ -927,6 +929,7 @@ paths:
             "default": 0,
             "hint": "Enter number",
             "formula": "",
+            "decimalplaces": 2,
             "color": "black",
             "fontsize": 12
           }
@@ -936,7 +939,7 @@ paths:
         - **default:** Provide a default number (Optional).
         - **hint:** Provide a hint for the number (Optional).
         - **readonly:** Set to true if you want to set the textbox as readonly. By default, it's false.
-        
+        - **decimalplaces:** Number of digits to display after the decimal point. e.g: 2 => 12.00, 0 => 12 (default 2)
         
         **Prefill Widgets:** Prefill widgets are elements that are inserted into a document **before** it is shared with a user. Only the document creator has permission to add them.
         
@@ -1403,6 +1406,7 @@ paths:
             "default": 0,
             "hint": "Enter number",
             "formula": "",
+            "decimalplaces": 2,
             "color": "black",
             "fontsize": 12
           }
@@ -1412,6 +1416,7 @@ paths:
         - **default:** Provide a default number (Optional).
         - **hint:** Provide a hint for the number (Optional).
         - **readonly:** Set to true if you want to set the textbox as readonly. By default, it's false.
+        - **decimalplaces:** Number of digits to display after the decimal point. e.g: 2 => 12.00, 0 => 12 (default 2)
         
         **Prefill Widgets:** Prefill widgets are elements that are inserted into a document **before** it is shared with a user. Only the document creator has permission to add them.
         
@@ -1662,7 +1667,7 @@ paths:
           "name": "number",
           "readonly": false,
           "default": 0,
-          "formula": ""
+          "formula": "",
         }
         ```
         
@@ -2400,6 +2405,7 @@ paths:
             "default": 0,
             "hint": "Enter number",
             "formula": "",
+            "decimalplaces": 2,
             "color": "black",
             "fontsize": 12
           }
@@ -2409,6 +2415,7 @@ paths:
         - **default:** Provide a default number (Optional).
         - **hint:** Provide a hint for the number (Optional).
         - **readonly:** Set to true if you want to set the textbox as readonly. By default, it's false.
+        - **decimalplaces:** Number of digits to display after the decimal point. e.g: 2 => 12.00, 0 => 12 (default 2)
         
         
         **Prefill Widgets:** Prefill widgets are elements that are inserted into a document **before** it is shared with a user. Only the document creator has permission to add them.
@@ -2897,6 +2904,7 @@ paths:
             "default": 0,
             "hint": "Enter number",
             "formula": "",
+            "decimalplaces": 2,
             "color": "black",
             "fontsize": 12
           }
@@ -2906,6 +2914,7 @@ paths:
         - **default:** Provide a default number (Optional).
         - **hint:** Provide a hint for the number (Optional).
         - **readonly:** Set to true if you want to set the textbox as readonly. By default, it's false.
+        - **decimalplaces:** Number of digits to display after the decimal point. e.g: 2 => 12.00, 0 => 12 (default 2)
         
         
         **Prefill Widgets:** Prefill widgets are elements that are inserted into a document **before** it is shared with a user. Only the document creator has permission to add them.
@@ -3393,6 +3402,7 @@ paths:
             "default": 0,
             "hint": "Enter number",
             "formula": "",
+            "decimalplaces": 2,
             "color": "black",
             "fontsize": 12
           }
@@ -3402,6 +3412,7 @@ paths:
         - **default:** Provide a default number (Optional).
         - **hint:** Provide a hint for the number (Optional).
         - **readonly:** Set to true if you want to set the textbox as readonly. By default, it's false.
+        - **decimalplaces:** Number of digits to display after the decimal point. e.g: 2 => 12.00, 0 => 12 (default 2)
         
         
         **Prefill Widgets:** Prefill widgets are elements that are inserted into a document **before** it is shared with a user. Only the document creator has permission to add them.
