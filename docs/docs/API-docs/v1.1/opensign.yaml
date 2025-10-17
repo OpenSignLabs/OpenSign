@@ -1668,6 +1668,7 @@ paths:
           "readonly": false,
           "default": 0,
           "formula": "",
+          "decimalplaces": 2
         }
         ```
         
