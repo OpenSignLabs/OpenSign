@@ -1,5 +1,7 @@
 # Use an official Node runtime as the base image
-FROM node:22.14.0
+# Use architecture-specific base image for arm64
+ARG TARGETARCH
+FROM ${TARGETARCH}node:22.14.0
 
 # Set the working directory inside the container
 WORKDIR /usr/src/app

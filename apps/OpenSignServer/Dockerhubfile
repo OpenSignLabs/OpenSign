@@ -1,6 +1,6 @@
 # Use an official Node runtime as the base image
-FROM node:22.14.0
-
+ARG TARGETARCH
+FROM ${TARGETARCH}node:22.14.0
 
 # Install LibreOffice for DOCX to PDF conversions
 RUN apt-get update \
