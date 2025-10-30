@@ -25,3 +25,35 @@ OpenSign™ lets you polish your PDF before you send it out—whether you’re s
 
 - **Rotate Page**  
   Options are provided to **rotate pages** in both **clockwise** and **counterclockwise** directions.
+
+## Prefill widgets
+
+Simply select the Prefill by Owner option from the right-side panel to view all available prefill widgets. Choose the desired widget and drag it into your document.
+The Prefill Widgets feature allows document creators to enter specific information in advance before sending a document for signatures. This helps ensure that essential details — such as names, dates, emails, images, checkboxes, radio buttons, or custom text — are already filled in when recipients receive the document. Prefilled data remains locked and cannot be modified by signers.
+
+<img width="800" alt="Prfill" src="https://github.com/user-attachments/assets/4794b2a9-acc0-4ef8-8110-076f0d90cc57" />
+
+---
+
+**🛠️ How It Works**
+1. **Add Widgets to the Document**  
+   - Open the right-side panel, select **Prefill Widgets**, then drag and drop the required widgets (Text, Date, Checkbox, Dropdown, Image, etc.) onto the document.  
+
+2. **Enter Prefill Value**  
+   - Provide the default value (e.g., *"Company: OpenSign Labs"*, *Date: 30/09/2025*).  
+   - For option-based widgets (Dropdown, Radio, Checkbox), choose the option to be prefilled.  
+
+**📋 Supported Widgets for Prefill**
+- **Text Field** – Names, job titles, company names, contract IDs  
+- **Date Field** – Default signing date or contract start date  
+- **Dropdown** – Preselect an option  
+- **Radio Button** – Prefill with a selected choice  
+- **Checkbox** – Prefill as checked or unchecked  
+- **Image** – Insert a default image (e.g., logo or stamp)
+
+## Add Widgets for Signers
+Select the desired signer from the right-side panel, then drag and drop the widget onto the document.
+
+📘 Learn more about [adding widgets for signers.](https://docs.opensignlabs.com/docs/help/New-Document/request-signatures/#add-widgets-for-signers)
+
+
