@@ -3,7 +3,7 @@ sidebar_position: 3
 title: Widgets in OpenSign
 ---
 
-# 🧩 Understanding Widgets in OpenSign
+# 🧩 Understanding the Number Widget
 
 Widgets in **OpenSign** are interactive fields that you can place on your documents to collect information, signatures, or confirmations from recipients during the signing process.  
 
