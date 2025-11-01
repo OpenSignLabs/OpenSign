@@ -61,20 +61,28 @@ let mailgunDomain;
 let isMailAdapter = false;
 if (smtpenable) {
   try {
-    transporterMail = createTransport({
+    let transporterConfig = {
       host: process.env.SMTP_HOST,
       port: process.env.SMTP_PORT || 465,
       secure: smtpsecure,
-      auth: {
+    };
+
+    // ✅ Add auth only if BOTH username & password exist
+    const smtpUser = process.env.SMTP_USERNAME;
+    const smtpPass = process.env.SMTP_PASS;
+
+    if (smtpUser && smtpPass) {
+      transporterConfig.auth = {
         user: process.env.SMTP_USERNAME ? process.env.SMTP_USERNAME : process.env.SMTP_USER_EMAIL,
-        pass: process.env.SMTP_PASS,
-      },
-    });
+        pass: smtpPass,
+      };
+    }
+    transporterMail = createTransport(transporterConfig);
     await transporterMail.verify();
     isMailAdapter = true;
   } catch (err) {
     isMailAdapter = false;
-    console.log('Please provide valid SMTP credentials');
+    console.log(`Please provide valid SMTP credentials: ${err}`);
   }
 } else if (process.env.MAILGUN_API_KEY) {
   try {
