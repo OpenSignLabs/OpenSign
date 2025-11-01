@@ -12,15 +12,23 @@ async function sendMailProvider(req, plan, monthchange) {
     let mailgunClient;
     let mailgunDomain;
     if (smtpenable) {
-      transporterSMTP = createTransport({
+      let transporterConfig = {
         host: process.env.SMTP_HOST,
         port: process.env.SMTP_PORT || 465,
         secure: smtpsecure,
-        auth: {
+      };
+
+      // ✅ Add auth only if BOTH username & password exist
+      const smtpUser = process.env.SMTP_USERNAME;
+      const smtpPass = process.env.SMTP_PASS;
+
+      if (smtpUser && smtpPass) {
+        transporterConfig.auth = {
           user: process.env.SMTP_USERNAME ? process.env.SMTP_USERNAME : process.env.SMTP_USER_EMAIL,
-          pass: process.env.SMTP_PASS,
-        },
-      });
+          pass: smtpPass,
+        };
+      }
+      transporterSMTP = createTransport(transporterConfig);
     } else {
       if (mailgunApiKey) {
         const mailgun = new Mailgun(formData);
@@ -185,7 +193,7 @@ async function sendMailProvider(req, plan, monthchange) {
           }
         }
       } catch (err) {
-        console.log('err in sendmailv3', err);
+        console.log(`Error in sendmailv3: ${err}`);
         if (fs.existsSync(testPdf)) {
           try {
             fs.unlinkSync(testPdf);
@@ -236,7 +244,7 @@ async function sendMailProvider(req, plan, monthchange) {
       }
     }
   } catch (err) {
-    console.log('err in sendmailv3', err);
+    console.log(`Error in sendmailv3: ${err}`);
     if (err) {
       return { status: 'error' };
     }
