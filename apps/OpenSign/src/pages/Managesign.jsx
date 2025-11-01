@@ -46,10 +46,9 @@ const ManageSign = () => {
         objectId: User.id
       };
       try {
-        const signCls = "contracts_Signature";
-        const signQuery = new Parse.Query(signCls);
-        signQuery.equalTo("UserId", userId);
-        const signRes = await signQuery.first();
+        const signRes = await Parse.Cloud.run("getdefaultsignature", {
+          userId: User.id
+        });
         if (signRes) {
           const res = signRes.toJSON();
           setId(res.objectId);
@@ -226,44 +225,23 @@ const ManageSign = () => {
   };
 
   const saveEntry = async (obj) => {
-    const signCls = "contracts_Signature";
-    const User = Parse?.User?.current()?.id;
-    const userId = { __type: "Pointer", className: "_User", objectId: User };
-    if (id) {
-      try {
-        const updateSign = new Parse.Object(signCls);
-        updateSign.id = id;
-        updateSign.set("Initials", obj.initialsUrl ? obj.initialsUrl : "");
-        updateSign.set("ImageURL", obj.url ? obj.url : "");
-        updateSign.set("SignatureName", obj.name);
-        updateSign.set("UserId", userId);
-        const res = await updateSign.save();
-        setIsAlert({ type: "success", message: t("signature-saved-alert") });
-        return res;
-      } catch (err) {
-        console.log(err);
-        setIsAlert({ type: "danger", message: `${err.message}` });
-      } finally {
-        setIsLoader(false);
-        setTimeout(() => setIsAlert({}), 2000);
-      }
-    } else {
-      try {
-        const updateSign = new Parse.Object(signCls);
-        updateSign.set("Initials", obj.initialsUrl ? obj.initialsUrl : "");
-        updateSign.set("ImageURL", obj.url);
-        updateSign.set("SignatureName", obj.name);
-        updateSign.set("UserId", userId);
-        const res = await updateSign.save();
-        setIsAlert({ type: "success", message: t("signature-saved-alert") });
-        return res;
-      } catch (err) {
-        console.log(err);
-        setIsAlert({ type: "success", message: `${err.message}` });
-      } finally {
-        setIsLoader(false);
-        setTimeout(() => setIsAlert({}), 2000);
-      }
+    try {
+      const User = Parse?.User?.current()?.id;
+      const res = await Parse.Cloud.run("managesign", {
+        signature: obj.url,
+        userId: User,
+        initials: obj.initialsUrl,
+        id: id,
+        title: obj.name
+      });
+      setIsAlert({ type: "success", message: t("signature-saved-alert") });
+      return res;
+    } catch (err) {
+      console.log(err);
+      setIsAlert({ type: "danger", message: `${err.message}` });
+    } finally {
+      setIsLoader(false);
+      setTimeout(() => setIsAlert({}), 2000);
     }
   };
 

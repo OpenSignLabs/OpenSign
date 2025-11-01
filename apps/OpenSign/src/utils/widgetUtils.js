@@ -16,22 +16,20 @@ export const saveToMySign = async (widget) => {
           : `${replaceSpace}__initials`;
       const file = base64StringtoFile(base64, fileName);
       const fileUrl = await uploadFile(file, User?.id);
-      // below code is used to save or update default signature, initials, stamp
-      const signCls = new Parse.Object("contracts_Signature");
-      if (widget?.defaultSignId) {
-        signCls.id = widget.defaultSignId;
-      }
+      const params = {
+        id: widget?.defaultSignId, // pass id to update existing signature/initials
+        userId: User.id
+      };
       if (widget?.type === "initials") {
-        signCls.set("Initials", fileUrl);
+        params.initials = fileUrl; // save initials image url
       } else if (widget?.type === "signature") {
-        signCls.set("ImageURL", fileUrl);
+        params.signature = fileUrl; // save signature image url
       }
-      signCls.set("UserId", Parse.User.createWithoutData(User.id));
-      const signRes = await signCls.save();
+      const signRes = await Parse.Cloud.run("savesignature", params);
       return { base64File: base64, id: signRes?.id };
     } catch (err) {
       console.log("Err while saving signature", err);
-      return url;
+      return err;
     }
   }
 };
