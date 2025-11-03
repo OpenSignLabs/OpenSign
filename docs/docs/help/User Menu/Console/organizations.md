@@ -1,3 +1,8 @@
+---
+sidebar_position: 7
+title: Preferences
+---
+
 # 🏢 Organizations
 
 The **Organizations** section allows administrators to manage company or team entities within **OpenSign**.  
