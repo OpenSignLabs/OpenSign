@@ -6,7 +6,7 @@ title: Org Admins
 # 👥 Org Admins
 
 The **Org Admins** section allows administrators to manage organization-level admin users within **OpenSign**.  
-Org Admins are responsible for managing users, templates, and signing workflows for their assigned organizations.
+Org Admins are responsible for managing users, templates, and signing workflows for their organizations.
 
 ---
 
