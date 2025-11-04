@@ -79,6 +79,7 @@ In some cases, documents stored in your **custom (BYOC)** file storage may not l
 If you’ve activated custom file storage, ensure your cloud configuration **allows OpenSign to access your documents** and does **not block requests** due to CORS errors.
 
 👉 [Read the article to learn how to set up CORS policies](https://docs.opensignlabs.com/docs/self-host/cloud-storage/s3)
+
 ---
 
 ## 💬 Need Help?
