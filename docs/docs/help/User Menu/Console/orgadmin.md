@@ -83,14 +83,14 @@ If you’ve reached your seat limit, you can buy more user seats to add addition
 2. The **Add Seats** popup will appear.
 
 
-### 🧾 Add Seats Fields
+### 🧾 Add Seats
 
 - **Quantity of users** — Enter the number of additional seats you want to purchase. *(Required)*  
 - **Price** — Automatically calculated based on the number of users selected (e.g., `1 * 20 = $ 20`).  
 
 Click **Proceed** to continue with the purchase.
 
-### 💬 Help Text for Add Seats Popup
+### Add Seats
 
 > - The price updates automatically based on the number of seats entered.  
 > - Once payment is successful, your **Available Seats** count updates in real-time.  
