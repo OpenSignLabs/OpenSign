@@ -43,6 +43,7 @@ Follow these steps to set up your custom signing certificate:
 If you wish to revert to the standard OpenSign certificate:
 - Simply click **Use default OpenSign™ certificate**.  
 - OpenSign will replace your custom certificate with its default one.
+<img width="861" height="408" alt="pfx_Certificate" src="https://github.com/user-attachments/assets/9063d927-c28f-4bb5-ac36-caeebc3845fc" />
 
 ---
 
