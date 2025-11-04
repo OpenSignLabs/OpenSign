@@ -71,4 +71,6 @@ The **Organizations table** lists all existing organizations with the following 
 > ⚠️ **Note:** Deactivating an organization disables all its associated users and workflows until it is reactivated.
 
 ---
+If you require more help, feel free to reach out to our customer support on support@opensignlabs.com.
 
+Happy signing with OpenSign™!
