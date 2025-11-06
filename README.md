@@ -101,6 +101,38 @@ Please refer to the [Installation Guide](https://docs.opensignlabs.com/docs/self
 
 ---
 
+### Local Development (Maildev)
+
+For local development and testing, OpenSign supports a Maildev SMTP server for safe email testing. This is enabled automatically by the included `docker-compose.override.yml` and `.env.local_dev` files.
+
+**Quick start:**
+```bash
+docker compose up
+```
+- This will start the app, MongoDB, and Maildev (web UI at http://localhost:1080).
+- All emails (password reset, verification, etc.) will appear in the Maildev UI and are never sent to real addresses.
+- The server and client containers will use `.env.local_dev` for configuration.
+
+**To build from local source (for contributors):**
+Uncomment the `build:` blocks in `docker-compose.override.yml` for `server` and `client`, then run:
+```bash
+docker compose up --build
+```
+
+**Environment switching:**
+- For production, use `.env.prod` and do not use the override file.
+- For local dev, use `.env.local_dev` and the override (default behavior).
+
+---
+
+### Production/CI
+
+- For production deployments, use the published images and `.env.prod` with real SMTP or Mailgun credentials.
+- Do not include the `maildev` service or override file in production.
+- See the [Installation Guide](https://docs.opensignlabs.com/docs/self-host/docker/run-locally/) for more details.
+
+---
+
 ### Usage
 
 For comprehensive guidelines on how to use OpenSign™, please consult our [User Manual](USAGE.md).
