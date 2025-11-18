@@ -50,8 +50,16 @@ When this option is enabled, user's public profiles will be indexed by search en
 
 This setting determines whether team members can create and manage their own email templates.
 
-- If **disabled**, users **cannot** create or modify custom templates for signature requests or completion notifications. 
-- If **enabled**, users can design and manage their own personalized email templates.
+- If **Disabled**: users **cannot** create or modify custom templates for signature requests or completion notifications. 
+- If **Enabled**: users can design and manage their own personalized email templates.
+  
+### Enable Individual User SMTP Settings
+
+This setting controls whether individual users are allowed to configure their own outgoing email servers (like connecting Gmail or using a custom SMTP).
+If **Disabled**: Users CANNOT connect Gmail or configure custom SMTP at their level.
+If **Enabled**: Users CAN connect Gmail or configure custom SMTP at their level.
+
+Note: If users do not configure their own settings, all outgoing emails will be sent using the organization-level SMTP (if configured), or the OpenSign default SMTP if not.
 
 ---
 
