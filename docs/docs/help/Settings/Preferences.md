@@ -115,53 +115,98 @@ The tour feature provides guidance for first-time users. You can turn this off f
 ---
 ### 📧 Custom SMTP Configuration in OpenSign
 
-OpenSign allows users to **send emails using their own SMTP configuration**. This includes options to connect with Gmail or use third-party SMTP providers.
-
-To set up and enable custom SMTP:
-
-1. Navigate to the **Settings** menu.
-2. Click on **Preferences**.
-3. Choose one of the available SMTP options below:
+OpenSign allows users to **send emails using their own SMTP settings**, including Gmail integration or third-party SMTP providers.  
+OpenSign now supports SMTP configuration at both the **organization level** and the **individual user level**.
 
 ---
 
-#### 🔗 Connect to Gmail
+## 🏢 SMTP at the Organization Level
 
-OpenSign allows you to send request signature emails directly from your **Gmail account**.
+Configure SMTP at the organization level to send all outgoing emails—such as request-signature and completion emails—using a company-configured SMTP server.  
+When enabled, these settings apply to all users **unless individual SMTP customization is allowed and set up by the user**.
 
-- Click the **Connect to Gmail** button.
-- A popup will appear prompting you to log in to your Gmail account.
-- Grant the required permissions.
-- Once authorized, your OpenSign account will be connected and ready to send emails using your Gmail.
+### How to Set Up SMTP at the Organization Level
+
+Admins can manage and enforce SMTP settings across the entire platform.
+
+**Step 1:** Open the profile menu and select **Console Application** to access the admin console.  
+**Step 2:** In the Console, navigate to the **Global SMTP** section and configure your SMTP settings.
+
+All users under your organization will automatically use the organization-level SMTP **unless** they are allowed to configure their own SMTP settings.
+
+<img width="861" height="409" alt="Global SMTP" src="https://github.com/user-attachments/assets/fe9dc091-59dd-47f9-992a-811cecaac2f3" />
+
+**Example:**  
+Adam, the administrator, disables **Enable individual user SMTP settings** under **Console → General**.  
+As a result, Ursula cannot configure her own SMTP.
+
+When Ursula sends a document to Sofia for signing, Sofia receives emails sent through the **organization-level SMTP**.  
+If Adam enables **Enable individual user SMTP settings**, but Ursula does not configure her own SMTP, emails will still be sent using the **organization-level SMTP**.
+
+> **Note:** Organization-level SMTP configuration is available **only on Paid plans** and is not included in **Free** plans.
+
+### 🔗 Connect to Gmail
+
+Send request-signature emails directly from your **Gmail account**.
+
+- Click **Connect to Gmail**  
+- A popup will appear prompting you to sign in  
+- Grant the required access permissions  
+- Once authorized, OpenSign will send emails using your Gmail account
 
 ---
 
-#### ⚙️ Custom SMTP
+### ⚙️ Custom SMTP
 
-You can also configure a **custom SMTP provider** such as SMTP2GO, Mailgun, etc.
+Configure any third-party SMTP provider such as SMTP2GO or Mailgun.
 
-- Click the **Custom SMTP** button.
-- A popup will appear asking for your SMTP credentials:
-  - **Host:** SMTP host address (e.g., `mail.smtp2go.com`)
-  - **Port:** SMTP port (e.g., `2525`)
-  - **Sender Email:** Email address configured in your SMTP account
-  - **Username:** SMTP username (can be the same as the sender email)
-  - **Password:** SMTP password
+- Click **Custom SMTP**  
+- A popup will appear asking for your SMTP details:  
+  - **Host:** SMTP server host (e.g., `mail.smtp2go.com`)  
+  - **Port:** SMTP port (e.g., `2525`)  
+  - **Sender Email:** Email address configured in your SMTP account  
+  - **Username:** SMTP username  
+  - **Password:** SMTP password  
 
 <img width="820" alt="Custom smtp" src="https://github.com/user-attachments/assets/a3c33510-11b9-4a32-bd44-99614182b089"></img>
 
 ---
 
-#### 📤 OpenSign™ Default SMTP
+### 📤 OpenSign™ Default SMTP
 
-If you choose the **default SMTP**, all request signature emails will be sent via OpenSign’s built-in SMTP server.
+If selected, all request-signature and completion emails will be sent using OpenSign’s built-in SMTP server.
 
 ---
 
-> ⚠️ **Note:**
-> - A green checkmark next to an option indicates the **currently active SMTP**.
-> - **Only one SMTP option can be active at a time.**
-> - This feature is available only on paid plans.
+## 👤 SMTP at the User Level
+
+Users can configure their own SMTP settings to send request-signature and completion emails using their personal mailbox.
+These user-level settings will override the organization-level SMTP only if the admin has **enabled individual SMTP customization** under Console → General.
+
+Use this option if you prefer sending emails directly from your own email address.
+
+### To set up and enable user-level SMTP:
+
+1. Go to **Settings**  
+2. Select **Preferences**  
+3. Choose one of the available SMTP options.
+   
+Once a user selects and configures any SMTP option, all emails will be sent using the user-level SMTP.
+
+<img width="861" height="409" alt="smtp at user level" src="https://github.com/user-attachments/assets/27c459f3-5ae6-41e8-966d-43785e67f192" />
+
+---
+If the user does not configure any SMTP option, emails will be sent using the organization-level SMTP (when it is enabled by the admin).
+If the admin has configured a company-level SMTP, and the user has not set up their own SMTP, the user will still be connected to the default OpenSign SMTP, but all outgoing emails will be delivered using the organization-level SMTP.
+
+---
+
+> ⚠️ **Notes:**  
+> - A green checkmark indicates the **active SMTP option**.  
+> - Only one SMTP option can be active at a time.  
+> - User-level SMTP is available only when permitted by the admin.  
+> - Some SMTP features are limited to **Paid plans**.
+
 
   ---
 ## 🧭 Timezone & Date Format
@@ -220,14 +265,48 @@ Please note that once merged, the certificate cannot be separated from the main 
 
 > **Note:** This feature is available only in the **paid plans** of OpenSign.
 
-## 📧 Email Templates
+## 🔄 Multi-Level Custom Email Templates
 
-In the **Preferences > Email** tab, users can customize email templates to personalize communication with signers and stakeholders.  
-This feature helps maintain brand consistency and enhances engagement throughout the signing workflow.
+**OpenSign™** offers flexible control over email templates at two different levels:
 
-👉 [📄 Step-by-step guide to setting up custom email templates](https://docs.opensignlabs.com/docs/help/Settings/Custom-email-templates)
+---
 
-**Note:** The custom email templates feature is only available on the **Professional** and higher plans—it is not included in the **Free** plan.
+### 🏢 Organization Level
+
+Admins can manage and enforce standardized email templates across the entire platform.
+
+**Step 1:** Open the profile menu and select **Console Application** to access the admin console.  
+**Step 2:** Once the Console Application opens, go to the **Mail** section. Here, administrators can configure email templates at the organization level.
+
+All users created under your organization will automatically use these templates for sending request-signature and document completion emails **unless** they have permission to create templates at the individual level or have customized their own templates.
+
+**Example:**  
+Adam, the administrator of your company account, disables the **Allow email template customization for users individually** setting under **Console → General**. As a result, Ursula, a team member, cannot create or modify her own email templates.
+
+When Ursula sends a document to Sofia for signing, Sofia will receive the organization-level email template.  
+If Adam enables **Allow email template customization for users individually** but Ursula does not set up her own template, the signers will still receive emails based on the organization-level template.
+
+**Note:** Organization-level email management is available only on **Paid** plans. This feature is **not** included in **Free** plans.
+
+<img width="861" height="409" alt="Email_templates" src="https://github.com/user-attachments/assets/0b15e356-cfba-46d5-9e97-c73d32b879f4" />
+
+---
+
+### 👤 User Level
+
+Users can configure their own email templates by navigating to **Settings → Preferences**.
+
+If a user sets up templates here, those templates will be used for sending request-signature emails and document-completion emails.
+
+<img width="861" height="480" alt="signatures" src="https://github.com/user-attachments/assets/dda05d4f-aa43-435d-bdb2-e68dca6f2b00" />
+
+**Note:** Customize email management is only available on **Paid** plans. This feature is not included in **Free** plans.
+
+### How Request-Signature and Completion Email Templates Work
+
+- If the admin enables **Allow email template customization for users individually** and the user sets up their own custom templates, then both **request-signature emails** and **completion emails** will be sent using the **user-level templates**.
+
+- If the user does **not** set up custom templates, and the admin has also **not** configured templates at the organization level, then the **default OpenSign templates** will be used.
 
 ---
 
