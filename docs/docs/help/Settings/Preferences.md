@@ -115,8 +115,12 @@ The tour feature provides guidance for first-time users. You can turn this off f
 ---
 ### 📧 Custom SMTP Configuration in OpenSign
 
-OpenSign allows users to **send emails using their own SMTP settings**, including Gmail integration or third-party SMTP providers.  
+OpenSign allows users to **send emails using their own SMTP settings**, including Gmail integration and third-party SMTP providers.
+
 OpenSign now supports SMTP configuration at both the **organization level** and the **individual user level**.
+
+To set up SMTP at the organization level, refer to the guide here:  
+https://docs.opensignlabs.com/docs/help/User%20Menu/Console/globalSMTP
 
 ## 👤 SMTP at the User Level
 
