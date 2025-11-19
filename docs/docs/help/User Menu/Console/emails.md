@@ -18,7 +18,7 @@ If you prefer not to grant users permission to set up their own email templates,
 
 <img width="800" alt="custom email templates" src="https://github.com/user-attachments/assets/b2fd3497-3e2b-4acc-b8a5-09bad8a5e5ba"></img>
 
-To set up SMTP at the user level, refer to the guide here:  
+To set up a custom email template at the user level, refer to the guide here:  
 https://docs.opensignlabs.com/docs/help/Settings/Custom-email-templates
 
 ---
