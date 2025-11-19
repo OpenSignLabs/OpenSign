@@ -1,6 +1,6 @@
 ---
 sidebar_position: 4
-title: Preferences
+title: Global SMTP
 ---
 
 ## 🏢 SMTP at the Organization Level
