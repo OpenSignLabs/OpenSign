@@ -1,6 +1,6 @@
 ---
 sidebar_position: 5
-title: Email Templates
+title: Mail
 ---
 
 # 📧 Company Email Template Settings
