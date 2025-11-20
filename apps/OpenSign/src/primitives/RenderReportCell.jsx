@@ -32,7 +32,8 @@ export const RenderReportCell = ({
   startIndex,
   handleDownload,
   handleRemovePrefill,
-  reportName
+  reportName,
+  handleItemClick
 }) => {
   const { t } = useTranslation();
   const appName =
@@ -59,7 +60,11 @@ export const RenderReportCell = ({
       );
     case "Reason":
       return (
-        <td key={col} className="p-2 text-center">
+        <td
+          key={col}
+          className="p-2 text-center cursor-pointer"
+          onClick={() => handleItemClick(col, rowData?.DeclineReason)}
+        >
           {rowData?.DeclineReason?.length > 25
             ? rowData?.DeclineReason?.slice(0, 25) + "..."
             : rowData?.DeclineReason || "-"}
@@ -68,7 +73,12 @@ export const RenderReportCell = ({
     case "Note":
       return (
         <td key={col} className="p-2 text-center">
-          <p className="truncate w-[100px]">{rowData?.Note || "-"}</p>
+          <p
+            className="truncate w-[100px] cursor-pointer"
+            onClick={() => handleItemClick(col, rowData?.Note)}
+          >
+            {rowData?.Note || "-"}
+          </p>
         </td>
       );
     case "Folder":

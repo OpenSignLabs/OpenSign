@@ -1,7 +1,6 @@
-import React, { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import ModalUi from "../../primitives/ModalUi";
 import RecipientList from "./RecipientList";
-import { useDrag } from "react-dnd";
 import WidgetList from "./WidgetList";
 import {
   isMobile,
@@ -11,106 +10,54 @@ import {
   textWidget,
   widgets
 } from "../../constant/Utils";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "react-i18next";  
+import { useWidgetDrag } from "../../hook/useWidgetDrag";
+
 function WidgetComponent(props) {
   const { t } = useTranslation();
   const signRef = useRef(null);
   const userInformation = localStorage.getItem("UserInformation");
   const [isSignersModal, setIsSignersModal] = useState(false);
-  const [, signature] = useDrag({
-    type: "BOX",
-    item: { type: "BOX", id: 1, text: "signature" }
-  });
-  const [, stamp] = useDrag({
-    type: "BOX",
-    item: { type: "BOX", id: 2, text: "stamp" }
-  });
-  const [, dropdown] = useDrag({
-    type: "BOX",
-    item: { type: "BOX", id: 5, text: "dropdown" }
-  });
-  const [, checkbox] = useDrag({
-    type: "BOX",
-    item: { type: "BOX", id: 6, text: "checkbox" }
-  });
-  const [, textInput] = useDrag({
-    type: "BOX",
-    item: { type: "BOX", id: 7, text: textInputWidget }
-  });
-  const [, cells] = useDrag({
-    type: "BOX",
-    item: { type: "BOX", id: 17, text: cellsWidget }
-  });
-  const [, initials] = useDrag({
-    type: "BOX",
-    item: { type: "BOX", id: 8, text: "initials" }
-  });
-  const [, name] = useDrag({
-    type: "BOX",
-    item: { type: "BOX", id: 9, text: "name" }
-  });
-  const [, company] = useDrag({
-    type: "BOX",
-    item: { type: "BOX", id: 10, text: "company" }
-  });
-  const [, jobTitle] = useDrag({
-    type: "BOX",
-    item: { type: "BOX", id: 11, text: "job title" }
-  });
-  const [, date] = useDrag({
-    type: "BOX",
-    item: { type: "BOX", id: 12, text: "date" }
-  });
-  const [, image] = useDrag({
-    type: "BOX",
-    item: { type: "BOX", id: 13, text: "image" }
-  });
-  const [, email] = useDrag({
-    type: "BOX",
-    item: { type: "BOX", id: 14, text: "email" }
-  });
-  const [, radioButton] = useDrag({
-    type: "BOX",
-    item: { type: "BOX", id: 15, text: radioButtonWidget }
-  });
-  const [, text] = useDrag({
-    type: "BOX",
-    item: { type: "BOX", id: 16, text: textWidget }
-  });
-  const [widget, setWidget] = useState([]);
+  // Define all draggable widget configurations
+  const draggableItems = [
+    { id: 1, text: "signature" },
+    { id: 2, text: "stamp" },
+    { id: 3, text: "initials" },
+    { id: 4, text: textInputWidget },
+    { id: 6, text: "name" },
+    { id: 7, text: "job title" },
+    { id: 8, text: "company" },
+    { id: 9, text: "email" },
+    { id: 10, text: "date" },
+    { id: 11, text: textWidget },
+    { id: 12, text: cellsWidget },
+    { id: 13, text: "checkbox" },
+    { id: 14, text: "dropdown" },
+    { id: 15, text: radioButtonWidget },
+    { id: 16, text: "image" }
+  ];
+
+  // Create all drag refs in one go
+  const widgetRefs = draggableItems.map((item) =>
+    useWidgetDrag({ type: "BOX", ...item })
+  );
+
+  // Map your widgets with the generated dragRefs
+  const [widgetList, setWidgetList] = useState([]);
   const handleModal = () => {
     setIsSignersModal(!isSignersModal);
   };
-
   useEffect(() => {
-    const widgetRef = [
-      signature,
-      stamp,
-      initials,
-      textInput,
-      name,
-      jobTitle,
-      company,
-      email,
-      date,
-      text,
-      cells,
-      checkbox,
-      dropdown,
-      radioButton,
-      image
-    ];
-    const getWidgetArray = widgets;
-    const newUpdateSigner = getWidgetArray.map((obj, ind) => {
-      return { ...obj, ref: widgetRef[ind] };
-    });
-
-    setWidget(newUpdateSigner);
+    const updated = widgets.map((obj, index) => ({
+      ...obj,
+      ref: widgetRefs[index]?.dragRef || null
+    }));
+    setWidgetList(updated);
     // eslint-disable-next-line
   }, []);
 
   // allow only (signature, stamp, initials, text, name, job title, company, email, cells) widget when isAllowModification true and user have session token
-  const modifiedWidgets = widget.filter(
+  const modifiedWidgets = widgetList.filter(
     (data) =>
       ![
         "dropdown",
@@ -122,7 +69,7 @@ function WidgetComponent(props) {
       ].includes(data.type)
   );
   // allow only (signature, stamp, initials, text, cells) widget when isAllowModification true and user does not have session token
-  const unlogedInUserWidgets = widget.filter(
+  const unlogedInUserWidgets = widgetList.filter(
     (data) =>
       ![
         "dropdown",
@@ -137,13 +84,13 @@ function WidgetComponent(props) {
         "company"
       ].includes(data.type)
   );
-  const selfSignWidgets = widget.filter(
+  const selfSignWidgets = widgetList.filter(
     (data) =>
       !["dropdown", radioButtonWidget, textInputWidget].includes(data.type)
   );
   //if user select prefill role then allow only date,image,text,checkbox,radio,dropdownAdd commentMore actions
   //dropdown widget should only be show in template flow
-  const prefillAllowWidgets = widget.filter((data) =>
+  const prefillAllowWidgets = widgetList.filter((data) =>
     (props.isPrefillDropdown ? ["dropdown"] : [])
       .concat([radioButtonWidget, textWidget, "date", "image", "checkbox"])
       .includes(data.type)
@@ -161,7 +108,7 @@ function WidgetComponent(props) {
         return unlogedInUserWidgets;
       }
     } else if (props?.roleName !== "prefill") {
-      return widget.filter((data) => ![textWidget].includes(data.type));
+      return widgetList.filter((data) => ![textWidget].includes(data.type));
     }
   };
   const handleSelectRecipient = () => {

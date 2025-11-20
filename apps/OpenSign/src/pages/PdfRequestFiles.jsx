@@ -3,7 +3,6 @@ import { PDFDocument } from "pdf-lib";
 import "../styles/signature.css";
 import Parse from "parse";
 import axios from "axios";
-import { useDrop } from "react-dnd";
 import { useDispatch, useSelector } from "react-redux";
 import RenderAllPdfPage from "../components/pdf/RenderAllPdfPage";
 import Tour from "../primitives/Tour";
@@ -49,7 +48,7 @@ import {
   widgetDataValue,
   getOriginalWH,
   handleCheckResponse,
-  convertJpegToPng,
+  convertJpegToPng
 } from "../constant/Utils";
 import Header from "../components/pdf/PdfHeader";
 import RenderPdf from "../components/pdf/RenderPdf";
@@ -156,16 +155,12 @@ function PdfRequestFiles(
   const [assignedWidgetId, setAssignedWidgetId] = useState([]);
   const [showSignPagenumber, setShowSignPagenumber] = useState([]);
   const [owner, setOwner] = useState({});
+  const [tenant, setTenant] = useState({});
   const [tenantMailTemplate, setTenantMailTemplate] = useState({
     body: "",
     subject: ""
   });
   const [isOptionalDetails, setIsOptionalDetails] = useState(false);
-  const [, drop] = useDrop({
-    accept: "BOX",
-    drop: (item, monitor) => addPositionOfSignature(item, monitor),
-    collect: (monitor) => ({ isOver: !!monitor.isOver() })
-  });
   const isMobile = window.innerWidth < 767;
   let isGuestSignFlow = false;
   let sendmail;
@@ -250,6 +245,7 @@ function PdfRequestFiles(
         const filterSignTypes = signatureType?.filter(
           (x) => x.enabled === true
         );
+        setTenant(tenantDetails || {});
         if (tenantDetails?.RequestBody) {
           setTenantMailTemplate({
             body: tenantDetails?.RequestBody,
@@ -340,7 +336,6 @@ function PdfRequestFiles(
         const getCurrentSigner = getSigners?.find(
           (data) => data.UserId.objectId === jsonSender?.objectId
         );
-
         currUserId = getCurrentSigner?.objectId
           ? getCurrentSigner.objectId
           : contactBookId ||
@@ -770,12 +765,16 @@ function PdfRequestFiles(
                     sendmail !== "false" &&
                     sendInOrder
                   ) {
+                    const mailBody =
+                          tenantMailTemplate?.body;
+                    const mailSubject =
+                          tenantMailTemplate?.subject;
                     const requestBody =
                       updatedDoc.updatedPdfDetails?.[0]?.RequestBody ||
-                      tenantMailTemplate?.body;
+                      mailBody;
                     const requestSubject =
                       updatedDoc.updatedPdfDetails?.[0]?.RequestSubject ||
-                      tenantMailTemplate?.subject;
+                      mailSubject;
                     if (user) {
                       const expireDate = expiry;
                       const newDate = new Date(expireDate);
@@ -1099,10 +1098,11 @@ function PdfRequestFiles(
     const userId =
       pdfDetails?.[0].Signers?.find((x) => x.objectId === signerObjectId)
         ?.UserId?.objectId || jsonSender?.objectId;
+
     const params = {
       docId: pdfDetails?.[0].objectId,
       reason: reason,
-      userId: userId
+      userId: userId,
     };
     await axios
       .post(`${localStorage.getItem("baseUrl")}functions/declinedoc`, params, {
@@ -1488,7 +1488,10 @@ function PdfRequestFiles(
       const widgetHeight =
         defaultWidthHeight(dragTypeValue).height * containerScale;
       const extUser = localStorage.getItem("Extand_Class");
-      const parseUser = extUser && JSON.parse(extUser)[0];
+      let parseUser =
+        (extUser && JSON.parse(extUser)[0]) ||
+        JSON.parse(localStorage.getItem("signer"));
+
       const widgetValue = widgetDataValue(dragTypeValue, parseUser);
       //adding and updating drop position in array when user drop signature button in div
       if (item === "onclick") {
@@ -1530,12 +1533,16 @@ function PdfRequestFiles(
         //`containerRect.top` The distance from the top of the viewport to the top of the element.
         const x = offset.x - containerRect.left;
         const y = offset.y - containerRect.top;
-        const getXPosition = signBtnPosition[0]
-          ? x - signBtnPosition[0].xPos
-          : x;
-        const getYPosition = signBtnPosition[0]
-          ? y - signBtnPosition[0].yPos
-          : y;
+        let getXPosition = signBtnPosition[0] ? x - signBtnPosition[0].xPos : x;
+        let getYPosition = signBtnPosition[0] ? y - signBtnPosition[0].yPos : y;
+        // to avoid negative position values (half portion of widget should not be out of pdf container)
+        if (getXPosition < 0) {
+          getXPosition = 0;
+        }
+        if (getYPosition < 0) {
+          getYPosition = 0;
+        }
+
         dropObj = {
           xPosition: getXPosition / (containerScale * scale),
           yPosition: getYPosition / (containerScale * scale),
@@ -1572,6 +1579,7 @@ function PdfRequestFiles(
         );
         const getPos = currentPagePosition?.pos;
         const newSignPos = getPos.concat(dropData);
+        newSignPos.sort((a, b) => a.yPosition - b.yPosition);
         let xyPos = { pageNumber: pageNumber, pos: newSignPos };
         updatePlace.push(xyPos);
         const updatesignerPos = signerPos.map((x) =>
@@ -1582,9 +1590,17 @@ function PdfRequestFiles(
         //else condition to add placeholder widgets on multiple page first time
         const updatesignerPos = signerPos.map((x) =>
           x.Id === uniqueId && x?.placeHolder
-            ? { ...x, placeHolder: [...x.placeHolder, placeHolder] }
+            ? {
+                ...x,
+                placeHolder: [...x.placeHolder, placeHolder].sort(
+                  (a, b) => a.pageNumber - b.pageNumber
+                )
+              }
             : x.Id === uniqueId
-              ? { ...x, placeHolder: [placeHolder] }
+              ? {
+                  ...x,
+                  placeHolder: [placeHolder]
+                }
               : x
         );
         setSignerPos(updatesignerPos);
@@ -2033,7 +2049,6 @@ function PdfRequestFiles(
                       {containerWH && (
                         <RenderPdf
                           setIsPageCopy={setIsPageCopy}
-                          drop={drop}
                           pageNumber={pageNumber}
                           pdfOriginalWH={pdfOriginalWH}
                           pdfNewWidth={pdfNewWidth}
@@ -2071,6 +2086,8 @@ function PdfRequestFiles(
                           setIsReqSignTourDisabled={handleCloseTour}
                           currWidgetsDetails={currWidgetsDetails}
                           isShowModal={isShowModal}
+                          signBtnPosition={signBtnPosition}
+                          addPositionOfSignature={addPositionOfSignature}
                         />
                       )}
                     </div>

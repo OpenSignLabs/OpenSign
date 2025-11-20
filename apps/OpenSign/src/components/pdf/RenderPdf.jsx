@@ -22,19 +22,25 @@ import { useDispatch, useSelector } from "react-redux";
 import Guidelines from "./Guidelines";
 import { useGuidelinesContext } from "../../context/GuidelinesContext";
 import { toggleSidebar } from "../../redux/reducers/sidebarReducer";
+import DragGuidelinesLayer from "./DragGridLinesLayer";
+import { useDrop } from "react-dnd";
+import WidgetsDragPreview from "./WidgetsDragPreview";
 
 function RenderPdf(props) {
   const { t } = useTranslation();
   const dispatch = useDispatch();
+  const [, drop] = useDrop({
+    accept: "BOX",
+    drop: (item, monitor) => props?.addPositionOfSignature(item, monitor)
+  });
   const [scaledHeight, setScaledHeight] = useState();
-  const { guideline } = useGuidelinesContext();
+  const { guideline, showGuidelines } = useGuidelinesContext();
   //check isGuestSigner is present in local if yes than handle login flow header in mobile view
   const isGuestSigner = localStorage.getItem("isGuestSigner");
   const scrollTriggerId = useSelector((state) => state.widget.scrollTriggerId);
   const isOpen = useSelector((state) => state.sidebar.isOpen);
   const scrollRef = useRef(null);
   const pdfContainerRef = useRef(null);
-
   useEffect(() => {
     dispatch(toggleSidebar(false));
     return () => {
@@ -335,7 +341,7 @@ function RenderPdf(props) {
           }}
           ref={(node) => {
             pdfContainerRef.current = node;
-            props.drop && props.drop(node);
+            drop && drop(node);
           }}
           id="container"
         >
@@ -532,6 +538,25 @@ function RenderPdf(props) {
               y2={guideline.y2}
             />
           )}
+          <DragGuidelinesLayer
+            signBtnPosition={props.signBtnPosition}
+            showGuidelines={showGuidelines}
+            posWidth={posWidth}
+            posHeight={posHeight}
+            isSignYourself={props.signerPos?.length > 0 ? true : false}
+          />
+          <WidgetsDragPreview
+            posWidth={posWidth}
+            posHeight={posHeight}
+            isSignYourself={props.signerPos?.length > 0 ? true : false}
+            uniqueId={props?.uniqueId}
+            data={props?.signerPos?.find((x) => x.Id === props?.uniqueId)}
+            isNeedSign={props?.pdfRequest}
+            pdfOriginalWH={props.pdfOriginalWH}
+            pageNumber={props.pageNumber}
+            containerWH={props.containerWH}
+            scale={props?.scale}
+          />
         </div>
       </RSC>
     </>

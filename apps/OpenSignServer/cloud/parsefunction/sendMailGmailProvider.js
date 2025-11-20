@@ -159,7 +159,8 @@ export default async function sendMailGmailProvider(_extRes, template) {
     template;
 
   if (_extRes) {
-    const refresh_token = _extRes.google_refresh_token;
+    let refresh_token = '';
+    refresh_token = _extRes?.TenantId?.google_refresh_token;
     // generate access token
     const access_token = await refreshAccessToken(refresh_token);
 

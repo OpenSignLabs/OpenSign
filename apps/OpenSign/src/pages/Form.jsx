@@ -388,13 +388,16 @@ const Forms = (props) => {
         object.set("Description", formData?.Description);
         object.set("Note", formData?.Note);
         if (props.title === "Request Signatures") {
-          if (
-            extUserData?.TenantId?.RequestBody &&
-            extUserData?.TenantId?.RequestSubject
-          ) {
-            object.set("RequestBody", extUserData?.TenantId?.RequestBody);
-            object.set("RequestSubject", extUserData?.TenantId?.RequestSubject);
-          }
+            if (
+              extUserData?.TenantId?.RequestBody &&
+              extUserData?.TenantId?.RequestSubject
+            ) {
+              object.set("RequestBody", extUserData?.TenantId?.RequestBody);
+              object.set(
+                "RequestSubject",
+                extUserData?.TenantId?.RequestSubject
+              );
+            }
         }
         if (props.title !== "Sign Yourself") {
           const isChecked = formData.SendinOrder === "false" ? false : true;

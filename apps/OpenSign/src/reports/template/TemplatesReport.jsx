@@ -86,6 +86,7 @@ const TemplatesReport = (props) => {
   const [isNewContact, setIsNewContact] = useState({ status: false, id: "" });
   const [isPrefillModal, setIsPrefillModal] = useState({});
   const [isSubmit, setIsSubmit] = useState(false);
+  const [objInfoModal, setObjInfoModal] = useState({ title: "", info: "" });
   const startIndex = (currentPage - 1) * props.docPerPage;
   const { isMoreDocs, setIsNextRecord } = props;
   const [isMailModal, setIsMailModal] = useState(false);
@@ -919,29 +920,21 @@ const TemplatesReport = (props) => {
           if (tenantDetails && tenantDetails === "user does not exist!") {
             alert(t("user-not-exist"));
           } else if (tenantDetails) {
-            //condition to check tenant have some already set any email template
-            if (tenantDetails?.RequestBody) {
-              //customize mail state is handle to when user want to customize already set tenant email format then use that format
-              setCustomizeMail({
-                subject: tenantDetails?.RequestSubject,
-                body: tenantDetails?.RequestBody
-              });
-              setDefaultMail({
-                subject: tenantDetails?.RequestSubject,
-                body: tenantDetails?.RequestBody
-              });
-            } else {
-              const defaultRequestBody = defaultMailBody;
-              const defaultSubject = defaultMailSubject;
-              setCustomizeMail({
-                subject: defaultSubject,
-                body: defaultRequestBody
-              });
-              setDefaultMail({
-                subject: defaultSubject,
-                body: defaultRequestBody
-              });
-            }
+            const extUser =
+              localStorage.getItem("Extand_Class") &&
+              JSON.parse(localStorage.getItem("Extand_Class"))?.[0];
+            const subject = tenantDetails?.RequestSubject ?? "";
+            const body = tenantDetails?.RequestBody ?? "";
+            //customize mail state is handle to when user want to customize already set tenant email format then use that format
+            const userSubject =
+                  subject;
+            const userBody =
+                  body;
+            setCustomizeMail({
+              subject: userSubject ?? defaultMailSubject,
+              body: userBody ?? defaultMailBody
+            });
+            setDefaultMail({ subject: userSubject, body: userBody });
           }
         } catch (e) {
           alert(t("user-not-exist"));
@@ -1010,6 +1003,10 @@ const TemplatesReport = (props) => {
     } else {
       navigate(`/recipientSignPdf/${docId}`);
     }
+  };
+
+  const handleItemClick = (title, info) => {
+    setObjInfoModal({ title, info });
   };
   return (
     <div className="relative">
@@ -1147,6 +1144,7 @@ const TemplatesReport = (props) => {
                         handleDownload={handleDownload}
                         handleRemovePrefill={handleRemovePrefill}
                         reportName={props.ReportName}
+                        handleItemClick={handleItemClick}
                       />
                     ))}
                     <td className="px-2 py-2">
@@ -1681,6 +1679,13 @@ const TemplatesReport = (props) => {
               </div>
             )}
           </div>
+        </ModalUi>
+        <ModalUi
+          title={t(`report-heading.${objInfoModal.title}`)}
+          isOpen={objInfoModal.title}
+          handleClose={() => setObjInfoModal({ title: "", info: "" })}
+        >
+          <div className="p-[20px]">{objInfoModal.info || "-"}</div>
         </ModalUi>
       </div>
     </div>

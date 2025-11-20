@@ -42,7 +42,7 @@ const ColumnSelector = ({
                 type="checkbox"
                 checked={selected.includes(col)}
                 onChange={() => handleChange(col)}
-                className="mb-0"
+                className="mb-0 cursor-pointer"
               />
               <span className="whitespace-nowrap ml-1">
                 {t(`report-heading.${col}`, { defaultValue: col })}

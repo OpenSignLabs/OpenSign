@@ -49,8 +49,8 @@ async function sendMail(document, publicUrl) {
       let signPdf = `${hostUrl}/login/${encodeBase64}`;
       const orgName = document.ExtUserPtr.Company ? document.ExtUserPtr.Company : '';
       const senderObj = document?.ExtUserPtr;
-      const mailBody = document?.ExtUserPtr?.TenantId?.RequestBody || '';
-      const mailSubject = document?.ExtUserPtr?.TenantId?.RequestSubject || '';
+      let mailBody = senderObj?.TenantId?.RequestBody || '';
+      let mailSubject = senderObj?.TenantId?.RequestSubject || '';
       let replaceVar;
       if (mailBody && mailSubject) {
         const replacedRequestBody = mailBody.replace(/"/g, "'");
@@ -126,8 +126,8 @@ async function batchQuery(userId, Documents, Ip, parseConfig, type, publicUrl) {
             }
           });
         }
-        const mailBody = x?.ExtUserPtr?.TenantId?.RequestBody || '';
-        const mailSubject = x?.ExtUserPtr?.TenantId?.RequestSubject || '';
+        let mailBody = x?.ExtUserPtr?.TenantId?.RequestBody || '';
+        let mailSubject = x?.ExtUserPtr?.TenantId?.RequestSubject || '';
         return {
           method: 'POST',
           path: '/app/classes/contracts_Document',

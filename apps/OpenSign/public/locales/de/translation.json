@@ -120,7 +120,8 @@
       "Teams": "Teams",
       "Team-update-successfully": "Team erfolgreich aktualisiert.",
       "Users": "Benutzer"
-    }
+    },
+    "Global SMTP": "Globales SMTP"
   },
   "dashboard-card": {
     "Need your Signature": "Benötigt Ihre Unterschrift",
@@ -1256,5 +1257,21 @@
   "Please provide required parameters.": "Bitte geben Sie die erforderlichen Parameter an.",
   "reset-password": "Benutzerpasswort zurücksetzen",
   "enter-strong-password": "Geben Sie ein sicheres Passwort ein oder generieren Sie eines automatisch.",
-  "autogenerate": "Automatisch generieren"
+  "autogenerate": "Automatisch generieren",
+  "extend": "Verlängern",
+  "console-general-help": "Um einzelnen Benutzern zu ermöglichen, ihre eigenen E-Mail-Vorlagen anzupassen, navigieren Sie zu",
+  "console-mail-help": "Um unternehmensweite E-Mail-Vorlagen zu aktualisieren, gehen Sie zu",
+  "admin-setting-disabled": "Diese Einstellung ist deaktiviert. Bitte wenden Sie sich für Unterstützung an den Administrator.",
+  "company-email-settings": "Unternehmens-E-Mail-Einstellungen",
+  "allow-email-template-individually": "E-Mail-Vorlagenanpassung für Benutzer individuell erlauben ",
+  "user-email-template-general-help": "Wenn diese Option deaktiviert ist, können Benutzer ihre E-Mail-Vorlagen nicht mehr anpassen.",
+  "disable-individual-user-smtp": "individuelle benutzer-smtp-einstellungen deaktivieren",
+  "enable-individual-user-smtp": "individuelle benutzer-smtp-einstellungen aktivieren",
+  "user-smtp-general-help": "Wenn deaktiviert, können Benutzer ihre eigenen SMTP-Einstellungen nicht konfigurieren. Alle E-Mails verwenden dann die globale SMTP-Konfiguration.",
+  "global-smtp-settings": "Globale SMTP-Einstellungen",
+  "global-smtp-settings-help-p1": "Diese Einstellungen gelten global für Ihr gesamtes {{appName}}-Konto. Wenn ein Benutzer keine eigenen E-Mail-Zustellungs­einstellungen konfiguriert hat, verwendet das System automatisch die hier definierten globalen SMTP-Einstellungen.",
+  "global-smtp-settings-help-p2": "Um eine bessere Zustellbarkeit aller Signaturanfragen sicherzustellen, können Sie Ihren bevorzugten E-Mail-Anbieter verbinden. Wählen Sie eine der folgenden Optionen:",
+  "global-connect-to-gmail-help": "Verwenden Sie ein Gmail-Konto, um Signaturanfragen direkt aus dem Posteingang Ihrer Organisation zu senden. Dies verbessert die Zustellrate, Reputation und Zuverlässigkeit.",
+  "global-connect-to-smtp-help": "Verwenden Sie Ihren eigenen SMTP-Server, um E-Mails über Ihre Domain zu senden. Dies bietet volle Kontrolle über Ihre E-Mail-Infrastruktur, verbessert die Zustellbarkeit und sorgt für konsistentes Branding.",
+  "global-smtp-settings-help-p3": "Wenn keine individuellen Benutzereinstellungen konfiguriert sind, werden automatisch diese globalen Einstellungen angewendet."
 }
