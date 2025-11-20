@@ -97,6 +97,7 @@ const DocumentsReport = (props) => {
   const [defaultMail, setDefaultMail] = useState({ body: "", subject: "" });
   const [currUserId, setCurrUserId] = useState(false);
   const [documentDetails, setDocumentDetails] = useState();
+  const [objInfoModal, setObjInfoModal] = useState({ title: "", info: "" });
   const startIndex = (currentPage - 1) * props.docPerPage;
   const { isMoreDocs, setIsNextRecord } = props;
 
@@ -202,29 +203,21 @@ const DocumentsReport = (props) => {
           const filterSignTypes = signatureType?.filter(
             (x) => x.enabled === true
           );
-          //condition to check tenant have some already set any email template
-          if (tenantDetails?.RequestBody) {
-            //customize mail state is handle to when user want to customize already set tenant email format then use that format
-            setCustomizeMail({
-              subject: tenantDetails?.RequestSubject,
-              body: tenantDetails?.RequestBody
-            });
-            setDefaultMail({
-              subject: tenantDetails?.RequestSubject,
-              body: tenantDetails?.RequestBody
-            });
-          } else {
-            const defaultRequestBody = defaultMailBody;
-            const defaultSubject = defaultMailSubject;
-            setCustomizeMail({
-              subject: defaultSubject,
-              body: defaultRequestBody
-            });
-            setDefaultMail({
-              subject: defaultSubject,
-              body: defaultRequestBody
-            });
-          }
+          const extUser =
+            localStorage.getItem("Extand_Class") &&
+            JSON.parse(localStorage.getItem("Extand_Class"))?.[0];
+          const subject = tenantDetails?.RequestSubject ?? "";
+          const body = tenantDetails?.RequestBody ?? "";
+          //customize mail state is handle to when user want to customize already set tenant email format then use that format
+          const userSubject =
+                subject;
+          const userBody =
+                body;
+          setCustomizeMail({
+            subject: userSubject ?? defaultMailSubject,
+            body: userBody ?? defaultMailBody
+          });
+          setDefaultMail({ subject: userSubject, body: userBody });
           return filterSignTypes;
         }
       } catch (e) {
@@ -1049,6 +1042,10 @@ const DocumentsReport = (props) => {
       );
     }
   };
+
+  const handleItemClick = (title, info) => {
+    setObjInfoModal({ title, info });
+  };
   return (
     <div className="relative">
       {Object.keys(actLoader)?.length > 0 && (
@@ -1173,6 +1170,7 @@ const DocumentsReport = (props) => {
                         handleDownload={handleDownload}
                         handleRemovePrefill={handleRemovePrefill}
                         reportName={props.ReportName}
+                        handleItemClick={handleItemClick}
                       />
                     ))}
                     {/* actions */}
@@ -1851,6 +1849,13 @@ const DocumentsReport = (props) => {
               </div>
             )}
           </div>
+        </ModalUi>
+        <ModalUi
+          title={t(`report-heading.${objInfoModal.title}`)}
+          isOpen={objInfoModal.title}
+          handleClose={() => setObjInfoModal({ title: "", info: "" })}
+        >
+          <div className="p-[20px]">{objInfoModal.info || "-"}</div>
         </ModalUi>
       </div>
     </div>

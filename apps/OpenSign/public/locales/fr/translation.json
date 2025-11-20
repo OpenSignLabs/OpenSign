@@ -120,7 +120,8 @@
       "Teams": "Équipe",
       "Team-update-successfully": "Équipe mise à jour avec succès.",
       "Users": "Utilisateurs"
-    }
+    },
+    "Global SMTP": "SMTP Global"
   },
   "dashboard-card": {
     "Need your Signature": "Besoin de votre signature",
@@ -1256,5 +1257,21 @@
   "Please provide required parameters.": "Veuillez fournir les paramètres requis.",
   "reset-password": "Réinitialiser le mot de passe utilisateur",
   "enter-strong-password": "Entrez un mot de passe sécurisé ou générez-en un automatiquement.",
-  "autogenerate": "Générer automatiquement"
+  "autogenerate": "Générer automatiquement",
+  "extend": "Prolonger",
+  "console-general-help": "Pour permettre aux utilisateurs individuels de personnaliser leurs propres modèles d'e-mails, accédez à",
+  "console-mail-help": "Pour mettre à jour les modèles d'e-mails à l'échelle de l'entreprise, allez dans",
+  "admin-setting-disabled": "Ce paramètre est désactivé. Veuillez contacter l'administrateur pour obtenir de l'aide.",
+  "company-email-settings": "Paramètres de messagerie de l'entreprise",
+  "allow-email-template-individually": "Autoriser la personnalisation individuelle des modèles d'e-mails pour chaque utilisateur ",
+  "user-email-template-general-help": "Si cette option est désactivée, les utilisateurs ne pourront plus personnaliser leurs modèles d'e-mails.",
+  "disable-individual-user-smtp": "désactiver les paramètres smtp individuels de l'utilisateur",
+  "enable-individual-user-smtp": "activer les paramètres smtp individuels de l'utilisateur",
+  "user-smtp-general-help": "Lorsqu'elle est désactivée, les utilisateurs ne pourront pas configurer leur propre SMTP. Tous les e-mails utiliseront la configuration SMTP globale.",
+  "global-smtp-settings": "Paramètres SMTP globaux",
+  "global-smtp-settings-help-p1": "Ces paramètres s'appliquent globalement à l'ensemble de votre compte {{appName}}. Si un utilisateur n'a pas configuré ses propres paramètres de messagerie, le système utilisera automatiquement les paramètres SMTP globaux définis ici.",
+  "global-smtp-settings-help-p2": "Pour assurer une meilleure délivrabilité de toutes les demandes de signature, vous pouvez connecter votre fournisseur de messagerie préféré. Choisissez l'une des options suivantes :",
+  "global-connect-to-gmail-help": "Utilisez un compte Gmail pour envoyer des demandes de signature directement depuis la boîte de réception de votre organisation. Cela améliore la délivrabilité, la réputation et la fiabilité.",
+  "global-connect-to-smtp-help": "Utilisez votre propre serveur SMTP pour envoyer des e-mails via votre domaine. Cela offre un contrôle total sur votre infrastructure de messagerie, améliore la délivrabilité et garantit une cohérence de marque.",
+  "global-smtp-settings-help-p3": "Si aucun paramètre utilisateur individuel n'est configuré, ces paramètres globaux seront appliqués automatiquement."
 }

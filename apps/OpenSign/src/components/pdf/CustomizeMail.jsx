@@ -3,6 +3,8 @@ import ModalUi from "../../primitives/ModalUi";
 import { EmailBody } from "./EmailBody";
 import {
   contractDocument,
+  defaultMailBody,
+  defaultMailSubject,
   sendEmailToSigners
 } from "../../constant/Utils";
 import { useTranslation } from "react-i18next";
@@ -101,7 +103,10 @@ function CustomizeMail(props) {
                     <div
                       className="flex justify-end items-center gap-1 mt-2 op-link op-link-primary"
                       onClick={() => {
-                        props?.setCustomizeMail(props?.defaultMail);
+                        props?.setCustomizeMail({
+                          subject: defaultMailSubject,
+                          body: defaultMailBody
+                        });
                       }}
                     >
                       <span>{t("reset-to-default")}</span>

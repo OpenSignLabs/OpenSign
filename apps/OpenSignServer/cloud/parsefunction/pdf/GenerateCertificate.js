@@ -41,6 +41,7 @@ export default async function GenerateCertificate(docDetails) {
   const maxX = width - margin - textWidth; // Ensures text stays inside the border with 30px margin
   const OriginIp = docDetails?.OriginIp || '';
   const company = docDetails?.ExtUserPtr?.Company || '';
+  const documentHash = docDetails?.DocumentHash || '';
   const createdAt = docDetails?.DocSentAt?.iso || docDetails.createdAt;
   const createdAtperTimezone = formatDateTime(createdAt, DateFormat, timezone, Is12Hr);
   const IsEnableOTP = docDetails?.IsEnableOTP || false;
@@ -150,9 +151,36 @@ export default async function GenerateCertificate(docDetails) {
     color: textValueColor,
   });
 
+  if (documentHash) {
+    page.drawText('Document hash (sha256) :', {
+      x: 30,
+      y: 670,
+      size: text,
+      font: timesRomanFont,
+      color: textKeyColor,
+    });
+
+    page.drawText(documentHash, {
+      x: 170,
+      y: 670,
+      size: text,
+      font: timesRomanFont,
+      color: textValueColor,
+    });
+  }
+
+  const organizationY = documentHash ? 650 : 670;
+  const createdOnY = organizationY - 20;
+  const completedOnY = createdOnY - 20;
+  const signersY = completedOnY - 20;
+  const originatorHeaderY = signersY - 20;
+  const nameY = originatorHeaderY - 17;
+  const emailY = nameY - 20;
+  const ipY = emailY - 20;
+
   page.drawText('Organization :', {
     x: 30,
-    y: 670,
+    y: organizationY,
     size: text,
     font: timesRomanFont,
     color: textKeyColor,
@@ -160,14 +188,14 @@ export default async function GenerateCertificate(docDetails) {
 
   page.drawText(company, {
     x: 110,
-    y: 670,
+    y: organizationY,
     size: text,
     font: timesRomanFont,
     color: textValueColor,
   });
   page.drawText('Created on :', {
     x: 30,
-    y: 650,
+    y: createdOnY,
     size: text,
     font: timesRomanFont,
     color: textKeyColor,
@@ -175,14 +203,14 @@ export default async function GenerateCertificate(docDetails) {
 
   page.drawText(`${createdAtperTimezone}`, {
     x: 97,
-    y: 650,
+    y: createdOnY,
     size: text,
     font: timesRomanFont,
     color: textValueColor,
   });
   page.drawText('Completed on :', {
     x: 30,
-    y: 630,
+    y: completedOnY,
     size: text,
     font: timesRomanFont,
     color: textKeyColor,
@@ -190,14 +218,14 @@ export default async function GenerateCertificate(docDetails) {
 
   page.drawText(`${completedUTCtime}`, {
     x: 115,
-    y: 630,
+    y: completedOnY,
     size: text,
     font: timesRomanFont,
     color: textValueColor,
   });
   page.drawText('Signers :', {
     x: 30,
-    y: 610,
+    y: signersY,
     size: text,
     font: timesRomanFont,
     color: textKeyColor,
@@ -205,75 +233,75 @@ export default async function GenerateCertificate(docDetails) {
 
   page.drawText(`${signersCount}`, {
     x: 80,
-    y: 610,
+    y: signersY,
     size: text,
     font: timesRomanFont,
     color: textValueColor,
   });
   page.drawText('Document originator', {
     x: 30,
-    y: 590,
+    y: originatorHeaderY,
     size: 17,
     font: timesRomanFont,
     color: titleColor,
   });
   page.drawText('Name :', {
     x: 60,
-    y: 573,
+    y: nameY,
     size: text,
     font: timesRomanFont,
     color: textKeyColor,
   });
   page.drawText(ownerName, {
     x: 105,
-    y: 573,
+    y: nameY,
     size: text,
     font: timesRomanFont,
     color: textValueColor,
   });
   page.drawText('Email :', {
     x: 60,
-    y: 553,
+    y: emailY,
     size: text,
     font: timesRomanFont,
     color: textKeyColor,
   });
   page.drawText(ownerEmail, {
     x: 105,
-    y: 553,
+    y: emailY,
     size: text,
     font: timesRomanFont,
     color: textValueColor,
   });
   page.drawText('IP address :', {
     x: 60,
-    y: 533,
+    y: ipY,
     size: text,
     font: timesRomanFont,
     color: textKeyColor,
   });
   page.drawText(`${OriginIp}`, {
     x: 125,
-    y: 533,
+    y: ipY,
     size: text,
     font: timesRomanFont,
     color: textValueColor,
   });
 
   page.drawLine({
-    start: { x: 30, y: 527 },
-    end: { x: width - 30, y: 527 },
+    start: { x: 30, y: ipY - 6 },
+    end: { x: width - 30, y: ipY - 6 },
     color: rgb(0.12, 0.12, 0.12),
     thickness: 0.5,
   });
-  let yPosition1 = 512;
-  let yPosition2 = 498;
-  let yPosition3 = 478;
-  let yPosition4 = 458;
-  let yPosition5 = 438;
-  let yPosition6 = 418;
-  let yPosition7 = 398;
-  let yPosition8 = 363;
+  let yPosition1 = ipY - 21;
+  let yPosition2 = yPosition1 - 14;
+  let yPosition3 = yPosition2 - 20;
+  let yPosition4 = yPosition3 - 20;
+  let yPosition5 = yPosition4 - 20;
+  let yPosition6 = yPosition5 - 20;
+  let yPosition7 = yPosition6 - 20;
+  let yPosition8 = yPosition7 - 35;
 
   auditTrail.slice(0, 3).forEach(async (x, i) => {
     const embedPng = x.Signature ? await pdfDoc.embedPng(x.Signature) : '';

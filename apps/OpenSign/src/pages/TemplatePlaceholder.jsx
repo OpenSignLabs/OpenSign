@@ -3,7 +3,6 @@ import RenderAllPdfPage from "../components/pdf/RenderAllPdfPage";
 import { useParams, useNavigate } from "react-router";
 import axios from "axios";
 import "../styles/signature.css";
-import { useDrop } from "react-dnd";
 import WidgetComponent from "../components/pdf/WidgetComponent";
 import Tour from "../primitives/Tour";
 import SignerListPlace from "../components/pdf/SignerListPlace";
@@ -124,11 +123,6 @@ const TemplatePlaceholder = () => {
   const [pdfBase64Url, setPdfBase64Url] = useState("");
   const [isUploadPdf, setIsUploadPdf] = useState(false);
   const isMobile = window.innerWidth < 767;
-  const [, drop] = useDrop({
-    accept: "BOX",
-    drop: (item, monitor) => addPositionOfSignature(item, monitor),
-    collect: (monitor) => ({ isOver: !!monitor.isOver() })
-  });
   const [uniqueId, setUniqueId] = useState("");
   const [isModalRole, setIsModalRole] = useState(false);
   const [roleName, setRoleName] = useState("");
@@ -215,28 +209,21 @@ const TemplatePlaceholder = () => {
           const filterSignTypes = signatureType?.filter(
             (x) => x.enabled === true
           );
-          if (tenantDetails?.RequestBody) {
-            //customize mail state is handle to when user want to customize already set tenant email format then use that format
-            setCustomizeMail({
-              subject: tenantDetails?.RequestSubject,
-              body: tenantDetails?.RequestBody
-            });
-            setDefaultMail({
-              subject: tenantDetails?.RequestSubject,
-              body: tenantDetails?.RequestBody
-            });
-          } else {
-            const defaultRequestBody = defaultMailBody;
-            const defaultSubject = defaultMailSubject;
-            setCustomizeMail({
-              subject: defaultSubject,
-              body: defaultRequestBody
-            });
-            setDefaultMail({
-              subject: defaultSubject,
-              body: defaultRequestBody
-            });
-          }
+          const extUser =
+            localStorage.getItem("Extand_Class") &&
+            JSON.parse(localStorage.getItem("Extand_Class"))?.[0];
+          const subject = tenantDetails?.RequestSubject ?? "";
+          const body = tenantDetails?.RequestBody ?? "";
+          //customize mail state is handle to when user want to customize already set tenant email format then use that format
+          const userSubject =
+                subject;
+          const userBody =
+                body;
+          setCustomizeMail({
+            subject: userSubject ?? defaultMailSubject,
+            body: userBody ?? defaultMailBody
+          });
+          setDefaultMail({ subject: userSubject, body: userBody });
           return filterSignTypes;
         }
       } catch (e) {
@@ -498,12 +485,33 @@ const TemplatePlaceholder = () => {
             .getBoundingClientRect();
           const x = offset.x - containerRect.left;
           const y = offset.y - containerRect.top;
-          const getXPosition = signBtnPosition[0]
+          let getXPosition = signBtnPosition[0]
             ? x - signBtnPosition[0].xPos
             : x;
-          const getYPosition = signBtnPosition[0]
+          let getYPosition = signBtnPosition[0]
             ? y - signBtnPosition[0].yPos
             : y;
+          // to avoid negative position values (half portion of widget should not be out of pdf container)
+          const calculateWidth =
+            getXPosition + widgetWidth - containerRect.width;
+          const calculateHeight =
+            getYPosition + widgetHeight - containerRect.height;
+
+          if (getXPosition < 0) {
+            getXPosition = 0;
+          }
+          if (getYPosition < 0) {
+            getYPosition = 0;
+          }
+
+          if (calculateWidth > 0) {
+            getXPosition = getXPosition - calculateWidth;
+          }
+
+          if (calculateHeight > 0) {
+            getYPosition = getYPosition - calculateHeight;
+          }
+
           dropObj = {
             xPosition: getXPosition / (containerScale * scale),
             yPosition: getYPosition / (containerScale * scale),
@@ -754,7 +762,11 @@ const TemplatePlaceholder = () => {
     }
   };
   useEffect(() => {
-    if (pdfDetails?.[0]?.CreatedBy?.objectId !== user?.objectId || isPrefillModal) return;
+    if (
+      pdfDetails?.[0]?.CreatedBy?.objectId !== user?.objectId ||
+      isPrefillModal
+    )
+      return;
     const timer = setTimeout(() => {
       autosavedetails();
     }, 2000);
@@ -1926,7 +1938,6 @@ const TemplatePlaceholder = () => {
                     numPages={numPages}
                     pageDetails={pageDetails}
                     placeholder={true}
-                    drop={drop}
                     handleDeleteWidget={handleDeleteWidgetObj}
                     handleTabDrag={handleTabDrag}
                     handleStop={handleStop}
@@ -1963,6 +1974,8 @@ const TemplatePlaceholder = () => {
                     currWidgetsDetails={currWidgetsDetails}
                     setRoleName={setRoleName}
                     isShowModal={isShowModal}
+                    signBtnPosition={signBtnPosition}
+                    addPositionOfSignature={addPositionOfSignature}
                   />
                 )}
               </div>
@@ -2039,9 +2052,6 @@ const TemplatePlaceholder = () => {
                     initial={true}
                     isTemplateFlow={true}
                     roleName={roleName}
-                    Add
-                    commentMore
-                    actions
                     isPrefillDropdown={true}
                   />
                 </div>

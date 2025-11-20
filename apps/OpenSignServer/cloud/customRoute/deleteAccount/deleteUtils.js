@@ -18,6 +18,7 @@ export function generateOtp(len = OTP_LENGTH) {
 }
 
 export async function sendDeleteOtpEmail(extUser, otp) {
+  const _extUser = extUser && JSON.parse(JSON.stringify(extUser));
   const params = {
     extUserId: extUser.id,
     from: appName,

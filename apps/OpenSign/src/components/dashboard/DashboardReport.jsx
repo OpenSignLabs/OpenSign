@@ -7,7 +7,6 @@ import Loader from "../../primitives/Loader";
 import { useTranslation } from "react-i18next";
 function DashboardReport(props) {
   const { t } = useTranslation();
-  // console.log("props ", props)
   const [List, setList] = useState([]);
   const [isLoader, setIsLoader] = useState(true);
   const [reportName, setReportName] = useState("");

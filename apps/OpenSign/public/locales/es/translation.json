@@ -120,7 +120,8 @@
       "Teams": "Equipos",
       "Team-update-successfully": "Equipo actualizado correctamente.",
       "Users": "Usuarios"
-    }
+    },
+    "Global SMTP": "SMTP Global"
   },
   "dashboard-card": {
     "Need your Signature": "Necesitan tu firma",
@@ -1257,5 +1258,21 @@
   "Please provide required parameters.": "Por favor, proporcione los parámetros requeridos.",
   "reset-password": "Restablecer contraseña de usuario",
   "enter-strong-password": "Ingrese una contraseña segura o genere una automáticamente.",
-  "autogenerate": "Generar automáticamente"
+  "autogenerate": "Generar automáticamente",
+  "extend": "Extender",
+  "console-general-help": "Para permitir que los usuarios individuales personalicen sus propias plantillas de correo electrónico, vaya a",
+  "console-mail-help": "Para actualizar las plantillas de correo electrónico de toda la empresa, vaya a",
+  "admin-setting-disabled": "Esta configuración está deshabilitada. Comuníquese con el administrador para obtener ayuda.",
+  "company-email-settings": "Configuración de correo electrónico de la empresa",
+  "allow-email-template-individually": "Permitir la personalización individual de plantillas de correo electrónico para los usuarios ",
+  "user-email-template-general-help": "Si se desactiva, los usuarios no podrán personalizar sus plantillas de correo electrónico.",
+  "disable-individual-user-smtp": "desactivar la configuración smtp individual del usuario",
+  "enable-individual-user-smtp": "activar la configuración smtp individual del usuario",
+  "user-smtp-general-help": "Cuando está desactivado, los usuarios no podrán configurar su propio SMTP. Todos los correos utilizarán la configuración SMTP global.",
+  "global-smtp-settings": "Configuración SMTP Global",
+  "global-smtp-settings-help-p1": "Estas configuraciones se aplican globalmente en toda su cuenta de {{appName}}. Si un usuario no ha configurado sus propios ajustes de entrega de correo, el sistema utilizará automáticamente la configuración SMTP global definida aquí.",
+  "global-smtp-settings-help-p2": "Para garantizar una mejor entregabilidad de todos los correos de solicitud de firma, puede conectar su proveedor de correo preferido. Elija una de las siguientes opciones:",
+  "global-connect-to-gmail-help": "Use una cuenta de Gmail para enviar correos de solicitud de firma directamente desde la bandeja de entrada de su organización. Esto mejora la entregabilidad, la reputación y la fiabilidad.",
+  "global-connect-to-smtp-help": "Use su propio servidor SMTP para enviar correos a través de su dominio. Esto proporciona control total sobre su infraestructura de correo, mejora la entregabilidad y mantiene la coherencia de marca.",
+  "global-smtp-settings-help-p3": "Si no se configuran ajustes a nivel de usuario, se aplicarán automáticamente estos ajustes globales."
 }

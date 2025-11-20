@@ -47,9 +47,13 @@ function Login() {
   const [image, setImage] = useState();
   const [errMsg, setErrMsg] = useState();
   useEffect(() => {
-    checkUserExt();
+    handleUserExist();
     // eslint-disable-next-line
   }, []);
+
+  const handleUserExist = async () => {
+      checkUserExt();
+  };
 
 
   const setLocalVar = (user) => {

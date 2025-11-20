@@ -10,13 +10,13 @@ const getWidgetType = (item, widgetName) => {
       <div className="w-full h-full flex md:justify-between items-center">
         <div className="flex justify-start items-center ml-1 overflow-hidden">
           {!isMobile && (
-            <i className="fa-light fa-grip-vertical ml-[3px] text-[13px]"></i>
+            <i className="fa-light fa-grip-vertical ml-[3px] text-[13px] lg:text-[13px]"></i>
           )}
-          <span className="md:inline-block text-center text-[11px] mx-[3px] truncate font-medium capitalize">
+          <span className="md:inline-block text-center text-[11px] lg:text-[13px] mx-[3px] truncate font-medium capitalize">
             {widgetName}
           </span>
         </div>
-        <div className="text-[13px] op-btn op-btn-primary rounded-none w-[20px] h-full flex justify-center items-center">
+        <div className="text-[13px] lg:text-[14px] op-btn op-btn-primary rounded-none w-[20px] h-full flex justify-center items-center">
           <i className={item.icon}></i>
         </div>
       </div>

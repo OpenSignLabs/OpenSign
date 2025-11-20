@@ -11,6 +11,7 @@ export const deleteUserOtp = async (req, res) => {
 
   const extUserQuery = new Parse.Query('contracts_Users');
   extUserQuery.equalTo('UserId', { __type: 'Pointer', className: '_User', objectId: userId });
+  extUserQuery.include('TenantId');
   const extUser = await extUserQuery.first({ useMasterKey: true });
   if (!extUser) return res.status(404).json({ error: 'User not found' });
 
