@@ -71,6 +71,7 @@
   "login-page": "Pagina di accesso",
   "or": "O",
   "signup-page": "Pagina di registrazione",
+  "password-match-length": "La nuova password e la conferma devono corrispondere",
   "password-length": "La password deve contenere almeno 8 caratteri",
   "password-case": "La password deve contenere una lettera maiuscola, una minuscola e un numero",
   "password-special-char": "La password deve contenere un carattere speciale",
