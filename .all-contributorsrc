@@ -241,6 +241,15 @@
       "contributions": [
         "translation"
       ]
+    },
+    {
+      "login": "ehowe",
+      "name": "Eugene Howe",
+      "avatar_url": "https://avatars.githubusercontent.com/u/756984?v=4",
+      "profile": "https://github.com/ehowe",
+      "contributions": [
+        "code"
+      ]
     }
   ]
 }
