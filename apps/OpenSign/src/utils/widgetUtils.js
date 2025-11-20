@@ -16,6 +16,7 @@ export const saveToMySign = async (widget) => {
           : `${replaceSpace}__initials`;
       const file = base64StringtoFile(base64, fileName);
       const fileUrl = await uploadFile(file, User?.id);
+      // below code is used to save or update default signature, initials, stamp
       const params = {
         id: widget?.defaultSignId, // pass id to update existing signature/initials
         userId: User.id

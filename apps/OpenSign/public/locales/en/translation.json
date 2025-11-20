@@ -120,7 +120,8 @@
       "Teams": "Teams",
       "Team-update-successfully": "Team Updated successfully.",
       "Users": "Users"
-    }
+    },
+    "Global SMTP": "Global SMTP"
   },
   "dashboard-card": {
     "Need your Signature": "Need your signature",
@@ -1257,5 +1258,21 @@
   "Please provide required parameters.": "Please provide required parameters.",
   "reset-password": "Reset User Password",
   "enter-strong-password": "Enter a strong password or auto-generate one.",
-  "autogenerate": "Autogenerate"
+  "autogenerate": "Autogenerate",
+  "extend": "Extend",
+  "console-general-help": "To let individual users customize their own email templates, navigate to",
+  "console-mail-help": "To update company-wide email templates, go to",
+  "admin-setting-disabled": "This setting is disabled. Please contact admin for  assistance.",
+  "company-email-settings": "Company email settings",
+  "allow-email-template-individually": "Allow email template customization for users individually ",
+  "user-email-template-general-help": "Disabling this will prevent users from customizing their email templates.",
+  "disable-individual-user-smtp": "Disable individual user smtp settings",
+  "enable-individual-user-smtp": "Enable individual user smtp settings",
+  "user-smtp-general-help": "When disabled, users will not be able to configure their own SMTP settings. All emails will use the global SMTP configuration instead.",
+  "global-smtp-settings": "Global SMTP Settings",
+  "global-smtp-settings-help-p1": "These settings apply globally across your entire {{appName}} account. If an individual user has not configured their own email delivery settings, the system will automatically use the Global SMTP Settings defined here.",
+  "global-smtp-settings-help-p2": "To ensure better inbox deliverability for all signature request emails, you can connect your preferred email provider. Choose one of the following options:",
+  "global-connect-to-gmail-help": "Use a Gmail account to send signature request emails directly from your organization's inbox. This improves delivery rates, reputation, and overall reliability.",
+  "global-connect-to-smtp-help": "Use your own SMTP server to send emails through your  domain. This provides full control over your email infrastructure, enhances deliverability, and maintains consistent branding.",
+  "global-smtp-settings-help-p3": "If no individual user-level settings are configured, these  global settings will be applied automatically."
 }

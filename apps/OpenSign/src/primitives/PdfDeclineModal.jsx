@@ -55,7 +55,7 @@ function CustomModal(props) {
                   className="op-btn op-btn-primary px-6 ml-[20px] mb-3 mt-1"
                   onClick={() => handleExtendBtn()}
                 >
-                  Extend
+                  {t("extend")}
                 </button>
               )}
               {props.isDownloadBtn && (

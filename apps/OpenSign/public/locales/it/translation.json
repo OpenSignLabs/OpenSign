@@ -120,7 +120,8 @@
       "Teams": "Team",
       "Team-update-successfully": "Team aggiornato con successo.",
       "Users": "Utenti"
-    }
+    },
+    "Global SMTP": "SMTP Globale"
   },
   "dashboard-card": {
     "Need your Signature": "Necessita della tua firma",
@@ -263,7 +264,7 @@
   "my-signature": "La mia firma",
   "signature": "Firma",
   "upload-image": "Carica immagine",
-  "clear": "Chiara",
+  "clear": "Cancella",
   "upload-signature/Image": "Carica firma/immagine",
   "initials": "Iniziali",
   "API": "API",
@@ -1256,5 +1257,21 @@
   "Please provide required parameters.": "Fornisci i parametri richiesti.",
   "reset-password": "Reimposta password utente",
   "enter-strong-password": "Inserisci una password sicura o generane una automaticamente.",
-  "autogenerate": "Genera automaticamente"
+  "autogenerate": "Genera automaticamente",
+  "extend": "Estendi",
+  "console-general-help": "Per consentire ai singoli utenti di personalizzare i propri modelli di e-mail, vai a",
+  "console-mail-help": "Per aggiornare i modelli di e-mail aziendali, vai a",
+  "admin-setting-disabled": "Questa impostazione è disabilitata. Contatta l'amministratore per assistenza.",
+  "company-email-settings": "Impostazioni e-mail aziendali",
+  "allow-email-template-individually": "Consenti la personalizzazione individuale dei modelli di e-mail per gli utenti ",
+  "user-email-template-general-help": "Disabilitando questa opzione, gli utenti non potranno più personalizzare i loro modelli di e-mail.",
+  "disable-individual-user-smtp": "disabilita le impostazioni smtp individuali dell'utente",
+  "enable-individual-user-smtp": "abilita le impostazioni smtp individuali dell'utente",
+  "user-smtp-general-help": "Quando disattivato, gli utenti non potranno configurare il proprio SMTP. Tutte le e-mail utilizzeranno la configurazione SMTP globale.",
+  "global-smtp-settings": "Impostazioni SMTP Globali",
+  "global-smtp-settings-help-p1": "Queste impostazioni si applicano globalmente all'intero account {{appName}}. Se un utente non ha configurato le proprie impostazioni di consegna e-mail, il sistema utilizzerà automaticamente le impostazioni SMTP globali definite qui.",
+  "global-smtp-settings-help-p2": "Per garantire una migliore consegna delle e-mail di richiesta firma, puoi collegare il tuo provider di posta preferito. Scegli una delle seguenti opzioni:",
+  "global-connect-to-gmail-help": "Utilizza un account Gmail per inviare e-mail di richiesta firma direttamente dalla casella di posta della tua organizzazione. Migliora la consegna, la reputazione e l'affidabilità.",
+  "global-connect-to-smtp-help": "Utilizza il tuo server SMTP per inviare e-mail tramite il tuo dominio. Questo offre pieno controllo sulla tua infrastruttura e-mail, migliora la consegna e mantiene la coerenza del marchio.",
+  "global-smtp-settings-help-p3": "Se non sono configurate impostazioni a livello utente, verranno applicate automaticamente queste impostazioni globali."
 }

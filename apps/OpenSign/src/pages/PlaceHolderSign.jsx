@@ -3,7 +3,6 @@ import axios from "axios";
 import Parse from "parse";
 import "../styles/signature.css";
 import { PDFDocument } from "pdf-lib";
-import { useDrop } from "react-dnd";
 import RenderAllPdfPage from "../components/pdf/RenderAllPdfPage";
 import WidgetComponent from "../components/pdf/WidgetComponent";
 import Tour from "../primitives/Tour";
@@ -164,11 +163,6 @@ function PlaceHolderSign() {
   const [docTitle, setDocTitle] = useState("");
   const [isEditDoc, setIsEditDoc] = useState(false);
   const isMobile = window.innerWidth < 767;
-  const [, drop] = useDrop({
-    accept: "BOX",
-    drop: (item, monitor) => addPositionOfSignature(item, monitor),
-    collect: (monitor) => ({ isOver: !!monitor.isOver() })
-  });
   const currentUser = localStorage.getItem(
     `Parse/${localStorage.getItem("parseAppId")}/currentUser`
   );
@@ -571,12 +565,33 @@ function PlaceHolderSign() {
           //`containerRect.top` The distance from the top of the viewport to the top of the element.
           const x = offset.x - containerRect.left;
           const y = offset.y - containerRect.top;
-          const getXPosition = signBtnPosition[0]
+          let getXPosition = signBtnPosition[0]
             ? x - signBtnPosition[0].xPos
             : x;
-          const getYPosition = signBtnPosition[0]
+          let getYPosition = signBtnPosition[0]
             ? y - signBtnPosition[0].yPos
             : y;
+
+          // to avoid negative position values (half portion of widget should not be out of pdf container)
+          const calculateWidth =
+            getXPosition + widgetWidth - containerRect.width;
+          const calculateHeight =
+            getYPosition + widgetHeight - containerRect.height;
+
+          if (getXPosition < 0) {
+            getXPosition = 0;
+          }
+          if (getYPosition < 0) {
+            getYPosition = 0;
+          }
+
+          if (calculateWidth > 0) {
+            getXPosition = getXPosition - calculateWidth;
+          }
+
+          if (calculateHeight > 0) {
+            getYPosition = getYPosition - calculateHeight;
+          }
           dropObj = {
             xPosition: getXPosition / (containerScale * scale),
             yPosition: getYPosition / (containerScale * scale),
@@ -1931,6 +1946,7 @@ function PlaceHolderSign() {
       return { ...x, ...data };
     });
     setPdfDetails(updateDocument);
+    setDocTitle(updateDocument?.[0]?.Name);
     try {
       const Bcc = updateDocument?.[0]?.Bcc?.length
         ? {
@@ -2332,7 +2348,6 @@ function PlaceHolderSign() {
                     numPages={numPages}
                     pageDetails={pageDetails}
                     placeholder={true}
-                    drop={drop}
                     handleDeleteWidget={handleDeleteWidget}
                     handleTabDrag={handleTabDrag}
                     handleStop={handleStop}
@@ -2368,6 +2383,8 @@ function PlaceHolderSign() {
                     currWidgetsDetails={currWidgetsDetails}
                     setRoleName={setRoleName}
                     isShowModal={isShowModal}
+                    signBtnPosition={signBtnPosition}
+                    addPositionOfSignature={addPositionOfSignature}
                   />
                 )}
               </div>

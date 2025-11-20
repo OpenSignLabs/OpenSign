@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+import { createHash } from 'node:crypto';
 import axios from 'axios';
 import { PDFDocument } from 'pdf-lib';
 import {
@@ -28,6 +29,10 @@ const headers = {
   'X-Parse-Master-Key': masterKEY,
 };
 
+function generateDocumentHash(buffer) {
+  return createHash('sha256').update(buffer).digest('hex');
+}
+
 async function unlinkFile(path) {
   if (fs.existsSync(path)) {
     try {
@@ -44,11 +49,6 @@ async function uploadFile(pdfName, filepath) {
     const filedata = fs.readFileSync(filepath);
     let fileUrl;
 
-    // const file = new Parse.File(pdfName, [...filedata], 'application/pdf');
-    // await file.save({ useMasterKey: true });
-    // const fileRes = getSecureUrl(file.url());
-    // fileUrl = fileRes.url;
-
     const fileRes = await parseUploadFile(pdfName, filedata, 'application/pdf');
     fileUrl = getSecureUrl(fileRes?.url)?.url;
 
@@ -61,7 +61,7 @@ async function uploadFile(pdfName, filepath) {
 }
 
 // `updateDoc` is used to update signedUrl, AuditTrail, Iscompleted in document
-async function updateDoc(docId, url, userId, ipAddress, data, className, sign) {
+async function updateDoc(docId, url, userId, ipAddress, data, className, sign, documentHash) {
   try {
     const UserPtr = { __type: 'Pointer', className: className, objectId: userId };
     const obj = {
@@ -100,8 +100,16 @@ async function updateDoc(docId, url, userId, ipAddress, data, className, sign) {
       isCompleted = true;
     }
     const body = { SignedUrl: url, AuditTrail: updateAuditTrail, IsCompleted: isCompleted };
+    if (documentHash && isCompleted) {
+      body.DocumentHash = documentHash;
+    }
     const signedRes = await axios.put(`${docUrl}/${docId}`, body, { headers });
-    return { isCompleted: isCompleted, message: 'success', AuditTrail: updateAuditTrail };
+    return {
+      isCompleted: isCompleted,
+      message: 'success',
+      AuditTrail: updateAuditTrail,
+      DocumentHash: documentHash && isCompleted ? documentHash : undefined,
+    };
   } catch (err) {
     console.log('update doc err ', err);
     return 'err';
@@ -183,8 +191,8 @@ async function sendCompletedMail(obj) {
   if (obj?.isCustomMail) {
     const tenant = sender?.TenantId;
     if (tenant) {
-      subject = tenant?.CompletionSubject || '';
-      body = tenant?.CompletionBody || '';
+      subject = tenant?.CompletionSubject ? tenant?.CompletionSubject : subject;
+      body = tenant?.CompletionBody ? tenant?.CompletionBody : body;
     } else {
       const userId = sender?.CreatedBy?.objectId || sender?.UserId?.objectId;
       if (userId) {
@@ -198,8 +206,8 @@ async function sendCompletedMail(obj) {
           const tenantRes = await tenantQuery.first({ useMasterKey: true });
           if (tenantRes) {
             const _tenantRes = JSON.parse(JSON.stringify(tenantRes));
-            subject = _tenantRes?.CompletionSubject || '';
-            body = _tenantRes?.CompletionBody || '';
+            subject = _tenantRes?.CompletionSubject ? tenant?.CompletionSubject : subject;
+            body = _tenantRes?.CompletionBody ? tenant?.CompletionBody : body;
           }
         } catch (err) {
           console.log('error in fetch tenant in signpdf', err.message);
@@ -427,6 +435,7 @@ async function PDF(req) {
       let filePath = `./exports/${name}`;
       let signedFilePath = `./exports/signed_${name}`;
       let pdfSize = PdfBuffer.length;
+      let documentHash;
       if (isCompleted) {
         const signersName = _resDoc.Signers?.map(x => x.Name + ' <' + x.Email + '>');
         const reason =
@@ -444,6 +453,7 @@ async function PDF(req) {
         //`saveUrl` is used to save signed pdf in exports folder
         fs.writeFileSync(signedFilePath, signedDocs);
         pdfSize = signedDocs.length;
+        documentHash = generateDocumentHash(signedDocs);
         console.log(`✅ PDF digitally signed created: ${signedFilePath} \n`);
       } else {
         //`saveUrl` is used to save signed pdf in exports folder
@@ -464,12 +474,17 @@ async function PDF(req) {
           userIP, // client ipAddress,
           _resDoc, // auditTrail, signers, etc data
           className, // className based on flow
-          sign // sign base64
+          sign, // sign base64
+          isCompleted ? documentHash : undefined
         );
         sendNotifyMail(_resDoc, signUser, mailProvider, publicUrl);
         saveFileUsage(pdfSize, data.imageUrl, _resDoc?.CreatedBy?.objectId);
         if (updatedDoc && updatedDoc.isCompleted) {
+          const hashForDoc = documentHash || updatedDoc?.DocumentHash;
           const doc = { ..._resDoc, AuditTrail: updatedDoc.AuditTrail, SignedUrl: data.imageUrl };
+          if (hashForDoc) {
+            doc.DocumentHash = hashForDoc;
+          }
           sendMailsaveCertifcate(doc, pfx, isCustomMail, mailProvider, `signed_${name}`);
         } else {
           unlinkFile(pfxname);

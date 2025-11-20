@@ -5,7 +5,6 @@ import Parse from "parse";
 import Confetti from "react-confetti";
 import axios from "axios";
 import RenderAllPdfPage from "../components/pdf/RenderAllPdfPage";
-import { useDrop } from "react-dnd";
 import EmailComponent from "../components/pdf/EmailComponent";
 import WidgetComponent from "../components/pdf/WidgetComponent";
 import {
@@ -69,7 +68,9 @@ import {
 import WidgetsValueModal from "../components/pdf/WidgetsValueModal";
 import WidgetNameModal from "../components/pdf/WidgetNameModal";
 import CellsSettingModal from "../components/pdf/CellsSettingModal";
-import { applyNumberFormulasToPages } from "../utils";
+import {
+  applyNumberFormulasToPages,
+} from "../utils";
 //For signYourself inProgress section signer can add sign and complete doc sign.
 function SignYourSelf() {
   const { t } = useTranslation();
@@ -145,11 +146,6 @@ function SignYourSelf() {
   const [widgetsTour, setWidgetsTour] = useState(false);
 
   const [owner, setOwner] = useState({});
-  const [, drop] = useDrop({
-    accept: "BOX",
-    drop: (item, monitor) => addPositionOfSignature(item, monitor),
-    collect: (monitor) => ({ isOver: !!monitor.isOver() })
-  });
   const index = xyPosition?.findIndex((object) => {
     return object.pageNumber === pageNumber;
   });
@@ -397,15 +393,34 @@ function SignYourSelf() {
         .getBoundingClientRect();
       //`containerRect.left`,  The distance from the left of the viewport to the left side of the element.
       //`containerRect.top` The distance from the top of the viewport to the top of the element.
-
       const x = offset.x - containerRect.left;
       const y = offset.y - containerRect.top;
-      const getXPosition = signBtnPosition[0] ? x - signBtnPosition[0].xPos : x;
-      const getYPosition = signBtnPosition[0] ? y - signBtnPosition[0].yPos : y;
+      let getXPosition = signBtnPosition[0] ? x - signBtnPosition[0].xPos : x;
+      let getYPosition = signBtnPosition[0] ? y - signBtnPosition[0].yPos : y;
       const getWidth = widgetTypeExist
         ? calculateInitialWidthHeight(widgetValue).getWidth
         : defaultWidthHeight(dragTypeValue).width;
       const getHeight = defaultWidthHeight(dragTypeValue).height;
+
+      // to avoid negative position values (half portion of widget should not be out of pdf container)
+      const calculateWidth = getXPosition + getWidth - containerRect.width;
+      const calculateHeight = getYPosition + getWidth - containerRect.height;
+
+      // to avoid negative position values (half portion of widget should not be out of pdf container)
+      if (getXPosition < 0) {
+        getXPosition = 0;
+      }
+      if (getYPosition < 0) {
+        getYPosition = 0;
+      }
+
+      if (calculateWidth > 0) {
+        getXPosition = getXPosition - calculateWidth;
+      }
+
+      if (calculateHeight > 0) {
+        getYPosition = getYPosition - calculateHeight;
+      }
       dropObj = {
         xPosition: getXPosition / (containerScale * scale),
         yPosition: getYPosition / (containerScale * scale),
@@ -454,9 +469,7 @@ function SignYourSelf() {
       setFontColor("black");
     }
     dispatch(setIsShowModal({ [key]: true }));
-    // if (dragTypeValue !== "checkbox") {
     setCurrWidgetsDetails(dropObj);
-    // }
   };
 
   //`handleResend` function is used to resend otp for email verification
@@ -1388,7 +1401,6 @@ function SignYourSelf() {
                       pageNumber={pageNumber}
                       pdfOriginalWH={pdfOriginalWH}
                       pdfNewWidth={pdfNewWidth}
-                      drop={drop}
                       successEmail={successEmail}
                       nodeRef={nodeRef}
                       handleTabDrag={handleTabDrag}
@@ -1427,6 +1439,8 @@ function SignYourSelf() {
                       currWidgetsDetails={currWidgetsDetails}
                       isShowModal={isShowModal}
                       unSignedWidgetId={unSignedWidgetId}
+                      signBtnPosition={signBtnPosition}
+                      addPositionOfSignature={addPositionOfSignature}
                     />
                   )}
                 </div>

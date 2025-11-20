@@ -15,7 +15,11 @@ export default async function updateTenant(request) {
     // Update tenant details
     Object.keys(details).forEach(key => {
       if (validKeys.includes(key)) {
-        tenant.set(key, details?.[key]);
+        if (details?.[key] !== undefined) {
+          tenant.set(key, details?.[key]);
+        } else {
+          tenant.unset(key);
+        }
       }
     });
 

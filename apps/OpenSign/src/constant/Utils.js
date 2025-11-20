@@ -3430,39 +3430,49 @@ export const updateDateWidgetsRes = (
   const contactUser = documentData?.Signers?.find(
     (data) => data.objectId === signerId
   );
-  const extUser = JSON.stringify([contactUser]);
+  const extUser =
+    localStorage.getItem("Extand_Class") || JSON.stringify([contactUser]);
   let placeHolders = documentData?.Placeholders;
   if (isRemovePrefill) {
     placeHolders = placeHolders?.filter((x) => x.Role !== "prefill");
   }
   const userDetails = extUser ? JSON.parse(extUser)[0] : contactUser;
   return placeHolders?.map((item) => {
-    if (item?.signerObjId === signerId) {
-      return {
-        ...item,
-        placeHolder: item?.placeHolder?.map((ph) => ({
+    if (item?.signerObjId === signerId || item?.Id === signerId) {
+      // Sort page number placeholders
+      const sortedPlaceHolder = [...item.placeHolder]
+        .sort((a, b) => a.pageNumber - b.pageNumber)
+        .map((ph) => ({
           ...ph,
-          pos: ph?.pos?.map((widget) => {
-            if (
-              ["name", "email", "job title", "company"].includes(widget.type) &&
-              !widget.options.defaultValue &&
-              !widget.options.response
-            ) {
-              return {
-                ...widget,
-                options: {
-                  ...widget.options,
-                  response: widgetDataValue(widget.type, userDetails)
-                }
-              };
-            }
-            return widget;
-          })
-        }))
-      };
-    } else {
-      return item;
+          // Sort positions within each page
+          pos: [...ph.pos]
+            .sort((a, b) => a.yPosition - b.yPosition)
+            .map((widget) => {
+              // Update widget values if needed
+              if (
+                ["name", "email", "job title", "company"].includes(
+                  widget.type
+                ) &&
+                !widget.options.defaultValue &&
+                !widget.options.response &&
+                userDetails
+              ) {
+                return {
+                  ...widget,
+                  options: {
+                    ...widget.options,
+                    response: widgetDataValue(widget.type, userDetails)
+                  }
+                };
+              }
+              return widget;
+            })
+        }));
+
+      return { ...item, placeHolder: sortedPlaceHolder };
     }
+
+    return item;
   });
 };
 
@@ -4038,3 +4048,31 @@ export const getDefaultDate = (dateStr, format) => {
 };
 //function to get default format
 export const getDefaultFormat = (dateFormat) => dateFormat || "MM/dd/yyyy";
+
+export function generateId(length) {
+  const characters =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  let result = "";
+  const charactersLength = characters.length;
+
+  for (let i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+  return result;
+}
+//function to handle widget background color
+export const handleBackground = (data, isNeedSign, uniqueId) => {
+  if (data) {
+    if (isNeedSign) {
+      if (data?.Id === uniqueId) {
+        return data?.blockColor + "b0";
+      } else {
+        return "#dedddc";
+      }
+    } else {
+      return data?.blockColor + "b0";
+    }
+  } else {
+    return "rgba(203, 233, 237, 0.69)";
+  }
+};

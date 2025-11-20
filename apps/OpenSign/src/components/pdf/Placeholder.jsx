@@ -7,7 +7,6 @@ import {
   fontColorArr,
   fontsizeArr,
   getContainerScale,
-  handleCopyNextToWidget,
   handleHeighlightWidget,
   onChangeInput,
   radioButtonWidget,
@@ -15,13 +14,13 @@ import {
   cellsWidget,
   textWidget,
   selectFormat,
-  randomId,
   getYear,
   getMonth,
   months,
   years,
   getDefaultDate,
-  getDefaultFormat
+  getDefaultFormat,
+  handleBackground
 } from "../../constant/Utils";
 import PlaceholderType from "./PlaceholderType";
 import moment from "moment";
@@ -29,10 +28,7 @@ import "../../styles/opensigndrive.css";
 import ModalUi from "../../primitives/ModalUi";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  setIsShowModal,
-  setPrefillImg
-} from "../../redux/reducers/widgetSlice";
+import { setIsShowModal } from "../../redux/reducers/widgetSlice";
 import { themeColor } from "../../constant/const";
 import { useGuidelinesContext } from "../../context/GuidelinesContext";
 import DatePicker from "react-datepicker";
@@ -40,7 +36,6 @@ import DatePicker from "react-datepicker";
 function Placeholder(props) {
   const { t } = useTranslation();
   const dispatch = useDispatch();
-  const prefillImg = useSelector((state) => state.widget.prefillImg);
   const { showGuidelines } = useGuidelinesContext();
   const statusArr = ["Required", "Optional"];
   const widgetData =
@@ -306,31 +301,8 @@ function Placeholder(props) {
     ) {
       props.setUniqueId(props?.data?.Id);
     }
-    if (props?.data?.Role !== "prefill") {
-      props.setIsPageCopy(true);
-      props.setCurrWidgetsDetails(props.pos);
-    } else {
-      const newId = randomId();
-      //function to create new widget next to just widget
-      handleCopyNextToWidget(
-        newId,
-        props.pos,
-        props.xyPosition,
-        props.index,
-        props.setXyPosition,
-        props.data && props.data?.Id
-      );
-      //condiiton is used to store copied prefill image base64 url in redux for display image
-      if (props?.pos?.type === "image") {
-        const getPrefillImg = prefillImg?.find((x) => x.id === props.pos.key);
-        dispatch(
-          setPrefillImg({
-            id: newId,
-            base64: getPrefillImg?.base64
-          })
-        );
-      }
-    }
+    props.setIsPageCopy(true);
+    props.setCurrWidgetsDetails(props.pos);
   };
 
   const setCellCount = (key, newCount) => {
@@ -594,7 +566,7 @@ function Placeholder(props) {
       }
     }
   };
-  //function to calculate font size
+   //function to calculate font size
   const calculateFont = (size, isMinHeight) => {
     const containerScale = getContainerScale(
       props.pdfOriginalWH,
@@ -624,22 +596,6 @@ function Placeholder(props) {
     }
   };
 
-  //function to handle widget background color
-  const handleBackground = () => {
-    if (props.data) {
-      if (props.isNeedSign) {
-        if (props.data?.Id === props?.uniqueId) {
-          return props.data?.blockColor + "b0";
-        } else {
-          return "#dedddc";
-        }
-      } else {
-        return props.data?.blockColor + "b0";
-      }
-    } else {
-      return "rgba(203, 233, 237, 0.69)";
-    }
-  };
   const fontSize = calculateFont(props.pos.options?.fontSize);
   const fontColor = props.pos.options?.fontColor || "black";
 
@@ -773,7 +729,11 @@ function Placeholder(props) {
             background:
               props?.data?.Role === "prefill"
                 ? "transparent"
-                : handleBackground() //handle block color of widget for
+                : handleBackground(
+                    props?.data,
+                    props?.isNeedSign,
+                    props?.uniqueId
+                  ) //handle block color of widget for
           }}
           onDrag={(_, d) => {
             props?.handleTabDrag?.(props.pos.key);

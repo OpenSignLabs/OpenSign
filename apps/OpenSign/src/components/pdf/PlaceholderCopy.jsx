@@ -2,9 +2,12 @@ import { useState } from "react";
 import ModalUi from "../../primitives/ModalUi";
 import { handleCopyNextToWidget, randomId } from "../../constant/Utils";
 import { useTranslation } from "react-i18next";
+import { setPrefillImg } from "../../redux/reducers/widgetSlice";
+import { useDispatch } from "react-redux";
 
 function PlaceholderCopy(props) {
   const { t } = useTranslation();
+  const dispatch = useDispatch();
   const copyType = [
     { id: 1, type: "All pages" },
     { id: 2, type: "All pages but last" },
@@ -121,7 +124,7 @@ function PlaceholderCopy(props) {
       );
       for (let i = 0; i < props.allPages; i++) {
         const newId = randomId();
-        const nameId = randomId(2)
+        const nameId = randomId(2);
         const widgetName = `${currentPlaceholder?.options?.name}${nameId}`;
         const newPlaceholder = {
           ...currentPlaceholder,
@@ -134,7 +137,6 @@ function PlaceholderCopy(props) {
         );
         const existPlaceholderPosition =
           existPlaceholder[0] && existPlaceholder[0].pos;
-
         //function for get copy to requested location of placeholder position
         const getPlaceholderObj = getCopyPlaceholderPosition(
           type,
@@ -146,6 +148,18 @@ function PlaceholderCopy(props) {
           newPlaceholderPosition.push(getPlaceholderObj);
         }
         newPageNumber++;
+        if (
+          filterSignerPosition[0]?.Role === "prefill" &&
+          currentPlaceholder?.options?.response &&
+          currentPlaceholder?.type === "image"
+        ) {
+          dispatch(
+            setPrefillImg({
+              id: newId,
+              base64: currentPlaceholder?.options?.response
+            })
+          );
+        }
       }
       let updatedSignerPlaceholder;
       if (props?.signerObjId) {
@@ -240,6 +254,18 @@ function PlaceholderCopy(props) {
           props.setXyPosition,
           props?.Id
         );
+          if (
+          filterSignerPosition[0]?.Role === "prefill" &&
+          currentXYposition?.options?.response &&
+          currentXYposition?.type === "image"
+        ) {
+          dispatch(
+            setPrefillImg({
+              id: newId,
+              base64: currentXYposition?.options?.response
+            })
+          );
+        }
       } else {
         const getIndex = props?.xyPosition.findIndex(
           (data) => data.pageNumber === props.pageNumber

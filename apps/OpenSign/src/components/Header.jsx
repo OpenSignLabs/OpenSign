@@ -13,8 +13,8 @@ import {
 import { useTranslation } from "react-i18next";
 import { appInfo } from "../constant/appinfo";
 import { useDispatch } from "react-redux";
-import { toggleSidebar } from "../redux/reducers/sidebarReducer.js";
-import { sessionStatus } from "../redux/reducers/userReducer.js";
+import { toggleSidebar } from "../redux/reducers/sidebarReducer";
+import { sessionStatus } from "../redux/reducers/userReducer";
 
 const Header = ({ isConsole, setIsLoggingOut }) => {
   const { t, i18n } = useTranslation();
@@ -141,7 +141,10 @@ const Header = ({ isConsole, setIsLoggingOut }) => {
           </button>
         </div>
         <div className="flex-1 ml-2">
-          <div className="h-[25px] md:h-[40px] w-auto overflow-hidden">
+          <div
+            onClick={() => navigate("/dashboard/35KBoSgoAK")}
+            className="h-[25px] md:h-[40px] w-auto overflow-hidden cursor-pointer"
+          >
             {applogo && (
               <img
                 className="object-contain h-full w-auto"
