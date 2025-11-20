@@ -71,6 +71,7 @@
   "login-page": "Page de connexion",
   "or": "OU",
   "signup-page": "Page d'inscription",
+  "password-match-length": "Le nouveau mot de passe et la confirmation doivent correspondre",
   "password-length": "Le mot de passe doit être de plus de 8 caractères",
   "password-case": "Le mot de passe doit contenir une lettre majuscule, minuscule et un chiffre ",
   "password-special-char": "Le mot de passe doit contenir un caractère spécial",

@@ -71,6 +71,7 @@
   "login-page": "Anmeldeseite",
   "or": "ODER",
   "signup-page": "Registrierungsseite",
+  "password-match-length": "Neues Passwort und Bestätigungspasswort sollten übereinstimmen",
   "password-length": "Das Passwort sollte 8 Zeichen lang sein",
   "password-case": "Das Passwort sollte einen Großbuchstaben, einen Kleinbuchstaben und eine Zahl enthalten",
   "password-special-char": "Das Passwort sollte ein Sonderzeichen enthalten",

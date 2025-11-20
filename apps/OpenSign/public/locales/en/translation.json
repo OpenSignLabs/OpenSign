@@ -71,6 +71,7 @@
   "login-page": "Login P+age",
   "or": "OR",
   "signup-page": "Signup page",
+  "password-match-length": "New password and confirmation password should match",
   "password-length": "Password should be 8 characters long",
   "password-case": "Password should contain uppercase letter, lowercase letter, digit",
   "password-special-char": " Password should contain special character",
