@@ -1,7 +1,4 @@
-import React, {
-  useState,
-  useEffect,
-} from "react";
+import React, { useState, useEffect } from "react";
 import { Navigate, useNavigate } from "react-router";
 import Parse from "parse";
 import { SaveFileSize } from "../constant/saveFileSize";
@@ -9,10 +6,7 @@ import dp from "../assets/images/dp.png";
 import { sanitizeFileName } from "../utils";
 import axios from "axios";
 import Tooltip from "../primitives/Tooltip";
-import {
-  getSecureUrl,
-  handleSendOTP,
-} from "../constant/Utils";
+import { getSecureUrl, handleSendOTP } from "../constant/Utils";
 import ModalUi from "../primitives/ModalUi";
 import Loader from "../primitives/Loader";
 import { useTranslation } from "react-i18next";
@@ -133,7 +127,7 @@ function UserProfile() {
         Name: obj.Name,
         JobTitle: jobTitle,
         Company: company,
-        Language: obj?.language || "",
+        Language: obj?.language || ""
       };
 
       await axios.put(
@@ -172,8 +166,8 @@ function UserProfile() {
 
     try {
       const response = await parseFile.save({
-        progress: (progressValue, loaded, total, { type }) => {
-          if (type === "upload" && progressValue !== null) {
+        progress: (progressValue, loaded, total) => {
+          if (progressValue !== null) {
             const percentCompleted = Math.round((loaded * 100) / total);
             // console.log("percentCompleted ", percentCompleted);
             setpercentage(percentCompleted);
@@ -449,7 +443,7 @@ function UserProfile() {
               <button
                 type="button"
                 onClick={(e) => {
-                    editmode ? handleSubmit(e) : setEditMode(true);
+                  editmode ? handleSubmit(e) : setEditMode(true);
                 }}
                 className="op-btn op-btn-primary md:w-[100px]"
               >
@@ -460,9 +454,7 @@ function UserProfile() {
                 onClick={() =>
                   editmode ? handleCancel() : navigate("/changepassword")
                 }
-                className={
-                      `op-btn ${editmode ? "op-btn-ghost w-[100px]" : "op-btn-secondary"}`
-                }
+                className={`op-btn ${editmode ? "op-btn-ghost w-[100px]" : "op-btn-secondary"}`}
               >
                 {editmode ? t("cancel") : t("change-password")}
               </button>
