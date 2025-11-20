@@ -71,6 +71,7 @@
   "login-page": "Página de inicio de sesión",
   "or": "O",
   "signup-page": "Página de registro",
+  "password-match-length": "La nueva contraseña y la confirmación deben coincidir",
   "password-length": "La contraseña debe tener 8 caracteres",
   "password-case": "La contraseña debe incluir mayúsculas, minúsculas y números",
   "password-special-char": " La contraseña debe incluir caracteres especiales",
