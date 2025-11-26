@@ -4587,7 +4587,7 @@ components:
         email:
           type: string
           example: joebee@example.com
-        phone:
+        ip_address:
           type: string
           example: "193.186.4.187"
       xml:
