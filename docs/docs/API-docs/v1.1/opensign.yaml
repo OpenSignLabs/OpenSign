@@ -337,6 +337,7 @@ paths:
         - **name:** Provides a different name for widgets if you are providing more than one widget.
         - **color:** Specifies the color of the widget content. Available options include black, blue, red, and yellow, with black as the default selection if no color is specified. This parameter is optional and is applicable to the following widgets: email, name, job title, company, date, textbox, checkbox.
         - **fontsize:** Specifies the fontsize of the widget content. Available options include 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, and 28, with a default fontsize of 12 if not specified. This parameter is optional and is applicable to the following widgets: email, name, job title, company, date, textbox, checkbox.
+        - **hide_text_with_asterisks:** When enabled, the text on the signed document is hidden from recipients using asterisks, but remains fully visible to the document owner in their OpenSign account. This option is available only on Teams and Enterprise plans.
 
         **List of all supported widgets:**
 
@@ -397,7 +398,8 @@ paths:
             "required": true,
             "name": "email",
             "color": "black",
-            "fontsize": 12
+            "fontsize": 12,
+            "hide_text_with_asterisks": false
           }
         }
         ```
@@ -415,7 +417,8 @@ paths:
             "required": true,
             "name": "name",
             "color": "black",
-            "fontsize": 12
+            "fontsize": 12,
+            "hide_text_with_asterisks": false
           }
         }
         ```
@@ -433,7 +436,8 @@ paths:
             "required": true,
             "name": "job title",
             "color": "black",
-            "fontsize": 12
+            "fontsize": 12,
+            "hide_text_with_asterisks": false
           }
         }
         ```
@@ -451,7 +455,8 @@ paths:
             "required": true,
             "name": "company",
             "color": "black",
-            "fontsize": 12
+            "fontsize": 12,
+            "hide_text_with_asterisks": false
           }
         }
         ```
@@ -506,7 +511,8 @@ paths:
             "hint": "provide name",
             "regularexpression": "",
             "color": "black",
-            "fontsize": 12
+            "fontsize": 12,
+            "hide_text_with_asterisks": false
           }
         }
         ```
@@ -580,7 +586,8 @@ paths:
             "formula": "",
             "decimalplaces": 2,
             "color": "black",
-            "fontsize": 12
+            "fontsize": 12,
+            "hide_text_with_asterisks": false
           }
         }
         ```
@@ -637,6 +644,7 @@ paths:
         - **name:** Provides a different name for widgets if you are providing more than one widget.
         - **color:** Specifies the color of the widget content. Available options include black, blue, red, and yellow, with black as the default selection if no color is specified. This parameter is optional and is applicable to the following widgets: email, name, job title, company, date, textbox, checkbox, radio button, and dropdown.
         - **fontsize:** Specifies the fontsize of the widget content. Available options include 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, and 28, with a default fontsize of 12 if not specified. This parameter is optional and is applicable to the following widgets: email, name, job title, company, date, textbox, checkbox, radio button, and dropdown.
+        - **hide_text_with_asterisks:** When enabled, the text on the signed document is hidden from recipients using asterisks, but remains fully visible to the document owner in their OpenSign account. This option is available only on Teams and Enterprise plans.
 
         **List of all supported widgets:**
 
@@ -697,7 +705,8 @@ paths:
             "required": true,
             "name": "email",
             "color": "black",
-            "fontsize": 12
+            "fontsize": 12,
+            "hide_text_with_asterisks": false
           }
         }
         ```
@@ -715,7 +724,8 @@ paths:
             "required": true,
             "name": "name",
             "color": "black",
-            "fontsize": 12
+            "fontsize": 12,
+            "hide_text_with_asterisks": false
           }
         }
         ```
@@ -733,7 +743,8 @@ paths:
             "required": true,
             "name": "job title",
             "color": "black",
-            "fontsize": 12
+            "fontsize": 12,
+            "hide_text_with_asterisks": false
           }
         }
         ```
@@ -751,7 +762,8 @@ paths:
             "required": true,
             "name": "company",
             "color": "black",
-            "fontsize": 12
+            "fontsize": 12,
+            "hide_text_with_asterisks": false
           }
         }
         ```
@@ -806,7 +818,8 @@ paths:
             "hint": "provide name",
             "regularexpression": "",
             "color": "black",
-            "fontsize": 12
+            "fontsize": 12,
+            "hide_text_with_asterisks": false
           }
         }
         ```
@@ -931,7 +944,8 @@ paths:
             "formula": "",
             "decimalplaces": 2,
             "color": "black",
-            "fontsize": 12
+            "fontsize": 12,
+            "hide_text_with_asterisks": false
           }
         }
         ```
@@ -1114,6 +1128,7 @@ paths:
         - **name:** Provides a different name for widgets if you are providing more than one widget.
         - **color:** Specifies the color of the widget content. Available options include black, blue, red, and yellow, with black as the default selection if no color is specified. This parameter is optional and is applicable to the following widgets: email, name, job title, company, date, textbox, checkbox, radio button, and dropdown.
         - **fontsize:** Specifies the fontsize of the widget content. Available options include 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, and 28, with a default fontsize of 12 if not specified. This parameter is optional and is applicable to the following widgets: email, name, job title, company, date, textbox, checkbox, radio button, and dropdown.
+        - **hide_text_with_asterisks:** When enabled, the text on the signed document is hidden from recipients using asterisks, but remains fully visible to the document owner in their OpenSign account. This option is available only on Teams and Enterprise plans.
 
         **List of all supported widgets:**
 
@@ -1174,7 +1189,8 @@ paths:
             "required": true,
             "name": "email",
             "color": "black",
-            "fontsize": 12
+            "fontsize": 12,
+            "hide_text_with_asterisks": false
           }
         }
         ```
@@ -1192,7 +1208,8 @@ paths:
             "required": true,
             "name": "name",
             "color": "black",
-            "fontsize": 12
+            "fontsize": 12,
+            "hide_text_with_asterisks": false
           }
         }
         ```
@@ -1210,7 +1227,8 @@ paths:
             "required": true,
             "name": "job title",
             "color": "black",
-            "fontsize": 12
+            "fontsize": 12,
+            "hide_text_with_asterisks": false
           }
         }
         ```
@@ -1228,7 +1246,8 @@ paths:
             "required": true,
             "name": "company",
             "color": "black",
-            "fontsize": 12
+            "fontsize": 12,
+            "hide_text_with_asterisks": false
           }
         }
         ```
@@ -1283,7 +1302,8 @@ paths:
             "hint": "provide name",
             "regularexpression": "",
             "color": "black",
-            "fontsize": 12
+            "fontsize": 12,
+            "hide_text_with_asterisks": false
           }
         }
         ```
@@ -1408,7 +1428,8 @@ paths:
             "formula": "",
             "decimalplaces": 2,
             "color": "black",
-            "fontsize": 12
+            "fontsize": 12,
+            "hide_text_with_asterisks": false
           }
         }
         ```
@@ -1579,12 +1600,16 @@ paths:
         The Create Document from template API allows you to generate new documents by just providing template_id instead of uploading a new file(in the form of base64 or binary) every time you need to create a document. Templates for repeatedly used files can be created from user interface at [**Debug UI**](https://app.opensignlabs.com/debugpdf) or using the Create Template API.
 
         You can provide default value for all widgets based on their name all widgets support except signature, stamp, initials, image.
+
+        **hide_text_with_asterisks:** When enabled, the text on the signed document is hidden from recipients using asterisks, but remains fully visible to the document owner in their OpenSign account. This option is available only on Teams and Enterprise plans.
+
         1. **email**
         ```
         {
           "name": "email",
           "readonly": false,
-          "default": "email@example.com"
+          "default": "email@example.com",
+          "hide_text_with_asterisks": false
         }
         ```
 
@@ -1593,7 +1618,8 @@ paths:
         {
           "name": "name",
           "readonly": false,
-          "default": "joe"
+          "default": "joe",
+          "hide_text_with_asterisks": false
         }
         ```
 
@@ -1602,7 +1628,8 @@ paths:
         {
           "name": "job title",
           "readonly": false,
-          "default": "ceo"
+          "default": "ceo",
+          "hide_text_with_asterisks": false
         }
         ```
 
@@ -1611,7 +1638,8 @@ paths:
         {
           "name": "company",
           "readonly": false,
-          "default": "example pvt ltd"
+          "default": "example pvt ltd",
+          "hide_text_with_asterisks": false
         }
         ```
 
@@ -1629,7 +1657,8 @@ paths:
         {
           "name": "textbox",
           "readonly": false,
-          "default": "my text"
+          "default": "my text",
+          "hide_text_with_asterisks": false
         }
         ```
 
@@ -1669,6 +1698,7 @@ paths:
           "default": 0,
           "formula": "",
           "decimalplaces": 2,
+          "hide_text_with_asterisks": false
         }
         ```
         
@@ -2169,6 +2199,7 @@ paths:
       security:
       - x-api-token: []
   /drafttemplate:
+    
     post:
       tags:
       - Templates
@@ -2212,6 +2243,7 @@ paths:
         - **name:** Provides a different name for widgets if you are providing more than one widget.
         - **color:** Specifies the color of the widget content. Available options include black, blue, red, and yellow, with black as the default selection if no color is specified. This parameter is optional and is applicable to the following widgets: email, name, job title, company, date, textbox, checkbox, radio button, and dropdown.
         - **fontsize:** Specifies the fontsize of the widget content. Available options include 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, and 28, with a default fontsize of 12 if not specified. This parameter is optional and is applicable to the following widgets: email, name, job title, company, date, textbox, checkbox, radio button, and dropdown.
+        - **hide_text_with_asterisks:** When enabled, the text on the signed document is hidden from recipients using asterisks, but remains fully visible to the document owner in their OpenSign account. This option is available only on Teams and Enterprise plans.
 
         **List of all supported widgets:**
 
@@ -2272,7 +2304,8 @@ paths:
             "required": true,
             "name": "email",
             "color": "black",
-            "fontsize": 12
+            "fontsize": 12,
+            "hide_text_with_asterisks": false
           }
         }
         ```
@@ -2290,7 +2323,8 @@ paths:
             "required": true,
             "name": "name",
             "color": "black",
-            "fontsize": 12
+            "fontsize": 12,
+            "hide_text_with_asterisks": false
           }
         }
         ```
@@ -2308,7 +2342,8 @@ paths:
             "required": true,
             "name": "job title",
             "color": "black",
-            "fontsize": 12
+            "fontsize": 12,
+            "hide_text_with_asterisks": false
           }
         }
         ```
@@ -2326,7 +2361,8 @@ paths:
             "required": true,
             "name": "company",
             "color": "black",
-            "fontsize": 12
+            "fontsize": 12,
+            "hide_text_with_asterisks": false
           }
         }
         ```
@@ -2381,7 +2417,8 @@ paths:
             "hint": "provide name",
             "regularexpression": "",
             "color": "black",
-            "fontsize": 12
+            "fontsize": 12,
+            "hide_text_with_asterisks": false
           }
         }
         ```
@@ -2506,7 +2543,8 @@ paths:
             "formula": "",
             "decimalplaces": 2,
             "color": "black",
-            "fontsize": 12
+            "fontsize": 12,
+            "hide_text_with_asterisks": false
           }
         }
         ```
@@ -2711,6 +2749,7 @@ paths:
         - **name:** Provides a different name for widgets if you are providing more than one widget.
         - **color:** Specifies the color of the widget content. Available options include black, blue, red, and yellow, with black as the default selection if no color is specified. This parameter is optional and is applicable to the following widgets: email, name, job title, company, date, textbox, checkbox, radio button, and dropdown.
         - **fontsize:** Specifies the fontsize of the widget content. Available options include 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, and 28, with a default fontsize of 12 if not specified. This parameter is optional and is applicable to the following widgets: email, name, job title, company, date, textbox, checkbox, radio button, and dropdown.
+        - **hide_text_with_asterisks:** When enabled, the text on the signed document is hidden from recipients using asterisks, but remains fully visible to the document owner in their OpenSign account. This option is available only on Teams and Enterprise plans.
 
         **List of all supported widgets:**
 
@@ -2771,7 +2810,8 @@ paths:
             "required": true,
             "name": "email",
             "color": "black",
-            "fontsize": 12
+            "fontsize": 12,
+            "hide_text_with_asterisks": false
           }
         }
         ```
@@ -2789,7 +2829,8 @@ paths:
             "required": true,
             "name": "name",
             "color": "black",
-            "fontsize": 12
+            "fontsize": 12,
+            "hide_text_with_asterisks": false
           }
         }
         ```
@@ -2807,7 +2848,8 @@ paths:
             "required": true,
             "name": "job title",
             "color": "black",
-            "fontsize": 12
+            "fontsize": 12,
+            "hide_text_with_asterisks": false
           }
         }
         ```
@@ -2825,7 +2867,8 @@ paths:
             "required": true,
             "name": "company",
             "color": "black",
-            "fontsize": 12
+            "fontsize": 12,
+            "hide_text_with_asterisks": false
           }
         }
         ```
@@ -2880,7 +2923,8 @@ paths:
             "hint": "provide name",
             "regularexpression": "",
             "color": "black",
-            "fontsize": 12
+            "fontsize": 12,
+            "hide_text_with_asterisks": false
           }
         }
         ```
@@ -3005,7 +3049,8 @@ paths:
             "formula": "",
             "decimalplaces": 2,
             "color": "black",
-            "fontsize": 12
+            "fontsize": 12,
+            "hide_text_with_asterisks": false
           }
         }
         ```
@@ -3209,6 +3254,7 @@ paths:
         - **name:** Provides a different name for widgets if you are providing more than one widget.
         - **color:** Specifies the color of the widget content. Available options include black, blue, red, and yellow, with black as the default selection if no color is specified. This parameter is optional and is applicable to the following widgets: email, name, job title, company, date, textbox, checkbox, radio button, and dropdown.
         - **fontsize:** Specifies the fontsize of the widget content. Available options include 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, and 28, with a default fontsize of 12 if not specified. This parameter is optional and is applicable to the following widgets: email, name, job title, company, date, textbox, checkbox, radio button, and dropdown.
+        - **hide_text_with_asterisks:** When enabled, the text on the signed document is hidden from recipients using asterisks, but remains fully visible to the document owner in their OpenSign account. This option is available only on Teams and Enterprise plans.
 
         **List of all supported widgets:**
 
@@ -3269,7 +3315,8 @@ paths:
             "required": true,
             "name": "email",
             "color": "black",
-            "fontsize": 12
+            "fontsize": 12,
+            "hide_text_with_asterisks": false
           }
         }
         ```
@@ -3287,7 +3334,8 @@ paths:
             "required": true,
             "name": "name",
             "color": "black",
-            "fontsize": 12
+            "fontsize": 12,
+            "hide_text_with_asterisks": false
           }
         }
         ```
@@ -3305,7 +3353,8 @@ paths:
             "required": true,
             "name": "job title",
             "color": "black",
-            "fontsize": 12
+            "fontsize": 12,
+            "hide_text_with_asterisks": false
           }
         }
         ```
@@ -3323,7 +3372,8 @@ paths:
             "required": true,
             "name": "company",
             "color": "black",
-            "fontsize": 12
+            "fontsize": 12,
+            "hide_text_with_asterisks": false
           }
         }
         ```
@@ -3378,7 +3428,8 @@ paths:
             "hint": "provide name",
             "regularexpression": "",
             "color": "black",
-            "fontsize": 12
+            "fontsize": 12,
+            "hide_text_with_asterisks": false
           }
         }
         ```
@@ -3503,7 +3554,8 @@ paths:
             "formula": "",
             "decimalplaces": 2,
             "color": "black",
-            "fontsize": 12
+            "fontsize": 12,
+            "hide_text_with_asterisks": false
           }
         }
         ```
