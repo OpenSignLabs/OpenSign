@@ -1668,7 +1668,7 @@ paths:
           "readonly": false,
           "default": 0,
           "formula": "",
-          "decimalplaces": 2
+          "decimalplaces": 2,
         }
         ```
         
@@ -2062,6 +2062,104 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/inline_response_404_1'
+        "405":
+          description: Invalid API Token!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/invalidtoken'
+      security:
+      - x-api-token: []
+  
+  /signerips/{document_id}:
+    get:
+      tags:
+      - Documents
+      summary: Get Signer IPs
+      description: |
+        The Get Signer IPs API enables you to retrieve IPs of signers who signed the document.
+
+        Note: This API is only available for Teams and Enterprise plans.
+      operationId: getsignerips
+      parameters:
+      - name: document_id
+        in: path
+        description: objectId of Document
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          format: string
+          example: aB2cc2hpbh
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/signerIpsResponse'
+        "400":
+          description: "Something went wrong, please try again later!"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_400_1'
+        "404":
+          description: Document not found!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_404_3'
+        "405":
+          description: Invalid API Token!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/invalidtoken'
+      security:
+      - x-api-token: []
+
+  /formdata/{document_id}:
+    get:
+      tags:
+      - Documents
+      summary: Get Formdata
+      description: |
+        The Get Formdata API enables you to retrieve widget data filled by signers who signed the document.
+
+        Note: This API is only available for Teams and Enterprise plans.
+      operationId: getformdata
+      parameters:
+      - name: document_id
+        in: path
+        description: objectId of Document
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          format: string
+          example: aB2cc2hpbh
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/formdataResponse'
+        "400":
+          description: "Something went wrong, please try again later!"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_400_1'
+        "404":
+          description: Document not found!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_404_3'
         "405":
           description: Invalid API Token!
           content:
@@ -4470,6 +4568,78 @@ components:
           example: 0  
       xml:
         name: documentwithstatus
+    signerIpsResponse:
+      type: object
+      properties:
+        objectId:
+          type: string
+          format: string
+          example:  FGik23bhUJ
+        signer_ips:
+          type: array
+          items:
+            $ref: '#/components/schemas/signer_ips'
+      xml:
+        name: signerIpsResponse
+    signer_ips:
+      type: object
+      properties:
+        email:
+          type: string
+          example: joebee@example.com
+        phone:
+          type: string
+          example: "193.186.4.187"
+      xml:
+        name: signerIpsResponse
+
+    formdataResponse:
+      type: object
+      properties:
+        objectId:
+          type: string
+          format: string
+          example:  FGik23bhUJ
+        title:
+          type: string
+          format: string
+          example: sample doc  
+        sent_date:
+          type: string
+          format: string
+          example: "26/11/2025"
+        status:
+          type: string
+          format: string
+          example: "completed"
+        form_data:
+          type: array
+          items:
+            $ref: '#/components/schemas/form_data'
+      xml:
+        name: formdataResponse
+    form_data:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "job bee"
+        email:
+          type: string
+          example: "jobbee@exampl.com"
+        widgets:  
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+                example: "job title"
+              response:
+                type: string
+                example: "ceo"
+      xml:
+        name: form_data
     document:
       type: object
       properties:
