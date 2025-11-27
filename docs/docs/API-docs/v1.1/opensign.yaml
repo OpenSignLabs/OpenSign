@@ -4659,7 +4659,7 @@ components:
         sent_date:
           type: string
           format: string
-          example: "26/11/2025"
+          example: "11/11/2025"
         status:
           type: string
           format: string
