@@ -409,6 +409,35 @@ function PdfRequestFiles(
         } else {
           const obj = documentData?.[0];
           setSendInOrder(obj?.SendinOrder || false);
+          if (
+            obj?.Signers?.length &&
+            obj?.Placeholders?.length &&
+            currUserId !== "undefined"
+          ) {
+            const params = {
+              event: "viewed",
+              contactId: currUserId,
+              body: {
+                objectId: documentData?.[0].objectId,
+              }
+            };
+            try {
+              await axios.post(
+                `${localStorage.getItem("baseUrl")}functions/triggerevent`,
+                params,
+                {
+                  headers: {
+                    "Content-Type": "application/json",
+                    "X-Parse-Application-Id":
+                      localStorage.getItem("parseAppId"),
+                    sessiontoken: localStorage.getItem("accesstoken")
+                  }
+                }
+              );
+            } catch (err) {
+              console.log("Err ", err);
+            }
+          }
         }
 
         let signers = [];
@@ -729,7 +758,7 @@ function PdfRequestFiles(
                   docId,
                   contactId,
                   objectId,
-                  widgets
+                  widgets,
                 );
                 if (resSign && resSign.status === "success") {
                   dispatch(setTypedSignFont("Fasthand"));

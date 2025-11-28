@@ -168,7 +168,9 @@
     "Save as template": "Salva come modello",
     "Fix & resend": "Correggi e reinvia",
     "Kiosk Mode": "Modalità Kiosk",
-    "Reset password": "Reimposta password"
+    "Reset password": "Reimposta password",
+    "View formdata": "Visualizza i dati del modulo",
+    "Download all formdata": "Scarica tutti i dati del modulo"
   },
   "report-heading": {
     "Sr.No": "Nr.",
@@ -203,7 +205,8 @@
     "Redirect url": "URL di reindirizzamento",
     "Created Date": "Data di creazione",
     "Updated Date": "Data di aggiornamento",
-    "Expiry Date": "Data di scadenza"
+    "Expiry Date": "Data di scadenza",
+    "Sent Date": "Data di invio"
   },
   "report-help": {
     "Draft Documents": "Questi sono documenti che hai iniziato ma non hai ancora finalizzato per l'invio.",
@@ -442,7 +445,7 @@
     "Next to current widget": "Accanto al widget corrente"
   },
   "options": "Opzioni",
-  "minimun-check": "Controllo minimo",
+  "minimum-check": "Controllo minimo",
   "maximum-check": "Controllo massimo",
   "cell-count": "conteggio delle cellule",
   "default-value": "Valore predefinita",
@@ -1274,5 +1277,24 @@
   "global-smtp-settings-help-p2": "Per garantire una migliore consegna delle e-mail di richiesta firma, puoi collegare il tuo provider di posta preferito. Scegli una delle seguenti opzioni:",
   "global-connect-to-gmail-help": "Utilizza un account Gmail per inviare e-mail di richiesta firma direttamente dalla casella di posta della tua organizzazione. Migliora la consegna, la reputazione e l'affidabilità.",
   "global-connect-to-smtp-help": "Utilizza il tuo server SMTP per inviare e-mail tramite il tuo dominio. Questo offre pieno controllo sulla tua infrastruttura e-mail, migliora la consegna e mantiene la coerenza del marchio.",
-  "global-smtp-settings-help-p3": "Se non sono configurate impostazioni a livello utente, verranno applicate automaticamente queste impostazioni globali."
+  "global-smtp-settings-help-p3": "Se non sono configurate impostazioni a livello utente, verranno applicate automaticamente queste impostazioni globali.",
+  "hide-text-with-asterisks": "Nascondi il testo con asterischi",
+  "hide-text-with-asterisks-help": "Il testo nel documento firmato sarà nascosto dalla visualizzazione ma rimarrà accessibile al mittente (proprietario) tramite il suo account {{appName}}.",
+  "document-id": "ID documento",
+  "sent-date": "Data di invio",
+  "status": "Stato",
+  "signer-form-data-for": "Dati del modulo per il firmatario: {{signerName}} <{{signerEmail}}>",
+  "widget-name": "Nome del widget",
+  "widget-responses": "Risposte del widget",
+  "formdata-download-note": "Nota: Firme, timbri, iniziali e immagini non verranno esportati.",
+  "export-all-formdata-error": "Non è possibile esportare i dati del modulo perché il modello contiene nomi di widget duplicati. Creare un nuovo modello per poter esportare i dati.",
+  "export-formdata-error": "Non è possibile esportare i dati del modulo perché il documento contiene nomi di widget duplicati. Creare un nuovo documento senza nomi duplicati per poter esportare i dati.",
+  "duplicate-widget-name-error": "Questo nome di widget è già assegnato a un altro firmatario. Scegli un nome diverso.",
+  "duplicate-template-widget-error": "Non è possibile duplicare questo modello perché contiene nomi di widget duplicati.",
+  "credit-alert": "Avviso di credito",
+  "document-form-data": "Dati del modulo del documento",
+  "view-formdata-paid-title-error": "La funzione 'Visualizza dati del modulo' consente di stampare e scaricare i dati dei widget compilati dai firmatari durante la firma.",
+  "view-formdata-paid-error": "Nota: La funzione 'Visualizza dati del modulo' è disponibile solo per documenti creati dalla versione v2.32.0 in poi che non contengono nomi di widget duplicati.",
+  "download-all-formdata-paid-title-error": "La funzione 'Scarica tutti i dati del modulo' consente di scaricare i dati dei widget compilati dai firmatari per tutti i documenti creati dal modello.",
+  "download-all-formdata-paid-error": "Nota: La funzione 'Scarica tutti i dati del modulo' è disponibile solo per modelli creati dalla versione v2.32.0 in poi che non contengano nomi di widget duplicati."
 }

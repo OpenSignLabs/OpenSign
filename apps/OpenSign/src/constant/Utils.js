@@ -116,6 +116,19 @@ export const getSecureUrl = async (url) => {
   }
 };
 
+// `generateId` generates a random alphanumeric ID of specified length.
+export function generateId(length) {
+  const characters =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  let result = "";
+  const charactersLength = characters.length;
+
+  for (let i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+  return result;
+}
+
 /**
  * Removes a trailing path segment from a URL string, if present.
  *
@@ -447,14 +460,15 @@ export const addWidgetOptions = (
   widgetValue
 ) => {
   let defaultOpt;
+  const id = generateId(6);
   if (placeholder) {
     const countSameWidget = placeholder?.reduce((count, page) => {
       return count + page.pos.filter((item) => item.type === type).length;
     }, 0);
     const count = countSameWidget + 1;
-    defaultOpt = { name: `${type}-${count}`, status: "required" };
+    defaultOpt = { name: `${type}-${id}-${count}`, status: "required" };
   } else {
-    defaultOpt = { name: `${type}-1`, status: "required" };
+    defaultOpt = { name: `${type}-${id}-1`, status: "required" };
   }
   switch (type) {
     case "signature":
@@ -464,7 +478,10 @@ export const addWidgetOptions = (
     case "checkbox":
       return { ...defaultOpt, isReadOnly: false, isHideLabel: false };
     case textInputWidget:
-      return { ...defaultOpt, isReadOnly: false };
+      return {
+        ...defaultOpt,
+        isReadOnly: false
+      };
     case cellsWidget:
       return {
         ...defaultOpt,
@@ -476,11 +493,20 @@ export const addWidgetOptions = (
     case "initials":
       return defaultOpt;
     case "name":
-      return { ...defaultOpt, defaultValue: widgetValue ? widgetValue : "" };
+      return {
+        ...defaultOpt,
+        defaultValue: widgetValue ? widgetValue : ""
+      };
     case "company":
-      return { ...defaultOpt, defaultValue: widgetValue ? widgetValue : "" };
+      return {
+        ...defaultOpt,
+        defaultValue: widgetValue ? widgetValue : ""
+      };
     case "job title":
-      return { ...defaultOpt, defaultValue: widgetValue ? widgetValue : "" };
+      return {
+        ...defaultOpt,
+        defaultValue: widgetValue ? widgetValue : ""
+      };
     case "date": {
       const dateFormat = signer?.DateFormat
         ? selectFormat(signer?.DateFormat)
@@ -505,8 +531,7 @@ export const addWidgetOptions = (
       return {
         ...defaultOpt,
         values: [],
-        isReadOnly: false,
-        isHideLabel: false
+        isReadOnly: false
       };
     case textWidget:
       return defaultOpt;
@@ -523,14 +548,15 @@ export const addWidgetSelfsignOptions = (
 ) => {
   let defaultOpt;
   //condition to handle widgets name field
+  const id = generateId(6);
   if (placeholder) {
     const countSameWidget = placeholder?.reduce((count, page) => {
       return count + page.pos.filter((item) => item.type === type).length;
     }, 0);
     const count = countSameWidget + 1;
-    defaultOpt = { name: `${type}-${count}`, status: "required" };
+    defaultOpt = { name: `${type}-${id}-${count}`, status: "required" };
   } else {
-    defaultOpt = { name: `${type}-1`, status: "required" };
+    defaultOpt = { name: `${type}-${id}-1`, status: "required" };
   }
   switch (type) {
     case "signature":
@@ -3872,25 +3898,17 @@ export const sendEmailToSigners = async (
         } else {
           data = { SendMail: true };
         }
-        try {
-          await axios.put(
-            `${localStorage.getItem("baseUrl")}classes/contracts_Document/${
-              pdfDetails[0]?.objectId
-            }`,
-            data,
-            {
-              headers: {
-                "Content-Type": "application/json",
-                "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
-                "X-Parse-Session-Token": sessiontoken
-              }
-            }
-          );
-        } catch (err) {
-          console.log("axois err ", err);
-        }
-      } catch (e) {
-        console.log("error", e);
+        const docUrl = `${localStorage.getItem("baseUrl")}classes/contracts_Document`;
+        await axios.put(`${docUrl}/${pdfDetails[0]?.objectId}`, data, {
+          headers: {
+            "Content-Type": "application/json",
+            "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
+            "X-Parse-Session-Token": sessiontoken
+          }
+        });
+      } catch (error) {
+        const err = error?.response?.data?.error || error?.message;
+        console.error("Error while updating doc: ", err);
       }
     }
     return { status: "success" };
@@ -4049,17 +4067,6 @@ export const getDefaultDate = (dateStr, format) => {
 //function to get default format
 export const getDefaultFormat = (dateFormat) => dateFormat || "MM/dd/yyyy";
 
-export function generateId(length) {
-  const characters =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  let result = "";
-  const charactersLength = characters.length;
-
-  for (let i = 0; i < length; i++) {
-    result += characters.charAt(Math.floor(Math.random() * charactersLength));
-  }
-  return result;
-}
 //function to handle widget background color
 export const handleBackground = (data, isNeedSign, uniqueId) => {
   if (data) {

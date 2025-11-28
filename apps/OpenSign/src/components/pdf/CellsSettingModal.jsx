@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import ModalUi from "../../primitives/ModalUi";
 import { fontsizeArr, fontColorArr } from "../../constant/Utils";
 import { useTranslation } from "react-i18next";
@@ -7,7 +7,7 @@ export default function CellsSettingModal({
   isOpen,
   handleClose,
   defaultData,
-  handleSave
+  handleSave,
 }) {
   const { t } = useTranslation();
   const [name, setName] = useState("");
@@ -31,13 +31,16 @@ export default function CellsSettingModal({
         name,
         cellCount: parseInt(cellCount, 10),
         fontSize,
-        fontColor
+        fontColor,
       });
   };
 
   return (
-    <ModalUi isOpen={isOpen} handleClose={handleClose} title={t("widget-info")}> 
-      <form onSubmit={onSubmit} className="p-[20px] text-base-content flex flex-col gap-3">
+    <ModalUi isOpen={isOpen} handleClose={handleClose} title={t("widget-info")}>
+      <form
+        onSubmit={onSubmit}
+        className="p-[20px] text-base-content flex flex-col gap-3"
+      >
         <div>
           <label htmlFor="name" className="text-[13px]">
             {t("name")} <span className="text-[red]">*</span>
@@ -91,7 +94,10 @@ export default function CellsSettingModal({
                 </option>
               ))}
             </select>
-            <span className="w-5 h-[19px] ml-1" style={{ background: fontColor }} />
+            <span
+              className="w-5 h-[19px] ml-1"
+              style={{ background: fontColor }}
+            />
           </div>
         </div>
         <div className="h-[1px] w-full bg-[#b7b3b3] my-[16px]"></div>

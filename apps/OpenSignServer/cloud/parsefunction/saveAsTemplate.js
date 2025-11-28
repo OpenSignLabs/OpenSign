@@ -61,6 +61,7 @@ export default async function saveAsTemplate(request) {
                 status: 'required',
                 response: '',
                 ...(p?.options?.defaultValue ? { defaultValue: '' } : {}),
+                ...(p?.options?.isReadOnly ? { isReadOnly: false } : {}),
               },
             })),
           }));
@@ -89,7 +90,14 @@ export default async function saveAsTemplate(request) {
               pos: (page.pos || []).map(widget => {
                 // if there is a defaultValue in options, zero it out
                 if (widget.options && widget.options.defaultValue !== undefined) {
-                  return { ...widget, options: { ...widget.options, defaultValue: '' } }; // reset only the value
+                  return {
+                    ...widget,
+                    options: {
+                      ...widget.options,
+                      defaultValue: '',
+                      ...(widget?.options?.isReadOnly ? { isReadOnly: false } : {}),
+                    },
+                  }; // reset only the value
                 }
                 // otherwise, return the widget unchanged
                 return widget;

@@ -225,7 +225,6 @@ const AddUser = (props) => {
                           className="block text-xs font-semibold"
                         >
                           {t("phone")}
-                          {/* <span className="text-[red] text-[13px]"> *</span> */}
                         </label>
                         <input
                           type="text"

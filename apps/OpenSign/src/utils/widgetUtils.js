@@ -41,6 +41,42 @@ export const hasSignatureWidget = (s) =>
     (ph?.pos ?? []).some((p) => p?.type === "signature")
   );
 
+export const widgetNamesArr = (placeholders, signerId) => {
+  const widgetNames =
+    placeholders?.length > 0
+      ? placeholders
+          ?.filter((x) => x.Id !== signerId) // exclude current signer
+          ?.flatMap((item) => item.placeHolder || []) // go inside placeHolder[]
+          ?.flatMap((ph) => ph.pos || []) // go inside pos[]
+          ?.map((pos) => pos.options?.name) // pick the name
+          .filter(Boolean)
+      : [];
+
+  return widgetNames;
+};
+
+// `hasDuplicateWidgetNames` checks for duplicate widget names across different placeholder objects
+export const hasDuplicateWidgetNames = (placeholders = []) => {
+  const seen = new Set(); // names we've already seen in previous objs
+
+  for (const obj of placeholders || []) {
+    const widgetNames =
+      obj?.placeHolder
+        ?.flatMap((ph) => ph.pos || [])
+        ?.map((pos) => pos.options?.name)
+        .filter(Boolean) || [];
+
+    const uniqueNames = [...new Set(widgetNames)]; // ignore duplicates inside same obj
+
+    const isDuplicate = uniqueNames.some((name) => seen.has(name));
+    if (isDuplicate) return true; // early exit on first cross-obj duplicate
+
+    uniqueNames.forEach((name) => seen.add(name));
+  }
+
+  return false;
+};
+
 /**
  *
  * @param {Array<object>} pages

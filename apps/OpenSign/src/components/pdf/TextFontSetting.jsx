@@ -1,4 +1,3 @@
-import React from "react";
 import ModalUi from "../../primitives/ModalUi";
 import { fontColorArr, fontsizeArr } from "../../constant/Utils";
 import { useTranslation } from "react-i18next";

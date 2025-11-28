@@ -21,9 +21,7 @@ const DisabledButtonExamples = () => {
 
       {/* Option C: Conditional styling */}
       <button
-        className={`op-btn op-btn-primary ${
-          isDisabled ? "op-btn-vscode-disabled" : ""
-        }`}
+        className={`op-btn op-btn-primary ${isDisabled ? "op-btn-vscode-disabled" : ""}`}
         disabled={isDisabled}
       >
         Conditional Button
