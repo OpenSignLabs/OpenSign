@@ -168,7 +168,9 @@
     "Save as template": "Save as template",
     "Fix & resend": "Fix & Resend",
     "Kiosk Mode": "Kiosk Mode",
-    "Reset password": "Reset password"
+    "Reset password": "Reset password",
+    "View formdata": "View formdata",
+    "Download all formdata": "Download all formdata"
   },
   "report-heading": {
     "Sr.No": "Sr.No",
@@ -203,7 +205,8 @@
     "Redirect url": "Redirect url",
     "Created Date": "Created Date",
     "Updated Date": "Updated Date",
-    "Expiry Date": "Expiry Date"
+    "Expiry Date": "Expiry Date",
+    "Sent Date": "Sent Date"
   },
   "report-help": {
     "Draft Documents": "These are documents you have started but have not finalized for sending.",
@@ -443,7 +446,7 @@
     "Next to current widget": "Next to current widget"
   },
   "options": "Options",
-  "minimun-check": "Minimun check",
+  "minimum-check": "Minimum check",
   "maximum-check": "Maximum check",
   "cell-count": "Cell count",
   "default-value": "Default value",
@@ -1275,5 +1278,24 @@
   "global-smtp-settings-help-p2": "To ensure better inbox deliverability for all signature request emails, you can connect your preferred email provider. Choose one of the following options:",
   "global-connect-to-gmail-help": "Use a Gmail account to send signature request emails directly from your organization's inbox. This improves delivery rates, reputation, and overall reliability.",
   "global-connect-to-smtp-help": "Use your own SMTP server to send emails through your  domain. This provides full control over your email infrastructure, enhances deliverability, and maintains consistent branding.",
-  "global-smtp-settings-help-p3": "If no individual user-level settings are configured, these  global settings will be applied automatically."
+  "global-smtp-settings-help-p3": "If no individual user-level settings are configured, these  global settings will be applied automatically.",
+  "hide-text-with-asterisks": "Hide text with asterisks",
+  "hide-text-with-asterisks-help": "The text on the signed document will be concealed from view but remain accessible to the document sender (owner) from their {{appName}} account.",
+  "document-id": "Document ID",
+  "sent-date": "Sent Date",
+  "status": "Status",
+  "signer-form-data-for": "Signer Form data for: {{signerName}} <{{signerEmail}}>",
+  "widget-name": "Widget Name",
+  "widget-responses": "Widget Responses",
+  "formdata-download-note": "Note: Signatures, stamps, initials and images wont be exported.",
+  "export-all-formdata-error": "You can/t export form data because the template contains duplicate widget names. Please create a fresh template to be able to export form data.",
+  "export-formdata-error": "You can't export form data because the document contains duplicate widget names. Please create a fresh document without duplicate widget names to be able to export form data.",
+  "duplicate-widget-name-error": "This widget name is already assigned to another signer. Please choose a different name.",
+  "duplicate-template-widget-error": "You can't duplicate this template because it contains duplicate widget names.",
+  "credit-alert": "Credit Alert",
+  "document-form-data": "Document Form Data",
+  "view-formdata-paid-title-error": "The View Form Data feature lets you print and download the widget data filled in by signers while signing.",
+  "view-formdata-paid-error": "Note: 'View Formdata' feature is only available for documents created on or after v2.32.0 that do not contain duplicate widget names.",
+  "download-all-formdata-paid-title-error": "The Download All Form Data feature lets you download widget data filled in by signers for all documents created from the template.",
+  "download-all-formdata-paid-error": "Note: 'Download All Formdata' feature is only available for templates created on or after v2.32.0 that do not contain duplicate widget names."
 }

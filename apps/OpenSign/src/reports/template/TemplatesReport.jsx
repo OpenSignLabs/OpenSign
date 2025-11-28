@@ -238,8 +238,8 @@ const TemplatesReport = (props) => {
         navigate(`/${act.redirectUrl}/${item.objectId}`);
     } else {
       // handle Use template
-      const placeholder = item?.Placeholders;
-      const isRoleExist = placeholder.filter((x) => x.Role !== "prefill");
+      const placeholder = item?.Placeholders || [];
+      const isRoleExist = placeholder?.filter((x) => x.Role !== "prefill");
       //condition to check atleast one role is present for use template
       if (isRoleExist && isRoleExist?.length > 0) {
         const checkIsSignatureExist = isRoleExist?.every((placeholderObj) =>
@@ -346,9 +346,16 @@ const TemplatesReport = (props) => {
       setIsShareWith({ [item.objectId]: true });
     }
     else if (act.action === "duplicate") {
-      const isPrefill = item?.Placeholders?.some((p) => p?.Role === "prefill");
-      setError(isPrefill ? t("duplicate-template-error") : "");
-      setIsModal({ [`duplicate_${item.objectId}`]: true });
+      const hasDuplicate = utils.hasDuplicateWidgetNames(item?.Placeholders);
+      if (hasDuplicate) {
+        setError(t("duplicate-template-widget-error"));
+        setIsModal({ [`duplicate_${item.objectId}`]: true });
+      } else {
+        const isPrefill =
+          item?.Placeholders?.some((p) => p?.Role === "prefill") ?? false;
+        setError(isPrefill ? t("duplicate-template-error") : "");
+        setIsModal({ [`duplicate_${item.objectId}`]: true });
+      }
     } else if (act.action === "rename") {
       setIsModal({ [`rename_${item.objectId}`]: true });
     } else if (act.action === "edit") {
@@ -727,7 +734,7 @@ const TemplatesReport = (props) => {
   // `handleBulkSend` is used to open modal as well as fetch template
   // and show Ui on the basis template response handleBulkSendTemplate
   const handleBulkSend = async (template) => {
-    const isPrefillExist = template?.Placeholders.some(
+    const isPrefillExist = template?.Placeholders?.some(
       (x) => x.Role === "prefill"
     );
     if (isPrefillExist) {
@@ -755,6 +762,7 @@ const TemplatesReport = (props) => {
       }
     }
   };
+
 
   // `handleShareWith` is used to save teams in sharedWith field
   const handleShareWith = async (e, template) => {

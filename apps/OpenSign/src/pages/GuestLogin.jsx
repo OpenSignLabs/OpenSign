@@ -463,7 +463,7 @@ function GuestLogin() {
                       e.preventDefault();
                       setIsOptionalDetails(!isOptionalDetails);
                     }}
-                    className="op-link op-link-secondary max-w-fit text-xs"
+                    className="text-base-content/60 no-underline hover:underline focus:outline-none max-w-fit text-xs"
                   >
                     {isOptionalDetails
                       ? t("hide-optional-details")

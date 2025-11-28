@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import ModalUi from "../primitives/ModalUi";
 import { useTranslation } from "react-i18next";
 
@@ -7,7 +7,6 @@ const ColumnSelector = ({
   allColumns = [],
   visibleColumns = [],
   columnLabels = {},
-  defaultColumns = [],
   onApply,
   onClose
 }) => {

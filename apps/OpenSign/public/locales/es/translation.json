@@ -168,7 +168,9 @@
     "Save as template": "Guardar como plantilla",
     "Fix & resend": "Corregir y reenviar",
     "Kiosk Mode": "Modo Kiosco",
-    "Reset password": "Restablecer contraseña"
+    "Reset password": "Restablecer contraseña",
+    "View formdata": "Ver datos del formulario",
+    "Download all formdata": "Descargar todos los datos del formulario"
   },
   "report-heading": {
     "Sr.No": "Nº",
@@ -203,7 +205,8 @@
     "Redirect url": "URL de redirección",
     "Created Date": "Fecha de creación",
     "Updated Date": "Fecha de actualización",
-    "Expiry Date": "Fecha de vencimiento"
+    "Expiry Date": "Fecha de vencimiento",
+    "Sent Date": "Fecha de envío"
   },
   "report-help": {
     "Draft Documents": "Estos son documentos que has iniciado pero no has finalizado para su envío.",
@@ -443,7 +446,7 @@
     "Next to current widget": "Junto al widget actual"
   },
   "options": "Opciones",
-  "minimun-check": "Chequeo mínimo",
+  "minimum-check": "Chequeo mínimo",
   "maximum-check": "Chequeo máximo",
   "cell-count": "recuento de células",
   "default-value": "Valor por defecto",
@@ -1275,5 +1278,24 @@
   "global-smtp-settings-help-p2": "Para garantizar una mejor entregabilidad de todos los correos de solicitud de firma, puede conectar su proveedor de correo preferido. Elija una de las siguientes opciones:",
   "global-connect-to-gmail-help": "Use una cuenta de Gmail para enviar correos de solicitud de firma directamente desde la bandeja de entrada de su organización. Esto mejora la entregabilidad, la reputación y la fiabilidad.",
   "global-connect-to-smtp-help": "Use su propio servidor SMTP para enviar correos a través de su dominio. Esto proporciona control total sobre su infraestructura de correo, mejora la entregabilidad y mantiene la coherencia de marca.",
-  "global-smtp-settings-help-p3": "Si no se configuran ajustes a nivel de usuario, se aplicarán automáticamente estos ajustes globales."
+  "global-smtp-settings-help-p3": "Si no se configuran ajustes a nivel de usuario, se aplicarán automáticamente estos ajustes globales.",
+  "hide-text-with-asterisks": "Ocultar texto con asteriscos",
+  "hide-text-with-asterisks-help": "El texto en el documento firmado se ocultará, pero seguirá siendo accesible para el remitente (propietario) desde su cuenta de {{appName}}.",
+  "document-id": "ID del documento",
+  "sent-date": "Fecha de envío",
+  "status": "Estado",
+  "signer-form-data-for": "Datos del formulario para el firmante: {{signerName}} <{{signerEmail}}>",
+  "widget-name": "Nombre del widget",
+  "widget-responses": "Respuestas del widget",
+  "formdata-download-note": "Nota: Las firmas, sellos, iniciales e imágenes no se exportarán.",
+  "export-all-formdata-error": "No puede exportar los datos del formulario porque la plantilla contiene nombres de widgets duplicados. Cree una nueva plantilla para poder exportar los datos.",
+  "export-formdata-error": "No puede exportar los datos del formulario porque el documento contiene nombres de widgets duplicados. Cree un documento nuevo sin nombres duplicados para poder exportar los datos.",
+  "duplicate-widget-name-error": "Este nombre de widget ya está asignado a otro firmante. Por favor elija un nombre diferente.",
+  "duplicate-template-widget-error": "No puede duplicar esta plantilla porque contiene nombres de widgets duplicados.",
+  "credit-alert": "Alerta de crédito",
+  "document-form-data": "Datos del formulario del documento",
+  "view-formdata-paid-title-error": "La función 'Ver datos del formulario' le permite imprimir y descargar los datos de los widgets completados por los firmantes durante la firma.",
+  "view-formdata-paid-error": "Nota: La función 'Ver datos del formulario' solo está disponible para documentos creados en o después de la versión v2.32.0 que no contengan nombres de widgets duplicados.",
+  "download-all-formdata-paid-title-error": "La función 'Descargar todos los datos del formulario' le permite descargar los datos de los widgets completados por los firmantes para todos los documentos creados a partir de la plantilla.",
+  "download-all-formdata-paid-error": "Nota: La función 'Descargar todos los datos del formulario' solo está disponible para plantillas creadas en o después de la versión v2.32.0 que no contengan nombres de widgets duplicados."
 }

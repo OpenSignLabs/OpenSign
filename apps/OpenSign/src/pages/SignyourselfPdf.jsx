@@ -144,7 +144,6 @@ function SignYourSelf() {
   const [isUploadPdf, setIsUploadPdf] = useState(false);
   const [unSignedWidgetId, setUnSignedWidgetId] = useState("");
   const [widgetsTour, setWidgetsTour] = useState(false);
-
   const [owner, setOwner] = useState({});
   const index = xyPosition?.findIndex((object) => {
     return object.pageNumber === pageNumber;

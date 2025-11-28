@@ -160,6 +160,7 @@ const TemplatePlaceholder = () => {
   const [documentDetails, setDocumentDetails] = useState();
   const [copied, setCopied] = useState(false);
   const [isUseTemplate, setIsUseTemplate] = useState(false);
+  const [prevRole, setPrevRole] = useState("");
   const currentUser = localStorage.getItem(
     `Parse/${localStorage.getItem("parseAppId")}/currentUser`
   );
@@ -1117,6 +1118,7 @@ const TemplatePlaceholder = () => {
   // `handleAddSigner` is used to open Add Role Modal
   const handleAddSigner = () => {
     setIsModalRole(true);
+    setPrevRole(roleName || "");
     setRoleName("");
   };
 
@@ -1144,6 +1146,7 @@ const TemplatePlaceholder = () => {
     setSignerPos((prev) => [...prev, signerPosObj]);
     setIsModalRole(false);
     setRoleName("");
+    setCurrWidgetsDetails({});
     setUniqueId(Id);
     setBlockColor(color[index]);
     setIsSelectId(index);
@@ -1305,6 +1308,7 @@ const TemplatePlaceholder = () => {
   };
 
   const handleCloseRoleModal = () => {
+    setRoleName(prevRole || "");
     setIsModalRole(false);
   };
   const handleSaveWidgetsOptions = (
@@ -1522,7 +1526,7 @@ const TemplatePlaceholder = () => {
                   defaultValue: defaultdata.defaultValue,
                   hint: defaultdata?.hint || "",
                   fontSize: textSize || 12,
-                  fontColor: textColor || "black"
+                  fontColor: textColor || "black",
                 }
               };
             }

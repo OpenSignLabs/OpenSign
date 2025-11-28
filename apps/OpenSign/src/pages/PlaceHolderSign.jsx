@@ -1617,7 +1617,7 @@ function PlaceHolderSign() {
                         {},
                   fontSize: textSize || 12,
                   fontColor: textColor || "black",
-                  isReadOnly: defaultdata?.isReadOnly || false
+                  isReadOnly: defaultdata?.isReadOnly || false,
                 }
               };
             } else if (position.type === cellsWidget) {
@@ -1637,7 +1637,7 @@ function PlaceHolderSign() {
                         {},
                   fontSize: textSize || 12,
                   fontColor: textColor || "black",
-                  isReadOnly: defaultdata?.isReadOnly || false
+                  isReadOnly: defaultdata?.isReadOnly || false,
                 }
               };
             }
@@ -1660,7 +1660,7 @@ function PlaceHolderSign() {
                   defaultValue: defaultdata.defaultValue,
                   hint: defaultdata?.hint || "",
                   fontSize: textSize || 12,
-                  fontColor: textColor || "black"
+                  fontColor: textColor || "black",
                 }
               };
             }
@@ -1743,11 +1743,14 @@ function PlaceHolderSign() {
     }
   };
   const handleLinkUser = (id) => {
+    setRoleName("");
     setIsAddUser({ [id]: true });
   };
   //`handleAddUser` function to use add new user
   const handleAddUser = (data, signerObjId) => {
     const id = signerObjId ? signerObjId : uniqueId;
+    setRoleName("");
+    setCurrWidgetsDetails({});
     if (isAddSigner) {
       handleAddNewRecipients(data);
     } else {

@@ -27,7 +27,7 @@ import moment from "moment";
 import "../../styles/opensigndrive.css";
 import ModalUi from "../../primitives/ModalUi";
 import { useTranslation } from "react-i18next";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { setIsShowModal } from "../../redux/reducers/widgetSlice";
 import { themeColor } from "../../constant/const";
 import { useGuidelinesContext } from "../../context/GuidelinesContext";
@@ -566,7 +566,7 @@ function Placeholder(props) {
       }
     }
   };
-   //function to calculate font size
+  // function to calculate font size
   const calculateFont = (size, isMinHeight) => {
     const containerScale = getContainerScale(
       props.pdfOriginalWH,
@@ -574,7 +574,7 @@ function Placeholder(props) {
       props.containerWH
     );
     const fontSize = (size || 12) * containerScale * props.scale;
-    //isMinHeight to set text box minimum height
+    // isMinHeight to set text box minimum height
     if (isMinHeight) {
       return fontSize * 1.5 + "px";
     } else {
@@ -646,10 +646,7 @@ function Placeholder(props) {
   };
   const handleClearDate = () => {
     setIsToday(false);
-    setSelectDate((prev) => ({
-      ...prev,
-      date: ""
-    }));
+    setSelectDate((prev) => ({ ...prev, date: "" }));
   };
   return (
     <>
@@ -667,12 +664,16 @@ function Placeholder(props) {
             position: "absolute",
             left: xPos(props.pos, props.isSignYourself),
             top: yPos(props.pos, props.isSignYourself),
+            ...(props.pos?.Width ? { width: props.pos?.Width - 5 } : {}),
+            ...(props.pos?.Height ? { height: props.pos?.Height } : {}),
             fontSize: fontSize,
             color: fontColor,
             zIndex: 99
           }}
         >
-          {props.pos?.options?.response}
+          {
+                props.pos?.options?.response
+          }
         </span>
       ) : (
         <Rnd
@@ -994,10 +995,7 @@ function Placeholder(props) {
                       type="checkbox"
                       className="op-checkbox op-checkbox-xs"
                       onClick={() => {
-                        setSelectDate((prev) => ({
-                          ...prev,
-                          date: ""
-                        }));
+                        setSelectDate((prev) => ({ ...prev, date: "" }));
                         setIsToday(!isToday);
                       }}
                     />
@@ -1106,9 +1104,7 @@ function Placeholder(props) {
           <button
             type="button"
             className="op-btn op-btn-primary"
-            onClick={() => {
-              saveDateSetting(selectDate);
-            }}
+            onClick={() => saveDateSetting(selectDate)}
           >
             {t("save")}
           </button>

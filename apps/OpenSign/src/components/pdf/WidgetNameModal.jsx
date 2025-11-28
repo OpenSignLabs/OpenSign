@@ -8,12 +8,16 @@ import {
   cellsWidget,
   textWidget
 } from "../../constant/Utils";
+import {
+  widgetNamesArr
+} from "../../utils";
 import { fontColorArr, fontsizeArr } from "../../constant/Utils";
 import { useTranslation } from "react-i18next";
 
 const WidgetNameModal = (props) => {
   const { t } = useTranslation();
   const signTypes = props?.signatureType || signatureTypes;
+  const [lastSubmittedName, setLastSubmittedName] = useState("");
   const [formdata, setFormdata] = useState({
     name: "",
     defaultValue: "",
@@ -46,7 +50,7 @@ const WidgetNameModal = (props) => {
     [type]
   );
 
-  const handleHint = () => {
+  const handleHintPlaceholder = () => {
     const type = props.defaultdata?.type;
 
     if (type === "signature") {
@@ -67,7 +71,7 @@ const WidgetNameModal = (props) => {
         name: props.defaultdata?.options?.name || "",
         defaultValue: props.defaultdata?.options?.defaultValue || "",
         status: props.defaultdata?.options?.status || "required",
-        hint: props.defaultdata?.options?.hint || handleHint(),
+        hint: props.defaultdata?.options?.hint || "",
         textvalidate:
           props.defaultdata?.options?.validation?.type === "regex"
             ? props.defaultdata?.options?.validation?.pattern
@@ -75,12 +79,14 @@ const WidgetNameModal = (props) => {
         isReadOnly: props.defaultdata?.options?.isReadOnly || false,
         cellCount: props.defaultdata?.options?.cellCount || 5,
       });
+      setLastSubmittedName(props.defaultdata?.options?.name || "");
     } else {
       setFormdata({
         ...formdata,
         name: props.defaultdata?.options?.name || "",
         cellCount: props.defaultdata?.options?.cellCount || 5,
       });
+      setLastSubmittedName(props.defaultdata?.options?.name || "");
     }
 
     if (signTypes.length > 0) {
@@ -93,6 +99,19 @@ const WidgetNameModal = (props) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (props.handleData) {
+      const widgetNames = widgetNamesArr(
+        props.widgetsSource,
+        props?.activeSignerId
+      );
+      if (lastSubmittedName && lastSubmittedName !== formdata.name) {
+        const widgetNameExist = widgetNames?.find(
+          (widget) => widget === formdata.name
+        );
+        if (widgetNameExist) {
+          alert(t("duplicate-widget-name-error"));
+          return;
+        }
+      }
       if (isSignOrInitials) {
         const enabledSignTypes = signatureType?.filter((x) => x.enabled);
         const isDefaultSignTypeOnly =
@@ -292,7 +311,7 @@ const WidgetNameModal = (props) => {
         {!props?.isSelfSign &&
           !isSignOrInitials &&
           props?.roleName !== "prefill" && (
-            <div className="mb-[0.75rem]">
+            <div className={showFontControls ? "mb-[0.5rem]" : "mb-[0.75rem]"}>
               <div className="flex flex-row gap-[10px] mb-[0.5rem]">
                 {statusArr.map((data, ind) => {
                   return (
@@ -324,30 +343,29 @@ const WidgetNameModal = (props) => {
               {[
                 textInputWidget,
                 cellsWidget,
-              ].includes(props.defaultdata?.type) &&
-                props?.roleName !== "prefill" && (
-                  <div className="flex items-center">
-                    <input
-                      id="isReadOnly"
-                      name="isReadOnly"
-                      type="checkbox"
-                      checked={formdata.isReadOnly}
-                      className="op-checkbox op-checkbox-xs"
-                      onChange={() =>
-                        setFormdata((prev) => ({
-                          ...formdata,
-                          isReadOnly: !prev.isReadOnly
-                        }))
-                      }
-                    />
-                    <label
-                      className="ml-1.5 mb-0 capitalize text-[13px]"
-                      htmlFor="isreadonly"
-                    >
-                      {t("read-only")}
-                    </label>
-                  </div>
-                )}
+              ].includes(props.defaultdata?.type) && (
+                <div className="flex items-center">
+                  <input
+                    id="isReadOnly"
+                    name="isReadOnly"
+                    type="checkbox"
+                    checked={formdata.isReadOnly}
+                    className="op-checkbox op-checkbox-xs"
+                    onChange={() =>
+                      setFormdata((prev) => ({
+                        ...formdata,
+                        isReadOnly: !prev.isReadOnly
+                      }))
+                    }
+                  />
+                  <label
+                    className="ml-1.5 mb-0 capitalize text-[13px]"
+                    htmlFor="isreadonly"
+                  >
+                    {t("read-only")}
+                  </label>
+                </div>
+              )}
             </div>
           )}
         {isSignOrInitials && (
@@ -387,6 +405,7 @@ const WidgetNameModal = (props) => {
               maxLength={40}
               className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
               name="hint"
+              placeholder={handleHintPlaceholder()}
               value={formdata.hint}
               onChange={(e) => handleChange(e)}
             />

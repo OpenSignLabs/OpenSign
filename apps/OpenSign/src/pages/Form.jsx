@@ -46,7 +46,8 @@ function Form() {
 }
 
 const Forms = (props) => {
-  const appName = "OpenSign™";
+  const appName =
+    "OpenSign™";
   const { t } = useTranslation();
   const abortController = new AbortController();
   const inputFileRef = useRef(null);
@@ -69,7 +70,7 @@ const Forms = (props) => {
     NotifyOnSignatures: "",
     Bcc: [],
     RedirectUrl: "",
-    AllowModifications: false
+    AllowModifications: false,
   });
   const [fileupload, setFileUpload] = useState("");
   const [selectedFiles, setSelectedFiles] = useState([]);
@@ -100,7 +101,8 @@ const Forms = (props) => {
     extUserData?.IsTourEnabled === false
       ? "false"
       : "true";
-  const fileSize = maxFileSize;
+  const fileSize =
+    maxFileSize;
   useEffect(() => {
     handleReset();
     return () => abortController.abort();
@@ -112,12 +114,12 @@ const Forms = (props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const initializeValues = async () => {
-    setFormData((obj) => ({
-      ...obj,
-      NotifyOnSignatures: true,
-      SendinOrder: sendinorder,
-      IsTourEnabled: istourenabled
-    }));
+      setFormData((obj) => ({
+        ...obj,
+        NotifyOnSignatures: true,
+        SendinOrder: sendinorder,
+        IsTourEnabled: istourenabled
+      }));
   };
 
   // `removeFile` is used to reset progress, percentage and remove file if exists
@@ -276,7 +278,8 @@ const Forms = (props) => {
             setfileload(false);
             removeFile(e);
             console.log("err in docx to pdf ", err);
-            const error = t("docx-error");
+            const error =
+                  t("docx-error");
             if (err?.code === 209) {
               dispatch(sessionStatus(false));
             } else {
@@ -305,25 +308,25 @@ const Forms = (props) => {
       const name = generatePdfName(16);
       const pdfName = `${name}.pdf`;
       let uploadedUrl = "";
-      const parseFile = new Parse.File(
-        pdfName,
-        [...pdfBytes],
-        "application/pdf"
-      );
-      const response = await parseFile.save({
-        progress: (progressValue, loaded, total) => {
-          if (progressValue !== null) {
-            const percentCompleted = Math.round((loaded * 100) / total);
-            setpercentage(percentCompleted);
+        const parseFile = new Parse.File(
+          pdfName,
+          [...pdfBytes],
+          "application/pdf"
+        );
+        const response = await parseFile.save({
+          progress: (progressValue, loaded, total) => {
+            if (progressValue !== null) {
+              const percentCompleted = Math.round((loaded * 100) / total);
+              setpercentage(percentCompleted);
+            }
+          }
+        });
+        if (response.url()) {
+          const fileRes = await getSecureUrl(response.url());
+          if (fileRes.url) {
+            uploadedUrl = fileRes.url;
           }
         }
-      });
-      if (response.url()) {
-        const fileRes = await getSecureUrl(response.url());
-        if (fileRes.url) {
-          uploadedUrl = fileRes.url;
-        }
-      }
       if (uploadedUrl) {
         const tenantId = localStorage.getItem("TenantId");
         const userId = extUserData?.UserId?.objectId;
@@ -339,6 +342,7 @@ const Forms = (props) => {
         setSelectedFiles([]);
       }
     } catch (error) {
+      console.error("error ", error);
       if (error?.code === 209) {
         dispatch(sessionStatus(false));
       } else {
@@ -385,13 +389,16 @@ const Forms = (props) => {
         object.set("Description", formData?.Description);
         object.set("Note", formData?.Note);
         if (props.title === "Request Signatures") {
-          if (
-            extUserData?.TenantId?.RequestBody &&
-            extUserData?.TenantId?.RequestSubject
-          ) {
-            object.set("RequestBody", extUserData?.TenantId?.RequestBody);
-            object.set("RequestSubject", extUserData?.TenantId?.RequestSubject);
-          }
+            if (
+              extUserData?.TenantId?.RequestBody &&
+              extUserData?.TenantId?.RequestSubject
+            ) {
+              object.set("RequestBody", extUserData?.TenantId?.RequestBody);
+              object.set(
+                "RequestSubject",
+                extUserData?.TenantId?.RequestSubject
+              );
+            }
         }
         if (props.title !== "Sign Yourself") {
           const isChecked = formData.SendinOrder === "false" ? false : true;
@@ -410,11 +417,11 @@ const Forms = (props) => {
           object.set("RemindOnceInEvery", remindOnceInEvery);
           object.set("IsTourEnabled", isTourEnabled);
           object.set("TimeToCompleteDays", TimeToCompleteDays);
-          object.set("AllowModifications", false);
-          object.set("IsEnableOTP", false);
-          if (formData.NotifyOnSignatures !== undefined) {
-            object.set("NotifyOnSignatures", formData.NotifyOnSignatures);
-          }
+            object.set("AllowModifications", false);
+            object.set("IsEnableOTP", false);
+            if (formData.NotifyOnSignatures !== undefined) {
+              object.set("NotifyOnSignatures", formData.NotifyOnSignatures);
+            }
           if (formData?.RedirectUrl) {
             object.set("RedirectUrl", formData.RedirectUrl);
           }
@@ -451,9 +458,9 @@ const Forms = (props) => {
           setBcc([]);
           setFolder({ ObjectId: "", Name: "" });
           const notifySign =
-            extUserData?.NotifyOnSignatures !== undefined
-              ? extUserData?.NotifyOnSignatures
-              : true;
+                extUserData?.NotifyOnSignatures !== undefined
+                ? extUserData?.NotifyOnSignatures
+                : true;
           setFormData({
             Name: "",
             Description: "",
@@ -471,7 +478,7 @@ const Forms = (props) => {
             IsEnableOTP: "false",
             IsTourEnabled: istourenabled,
             RedirectUrl: "",
-            AllowModifications: false
+            AllowModifications: false,
           });
           setFileUpload("");
           setSelectedFiles([]);
@@ -533,9 +540,9 @@ const Forms = (props) => {
     setBcc([]);
     setFolder({ ObjectId: "", Name: "" });
     const notifySign =
-      extUserData?.NotifyOnSignatures !== undefined
-        ? extUserData?.NotifyOnSignatures
-        : true;
+          extUserData?.NotifyOnSignatures !== undefined
+          ? extUserData?.NotifyOnSignatures
+          : true;
     let obj = {
       Name: "",
       Description: "",
@@ -553,7 +560,7 @@ const Forms = (props) => {
       IsTourEnabled: istourenabled,
       NotifyOnSignatures: notifySign,
       RedirectUrl: "",
-      AllowModifications: false
+      AllowModifications: false,
     };
     setFormData(obj);
     removeFile();
@@ -575,27 +582,35 @@ const Forms = (props) => {
       const name = generatePdfName(16);
       const pdfFile = await decryptPdf(formData?.file, formData?.password);
       setIsDecrypting(false);
-      const res = await getFileAsArrayBuffer(pdfFile);
-      const flatPdf = await flattenPdf(res);
-      const parseFile = new Parse.File(name, [...flatPdf], "application/pdf");
-      await parseFile.save({
-        progress: (progressValue, loaded, total) => {
-          if (progressValue !== null) {
-            const percentCompleted = Math.round((loaded * 100) / total);
-            setpercentage(percentCompleted);
+        const res = await getFileAsArrayBuffer(pdfFile);
+        const flatPdf = await flattenPdf(res);
+        const parseFile = new Parse.File(name, [...flatPdf], "application/pdf");
+        await parseFile.save({
+          progress: (progressValue, loaded, total) => {
+            if (progressValue !== null) {
+              const percentCompleted = Math.round((loaded * 100) / total);
+              setpercentage(percentCompleted);
+            }
           }
-        }
-      });
-      // Retrieve the URL of the uploaded file
-      if (parseFile.url()) {
-        const fileRes = await getSecureUrl(parseFile.url());
-        if (fileRes.url) {
-          setFileUpload(fileRes.url);
-          removeFile();
-          const title = generateTitleFromFilename(formData?.file?.name);
-          setFormData((obj) => ({ ...obj, password: "", Name: title }));
-          SaveFileSize(size, fileRes?.url, tenantId, userId);
-          return fileRes.url;
+        });
+        // Retrieve the URL of the uploaded file
+        if (parseFile.url()) {
+          const fileRes = await getSecureUrl(parseFile.url());
+          if (fileRes.url) {
+            setFileUpload(fileRes.url);
+            removeFile();
+            const title = generateTitleFromFilename(formData?.file?.name);
+            setFormData((obj) => ({ ...obj, password: "", Name: title }));
+            SaveFileSize(size, fileRes?.url, tenantId, userId);
+            return fileRes.url;
+          } else {
+            removeFile();
+            setFormData((prev) => ({ ...prev, password: "" }));
+            setIsDecrypting(false);
+            if (inputFileRef.current) {
+              inputFileRef.current.value = ""; // Set file input value to empty string
+            }
+          }
         } else {
           removeFile();
           setFormData((prev) => ({ ...prev, password: "" }));
@@ -604,14 +619,6 @@ const Forms = (props) => {
             inputFileRef.current.value = ""; // Set file input value to empty string
           }
         }
-      } else {
-        removeFile();
-        setFormData((prev) => ({ ...prev, password: "" }));
-        setIsDecrypting(false);
-        if (inputFileRef.current) {
-          inputFileRef.current.value = ""; // Set file input value to empty string
-        }
-      }
     } catch (err) {
       removeFile();
       if (err?.code === 209) {
@@ -1054,7 +1061,10 @@ const Forms = (props) => {
                 {isAdvanceOpt && (
                   <div
                     style={{
-                      height: props.title === "New Template" ? "100px" : "280px"
+                      height:
+                              props.title === "New Template"
+                            ? "100px"
+                            : "280px"
                     }}
                     className="w-[1px] bg-gray-300 m-auto hidden md:inline-block"
                   ></div>
@@ -1163,7 +1173,11 @@ const Forms = (props) => {
                         </Tooltip>
                       </label>
                       <div className="flex flex-col md:flex-row md:gap-4">
-                        <div className={`flex items-center gap-2 ml-2 mb-1`}>
+                        <div
+                          className={
+                            `flex items-center gap-2 ml-2 mb-1`
+                          }
+                        >
                           <input
                             className="mr-[2px] op-radio op-radio-xs"
                             type="radio"
@@ -1172,7 +1186,11 @@ const Forms = (props) => {
                           />
                           <div className="text-center">{t("yes")}</div>
                         </div>
-                        <div className={`flex items-center gap-2 ml-2 mb-1`}>
+                        <div
+                          className={
+                            `flex items-center gap-2 ml-2 mb-1`
+                          }
+                        >
                           <input
                             className="mr-[2px] op-radio op-radio-xs"
                             type="radio"

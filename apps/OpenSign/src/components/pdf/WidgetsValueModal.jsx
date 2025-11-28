@@ -1718,7 +1718,7 @@ function WidgetsValueModal(props) {
 
   // focusNextWidget(currWidgetsDetails?.key, xyPosition)
   //function too use on click on next/finish button then update modal UI according to current widgets
-  const handleClickOnNext = (isFinishDoc) => {
+  const handleClickOnNext = async (isFinishDoc) => {
     if (
       ["signature", "stamp", "image", "initials"].includes(
         currWidgetsDetails?.type
@@ -1777,6 +1777,7 @@ function WidgetsValueModal(props) {
       dispatch(setIsShowModal({ [nextWidgetDetails?.key]: true }));
       props.setCurrWidgetsDetails(nextWidgetDetails);
     }
+
   };
   //function is used to disable/enable save button
   const handleDisable = () => {
