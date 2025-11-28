@@ -176,7 +176,8 @@
     "Redirect url": "URL de redirection",
     "Created Date": "Date de création",
     "Updated Date": "Date de mise à jour",
-    "Expiry Date": "Date d'expiration"
+    "Expiry Date": "Date d'expiration",
+    "Sent Date": "Date d'envoi"
   },
   "btnLabel": {
     "sign": "Signer",
@@ -203,7 +204,9 @@
     "Save as template": "Enregistrer comme modèle",
     "Fix & resend": "Corriger et renvoyer",
     "Kiosk Mode": "Mode Kiosque",
-    "Reset password": "Réinitialiser le mot de passe"
+    "Reset password": "Réinitialiser le mot de passe",
+    "View formdata": "Voir les données du formulaire",
+    "Download all formdata": "Télécharger toutes les données du formulaire"
   },
   "report-help": {
     "Draft Documents": "Il s'agit de documents que vous avez commencés mais que vous n'avez pas finalisés pour envoi.",
@@ -442,7 +445,7 @@
     "Next to current widget": "À côté du widget actuel"
   },
   "options": "Possibilités",
-  "minimun-check": "Vérification minimale",
+  "minimum-check": "Vérification minimale",
   "maximum-check": "Contrôle maximum",
   "cell-count": "numération cellulaire",
   "default-value": "Valeur par défaut",
@@ -1274,5 +1277,24 @@
   "global-smtp-settings-help-p2": "Pour assurer une meilleure délivrabilité de toutes les demandes de signature, vous pouvez connecter votre fournisseur de messagerie préféré. Choisissez l'une des options suivantes :",
   "global-connect-to-gmail-help": "Utilisez un compte Gmail pour envoyer des demandes de signature directement depuis la boîte de réception de votre organisation. Cela améliore la délivrabilité, la réputation et la fiabilité.",
   "global-connect-to-smtp-help": "Utilisez votre propre serveur SMTP pour envoyer des e-mails via votre domaine. Cela offre un contrôle total sur votre infrastructure de messagerie, améliore la délivrabilité et garantit une cohérence de marque.",
-  "global-smtp-settings-help-p3": "Si aucun paramètre utilisateur individuel n'est configuré, ces paramètres globaux seront appliqués automatiquement."
+  "global-smtp-settings-help-p3": "Si aucun paramètre utilisateur individuel n'est configuré, ces paramètres globaux seront appliqués automatiquement.",
+  "hide-text-with-asterisks": "Masquer le texte avec des astérisques",
+  "hide-text-with-asterisks-help": "Le texte sur le document signé sera masqué, mais restera accessible à l'expéditeur du document (propriétaire) depuis son compte {{appName}}.",
+  "document-id": "ID du document",
+  "sent-date": "Date d'envoi",
+  "status": "Statut",
+  "signer-form-data-for": "Données du formulaire pour le signataire : {{signerName}} <{{signerEmail}}>",
+  "widget-name": "Nom du widget",
+  "widget-responses": "Réponses du widget",
+  "formdata-download-note": "Remarque : Les signatures, tampons, initiales et images ne seront pas exportés.",
+  "export-all-formdata-error": "Vous ne pouvez pas exporter les données du formulaire car le modèle contient des noms de widgets en double. Veuillez créer un nouveau modèle pour pouvoir exporter les données.",
+  "export-formdata-error": "Vous ne pouvez pas exporter les données du formulaire car le document contient des noms de widgets en double. Veuillez créer un nouveau document sans doublons pour pouvoir exporter les données.",
+  "duplicate-widget-name-error": "Ce nom de widget est déjà attribué à un autre signataire. Veuillez choisir un autre nom.",
+  "duplicate-template-widget-error": "Vous ne pouvez pas dupliquer ce modèle car il contient des noms de widgets en double.",
+  "credit-alert": "Alerte de crédit",
+  "document-form-data": "Données du formulaire du document",
+  "view-formdata-paid-title-error": "La fonction 'Afficher les données du formulaire' vous permet d’imprimer et de télécharger les données des widgets remplies par les signataires lors de la signature.",
+  "view-formdata-paid-error": "Remarque : La fonction 'Afficher les données du formulaire' est uniquement disponible pour les documents créés à partir de la version v2.32.0 et ne contenant pas de noms de widgets en double.",
+  "download-all-formdata-paid-title-error": "La fonction 'Télécharger toutes les données du formulaire' vous permet de télécharger les données des widgets remplies par les signataires pour tous les documents créés à partir du modèle.",
+  "download-all-formdata-paid-error": "Remarque : La fonction 'Télécharger toutes les données du formulaire' est uniquement disponible pour les modèles créés à partir de la version v2.32.0 et ne contenant pas de noms de widgets en double."
 }

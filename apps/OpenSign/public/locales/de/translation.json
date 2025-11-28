@@ -168,7 +168,9 @@
     "Save as template": "Als Vorlage speichern",
     "Fix & resend": "Korrigieren und erneut senden",
     "Kiosk Mode": "Kiosk Modus",
-    "Reset password": "Passwort zurücksetzen"
+    "Reset password": "Passwort zurücksetzen",
+    "View formdata": "Formulardaten ansehen",
+    "Download all formdata": "Alle Formulardaten herunterladen"
   },
   "report-heading": {
     "Sr.No": "Nr.",
@@ -203,7 +205,8 @@
     "Redirect url": "Weiterleitungs-URL",
     "Created Date": "Erstellungsdatum",
     "Updated Date": "Aktualisierungsdatum",
-    "Expiry Date": "Ablaufdatum"
+    "Expiry Date": "Ablaufdatum",
+    "Sent Date": "Sendedatum"
   },
   "report-help": {
     "Draft Documents": "Dies sind Dokumente, die Sie begonnen, aber noch nicht zum Versenden fertiggestellt haben.",
@@ -442,7 +445,7 @@
     "Next to current widget": "Neben dem aktuellen Widget"
   },
   "options": "Optionen",
-  "minimun-check": "Minimale Anzahl",
+  "minimum-check": "Minimale Anzahl",
   "maximum-check": "Maximale Anzahl",
   "cell-count": "Zellzahl",
   "default-value": "Standardwert",
@@ -1274,5 +1277,24 @@
   "global-smtp-settings-help-p2": "Um eine bessere Zustellbarkeit aller Signaturanfragen sicherzustellen, können Sie Ihren bevorzugten E-Mail-Anbieter verbinden. Wählen Sie eine der folgenden Optionen:",
   "global-connect-to-gmail-help": "Verwenden Sie ein Gmail-Konto, um Signaturanfragen direkt aus dem Posteingang Ihrer Organisation zu senden. Dies verbessert die Zustellrate, Reputation und Zuverlässigkeit.",
   "global-connect-to-smtp-help": "Verwenden Sie Ihren eigenen SMTP-Server, um E-Mails über Ihre Domain zu senden. Dies bietet volle Kontrolle über Ihre E-Mail-Infrastruktur, verbessert die Zustellbarkeit und sorgt für konsistentes Branding.",
-  "global-smtp-settings-help-p3": "Wenn keine individuellen Benutzereinstellungen konfiguriert sind, werden automatisch diese globalen Einstellungen angewendet."
+  "global-smtp-settings-help-p3": "Wenn keine individuellen Benutzereinstellungen konfiguriert sind, werden automatisch diese globalen Einstellungen angewendet.",
+  "hide-text-with-asterisks": "Text mit Sternchen ausblenden",
+  "hide-text-with-asterisks-help": "Der Text im unterzeichneten Dokument wird ausgeblendet, bleibt jedoch für den Dokumentabsender (Eigentümer) über sein {{appName}}-Konto zugänglich.",
+  "document-id": "Dokument-ID",
+  "sent-date": "Sendedatum",
+  "status": "Status",
+  "signer-form-data-for": "Formulardaten für Unterzeichner: {{signerName}} <{{signerEmail}}>",
+  "widget-name": "Widget-Name",
+  "widget-responses": "Widget-Antworten",
+  "formdata-download-note": "Hinweis: Signaturen, Stempel, Initialen und Bilder werden nicht exportiert.",
+  "export-all-formdata-error": "Sie können die Formulardaten nicht exportieren, da die Vorlage doppelte Widget-Namen enthält. Bitte erstellen Sie eine neue Vorlage, um Formulardaten exportieren zu können.",
+  "export-formdata-error": "Sie können die Formulardaten nicht exportieren, da das Dokument doppelte Widget-Namen enthält. Bitte erstellen Sie ein neues Dokument ohne doppelte Widget-Namen, um Formulardaten exportieren zu können.",
+  "duplicate-widget-name-error": "Dieser Widget-Name ist bereits einem anderen Unterzeichner zugewiesen. Bitte wählen Sie einen anderen Namen.",
+  "duplicate-template-widget-error": "Sie können diese Vorlage nicht duplizieren, da sie doppelte Widget-Namen enthält.",
+  "credit-alert": "Kreditwarnung",
+  "document-form-data": "Dokumenten-Formulardaten",
+  "view-formdata-paid-title-error": "Die Funktion 'Formulardaten anzeigen' ermöglicht es Ihnen, die von Unterzeichnern ausgefüllten Widget-Daten auszudrucken und herunterzuladen.",
+  "view-formdata-paid-error": "Hinweis: Die Funktion 'Formulardaten anzeigen' ist nur für Dokumente verfügbar, die ab Version v2.32.0 erstellt wurden und keine doppelten Widget-Namen enthalten.",
+  "download-all-formdata-paid-title-error": "Die Funktion 'Alle Formulardaten herunterladen' ermöglicht es Ihnen, die von Unterzeichnern ausgefüllten Widget-Daten für alle aus der Vorlage erstellten Dokumente herunterzuladen.",
+  "download-all-formdata-paid-error": "Hinweis: Die Funktion 'Alle Formulardaten herunterladen' ist nur für Vorlagen verfügbar, die ab Version v2.32.0 erstellt wurden und keine doppelten Widget-Namen enthalten."
 }

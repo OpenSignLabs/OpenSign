@@ -42,10 +42,10 @@ function PlaceholderType(props) {
   // prefer the latest response value over any default value
   const widgetData =
     props.pos?.options?.response ?? props.pos?.options?.defaultValue ?? "";
-  const widgetTypeTranslation = t(`widgets-name.${props?.pos?.type}`);
+  // const widgetTypeTranslation = t(`widgets-name.${props?.pos?.type}`);
   const [widgetValue, setwidgetValue] = useState();
   const [selectedCheckbox, setSelectedCheckbox] = useState([]);
-  const [hint, setHint] = useState("");
+  // const [hint, setHint] = useState("");
   const [imgUrl, setImgUrl] = useState("");
   const fontSize = props.calculateFont(props.pos.options?.fontSize);
   const fontColor = props.pos.options?.fontColor || "black";
@@ -72,11 +72,11 @@ function PlaceholderType(props) {
         // keep displayed value in sync with the stored response
         setwidgetValue(widgetData);
       }
-      if (props.pos?.options?.hint) {
-        setHint(props.pos?.options.hint);
-      } else if (props.pos?.options?.validation?.type) {
-          checkRegularExpress(props.pos?.options?.validation?.type, setHint);
-      }
+      // if (props.pos?.options?.hint) {
+      //   setHint(props.pos?.options.hint);
+      // } else if (props.pos?.options?.validation?.type) {
+      //     checkRegularExpress(props.pos?.options?.validation?.type, setHint);
+      // }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.pos, widgetData, type]);
@@ -130,6 +130,14 @@ function PlaceholderType(props) {
     loadImage();
   }, [props.pos.SignUrl]);
 
+  const formatWidgetName = () => {
+    const widgetName = props?.pos?.options?.name;
+    const name = widgetName ? widgetName?.split(`-`) : ["-", "-", "-"];
+    const lastWord = name.length > 1 ? `-${name[name.length - 1]}` : "";
+    const title =
+      props?.pos?.type === name[0] ? `${name[0]}${lastWord}` : widgetName;
+    return props?.pos?.options?.hint || title;
+  };
   switch (type) {
     case "signature":
       return props.pos.SignUrl ? (
@@ -150,7 +158,7 @@ function PlaceholderType(props) {
               }}
               className="font-medium"
             >
-              {hint || widgetTypeTranslation}
+              {formatWidgetName()}
             </div>
           )}
         </div>
@@ -174,7 +182,7 @@ function PlaceholderType(props) {
               }}
               className="font-medium"
             >
-              {hint || widgetTypeTranslation}
+              {formatWidgetName()}
             </div>
           )}
         </div>
@@ -221,9 +229,11 @@ function PlaceholderType(props) {
     case textInputWidget:
       return props.isSignYourself || iswidgetEnable ? (
         <textarea
-          placeholder={hint || t("widgets-name.text")}
+          placeholder={formatWidgetName()}
           rows={1}
-          value={widgetValue}
+          value={
+                widgetValue
+          }
           className={`${textWidgetCls} ${isReadOnly ? "select-none" : ""}`}
           style={{
             fontSize: fontSize,
@@ -237,7 +247,7 @@ function PlaceholderType(props) {
         />
       ) : (
         <div style={textWidgetStyle} className="select-none-cls">
-          <span>{hint || widgetTypeTranslation}</span>
+          <span className="ml-0.5">{formatWidgetName()}</span>
         </div>
       );
     case cellsWidget: {
@@ -256,12 +266,14 @@ function PlaceholderType(props) {
           isEnabled={iswidgetEnable}
           count={count}
           height={height}
-          value={cells.join("")}
+          value={
+                cells.join("")
+          }
           editable={isEditable}
           resizable={props?.isAllowModify}
           fontSize={fontSize}
           fontColor={fontColor}
-          hint={hint}
+          hint={formatWidgetName()}
           onCellCountChange={handleCellResize}
         />
       );
@@ -295,7 +307,7 @@ function PlaceholderType(props) {
               }}
               className="font-medium text-center"
             >
-              {hint || widgetTypeTranslation}
+              {formatWidgetName()}
             </div>
           )}
         </div>
@@ -304,9 +316,11 @@ function PlaceholderType(props) {
       return iswidgetEnable ? (
         <textarea
           readOnly
-          placeholder={hint || widgetTypeTranslation}
+          placeholder={formatWidgetName()}
           rows={1}
-          value={widgetValue}
+          value={
+                widgetValue
+          }
           className={`${textWidgetCls} ${isReadOnly ? "select-none" : ""}`}
           style={{
             fontSize: fontSize,
@@ -319,16 +333,18 @@ function PlaceholderType(props) {
         />
       ) : (
         <div className="flex h-full select-none-cls" style={textWidgetStyle}>
-          <span> {props.pos?.options?.hint || widgetTypeTranslation}</span>
+          <span className="ml-0.5">{formatWidgetName()}</span>
         </div>
       );
     case "company":
       return iswidgetEnable ? (
         <textarea
           readOnly
-          placeholder={hint || widgetTypeTranslation}
+          placeholder={formatWidgetName()}
           rows={1}
-          value={widgetValue}
+          value={
+                widgetValue
+          }
           className={`${textWidgetCls} ${isReadOnly ? "select-none" : ""}`}
           style={{
             fontSize: fontSize,
@@ -341,16 +357,18 @@ function PlaceholderType(props) {
         />
       ) : (
         <div style={textWidgetStyle} className="select-none-cls">
-          <span>{hint || widgetTypeTranslation}</span>
+          <span className="ml-0.5">{formatWidgetName()}</span>
         </div>
       );
     case "job title":
       return iswidgetEnable ? (
         <textarea
           readOnly
-          placeholder={hint || widgetTypeTranslation}
+          placeholder={formatWidgetName()}
           rows={1}
-          value={widgetValue}
+          value={
+                widgetValue
+          }
           className={`${textWidgetCls} ${isReadOnly ? "select-none" : ""}`}
           style={{
             fontSize: fontSize,
@@ -363,7 +381,7 @@ function PlaceholderType(props) {
         />
       ) : (
         <div style={textWidgetStyle} className="select-none-cls">
-          <span>{hint || widgetTypeTranslation}</span>
+          <span className="ml-0.5">{formatWidgetName()}</span>
         </div>
       );
     case "date":
@@ -444,7 +462,7 @@ function PlaceholderType(props) {
               }}
               className="font-medium text-center"
             >
-              {hint || widgetTypeTranslation}
+              {formatWidgetName()}
             </div>
           )}
         </div>
@@ -453,9 +471,11 @@ function PlaceholderType(props) {
       return iswidgetEnable ? (
         <textarea
           readOnly
-          placeholder={hint || widgetTypeTranslation}
+          placeholder={formatWidgetName()}
           rows={1}
-          value={widgetValue}
+          value={
+                widgetValue
+          }
           className={`${textWidgetCls} ${isReadOnly ? "select-none" : ""}`}
           style={{
             fontSize: fontSize,
@@ -468,7 +488,7 @@ function PlaceholderType(props) {
         />
       ) : (
         <div style={textWidgetStyle} className="select-none-cls">
-          <span>{hint || widgetTypeTranslation}</span>
+          <span className="ml-0.5">{formatWidgetName()}</span>
         </div>
       );
     case radioButtonWidget:
@@ -513,7 +533,9 @@ function PlaceholderType(props) {
           readOnly
           placeholder={t("widgets-name.text")}
           rows={1}
-          value={widgetValue}
+          value={
+                widgetValue
+          }
           className={textWidgetCls}
           style={{
             fontFamily: "Arial, sans-serif",
@@ -546,7 +568,7 @@ function PlaceholderType(props) {
               }}
               className="font-medium"
             >
-              {hint || widgetTypeTranslation}
+              {formatWidgetName()}
             </div>
           )}
         </div>

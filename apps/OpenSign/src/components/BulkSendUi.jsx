@@ -25,13 +25,16 @@ const BulkSendUi = (props) => {
 
   //function to check at least one signature field exist
   const signatureExist = async () => {
-    const isPrefill = props?.Placeholders.some((x) => x?.Role === "prefill");
+    const isPrefill =
+      props?.Placeholders?.some((x) => x?.Role === "prefill") || false;
     if (isPrefill) {
       setIsPrefillExist(isPrefill);
     }
       setIsDisableBulkSend(false);
       const getPlaceholder = props?.Placeholders;
-      const removePrefill = getPlaceholder.filter((x) => x?.Role !== "prefill");
+      const removePrefill = getPlaceholder?.filter(
+        (x) => x?.Role !== "prefill"
+      );
       const checkIsSignatureExistt = removePrefill?.every((placeholderObj) =>
         placeholderObj?.placeHolder?.some((holder) =>
           holder?.pos?.some((posItem) => posItem?.type === "signature")

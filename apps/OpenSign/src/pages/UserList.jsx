@@ -375,10 +375,14 @@ const UserList = () => {
                               </td>
                               {handleActiveToggleVisibility(item) ? (
                                 <td className="px-4 py-2 font-semibold">
-                                  <label className="cursor-pointer relative block items-center mb-0">
+                                  <label
+                                    htmlFor={`isdisabled-${item.objectId}`}
+                                    className="cursor-pointer relative block items-center mb-0"
+                                  >
                                     <input
+                                      id={`isdisabled-${item.objectId}`}
                                       type="checkbox"
-                                      className="op-toggle transition-all op-toggle-secondary"
+                                      className="op-toggle checked:[--tglbg:#3368ff] transition-all checked:text-white"
                                       checked={item?.IsDisabled !== true}
                                       onChange={() => handleToggleBtn(item)}
                                     />
