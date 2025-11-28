@@ -66,6 +66,17 @@ The pop-up will display a list of email addresses of the intended recipients or 
 Upon clicking, a confirmation popup will appear. If the user selects Yes, the template will be created successfully. After that, the user will be presented with options to Use Template, Send in Bulk, or Edit the Template.
 The newly created template will also be available in the Manage Templates list.
 
+- **View formdata**: Use this option to download all form data collected during the signing process. The exported file contains every input field and its corresponding value, making it easy to review, archive, or process externally.
+
+You can download the data in Excel format using this option.
+
+You can also print the form details if needed.
+
+Fields marked with **Hide Text with Asterisks** will be exported in plain text (unmasked), showing the actual values entered.
+
+**Note:** You cannot download form data if any widget names in the document are duplicated — each widget must have a unique name.  
+This feature is available only on the **Teams** and **Enterprise** plans.
+
 - **Delete :** If the document is outdated or was sent by mistake, you can permanently remove it from the list. Use this action cautiously, as deleted documents cannot be recovered.
 
 If you require more help, feel free to reach out to our customer support on support@opensignlabs.com.
