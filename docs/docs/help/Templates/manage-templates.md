@@ -48,6 +48,15 @@ The selected user will be able to access the template and create documents from 
    <img width="828" alt="Manage Template" src="https://github.com/user-attachments/assets/89780622-dd0d-47b7-b3b2-a71d537d7967" />
    
    <img width="828" alt="Manage Template" src="https://github.com/user-attachments/assets/fdc98efe-dc2d-4e53-bc66-be3aab07eef0" />
+   
+**Download all formdata**: Use this option to download all form data collected during the signing process. The exported file contains every input field and its corresponding value, making it easy to review, archive, or process externally.
+
+You can download the data in Excel format using this template.
+
+Fields marked with **Hide Text with Asterisks** will be exported in plain text (unmasked), showing the actual values entered.
+
+**Note:** You cannot download form data if any widget names in the template are duplicated — each widget must have a unique name.  
+This feature is available only on the **Teams** and **Enterprise** plans.
 
 **Embed**: The "Embed" option provides you with a code to embed the template into a website or other platforms, allowing users to interact with it directly from the external site.
 Click "Embed" to generate the code that can be copied and pasted into your desired web location. We currently support React, HTML/JavaScript and Angular-based websites.
