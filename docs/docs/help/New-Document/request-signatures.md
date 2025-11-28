@@ -153,25 +153,27 @@ Use the option on the right side to add recipients if you need to include additi
       -  All pages but first: It will copy the initials widget to all pages except the first page.
  - **Name**: The name widget allows signers to add their name or any other text, functioning like a text field during the signing process. After placing the name widget, you will see the options on the widget such as:
     - Setting icon: By clicking on the option, you can set the color and font.
+      
+      **Hide text with asterisks**: **"which masks the entered text (*) to protect sensitive information while filling out the document. The final embedded document will also display the text as asterisks, keeping the actual value hidden.
     - Add Signer/Change Signer: Clicking the first icon on the Name widget allows you to change the signer. You can choose from existing signers in the dropdown or add a new signer.
     - Copy : Clicking on this you can duplicate the name widget.
  - **Job title**: The Job title widget allows signers to add their Job title or any other text, functioning like a text field during the signing process. After placing the job title widget, you will see the options on the widget such as:
     - Setting icon: By clicking on the option, you can set the color and font.
+      
+      **Hide text with asterisks**: **"which masks the entered text (*) to protect sensitive information while filling out the document. The final embedded document will also display the text as asterisks, keeping the actual value hidden.
     - Add Signer/Change Signer: Clicking the first icon on the Job title widget allows you to change the signer. You can choose from existing signers in the dropdown or add a new signer.
     - Copy : Clicking on this you can duplicate the job title widget.
   
  - **Company**: The company widget allows signers to add their company or any other text, functioning like a text field during the signing process. After placing the company widget, you will see the options on the widget such as:
      - Setting icon: By clicking on the option, you can set the color and font.
+       
+       **Hide text with asterisks**: **"which masks the entered text (*) to protect sensitive information while filling out the document. The final embedded document will also display the text as asterisks, keeping the actual value hidden.
      - Add Signer/Change Signer: Clicking the first icon on the Company widget allows you to change the signer. You can choose from existing signers in the dropdown or add a new signer.
      - Copy : Clicking on this you can duplicate the Company widget.
  - **Date**: The date widget allows signers to add a date during the signing process. After placing the date widget, you will see the options on the widget such as:
      - Setting icon: By clicking on the option, you can choose from various date formats.
      - Add Signer/Change Signer: Clicking the first icon on the Date widget allows you to change the signer. You can choose from existing signers in the dropdown or add a new signer.
      - Copy : Clicking on this you can duplicate the date widget. 
- - **Text**: The text field functions as a label. Users can add and type text into this field, which will be embedded in the document when it's sent. This field is not editable by the signer. After placing the Text widget, you will see the options on the widget such as:
-    - Setting icon: By clicking on the option, you can set the color and font.
-    - Copy : Clicking on this you can duplicate the Text widget.
-  
  - **Text Input**: The text input field is used to collect input from the signer. Signers can type their responses directly into this field. After placing the Text Input widget, you will see the options on the widget such as:
     - Setting : The widget settings panel provides additional customization options, including:
       - Choosing a **font color**
@@ -179,6 +181,7 @@ Use the option on the right side to add recipients if you need to include additi
       - Marking the field as **required** or **optional**
       - Providing a **default value**
       - Making the field **read-only**
+      - **Hide text with asterisks**: **"which masks the entered text (*) to protect sensitive information while filling out the document. The final embedded document will also display the text as asterisks, keeping the actual value hidden.
       - Adding a **hint**, which will be displayed on the widget for better clarity
       - **Custom Validations** are also supported, including:
        - Predefined formats like **SSN**, **email**, or **numeric values**
@@ -206,6 +209,7 @@ Use the option on the right side to add recipients if you need to include additi
    - Marking the field as **required** or **optional**
    - Providing a **default value**
    - Making the field **read-only**
+   - **Hide text with asterisks**: **"which masks the entered text (*) to protect sensitive information while filling out the document. The final embedded document will also display the text as asterisks, keeping the actual value hidden.
    - Adding a **hint**, which will be displayed on the widget for better clarity
 
   **Custom Validations** are also supported, including:
@@ -237,6 +241,9 @@ Use the option on the right side to add recipients if you need to include additi
     - Copy : Clicking on this you can duplicate the image widget.
  - **Email**: The email widget is used to enter an email address during the signing process. It only accepts input in a valid email format. If the signer enters invalid text, a validation error will occur, and the document cannot be completed until it's corrected. After placing the email widget, you will see the options on the widget such as:
     - Setting icon: By clicking on the option, you can set the color and font.
+      
+      **Hide text with asterisks**: **"which masks the entered text (*) to protect sensitive information while filling out the document. The final embedded document will also display the text as asterisks, keeping the actual value hidden.
+      
     - Add Signer/Change Signer: Clicking the first icon on the Email widget allows you to change the signer. You can choose from existing signers in the dropdown or add a new signer.
     - Copy : Clicking on this you can duplicate the email widget.
   ### 📄 Document Page Controls

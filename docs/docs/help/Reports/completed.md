@@ -47,6 +47,17 @@ The "Completed documents" report also includes several actions icons for each do
 
 - **Save as template:** This option allows the user to save the current document as a reusable template. Upon clicking, a confirmation popup will appear. If the user selects Yes, the template will be created successfully. After that, the user will be presented with options to Use Template, Send in Bulk, or Edit the Template. The newly created template will also be available in the Manage Templates list.
   
+- **View formdata**: Use this option to download all form data collected during the signing process. The exported file contains every input field and its corresponding value, making it easy to review, archive, or process externally.
+
+You can download the data in Excel format using this option.
+
+You can also print the form details if needed.
+
+Fields marked with **Hide Text with Asterisks** will be exported in plain text (unmasked), showing the actual values entered.
+
+**Note:** You cannot download form data if any widget names in the document are duplicated — each widget must have a unique name.  
+This feature is available only on the **Teams** and **Enterprise** plans.
+  
 - **Fix and resend:** This option allows the user to recreate a completed document.
 It is useful when the completed document contains missing or incorrect information. Instead of starting from scratch, the user can use this feature to make the necessary edits and resend the document for signature.
   
