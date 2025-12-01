@@ -5006,7 +5006,7 @@ components:
         remind_once_in_every:
           type: number
           description: "Number of days between reminders. This is only applicable when auto_reminder is set to true."
-          example: 5,
+          example: 5
         merge_certificate: 
           type: boolean
           description: |
@@ -5249,7 +5249,7 @@ components:
         remind_once_in_every:
           type: number
           description: "Number of days between reminders. This is only applicable when auto_reminder is set to true."
-          example: 5,
+          example: 5
         merge_certificate: 
           type: boolean
           description: |
@@ -5449,7 +5449,7 @@ components:
         remind_once_in_every:
           type: number
           description: "Number of days between reminders. This is only applicable when auto_reminder is set to true."
-          example: 5,
+          example: 5
         merge_certificate: 
           type: boolean
           description: |
