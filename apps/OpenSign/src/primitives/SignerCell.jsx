@@ -158,7 +158,7 @@ const SignerCell = ({ reportName, item, handleRemovePrefill }) => {
               </tr>
             </thead>
             <tbody>
-              {item.Placeholders.map(
+              {item?.Placeholders?.map(
                 (x, i) =>
                   x.Role !== "prefill" && (
                     <tr key={i} className="text-sm font-medium">

@@ -18,8 +18,7 @@ export default async function createContactIndex() {
     const migrationExists = await migrationCollection.findOne({ name: migrationName });
 
     if (migrationExists) {
-      console.log(' INFO  No migrations were executed, database schema was already up to date.');
-      console.log(' SUCCESS  Successfully ran indexed migrations directly on db.');
+      console.log(' INFO  The unqiue index for contracts_Contactbook is already present.');
       return;
     }
 
@@ -61,10 +60,9 @@ export default async function createContactIndex() {
 
     // Insert the document
     await migrationdb.insertOne(schemaDocument);
-    console.log(' Unique index created successfully.');
-    console.log(' SUCCESS  Successfully ran indexed migrations directly on db.');
+    console.log(' SUCCESS  The unqiue index for contracts_Contactbook is already created.');
   } catch (error) {
-    console.log(' ERROR  running indexed migration:', error);
+    console.log(' ERROR  Running unqiue index for contracts_Contactbook migration:', error);
   } finally {
     await client.close();
   }

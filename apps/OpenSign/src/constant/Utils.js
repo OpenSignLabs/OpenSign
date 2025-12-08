@@ -3466,7 +3466,10 @@ export const updateDateWidgetsRes = (
   return placeHolders?.map((item) => {
     if (item?.signerObjId === signerId || item?.Id === signerId) {
       // Sort page number placeholders
-      const sortedPlaceHolder = [...item.placeHolder]
+      const placeHolder = Array.isArray(item.placeHolder)
+        ? [...item.placeHolder]
+        : [];
+      const sortedPlaceHolder = placeHolder
         .sort((a, b) => a.pageNumber - b.pageNumber)
         .map((ph) => ({
           ...ph,
@@ -3981,74 +3984,68 @@ export const getSignerEmail = (data, signers) => {
 
 //function is used to delete widgets
 export const handleDeleteWidget = (key, Id, pageNumber, signerPos) => {
-  const updateData = [];
+  // Find the signer by ID
+  const signer = signerPos.find((item) => item.Id === Id);
+  if (!signer || !signer.placeHolder) return signerPos;
 
-  const filterSignerPos = signerPos.filter((data) => data.Id === Id);
+  const placeHolder = signer.placeHolder;
 
-  if (filterSignerPos.length > 0) {
-    const getPlaceHolder = filterSignerPos[0].placeHolder;
+  // Find the page inside placeHolder
+  const currentPage = placeHolder.find((p) => p.pageNumber === pageNumber);
+  if (!currentPage) return signerPos;
 
-    const getPageNumer = getPlaceHolder.filter(
-      (data) => data.pageNumber === pageNumber
+  // Remove widget from the selected page
+  const updatedPos = currentPage.pos.filter((w) => w.key !== key);
+
+  // -------------------------------------------------------
+  // CASE A → After deletion, page still has widgets then keep that widgets
+  // -------------------------------------------------------
+  if (updatedPos.length > 0) {
+    const updatedPlaceHolder = placeHolder.map((p) =>
+      p.pageNumber === pageNumber ? { ...p, pos: updatedPos } : p
     );
 
-    if (getPageNumer.length > 0) {
-      const getXYdata = getPageNumer[0].pos.filter((data) => data.key !== key);
-
-      if (getXYdata.length > 0) {
-        updateData.push(getXYdata);
-        const newUpdatePos = getPlaceHolder.map((obj) => {
-          if (obj.pageNumber === pageNumber) {
-            return { ...obj, pos: updateData[0] };
-          }
-          return obj;
-        });
-
-        const newUpdateSigner = signerPos.map((obj) => {
-          if (obj.Id === Id) {
-            return { ...obj, placeHolder: newUpdatePos };
-          }
-          return obj;
-        });
-        return newUpdateSigner;
-      } else {
-        const getRemainPage = filterSignerPos[0].placeHolder.filter(
-          (data) => data.pageNumber !== pageNumber
-        );
-        //condition to check placeholder length is greater than 1 do not need to remove whole placeholder
-        //array only resove particular widgets
-        if (getRemainPage && getRemainPage.length > 0) {
-          const newUpdatePos = filterSignerPos.map((obj) => {
-            if (obj.Id === Id) {
-              return { ...obj, placeHolder: getRemainPage };
-            }
-            return obj;
-          });
-          let signerupdate = [];
-          signerupdate = signerPos.filter((data) => data.Id !== Id);
-          signerupdate.push(newUpdatePos[0]);
-
-          return signerupdate;
-        } else {
-          const updatedData = signerPos
-            .map((item) => {
-              if (item.Id === Id && item?.Role === "prefill") {
-                return null; // mark this item to remove
-              }
-              if (item.Id === Id) {
-                const updatedItem = { ...item };
-                delete updatedItem.placeHolder;
-                return updatedItem;
-              }
-              return item;
-            })
-            .filter(Boolean); // remove nulls (deleted items)
-
-          return updatedData;
-        }
-      }
-    }
+    return signerPos.map((s) =>
+      s.Id === Id ? { ...s, placeHolder: updatedPlaceHolder } : s
+    );
   }
+
+  // -------------------------------------------------------
+  // CASE B → current page becomes empty → remove current page entirely and keep another pages which have widgets
+  // -------------------------------------------------------
+  const remainPages = placeHolder.filter((p) => p.pageNumber !== pageNumber);
+
+  //`remainPages` keep another pages's data which have widgets
+  if (remainPages.length > 0) {
+    const index = signerPos.findIndex((s) => s.Id === Id);
+    if (index === -1) return signerPos;
+
+    const newSignerPos = [...signerPos];
+    newSignerPos[index] = {
+      ...newSignerPos[index],
+      placeHolder: remainPages
+    };
+
+    return newSignerPos;
+  }
+
+  // -------------------------------------------------------
+  // CASE C → No pages have widgets after delete widgets
+  //          Remove placeHolder field for particular signers, EXCEPT prefill role
+  // -------------------------------------------------------
+  const updatedData = signerPos
+    .map((s) => {
+      if (s.Id === Id && s.Role === "prefill") return null; // remove whole signer
+      if (s.Id === Id) {
+        const updated = { ...s };
+        delete updated.placeHolder;
+        return updated;
+      }
+      return s;
+    })
+    .filter(Boolean); // remove nulls (deleted items)
+
+  return updatedData;
 };
 //function to convert formatted date to new Date() format
 export const getDefaultDate = (dateStr, format) => {

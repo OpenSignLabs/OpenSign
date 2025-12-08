@@ -170,7 +170,8 @@
     "Kiosk Mode": "Modo Kiosco",
     "Reset password": "Restablecer contraseña",
     "View formdata": "Ver datos del formulario",
-    "Download all formdata": "Descargar todos los datos del formulario"
+    "Download all formdata": "Descargar todos los datos del formulario",
+    "API credits": "Créditos de API"
   },
   "report-heading": {
     "Sr.No": "Nº",
@@ -704,7 +705,7 @@
   "select-date-format": "Selecciona un formato de fecha",
   "quantity-of-credits": "Cantidad de créditos premium",
   "remaining-credits": "Créditos premium disponibles:",
-  "remaining-credits-help": "Usa créditos premium para la API para la firma de documentos, envío en masa, o para incorporar la integración de OpenSign en tu página web. Te quedan {{allowedcredits}} créditos incluidos y {{addoncredits}} créditos comprados adicionalmente.",
+  "remaining-credits-help": "Utilice créditos premium para la firma de documentos mediante API, el envío masivo o para integrar OpenSign en su sitio web. Le quedan {{allowedcredits}} créditos incluidos y {{addoncredits}} créditos adicionales comprados. Si está en un plan Teams o Enterprise, estos créditos pueden compartirse entre todos los usuarios de su empresa, a menos que el administrador de la cuenta haya establecido un límite para su cuenta.",
   "additional-credits": "Por favor, compra créditos premium",
   "quota-err-quicksend": "Cuota alcanzada, no tienes créditos suficientes.",
   "buy-credits": "Comprar créditos premium",
@@ -1297,5 +1298,16 @@
   "view-formdata-paid-title-error": "La función 'Ver datos del formulario' le permite imprimir y descargar los datos de los widgets completados por los firmantes durante la firma.",
   "view-formdata-paid-error": "Nota: La función 'Ver datos del formulario' solo está disponible para documentos creados en o después de la versión v2.32.0 que no contengan nombres de widgets duplicados.",
   "download-all-formdata-paid-title-error": "La función 'Descargar todos los datos del formulario' le permite descargar los datos de los widgets completados por los firmantes para todos los documentos creados a partir de la plantilla.",
-  "download-all-formdata-paid-error": "Nota: La función 'Descargar todos los datos del formulario' solo está disponible para plantillas creadas en o después de la versión v2.32.0 que no contengan nombres de widgets duplicados."
+  "download-all-formdata-paid-error": "Nota: La función 'Descargar todos los datos del formulario' solo está disponible para plantillas creadas en o después de la versión v2.32.0 que no contengan nombres de widgets duplicados.",
+  "api-token-not-found": "Token de API no encontrado.",
+  "sub-head-api-credits": "Defina la cantidad máxima de créditos API que este usuario puede consumir.",
+  "consumed-credits": "Créditos consumidos",
+  "allowed-api-credits": "Créditos API permitidos",
+  "allowed-api-credits-help": "Los créditos permitidos deben ser mayores o iguales a los créditos consumidos.",
+  "Enter-allowed-api-credits": "Ingrese los créditos API permitidos",
+  "login-to-sandbox": "Iniciar sesión en sandbox",
+  "your-credits-usage": "Uso de sus créditos",
+  "remaining": "restantes",
+  "used": "usados",
+  "your-credits-usage-help": "Esta es la cantidad de créditos consumidos con su clave API."
 }

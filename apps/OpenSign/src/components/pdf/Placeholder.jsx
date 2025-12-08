@@ -216,16 +216,17 @@ function Placeholder(props) {
     //placeholder, template flow
     else if (props.isPlaceholder && !props.isDragging) {
       props.setCurrWidgetsDetails && props.setCurrWidgetsDetails(props.pos);
-      if (
-        props.pos.key === props?.currWidgetsDetails?.key &&
-        props?.data?.Role !== "prefill"
-      ) {
-        props.handleLinkUser(props.data.Id);
+      if (props?.data?.Role !== "prefill") {
+        //this condition is used open signers attach modal but it should only open when widgets already selected
+        if (props?.currWidgetsDetails?.key === props.pos?.key) {
+          props.handleLinkUser(props.data.Id);
+        }
         props.setUniqueId(props.data.Id);
         const checkIndex = props.xyPosition.findIndex(
           (data) => data.Id === props.data.Id
         );
         props.setIsSelectId(checkIndex || 0);
+        props?.setRoleName("");
       } else if (props?.data?.Role === "prefill") {
         dispatch(setIsShowModal({ [props.pos.key]: true }));
         props.setUniqueId(props?.data?.Id);
@@ -658,6 +659,8 @@ function Placeholder(props) {
           onClick={() => {
             props.setCurrWidgetsDetails &&
               props.setCurrWidgetsDetails(props.pos);
+            props?.setRoleName("prefill");
+            props.setUniqueId(props?.data?.Id);
           }}
           style={{
             fontFamily: "Arial, sans-serif",
