@@ -170,7 +170,8 @@
     "Kiosk Mode": "Modalità Kiosk",
     "Reset password": "Reimposta password",
     "View formdata": "Visualizza i dati del modulo",
-    "Download all formdata": "Scarica tutti i dati del modulo"
+    "Download all formdata": "Scarica tutti i dati del modulo",
+    "API credits": "Crediti API"
   },
   "report-heading": {
     "Sr.No": "Nr.",
@@ -703,7 +704,7 @@
   "select-date-format": "Seleziona un formato data",
   "quantity-of-credits": "Quantità di crediti premium",
   "remaining-credits": "Crediti premium disponibili:",
-  "remaining-credits-help": "Usa i crediti premium per firmare documenti API, invii in massa o per integrare OpenSign nel tuo sito web. Hai a disposizione {{allowedcredits}} crediti inclusi e {{addoncredits}} crediti acquistati aggiuntivi rimanenti.",
+  "remaining-credits-help": "Usa i crediti premium per la firma di documenti tramite API, l'invio massivo o per integrare OpenSign nel tuo sito web. Hai ancora {{allowedcredits}} crediti inclusi e {{addoncredits}} crediti aggiuntivi acquistati. Se sei in un piano Teams o Enterprise, questi crediti possono essere condivisi tra tutti gli utenti della tua azienda, a meno che l'amministratore dell'account non abbia impostato un limite specifico per il tuo account.",
   "additional-credits": "Acquista crediti premium",
   "quota-err-quicksend": "Quota raggiunta, non hai abbastanza crediti.",
   "buy-credits": "Acquista Crediti Premium",
@@ -1296,5 +1297,16 @@
   "view-formdata-paid-title-error": "La funzione 'Visualizza dati del modulo' consente di stampare e scaricare i dati dei widget compilati dai firmatari durante la firma.",
   "view-formdata-paid-error": "Nota: La funzione 'Visualizza dati del modulo' è disponibile solo per documenti creati dalla versione v2.32.0 in poi che non contengono nomi di widget duplicati.",
   "download-all-formdata-paid-title-error": "La funzione 'Scarica tutti i dati del modulo' consente di scaricare i dati dei widget compilati dai firmatari per tutti i documenti creati dal modello.",
-  "download-all-formdata-paid-error": "Nota: La funzione 'Scarica tutti i dati del modulo' è disponibile solo per modelli creati dalla versione v2.32.0 in poi che non contengano nomi di widget duplicati."
+  "download-all-formdata-paid-error": "Nota: La funzione 'Scarica tutti i dati del modulo' è disponibile solo per modelli creati dalla versione v2.32.0 in poi che non contengano nomi di widget duplicati.",
+  "api-token-not-found": "Token API non trovato.",
+  "sub-head-api-credits": "Definisci il numero massimo di crediti API che questo utente può consumare.",
+  "consumed-credits": "Crediti consumati",
+  "allowed-api-credits": "Crediti API consentiti",
+  "allowed-api-credits-help": "I crediti consentiti devono essere maggiori o uguali ai crediti consumati.",
+  "Enter-allowed-api-credits": "Inserisci i crediti API consentiti",
+  "login-to-sandbox": "Accedi alla sandbox",
+  "your-credits-usage": "Utilizzo dei tuoi crediti",
+  "remaining": "rimanenti",
+  "used": "usati",
+  "your-credits-usage-help": "Questo è il numero di crediti consumati con la tua chiave API."
 }

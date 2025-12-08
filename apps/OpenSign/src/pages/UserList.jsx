@@ -13,26 +13,8 @@ import {
 import DeleteUserModal from "../primitives/DeleteUserModal";
 import axios from "axios";
 import PasswordResetModal from "../primitives/PasswordResetModal";
+import { usersActions } from "../json/ReportJson";
 
-const actions = [
-  {
-    btnId: "4741",
-    hoverLabel: "Delete",
-    btnColor: "op-btn-secondary",
-    btnIcon: "fa-light fa-trash",
-    redirectUrl: "",
-    action: "delete",
-    restrictAdmin: true
-  },
-  {
-    btnId: "1910",
-    hoverLabel: "Reset password",
-    btnIcon: "fa-light fa-key",
-    redirectUrl: "",
-    action: "resetpassword",
-    restrictAdmin: true
-  },
-];
 const heading = ["Sr.No", "Name", "Email", "Phone", "Role", "Team", "Active"];
 const UserList = () => {
   const { t } = useTranslation();
@@ -342,7 +324,7 @@ const UserList = () => {
                               {t(`report-heading.${item}`)}
                             </th>
                           ))}
-                          {actions?.length > 0 && (
+                          {usersActions?.length > 0 && (
                             <th className="p-2 text-transparent pointer-events-none">
                               {t("action")}
                             </th>
@@ -429,8 +411,8 @@ const UserList = () => {
                               {isAdmin && (
                                 <td className="px-3 py-2">
                                   <div className="text-base-content min-w-max flex flex-row gap-x-2 gap-y-1 justify-start items-center">
-                                    {actions?.length > 0 &&
-                                      actions.map((act, index) => (
+                                    {usersActions?.length > 0 &&
+                                      usersActions?.map((act, index) => (
                                         <React.Fragment key={index}>
                                           {handleBtnVisibility(act, item) && (
                                             <div
@@ -458,37 +440,29 @@ const UserList = () => {
                                               )}
                                             </div>
                                           )}
-                                          <DeleteUserModal
-                                            title={t("delete-account")}
-                                            deleting={deleting}
-                                            userEmail={item?.Email}
-                                            isOpen={
-                                              isActModal[
-                                                "delete_" + item.objectId
-                                              ]
-                                            }
-                                            onConfirm={() =>
-                                              handleDeleteAccount(item)
-                                            }
-                                            deleteRes={deleteUserRes}
-                                            handleClose={handleCloseModal}
-                                          />
-                                          <PasswordResetModal
-                                            isOpen={
-                                              isActModal[
-                                                "resetpassword_" + item.objectId
-                                              ]
-                                            }
-                                            userId={item?.UserId?.objectId}
-                                            onClose={handleCloseModal}
-                                            onSubmit={submitPassword}
-                                            showAlert={showAlert}
-                                          />
                                         </React.Fragment>
                                       ))}
                                   </div>
                                 </td>
                               )}
+                              <DeleteUserModal
+                                title={t("delete-account")}
+                                deleting={deleting}
+                                userEmail={item?.Email}
+                                isOpen={isActModal["delete_" + item.objectId]}
+                                onConfirm={() => handleDeleteAccount(item)}
+                                deleteRes={deleteUserRes}
+                                handleClose={handleCloseModal}
+                              />
+                              <PasswordResetModal
+                                isOpen={
+                                  isActModal["resetpassword_" + item.objectId]
+                                }
+                                userId={item?.UserId?.objectId}
+                                onClose={handleCloseModal}
+                                onSubmit={submitPassword}
+                                showAlert={showAlert}
+                              />
                             </tr>
                           ))}
                         </tbody>

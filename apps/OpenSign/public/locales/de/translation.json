@@ -170,7 +170,8 @@
     "Kiosk Mode": "Kiosk Modus",
     "Reset password": "Passwort zurücksetzen",
     "View formdata": "Formulardaten ansehen",
-    "Download all formdata": "Alle Formulardaten herunterladen"
+    "Download all formdata": "Alle Formulardaten herunterladen",
+    "API credits": "API-Credits"
   },
   "report-heading": {
     "Sr.No": "Nr.",
@@ -703,7 +704,7 @@
   "select-date-format": "Wählen Sie ein Datumsformat",
   "quantity-of-credits": "Anzahl der Premium-Credits",
   "remaining-credits": "Verfügbare Premium-Credits:",
-  "remaining-credits-help": "Verwenden Sie Premium-Credits für API-Dokumentensignaturen, Massenversand oder die Einbettung der OpenSign-Integration auf Ihrer Website. Sie haben {{allowedcredits}} enthaltene Credits und {{addoncredits}} zusätzlich gekaufte Credits übrig.",
+  "remaining-credits-help": "Verwenden Sie Premium-Credits für die API-Dokumentensignatur, den Massenversand oder die Einbettung der OpenSign-Integration auf Ihrer Website. Sie haben noch {{allowedcredits}} inkludierte Credits und {{addoncredits}} zusätzlich gekaufte Credits übrig. Wenn Sie einen Teams- oder Enterprise-Plan nutzen, können diese Credits von allen Benutzern in Ihrem Unternehmen gemeinsam verwendet werden, sofern der Kontoadministrator für Ihr Konto kein Limit festgelegt hat.",
   "additional-credits": "Bitte kaufen Sie Premium-Credits hinzu",
   "quota-err-quicksend": "Kontingent erreicht, Sie haben nicht genügend Credits.",
   "buy-credits": "Premium-Credits kaufen",
@@ -1296,5 +1297,16 @@
   "view-formdata-paid-title-error": "Die Funktion 'Formulardaten anzeigen' ermöglicht es Ihnen, die von Unterzeichnern ausgefüllten Widget-Daten auszudrucken und herunterzuladen.",
   "view-formdata-paid-error": "Hinweis: Die Funktion 'Formulardaten anzeigen' ist nur für Dokumente verfügbar, die ab Version v2.32.0 erstellt wurden und keine doppelten Widget-Namen enthalten.",
   "download-all-formdata-paid-title-error": "Die Funktion 'Alle Formulardaten herunterladen' ermöglicht es Ihnen, die von Unterzeichnern ausgefüllten Widget-Daten für alle aus der Vorlage erstellten Dokumente herunterzuladen.",
-  "download-all-formdata-paid-error": "Hinweis: Die Funktion 'Alle Formulardaten herunterladen' ist nur für Vorlagen verfügbar, die ab Version v2.32.0 erstellt wurden und keine doppelten Widget-Namen enthalten."
+  "download-all-formdata-paid-error": "Hinweis: Die Funktion 'Alle Formulardaten herunterladen' ist nur für Vorlagen verfügbar, die ab Version v2.32.0 erstellt wurden und keine doppelten Widget-Namen enthalten.",
+  "api-token-not-found": "API-Token nicht gefunden.",
+  "sub-head-api-credits": "Legen Sie die maximale Anzahl von API-Credits fest, die dieser Benutzer verbrauchen darf.",
+  "consumed-credits": "Verbrauchte Credits",
+  "allowed-api-credits": "Zulässige API-Credits",
+  "allowed-api-credits-help": "Die zulässigen Credits sollten größer oder gleich den verbrauchten Credits sein.",
+  "Enter-allowed-api-credits": "Zulässige API-Credits eingeben",
+  "login-to-sandbox": "Im Sandbox-Modus anmelden",
+  "your-credits-usage": "Ihr Kreditverbrauch",
+  "remaining": "verbleibend",
+  "used": "verwendet",
+  "your-credits-usage-help": "Dies ist die Anzahl der Credits, die mit Ihrem API-Schlüssel verbraucht wurden."
 }

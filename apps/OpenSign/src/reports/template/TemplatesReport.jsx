@@ -351,9 +351,6 @@ const TemplatesReport = (props) => {
         setError(t("duplicate-template-widget-error"));
         setIsModal({ [`duplicate_${item.objectId}`]: true });
       } else {
-        const isPrefill =
-          item?.Placeholders?.some((p) => p?.Role === "prefill") ?? false;
-        setError(isPrefill ? t("duplicate-template-error") : "");
         setIsModal({ [`duplicate_${item.objectId}`]: true });
       }
     } else if (act.action === "rename") {

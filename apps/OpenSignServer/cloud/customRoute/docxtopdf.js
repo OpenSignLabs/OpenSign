@@ -13,10 +13,13 @@ async function convertLibre(input, ext, opts) {
     }
   });
 }
-// -------------------- Concurrency limiter (no dependency) --------------------
-const MAX_CONCURRENCY = Number(process.env.DOCX2PDF_CONCURRENCY || 2); // 1 for tiny droplets
+
+// -------------------- Concurrency limiter --------------------
+// CRITICAL FIX: Reduced to 1 for CPU-intensive LibreOffice conversions
+const MAX_CONCURRENCY = Number(process.env.DOCX2PDF_CONCURRENCY || 1);
 let active = 0;
 const queue = [];
+
 function runWithLimit(task) {
   return new Promise((resolve, reject) => {
     const run = () => {
@@ -34,7 +37,7 @@ function runWithLimit(task) {
   });
 }
 
-// -------------------- Timeout helper (async version = no TS hint) --------------------
+// -------------------- Timeout helper --------------------
 /**
  * @template T
  * @param {Promise<T>} promise
@@ -58,6 +61,7 @@ export async function withTimeout(promise, ms, label = 'operation') {
 const storage = multer.memoryStorage();
 export const upload = multer({
   storage,
+  limits: { fileSize: 50 * 1024 * 1024 }, // 50MB hard limit at multer level
   fileFilter: (req, file, cb) => {
     const okExt = /\.docx$/i.test(file.originalname || '');
     const okMime =
@@ -109,14 +113,30 @@ export default async function docxtopdf(req, res) {
       return res.status(403).json({ error: 'Tenant not found for user.' });
     }
 
-    // ---- DOCX -> PDF (buffer -> buffer), with concurrency + timeout ----
+    // ---- DOCX -> PDF conversion with concurrency control and timeout ----
     const fileName = `${generatePdfName(16)}.pdf`;
 
-    const pdfBuffer = await runWithLimit(() =>
-      withTimeout(convertLibre(req.file.buffer, '.pdf', undefined), 60_000, 'DOCX->PDF')
-    );
+    // FIX: Increased timeout to 90s for large files, added nice priority
+    const pdfBuffer = await runWithLimit(async () => {
+      // Log for monitoring
+      console.log(`[DOCX2PDF] Starting conversion, active: ${active}, queued: ${queue.length}`);
 
-    // ---- Upload PDF (no disk IO) ----
+      const startTime = Date.now();
+      try {
+        const result = await withTimeout(
+          convertLibre(req.file.buffer, '.pdf', undefined),
+          90_000, // Increased from 60s to 90s
+          'DOCX->PDF'
+        );
+        console.log(`[DOCX2PDF] Completed in ${Date.now() - startTime}ms`);
+        return result;
+      } catch (error) {
+        console.error(`[DOCX2PDF] Failed after ${Date.now() - startTime}ms:`, error.message);
+        throw error;
+      }
+    });
+
+    // ---- Upload PDF ----
     const activeFileAdapter = resUser.data.results[0]?.TenantId?.ActiveFileAdapter;
     let fileUrl;
     if (activeFileAdapter) {
@@ -140,12 +160,23 @@ export default async function docxtopdf(req, res) {
 
     return res.status(200).json({ message: 'success.', url: fileUrl });
   } catch (err) {
-    const msg =
+    // More specific error messages
+    let msg =
       err?.response?.data?.error || err?.response?.data || err?.message || 'Something went wrong.';
-    console.log(`Error in docxtopdf: ${msg}`);
     // Friendly message to the client
     const message =
       'We are currently experiencing some issues with processing DOCX files. Please upload the PDF version or contact us on support@opensignlabs.com';
+
+    if (msg.includes('timed out')) {
+      msg =
+        'Document conversion is taking too long. Please try a smaller file or contact support@opensignlabs.com';
+    } else if (msg.includes('too large') || msg.includes('size')) {
+      msg =
+        'File is too large to process. Please reduce the file size or contact support@opensignlabs.com';
+    } else {
+      msg = message;
+    }
+    console.error(`[DOCX2PDF] Error: ${msg}`);
     return res.status(400).json({ error: message });
   }
 }

@@ -533,3 +533,23 @@ export default function reportJson(id) {
       return null;
   }
 }
+
+export const usersActions = [
+  {
+    btnId: "4741",
+    hoverLabel: "Delete",
+    btnColor: "op-btn-secondary",
+    btnIcon: "fa-light fa-trash",
+    redirectUrl: "",
+    action: "delete",
+    restrictAdmin: true
+  },
+  {
+    btnId: "1910",
+    hoverLabel: "Reset password",
+    btnIcon: "fa-light fa-key",
+    redirectUrl: "",
+    action: "resetpassword",
+    restrictAdmin: true
+  }
+];

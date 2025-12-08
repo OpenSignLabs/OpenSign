@@ -170,7 +170,8 @@
     "Kiosk Mode": "Kiosk Mode",
     "Reset password": "Reset password",
     "View formdata": "View formdata",
-    "Download all formdata": "Download all formdata"
+    "Download all formdata": "Download all formdata",
+    "API credits": "API credits"
   },
   "report-heading": {
     "Sr.No": "Sr.No",
@@ -704,7 +705,7 @@
   "select-date-format": "Select a date format",
   "quantity-of-credits": "Quantity of premium credits",
   "remaining-credits": "Premium credits available:",
-  "remaining-credits-help": "Use premium credits for API document signing, bulk sending, or embedding OpenSign integration on your website. You have {{allowedcredits}} included credits and {{addoncredits}} additional purchased credits remaining.",
+  "remaining-credits-help": "Use premium credits for API document signing, bulk sending, or embedding OpenSign integration on your website. You have {{allowedcredits}} included credits and {{addoncredits}} additional purchased credits remaining. If you are on Teams or enterprise plan these are the credits that could be shared across all users in your company unless there is a limit set by the account admin for your account.",
   "additional-credits": "Please purchase premium credits",
   "quota-err-quicksend": "Quota reached, you don't have enough credits.",
   "buy-credits": "Buy premium credits",
@@ -1297,5 +1298,16 @@
   "view-formdata-paid-title-error": "The View Form Data feature lets you print and download the widget data filled in by signers while signing.",
   "view-formdata-paid-error": "Note: 'View Formdata' feature is only available for documents created on or after v2.32.0 that do not contain duplicate widget names.",
   "download-all-formdata-paid-title-error": "The Download All Form Data feature lets you download widget data filled in by signers for all documents created from the template.",
-  "download-all-formdata-paid-error": "Note: 'Download All Formdata' feature is only available for templates created on or after v2.32.0 that do not contain duplicate widget names."
+  "download-all-formdata-paid-error": "Note: 'Download All Formdata' feature is only available for templates created on or after v2.32.0 that do not contain duplicate widget names.",
+  "api-token-not-found": "API token not found.",
+  "sub-head-api-credits": " Define the maximum number of API credits this user is allowed to  consume.",
+  "consumed-credits": "Consumed credits",
+  "allowed-api-credits": "Allowed API credits",
+  "allowed-api-credits-help": "The allowed credits should be greater than or equal to the  consumed credits.",
+  "Enter-allowed-api-credits": "Enter allowed API credits",
+  "login-to-sandbox": "Login to sandbox",
+  "your-credits-usage": "Your credits usage",
+  "remaining": "remaining",
+  "used": "used",
+  "your-credits-usage-help": "This is the number of credits consumed with your API key."
 }

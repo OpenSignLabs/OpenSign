@@ -17,7 +17,7 @@ import { exec } from 'child_process';
 import { createTransport } from 'nodemailer';
 import { appName, cloudServerUrl, serverAppId, smtpenable, smtpsecure, useLocal } from './Utils.js';
 import { SSOAuth } from './auth/authadapter.js';
-import createContactIndex from './migrationdb/createContactIndex.js';
+import runDbMigrations from './migrationdb/index.js';
 import { validateSignedLocalUrl } from './cloud/parsefunction/getSignedUrl.js';
 import maintenance_mode_message from 'aws-sdk/lib/maintenance_mode_message.js';
 let fsAdapter;
@@ -119,6 +119,7 @@ export const config = {
   allowClientClassCreation: false,
   allowExpiredAuthDataToken: false,
   enableInsecureAuthAdapters: false,
+  databaseOptions: { allowPublicExplain: false },
   encodeParseObjectInCloudFunction: true,
   ...(isMailAdapter === true
     ? {
@@ -240,7 +241,7 @@ if (!process.env.TESTING) {
     console.log('opensign-server running on port ' + port + '.');
     const isWindows = process.platform === 'win32';
     // console.log('isWindows', isWindows);
-    createContactIndex();
+    runDbMigrations();
     const migrate = isWindows
       ? `set APPLICATION_ID=${serverAppId}&& set SERVER_URL=${cloudServerUrl}&& set MASTER_KEY=${process.env.MASTER_KEY}&& npx parse-dbtool migrate`
       : `APPLICATION_ID=${serverAppId} SERVER_URL=${cloudServerUrl} MASTER_KEY=${process.env.MASTER_KEY} npx parse-dbtool migrate`;
