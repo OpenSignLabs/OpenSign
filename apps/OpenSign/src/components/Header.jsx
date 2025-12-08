@@ -60,7 +60,6 @@ const Header = ({ isConsole, setIsLoggingOut }) => {
         setAppLogo(logo);
       }
   }
-
   const handleLogout = async () => {
     setIsOpen(false);
     setIsLoggingOut(true);

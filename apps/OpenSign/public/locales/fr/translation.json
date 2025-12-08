@@ -206,7 +206,8 @@
     "Kiosk Mode": "Mode Kiosque",
     "Reset password": "Réinitialiser le mot de passe",
     "View formdata": "Voir les données du formulaire",
-    "Download all formdata": "Télécharger toutes les données du formulaire"
+    "Download all formdata": "Télécharger toutes les données du formulaire",
+    "API credits": "Crédits API"
   },
   "report-help": {
     "Draft Documents": "Il s'agit de documents que vous avez commencés mais que vous n'avez pas finalisés pour envoi.",
@@ -704,7 +705,7 @@
   "quantity-of-credits": "Quantité de crédits de prime",
   "remaining-credits": "Crédits premium disponibles :",
   "additional-credits": "Veuillez acheter des crédits premium",
-  "remaining-credits-help": "Utilisez des crédits premium pour la signature de documents API, l'envoi groupé ou l'intégration d'OpenSign sur votre site Web. Il vous reste {{allowedcredits}} crédits inclus et {{addoncredits}} crédits achetés supplémentaires.",
+  "remaining-credits-help": "Utilisez des crédits premium pour la signature de documents via l'API, l'envoi groupé ou l'intégration d'OpenSign sur votre site Web. Il vous reste {{allowedcredits}} crédits inclus et {{addoncredits}} crédits supplémentaires achetés. Si vous êtes sur un plan Teams ou Enterprise, ces crédits peuvent être partagés entre tous les utilisateurs de votre entreprise, sauf si l'administrateur du compte a défini une limite pour votre compte.",
   "quota-err-quicksend": "Quota atteint, vous n'avez pas assez de crédits.",
   "buy-credits": "Acheter des crédits premium",
   "rotate-right": "Faire pivoter à droite",
@@ -1293,8 +1294,19 @@
   "duplicate-template-widget-error": "Vous ne pouvez pas dupliquer ce modèle car il contient des noms de widgets en double.",
   "credit-alert": "Alerte de crédit",
   "document-form-data": "Données du formulaire du document",
-  "view-formdata-paid-title-error": "La fonction 'Afficher les données du formulaire' vous permet d’imprimer et de télécharger les données des widgets remplies par les signataires lors de la signature.",
+  "view-formdata-paid-title-error": "La fonction 'Afficher les données du formulaire' vous permet d'imprimer et de télécharger les données des widgets remplies par les signataires lors de la signature.",
   "view-formdata-paid-error": "Remarque : La fonction 'Afficher les données du formulaire' est uniquement disponible pour les documents créés à partir de la version v2.32.0 et ne contenant pas de noms de widgets en double.",
   "download-all-formdata-paid-title-error": "La fonction 'Télécharger toutes les données du formulaire' vous permet de télécharger les données des widgets remplies par les signataires pour tous les documents créés à partir du modèle.",
-  "download-all-formdata-paid-error": "Remarque : La fonction 'Télécharger toutes les données du formulaire' est uniquement disponible pour les modèles créés à partir de la version v2.32.0 et ne contenant pas de noms de widgets en double."
+  "download-all-formdata-paid-error": "Remarque : La fonction 'Télécharger toutes les données du formulaire' est uniquement disponible pour les modèles créés à partir de la version v2.32.0 et ne contenant pas de noms de widgets en double.",
+  "api-token-not-found": "Jeton API introuvable.",
+  "sub-head-api-credits": "Définissez le nombre maximal de crédits API que cet utilisateur est autorisé à consommer.",
+  "consumed-credits": "Crédits consommés",
+  "allowed-api-credits": "Crédits API autorisés",
+  "allowed-api-credits-help": "Les crédits autorisés doivent être supérieurs ou égaux aux crédits consommés.",
+  "Enter-allowed-api-credits": "Saisissez les crédits API autorisés",
+  "login-to-sandbox": "Se connecter au sandbox",
+  "your-credits-usage": "Votre utilisation des crédits",
+  "remaining": "restants",
+  "used": "utilisés",
+  "your-credits-usage-help": "Ceci est le nombre de crédits consommés avec votre clé API."
 }

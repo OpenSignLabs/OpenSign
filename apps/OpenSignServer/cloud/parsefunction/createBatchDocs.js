@@ -192,7 +192,6 @@ async function batchQuery(userId, Documents, Ip, parseConfig, type, publicUrl) {
           },
         };
       });
-      // console.log('requests ', requests);
       if (requests?.length > 0) {
         const newrequests = [requests?.[0]];
         const response = await axios.post('batch', { requests: newrequests }, parseConfig);
