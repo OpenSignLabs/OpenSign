@@ -594,6 +594,31 @@ paths:
         - **formula:** Compute the value from other number widgets using +, -, *, /, (, ). Reference widgets by their name in double curly braces, e.g. {{quantity}} * {{rate}}. to know more [visit here](https://docs.opensignlabs.com/docs/help/New-Document/widgets) (optional).
         - **default:** Provide a default number (Optional).
         - **decimalplaces:** Number of digits to display after the decimal point. e.g: 2 => 12.00, 0 => 12 (default 2)
+
+        13. **cells**
+        ```
+        {
+          "type": "cells",
+          "page": 1,
+          "x": 100,
+          "y": 100,
+          "w": 114,
+          "h": 50,
+          "options": {
+            "name": "cells",
+            "required": true,
+            "readonly": false,
+            "cell_count": 5,
+            "default": "",
+            "hint": "",
+            "regularexpression": "",
+            "color": "black",
+            "fontsize": 12,
+            "hide_text_with_asterisks": false
+          }
+        }
+        ```
+        - **cell_count:** Specify the number of cells that should be returned to the user.
       operationId: selfsign
       requestBody:
         content:
@@ -955,6 +980,31 @@ paths:
         - **readonly:** Set to true if you want to set the textbox as readonly. By default, it's false.
         - **decimalplaces:** Number of digits to display after the decimal point. e.g: 2 => 12.00, 0 => 12 (default 2)
         
+        15. **cells**
+        ```
+        {
+          "type": "cells",
+          "page": 1,
+          "x": 100,
+          "y": 100,
+          "w": 114,
+          "h": 50,
+          "options": {
+            "name": "cells",
+            "required": true,
+            "readonly": false,
+            "cell_count": 5,
+            "default": "",
+            "hint": "",
+            "regularexpression": "",
+            "color": "black",
+            "fontsize": 12,
+            "hide_text_with_asterisks": false
+          }
+        }
+        ```
+        - **cell_count:** Specify the number of cells that should be returned to the user.
+
         **Prefill Widgets:** Prefill widgets are elements that are inserted into a document **before** it is shared with a user. Only the document creator has permission to add them.
         
         **Note:** Responses for prefill widgets are **required**.
@@ -1438,7 +1488,32 @@ paths:
         - **hint:** Provide a hint for the number (Optional).
         - **readonly:** Set to true if you want to set the textbox as readonly. By default, it's false.
         - **decimalplaces:** Number of digits to display after the decimal point. e.g: 2 => 12.00, 0 => 12 (default 2)
-        
+
+        15. **cells**
+        ```
+        {
+          "type": "cells",
+          "page": 1,
+          "x": 100,
+          "y": 100,
+          "w": 114,
+          "h": 50,
+          "options": {
+            "name": "cells",
+            "required": true,
+            "readonly": false,
+            "cell_count": 5,
+            "default": "",
+            "hint": "",
+            "regularexpression": "",
+            "color": "black",
+            "fontsize": 12,
+            "hide_text_with_asterisks": false
+          }
+        }
+        ```
+        - **cell_count:** Specify the number of cells that should be returned to the user.
+
         **Prefill Widgets:** Prefill widgets are elements that are inserted into a document **before** it is shared with a user. Only the document creator has permission to add them.
         
         **Note:** Responses for prefill widgets are **required**.
@@ -1704,6 +1779,18 @@ paths:
         
         **Prefill Widgets:** Prefill widgets are elements that are inserted into a document before it is shared with a user. Only the document creator has permission to add them.
         
+        11. **cells**
+        ```
+        {
+          "name": "cells",
+          "readonly": false,
+          "cell_count": 5,
+          "default": "",
+          "hide_text_with_asterisks": false 
+        }
+        ```
+        - **cell_count:** Specify the number of cells that should be returned to the user.
+
         **response:** Provide the value that should replace the existing response.
         
         **List of widgets supported in Prefill**
@@ -2554,7 +2641,31 @@ paths:
         - **readonly:** Set to true if you want to set the textbox as readonly. By default, it's false.
         - **decimalplaces:** Number of digits to display after the decimal point. e.g: 2 => 12.00, 0 => 12 (default 2)
         
-        
+        15. **cells**
+        ```
+        {
+          "type": "cells",
+          "page": 1,
+          "x": 100,
+          "y": 100,
+          "w": 114,
+          "h": 50,
+          "options": {
+            "name": "cells",
+            "required": true,
+            "readonly": false,
+            "cell_count": 5,
+            "default": "",
+            "hint": "",
+            "regularexpression": "",
+            "color": "black",
+            "fontsize": 12,
+            "hide_text_with_asterisks": false
+          }
+        }
+        ```
+        - **cell_count:** Specify the number of cells that should be returned to the user.
+
         **Prefill Widgets:** Prefill widgets are elements that are inserted into a document **before** it is shared with a user. Only the document creator has permission to add them.
         
         **Note:** Responses for prefill widgets are **required**.
@@ -3060,7 +3171,32 @@ paths:
         - **readonly:** Set to true if you want to set the textbox as readonly. By default, it's false.
         - **decimalplaces:** Number of digits to display after the decimal point. e.g: 2 => 12.00, 0 => 12 (default 2)
         
-        
+        15. **cells**
+        ```
+        {
+          "type": "cells",
+          "page": 1,
+          "x": 100,
+          "y": 100,
+          "w": 114,
+          "h": 50,
+          "options": {
+            "name": "cells",
+            "required": true,
+            "readonly": false,
+            "cell_count": 5,
+            "default": "",
+            "hint": "",
+            "regularexpression": "",
+            "color": "black",
+            "fontsize": 12,
+            "hide_text_with_asterisks": false
+          }
+        }
+        ```
+        - **cell_count:** Specify the number of cells that should be returned to the user.
+
+ 
         **Prefill Widgets:** Prefill widgets are elements that are inserted into a document **before** it is shared with a user. Only the document creator has permission to add them.
         
         **Note:** Responses for prefill widgets are **required**.
@@ -3565,6 +3701,30 @@ paths:
         - **readonly:** Set to true if you want to set the textbox as readonly. By default, it's false.
         - **decimalplaces:** Number of digits to display after the decimal point. e.g: 2 => 12.00, 0 => 12 (default 2)
         
+        15. **cells**
+        ```
+        {
+          "type": "cells",
+          "page": 1,
+          "x": 100,
+          "y": 100,
+          "w": 114,
+          "h": 50,
+          "options": {
+            "name": "cells",
+            "required": true,
+            "readonly": false,
+            "cell_count": 5,
+            "default": "",
+            "hint": "",
+            "regularexpression": "",
+            "color": "black",
+            "fontsize": 12,
+            "hide_text_with_asterisks": false
+          }
+        }
+        ```
+        - **cell_count:** Specify the number of cells that should be returned to the user.
         
         **Prefill Widgets:** Prefill widgets are elements that are inserted into a document **before** it is shared with a user. Only the document creator has permission to add them.
         
