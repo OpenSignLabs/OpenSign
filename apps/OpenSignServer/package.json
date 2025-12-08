@@ -36,7 +36,7 @@
     "express": "^5.1.0",
     "form-data": "^4.0.5",
     "generate-api-key": "^1.0.2",
-    "googleapis": "^166.0.0",
+    "googleapis": "^167.0.0",
     "libreoffice-convert": "^1.7.0",
     "mailgun.js": "^12.2.0",
     "mongodb": "^5.9.2",
