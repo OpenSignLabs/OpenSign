@@ -99,6 +99,15 @@ To add a new user:
 
 - The user will now be able to use the assigned API credits up to the new limit.
 
+> ⚡ **Note:** Credits can only be added if the selected user has an active API token.
+
+**How to create an API token for a team user:**
+1. Log in using the team user's email address.
+2. Navigate to **Settings → API Token**.
+3. Generate a live API token.
+
+Once the API token is created, the admin can assign API credits to that user.
+
 ---
 
 ## 🔐 Permissions by Role
