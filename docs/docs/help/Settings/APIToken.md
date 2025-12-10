@@ -41,6 +41,35 @@ You’ll also find the option to generate a **Sandbox API Token** on the same pa
 
   <img width="436" alt="Sandbox api token" src="https://github.com/user-attachments/assets/f27d9e00-7989-4c01-b23e-cecaccce4be2" />
   
+### 🧪 API Credits
+
+**Premium Credits Available:**  
+Displays the total API credits available for your organisation.
+
+**Your Credits Usage:**  
+- **Used Credits:** The number of credits you have consumed.  
+- **Remaining Credits:** The number of credits still available for you to use.
+
+<img width="436" alt="API credit" src="https://github.com/user-attachments/assets/e0d87fb2-7391-4bad-b668-9ce2b558c52d" />
+
+### Where API Credits Are Deducted
+
+API credits are consumed whenever a document is created through the following actions:
+
+- **Self Sign API:** Credits deducted when a document is created.  
+- **Draft Document API:** Deducted when drafting a document.  
+- **Create Document API:** Deducted on document creation.  
+- **Draft Template API:** Deducted when:
+  - Sending a document if signers are already assigned,  
+  - Bulk sending,  
+  - Creating documents using public templates (signer fills details and finish).
+- **Create Document From Template API:** Deducted on document creation.
+
+### In the OpenSign Application
+
+- **Manage Templates → Bulk Send:** Credits are deducted for each document created.  
+- **Public Template Signing:** Credits are deducted when a document is created during public signing (when the signer enters details and completes the process).
+  
 ### 🧪 Sandbox Cloud Account Login
 
 OpenSign provides a **sandbox testing cloud environment**, which is a replica of the production environment. This allows users to test features without affecting live data.
