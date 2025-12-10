@@ -73,7 +73,31 @@ To add a new user:
   3. Enter the user’s email in the input box and click **Delete**.  
 - After deletion, the user (and all related data) will be permanently erased.  
 
-> ⚡ **Note:** Once a user is deleted, your **available user count will automatically increase**.  
+> ⚡ **Note:** Once a user is deleted, your **available user count will automatically increase**.
+
+## 🔁 Change Password
+
+- OpenSign allows **admins** to update a team user's password whenever required.
+
+- **To change a user’s password:**
+  1. Navigate to **Settings → Users** and click the **Change Password** button next to the user whose password needs to be updated.
+  2. Enter the new password on the reset password screen and submit.
+
+- The user’s password will be successfully updated, and they will no longer be able to log in using the old password.
+  
+## 🔁 Add API Credits
+
+- OpenSign allows **admins to assign API credits** to team users. This feature helps control and limit how many API-based document operations a user can perform.
+- A team user can only use the number of credits allocated by the admin.  
+  - For example, if an admin assigns **100 API credits**, the user can perform API actions only until those 100 credits are consumed.  
+  - Once credits are exhausted, the admin can add more.  
+    - Example: If the admin wants to give the user 50 additional credits, they must enter the updated total — 150 credits. After updating, the user will have 50 usable credits remaining.
+
+- **How to add API credits:**
+  1. Navigate to **Settings → Users** and click the **Add Credits** button next to the user who needs add API credits.
+  2. Enter the number of credits to allocate and submit.
+
+- The user will now be able to use the assigned API credits up to the new limit.
 
 ---
 
