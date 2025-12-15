@@ -45,7 +45,7 @@
     "node-forge": "^1.3.3",
     "nodemailer": "^7.0.11",
     "p-limit": "^7.2.0",
-    "parse": "^7.1.2",
+    "parse": "^8.0.0",
     "parse-dbtool": "^1.2.0",
     "parse-server": "^8.5.0",
     "parse-server-api-mail-adapter": "^5.0.2",
