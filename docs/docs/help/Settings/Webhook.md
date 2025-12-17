@@ -28,15 +28,13 @@ Suppose you're using OpenSign to collect eSignatures:
 **Step 1:** Log in to your OpenSign account using your credentials.  
 **Step 2:** Navigate to **Settings → Webhook**.
 
-![Navigate to Add Webhook](https://github.com/user-attachments/assets/6b069b6c-d2b7-408b-b7c9-7fbeb55d6c98)
+<img width="861" height="407" alt="Navigate to Add Webhook" src="https://github.com/user-attachments/assets/883dc914-9316-42b0-b59c-10b168265b38" />
 
 **Step 3:** Click **Add Webhook**.
 
 - A popup will appear. Enter your **Webhook URL** and click **Yes** to save it.
 
 > **Note:** To enable **Live Webhook** support, you must upgrade to a **paid plan** — either the **Professional** or **Teams** plan.
-
-![Add Webhook](https://github.com/user-attachments/assets/ff68b255-a6e6-4a7d-9cef-6dd9e3b6d4e4)
 
 ---
 
@@ -49,10 +47,11 @@ A **Webhook Security Key** (also called a webhook secret) is a shared secret use
 1. Log in to your **OpenSign** account.
 2. Navigate to **Settings → Webhooks**.
 3. Add or edit a webhook endpoint.
-4. Generate a **Security Key** (or manually enter a strong secret).
-   - Use a long, random string (at least 32 characters).
+4. Generate a **Security Key** click Enable authentication.
    - Example: `a50a904a2a329d761781dac27c984416a07396736ac5588b62c6fe226538fbca`
 5. Save the webhook configuration.
+   
+<img width="861" height="600" alt="webhook security key" src="https://github.com/user-attachments/assets/5a7702a6-998a-4d12-a073-5482c2300ffe" />
 
 ⚠️ **Important:** Store this key securely. Do not expose it in client-side code or public repositories.
 
