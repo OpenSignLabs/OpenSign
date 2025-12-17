@@ -40,6 +40,134 @@ Suppose you're using OpenSign to collect eSignatures:
 
 ---
 
+## 🧭 How to Create a Webhook Security Key
+
+A **Webhook Security Key** (also called a webhook secret) is a shared secret used to verify that webhook requests are genuinely sent by OpenSign and have not been tampered with.
+
+### Steps to Create a Webhook Security Key
+
+1. Log in to your **OpenSign** account.
+2. Navigate to **Settings → Webhooks**.
+3. Add or edit a webhook endpoint.
+4. Generate a **Security Key** (or manually enter a strong secret).
+   - Use a long, random string (at least 32 characters).
+   - Example: `a50a904a2a329d761781dac27c984416a07396736ac5588b62c6fe226538fbca`
+5. Save the webhook configuration.
+
+⚠️ **Important:** Store this key securely. Do not expose it in client-side code or public repositories.
+
+---
+
+## 🔐 How the Webhook Security Key Works
+
+OpenSign signs every webhook request using your security key.
+
+### High-level Flow
+
+1. An event occurs (e.g. create document, document viewed, signed, completed, and declined).
+2. OpenSign sends a webhook request to your configured endpoint.
+3. OpenSign generates a signature using:
+   - The **raw request payload**
+   - Your **webhook security key**
+   - The **HMAC-SHA256** algorithm
+4. The generated signature is sent in the request header:
+
+```
+x-webhook-signature
+```
+
+5. Your server recomputes the signature using the same payload and secret.
+6. If both signatures match, the request is verified as authentic.
+
+---
+
+## 🧪 Signature Verification Example (Node.js)
+
+Below is a sample implementation to verify the webhook signature on your server.
+
+```js
+const crypto = require("crypto");
+
+function verifySignature(req, secret) {
+  const receivedSignature = req.headers["x-webhook-signature"];
+  const payload = req.body;
+
+  const expectedSignature = crypto
+    .createHmac("sha256", secret)
+    .update(JSON.stringify(payload))
+    .digest("hex");
+
+  return receivedSignature === expectedSignature;
+}
+```
+
+### Usage Example
+
+```js
+const isValid = verifySignature(req, WEBHOOK_SECRET);
+
+if (!isValid) {
+  return res.status(401).send("Invalid webhook signature");
+}
+
+// Process webhook event
+```
+
+---
+
+## 📦 Sample Webhook Payload
+
+```json
+{
+  "event": "viewed",
+  "objectId": "d4LP0kKezS",
+  "type": "request-sign",
+  "file": "https://...pdf",
+  "name": "Nu-international-application-form",
+  "note": "Please review and sign this document",
+  "signers": [
+    {
+      "name": "Mathew Wade",
+      "email": "mathew.wade@opensignlabs.com"
+    },
+    {
+      "name": "Steve Broad",
+      "email": "steve.Broad@opensignlabs.com",
+      "phone": "2678288322"
+    }
+  ],
+  "viewedBy": "mathew.wade@opensignlabs.com",
+  "viewedAt": "Wed, 17 Dec 2025 13:46:05 GMT+5:30",
+  "createdAt": "Wed, 17 Dec 2025 13:36:40 GMT+5:30"
+}
+```
+
+The corresponding signature is sent in the request header:
+
+```
+x-webhook-signature: bcf57b06dde0c030d9423639824bad17ab7dd09ea3bf0a743773b95254ecf78e
+```
+---
+
+## ✅ Best Practices
+
+- Always verify the webhook signature before processing the payload.
+- Use the **raw request body** for signature calculation (avoid modifying it).
+- Rotate your webhook security key periodically.
+- Return a **2xx** HTTP status only after successful verification.
+
+---
+
+## 🧩 Common Issues
+
+- **Signature mismatch**: Ensure the payload is stringified exactly as received.
+- **Missing header**: Confirm `x-webhook-signature` is present in the request.
+- **Wrong secret**: Verify the same security key is used on both sides.
+
+---
+
+This mechanism ensures webhook requests are secure, tamper-proof, and trustworthy.
+
 ## 🧪 Sandbox Webhook
 
 - You can also add webhook for the **Sandbox** environment on the same page.
