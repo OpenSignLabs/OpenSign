@@ -47,11 +47,12 @@ A **Webhook Security Key** (also called a webhook secret) is a shared secret use
 1. Log in to your **OpenSign** account.
 2. Navigate to **Settings → Webhooks**.
 3. Add or edit a webhook endpoint.
-4. Generate a **Security Key** click Enable authentication.
+4. Generate a Security Key by clicking Enable Authentication, then click the Generate button.
+The webhook security key has been generated.
    - Example: `a50a904a2a329d761781dac27c984416a07396736ac5588b62c6fe226538fbca`
-5. Save the webhook configuration.
+6. Save the webhook configuration.
    
-<img width="861" height="600" alt="webhook security key" src="https://github.com/user-attachments/assets/5a7702a6-998a-4d12-a073-5482c2300ffe" />
+<img width="861" height="600" alt="webhook security key" src="https://github.com/user-attachments/assets/6f61a23e-25a1-4785-b241-657af0c1eeb1" />
 
 ⚠️ **Important:** Store this key securely. Do not expose it in client-side code or public repositories.
 
@@ -80,11 +81,14 @@ x-webhook-signature
 
 ---
 
-## 🧪 Signature Verification Example (Node.js)
+// Process webhook event
+```
 
-Below is a sample implementation to verify the webhook signature on your server.
+---
 
-```js
+## 📦 Sample Webhook Payload
+
+```json
 const crypto = require("crypto");
 
 function verifySignature(req, secret) {
@@ -98,47 +102,27 @@ function verifySignature(req, secret) {
 
   return receivedSignature === expectedSignature;
 }
-```
 
-### Usage Example
-
-```js
-const isValid = verifySignature(req, WEBHOOK_SECRET);
-
-if (!isValid) {
-  return res.status(401).send("Invalid webhook signature");
-}
-
-// Process webhook event
-```
-
----
-
-## 📦 Sample Webhook Payload
-
-```json
-{
-  "event": "viewed",
-  "objectId": "d4LP0kKezS",
+console.log("Try programiz.pro", verifySignature({body: {
+  "event": "created",
   "type": "request-sign",
-  "file": "https://...pdf",
-  "name": "Nu-international-application-form",
+  "objectId": "SBEbnHwfrN",
+  "file": "https://legadratw3d.ams3.digitaloceanspaces.com/c3f0bc11b84a87e6265de6bf28e5015e_uoeksXXU6FI5Op2B.pdf?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=DO00QAPRB3CQRWHWQ8ZB%2F20251219%2Fus-west%2Fs3%2Faws4_request&X-Amz-Date=20251219T152806Z&X-Amz-Expires=900&X-Amz-Signature=9635dfb8ee8fde933f881905a97f869578ef7e99b337d4b21a0805b8317fd70d&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject",
+  "name": "Sample Test Doc Line Compressed",
   "note": "Please review and sign this document",
+  "description": "",
   "signers": [
     {
-      "name": "Mathew Wade",
-      "email": "mathew.wade@opensignlabs.com"
+      "name": "Peter Mark",
+      "email": "peter.mark@opensignlabs.com"
     },
     {
-      "name": "Steve Broad",
-      "email": "steve.Broad@opensignlabs.com",
-      "phone": "2678288322"
+      "name": "kelvin bosch",
+      "email": "kelvin.bosch@opensignlabs.com"
     }
   ],
-  "viewedBy": "mathew.wade@opensignlabs.com",
-  "viewedAt": "Wed, 17 Dec 2025 13:46:05 GMT+5:30",
-  "createdAt": "Wed, 17 Dec 2025 13:36:40 GMT+5:30"
-}
+  "createdAt": "Sat, 20 Dec 2025 00:58:20 GMT+9:30"
+}, headers:{"x-webhook-signature":"52958fd3900f19ba6485319eb2622ef0ec4cf5ddfe36509cbe95eb706ed6b8c2" }}, "0906e8cbc88da0d5a6fd78162eb8e5e57ba7bd99bdc472145dc089d7f82b0a4a"));
 ```
 
 The corresponding signature is sent in the request header:
@@ -146,7 +130,7 @@ The corresponding signature is sent in the request header:
 ```
 x-webhook-signature: bcf57b06dde0c030d9423639824bad17ab7dd09ea3bf0a743773b95254ecf78e
 ```
----
+If the script returns true, it means the webhook is valid and has not been tampered with.
 
 ## ✅ Best Practices
 
