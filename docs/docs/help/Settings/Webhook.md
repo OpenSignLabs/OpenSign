@@ -52,7 +52,7 @@ The webhook security key has been generated.
    - Example: `a50a904a2a329d761781dac27c984416a07396736ac5588b62c6fe226538fbca`
 6. Save the webhook configuration.
    
-<img width="861" height="600" alt="webhook security key" src="https://github.com/user-attachments/assets/6f61a23e-25a1-4785-b241-657af0c1eeb1" />
+<img width="861" height="407" alt="webhook security key" src="https://github.com/user-attachments/assets/6f61a23e-25a1-4785-b241-657af0c1eeb1" />
 
 ⚠️ **Important:** Store this key securely. Do not expose it in client-side code or public repositories.
 
