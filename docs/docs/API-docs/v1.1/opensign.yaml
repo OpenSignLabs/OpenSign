@@ -476,7 +476,9 @@ paths:
             "default": "04-15-2024",
             "format": "mm-dd-yyyy",
             "color": "black",
-            "fontsize": 12
+            "fontsize": 12,
+            "min_date": "",
+            "max_date": ""
           }
         }
         ```
@@ -493,7 +495,9 @@ paths:
           - "dd mmmm, yyy",
           - "dd/mm/yyyy",
           - "dd.mm.yyyy".
-          
+        - **min_date:**  Provide the minimum restriction date. The date must be in **YYYY-MM-DD** format.
+        - **max_date:** Provide the maximum restriction date. The date must be in **YYYY-MM-DD** format.
+        
         9. **textbox**
         ```
         {
@@ -808,7 +812,9 @@ paths:
             "default": "04-15-2024",
             "format": "mm-dd-yyyy",
             "color": "black",
-            "fontsize": 12
+            "fontsize": 12,
+            "min_date": "",
+            "max_date": ""
           }
         }
         ```
@@ -825,6 +831,8 @@ paths:
           - "dd mmmm, yyy",
           - "dd/mm/yyyy",
           - "dd.mm.yyyy".
+        - **min_date:**  Provide the minimum restriction date. The date must be in **YYYY-MM-DD** format.
+        - **max_date:** Provide the maximum restriction date. The date must be in **YYYY-MM-DD** format.
 
         9. **textbox**
         ```
@@ -1317,7 +1325,9 @@ paths:
             "default": "04-15-2024",
             "format": "mm-dd-yyyy",
             "color": "black",
-            "fontsize": 12
+            "fontsize": 12,
+            "min_date": "",
+            "max_date": ""
           }
         }
         ```
@@ -1334,6 +1344,8 @@ paths:
           - "dd mmmm, yyy",
           - "dd/mm/yyyy",
           - "dd.mm.yyyy".
+        - **min_date:**  Provide the minimum restriction date. The date must be in **YYYY-MM-DD** format.
+        - **max_date:** Provide the maximum restriction date. The date must be in **YYYY-MM-DD** format.  
 
         9. **textbox**
         ```
@@ -1723,9 +1735,13 @@ paths:
         {
           "name": "date",
           "readonly": false,
-          "default": "11-05-2025"
+          "default": "11-05-2025",
+          "min_date": "",
+          "max_date": ""
         }
         ```
+        - **min_date:**  Provide the minimum restriction date. The date must be in **YYYY-MM-DD** format.
+        - **max_date:** Provide the maximum restriction date. The date must be in **YYYY-MM-DD** format.
 
         6. **textbox**
         ```
@@ -2286,7 +2302,6 @@ paths:
       security:
       - x-api-token: []
   /drafttemplate:
-    
     post:
       tags:
       - Templates
@@ -2469,7 +2484,9 @@ paths:
             "default": "04-15-2024",
             "format": "mm-dd-yyyy",
             "color": "black",
-            "fontsize": 12
+            "fontsize": 12,
+            "min_date": "",
+            "max_date": ""
           }
         }
         ```
@@ -2486,6 +2503,8 @@ paths:
           - "dd mmmm, yyy",
           - "dd/mm/yyyy",
           - "dd.mm.yyyy".
+        - **min_date:**  Provide the minimum restriction date. The date must be in **YYYY-MM-DD** format.
+        - **max_date:** Provide the maximum restriction date. The date must be in **YYYY-MM-DD** format.  
 
         9. **textbox**
         ```
@@ -2999,7 +3018,9 @@ paths:
             "default": "04-15-2024",
             "format": "mm-dd-yyyy",
             "color": "black",
-            "fontsize": 12
+            "fontsize": 12,
+            "min_date": "",
+            "max_date": ""
           }
         }
         ```
@@ -3016,6 +3037,8 @@ paths:
           - "dd mmmm, yyy",
           - "dd/mm/yyyy",
           - "dd.mm.yyyy".
+        - **min_date:**  Provide the minimum restriction date. The date must be in **YYYY-MM-DD** format.
+        - **max_date:** Provide the maximum restriction date. The date must be in **YYYY-MM-DD** format.  
 
         9. **textbox**
         ```
@@ -3529,7 +3552,9 @@ paths:
             "default": "04-15-2024",
             "format": "mm-dd-yyyy",
             "color": "black",
-            "fontsize": 12
+            "fontsize": 12,
+            "min_date": "",
+            "max_date": ""
           }
         }
         ```
@@ -3546,6 +3571,8 @@ paths:
           - "dd mmmm, yyy",
           - "dd/mm/yyyy",
           - "dd.mm.yyyy".
+        - **min_date:**  Provide the minimum restriction date. The date must be in **YYYY-MM-DD** format.
+        - **max_date:** Provide the maximum restriction date. The date must be in **YYYY-MM-DD** format.  
 
         9. **textbox**
         ```
@@ -4970,7 +4997,7 @@ components:
         job_title:
           type: string
           format: string
-          example: dev      
+          example: dev
     folder_body:
       required:
       - foldername
@@ -5084,7 +5111,21 @@ components:
             **false** - If you choose not to merge, the completion certificate will be provided as a separate signed PDF file along with the signed document.
             
             If nothing is set, it will use the owner’s preferences. If the owner’s preferences are also not set, it will default to false.
-          example: false 
+          example: false
+        notify_on_signatures:
+          type: boolean
+          example: false
+          description: |
+            **true** - The document creator will receive an email notification whenever a signer signs the document.
+
+            **false** - The document creator will not receive an email notification whenever a signer signs the document.
+
+            Note: Regardless of this setting, a completion email with the signed document and completion certificate attached is depend on 'send_email' parameter.
+        pen_colors:
+          type: array
+          items:
+            type: string
+          example: ["blue", "red", "black"]
     draftdocument_body:
       required:
       - file
@@ -5176,6 +5217,20 @@ components:
             
             If nothing is set, it will use the owner’s preferences. If the owner’s preferences are also not set, it will default to false.
           example: false
+        notify_on_signatures:
+          type: boolean
+          example: false
+          description: |
+            **true** - The document creator will receive an email notification whenever a signer signs the document.
+
+            **false** - The document creator will not receive an email notification whenever a signer signs the document.
+
+            Note: Regardless of this setting, a completion email with the signed document and completion certificate attached is depend on 'send_email' parameter.
+        pen_colors:
+          type: array
+          items:
+            type: string
+          example: ["blue", "red", "black"]
         prefill: 
           $ref: '#/components/schemas/prefill'
     createdocument_body:
@@ -5269,7 +5324,21 @@ components:
             **false** - If you choose not to merge, the completion certificate will be provided as a separate signed PDF file along with the signed document.
             
             If nothing is set, it will use the owner’s preferences. If the owner’s preferences are also not set, it will default to false.
-          example: false  
+          example: false
+        notify_on_signatures:
+          type: boolean
+          example: false
+          description: |
+            **true** - The document creator will receive an email notification whenever a signer signs the document.
+
+            **false** - The document creator will not receive an email notification whenever a signer signs the document.
+
+            Note: Regardless of this setting, a completion email with the signed document and completion certificate attached is depend on 'send_email' parameter.
+        pen_colors:
+          type: array
+          items:
+            type: string
+          example: ["blue", "red", "black"]
         prefill: 
           $ref: '#/components/schemas/prefill'  
     inline_response_200_1:
@@ -5418,7 +5487,21 @@ components:
             **false** - If you choose not to merge, the completion certificate will be provided as a separate signed PDF file along with the signed document.
             
             If nothing is set, it will use the owner’s preferences. If the owner’s preferences are also not set, it will default to false.
-          example: false  
+          example: false
+        notify_on_signatures:
+          type: boolean
+          example: false
+          description: |
+            **true** - The document creator will receive an email notification whenever a signer signs the document.
+
+            **false** - The document creator will not receive an email notification whenever a signer signs the document.
+
+            Note: Regardless of this setting, a completion email with the signed document and completion certificate attached is depend on 'send_email' parameter.
+        pen_colors:
+          type: array
+          items:
+            type: string
+          example: ["blue", "red", "black"]    
         prefill: 
           type: object
           properties:
@@ -5511,6 +5594,20 @@ components:
           type: number
           description: "Number of days between reminders. This is only applicable when auto_reminder is set to true."
           example: 5
+        notify_on_signatures:
+          type: boolean
+          example: false
+          description: |
+            **true** - The document creator will receive an email notification whenever a signer signs the document.
+
+            **false** - The document creator will not receive an email notification whenever a signer signs the document.
+
+            Note: Regardless of this setting, a completion email with the signed document and completion certificate attached is depend on 'send_email' parameter.
+        pen_colors:
+          type: array
+          items:
+            type: string
+          example: ["blue", "red", "black"]    
     inline_response_200_3:
       type: object
       properties:
@@ -5618,7 +5715,21 @@ components:
             **false** - If you choose not to merge, the completion certificate will be provided as a separate signed PDF file along with the signed document.
             
             If nothing is set, it will use the owner’s preferences. If the owner’s preferences are also not set, it will default to false.
-          example: false  
+          example: false
+        notify_on_signatures:
+          type: boolean
+          example: false
+          description: |
+            **true** - The document creator will receive an email notification whenever a signer signs the document.
+
+            **false** - The document creator will not receive an email notification whenever a signer signs the document.
+
+            Note: Regardless of this setting, a completion email with the signed document and completion certificate attached is depend on 'send_email' parameter.
+        pen_colors:
+          type: array
+          items:
+            type: string
+          example: ["blue", "red", "black"]    
         prefill: 
           $ref: '#/components/schemas/prefill'          
     inline_response_draft_200:
@@ -5703,7 +5814,21 @@ components:
         remind_once_in_every:
           type: number
           description: "Number of days between reminders. This is only applicable when auto_reminder is set to true."  
-          example: 5  
+          example: 5
+        notify_on_signatures:
+          type: boolean
+          example: false
+          description: |
+            **true** - The document creator will receive an email notification whenever a signer signs the document.
+
+            **false** - The document creator will not receive an email notification whenever a signer signs the document.
+
+            Note: Regardless of this setting, a completion email with the signed document and completion certificate attached is depend on 'send_email' parameter.
+        pen_colors:
+          type: array
+          items:
+            type: string
+          example: ["blue", "red", "black"]    
     inline_response_404_7:
       type: object
       properties:
