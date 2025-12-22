@@ -170,10 +170,35 @@ Use the option on the right side to add recipients if you need to include additi
        **Hide text with asterisks**: **"which masks the entered text (*) to protect sensitive information while filling out the document. The final embedded document will also display the text as asterisks, keeping the actual value hidden.
      - Add Signer/Change Signer: Clicking the first icon on the Company widget allows you to change the signer. You can choose from existing signers in the dropdown or add a new signer.
      - Copy : Clicking on this you can duplicate the Company widget.
- - **Date**: The date widget allows signers to add a date during the signing process. After placing the date widget, you will see the options on the widget such as:
-     - Setting icon: By clicking on the option, you can choose from various date formats.
-     - Add Signer/Change Signer: Clicking the first icon on the Date widget allows you to change the signer. You can choose from existing signers in the dropdown or add a new signer.
-     - Copy : Clicking on this you can duplicate the date widget. 
+       
+ - **Date Widget**
+
+The **Date widget** allows signers to enter a date while signing the document. Once the widget is placed, you can configure its behavior using the available settings in the **Widget Info** panel.
+
+#### ⚙️ Widget Options
+
+- **Date Format**: Choose the preferred date format (for example, `MM/dd/yyyy`, `dd-mm-yyyy`, or `dd/mm/yyyy`) from the Format dropdown. This determines how the date appears to the signer.
+- **Set Date**: This option allows the user to set a default date, which will be displayed while signing the document.
+- **Signing Date**: When selected, the date on which the signer signs the document will be automatically displayed in the Date widget.
+- **Clear**: Removes the selected date setting.
+
+- **Date Range**
+  - **Min Date**: Sets the earliest date the signer can select.
+  - **Max Date**: Sets the latest date the signer can select.
+  - Use **Clear** to remove the minimum or maximum date restrictions.
+
+- **Required / Optional**  
+  Mark the widget as **Required** if the signer must fill it in before completing the signing, or **Optional** if it is not mandatory.
+
+- **Font Settings**
+  Customize the **font size** and **text color** to match the document’s style.
+
+- **Read Only**
+  Enable this option to display a date that cannot be edited by the signer.
+
+- **Save**
+  Click **Save** to apply all selected settings to the Date widget.
+  
  - **Text Input**: The text input field is used to collect input from the signer. Signers can type their responses directly into this field. After placing the Text Input widget, you will see the options on the widget such as:
     - Setting : The widget settings panel provides additional customization options, including:
       - Choosing a **font color**
