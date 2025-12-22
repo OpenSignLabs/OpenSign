@@ -222,6 +222,7 @@ const WidgetNameModal = (props) => {
       )
     );
   };
+
   return (
     <ModalUi
       isOpen={props.isOpen}
@@ -373,7 +374,7 @@ const WidgetNameModal = (props) => {
             <label htmlFor="signaturetype" className="text-[14px] mb-[0.7rem]">
               {t("allowed-signature-types")}
             </label>
-            <div className=" ml-[7px] flex flex-col md:flex-row gap-[10px] mb-[0.7rem]">
+            <div className="ml-[7px] flex flex-col md:flex-row gap-[10px] mb-[0.7rem]">
               {signatureType.map((type, i) => {
                 return (
                   <div key={i} className="flex flex-row gap-[5px] items-center">

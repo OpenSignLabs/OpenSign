@@ -11,7 +11,6 @@ import Parse from "parse";
 import {
   copytoData,
   fetchUrl,
-  formatDate,
   getSignedUrl,
   getTenantDetails,
   handleSignatureType,
@@ -46,7 +45,6 @@ const DocumentsReport = (props) => {
   const copyUrlRef = useRef(null);
   const titleRef = useRef(null);
   const titleElement = useElSize(titleRef);
-  const journey = "Use Template";
   const appName =
     "OpenSign™";
   const { t } = useTranslation();
@@ -267,7 +265,7 @@ const DocumentsReport = (props) => {
       [templateRes || templateDeatils],
       placeholder || xyPosition,
       signer || signerList,
-      templateRes?.URL || templateDeatils?.URL
+      templateRes?.URL || templateDeatils?.URL,
     );
     if (res.status === "success") {
       navigate(`/placeHolderSign/${res.id}`, {
@@ -944,12 +942,14 @@ const DocumentsReport = (props) => {
     );
     if (res?.status === "unfilled") {
       const emptyWidget = res?.emptyResponseObjects
-        .map((item) => `[ ${item.options.name}]`)
-        .join(", ");
+        ?.map((item) => item.options.name)
+        ?.join(", ");
       const timeInMiliSec = 6000;
       showAlert(
         "danger",
-        t("prefill-unfilled-widget", { emptyWidget: emptyWidget }),
+        t("prefill-unfilled-widget", {
+          emptyWidget: emptyWidget ? `[${emptyWidget}]` : ""
+        }),
         timeInMiliSec
       );
     } else if (res?.status === "unattach signer") {

@@ -42,7 +42,8 @@ const Dashboard = () => {
           return {
             selector: `[data-tut=${col.widget.data.tourSection}]`,
             content: t(`tour-mssg.${col.widget.label}`),
-            position: "top"
+            position: "top",
+            styles: { fontSize: "13px" }
             // style: { backgroundColor: "#abd4d2" },
           };
         });

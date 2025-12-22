@@ -1,4 +1,3 @@
-import { Helmet } from "react-helmet";
 import { useLocation, matchPath } from "react-router";
 import { useTranslation } from "react-i18next";
 import { useMemo } from "react";
@@ -70,13 +69,13 @@ export default function Title() {
     [t, prefix, appName]
   );
   const manifestUrl = useManifestUrl(appName, logo);
-  
+
   return (
-    <Helmet>
+    <>
       <title>{title}</title>
       <meta name="description" content={title} />
       {logo && <link rel="icon" type="image/png" href={logo} />}
       <link rel="manifest" href={manifestUrl} />
-    </Helmet>
+    </>
   );
 }

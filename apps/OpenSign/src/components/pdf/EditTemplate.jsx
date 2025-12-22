@@ -54,6 +54,10 @@ const EditTemplate = ({
     AllowModifications: template?.AllowModifications || false,
     TimeToCompleteDays: template?.TimeToCompleteDays || 15,
   });
+  const pensList = ["blue", "red", "black"];
+  const [selectedColors, setSelectedColors] = useState(
+    template?.PenColors || pensList
+  );
   const [isUpdate, setIsUpdate] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [uploadPdf, setUploadPdf] = useState({
@@ -211,6 +215,7 @@ const EditTemplate = ({
       IsEnableOTP: IsEnableOTP,
       IsTourEnabled: isTourEnabled,
       AllowModifications: allowModify,
+      PenColors: selectedColors,
       ...reminderDate
     };
     onSuccess(data);
@@ -245,6 +250,19 @@ const EditTemplate = ({
     handleClose();
   };
 
+  const handleColorsChange = (color) => {
+    setSelectedColors((prev) => {
+      // If user tries to uncheck the last remaining color → block it
+      if (prev.length === 1 && prev.includes(color)) {
+        return prev;
+      }
+
+      // Normal toggle behavior
+      return prev.includes(color)
+        ? prev.filter((c) => c !== color) // remove
+        : [...prev, color]; // add
+    });
+  };
   return (
     <ModalUi
       isOpen
@@ -483,6 +501,41 @@ const EditTemplate = ({
                   />
                   <div className="text-center">{t("no")}</div>
                 </div>
+              </div>
+            </div>
+            <div className="text-xs mt-3 mb-4">
+              <label htmlFor="penColors">
+                {t("pen-colors")}
+                <a data-tooltip-id="pen-colors-tooltip" className="ml-1">
+                  <sup>
+                    <i className="fa-light fa-question rounded-full border-[#33bbff] text-[#33bbff] text-[13px] border-[1px] py-[1.5px] px-[4px]"></i>
+                  </sup>
+                </a>
+                <Tooltip id="pen-colors-tooltip" className="z-[999]">
+                  <div className="max-w-[200px] md:max-w-[450px]">
+                    <p className="font-bold">{t("pen-colors")}</p>
+                    <div>{t("pen-colors-help")}</div>
+                  </div>
+                </Tooltip>
+              </label>
+              <div className="ml-[7px] flex flex-col md:flex-row gap-[10px] mb-[0.7rem]">
+                {pensList.map((color) => (
+                  <div
+                    key={color}
+                    className="flex flex-row gap-[5px] items-center"
+                  >
+                    <input
+                      className="mr-[2px] op-checkbox op-checkbox-xs"
+                      type="checkbox"
+                      name="penColors"
+                      checked={selectedColors.includes(color)}
+                      onChange={() => handleColorsChange(color)}
+                    />
+                    <div className="hover:underline underline-offset-2 cursor-default capitalize">
+                      {color}
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
             <div className="text-xs mt-3">

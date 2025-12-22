@@ -1,5 +1,11 @@
-import { useEffect, useMemo, useState, forwardRef } from "react";
 import {
+  useEffect,
+  useState,
+  forwardRef,
+  useRef
+} from "react";
+import {
+  onChangeInput,
   getMonth,
   getYear,
   radioButtonWidget,
@@ -9,9 +15,7 @@ import {
   months,
   years,
   selectCheckbox,
-  checkRegularExpress,
-  isBase64,
-  getSignerPages
+  isBase64
 } from "../../constant/Utils";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -28,6 +32,7 @@ const widgetCls =
 function PlaceholderType(props) {
   const selectWidgetCls = `w-full h-full absolute left-0 top-0 focus:outline-none text-base-content`;
   const { t } = useTranslation();
+  const textRef = useRef();
   const prefillImg = useSelector((state) => state.widget.prefillImg);
   const prefillImgLoad = useSelector((state) => state.widget.prefillImgLoad);
   const type = props?.pos?.type;
@@ -42,10 +47,8 @@ function PlaceholderType(props) {
   // prefer the latest response value over any default value
   const widgetData =
     props.pos?.options?.response ?? props.pos?.options?.defaultValue ?? "";
-  // const widgetTypeTranslation = t(`widgets-name.${props?.pos?.type}`);
   const [widgetValue, setwidgetValue] = useState();
   const [selectedCheckbox, setSelectedCheckbox] = useState([]);
-  // const [hint, setHint] = useState("");
   const [imgUrl, setImgUrl] = useState("");
   const fontSize = props.calculateFont(props.pos.options?.fontSize);
   const fontColor = props.pos.options?.fontColor || "black";
@@ -72,11 +75,6 @@ function PlaceholderType(props) {
         // keep displayed value in sync with the stored response
         setwidgetValue(widgetData);
       }
-      // if (props.pos?.options?.hint) {
-      //   setHint(props.pos?.options.hint);
-      // } else if (props.pos?.options?.validation?.type) {
-      //     checkRegularExpress(props.pos?.options?.validation?.type, setHint);
-      // }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.pos, widgetData, type]);
@@ -138,6 +136,39 @@ function PlaceholderType(props) {
       props?.pos?.type === name[0] ? `${name[0]}${lastWord}` : widgetName;
     return props?.pos?.options?.hint || title;
   };
+  //useEffect is used to increase auto height of text/textInput widget when user using multiline option and enter value in next line
+  useEffect(() => {
+    if (!textRef.current) return;
+    if (
+      (type === "text" || type === textInputWidget) &&
+      textRef.current &&
+      widgetValue
+    ) {
+      const el = textRef.current;
+      // Count actual number of lines
+      const lines = widgetValue?.split("\n")?.length || props.pos?.Height;
+      // Get line height from computed style
+      const lineHeight = parseInt(window.getComputedStyle(el).lineHeight);
+
+      const textWidgetHeight = lines * lineHeight;
+      // Set widget box height (your logic)
+      onChangeInput(
+        null,
+        props.pos,
+        props?.xyPosition,
+        props.index,
+        props?.setXyPosition,
+        props.data && props.data.Id,
+        null,
+        null,
+        null,
+        null,
+        null,
+        textWidgetHeight
+      );
+    }
+  }, [widgetValue]);
+
   switch (type) {
     case "signature":
       return props.pos.SignUrl ? (
@@ -230,17 +261,19 @@ function PlaceholderType(props) {
       return props.isSignYourself || iswidgetEnable ? (
         <textarea
           placeholder={formatWidgetName()}
-          rows={1}
+          ref={textRef}
+          rows={50}
           value={
                 widgetValue
           }
-          className={`${textWidgetCls} ${isReadOnly ? "select-none" : ""}`}
+          className={`w-full resize-none overflow-hidden text-base-content item-center outline-none ${isReadOnly ? "select-none" : ""}`}
           style={{
             fontSize: fontSize,
             color: fontColor,
             background: isReadOnly ? props.data?.blockColor : "white",
             pointerEvents: "none"
           }}
+          name="text"
           readOnly
           disabled={props.isNeedSign && isReadOnly}
           cols="50"
@@ -530,20 +563,22 @@ function PlaceholderType(props) {
     case textWidget:
       return (
         <textarea
+          name="text"
+          ref={textRef}
           readOnly
           placeholder={t("widgets-name.text")}
-          rows={1}
-          value={
+          rows={50}
+          cols={50}
+          defaultValue={
                 widgetValue
           }
-          className={textWidgetCls}
           style={{
             fontFamily: "Arial, sans-serif",
             fontSize: fontSize,
             color: fontColor,
             background: "white"
           }}
-          cols="50"
+          className="w-full resize-none overflow-hidden text-base-content item-center outline-none"
         />
       );
     default:

@@ -1,11 +1,14 @@
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import * as XLSX from "xlsx";
 import Parse from "parse";
 import { emailRegex } from "../../constant/const";
+import { useDispatch } from "react-redux";
+import { sessionStatus } from "../../redux/reducers/userReducer";
 
 const ImportContact = ({ setLoader, onImport, showAlert }) => {
   const { t } = useTranslation();
+  const dispatch = useDispatch();
   const [currentImportPage, setCurrentImportPage] = useState(1);
   const [importedData, setImportedData] = useState([]);
   const [invalidRecords, setInvalidRecords] = useState(0);
@@ -183,40 +186,50 @@ const ImportContact = ({ setLoader, onImport, showAlert }) => {
     e.stopPropagation();
     setLoader(true);
     try {
-      const filterdata = importedData.map((x) => ({
-        Name: x.Name,
-        Email: x.Email,
-        Phone: x.Phone,
-        Company: x.Company,
-        JobTitle: x.JobTitle,
-        TenantId: localStorage.getItem("TenantId")
-      }));
-      const contacts = JSON.stringify(filterdata);
-      const res = await Parse.Cloud.run("createbatchcontact", { contacts });
-      if (res) {
-        showAlert(
-          "info",
-          t("contact-imported", {
-            imported: res?.success || 0,
-            failed: res?.failed || 0
-          })
-        );
-        if (res?.success > 0) {
-          setTimeout(() => window.location.reload(), 1500);
+      const sessionToken = Parse.User?.current()?.getSessionToken();
+      if (localStorage.getItem("TenantId") && sessionToken) {
+        try {
+          const filterdata = importedData.map((x) => ({
+            Name: x.Name,
+            Email: x.Email,
+            Phone: x.Phone,
+            Company: x.Company,
+            JobTitle: x.JobTitle,
+            TenantId: localStorage.getItem("TenantId")
+          }));
+          const contacts = JSON.stringify(filterdata);
+          const res = await Parse.Cloud.run("createbatchcontact", { contacts });
+          if (res) {
+            showAlert(
+              "info",
+              t("contact-imported", {
+                imported: res?.success || 0,
+                failed: res?.failed || 0
+              })
+            );
+            if (res?.success > 0) {
+              setTimeout(() => window.location.reload(), 1500);
+            }
+          }
+        } catch (err) {
+          console.log("err while creating batch contact", err);
+          showAlert("danger", t("something-went-wrong-mssg"));
+        } finally {
+          onImport && onImport();
+          setImportedData([]);
+          setInvalidRecords(0);
         }
+      } else {
+        dispatch(sessionStatus(false));
       }
     } catch (err) {
-      console.log("err while creating batch contact", err);
-      showAlert("danger", t("something-went-wrong-mssg"));
-    } finally {
-      onImport && onImport();
-      setImportedData([]);
-      setInvalidRecords(0);
+      console.error("invalid session or missing tenantId ", err);
+      dispatch(sessionStatus(false));
     }
   };
 
   return (
-    <form onSubmit={handleImportData} className="p-[20px] h-full ">
+    <form onSubmit={handleImportData} className="p-[20px] h-full">
       <div className="text-xs">
         <label className="block ml-2">
           {t("contacts-file")}

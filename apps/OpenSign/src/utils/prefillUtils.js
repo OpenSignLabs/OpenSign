@@ -161,6 +161,8 @@ export const handleCheckPrefillCreateDoc = async (
     );
     if (res.status === "success") {
       return res;
+    } else if (res.status === "error") {
+      return res;
     }
   } else {
     const res = { status: "unattach signer" };

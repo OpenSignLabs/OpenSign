@@ -1,5 +1,5 @@
 export default async function manageSign(request) {
-  const { signature, userId, initials, id, title } = request.params;
+  const { signature, userId, initials, id, title, stamp } = request.params;
 
   if (!userId) {
     throw new Parse.Error(Parse.Error.INVALID_QUERY, 'Missing userId parameter.');
@@ -16,6 +16,7 @@ export default async function manageSign(request) {
     signatureCls.set('Initials', initials ? initials : '');
     signatureCls.set('ImageURL', signature ? signature : '');
     signatureCls.set('SignatureName', title ? title : '');
+    signatureCls.set('Stamp', stamp ? stamp : '');
     if (userPtr) {
       signatureCls.set('UserId', userPtr);
     }

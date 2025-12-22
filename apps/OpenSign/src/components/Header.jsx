@@ -197,7 +197,7 @@ const Header = ({ isConsole, setIsLoggingOut }) => {
             </div>
             <ul
               tabIndex={0}
-              className={`mt-3 z-[1] p-2 shadow op-dropdown-open op-menu op-menu-sm op-dropdown-content text-base-content bg-base-100 rounded-box w-56 ${
+              className={`mt-4 z-[1] p-2 shadow op-dropdown-open op-menu op-menu-sm op-dropdown-content text-base-content bg-base-100 rounded-box w-56 ${
                 isOpen ? "" : "hidden"
               }`}
             >

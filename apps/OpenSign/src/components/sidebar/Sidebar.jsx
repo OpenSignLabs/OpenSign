@@ -7,7 +7,10 @@ import sidebarList, { subSetting } from "../../json/menuJson";
 import { useNavigate } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import { useWindowSize } from "../../hook/useWindowSize";
-import { toggleSidebar } from "../../redux/reducers/sidebarReducer";
+import {
+  setSelectedMenu,
+  toggleSidebar
+} from "../../redux/reducers/sidebarReducer";
 
 const Sidebar = () => {
   const { width } = useWindowSize();
@@ -29,6 +32,7 @@ const Sidebar = () => {
   }, []);
 
   const closeSidebar = () => {
+    dispatch(setSelectedMenu(true));
     if (width <= 1023) {
       dispatch(toggleSidebar(false));
     }
@@ -58,10 +62,12 @@ const Sidebar = () => {
   };
 
   const toggleSubmenu = (title) => {
+    dispatch(setSelectedMenu(false));
     setSubmenuOpen({ [title]: !submenuOpen[title] });
   };
 
   const handleMenuItem = () => {
+    dispatch(setSelectedMenu(true));
     closeSidebar();
     setSubmenuOpen({});
   };

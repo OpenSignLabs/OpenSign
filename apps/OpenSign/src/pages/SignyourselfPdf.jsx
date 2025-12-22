@@ -63,7 +63,8 @@ import {
   setDefaultSignImg,
   setIsShowModal,
   resetWidgetState,
-  setTypedSignFont
+  setTypedSignFont,
+  setMyStamp
 } from "../redux/reducers/widgetSlice";
 import WidgetsValueModal from "../components/pdf/WidgetsValueModal";
 import WidgetNameModal from "../components/pdf/WidgetNameModal";
@@ -192,7 +193,6 @@ function SignYourSelf() {
     return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [divRef.current, isSidebar]);
-
   //function for get document details for perticular signer with signer'object id
   const getDocumentDetails = async (showComplete) => {
     try {
@@ -267,6 +267,7 @@ function SignYourSelf() {
         );
         dispatch(setDefaultSignImg(defaultSignRes?.res?.defaultSignature));
         dispatch(setMyInitial(defaultSignRes?.res?.defaultInitial));
+        dispatch(setMyStamp(defaultSignRes?.res?.defaultStamp));
       } else {
         dispatch(setSaveSignCheckbox({ isVisible: true }));
       }
@@ -892,7 +893,7 @@ function SignYourSelf() {
         />
       ),
       position: "top",
-      style: { fontSize: "13px" }
+      styles: { fontSize: "13px" }
     },
     {
       selector: '[data-tut="reactourSecond"]',
@@ -904,7 +905,7 @@ function SignYourSelf() {
         />
       ),
       position: "top",
-      style: { fontSize: "13px" }
+      styles: { fontSize: "13px" }
     },
     {
       selector: '[data-tut="pdftools"]',
@@ -916,7 +917,7 @@ function SignYourSelf() {
         />
       ),
       position: "top",
-      style: { fontSize: "13px" }
+      styles: { fontSize: "13px" }
     }
   ];
 
@@ -1215,7 +1216,7 @@ function SignYourSelf() {
       selector: '[data-tut="IsSigned"]',
       content: t("signature-validate-alert-2"),
       position: "top",
-      style: { fontSize: "13px" }
+      styles: { fontSize: "13px" }
     }
   ];
   return (

@@ -38,7 +38,8 @@ import {
   getOriginalWH,
   defaultMailBody,
   defaultMailSubject,
-  handleDeleteWidget
+  handleDeleteWidget,
+  nonPresentMaskCss
 } from "../constant/Utils";
 import RenderPdf from "../components/pdf/RenderPdf";
 import "../styles/AddUser.css";
@@ -71,7 +72,6 @@ import ShareButton from "../primitives/ShareButton";
 
 const TemplatePlaceholder = () => {
   const { t } = useTranslation();
-  const journey = "Use Template";
   const { templateId } = useParams();
   const dispatch = useDispatch();
   const prefillImg = useSelector((state) => state.widget.prefillImg);
@@ -629,7 +629,7 @@ const TemplatePlaceholder = () => {
       selector: '[data-tut="reactourAddbtn"]',
       content: t("add-user-template"),
       position: "top",
-      style: { fontSize: "13px" }
+      styles: { fontSize: "13px" }
     }
   ];
 
@@ -958,24 +958,16 @@ const TemplatePlaceholder = () => {
       );
       if (res?.status === "unfilled") {
         setIsUiLoading(false);
-        const emptyWidget = res?.emptyResponseObjects.map((item, index) => (
-          <span className="font-medium" key={index}>
-            {item.options.name}
-          </span>
-        ));
+        const emptyWidget = res?.emptyResponseObjects
+          ?.map((item) => item.options.name)
+          ?.join(", ");
+        const timeInMiliSec = 6000;
         showAlert(
           "danger",
-          <>
-            The following required field(s) cannot be left empty:{" "}
-            {emptyWidget.map((item, index) => (
-              <span key={index}>
-                {index > 0 && ", "}
-                {item}
-              </span>
-            ))}
-            . Please fill them out to proceed.
-          </>,
-          6000
+          t("prefill-unfilled-widget", {
+            emptyWidget: emptyWidget ? `[${emptyWidget}]` : ""
+          }),
+          timeInMiliSec
         );
       } else if (res?.status === "unattach signer") {
         setIsUiLoading(false);
@@ -996,7 +988,7 @@ const TemplatePlaceholder = () => {
         pdfDetails,
         signerPos,
         signersdata,
-        updatedPdfUrl
+        updatedPdfUrl,
       );
       if (res.status === "success") {
         navigate(`/placeHolderSign/${res.id}`, {
@@ -1025,7 +1017,7 @@ const TemplatePlaceholder = () => {
         />
       ),
       position: "top",
-      style: { fontSize: "13px" }
+      styles: { fontSize: "13px" }
     },
     {
       selector: '[data-tut="reactourAddbtn"]',
@@ -1038,19 +1030,31 @@ const TemplatePlaceholder = () => {
       ),
       position: "top",
       observe: '[data-tut="reactourAddbtn--observe"]',
-      style: { fontSize: "13px" }
+      styles: { fontSize: "13px" }
     },
+    // {
+    //   selector: '[data-tut="addWidgets"]',
+    //   content: () => (
+    //     <TourContentWithBtn
+    //       message={t("tour-mssg.template-placeholder-2")}
+    //       isDontShowCheckbox={!checkTourStatus}
+    //       isChecked={handleDontShow}
+    //     />
+    //   ),
+    //   position: "top",
+    //   styles: { fontSize: "13px" }
+    // },
     {
-      selector: '[data-tut="addWidgets"]',
+      selector: '[data-tut="nonpresentmask"]',
       content: () => (
         <TourContentWithBtn
           message={t("tour-mssg.template-placeholder-2")}
-          isDontShowCheckbox={!checkTourStatus}
           isChecked={handleDontShow}
         />
       ),
-      position: "top",
-      style: { fontSize: "13px" }
+      position: "center",
+      styles: { fontSize: "13px", maskArea: nonPresentMaskCss },
+      action: () => handleCloseRoleModal()
     },
     {
       selector: '[data-tut="pdftools"]',
@@ -1062,7 +1066,7 @@ const TemplatePlaceholder = () => {
         />
       ),
       position: "top",
-      style: { fontSize: "13px" }
+      styles: { fontSize: "13px" }
     },
     {
       selector: '[data-tut="headerArea"]',
@@ -1074,7 +1078,7 @@ const TemplatePlaceholder = () => {
         />
       ),
       position: "top",
-      style: { fontSize: "13px" }
+      styles: { fontSize: "13px" }
     }
   ];
 
@@ -1277,6 +1281,10 @@ const TemplatePlaceholder = () => {
       const RedirectUrl = updateTemplate?.[0]?.RedirectUrl
         ? { RedirectUrl: updateTemplate?.[0]?.RedirectUrl }
         : {};
+      const penColors =
+        updateTemplate?.[0]?.PenColors?.length > 0
+          ? { PenColors: updateTemplate?.[0]?.PenColors }
+          : {};
       const data = {
         ...(updateTemplate?.[0]?.URL ? { URL: updateTemplate?.[0]?.URL } : {}),
         Name: updateTemplate?.[0]?.Name || "",
@@ -1293,6 +1301,7 @@ const TemplatePlaceholder = () => {
             : false,
         TimeToCompleteDays:
           parseInt(updateTemplate?.[0]?.TimeToCompleteDays) || 15,
+        ...penColors,
         ...Bcc,
         ...RedirectUrl
       };
@@ -1507,13 +1516,16 @@ const TemplatePlaceholder = () => {
                 }
               };
             }
-            else if (["signature"].includes(position.type)) {
+            else if (["signature", "initials"].includes(position.type)) {
               return {
                 ...position,
                 options: {
                   ...position.options,
                   name: defaultdata.name,
-                  hint: defaultdata?.hint || ""
+                  hint: defaultdata?.hint || "",
+                  ...(defaultdata?.penColors?.length > 0 && {
+                    penColors: defaultdata?.penColors
+                  })
                 }
               };
             } else {
@@ -1621,7 +1633,7 @@ const TemplatePlaceholder = () => {
       selector: '[data-tut="isSignatureWidget"]',
       content: t("signature-field-widget", { signersName }),
       position: "top",
-      style: { fontSize: "13px" }
+      styles: { fontSize: "13px" }
     }
   ];
   const showAlert = (type, message, duration = 1500) => {
@@ -1633,7 +1645,7 @@ const TemplatePlaceholder = () => {
       selector: '[data-tut="IsSigned"]',
       content: t("text-field-tour"),
       position: "top",
-      style: { fontSize: "13px" }
+      styles: { fontSize: "13px" }
     }
   ];
   const copytoclipboard = (text) => {
@@ -2150,6 +2162,7 @@ const TemplatePlaceholder = () => {
           isSave={true}
           setUniqueId={setUniqueId}
           signatureTypes={signatureType}
+          penColors={pdfDetails?.[0]?.PenColors}
         />
       )}
       <RotateAlert

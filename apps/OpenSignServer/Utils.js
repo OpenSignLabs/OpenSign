@@ -160,6 +160,17 @@ export const smtpsecure = process.env.SMTP_PORT && process.env.SMTP_PORT !== '46
 export const smtpenable =
   process.env.SMTP_ENABLE && process.env.SMTP_ENABLE.toLowerCase() === 'true' ? true : false;
 export const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+export function signPayload(payload, secret) {
+  if (payload && secret) {
+    const signature = crypto
+      .createHmac('sha256', secret)
+      .update(JSON.stringify(payload))
+      .digest('hex');
+    return { 'x-webhook-signature': signature };
+  } else {
+    return {};
+  }
+}
 
 // `generateId` is used to unique Id for fileAdapter
 export function generateId(length) {

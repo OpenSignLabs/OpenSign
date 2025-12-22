@@ -75,7 +75,6 @@ function PlaceHolderSign() {
   const prefillImg = useSelector((state) => state.widget.prefillImg);
   const isShowModal = useSelector((state) => state.widget.isShowModal);
   const editorRef = useRef();
-  const { state } = useLocation();
   const navigate = useNavigate();
   const [defaultBody, setDefaultBody] = useState("");
   const [defaultSubject, setDefaultSubject] = useState("");
@@ -1152,14 +1151,14 @@ function PlaceHolderSign() {
               className="flex flex-row items-center op-link op-link-primary"
             >
               <i className="fa-light fa-copy" />
-              <span className=" hidden md:block ml-1 ">{t("copy-link")}</span>
+              <span className="hidden md:block ml-1">{t("copy-link")}</span>
             </button>
             <ShareButton
               title={t("sign-url")}
               text={t("sign-url")}
               url={data.url}
             >
-              <i className="fa-light fa-share-from-square op-link data-[theme=opensigndark]:op-link-primary data-[theme=opensigncss]:op-link-secondary no-underline"></i>
+              <i className="fa-light fa-share-from-square op-link opensigncss:op-link-secondary opensigndark:op-link-primary no-underline"></i>
             </ShareButton>
           </div>
         </div>
@@ -1372,7 +1371,7 @@ function PlaceHolderSign() {
         />
       ),
       position: "top",
-      style: { fontSize: "13px" }
+      styles: { fontSize: "13px" }
     },
     {
       selector: '[data-tut="recipientArea"]',
@@ -1384,7 +1383,7 @@ function PlaceHolderSign() {
         />
       ),
       position: "top",
-      style: { fontSize: "13px" }
+      styles: { fontSize: "13px" }
     },
     {
       selector: '[data-tut="addRecipient"]',
@@ -1396,7 +1395,7 @@ function PlaceHolderSign() {
         />
       ),
       position: "top",
-      style: { fontSize: "13px" }
+      styles: { fontSize: "13px" }
     },
     {
       selector: '[data-tut="addWidgets"]',
@@ -1408,7 +1407,7 @@ function PlaceHolderSign() {
         />
       ),
       position: "top",
-      style: { fontSize: "13px" }
+      styles: { fontSize: "13px" }
     },
     {
       selector: '[data-tut="pdfArea"]',
@@ -1420,7 +1419,7 @@ function PlaceHolderSign() {
         />
       ),
       position: "top",
-      style: { fontSize: "13px" }
+      styles: { fontSize: "13px" }
     },
     {
       selector: '[data-tut="pdftools"]',
@@ -1432,7 +1431,7 @@ function PlaceHolderSign() {
         />
       ),
       position: "top",
-      style: { fontSize: "13px" }
+      styles: { fontSize: "13px" }
     },
     {
       selector: '[data-tut="headerArea"]',
@@ -1444,7 +1443,7 @@ function PlaceHolderSign() {
         />
       ),
       position: "top",
-      style: { fontSize: "13px" }
+      styles: { fontSize: "13px" }
     }
   ];
 
@@ -1641,13 +1640,16 @@ function PlaceHolderSign() {
                 }
               };
             }
-            else if (["signature"].includes(position.type)) {
+            else if (["signature", "initials"].includes(position.type)) {
               return {
                 ...position,
                 options: {
                   ...position.options,
                   name: defaultdata.name,
-                  hint: defaultdata?.hint || ""
+                  hint: defaultdata?.hint || "",
+                  ...(defaultdata?.penColors?.length > 0 && {
+                    penColors: defaultdata?.penColors
+                  })
                 }
               };
             } else {
@@ -1844,7 +1846,7 @@ function PlaceHolderSign() {
       selector: '[data-tut="assignSigner"]',
       content: t("attach-signer-tour"),
       position: "top",
-      style: { fontSize: "13px" }
+      styles: { fontSize: "13px" }
     }
   ];
   const prefillWidgetTour = [
@@ -1852,7 +1854,7 @@ function PlaceHolderSign() {
       selector: '[data-tut="IsSigned"]',
       content: t("text-field-tour"),
       position: "top",
-      style: { fontSize: "13px" }
+      styles: { fontSize: "13px" }
     }
   ];
   const signatureWidgetTour = [
@@ -1860,7 +1862,7 @@ function PlaceHolderSign() {
       selector: '[data-tut="isSignatureWidget"]',
       content: t("signature-field-widget", { signersName }),
       position: "top",
-      style: { fontSize: "13px" }
+      styles: { fontSize: "13px" }
     }
   ];
 
@@ -1963,6 +1965,10 @@ function PlaceHolderSign() {
       const RedirectUrl = updateDocument?.[0]?.RedirectUrl
         ? { RedirectUrl: updateDocument?.[0]?.RedirectUrl }
         : {};
+      const penColors =
+        updateDocument?.[0]?.PenColors?.length > 0
+          ? { PenColors: updateDocument?.[0]?.PenColors }
+          : {};
       const data = {
         ...(updateDocument?.[0]?.URL ? { URL: updateDocument?.[0]?.URL } : {}),
         Name: updateDocument?.[0]?.Name || "",
@@ -1979,6 +1985,7 @@ function PlaceHolderSign() {
             : false,
         TimeToCompleteDays:
           parseInt(updateDocument?.[0]?.TimeToCompleteDays) || 15,
+        ...penColors,
         ...Bcc,
         ...RedirectUrl
       };
@@ -2017,8 +2024,6 @@ function PlaceHolderSign() {
             onRequestClose={closeTour}
             steps={tourConfig}
             isOpen={placeholderTour}
-            rounded={5}
-            closeWithMask={false}
           />
           <Tour
             onRequestClose={() => setSignerExistModal(false)}
@@ -2489,6 +2494,7 @@ function PlaceHolderSign() {
           isSave={true}
           setUniqueId={setUniqueId}
           signatureTypes={signatureType}
+          penColors={pdfDetails?.[0]?.PenColors}
         />
       )}
       <ModalUi

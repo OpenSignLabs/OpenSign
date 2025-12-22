@@ -72,7 +72,7 @@ const ImageComponent = (props) => {
           <div className="cursor-pointer op-card border-[1px] border-gray-400 flex flex-col w-full h-full justify-center items-center ">
             <img
               alt="print img"
-              ref={(el) => (imageRefs.current[props?.position.key] = el)} // Assign ref dynamicallys
+              ref={(el) => (imageRefs.current[props?.id] = el)} // Assign ref dynamicallys
               src={imgUrl}
               draggable="false"
               className="object-contain h-full w-full aspect-[5/2]"
@@ -90,19 +90,14 @@ const ImageComponent = (props) => {
       ) : (
         <div
           className="cursor-pointer op-card border-[1px] op-border-hover flex flex-col overflow-hidden w-full h-full aspect-[5/2] justify-center items-center"
-          onClick={() => imageRefs.current[props?.position.key]?.click()}
+          onClick={() => imageRefs.current[props?.id]?.click()}
         >
-          {props?.imageLoaders[props?.position?.key] && (
-            <div className="absolute w-full h-full inset-0 flex justify-center items-center bg-white/30 z-50">
-              <Loader />
-            </div>
-          )}
           <input
             type="file"
             onChange={(e) => props?.onImageChange?.(e, props?.position)}
             className="filetype"
             accept="image/png,image/jpeg"
-            ref={(el) => (imageRefs.current[props?.position.key] = el)} // Assign ref dynamically
+            ref={(el) => (imageRefs.current[props?.id] = el)} // Assign ref dynamically
             hidden
           />
           <i className="fa-light text-base-content fa-cloud-upload-alt text-[25px]"></i>
@@ -120,16 +115,12 @@ function PrefillWidgetModal(props) {
   const loadedSet = useRef(new Set());
   const initializedRef = useRef(false); // prevent rerun on state updates
   const [image, setImage] = useState(null);
-  const [imageLoaders, setImageLoaders] = useState({});
   const [currentWidget, setCurrentWidget] = useState("");
   const [userList, setUserList] = useState([]);
   const [totalImages, setTotalImages] = useState(0);
   const [loadedImages, setLoadedImages] = useState(0);
   const [loading, setLoading] = useState(false);
   const years = range(1950, getYear(new Date()) + 16, 1);
-  const isAnyLoaderActive = Object.values(imageLoaders).some(
-    (val) => val === true
-  );
 
   // useMemo to memoize the calculation of unique widgets
   const uniqueWidget = useMemo(() => {
@@ -179,7 +170,7 @@ function PrefillWidgetModal(props) {
       if (Array.isArray(prefillImg)) {
         prefillImg.forEach((img) => dispatch(setPrefillImg(img)));
       }
-      setImageLoaders({});
+      setLoading(false);
     };
     savePrefillImg();
   }, [props.xyPosition]);
@@ -271,7 +262,7 @@ function PrefillWidgetModal(props) {
   };
 
   const handleSavePrefillImg = async (widgetDetails) => {
-    setImageLoaders((prev) => ({ ...prev, [widgetDetails?.key]: true }));
+    setLoading(true);
     try {
       const imageName = generatePdfName(16);
       const imageUrl = await convertBase64ToFile(
@@ -419,9 +410,9 @@ function PrefillWidgetModal(props) {
       // (tracks how many images have finished loading)
       setLoadedImages((prev) => prev + 1);
     }
-    setImageLoaders({});
+    setLoading(false);
   };
-  const handleWidgetType = (position) => {
+  const handleWidgetType = (position, id) => {
     switch (position?.type) {
       case "checkbox":
         return (
@@ -533,10 +524,10 @@ function PrefillWidgetModal(props) {
         return (
           <ImageComponent
             position={position}
-            imageLoaders={imageLoaders}
             onImageChange={onImageChange}
             handleImageLoaded={handleImageLoaded}
             handleClearImage={handleClearImage}
+            id={id}
           />
         );
       case radioButtonWidget:
@@ -658,7 +649,7 @@ function PrefillWidgetModal(props) {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-4 w-full">
                 {uniqueWidget.map((x, id) => (
                   <div key={id} className="flex flex-col gap-2 w-full">
-                    {handleWidgetType(x.widget)}
+                    {handleWidgetType(x.widget, id)}
                   </div>
                 ))}
               </div>
@@ -727,7 +718,7 @@ function PrefillWidgetModal(props) {
           </div>
           <div className="flex gap-2 mx-4 mb-3">
             <button
-              disabled={isAnyLoaderActive || props?.isSubmit}
+              disabled={props?.isSubmit}
               className="op-btn op-btn-primary op-btn-sm w-[80px]"
               onClick={() => handleEmbedPrefill(props?.item)}
             >

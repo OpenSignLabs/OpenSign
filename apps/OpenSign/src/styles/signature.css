@@ -44,8 +44,26 @@
 }
 
 .mysignatureCanvas {
-  width: 456px;
-  height: 180px;
+  /* width: 456px;
+  height: 180px; */
+  width: 370px;
+  height: 146px;
+}
+
+.mystampCanvas {
+  /* width: 446px;
+  height: 180px; */
+  width: 370px;
+  height: 146px;
+}
+
+.intialSignature {
+  border: 2px solid #888;
+  background-color: rgb(255, 255, 255);
+  /* width: 180px;
+  height: 180px; */
+  width: 150px;
+  height: 150px;
 }
 
 [data-theme="opensigndark"] .tabWidth {
@@ -68,13 +86,6 @@
   border-radius: 9999px;
   background-color: #111111;
   /* blue-500 */
-}
-
-.intialSignature {
-  border: 2px solid #888;
-  background-color: rgb(255, 255, 255);
-  width: 180px;
-  height: 180px;
 }
 
 /* Dark mode support for initials box in /managesign */
@@ -115,10 +126,6 @@
 [data-theme="opensigndark"] .mysignatureCanvas {
   background-color: #1f2937 !important;
   border-color: #4b5563 !important;
-}
-
-.penContainerDefault {
-  width: 460px;
 }
 
 .icon {
@@ -450,7 +457,7 @@ option {
   to prevent sudden quick movement (as the
   navigation bar gets a new position at the top of the
   page (position:fixed and top:0) */
-  .stickyHead+.content {
+  .stickyHead + .content {
     padding-top: 60px;
   }
 }
@@ -466,11 +473,12 @@ option {
     height: 118px;
   }
 
-  .tabWidth {
+  .mystampCanvas {
     width: 300px;
+    height: 118px;
   }
 
-  .penContainerDefault {
+  .tabWidth {
     width: 300px;
   }
 
@@ -498,18 +506,17 @@ option {
     width: 280px;
     height: 111px;
   }
+  .mystampCanvas {
+    width: 280px;
+    height: 111px;
+  }
 
   .tabWidth {
     width: 280px;
   }
 
-  .penContainerDefault {
-    width: 280px;
-  }
-
   .signTab {
     font-weight: 500 !important;
-
     font-size: 10px !important;
   }
 
@@ -528,12 +535,12 @@ option {
     width: 230px;
     height: 91px;
   }
-
-  .tabWidth {
+  .mystampCanvas {
     width: 230px;
+    height: 91px;
   }
 
-  .penContainerDefault {
+  .tabWidth {
     width: 230px;
   }
 

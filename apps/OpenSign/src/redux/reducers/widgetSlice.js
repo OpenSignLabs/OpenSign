@@ -10,6 +10,7 @@ const initialState = {
   signatureTypes: null,
   defaultSignImg: null,
   myInitial: null,
+  myStamp: null,
   lastIndex: "",
   scrollTriggerId: "",
   prefillImg: [],
@@ -63,6 +64,9 @@ const widgetSlice = createSlice({
     setPrefillImgLoad: (state, action) => {
       state.prefillImgLoad = action.payload;
     },
+    setMyStamp: (state, action) => {
+      state.myStamp = action.payload;
+    },
     resetWidgetState: () => initialState
   }
 });
@@ -78,7 +82,8 @@ export const {
   setScrollTriggerId,
   setPrefillImg,
   setPrefillImgLoad,
-  setTypedSignFont
+  setTypedSignFont,
+  setMyStamp
 } = widgetSlice.actions;
 
 export default widgetSlice.reducer;

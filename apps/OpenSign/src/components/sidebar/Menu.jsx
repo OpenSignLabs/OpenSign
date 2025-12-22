@@ -1,5 +1,5 @@
-import React from "react";
 import { useTranslation } from "react-i18next";
+import { useSelector } from "react-redux";
 import { NavLink } from "react-router";
 
 const Menu = ({ item, isOpen, closeSidebar }) => {
@@ -7,6 +7,8 @@ const Menu = ({ item, isOpen, closeSidebar }) => {
     "OpenSign™";
   const drivename = appName === "OpenSign™" ? "OpenSign™" : "";
   const { t } = useTranslation();
+  const { selectedMenu } = useSelector((state) => state.sidebar);
+
   return (
     <li key={item.title} role="none" className="my-0.5">
       <NavLink
@@ -16,11 +18,9 @@ const Menu = ({ item, isOpen, closeSidebar }) => {
             : `/${item.objectId}`
         }
         className={({ isActive }) =>
-          `${
-            isActive ? " bg-base-300 text-base-content" : ""
-          } flex gap-x-5 items-center justify-start text-left p-3 text-base-content hover:text-base-content focus:bg-base-300 hover:bg-base-300 hover:no-underline focus:outline-none`
+          `${isActive && selectedMenu ? "bg-base-300 text-base-content" : ""} flex gap-x-5 items-center justify-start text-left p-3 text-base-content hover:text-base-content focus:bg-base-300 hover:bg-base-300 hover:no-underline focus:outline-none`
         }
-        onClick={closeSidebar}
+        onClick={() => closeSidebar(item.title)}
         tabIndex={isOpen ? 0 : -1}
         role="menuitem"
       >

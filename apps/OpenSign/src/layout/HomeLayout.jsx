@@ -1,4 +1,7 @@
 import { useState, useEffect } from "react";
+import {
+  nonPresentMaskCss
+} from "../constant/Utils";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import Sidebar from "../components/sidebar/Sidebar";
@@ -6,7 +9,9 @@ import Tour from "../primitives/Tour";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import Parse from "parse";
-import { useNavigate, Outlet } from "react-router";
+import {
+  Outlet
+} from "react-router";
 import Loader from "../primitives/Loader";
 import { useTranslation } from "react-i18next";
 import { sessionStatus } from "../redux/reducers/userReducer";
@@ -16,9 +21,8 @@ const HomeLayout = () => {
   const appName =
     "OpenSign™";
   const { t, i18n } = useTranslation();
-  const navigate = useNavigate();
   const dispatch = useDispatch();
-  const arr = useSelector((state) => state.TourSteps);
+  const tourArr = useSelector((state) => state.TourSteps);
   const isValidSession = useSelector((state) => state.user.isValidSession);
   const [isLoader, setIsLoader] = useState(true);
   const [isCloseBtn, setIsCloseBtn] = useState(true);
@@ -55,7 +59,7 @@ const HomeLayout = () => {
               dispatch(sessionStatus(true));
             }
           } catch (error) {
-            console.log("catch");
+            console.error("error in authentication:", error?.message);
             // Session token is invalid or there was an error
             dispatch(sessionStatus(false));
           }
@@ -68,40 +72,36 @@ const HomeLayout = () => {
 
 
   useEffect(() => {
-    if (arr && arr.length > 0) {
+    if (tourArr && tourArr.length > 0) {
       handleDynamicSteps();
     } else {
       setIsTour(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [arr]);
+  }, [tourArr]);
 
   const handleDynamicSteps = () => {
     const github = "https://github.com/OpenSignLabs/OpenSign";
-    if (arr && arr.length > 0) {
-      // const resArr = arr;
-      const resArr = arr.map((obj, index) => {
-        if (arr.length - 1 === index) {
-          return { ...obj };
+    if (tourArr && tourArr.length > 0) {
+      const resArr = tourArr.map((obj, index) => {
+        if (tourArr.length - 1 === index) {
+          return obj;
         } else {
-          return {
-            ...obj,
-            actions: () => {
-              setIsCloseBtn(false);
-            }
-          };
+          return { ...obj, actions: () => setIsCloseBtn(false) };
         }
       });
       setTourConfigs([
         {
           selector: '[data-tut="nonpresentmask"]',
           content: t("tour-mssg.home-layout-1"),
-          position: "center"
+          position: "center",
+          styles: { fontSize: "13px", maskArea: nonPresentMaskCss }
         },
         {
           selector: '[data-tut="tourbutton"]',
           content: t("tour-mssg.home-layout-2"),
-          position: "top"
+          position: "top",
+          styles: { fontSize: "13px" }
         },
         ...resArr,
         {
@@ -122,20 +122,19 @@ const HomeLayout = () => {
               </p>
             </div>
           ),
-          position: "center"
+          position: "center",
+          styles: { fontSize: "13px", maskArea: nonPresentMaskCss }
         }
       ]);
       checkTourStatus();
     }
   };
   const closeTour = async () => {
-    // console.log("closeTour");
     setIsTour(false);
     const serverUrl = localStorage.getItem("baseUrl");
     const appId = localStorage.getItem("parseAppId");
     const json = JSON.parse(localStorage.getItem("Extand_Class"));
     const extUserId = json && json.length > 0 && json[0].objectId;
-    // console.log("extUserId ", extUserId)
 
     let updatedTourStatus = [];
     if (tourStatusArr.length > 0) {
@@ -209,15 +208,15 @@ const HomeLayout = () => {
               </div>
             </main>
           </div>
-          <Tour
-            onRequestClose={closeTour}
-            steps={tourConfigs}
-            isOpen={isTour}
-            disableKeyboardNavigation={["esc"]}
-            // disableInteraction={true}
-            scrollOffset={-100}
-            showCloseButton={isCloseBtn}
-          />
+          {isTour && (
+            <Tour
+              onRequestClose={closeTour}
+              steps={tourConfigs}
+              isOpen={isTour}
+              // scrollOffset={-100}
+              showCloseButton={isCloseBtn}
+            />
+          )}
         </>
       )}
     </div>
