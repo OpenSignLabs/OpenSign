@@ -28,6 +28,11 @@ const appName = "OpenSign™";
 
 export const defaultMailBody = `<p>Hi {{receiver_name}},</p><br><p>We hope this email finds you well. {{sender_name}}&nbsp;has requested you to review and sign&nbsp;{{document_title}}.</p><p>Your signature is crucial to proceed with the next steps as it signifies your agreement and authorization.</p><br><p><a href='{{signing_url}}' rel='noopener noreferrer' target='_blank'>Sign here</a></p><br><br><p>If you have any questions or need further clarification regarding the document or the signing process,  please contact the sender.</p><br><p>Thanks</p><p> Team ${appName}</p><br>`;
 export const defaultMailSubject = `{{sender_name}} has requested you to sign {{document_title}}`;
+export const nonPresentMaskCss = (base) => ({
+  ...base,
+  width: "0px",
+  height: "0px"
+});
 
 export const randomId = (digit = 8) => {
   // 1. Grab a cryptographically-secure 32-bit random value
@@ -849,6 +854,7 @@ export const signPdfFun = async (
     }
   }
 };
+
 export const createDocument = async (
   template,
   placeholders,
@@ -900,6 +906,8 @@ export const createDocument = async (
     const RedirectUrl = Doc?.RedirectUrl
       ? { RedirectUrl: Doc?.RedirectUrl }
       : {};
+    const PenColors =
+      Doc?.PenColors?.length > 0 ? { PenColors: Doc?.PenColors } : {};
     const TemplateId = Doc?.objectId
       ? {
           TemplateId: {
@@ -922,11 +930,7 @@ export const createDocument = async (
         className: "contracts_Users",
         objectId: extUserId
       },
-      CreatedBy: {
-        __type: "Pointer",
-        className: "_User",
-        objectId: creatorId
-      },
+      CreatedBy: { __type: "Pointer", className: "_User", objectId: creatorId },
       Signers: signers,
       SendinOrder: Doc?.SendinOrder || false,
       AutomaticReminders: Doc?.AutomaticReminders || false,
@@ -940,7 +944,8 @@ export const createDocument = async (
       ...NotifyOnSignatures,
       ...Bcc,
       ...RedirectUrl,
-      ...TemplateId
+      ...TemplateId,
+      ...PenColors
     };
     const remindOnceInEvery = Doc?.RemindOnceInEvery;
     const TimeToCompleteDays = parseInt(Doc?.TimeToCompleteDays);
@@ -949,23 +954,27 @@ export const createDocument = async (
     if (AutomaticReminders && reminderCount > 15) {
       return { status: "error", id: "only-15-reminder-allowed" };
     }
+    const url = `${localStorage.getItem("baseUrl")}classes/contracts_Document`;
+    const token = {
+      "X-Parse-Session-Token": localStorage.getItem("accesstoken")
+    };
     try {
-      const res = await axios.post(
-        `${localStorage.getItem("baseUrl")}classes/contracts_Document`,
-        data,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
-            "X-Parse-Session-Token": localStorage.getItem("accesstoken")
-          }
+      const res = await axios.post(url, data, {
+        headers: {
+          "Content-Type": "application/json",
+          "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
+          ...token
         }
-      );
+      });
       if (res) {
-        return { status: "success", id: res.data.objectId, data: res.data };
+        const result = res.data;
+
+        return { status: "success", id: result.objectId, data: result };
       }
     } catch (err) {
-      console.log("axois err ", err);
+      const message =
+        err?.response?.data?.error || err?.message || "something went wrong.";
+      console.error("error in create document:", message);
       return { status: "error", id: "something-went-wrong-mssg" };
     }
   }
@@ -1037,7 +1046,8 @@ export const onChangeInput = (
   dateFormat,
   fontSize,
   fontColor,
-  dateDetails
+  dateDetails,
+  textWidgetHeight
 ) => {
   const isSigners = xyPosition.some(
     (data) => data.signerPtr || data.Role === "prefill"
@@ -1086,6 +1096,16 @@ export const onChangeInput = (
                     format: dateFormat // This indicates the required date format explicitly.
                   }
                 }
+              };
+            } else if (
+              (currentPosition?.type === "text" ||
+                currentPosition?.type === textInputWidget) &&
+              textWidgetHeight &&
+              !value
+            ) {
+              return {
+                ...position,
+                Height: textWidgetHeight
               };
             } else {
               return {
@@ -1136,6 +1156,15 @@ export const onChangeInput = (
                 format: dateFormat // This indicates the required date format explicitly.
               }
             }
+          };
+        } else if (
+          currentPosition?.type === "text" &&
+          textWidgetHeight &&
+          !value
+        ) {
+          return {
+            ...positionData,
+            Height: textWidgetHeight
           };
         } else {
           return {
@@ -1605,7 +1634,9 @@ export function onSaveImage(
   isAutoSign,
   widgetsType,
   isApplyAll,
-  imgUrl
+  imgUrl,
+  defaultStampImg,
+  defaultStampType
 ) {
   // let getIMGWH;
   const isSignOrInitials =
@@ -1616,12 +1647,12 @@ export function onSaveImage(
     if (position.key === signKey) {
       return {
         ...position,
-        SignUrl: imgUrl || image.src,
-        ImageType: image.imgType,
+        SignUrl: imgUrl || image?.src || defaultStampImg,
+        ImageType: image?.imgType || defaultStampType,
         ...(isSignOrInitials && { signatureType: signatureType || "" }),
         options: {
           ...position.options,
-          response: imgUrl || image.src
+          response: imgUrl || image?.src || defaultStampImg
         }
       };
     }
@@ -1643,16 +1674,17 @@ export function onSaveImage(
           item.type === widgetsType && item.type !== "image"
             ? {
                 ...item,
-                SignUrl: image.src,
-                ImageType: image.imgType,
+                SignUrl: image?.src || defaultStampImg,
+                ImageType: image?.imgType || defaultStampType,
                 options: {
                   ...item.options,
-                  response: image.src
+                  response: image?.src || defaultStampImg
                 }
               }
             : item // Otherwise, keep it unchanged
       )
     }));
+
     return updatedArray;
   } else {
     return updateXYposition;
@@ -1792,6 +1824,26 @@ export const isBase64 = (str) => {
     /^data:([a-zA-Z0-9]+\/[a-zA-Z0-9-.+]+)?;base64,[A-Za-z0-9+/=]+$/;
   return base64Pattern.test(str);
 };
+// Break a long word into smaller parts character-by-character
+const forceBreakLongWord = (word, width, font, fontSize) => {
+  const parts = [];
+  let current = "";
+
+  for (const char of word) {
+    const lineWidth = font.widthOfTextAtSize(current + char, fontSize);
+
+    if (lineWidth <= width) {
+      current += char;
+    } else {
+      parts.push(current);
+      current = char;
+    }
+  }
+  if (current) parts.push(current);
+
+  return parts;
+};
+
 //function for embed all type widgets in document using pdf-lib
 export const embedWidgetsToDoc = async (
   widgets,
@@ -2080,41 +2132,59 @@ export const embedWidgetsToDoc = async (
               const lines = [];
               let currentLine = "";
 
-              for (const word of textContent?.split(" ")) {
-                //get text line width
-                const lineWidth = font.widthOfTextAtSize(
-                  `${currentLine} ${word}`,
-                  fontSize
-                );
-                //check text content line width is less or equal to container width
-                if (lineWidth <= width) {
-                  currentLine += ` ${word}`;
+              const words = textContent?.split(" ");
+              for (let word of words) {
+                const testLine = currentLine ? currentLine + " " + word : word;
+                const testWidth = font.widthOfTextAtSize(testLine, fontSize);
+
+                if (testWidth <= width) {
+                  currentLine = testLine;
                 } else {
-                  lines.push(currentLine.trim());
-                  currentLine = `${word}`;
+                  // If single long word
+                  if (font.widthOfTextAtSize(word, fontSize) > width) {
+                    // Break a long word into smaller parts character-by-character
+                    const brokenParts = forceBreakLongWord(
+                      word,
+                      width,
+                      font,
+                      fontSize
+                    );
+
+                    // push currentLine before breaking word
+                    if (currentLine.trim()) lines.push(currentLine.trim());
+
+                    // push ALL broken parts in order
+                    brokenParts.forEach((p) => lines.push(p));
+
+                    currentLine = "";
+                  } else {
+                    // push current line and start new
+                    if (currentLine.trim()) lines.push(currentLine.trim());
+                    currentLine = word;
+                  }
                 }
               }
-              lines.push(currentLine.trim());
+              if (currentLine.trim()) lines.push(currentLine.trim());
               return lines;
             };
             // Function to break text into lines based on when user go next line on press enter button
             const breakTextIntoLines = (textContent, width) => {
-              const lines = [];
-              for (const word of textContent.split("\n")) {
-                const lineWidth = font.widthOfTextAtSize(`${word}`, fontSize);
+              const finalLines = [];
+              const paragraphs = textContent.split("\n"); // preserve user order
+              for (const para of paragraphs) {
+                const lineWidth = font.widthOfTextAtSize(para, fontSize);
                 //checking string length to container width
                 //if string length is less then container width it means user press enter button
                 if (lineWidth <= width) {
-                  lines.push(word);
-                }
-                //else adjust text content according to width and send it in new line
-                else {
-                  const newLine = NewbreakTextIntoLines(word, width);
-                  lines.push(...newLine);
+                  // user forced newline
+                  finalLines.push(para);
+                } else {
+                  // auto wrap paragraph
+                  finalLines.push(...NewbreakTextIntoLines(para, width));
                 }
               }
 
-              return lines;
+              return finalLines;
             };
             //check if text content have `\n` string it means user press enter to go next line and handle condition
             //else auto adjust text content according to container width
@@ -3022,13 +3092,17 @@ export const getDefaultSignature = async (objectId) => {
         const defaultInitial = res?.Initials
           ? await getBase64FromUrl(res?.Initials, true)
           : "";
+        const defaultStamp = res?.Stamp
+          ? await getBase64FromUrl(res?.Stamp, true)
+          : "";
 
         return {
           status: "success",
           res: {
             id: result?.id,
             defaultSignature: defaultSignature,
-            defaultInitial: defaultInitial
+            defaultInitial: defaultInitial,
+            defaultStamp: defaultStamp
           }
         };
       }
@@ -3927,51 +4001,55 @@ export const sendEmailToSigners = async (
  * @returns {Promise<File>}     - A promise that resolves with a new PNG File.
  */
 export function convertJpegToPng(base64Image, filename) {
-  const arr = base64Image.split(",");
-  const mimeMatch = arr[0].match(/:(.*?);/);
-  if (!mimeMatch) throw new Error("Invalid dataURL");
-  const mime = mimeMatch[1];
-  const type = mime.split("/")[1];
-  if (type === "png") {
-    return base64Image;
-  } else {
-    const bstr = atob(arr[1]);
-    let n = bstr.length;
-    const u8arr = new Uint8Array(n);
-    while (n--) u8arr[n] = bstr.charCodeAt(n);
-    const inputFile = new File([u8arr], `${filename}.${type}`, { type: mime });
-    return new Promise((resolve, reject) => {
-      // ensure it’s JPEG/JPG (you can remove this check if not needed)
-      if (!/image\/jpe?g/.test(inputFile.type)) {
-        return reject(new Error("Input must be a JPEG or JPG image"));
-      }
+  if (base64Image) {
+    const arr = base64Image.split(",");
+    const mimeMatch = arr[0].match(/:(.*?);/);
+    if (!mimeMatch) throw new Error("Invalid dataURL");
+    const mime = mimeMatch[1];
+    const type = mime.split("/")[1];
+    if (type === "png") {
+      return base64Image;
+    } else {
+      const bstr = atob(arr[1]);
+      let n = bstr.length;
+      const u8arr = new Uint8Array(n);
+      while (n--) u8arr[n] = bstr.charCodeAt(n);
+      const inputFile = new File([u8arr], `${filename}.${type}`, {
+        type: mime
+      });
+      return new Promise((resolve, reject) => {
+        // ensure it’s JPEG/JPG (you can remove this check if not needed)
+        if (!/image\/jpe?g/.test(inputFile.type)) {
+          return reject(new Error("Input must be a JPEG or JPG image"));
+        }
 
-      // Read the file as a data URL
-      const reader = new FileReader();
-      reader.onerror = () => reject(new Error("Failed to read the file"));
-      reader.onload = () => {
-        const img = new Image();
-        img.onerror = () => reject(new Error("Failed to load image"));
-        img.onload = () => {
-          // draw image onto a canvas
-          const canvas = document.createElement("canvas");
-          canvas.width = img.width;
-          canvas.height = img.height;
-          const ctx = canvas.getContext("2d");
-          ctx.drawImage(img, 0, 0);
+        // Read the file as a data URL
+        const reader = new FileReader();
+        reader.onerror = () => reject(new Error("Failed to read the file"));
+        reader.onload = () => {
+          const img = new Image();
+          img.onerror = () => reject(new Error("Failed to load image"));
+          img.onload = () => {
+            // draw image onto a canvas
+            const canvas = document.createElement("canvas");
+            canvas.width = img.width;
+            canvas.height = img.height;
+            const ctx = canvas.getContext("2d");
+            ctx.drawImage(img, 0, 0);
 
-          // directly get PNG as base64 data URL
-          try {
-            const pngDataUrl = canvas.toDataURL("image/png");
-            resolve(pngDataUrl);
-          } catch (err) {
-            reject(new Error("Failed to convert canvas to PNG"));
-          }
+            // directly get PNG as base64 data URL
+            try {
+              const pngDataUrl = canvas.toDataURL("image/png");
+              resolve(pngDataUrl);
+            } catch (err) {
+              reject(new Error("Failed to convert canvas to PNG"));
+            }
+          };
+          img.src = reader.result;
         };
-        img.src = reader.result;
-      };
-      reader.readAsDataURL(inputFile);
-    });
+        reader.readAsDataURL(inputFile);
+      });
+    }
   }
 }
 //function is used to get assigned signer's email
@@ -4080,3 +4158,8 @@ export const handleBackground = (data, isNeedSign, uniqueId) => {
     return "rgba(203, 233, 237, 0.69)";
   }
 };
+
+export function getBase64MimeType(base64) {
+  const match = base64.match(/^data:(image\/[a-zA-Z0-9+.-]+);base64,/);
+  return match ? match[1] : null;
+}

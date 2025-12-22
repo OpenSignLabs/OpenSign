@@ -136,7 +136,7 @@ function Placeholder(props) {
       data?.format,
       props.fontSize || props.pos?.options?.fontSize || 12,
       props.fontColor || props.pos?.options?.fontColor || "black",
-      formdata
+      formdata,
     );
   };
 
@@ -620,12 +620,12 @@ function Placeholder(props) {
   };
   const ExampleCustomInput = forwardRef(({ value, onClick }, ref) => (
     <div
-      className="border-gray-400 rounded-[50px] border-[1px] px-3 md:ml-2 text-xs py-2 focus:outline-none hover:border-base-content "
+      className="border-gray-400 rounded-[50px] border-[1px] px-3  text-xs py-2 focus:outline-none hover:border-base-content "
       onClick={onClick}
       ref={ref}
     >
       {value}
-      <i className="fa-light fa-calendar ml-[5px]"></i>
+      <i className={`${value ? "ml-[5px]" : ""} fa-light fa-calendar `}></i>
     </div>
   ));
   ExampleCustomInput.displayName = "ExampleCustomInput";
@@ -655,12 +655,14 @@ function Placeholder(props) {
       {props.pos?.options?.response &&
       props.pos.key !== props?.currWidgetsDetails?.key &&
       props.pos.type === textWidget ? (
-        <span
+        <textarea
+          readOnly
           onClick={() => {
+            if (props?.ispublicTemplate) return;
             props.setCurrWidgetsDetails &&
               props.setCurrWidgetsDetails(props.pos);
-            props?.setRoleName("prefill");
-            props.setUniqueId(props?.data?.Id);
+            props?.setRoleName && props?.setRoleName("prefill");
+            props.setUniqueId && props.setUniqueId(props?.data?.Id);
           }}
           style={{
             fontFamily: "Arial, sans-serif",
@@ -671,13 +673,21 @@ function Placeholder(props) {
             ...(props.pos?.Height ? { height: props.pos?.Height } : {}),
             fontSize: fontSize,
             color: fontColor,
-            zIndex: 99
+            zIndex: 99,
+            cursor: getCursor(),
+            resize: "none",
+            background: "transparent",
+            width: props.posWidth(props.pos, props.isSignYourself),
+            whiteSpace: "pre-wrap",
+            overflow: "hidden",
+            outline: "none",
+            border: "none"
           }}
         >
           {
                 props.pos?.options?.response
           }
-        </span>
+        </textarea>
       ) : (
         <Rnd
           id={props.pos.key}
@@ -737,7 +747,7 @@ function Placeholder(props) {
                     props?.data,
                     props?.isNeedSign,
                     props?.uniqueId
-                  ) //handle block color of widget for
+                  )
           }}
           onDrag={(_, d) => {
             props?.handleTabDrag?.(props.pos.key);
@@ -938,7 +948,7 @@ function Placeholder(props) {
                   <span>{t("set-date")} :</span>
                   <DatePicker
                     renderCustomHeader={({ date, changeYear, changeMonth }) => (
-                      <div className="flex justify-start md:ml-2 ">
+                      <div className="flex justify-start md:ml-2">
                         <select
                           className="bg-transparent outline-none"
                           value={months[getMonth(date)]}
@@ -992,7 +1002,7 @@ function Placeholder(props) {
                     }
                     portalId="root-portal"
                   />
-                  <label className=" flex items-center gap-1 cursor-pointer">
+                  <label className="flex items-center gap-1 cursor-pointer mb-0">
                     <input
                       checked={isToday}
                       type="checkbox"
@@ -1006,7 +1016,7 @@ function Placeholder(props) {
                   </label>
                   <span
                     onClick={() => handleClearDate()}
-                    className="underline text-blue-500 cursor-pointer md:ml-2"
+                    className="underline text-blue-500 cursor-pointer ml-2"
                   >
                     {t("clear")}
                   </span>

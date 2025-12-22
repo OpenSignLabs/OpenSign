@@ -16,7 +16,6 @@ import {
   handleSignatureType,
   replaceMailVaribles,
   signatureTypes,
-  openInNewTab,
   createDocument,
   defaultMailBody,
   defaultMailSubject
@@ -30,7 +29,9 @@ import "../../styles/quill.css";
 import BulkSendUi from "../../components/BulkSendUi";
 import Loader from "../../primitives/Loader";
 import { serverUrl_fn } from "../../constant/appinfo";
-import { Trans, useTranslation } from "react-i18next";
+import {
+  useTranslation
+} from "react-i18next";
 import { useElSize } from "../../hook/useElSize";
 import LottieWithLoader from "../../primitives/DotLottieReact";
 import PrefillWidgetModal from "../../components/pdf/PrefillWidgetsModal";
@@ -42,7 +43,6 @@ import CustomizeMail from "../../components/pdf/CustomizeMail";
 const TemplatesReport = (props) => {
   const copyUrlRef = useRef(null);
   const titleRef = useRef(null);
-  const journey = "Use Template";
   const titleElement = useElSize(titleRef);
   const prefillImg = useSelector((state) => state.widget.prefillImg);
   const appName =
@@ -309,7 +309,7 @@ const TemplatesReport = (props) => {
       [templateRes || templateDetails],
       placeholder || xyPosition,
       signer || signerList,
-      templateRes?.URL || templateDetails?.URL
+      templateRes?.URL || templateDetails?.URL,
     );
     if (res.status === "success") {
       navigate(`/placeHolderSign/${res.id}`, {
@@ -900,12 +900,14 @@ const TemplatesReport = (props) => {
     );
     if (res?.status === "unfilled") {
       const emptyWidget = res?.emptyResponseObjects
-        .map((item) => `[ ${item.options.name}]`)
-        .join(", ");
+        ?.map((item) => item.options.name)
+        ?.join(", ");
       const timeInMiliSec = 6000;
       showAlert(
         "danger",
-        t("prefill-unfilled-widget", { emptyWidget: emptyWidget }),
+        t("prefill-unfilled-widget", {
+          emptyWidget: emptyWidget ? `[${emptyWidget}]` : ""
+        }),
         timeInMiliSec
       );
     } else if (res?.status === "unattach signer") {

@@ -1,11 +1,15 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import Loader from "./Loader";
 import { useTranslation } from "react-i18next";
 import axios from "axios";
 import { getTenantDetails } from "../constant/Utils";
 import { emailRegex } from "../constant/const";
+import { useDispatch } from "react-redux";
+import { sessionStatus } from "../redux/reducers/userReducer";
+
 const AddContact = (props) => {
   const { t } = useTranslation();
+  const dispatch = useDispatch();
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
@@ -108,6 +112,7 @@ const AddContact = (props) => {
         }
       } else {
         setIsLoader(false);
+        dispatch(sessionStatus(false));
         alert(t("something-went-wrong-mssg"));
       }
     }
@@ -139,7 +144,9 @@ const AddContact = (props) => {
       )}
       <div className="w-full mx-auto p-[8px]">
         {!props?.isDisableTitle && (
-          <div className="text-[14px] font-[700] text-base-content mb-1">{t("add-contact")}</div>
+          <div className="text-[14px] font-[700] text-base-content mb-1">
+            {t("add-contact")}
+          </div>
         )}
         {isUserExist && props?.isAddYourSelfCheckbox && (
           <div className="mb-[0.75rem] flex items-center mt-1">

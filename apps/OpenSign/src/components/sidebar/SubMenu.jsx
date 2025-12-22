@@ -1,5 +1,5 @@
-import React from "react";
 import { useTranslation } from "react-i18next";
+import { useSelector } from "react-redux";
 import { NavLink } from "react-router";
 
 const Submenu = ({ item, closeSidebar, toggleSubmenu, submenuOpen }) => {
@@ -8,6 +8,8 @@ const Submenu = ({ item, closeSidebar, toggleSubmenu, submenuOpen }) => {
   const drivename = appName === "OpenSign™" ? "OpenSign™" : "";
   const { t } = useTranslation();
   const { title, icon, children } = item;
+  const { selectedMenu } = useSelector((state) => state.sidebar);
+
   return (
     <li role="none" className="my-0.5">
       <button
@@ -45,11 +47,9 @@ const Submenu = ({ item, closeSidebar, toggleSubmenu, submenuOpen }) => {
                     : `/${childItem.objectId}`
                 }
                 className={({ isActive }) =>
-                  `${
-                    isActive ? "bg-base-300 text-base-content " : ""
-                  } pl-4 flex items-center gap-x-5 py-2 text-sm cursor-pointer text-base-content hover:text-base-content focus:bg-base-300 hover:bg-base-300 hover:no-underline focus:outline-none`
+                  `${isActive && selectedMenu ? "bg-base-300 text-base-content" : ""} pl-4 flex items-center gap-x-5 py-2 text-sm cursor-pointer text-base-content hover:text-base-content focus:bg-base-300 hover:bg-base-300 hover:no-underline focus:outline-none`
                 }
-                onClick={closeSidebar}
+                onClick={() => closeSidebar(childItem.title)}
                 role="menuitem"
                 tabIndex={submenuOpen ? 0 : -1}
               >

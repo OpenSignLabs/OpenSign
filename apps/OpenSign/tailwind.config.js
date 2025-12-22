@@ -6,7 +6,11 @@ module.exports = {
   },
   plugins: [
     require("daisyui"),
-    function ({ addUtilities, theme }) {
+    function ({ addUtilities, addVariant }) {
+      // ✅ Variants that match html[data-theme="..."] (or any ancestor with data-theme)
+      addVariant("opensigncss", '[data-theme="opensigncss"] &');
+      addVariant("opensigndark", '[data-theme="opensigndark"] &');
+
       addUtilities({
         // Prevent iOS long-press popup
         ".touch-callout-none": {

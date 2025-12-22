@@ -22,8 +22,6 @@ const Preferences = () => {
   const appName =
     "OpenSign™";
   const { t } = useTranslation();
-  const Extand_Class = localStorage.getItem("Extand_Class");
-  const extClass = Extand_Class && JSON.parse(Extand_Class);
   const [isalert, setIsAlert] = useState({ type: "success", msg: "" });
   const [isTopLoader, setIsTopLoader] = useState(false);
   const [isLoader, setIsLoader] = useState(false);
@@ -44,7 +42,6 @@ const Preferences = () => {
   const [is12HourTime, setIs12HourTime] = useState(false);
   const [isLTVEnabled, setIsLTVEnabled] = useState(false);
   const [fileNameFormat, setFileNameFormat] = useState("DOCNAME");
-  const [userInfo, setUserInfo] = useState({});
   const [tenantInfo, setTenantInfo] = useState({});
 
   useEffect(() => {
@@ -87,7 +84,6 @@ const Preferences = () => {
       const getUser = extUser.data?.result;
       if (getUser) {
         const _getUser = JSON.parse(JSON.stringify(getUser));
-        setUserInfo(_getUser);
         setIsNotifyOnSignatures(
           _getUser?.NotifyOnSignatures !== undefined
             ? _getUser?.NotifyOnSignatures

@@ -190,9 +190,7 @@ const BulkSendUi = (props) => {
   const batchQuery = async (Documents) => {
     const token =
           { "X-Parse-Session-Token": localStorage.getItem("accesstoken") };
-    const functionsUrl = `${localStorage.getItem(
-      "baseUrl"
-    )}functions/batchdocuments`;
+    const functionsUrl = `${localStorage.getItem("baseUrl")}functions/batchdocuments`;
     const headers = {
       "Content-Type": "application/json",
       "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
@@ -201,13 +199,14 @@ const BulkSendUi = (props) => {
     const params = { Documents: JSON.stringify(Documents) };
     try {
       const res = await axios.post(functionsUrl, params, { headers: headers });
-      // console.log("res ", res);
       if (res.data && res.data.result) {
         props.handleClose("success", Documents?.length);
       }
     } catch (err) {
-      console.log("Err ", err);
-      props.handleClose("error", 0);
+      const message =
+        err?.response?.data?.error || err?.message || "something went wrong.";
+      console.error("Error sending documents:", message);
+        props.handleClose("error", 0, message);
     } finally {
       setIsSubmit(false);
     }

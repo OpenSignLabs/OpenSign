@@ -84,6 +84,8 @@ const Forms = (props) => {
   const [isCorrectPass, setIsCorrectPass] = useState(true);
   const [isAdvanceOpt, setIsAdvanceOpt] = useState(false);
   const [bcc, setBcc] = useState([]);
+  const pensList = ["blue", "red", "black"];
+  const [selectedColors, setSelectedColors] = useState(pensList);
 
   const handleStrInput = (e) => {
     setIsCorrectPass(true);
@@ -417,6 +419,8 @@ const Forms = (props) => {
           object.set("RemindOnceInEvery", remindOnceInEvery);
           object.set("IsTourEnabled", isTourEnabled);
           object.set("TimeToCompleteDays", TimeToCompleteDays);
+          object.set("PenColors", selectedColors);
+
             object.set("AllowModifications", false);
             object.set("IsEnableOTP", false);
             if (formData.NotifyOnSignatures !== undefined) {
@@ -456,6 +460,7 @@ const Forms = (props) => {
         if (res) {
           setSigners([]);
           setBcc([]);
+          setSelectedColors(pensList);
           setFolder({ ObjectId: "", Name: "" });
           const notifySign =
                 extUserData?.NotifyOnSignatures !== undefined
@@ -538,6 +543,7 @@ const Forms = (props) => {
     setIsReset(true);
     setSigners([]);
     setBcc([]);
+    setSelectedColors(pensList);
     setFolder({ ObjectId: "", Name: "" });
     const notifySign =
           extUserData?.NotifyOnSignatures !== undefined
@@ -649,6 +655,20 @@ const Forms = (props) => {
   // `handleNotifySignChange` is trigger when user change radio of notify on signatures
   const handleNotifySignChange = (value) => {
     setFormData((obj) => ({ ...obj, NotifyOnSignatures: value }));
+  };
+
+  const handleColorsChange = (color) => {
+    setSelectedColors((prev) => {
+      // If user tries to uncheck the last remaining color → block it
+      if (prev.length === 1 && prev.includes(color)) {
+        return prev;
+      }
+
+      // Normal toggle behavior
+      return prev.includes(color)
+        ? prev.filter((c) => c !== color) // remove
+        : [...prev, color]; // add
+    });
   };
 
   return (
@@ -1214,6 +1234,46 @@ const Forms = (props) => {
                         onInput={(e) => e.target.setCustomValidity("")}
                       />
                     </div>
+                    {props.title !== "Sign Yourself" && (
+                      <div className="text-xs mt-3">
+                        <label htmlFor="penColors">
+                          {t("pen-colors")}
+                          <a
+                            data-tooltip-id="pen-colors-tooltip"
+                            className="ml-1"
+                          >
+                            <sup>
+                              <i className="fa-light fa-question rounded-full border-[#33bbff] text-[#33bbff] text-[13px] border-[1px] py-[1.5px] px-[4px]"></i>
+                            </sup>
+                          </a>
+                          <Tooltip id="pen-colors-tooltip" className="z-[999]">
+                            <div className="max-w-[200px] md:max-w-[450px]">
+                              <p className="font-bold">{t("pen-colors")}</p>
+                              <div>{t("pen-colors-help")}</div>
+                            </div>
+                          </Tooltip>
+                        </label>
+                        <div className="ml-[7px] flex flex-col md:flex-row gap-[10px] mb-[0.7rem]">
+                          {pensList.map((color) => (
+                            <div
+                              key={color}
+                              className="flex flex-row gap-[5px] items-center"
+                            >
+                              <input
+                                className="mr-[2px] op-checkbox op-checkbox-xs"
+                                type="checkbox"
+                                name="penColors"
+                                checked={selectedColors.includes(color)}
+                                onChange={() => handleColorsChange(color)}
+                              />
+                              <div className="hover:underline underline-offset-2 cursor-default capitalize">
+                                {color}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>

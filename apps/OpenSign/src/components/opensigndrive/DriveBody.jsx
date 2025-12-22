@@ -56,9 +56,7 @@ function DriveBody(props) {
     setRename("");
     const trimmedValue = renameValue.trim();
     if (trimmedValue.length > 0) {
-      const updateName = {
-        Name: renameValue
-      };
+      const updateName = { Name: renameValue };
       const docId = data.objectId;
       const docData = props.pdfData;
       const updatedData = docData.map((item) => {
@@ -84,7 +82,7 @@ function DriveBody(props) {
           }
         );
       } catch (err) {
-        console.log("Err ", err);
+        console.error("Error in rename doc", err);
         props.setIsAlert({
           isShow: true,
           alertMessage: t("something-went-wrong-mssg")
@@ -160,9 +158,7 @@ function DriveBody(props) {
   const handleDeleteDocument = async (docData) => {
     setIsDeleteDoc({});
     const docId = docData.objectId;
-    const data = {
-      IsArchive: true
-    };
+    const data = { IsArchive: true };
 
     await axios
       .put(
@@ -184,7 +180,7 @@ function DriveBody(props) {
         }
       })
       .catch((err) => {
-        console.log("Err ", err);
+        console.error("Err in delete doc", err);
         props.setIsAlert({
           isShow: true,
           alertMessage: t("something-went-wrong-mssg")
@@ -218,16 +214,12 @@ function DriveBody(props) {
           }
         };
       } else {
-        updateData = {
-          Folder: { __op: "Delete" }
-        };
+        updateData = { Folder: { __op: "Delete" } };
       }
 
       await axios
         .put(
-          `${localStorage.getItem(
-            "baseUrl"
-          )}classes/contracts_Document/${updateDocId}`,
+          `${localStorage.getItem("baseUrl")}classes/contracts_Document/${updateDocId}`,
           updateData,
           {
             headers: {
@@ -248,7 +240,7 @@ function DriveBody(props) {
           }
         })
         .catch((err) => {
-          console.log("err", err);
+          console.error("err in move folder", err);
         });
 
       setIsOpenMoveModal(false);
@@ -296,7 +288,7 @@ function DriveBody(props) {
           props.setPdfData(updatedData);
         }
       } catch (err) {
-        console.log("Err ", err);
+        console.error("Err in delete folder", err);
         props.setIsAlert({
           isShow: true,
           alertMessage: t("something-went-wrong-mssg")

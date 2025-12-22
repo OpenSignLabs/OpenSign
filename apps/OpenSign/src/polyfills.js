@@ -1,4 +1,4 @@
-// below code is used to handle undefined Promise.withResolvers for safari
+// below code is used to handle undefined Promise.withResolvers for safari for react-pdf
 if (typeof Promise.withResolvers === "undefined") {
   Promise.withResolvers = function () {
     let resolve, reject;
