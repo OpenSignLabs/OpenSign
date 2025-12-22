@@ -13,6 +13,14 @@ import Alert from "../primitives/Alert";
 import Loader from "../primitives/Loader";
 import { useTranslation } from "react-i18next";
 import { sanitizeFileName } from "../utils";
+
+const COLOR_CLASS = {
+  blue: "text-blue-600",
+  red: "text-red-600",
+  black: "text-black",
+  white: "text-white"
+};
+
 const ManageSign = () => {
   const { t } = useTranslation();
   const [penColor, setPenColor] = useState("blue");
@@ -29,10 +37,12 @@ const ManageSign = () => {
   const [isInitials, setIsInitials] = useState(false);
   const [id, setId] = useState("");
   const [imgInitials, setImgInitials] = useState("");
+  const [stamp, setStamp] = useState();
   const canvasRef = useRef(null);
   const imageRef = useRef(null);
   const initailsRef = useRef(null);
   const imgInitialsRef = useRef(null);
+  const stampRef = useRef(null);
   useEffect(() => {
     fetchUserSign();
     // eslint-disable-next-line
@@ -62,6 +72,9 @@ const ManageSign = () => {
             // setInitials(res.Initials);
             setIsInitials(true);
             setImgInitials(res?.Initials);
+          }
+          if (res && res?.Stamp) {
+            setStamp(res?.Stamp);
           }
         } else {
           if (User?.get("name")) {
@@ -171,11 +184,24 @@ const ManageSign = () => {
       } else {
         initialsUrl = imgInitials;
       }
+      const isStampUrl = stamp?.includes("https") || stamp?.includes("http");
+
+      let stampFile;
+      if (stamp && !isStampUrl) {
+        stampFile = base64StringtoFile(stamp, `${replaceSpace}_stamp`);
+      }
+      let stampUrl;
+      if (stampFile && !isStampUrl) {
+        stampUrl = await uploadFile(stampFile);
+      } else {
+        stampUrl = stamp;
+      }
       if (imgUrl) {
         await saveEntry({
           name: signName,
           url: imgUrl,
-          initialsUrl: initialsUrl
+          initialsUrl: initialsUrl,
+          stampUrl: stampUrl
         });
       }
     }
@@ -232,7 +258,8 @@ const ManageSign = () => {
         userId: User,
         initials: obj.initialsUrl,
         id: id,
-        title: obj.name
+        title: obj.name,
+        stamp: obj?.stampUrl
       });
       setIsAlert({ type: "success", message: t("signature-saved-alert") });
       return res;
@@ -274,6 +301,28 @@ const ManageSign = () => {
       setIsValue(false);
     }
   };
+  const handleClearStamp = () => {
+    if (stampRef.current) {
+      stampRef.current.clear();
+    }
+    if (stampRef.current) {
+      stampRef.current.value = "";
+    }
+    setStamp("");
+    if (image) {
+      setIsValue(true);
+    }
+  };
+  const onStampChange = async (event) => {
+    if (event.target.files && event.target.files[0]) {
+      const file = event.target.files[0];
+      const base64Img = await toDataUrl(file);
+      setStamp(base64Img);
+      setIsValue(true);
+    } else {
+      setStamp("");
+    }
+  };
   return (
     <div className="relative h-full bg-base-100 text-base-content flex shadow-md rounded-box overflow-auto">
       {isLoader && (
@@ -287,9 +336,9 @@ const ManageSign = () => {
           <div className="text-[20px] font-semibold m-[10px] md:m-0 mb-2">
             {t("my-signature")}
           </div>
-          <div className="flex flex-col md:flex-row gap-0 md:gap-[12px]">
+          <div className="flex flex-col md:flex-row gap-2 md:gap-5">
             <div className="relative">
-              <span className="font-medium select-none flex mb-[10px] pl-[10px]">
+              <span className="font-medium select-none flex mb-[10px]">
                 {t("signature")}
               </span>
               <input
@@ -300,7 +349,7 @@ const ManageSign = () => {
                 ref={imageRef}
                 hidden
               />
-              <div className="relative">
+              <div>
                 {image ? (
                   <div className="mysignatureCanvas relative border-[2px] border-[#888] rounded-box overflow-hidden">
                     <img
@@ -323,23 +372,24 @@ const ManageSign = () => {
                     dotSize={1}
                   />
                 )}
-                <div className="penContainerDefault flex flex-row justify-between">
+                <div className="flex flex-row justify-between w-full">
                   <div>
                     {!image && (
-                      <div className="flex flex-row gap-1.5 m-[5px]">
-                        {allColor.map((data, key) => {
+                      <div className="flex flex-row gap-1 m-[5px]">
+                        {allColor.map((color, key) => {
+                          const selected = penColor === color;
                           return (
                             <i
                               key={key}
-                              onClick={() => setPenColor(allColor[key])}
-                              className={`border-b-[2px] ${key === 0 && penColor === "blue" ? "border-blue-600" : key === 1 && penColor === "red" ? "border-red-500" : key === 2 && penColor === "black" ? "border-black" : "border-white"} text-[${data}] text-[16px] fa-light fa-pen-nib`}
+                              onClick={() => setPenColor(color)}
+                              className={`${COLOR_CLASS[color] ?? ""} ${selected ? "border-current" : "border-white"} cursor-pointer border-b-[2px] pb-[2px] text-[16px] fa-light fa-pen-nib`}
                             ></i>
                           );
                         })}
                       </div>
                     )}
                   </div>
-                  <div className="flex flex-row gap-2 text-sm md:text-base mr-1">
+                  <div className="flex flex-row gap-2 text-sm pr-2">
                     <div
                       type="button"
                       className="op-link"
@@ -364,7 +414,8 @@ const ManageSign = () => {
                 )}
               </div>
             </div>
-            <div className="relative">
+
+            <div>
               <span className="font-medium select-none flex mb-[10px] pl-[10px]">
                 {t("initials")}
               </span>
@@ -396,26 +447,29 @@ const ManageSign = () => {
                     dotSize={1}
                   />
                 )}
-                <div className="flex flex-row justify-between w-[183px]">
+                <div
+                  className={`${isInitials ? "justify-between" : ""} flex flex-row gap-1`}
+                >
                   <div>
                     {!isInitials && (
-                      <div className="flex flex-row gap-1.5 m-[5px]">
-                        {allColor.map((data, key) => {
+                      <div className="flex flex-row gap-1 m-[5px]">
+                        {allColor.map((color, key) => {
+                          const selected = initialPen === color;
                           return (
                             <i
                               key={key}
-                              onClick={() => setInitialPen(allColor[key])}
-                              className={`border-b-[2px] ${key === 0 && initialPen === "blue" ? "border-blue-600" : key === 1 && initialPen === "red" ? "border-red-500" : key === 2 && initialPen === "black" ? "border-black" : "border-white"} text-[${data}] text-[16px] fa-light fa-pen-nib`}
+                              onClick={() => setInitialPen(color)}
+                              className={`${COLOR_CLASS[color] ?? ""} ${selected ? "border-current" : "border-white"} cursor-pointer border-b-[2px] pb-[2px] text-[16px] fa-light fa-pen-nib`}
                             ></i>
                           );
                         })}
                       </div>
                     )}
                   </div>
-                  <div className="flex flex-row gap-1">
+                  <div className="flex flex-row gap-1.5 text-sm">
                     <div
                       type="button"
-                      className="op-link text-sm md:text-base mr-1"
+                      className="op-link"
                       onClick={() => handleUploadInitials()}
                     >
                       {t("upload")}
@@ -423,13 +477,55 @@ const ManageSign = () => {
                     <div>
                       <div
                         type="button"
-                        className="op-link text-sm md:text-base mr-1"
+                        className="op-link"
                         onClick={() => handleClearInitials()}
                       >
                         {t("clear")}
                       </div>
                     </div>
                   </div>
+                </div>
+              </div>
+            </div>
+            <div>
+              <span className="font-medium select-none flex mb-[10px] pl-[10px]">
+                Stamp
+              </span>
+
+              <div
+                onClick={() => stampRef.current.click()}
+                className="mystampCanvas opensigndark:bg-[#1f2937] cursor-pointer border-[2px] opensigncss:border-[#888] opensigndark:border-[#4b5563] rounded-box flex flex-col overflow-hidden w-full h-full aspect-[5/2] justify-center items-center mr-2"
+              >
+                {stamp ? (
+                  <img
+                    alt="signature"
+                    src={stamp}
+                    className="w-full h-full object-contain"
+                  />
+                ) : (
+                  <>
+                    <input
+                      onChange={onStampChange}
+                      type="file"
+                      className="filetype"
+                      accept="image/png,image/jpeg"
+                      hidden
+                      ref={stampRef}
+                    />
+                    <i className="fa-light text-base-content fa-cloud-upload-alt text-[28px]"></i>
+                    <div className="text-[15px] text-base-content">
+                      {t("upload")}
+                    </div>
+                  </>
+                )}
+              </div>
+              <div className="flex justify-end pr-3">
+                <div
+                  type="button"
+                  className="op-link text-sm"
+                  onClick={() => handleClearStamp()}
+                >
+                  {t("clear")}
                 </div>
               </div>
             </div>

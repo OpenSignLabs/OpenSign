@@ -1,5 +1,5 @@
 export default async function saveSignature(request) {
-  const { signature, userId, initials, id, title } = request.params;
+  const { signature, userId, initials, id, title, stamp } = request.params;
 
   if (!userId) {
     throw new Parse.Error(Parse.Error.INVALID_QUERY, 'Missing userId parameter.');
@@ -18,6 +18,9 @@ export default async function saveSignature(request) {
     }
     if (signature) {
       signatureCls.set('ImageURL', signature);
+    }
+    if (stamp) {
+      signatureCls.set('Stamp', stamp);
     }
     if (title) {
       signatureCls.set('SignatureName', title);

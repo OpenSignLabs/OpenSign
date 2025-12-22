@@ -11,7 +11,7 @@ import axios from "axios";
 import Tooltip from "../primitives/Tooltip";
 import {
   getSecureUrl,
-  handleSendOTP,
+  handleSendOTP
 } from "../constant/Utils";
 import ModalUi from "../primitives/ModalUi";
 import Loader from "../primitives/Loader";

@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const sidebarSlice = createSlice({
   name: "sidebar",
-  initialState: { isOpen: true },
+  initialState: { isOpen: true, selectedMenu: true },
   reducers: {
     toggleSidebar: (state, action) => {
       if (typeof action.payload === "undefined") {
@@ -12,9 +12,12 @@ const sidebarSlice = createSlice({
         // payload provided → use it directly
         state.isOpen = action.payload;
       }
+    },
+    setSelectedMenu: (state, action) => {
+      state.selectedMenu = action.payload;
     }
   }
 });
 
-export const { toggleSidebar } = sidebarSlice.actions;
+export const { toggleSidebar, setSelectedMenu } = sidebarSlice.actions;
 export default sidebarSlice.reducer;

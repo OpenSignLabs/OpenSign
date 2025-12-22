@@ -114,6 +114,9 @@ export default async function saveAsTemplate(request) {
       if (_docRes?.Bcc?.length > 0) {
         templateCls.set('Bcc', _docRes?.Bcc);
       }
+      if (_docRes?.PenColors?.length > 0) {
+        templateCls.set('PenColors', _docRes?.PenColors);
+      }
       const res = await templateCls.save(null, { useMasterKey: true });
       return res;
     } else {

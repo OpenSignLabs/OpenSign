@@ -14,7 +14,8 @@ import {
   setDefaultSignImg,
   resetWidgetState,
   setPrefillImg,
-  setTypedSignFont
+  setTypedSignFont,
+  setMyStamp
 } from "../redux/reducers/widgetSlice";
 import {
   contractDocument,
@@ -155,12 +156,10 @@ function PdfRequestFiles(
   const [assignedWidgetId, setAssignedWidgetId] = useState([]);
   const [showSignPagenumber, setShowSignPagenumber] = useState([]);
   const [owner, setOwner] = useState({});
-  const [tenant, setTenant] = useState({});
   const [tenantMailTemplate, setTenantMailTemplate] = useState({
     body: "",
     subject: ""
   });
-  const [isOptionalDetails, setIsOptionalDetails] = useState(false);
   const isMobile = window.innerWidth < 767;
   let isGuestSignFlow = false;
   let sendmail;
@@ -245,7 +244,6 @@ function PdfRequestFiles(
         const filterSignTypes = signatureType?.filter(
           (x) => x.enabled === true
         );
-        setTenant(tenantDetails || {});
         if (tenantDetails?.RequestBody) {
           setTenantMailTemplate({
             body: tenantDetails?.RequestBody,
@@ -532,6 +530,7 @@ function PdfRequestFiles(
                 const initials = defaultSignRes?.res?.defaultInitial || "";
                 dispatch(setDefaultSignImg(sign));
                 dispatch(setMyInitial(initials));
+                dispatch(setMyStamp(defaultSignRes?.res?.defaultStamp));
               } else {
                 dispatch(setSaveSignCheckbox({ isVisible: true }));
               }
@@ -1103,7 +1102,7 @@ function PdfRequestFiles(
         ? t("signature-validate-alert", { minRequiredCount })
         : t("signature-validate-alert-2"),
       position: "top",
-      style: { fontSize: "13px" }
+      styles: { fontSize: "13px" }
     }
   ];
   //function for get pdf page details
@@ -1260,7 +1259,7 @@ function PdfRequestFiles(
           />
         ),
         position: "top",
-        style: { fontSize: "13px" }
+        styles: { fontSize: "13px" }
       },
       {
         selector: '[data-tut="reactourFirst"]',
@@ -1272,7 +1271,7 @@ function PdfRequestFiles(
           />
         ),
         position: "top",
-        style: { fontSize: "13px" }
+        styles: { fontSize: "13px" }
       },
       {
         selector: '[data-tut="pdfArea"]',
@@ -1284,7 +1283,7 @@ function PdfRequestFiles(
           />
         ),
         position: "top",
-        style: { fontSize: "13px" }
+        styles: { fontSize: "13px" }
       },
       {
         selector: '[data-tut="pdftools"]',
@@ -1296,7 +1295,7 @@ function PdfRequestFiles(
           />
         ),
         position: "top",
-        style: { fontSize: "13px" }
+        styles: { fontSize: "13px" }
       },
       {
         selector: '[data-tut="reactourFifth"]',
@@ -1308,7 +1307,7 @@ function PdfRequestFiles(
           />
         ),
         position: "top",
-        style: { fontSize: "13px" }
+        styles: { fontSize: "13px" }
       }
     ];
     const signedByStep = {
@@ -1321,7 +1320,7 @@ function PdfRequestFiles(
         />
       ),
       position: "top",
-      style: { fontSize: "13px" }
+      styles: { fontSize: "13px" }
     };
     //checking if signed by user component exist then add signed by tour step
     const signedBy =
@@ -1340,7 +1339,7 @@ function PdfRequestFiles(
         />
       ),
       position: "top",
-      style: { fontSize: "13px" }
+      styles: { fontSize: "13px" }
     };
     //checking if AllowModifications is true then add allow widgets panel tour step
     const allModifyWidgets = {
@@ -1353,7 +1352,7 @@ function PdfRequestFiles(
         />
       ),
       position: "top",
-      style: { fontSize: "13px" }
+      styles: { fontSize: "13px" }
     };
 
     //handle signed by panel index if signed by exist then 2 else 1 to add tour step
@@ -1823,6 +1822,7 @@ function PdfRequestFiles(
                   !alreadySign &&
                   requestSignTourFunction()}
                 <Tour
+                  key={`tour-min-required-${minRequiredCount || 0}`}
                   showNumber={false}
                   showNavigation={false}
                   showNavigationNumber={false}
@@ -2224,6 +2224,7 @@ function PdfRequestFiles(
               setUniqueId={setUniqueId}
               signatureTypes={signatureType}
               allowCellResize={false}
+              penColors={pdfDetails?.[0]?.PenColors}
             />
           )}
           <DownloadPdfZip

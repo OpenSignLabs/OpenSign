@@ -8,6 +8,8 @@ export default async function triggerEvent(request) {
   const contactId = request.params.contactId;
   const serverUrl = cloudServerUrl; //process.env.SERVER_URL;
   const appId = serverAppId;
+  const sessiontoken = request.headers?.sessiontoken;
+
   try {
     const docQuery = new Parse.Query('contracts_Document');
     docQuery.select(['Name', 'IsEnableOTP', 'SignedUrl', 'AuditTrail']);
@@ -17,13 +19,16 @@ export default async function triggerEvent(request) {
 
     let userId;
     if (isEnableOTP) {
-      const userRes = await axios.get(serverUrl + '/users/me', {
-        headers: {
-          'X-Parse-Application-Id': appId,
-          'X-Parse-Session-Token': request.headers['sessiontoken'],
-        },
-      });
-      userId = userRes.data && userRes.data.objectId;
+      let userId;
+      if (sessiontoken) {
+        const userRes = await axios.get(serverUrl + '/users/me', {
+          headers: {
+            'X-Parse-Application-Id': appId,
+            'X-Parse-Session-Token': sessiontoken,
+          },
+        });
+        userId = userRes.data && userRes.data.objectId;
+      }
       if (!userId) {
         return { message: 'User not found!' };
       }
@@ -58,7 +63,10 @@ export default async function triggerEvent(request) {
 
     return { message: 'event called!' };
   } catch (err) {
-    console.log(`Err in triggerEvent: ${err}`);
+    console.log(
+      `triggerEvent error: `,
+      err?.response?.data?.error || err?.message || 'Something went wrong!'
+    );
     return { message: 'Something went wrong!' };
   }
 }

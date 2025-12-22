@@ -13,7 +13,9 @@ export const saveToMySign = async (widget) => {
       const fileName =
         widget?.type === "signature"
           ? `${replaceSpace}__sign`
-          : `${replaceSpace}__initials`;
+          : widget?.type === "initials"
+            ? `${replaceSpace}__initials`
+            : `${replaceSpace}_stamp`;
       const file = base64StringtoFile(base64, fileName);
       const fileUrl = await uploadFile(file, User?.id);
       // below code is used to save or update default signature, initials, stamp
@@ -25,6 +27,8 @@ export const saveToMySign = async (widget) => {
         params.initials = fileUrl; // save initials image url
       } else if (widget?.type === "signature") {
         params.signature = fileUrl; // save signature image url
+      } else if (widget?.type === "stamp") {
+        params.stamp = fileUrl; // save stamp image url
       }
       const signRes = await Parse.Cloud.run("savesignature", params);
       return { base64File: base64, id: signRes?.id };
@@ -112,4 +116,22 @@ export const applyNumberFormulasToPages = (pages = []) => {
 
   // Return the cloned, updated pages
   return clonedPages;
+};
+
+export const getInitials = (name) => {
+  if (!name) return "";
+
+  // Trim and split by any amount of whitespace
+  const parts = name.trim().split(/\s+/);
+
+  // Only one word → return first letter of that word
+  if (parts.length === 1) {
+    return parts[0][0].toUpperCase();
+  }
+
+  // More than one word → take first and second words
+  const first = parts[0];
+  const second = parts[1];
+
+  return `${first[0].toUpperCase()} ${second[0].toUpperCase()}`;
 };

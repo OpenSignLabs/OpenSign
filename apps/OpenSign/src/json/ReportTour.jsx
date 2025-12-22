@@ -5,19 +5,19 @@ export const templateReportTour = [
     selector: "[data-tut=reactourFirst]",
     content: <Trans i18nKey="tour-mssg.report-1" />,
     position: "top",
-    style: { fontSize: "13px" }
+    styles: { fontSize: "11px" }
   },
   {
     selector: "[data-tut=reactourSecond]",
     content: <Trans i18nKey="tour-mssg.redirect" />,
     position: "top",
-    style: { fontSize: "13px" }
+    styles: { fontSize: "13px" }
   },
   {
     selector: "[data-tut=tourbulksend]",
     content: <Trans i18nKey="tour-mssg.bulksend" />,
     position: "top",
-    style: { fontSize: "13px" }
+    styles: { fontSize: "13px" }
   },
   {
     selector: "[data-tut=reactourThird]",
@@ -42,6 +42,6 @@ export const templateReportTour = [
       </Trans>
     ),
     position: "top",
-    style: { fontSize: "13px" }
+    styles: { fontSize: "13px" }
   }
 ];

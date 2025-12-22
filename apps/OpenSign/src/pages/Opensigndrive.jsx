@@ -20,7 +20,7 @@ const DriveBody = lazyWithRetry(
   () => import("../components/opensigndrive/DriveBody")
 );
 const dropdowncss =
-  "absolute right-0 py-2 text-[1rem] text-left bg-white border-[1px] border-gray-300 min-w-1 hover:bg-gray-300  rounded-[0.25rem] z-[800]";
+  "absolute right-0 py-2 text-[1rem] text-left bg-base-100 border-[1px] border-gray-300 min-w-1 rounded-[0.25rem] z-[800]";
 const AppLoader = () => {
   return (
     <div className="h-[100vh] flex justify-center items-center">
@@ -98,7 +98,7 @@ function Opensigndrive() {
         />
       ),
       position: "top",
-      style: { fontSize: "13px" }
+      styles: { fontSize: "13px" }
     },
     {
       selector: '[data-tut="reactourSecond"]',
@@ -109,7 +109,7 @@ function Opensigndrive() {
         />
       ),
       position: "top",
-      style: { fontSize: "13px" }
+      styles: { fontSize: "13px" }
     },
     {
       selector: '[data-tut="reactourThird"]',
@@ -120,7 +120,7 @@ function Opensigndrive() {
         />
       ),
       position: "top",
-      style: { fontSize: "13px" }
+      styles: { fontSize: "13px" }
     },
     {
       selector: '[data-tut="reactourForth"]',
@@ -131,7 +131,7 @@ function Opensigndrive() {
         />
       ),
       position: "top",
-      style: { fontSize: "13px" }
+      styles: { fontSize: "13px" }
     }
   ];
   const getDetails = async () => {
@@ -161,7 +161,7 @@ function Opensigndrive() {
               />
             ),
             position: "bottom",
-            style: { fontSize: "13px" }
+            styles: { fontSize: "13px" }
           },
           {
             selector: '[data-tut="reactourSixth"]',
@@ -172,7 +172,7 @@ function Opensigndrive() {
               />
             ),
             position: "bottom",
-            style: { fontSize: "13px" }
+            styles: { fontSize: "13px" }
           },
           {
             selector: '[data-tut="reactourSeventh"]',
@@ -183,7 +183,7 @@ function Opensigndrive() {
               />
             ),
             position: "bottom",
-            style: { fontSize: "13px" }
+            styles: { fontSize: "13px" }
           }
         ];
         let newTour = [...tourConfigs, ...addMoreTour];
@@ -688,7 +688,7 @@ function Opensigndrive() {
               </div>
               {/* Mobile search toggle */}
               <button
-                className="md:hidden p-2 flex justify-center items-center focus:outline-none rounded-md hover:bg-gray-200 text-[18px]"
+                className="md:hidden p-2 flex justify-center items-center focus:outline-none rounded-md hover:bg-base-300 text-[18px]"
                 aria-label="Search"
                 onClick={() => setMobileSearchOpen((open) => !open)}
               >
@@ -699,7 +699,7 @@ function Opensigndrive() {
               </button>
               <div
                 id="folder-menu"
-                className={`${isOptions ? "dropdown show dropDownStyle" : "dropdown"} hidden md:block cursor-pointer hover:bg-gray-200 p-2 rounded-md`}
+                className={`${isOptions ? "dropdown show dropDownStyle" : "dropdown"} hidden md:block cursor-pointer hover:bg-base-300 p-2 rounded-md`}
                 onClick={handleFolderOptions}
               >
                 <div data-tut="reactourSecond">
@@ -749,7 +749,7 @@ function Opensigndrive() {
               >
                 <div
                   data-tut="reactourThird"
-                  className="cursor-pointer flex flex-row items-center justify-center p-2 hover:bg-gray-200 rounded-md"
+                  className="cursor-pointer flex flex-row items-center justify-center p-2 hover:bg-base-300 rounded-md"
                   data-toggle="dropdown"
                 >
                   <i
@@ -767,9 +767,7 @@ function Opensigndrive() {
                   </span>
                 </div>
                 <div
-                  className={
-                    isShowSort ? "dropdown-menu show" : "dropdown-menu"
-                  }
+                  className={`${isShowSort ? "dropdown-menu show" : "dropdown-menu"} bg-base-100 border-[1px] border-gray-300`}
                   aria-labelledby="dropdownMenuButton"
                   aria-expanded={isShowSort ? "true" : "false"}
                 >
@@ -817,7 +815,7 @@ function Opensigndrive() {
                 </div>
               </div>
               <div
-                className="cursor-pointer p-2 hover:bg-gray-200 rounded-md flex justify-center items-center"
+                className="cursor-pointer p-2 hover:bg-base-300 rounded-md flex justify-center items-center"
                 data-tut="reactourForth"
                 onClick={handleViewOption}
               >
@@ -833,7 +831,7 @@ function Opensigndrive() {
                 onClick={() => setIsOptions(!isOptions)}
               >
                 <div
-                  className="p-3 flex items-center justify-center cursor-pointer rounded-md hover:bg-gray-200"
+                  className="p-3 flex items-center justify-center cursor-pointer rounded-md hover:bg-base-300"
                   data-tut="reactourSecond"
                 >
                   <i

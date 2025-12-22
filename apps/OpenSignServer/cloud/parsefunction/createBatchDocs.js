@@ -101,11 +101,7 @@ async function sendMail(document, publicUrl) {
 }
 async function batchQuery(userId, Documents, Ip, parseConfig, type, publicUrl) {
   const extCls = new Parse.Query('contracts_Users');
-  extCls.equalTo('UserId', {
-    __type: 'Pointer',
-    className: '_User',
-    objectId: userId,
-  });
+  extCls.equalTo('UserId', { __type: 'Pointer', className: '_User', objectId: userId });
   const resExt = await extCls.first({ useMasterKey: true });
   if (resExt) {
     const _resExt = JSON.parse(JSON.stringify(resExt));
@@ -189,6 +185,7 @@ async function batchQuery(userId, Documents, Ip, parseConfig, type, publicUrl) {
                   },
                 }
               : {}),
+            ...(x?.PenColors?.length > 0 ? { PenColors: x?.PenColors } : {}),
           },
         };
       });

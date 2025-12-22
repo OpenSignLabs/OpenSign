@@ -2,8 +2,12 @@ import { useEffect, useState } from "react";
 import Loader from "../../primitives/Loader";
 import { useTranslation } from "react-i18next";
 import Parse from "parse";
+import { useDispatch } from "react-redux";
+import { sessionStatus } from "../../redux/reducers/userReducer";
+
 const EditContactForm = (props) => {
   const { t } = useTranslation();
+  const dispatch = useDispatch();
   const [isLoader, setIsLoader] = useState(false);
   const [formData, setFormData] = useState({
     Name: "",
@@ -30,39 +34,49 @@ const EditContactForm = (props) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     e.stopPropagation();
-    if (props.handleEditContact) {
-      try {
-        setIsLoader(true);
-        const params = {
-          contactId: props.contact.objectId,
-          name: formData.Name,
-          email: formData.Email,
-          phone: formData?.Phone,
-          company: formData?.Company,
-          jobTitle: formData?.JobTitle,
-          tenantId: localStorage.getItem("TenantId")
-        };
-        const res = await Parse.Cloud.run("editcontact", params);
-        const updateContact = {
-          ...res,
-          Name: formData.Name,
-          Email: formData.Email,
-          Phone: formData?.Phone,
-          Company: formData?.Company,
-          JobTitle: formData?.JobTitle
-        };
-        props.handleEditContact(updateContact);
-      } catch (err) {
-        console.log("err in edit contact ", err);
-        if (err.code === 137) {
-          alert(t("contact-already-exists"));
-        } else {
-          alert(t("something-went-wrong-mssg"));
+    try {
+      const sessionToken = Parse.User?.current()?.getSessionToken();
+      if (localStorage.getItem("TenantId") && sessionToken) {
+        if (props.handleEditContact) {
+          try {
+            setIsLoader(true);
+            const params = {
+              contactId: props.contact.objectId,
+              name: formData.Name,
+              email: formData.Email,
+              phone: formData?.Phone,
+              company: formData?.Company,
+              jobTitle: formData?.JobTitle,
+              tenantId: localStorage.getItem("TenantId")
+            };
+            const res = await Parse.Cloud.run("editcontact", params);
+            const updateContact = {
+              ...res,
+              Name: formData.Name,
+              Email: formData.Email,
+              Phone: formData?.Phone,
+              Company: formData?.Company,
+              JobTitle: formData?.JobTitle
+            };
+            props.handleEditContact(updateContact);
+          } catch (err) {
+            console.log("err in edit contact ", err);
+            if (err.code === 137) {
+              alert(t("contact-already-exists"));
+            } else {
+              alert(t("something-went-wrong-mssg"));
+            }
+          } finally {
+            setIsLoader(false);
+            props.handleClose && props.handleClose();
+          }
         }
-      } finally {
-        setIsLoader(false);
-        props.handleClose && props.handleClose();
+      } else {
+        dispatch(sessionStatus(false));
       }
+    } catch (err) {
+      console.error("invalid session or missing tenantId ", err);
+      dispatch(sessionStatus(false));
     }
   };
   return (

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
 function DefaultSignature(props) {
@@ -105,9 +105,7 @@ function DefaultSignature(props) {
         </button>
         {!props.isDefault && (
           <div className="absolute bg-black/70 text-white w-full h-full flex items-center justify-center text-[11px] cursor-default">
-            <span className="-rotate-45">
-              Document creator has disabled this option
-            </span>
+            <span className="-rotate-45">{t("option-disabled-by-owner")}</span>
           </div>
         )}
       </div>
