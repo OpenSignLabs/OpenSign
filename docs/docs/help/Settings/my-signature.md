@@ -29,6 +29,12 @@ After you have drawn your signature and initials or uploaded your signature imag
 
 Once saved, these can be applied with a single click whenever you need to sign a document within the OpenSign application, streamlining your workflow and ensuring consistency in your document signing process.
 
+## Uploading a Stamp Image
+
+Click the Upload Image button next to the Stamp option to upload your stamp image. Once uploaded, the image will appear in the stamp image box and is ready to be saved. The uploaded stamp will be displayed during the document signing process.
+
+<img width="820" alt="upload stamp" src="https://github.com/user-attachments/assets/232e4dfd-d305-4b62-ba69-668225287efc"></img>
+
 ## Getting Started
 **try OpenSign on cloud** at **[OpenSignLabs](https://app.opensignlabs.com)**.
 
