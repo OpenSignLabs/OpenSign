@@ -5,7 +5,8 @@ export default async function updatePreferences(request) {
   const SignatureType = request.params.SignatureType || [];
   const NotifyOnSignatures = request.params.NotifyOnSignatures;
   const Timezone = request.params.Timezone;
-  if (SignatureType?.length > 0 || NotifyOnSignatures !== undefined || Timezone) {
+  const Theme = request.params.Theme;
+  if (SignatureType?.length > 0 || NotifyOnSignatures !== undefined || Timezone || Theme) {
     try {
       const orgQuery = new Parse.Query('contracts_Users');
       orgQuery.equalTo('UserId', {
@@ -59,6 +60,9 @@ export default async function updatePreferences(request) {
         }
         if (request.params.DownloadFilenameFormat) {
           newOrg.set('DownloadFilenameFormat', request.params.DownloadFilenameFormat);
+        }
+        if (request.params.Theme) {
+          newOrg.set('Theme', request.params.Theme);
         }
         const updateUserRes = await newOrg.save(null, { useMasterKey: true });
         if (updateUserRes) {
