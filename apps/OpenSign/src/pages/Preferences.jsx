@@ -43,6 +43,7 @@ const Preferences = () => {
   const [isLTVEnabled, setIsLTVEnabled] = useState(false);
   const [fileNameFormat, setFileNameFormat] = useState("DOCNAME");
   const [tenantInfo, setTenantInfo] = useState({});
+  const [theme, setTheme] = useState("light");
 
   useEffect(() => {
     fetchSignType();
@@ -121,6 +122,7 @@ const Preferences = () => {
         const downloadFilenameFormat =
           _getUser?.DownloadFilenameFormat || "DOCNAME";
         setFileNameFormat(downloadFilenameFormat);
+        setTheme(_getUser?.Theme || "light");
       }
     } catch (err) {
       console.error("Error while getting user details: ", err);
@@ -187,6 +189,7 @@ const Preferences = () => {
           Is12HourTime: is12HourTime,
           IsLTVEnabled: isLTVEnabled,
           DownloadFilenameFormat: fileNameFormat,
+          Theme: theme
         };
         const updateRes = await Parse.Cloud.run("updatepreferences", params);
         if (updateRes) {
@@ -201,6 +204,7 @@ const Preferences = () => {
             extUser.DateFormat = dateFormat;
             extUser.Is12HourTime = is12HourTime;
             extUser.DownloadFilenameFormat = fileNameFormat;
+            extUser.Theme = theme;
             const _extUser = JSON.parse(JSON.stringify(extUser));
             localStorage.setItem("Extand_Class", JSON.stringify([_extUser]));
           }
@@ -603,6 +607,59 @@ const Preferences = () => {
                           fileNameFormat={fileNameFormat}
                           setFileNameFormat={setFileNameFormat}
                         />
+                      </div>
+
+                      <div className="mb-6">
+                        <label className="text-[14px] mb-[0.7rem] font-medium">
+                          {t("theme")}
+                          <a data-tooltip-id="theme-tooltip" className="ml-1">
+                            <sup>
+                              <i className="fa-light fa-question rounded-full border-[#33bbff] text-[#33bbff] text-[13px] border-[1px] py-[1.5px] px-[4px]"></i>
+                            </sup>
+                          </a>
+                          <ReactTooltip id="theme-tooltip" className="z-[999]">
+                            <div className="max-w-[200px] md:max-w-[450px]">
+                              <p className="font-bold">{t("theme")}</p>
+                              <p>{t("theme-help", "Choose your preferred color theme")}</p>
+                            </div>
+                          </ReactTooltip>
+                        </label>
+                        <div className="flex flex-row gap-6">
+                          <div className="flex items-center gap-2">
+                            <input
+                              id="theme-light"
+                              type="radio"
+                              value="light"
+                              className="op-radio op-radio-xs"
+                              name="Theme"
+                              checked={theme === "light"}
+                              onChange={(e) => setTheme(e.target.value)}
+                            />
+                            <label
+                              htmlFor="theme-light"
+                              className="text-sm text-base-content cursor-pointer mb-0"
+                            >
+                              {t("light")}
+                            </label>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <input
+                              id="theme-dark"
+                              type="radio"
+                              value="dark"
+                              className="op-radio op-radio-xs"
+                              name="Theme"
+                              checked={theme === "dark"}
+                              onChange={(e) => setTheme(e.target.value)}
+                            />
+                            <label
+                              htmlFor="theme-dark"
+                              className="text-sm text-base-content cursor-pointer mb-0"
+                            >
+                              {t("dark")}
+                            </label>
+                          </div>
+                        </div>
                       </div>
                     </div>
                     {/* Save Button - Full Width */}
