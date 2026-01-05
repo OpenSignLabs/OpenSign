@@ -1792,9 +1792,7 @@ paths:
           "hide_text_with_asterisks": false
         }
         ```
-        
-        **Prefill Widgets:** Prefill widgets are elements that are inserted into a document before it is shared with a user. Only the document creator has permission to add them.
-        
+                
         11. **cells**
         ```
         {
@@ -1809,6 +1807,8 @@ paths:
 
         **response:** Provide the value that should replace the existing response.
         
+        **Prefill Widgets:** Prefill widgets are elements that are inserted into a document before it is shared with a user. Only the document creator has permission to add them.
+
         **List of widgets supported in Prefill**
         1. **textbox**
         ```
