@@ -478,7 +478,8 @@ paths:
             "color": "black",
             "fontsize": 12,
             "min_date": "",
-            "max_date": ""
+            "max_date": "",
+            "signing_date": false
           }
         }
         ```
@@ -497,6 +498,7 @@ paths:
           - "dd.mm.yyyy".
         - **min_date:**  Provide the minimum restriction date. The date must be in **YYYY-MM-DD** format.
         - **max_date:** Provide the maximum restriction date. The date must be in **YYYY-MM-DD** format.
+        - **signing_date**: If signing_date is set to true, the signing date is shown to the signer during signing. You may set either signing_date or default, but not both. Using both is not supported.
         
         9. **textbox**
         ```
@@ -814,7 +816,9 @@ paths:
             "color": "black",
             "fontsize": 12,
             "min_date": "",
-            "max_date": ""
+            "max_date": "",
+            "readonly": false,
+            "signing_date": false
           }
         }
         ```
@@ -833,6 +837,7 @@ paths:
           - "dd.mm.yyyy".
         - **min_date:**  Provide the minimum restriction date. The date must be in **YYYY-MM-DD** format.
         - **max_date:** Provide the maximum restriction date. The date must be in **YYYY-MM-DD** format.
+        - **signing_date**: If signing_date is set to true, the signing date is shown to the signer during signing. You may set either signing_date or default, but not both. Using both is not supported.
 
         9. **textbox**
         ```
@@ -1015,8 +1020,6 @@ paths:
 
         **Prefill Widgets:** Prefill widgets are elements that are inserted into a document **before** it is shared with a user. Only the document creator has permission to add them.
         
-        **Note:** Responses for prefill widgets are **required**.
-        
         **List of widgets supported in Prefill**
         1. **textbox**
         ```
@@ -1028,6 +1031,7 @@ paths:
           "w": 150,
           "h": 20,
           "options": {
+           "required": true,
            "name": "textbox",
            "response": "joe",
            "color": "red",
@@ -1048,6 +1052,7 @@ paths:
           "w": 114,
           "h": 21,
           "options": {
+            "required": true,
             "name": "date",
             "response": "04/15/2024",
             "format": "mm/dd/yyyy",
@@ -1081,6 +1086,7 @@ paths:
           "w": 114,
           "h": 21,
           "options": {
+            "required": true,
             "name": "checkbox",
             "values": ["male", "female", "other"],
             "response": ["male", "female"],
@@ -1105,6 +1111,7 @@ paths:
           "w": 114,
           "h": 21,
           "options": {
+            "required": true,
             "name": "radio button",
             "values": ["male", "female", "other"],
             "response": "male",
@@ -1129,6 +1136,7 @@ paths:
           "w": 92,
           "h": 55,
           "options": {
+            "required": true,
             "name": "image",
             "response":"iVBORw0KGgoAAAANSUhEUgAAAmoAAA..."
           }
@@ -1327,7 +1335,9 @@ paths:
             "color": "black",
             "fontsize": 12,
             "min_date": "",
-            "max_date": ""
+            "max_date": "",
+            "readonly": false,
+            "signing_date": false
           }
         }
         ```
@@ -1345,7 +1355,8 @@ paths:
           - "dd/mm/yyyy",
           - "dd.mm.yyyy".
         - **min_date:**  Provide the minimum restriction date. The date must be in **YYYY-MM-DD** format.
-        - **max_date:** Provide the maximum restriction date. The date must be in **YYYY-MM-DD** format.  
+        - **max_date:** Provide the maximum restriction date. The date must be in **YYYY-MM-DD** format.
+        - **signing_date**: If signing_date is set to true, the signing date is shown to the signer during signing. You may set either signing_date or default, but not both. Using both is not supported.
 
         9. **textbox**
         ```
@@ -1528,8 +1539,6 @@ paths:
 
         **Prefill Widgets:** Prefill widgets are elements that are inserted into a document **before** it is shared with a user. Only the document creator has permission to add them.
         
-        **Note:** Responses for prefill widgets are **required**.
-        
         **List of widgets supported in Prefill**
         1. **textbox**
         ```
@@ -1541,6 +1550,7 @@ paths:
           "w": 150,
           "h": 20,
           "options": {
+           "required": true,
            "name": "textbox",
            "response": "joe",
            "color": "red",
@@ -1561,6 +1571,7 @@ paths:
           "w": 114,
           "h": 21,
           "options": {
+            "required": true,
             "name": "date",
             "response": "04/15/2024",
             "format": "mm/dd/yyyy",
@@ -1594,6 +1605,7 @@ paths:
           "w": 114,
           "h": 21,
           "options": {
+            "required": true,
             "name": "checkbox",
             "values": ["male", "female", "other"],
             "response": ["male", "female"],
@@ -1618,6 +1630,7 @@ paths:
           "w": 114,
           "h": 21,
           "options": {
+            "required": true,
             "name": "radio button",
             "values": ["male", "female", "other"],
             "response": "male",
@@ -1642,6 +1655,7 @@ paths:
           "w": 92,
           "h": 55,
           "options": {
+            "required": true,
             "name": "image",
             "response":"iVBORw0KGgoAAAANSUhEUgAAAmoAAA..."
           }
@@ -1737,11 +1751,14 @@ paths:
           "readonly": false,
           "default": "11-05-2025",
           "min_date": "",
-          "max_date": ""
+          "max_date": "",
+          "readonly": false,
+          "signing_date": false
         }
         ```
         - **min_date:**  Provide the minimum restriction date. The date must be in **YYYY-MM-DD** format.
         - **max_date:** Provide the maximum restriction date. The date must be in **YYYY-MM-DD** format.
+        - **signing_date**: If signing_date is set to true, the signing date is shown to the signer during signing. You may set either signing_date or default, but not both. Using both is not supported.
 
         6. **textbox**
         ```
@@ -2486,7 +2503,9 @@ paths:
             "color": "black",
             "fontsize": 12,
             "min_date": "",
-            "max_date": ""
+            "max_date": "",
+            "readonly": false,
+            "signing_date": false
           }
         }
         ```
@@ -2504,7 +2523,8 @@ paths:
           - "dd/mm/yyyy",
           - "dd.mm.yyyy".
         - **min_date:**  Provide the minimum restriction date. The date must be in **YYYY-MM-DD** format.
-        - **max_date:** Provide the maximum restriction date. The date must be in **YYYY-MM-DD** format.  
+        - **max_date:** Provide the maximum restriction date. The date must be in **YYYY-MM-DD** format.
+        - **signing_date**: If signing_date is set to true, the signing date is shown to the signer during signing. You may set either signing_date or default, but not both. Using both is not supported.
 
         9. **textbox**
         ```
@@ -2687,8 +2707,6 @@ paths:
 
         **Prefill Widgets:** Prefill widgets are elements that are inserted into a document **before** it is shared with a user. Only the document creator has permission to add them.
         
-        **Note:** Responses for prefill widgets are **required**.
-        
         **List of widgets supported in Prefill**
         1. **textbox**
         ```
@@ -2700,6 +2718,7 @@ paths:
           "w": 150,
           "h": 20,
           "options": {
+           "required": true,
            "name": "textbox",
            "response": "joe",
            "color": "red",
@@ -2720,6 +2739,7 @@ paths:
           "w": 114,
           "h": 21,
           "options": {
+            "required": true,
             "name": "date",
             "response": "04/15/2024",
             "format": "mm/dd/yyyy",
@@ -2753,6 +2773,7 @@ paths:
           "w": 114,
           "h": 21,
           "options": {
+            "required": true,
             "name": "checkbox",
             "values": ["male", "female", "other"],
             "response": ["male", "female"],
@@ -2777,6 +2798,7 @@ paths:
           "w": 114,
           "h": 21,
           "options": {
+            "required": true,
             "name": "radio button",
             "values": ["male", "female", "other"],
             "response": "male",
@@ -2801,6 +2823,7 @@ paths:
           "w": 92,
           "h": 55,
           "options": {
+            "required": true,
             "name": "image",
             "response":"iVBORw0KGgoAAAANSUhEUgAAAmoAAA..."
           }
@@ -2817,6 +2840,7 @@ paths:
           "w": 114,
           "h": 21,
           "options": {
+            "required": true,
             "name": "dropdown",
             "values": ["male", "female", "other"],
             "response": "female",
@@ -3020,7 +3044,9 @@ paths:
             "color": "black",
             "fontsize": 12,
             "min_date": "",
-            "max_date": ""
+            "max_date": "",
+            "readonly": false,
+            "signing_date": false
           }
         }
         ```
@@ -3038,7 +3064,8 @@ paths:
           - "dd/mm/yyyy",
           - "dd.mm.yyyy".
         - **min_date:**  Provide the minimum restriction date. The date must be in **YYYY-MM-DD** format.
-        - **max_date:** Provide the maximum restriction date. The date must be in **YYYY-MM-DD** format.  
+        - **max_date:** Provide the maximum restriction date. The date must be in **YYYY-MM-DD** format.
+        - **signing_date**: If signing_date is set to true, the signing date is shown to the signer during signing. You may set either signing_date or default, but not both. Using both is not supported.
 
         9. **textbox**
         ```
@@ -3222,8 +3249,6 @@ paths:
  
         **Prefill Widgets:** Prefill widgets are elements that are inserted into a document **before** it is shared with a user. Only the document creator has permission to add them.
         
-        **Note:** Responses for prefill widgets are **required**.
-        
         **List of widgets supported in Prefill**
         1. **textbox**
         ```
@@ -3235,6 +3260,7 @@ paths:
           "w": 150,
           "h": 20,
           "options": {
+           "required": true,
            "name": "textbox",
            "response": "joe",
            "color": "red",
@@ -3255,6 +3281,7 @@ paths:
           "w": 114,
           "h": 21,
           "options": {
+            "required": true,
             "name": "date",
             "response": "04/15/2024",
             "format": "mm/dd/yyyy",
@@ -3288,6 +3315,7 @@ paths:
           "w": 114,
           "h": 21,
           "options": {
+            "required": true,
             "name": "checkbox",
             "values": ["male", "female", "other"],
             "response": ["male", "female"],
@@ -3312,6 +3340,7 @@ paths:
           "w": 114,
           "h": 21,
           "options": {
+            "required": true,
             "name": "radio button",
             "values": ["male", "female", "other"],
             "response": "male",
@@ -3336,6 +3365,7 @@ paths:
           "w": 92,
           "h": 55,
           "options": {
+            "required": true,
             "name": "image",
             "response":"iVBORw0KGgoAAAANSUhEUgAAAmoAAA..."
           }
@@ -3352,6 +3382,7 @@ paths:
           "w": 114,
           "h": 21,
           "options": {
+            "required": true,
             "name": "dropdown",
             "values": ["male", "female", "other"],
             "response": "female",
@@ -3554,7 +3585,9 @@ paths:
             "color": "black",
             "fontsize": 12,
             "min_date": "",
-            "max_date": ""
+            "max_date": "",
+            "readonly": false,
+            "signing_date": false
           }
         }
         ```
@@ -3572,7 +3605,8 @@ paths:
           - "dd/mm/yyyy",
           - "dd.mm.yyyy".
         - **min_date:**  Provide the minimum restriction date. The date must be in **YYYY-MM-DD** format.
-        - **max_date:** Provide the maximum restriction date. The date must be in **YYYY-MM-DD** format.  
+        - **max_date:** Provide the maximum restriction date. The date must be in **YYYY-MM-DD** format.
+        - **signing_date**: If signing_date is set to true, the signing date is shown to the signer during signing. You may set either signing_date or default, but not both. Using both is not supported.
 
         9. **textbox**
         ```
@@ -3755,8 +3789,6 @@ paths:
         
         **Prefill Widgets:** Prefill widgets are elements that are inserted into a document **before** it is shared with a user. Only the document creator has permission to add them.
         
-        **Note:** Responses for prefill widgets are **required**.
-        
         **List of widgets supported in Prefill**
         1. **textbox**
         ```
@@ -3768,6 +3800,7 @@ paths:
           "w": 150,
           "h": 20,
           "options": {
+           "required": true,
            "name": "textbox",
            "response": "joe",
            "color": "red",
@@ -3788,6 +3821,7 @@ paths:
           "w": 114,
           "h": 21,
           "options": {
+            "required": true,
             "name": "date",
             "response": "04/15/2024",
             "format": "mm/dd/yyyy",
@@ -3821,6 +3855,7 @@ paths:
           "w": 114,
           "h": 21,
           "options": {
+            "required": true,
             "name": "checkbox",
             "values": ["male", "female", "other"],
             "response": ["male", "female"],
@@ -3845,6 +3880,7 @@ paths:
           "w": 114,
           "h": 21,
           "options": {
+            "required": true,
             "name": "radio button",
             "values": ["male", "female", "other"],
             "response": "male",
@@ -3869,6 +3905,7 @@ paths:
           "w": 92,
           "h": 55,
           "options": {
+            "required": true,
             "name": "image",
             "response":"iVBORw0KGgoAAAANSUhEUgAAAmoAAA..."
           }
@@ -3885,6 +3922,7 @@ paths:
           "w": 114,
           "h": 21,
           "options": {
+            "required": true,
             "name": "dropdown",
             "values": ["male", "female", "other"],
             "response": "female",
