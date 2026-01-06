@@ -1752,7 +1752,6 @@ paths:
           "default": "11-05-2025",
           "min_date": "",
           "max_date": "",
-          "readonly": false,
           "signing_date": false
         }
         ```
