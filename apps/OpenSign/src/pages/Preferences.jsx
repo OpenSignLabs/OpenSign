@@ -6,7 +6,6 @@ import Tooltip from "../primitives/Tooltip";
 import {
   getTenantDetails,
   handleSignatureType,
-  openInNewTab,
   signatureTypes,
   usertimezone
 } from "../constant/Utils";
@@ -16,15 +15,25 @@ import TimezoneSelector from "../components/preferences/TimezoneSelector";
 import DateFormatSelector from "../components/preferences/DateFormatSelector";
 import FilenameFormatSelector from "../components/preferences/FilenameFormatSelector";
 import axios from "axios";
-import MailTemplateEditor from "../components/preferences/MailTemplateEditor";
+import { withSessionValidation } from "../utils";
+import { WidgetsTab, EmailTab } from "../components/preferences/tabs";
+import {
+  setUserInfo,
+  setTenantInfo,
+  setLoader,
+  setTopLoader,
+  setAlertInfo
+} from "../redux/reducers/userReducer";
+import { useDispatch, useSelector } from "react-redux";
 
 const Preferences = () => {
   const appName =
     "OpenSign™";
   const { t } = useTranslation();
-  const [isalert, setIsAlert] = useState({ type: "success", msg: "" });
-  const [isTopLoader, setIsTopLoader] = useState(false);
-  const [isLoader, setIsLoader] = useState(false);
+  const dispatch = useDispatch();
+  const { isLoader, isTopLoader, alertInfo } = useSelector(
+    (state) => state.user
+  );
   const [signatureType, setSignatureType] = useState([]);
   const [errMsg, setErrMsg] = useState("");
   const [isNotifyOnSignatures, setIsNotifyOnSignatures] = useState();
@@ -42,21 +51,28 @@ const Preferences = () => {
   const [is12HourTime, setIs12HourTime] = useState(false);
   const [isLTVEnabled, setIsLTVEnabled] = useState(false);
   const [fileNameFormat, setFileNameFormat] = useState("DOCNAME");
-  const [tenantInfo, setTenantInfo] = useState({});
 
   useEffect(() => {
     fetchSignType();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const fetchSignType = async () => {
-    setIsTopLoader(true);
+  const showAlert = (type, msg) => {
+    dispatch(setAlertInfo({ type, msg }));
+    setTimeout(() => {
+      dispatch(setAlertInfo({ type: "success", msg: "" }));
+    }, 2000);
+  };
+
+  const fetchSignType = withSessionValidation(async () => {
+    dispatch(setTopLoader(true));
     const EmailTab = [
       { name: "email", title: t("email"), icon: "fa-light fa-envelope" }
     ];
 
     const arr = [
       generaltab,
+      { name: "widgets", title: t("widgets"), icon: "fa-light fa-list" },
       ...EmailTab,
     ];
     setTab(arr);
@@ -67,7 +83,7 @@ const Preferences = () => {
         )
       );
       const tenantDetails = await getTenantDetails(user?.objectId);
-      setTenantInfo(tenantDetails);
+      dispatch(setTenantInfo(tenantDetails));
       const signatureType = tenantDetails?.SignatureType || [];
       const tenantSignTypes = signatureType?.filter((x) => x.enabled === true);
       const extUser = await axios.post(
@@ -81,68 +97,74 @@ const Preferences = () => {
           }
         }
       );
-      const getUser = extUser.data?.result;
-      if (getUser) {
-        const _getUser = JSON.parse(JSON.stringify(getUser));
-        setIsNotifyOnSignatures(
-          _getUser?.NotifyOnSignatures !== undefined
-            ? _getUser?.NotifyOnSignatures
-            : true
-        );
-        setTimezone(_getUser?.Timezone || usertimezone);
-        if (tenantSignTypes?.length > 0) {
-          const signatureType = _getUser?.SignatureType || signatureTypes;
-          const updatedSignatureType = await handleSignatureType(
-            tenantSignTypes,
-            signatureType
-          );
-          setSignatureType(updatedSignatureType);
-        } else {
-          const SignatureType = _getUser?.SignatureType || signatureTypes;
-          setSignatureType(SignatureType);
-        }
-        setSendinOrder(
-          _getUser?.SendinOrder !== undefined ? _getUser?.SendinOrder : true
-        );
-        setIsTourEnabled(
-          _getUser?.IsTourEnabled !== undefined ? _getUser?.IsTourEnabled : true
-        );
-        setDateFormat(
-          _getUser?.DateFormat !== undefined
-            ? _getUser?.DateFormat
-            : "MM/DD/YYYY"
-        );
-        setIs12HourTime(
-          _getUser?.Is12HourTime !== undefined ? _getUser?.Is12HourTime : false
-        );
-        setIsLTVEnabled(
-          _getUser?.IsLTVEnabled !== undefined ? _getUser?.IsLTVEnabled : false
-        );
-        const downloadFilenameFormat =
-          _getUser?.DownloadFilenameFormat || "DOCNAME";
-        setFileNameFormat(downloadFilenameFormat);
+      const getUser = extUser?.data?.result;
+      if (!getUser) {
+        setErrMsg(t("something-went-wrong-mssg"));
+        return;
       }
+      const _getUser = JSON.parse(JSON.stringify(getUser));
+      dispatch(setUserInfo(_getUser));
+      setIsNotifyOnSignatures(
+        _getUser?.NotifyOnSignatures !== undefined
+          ? _getUser?.NotifyOnSignatures
+          : true
+      );
+      setTimezone(_getUser?.Timezone || usertimezone);
+      if (tenantSignTypes?.length > 0) {
+        const signatureType = _getUser?.SignatureType || signatureTypes;
+        const updatedSignatureType = await handleSignatureType(
+          tenantSignTypes,
+          signatureType
+        );
+        setSignatureType(updatedSignatureType);
+      } else {
+        setSignatureType(_getUser?.SignatureType || signatureTypes);
+      }
+      setSendinOrder(
+        _getUser?.SendinOrder !== undefined ? _getUser?.SendinOrder : true
+      );
+      setIsTourEnabled(
+        _getUser?.IsTourEnabled !== undefined ? _getUser?.IsTourEnabled : true
+      );
+      setDateFormat(
+        _getUser?.DateFormat !== undefined ? _getUser?.DateFormat : "MM/DD/YYYY"
+      );
+      setIs12HourTime(
+        _getUser?.Is12HourTime !== undefined ? _getUser?.Is12HourTime : false
+      );
+      setIsLTVEnabled(
+        _getUser?.IsLTVEnabled !== undefined ? _getUser?.IsLTVEnabled : false
+      );
+      const downloadFilenameFormat =
+        _getUser?.DownloadFilenameFormat || "DOCNAME";
+      setFileNameFormat(downloadFilenameFormat);
     } catch (err) {
       console.error("Error while getting user details: ", err);
       setErrMsg(t("something-went-wrong-mssg"));
     } finally {
-      setIsTopLoader(false);
+      dispatch(setTopLoader(false));
     }
-  };
+  });
 
   // `handleCheckboxChange` is trigger when user enable/disable checkbox of respective type
   const handleCheckboxChange = (index) => {
-    // Create a copy of the signatureType array
-    const updatedSignatureType = [...signatureType];
-    // Toggle the enabled value for the clicked item
-    updatedSignatureType[index].enabled = !updatedSignatureType[index].enabled;
-    // Update the state with the modified array
-    setSignatureType(updatedSignatureType);
+    // // Create a copy of the signatureType array
+    // const updatedSignatureType = [...signatureType];
+    // // Toggle the enabled value for the clicked item
+    // updatedSignatureType[index].enabled = !updatedSignatureType[index].enabled;
+    // // Update the state with the modified array
+    // setSignatureType(updatedSignatureType);
+
+    setSignatureType((prev) =>
+      prev.map((item, i) =>
+        i === index ? { ...item, enabled: !item.enabled } : item
+      )
+    );
   };
 
   // `handleSave` is used save updated value signature type
-  const handleSave = async () => {
-    setIsLoader(true);
+  const handleSave = withSessionValidation(async () => {
+    dispatch(setLoader(true));
     const Timezone = timezone || usertimezone;
     if (
       signatureType.length > 0 ||
@@ -156,20 +178,12 @@ const Preferences = () => {
           enabledSignTypes?.length === 1 &&
           enabledSignTypes[0]?.name === "default";
         if (enabledSignTypes.length === 0) {
-          setIsAlert({
-            type: "danger",
-            msg: t("at-least-one-signature-type")
-          });
-          setIsLoader(false);
-          setTimeout(() => setIsAlert({ type: "success", msg: "" }), 2000);
+          showAlert("danger", t("at-least-one-signature-type"));
+          dispatch(setLoader(false));
           return;
         } else if (isDefaultSignTypeOnly) {
-          setIsAlert({
-            type: "danger",
-            msg: t("expect-default-one-signature-type")
-          });
-          setIsLoader(false);
-          setTimeout(() => setIsAlert({ type: "success", msg: "" }), 2000);
+          showAlert("danger", t("expect-default-one-signature-type"));
+          dispatch(setLoader(false));
           return;
         } else {
           params = { ...params, SignatureType: signatureType };
@@ -190,7 +204,7 @@ const Preferences = () => {
         };
         const updateRes = await Parse.Cloud.run("updatepreferences", params);
         if (updateRes) {
-          setIsAlert({ type: "success", msg: t("saved-successfully") });
+          showAlert("success", t("saved-successfully"));
           let extUser =
             localStorage.getItem("Extand_Class") &&
             JSON.parse(localStorage.getItem("Extand_Class"))?.[0];
@@ -207,13 +221,11 @@ const Preferences = () => {
         }
       } catch (err) {
         console.error("Error updating signature type: ", err);
-        setIsAlert({ type: "danger", msg: err.message });
+        showAlert("danger", err.message);
       }
-
-      setTimeout(() => setIsAlert({ type: "success", msg: "" }), 1500);
-      setIsLoader(false);
+      dispatch(setLoader(false));
     }
-  };
+  });
 
   // `handleNotifySignChange` is trigger when user change radio of notify on signatures
   const handleNotifySignChange = (value) => {
@@ -227,7 +239,7 @@ const Preferences = () => {
 
   return (
     <React.Fragment>
-      {isalert.msg && <Alert type={isalert.type}>{isalert.msg}</Alert>}
+      {alertInfo.msg && <Alert type={alertInfo.type}>{alertInfo.msg}</Alert>}
       {isTopLoader ? (
         <div className="flex justify-center items-center h-screen">
           <Loader />
@@ -261,20 +273,25 @@ const Preferences = () => {
                       onClick={() => setactiveTab(ind)}
                       key={ind}
                       role="tab"
-                      className={`${activeTab === ind ? "op-tab-active" : ""} op-tab text-xs md:text-base pb-2 md:pb-0 transition-all `}
+                      className={` op-tab text-xs md:text-base pb-2 md:pb-0 transition-all`}
                       aria-selected={activeTab === ind}
                       aria-controls={`panel-${tabData.title}`}
                     >
                       <i className={tabData.icon}></i>
-                      <span className="ml-1 md:ml-2">{tabData.title}</span>
+                      <span
+                        className={`${activeTab === ind ? "block" : "hidden"} md:block ml-1`}
+                        title={tabData?.title}
+                      >
+                        {tabData.title}
+                      </span>
                     </div>
                   ))}
                 </div>
               </div>
               <div
-                id="panel-general"
+                id={`panel-${activeTab}`}
                 className="px-6 pt-4 pb-6"
-                aria-labelledby="tab-general"
+                aria-labelledby={`tab-${activeTab}`}
                 role="tabpanel"
               >
                 {tabName(activeTab) === "general" && (
@@ -308,7 +325,9 @@ const Preferences = () => {
                               <div className="p-[5px] ml-2">
                                 <ol className="list-disc">
                                   <li>
-                                    <span className="font-bold">Draw: </span>
+                                    <span className="font-bold">
+                                      {t("draw")}:{" "}
+                                    </span>
                                     <span>
                                       {t("allowed-signature-types-help.l1")}
                                     </span>
@@ -320,7 +339,9 @@ const Preferences = () => {
                                     </span>
                                   </li>
                                   <li>
-                                    <span className="font-bold">Upload: </span>
+                                    <span className="font-bold">
+                                      {t("upload")}:{" "}
+                                    </span>
                                     <span>
                                       {t("allowed-signature-types-help.l3")}
                                     </span>
@@ -616,20 +637,8 @@ const Preferences = () => {
                     </div>
                   </div>
                 )}
-                {tabName(activeTab) === "email" && (
-                  <div className="flex flex-col mb-4">
-                      <MailTemplateEditor
-                        info={
-                              tenantInfo
-                        }
-                        tenantId={tenantInfo?.objectId}
-                      />
-                  </div>
-                )}
-                {tabName(activeTab) === "security" && (
-                  <>
-                  </>
-                )}
+                {tabName(activeTab) === "widgets" && <WidgetsTab />}
+                {tabName(activeTab) === "email" && <EmailTab />}
               </div>
             </div>
           )}

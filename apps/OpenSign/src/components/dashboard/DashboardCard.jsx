@@ -5,6 +5,7 @@ import getReplacedHashQuery from "../../constant/getReplacedHashQuery";
 import { useNavigate } from "react-router";
 import Tooltip from "../../primitives/Tooltip";
 import { useTranslation } from "react-i18next";
+import { withSessionValidation } from "../../utils";
 
 const DashboardCard = (props) => {
   const navigate = useNavigate();
@@ -14,7 +15,7 @@ const DashboardCard = (props) => {
   const [response, setresponse] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const renderData = async () => {
+  const renderData = withSessionValidation(async () => {
     if (props.Data.queryType === "function") {
       setLoading(true);
       try {
@@ -186,9 +187,9 @@ const DashboardCard = (props) => {
         setLoading(false);
       }
     }
-  };
+  });
 
-  const filterRender = async () => {
+  const filterRender = withSessionValidation(async () => {
     if (props.FilterData && props.FilterData.queryType === "function") {
       setLoading(true);
       try {
@@ -266,7 +267,7 @@ const DashboardCard = (props) => {
         setLoading(false);
       }
     }
-  };
+  });
 
   const setFormat = (val) => {
     switch (props.Format) {

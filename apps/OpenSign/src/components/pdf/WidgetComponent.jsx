@@ -8,7 +8,8 @@ import {
   textInputWidget,
   cellsWidget,
   textWidget,
-  widgets
+  widgets,
+  drawWidget
 } from "../../constant/Utils";
 import { useTranslation } from "react-i18next";  
 import { useWidgetDrag } from "../../hook/useWidgetDrag";
@@ -34,7 +35,8 @@ function WidgetComponent(props) {
     { id: 13, text: "checkbox" },
     { id: 14, text: "dropdown" },
     { id: 15, text: radioButtonWidget },
-    { id: 16, text: "image" }
+    { id: 16, text: "image" },
+    { id: 17, text: drawWidget }
   ];
 
   // Create all drag refs in one go
@@ -65,7 +67,8 @@ function WidgetComponent(props) {
         textInputWidget,
         "date",
         "image",
-        "checkbox"
+        "checkbox",
+        drawWidget
       ].includes(data.type)
   );
   // allow only (signature, stamp, initials, text, cells) widget when isAllowModification true and user does not have session token
@@ -81,18 +84,19 @@ function WidgetComponent(props) {
         "name",
         "email",
         "job title",
-        "company"
+        "company",
+        drawWidget
       ].includes(data.type)
   );
   const selfSignWidgets = widgetList.filter(
     (data) =>
-      !["dropdown", radioButtonWidget, textInputWidget].includes(data.type)
+      !["dropdown", radioButtonWidget, textInputWidget,drawWidget].includes(data.type)
   );
   //if user select prefill role then allow only date,image,text,checkbox,radio,dropdownAdd commentMore actions
   //dropdown widget should only be show in template flow
   const prefillAllowWidgets = widgetList.filter((data) =>
     (props.isPrefillDropdown ? ["dropdown"] : [])
-      .concat([radioButtonWidget, textWidget, "date", "image", "checkbox"])
+      .concat([radioButtonWidget, textWidget, "date", "image", "checkbox",drawWidget])
       .includes(data.type)
   );
   //function to show widget on the base of conditionAdd commentMore actions
@@ -108,7 +112,7 @@ function WidgetComponent(props) {
         return unlogedInUserWidgets;
       }
     } else if (props?.roleName !== "prefill") {
-      return widgetList.filter((data) => ![textWidget].includes(data.type));
+      return widgetList.filter((data) => ![textWidget,drawWidget].includes(data.type));
     }
   };
   const handleSelectRecipient = () => {

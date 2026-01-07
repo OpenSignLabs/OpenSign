@@ -32,6 +32,7 @@ import Loader from "../primitives/Loader";
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 import { sessionStatus } from "../redux/reducers/userReducer";
+import { withSessionValidation } from "../utils";
 
 // `Form` render all type of Form on this basis of their provided in path
 function Form() {
@@ -132,7 +133,7 @@ const Forms = (props) => {
       e.target.value = "";
     }
   };
-  const handleFileInput = async (e) => {
+  const handleFileInput = withSessionValidation(async (e) => {
     setpercentage(0);
     try {
       const files = Array.from(e.target.files);
@@ -353,7 +354,7 @@ const Forms = (props) => {
       setSelectedFiles([]);
       removeFile(e);
     }
-  };
+  });
   // `isValidURL` is used to check valid webhook url
   function isValidURL(value) {
     try {
@@ -363,7 +364,7 @@ const Forms = (props) => {
       return false;
     }
   }
-  const handleSubmit = async (e) => {
+  const handleSubmit = withSessionValidation(async (e) => {
     e.preventDefault();
     e.stopPropagation();
     if (fileupload) {
@@ -512,7 +513,7 @@ const Forms = (props) => {
     } else {
       alert(t("file-alert-3"));
     }
-  };
+  });
 
   const handleFolder = (data) => {
     setFolder(data);

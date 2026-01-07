@@ -185,7 +185,7 @@ const DocumentsReport = (props) => {
   }, [isMoreDocs, pageNumbers, currentPage, setIsNextRecord]);
 
   //function to fetch tenant Details
-  const fetchTenantDetails = async () => {
+  const fetchTenantDetails = utils.withSessionValidation(async () => {
     const user = JSON.parse(
       localStorage.getItem(
         `Parse/${localStorage.getItem("parseAppId")}/currentUser`
@@ -224,14 +224,14 @@ const DocumentsReport = (props) => {
     } else {
       alert(t("user-not-exist"));
     }
-  };
+  });
 
   // `handleURL` is used to open microapp
   const handleURL = async (item, act) => {
     navigate(`/${act.redirectUrl}?docId=${item?.objectId}`);
   };
 
-  const fetchTemplate = async (templateId) => {
+  const fetchTemplate = utils.withSessionValidation(async (templateId) => {
     try {
       const params = {
         templateId: templateId,
@@ -257,24 +257,26 @@ const DocumentsReport = (props) => {
       setActLoader({});
       console.log("Error to fetch template in report", e);
     }
-  };
+  });
   //function is called when there ther no any prefill role widget exist then create direct document and navigate
-  const navigatePageToDoc = async (templateRes, placeholder, signer) => {
-    setIsPrefillModal({});
-    const res = await createDocument(
-      [templateRes || templateDeatils],
-      placeholder || xyPosition,
-      signer || signerList,
-      templateRes?.URL || templateDeatils?.URL,
-    );
-    if (res.status === "success") {
-      navigate(`/placeHolderSign/${res.id}`, {
-        state: { title: "Use Template" }
-      });
-    } else {
-      alert(t("something-went-wrong-mssg"));
+  const navigatePageToDoc = utils.withSessionValidation(
+    async (templateRes, placeholder, signer) => {
+      setIsPrefillModal({});
+      const res = await createDocument(
+        [templateRes || templateDeatils],
+        placeholder || xyPosition,
+        signer || signerList,
+        templateRes?.URL || templateDeatils?.URL,
+      );
+      if (res.status === "success") {
+        navigate(`/placeHolderSign/${res.id}`, {
+          state: { title: "Use Template" }
+        });
+      } else {
+        alert(t("something-went-wrong-mssg"));
+      }
     }
-  };
+  );
   const handleUseTemplate = async (templateId, item) => {
     try {
       const templateDeatils = await fetchTemplate(templateId);
@@ -303,7 +305,7 @@ const DocumentsReport = (props) => {
       setActLoader({});
     }
   };
-  const handleActionBtn = async (act, item) => {
+  const handleActionBtn = utils.withSessionValidation(async (act, item) => {
     if (act.action === "redirect") {
       handleURL(item, act);
     } else if (act.action === "delete") {
@@ -329,7 +331,7 @@ const DocumentsReport = (props) => {
     } else if (act.action === "extendexpiry") {
       setIsModal({ [`extendexpiry_${item.objectId}`]: true });
     }
-  };
+  });
 
 
   // Get current list
@@ -352,7 +354,7 @@ const DocumentsReport = (props) => {
     }
   };
 
-  const handleDelete = async (item) => {
+  const handleDelete = utils.withSessionValidation(async (item) => {
     setIsDeleteModal({});
     setActLoader({ [`${item.objectId}`]: true });
     try {
@@ -380,7 +382,7 @@ const DocumentsReport = (props) => {
       showAlert("danger", t("something-went-wrong-mssg"));
       setActLoader({});
     }
-  };
+  });
   const handleClose = () => {
     setIsRevoke({});
     setIsDeleteModal({});
@@ -429,7 +431,7 @@ const DocumentsReport = (props) => {
     setCopied({ [email]: true });
   };
   //function to handle revoke/decline docment
-  const handleRevoke = async (item) => {
+  const handleRevoke = utils.withSessionValidation(async (item) => {
     const senderUser = localStorage.getItem(
       `Parse/${localStorage.getItem("parseAppId")}/currentUser`
     );
@@ -477,7 +479,7 @@ const DocumentsReport = (props) => {
         showAlert("danger", t("something-went-wrong-mssg"));
         setActLoader({});
       });
-  };
+  });
 
   // `handleDownload` is used to get valid doc url available in completed report
   const handleDownload = async (item) => {
@@ -635,7 +637,7 @@ const DocumentsReport = (props) => {
     setMail((prev) => ({ ...prev, subject: res.subject, body: res.body }));
     setIsNextStep({ [user.Id]: true });
   };
-  const handleResendMail = async (e, doc, user) => {
+  const handleResendMail = utils.withSessionValidation(async (e, doc, user) => {
     e.preventDefault();
     setActLoader({ [user?.Id]: true });
     const url = `${localStorage.getItem("baseUrl")}functions/sendmailv3`;
@@ -672,7 +674,7 @@ const DocumentsReport = (props) => {
       setUserDetails({});
       setActLoader({});
     }
-  };
+  });
   const fetchUserStatus = (user, doc) => {
     const email = user.email ? user.email : user.signerPtr.Email;
     const audit = doc?.AuditTrail?.find((x) => x.UserPtr.Email === email);
@@ -707,7 +709,7 @@ const DocumentsReport = (props) => {
     }
   };
 
-  const handleUpdateExpiry = async (e, item) => {
+  const handleUpdateExpiry = utils.withSessionValidation(async (e, item) => {
     e.preventDefault();
     e.stopPropagation();
     if (expiryDate) {
@@ -758,10 +760,10 @@ const DocumentsReport = (props) => {
     } else {
       showAlert("danger", t("expiry-date-error"), 2000);
     }
-  };
+  });
 
   // `handleRenameDoc` is used to update document name
-  const handleRenameDoc = async (item) => {
+  const handleRenameDoc = utils.withSessionValidation(async (item) => {
     setActLoader({ [item.objectId]: true });
     setIsModal({});
     const className = "contracts_Document";
@@ -781,7 +783,7 @@ const DocumentsReport = (props) => {
       showAlert("danger", t("something-went-wrong-mssg"), 2000);
       setActLoader({});
     }
-  };
+  });
   const handleBtnVisibility = (act, item) => {
     if (!act.restrictBtn) {
       return true;
@@ -797,7 +799,7 @@ const DocumentsReport = (props) => {
     setError("");
     setIsModal({});
   };
-  const handleSaveAsTemplate = async (doc) => {
+  const handleSaveAsTemplate = utils.withSessionValidation(async (doc) => {
     try {
       const params = { docId: doc?.objectId };
       const templateRes = await Parse.Cloud.run("saveastemplate", params);
@@ -808,7 +810,7 @@ const DocumentsReport = (props) => {
     } finally {
       setActLoader({});
     }
-  };
+  });
   const handleCloseTemplate = () => {
     setTemplateId("");
     setIsSuccess({});
@@ -819,37 +821,39 @@ const DocumentsReport = (props) => {
 
   // `handleBulkSendTemplate` is used to open modal as well as fetch template
   // and show Ui on the basis template response
-  const handleBulkSendTemplate = async (templateId, docId) => {
-    setIsBulkSend({ [docId]: true });
-    setIsLoader({ [docId]: true });
-    try {
-      const axiosRes = await fetchTemplate(templateId);
-      const templateRes = axiosRes.data && axiosRes.data.result;
-      const isPrefillExist = templateRes?.Placeholders.some(
-        (x) => x.Role === "prefill"
-      );
-      if (isPrefillExist) {
-        setIsBulkSend({});
-        setIsLoader({});
-        showAlert("danger", t("prefill-bulk-error"));
-      } else {
-        const tenantSignTypes = await fetchTenantDetails();
-        const docSignTypes = templateRes?.SignatureType || signatureTypes;
-        const updatedSignatureType = await handleSignatureType(
-          tenantSignTypes,
-          docSignTypes
+  const handleBulkSendTemplate = utils.withSessionValidation(
+    async (templateId, docId) => {
+      setIsBulkSend({ [docId]: true });
+      setIsLoader({ [docId]: true });
+      try {
+        const axiosRes = await fetchTemplate(templateId);
+        const templateRes = axiosRes.data && axiosRes.data.result;
+        const isPrefillExist = templateRes?.Placeholders.some(
+          (x) => x.Role === "prefill"
         );
-        setSignatureType(updatedSignatureType);
-        setPlaceholders(templateRes?.Placeholders);
-        setTemplateDetails(templateRes);
-        setIsLoader({});
+        if (isPrefillExist) {
+          setIsBulkSend({});
+          setIsLoader({});
+          showAlert("danger", t("prefill-bulk-error"));
+        } else {
+          const tenantSignTypes = await fetchTenantDetails();
+          const docSignTypes = templateRes?.SignatureType || signatureTypes;
+          const updatedSignatureType = await handleSignatureType(
+            tenantSignTypes,
+            docSignTypes
+          );
+          setSignatureType(updatedSignatureType);
+          setPlaceholders(templateRes?.Placeholders);
+          setTemplateDetails(templateRes);
+          setIsLoader({});
+        }
+      } catch (err) {
+        console.log("err in fetch template in bulk modal", err);
+        setIsBulkSend({});
+        showAlert("danger", t("something-went-wrong-mssg"));
       }
-    } catch (err) {
-      console.log("err in fetch template in bulk modal", err);
-      setIsBulkSend({});
-      showAlert("danger", t("something-went-wrong-mssg"));
     }
-  };
+  );
 
   const handleResendClose = () => {
     setIsResendMail({});
@@ -857,7 +861,7 @@ const DocumentsReport = (props) => {
     setUserDetails({});
   };
 
-  const handleRecreateDoc = async (item) => {
+  const handleRecreateDoc = utils.withSessionValidation(async (item) => {
     setActLoader({ [item.objectId]: true });
     try {
       const res = await Parse.Cloud.run("recreatedoc", {
@@ -874,7 +878,7 @@ const DocumentsReport = (props) => {
     } finally {
       setActLoader({});
     }
-  };
+  });
 
   const restrictBtn = (item, act) => {
     return item.IsSignyourself && act.action === "recreatedocument"
@@ -1151,6 +1155,7 @@ const DocumentsReport = (props) => {
             </thead>
             <tbody className="text-[12px]">
               {props.List?.length > 0 &&
+                !props.searchLoader &&
                 currentList.map((item, index) => (
                   <tr
                     className={`${
@@ -1706,22 +1711,31 @@ const DocumentsReport = (props) => {
                 ))}
             </tbody>
           </table>
-          {props.List?.length <= 0 && (
+          {(props.searchLoader || props.List?.length <= 0) && (
             <div
               className={`${
                 isDashboard ? "h-[317px]" : ""
               } flex flex-col items-center justify-center w-ful bg-base-100 text-base-content rounded-xl py-4`}
             >
-              <div className="w-[60px] h-[60px] overflow-hidden">
-                <img
-                  className="w-full h-full object-contain"
-                  src={pad}
-                  alt="img"
-                />
-              </div>
-              <div className="text-sm font-semibold">
-                {t("no-data-avaliable")}
-              </div>
+              {props.searchLoader ? (
+                <>
+                  <Loader />
+                  <div className="text-sm ">{t("loading-mssg")}</div>
+                </>
+              ) : (
+                <>
+                  <div className="w-[60px] h-[60px] overflow-hidden">
+                    <img
+                      className="w-full h-full object-contain"
+                      src={pad}
+                      alt={t("no-data-avaliable")}
+                    />
+                  </div>
+                  <div className="text-sm font-semibold">
+                    {t("no-data-avaliable")}
+                  </div>
+                </>
+              )}
             </div>
           )}
         </div>

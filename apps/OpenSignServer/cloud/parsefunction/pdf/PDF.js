@@ -122,7 +122,7 @@ async function sendNotifyMail(doc, signUser, mailProvider, publicUrl) {
     const TenantAppName = appName;
     const logo =
       "<img src='https://qikinnovation.ams3.digitaloceanspaces.com/logo.png' height='50' style='padding:20px'/>";
-    const opurl = ` <a href=www.opensignlabs.com target=_blank>here</a>`;
+    const opurl = ` <a href='mailto:complaint@opensiglabs.com' target=_blank>here</a>`;
     const auditTrailCount = doc?.AuditTrail?.filter(x => x.Activity === 'Signed')?.length || 0;
     const removePrefill =
       doc?.Placeholders?.length > 0 && doc?.Placeholders?.filter(x => x?.Role !== 'prefill');
@@ -142,7 +142,7 @@ async function sendNotifyMail(doc, signUser, mailProvider, publicUrl) {
         `<div>${logo}</div><div style='padding:2px;font-family:system-ui;background-color:#47a3ad'><p style='font-size:20px;font-weight:400;color:white;padding-left:20px'>Document signed by ${signerName}</p>` +
         `</div><div style='padding:20px;font-family:system-ui;font-size:14px'><p>Dear ${creatorName},</p><p>${pdfName} has been signed by ${signerName} "${signerEmail}" successfully</p>` +
         `<p><a href=${viewDocUrl} target=_blank>View Document</a></p></div></div><div><p>This is an automated email from ${TenantAppName}. For any queries regarding this email, ` +
-        `please contact the sender ${creatorEmail} directly. If you think this email is inappropriate or spam, you may file a complaint with ${TenantAppName}${opurl}.</p></div></div></body></html>`;
+        `please contact the sender ${creatorEmail} directly. If you think this email is inappropriate or spam, you may file a complaints with ${TenantAppName}${opurl}.</p></div></div></body></html>`;
 
       const params = {
         extUserId: sender.objectId,
@@ -169,7 +169,7 @@ async function sendCompletedMail(obj) {
   const TenantAppName = appName;
   const logo =
     "<img src='https://qikinnovation.ams3.digitaloceanspaces.com/logo.png' height='50' style='padding:20px'/>";
-  const opurl = ` <a href=www.opensignlabs.com target=_blank>here</a>`;
+  const opurl = ` <a href='mailto:complaint@opensiglabs.com' target=_blank>here</a>`;
   let signersMail;
   if (doc?.Signers?.length > 0) {
     const isOwnerExistsinSigners = doc?.Signers?.find(x => x.Email === sender.Email);
@@ -186,7 +186,7 @@ async function sendCompletedMail(obj) {
     `<div>${logo}</div><div style='padding:2px;font-family:system-ui;background-color:#47a3ad'><p style='font-size:20px;font-weight:400;color:white;padding-left:20px'>Document signed successfully</p></div><div>` +
     `<p style='padding:20px;font-family:system-ui;font-size:14px'>All parties have successfully signed the document <b>"${pdfName}"</b>. Kindly download the document from the attachment.</p>` +
     `</div></div><div><p>This is an automated email from ${TenantAppName}. For any queries regarding this email, please contact the sender ${sender.Email} directly.` +
-    `If you think this email is inappropriate or spam, you may file a complaint with ${TenantAppName}${opurl}.</p></div></div></body></html>`;
+    `If you think this email is inappropriate or spam, you may file a complaints with ${TenantAppName}${opurl}.</p></div></div></body></html>`;
 
   if (obj?.isCustomMail) {
     const tenant = sender?.TenantId;

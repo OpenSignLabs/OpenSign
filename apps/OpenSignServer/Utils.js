@@ -183,35 +183,6 @@ export function generateId(length) {
   return result;
 }
 
-// Format date and time for the selected timezone
-export const formatTimeInTimezone = (date, timezone) => {
-  const nyDate = timezone && toZonedTime(date, timezone);
-  const generatedDate = timezone
-    ? format(nyDate, 'EEE, dd MMM yyyy HH:mm:ss zzz', { timeZone: timezone })
-    : new Date(date).toUTCString();
-  return generatedDate;
-};
-
-// `getSecureUrl` is used to return local secure url if local files
-export const getSecureUrl = url => {
-  const fileUrl = new URL(url)?.pathname?.includes('files');
-  if (fileUrl) {
-    try {
-      const file = getSignedLocalUrl(url);
-      if (file) {
-        return { url: file };
-      } else {
-        return { url: '' };
-      }
-    } catch (err) {
-      console.log('err while fileupload ', err);
-      return { url: '' };
-    }
-  } else {
-    return { url: url };
-  }
-};
-
 /**
  * FlattenPdf is used to remove existing widgets if present any and flatten pdf.
  * @param {string | Uint8Array | ArrayBuffer} pdfFile - pdf file.
@@ -249,13 +220,42 @@ export const flattenPdf = async pdfFile => {
   }
 };
 
+// Format date and time for the selected timezone
+export const formatTimeInTimezone = (date, timezone) => {
+  const nyDate = timezone && toZonedTime(date, timezone);
+  const generatedDate = timezone
+    ? format(nyDate, 'EEE, dd MMM yyyy HH:mm:ss zzz', { timeZone: timezone })
+    : new Date(date).toUTCString();
+  return generatedDate;
+};
+
+// `getSecureUrl` is used to return local secure url if local files
+export const getSecureUrl = url => {
+  const fileUrl = new URL(url)?.pathname?.includes('files');
+  if (fileUrl) {
+    try {
+      const file = getSignedLocalUrl(url);
+      if (file) {
+        return { url: file };
+      } else {
+        return { url: '' };
+      }
+    } catch (err) {
+      console.log('err while fileupload ', err);
+      return { url: '' };
+    }
+  } else {
+    return { url: url };
+  }
+};
+
 export const mailTemplate = param => {
   const themeColor = '#47a3ad';
   const subject = `${param.senderName} has requested you to sign "${param.title}"`;
   const AppName = appName;
   const logo = `<img src='https://qikinnovation.ams3.digitaloceanspaces.com/logo.png' height='50' />`;
 
-  const opurl = ` <a href='www.opensignlabs.com' target=_blank>here</a>`;
+  const opurl = ` <a href='mailto:complaint@opensiglabs.com' target=_blank>here</a>`;
 
   const body =
     "<html><head><meta http-equiv='Content-Type' content='text/html;charset=UTF-8' /></head><body><div style='background-color:#f5f5f5;padding:20px'><div style='background:white;padding-bottom:20px'><div style='padding:10px'>" +
@@ -278,7 +278,7 @@ export const mailTemplate = param => {
     AppName +
     '. For any queries regarding this email, please contact the sender ' +
     param.senderMail +
-    ` directly. If you think this email is inappropriate or spam, you may file a complaint with ${AppName}${opurl}.</p></div></div></body></html>`;
+    ` directly. If you think this email is inappropriate or spam, you may file a complaints with ${AppName}${opurl}.</p></div></div></body></html>`;
 
   return { subject, body };
 };
@@ -369,34 +369,27 @@ export const handleValidImage = async Placeholder => {
       for (const item of placeholder.placeHolder || []) {
         const updatedPos = [];
         for (const posItem of item.pos || []) {
-          if (posItem?.type === 'image' && posItem?.SignUrl) {
-            const validUrl = await getPresignedUrl(posItem?.SignUrl);
+          if (
+            (posItem?.type === 'image' || posItem?.type === 'draw') &&
+            posItem?.options?.response
+          ) {
+            const validUrl = await getPresignedUrl(posItem?.options?.response);
             updatedPos.push({
               ...posItem,
-              SignUrl: validUrl,
+              ...(item.SignUrl !== undefined && { SignUrl: validUrl }),
               options: { ...posItem.options, response: validUrl },
             });
           } else {
             updatedPos.push(posItem);
           }
         }
-        updatedRole.push({
-          ...item,
-          pos: updatedPos,
-        });
+        updatedRole.push({ ...item, pos: updatedPos });
       }
 
-      updatedPlaceholders.push({
-        ...placeholder,
-        signerPtr,
-        placeHolder: updatedRole,
-      });
+      updatedPlaceholders.push({ ...placeholder, signerPtr, placeHolder: updatedRole });
     } else {
       // Not prefill role, just push as-is
-      updatedPlaceholders.push({
-        ...placeholder,
-        signerPtr,
-      });
+      updatedPlaceholders.push({ ...placeholder, signerPtr });
     }
   }
   return updatedPlaceholders;

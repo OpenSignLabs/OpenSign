@@ -393,7 +393,8 @@
     "radio button": "botón de radio",
     "image": "imagen",
     "email": "correo",
-    "number": "número"
+    "number": "número",
+    "draw": "Dibujar"
   },
   "fields": "Campos",
   "recipients": "Destinatarios",
@@ -517,7 +518,7 @@
   "placeholder-alert-4": "¡Has enviado exitosamente correos a todos los destinatarios!",
   "placeholder-mail-alert": "Has enviado un correo electrónico con éxito a {{name}}. Los siguientes firmantes recibirán un correo electrónico una vez que {{name}} firme el documento.",
   "placeholder-mail-alert-you": "Los firmantes siguientes recibirán un correo electrónico una vez que usted firme el documento.",
-  "placeholder-alert-5": "¿Quieres firmar documentos ahora mismo?",
+  "placeholder-alert-5": "Puede firmar ahora o enviarlo a su correo electrónico para completarlo más tarde.",
   "placeholder-alert-6": "¡Por favor, configura el adaptador de correo para enviar correos!",
   "placeholder-alert-7": "¡Por favor, selecciona un firmante para agregar un marcador de posición!",
   "email-subject": "asunto del correo",
@@ -1244,6 +1245,7 @@
   },
   "read-only-date-error": "El widget de fecha de solo lectura debe tener una fecha predeterminada.",
   "set-date": "Establecer fecha",
+  "default-date": "Fecha predeterminada",
   "set-today": "Fecha de firma",
   "enter-name": "Ingrese nombre",
   "enter-email": "Ingrese correo electrónico",
@@ -1329,5 +1331,15 @@
   "working": "En funcionamiento",
   "test-security-key": "Probar clave de seguridad",
   "generate": "Generar",
-  "regenerate": "Regenerar"
+  "regenerate": "Regenerar",
+  "signing-date": "Fecha de firma",
+  "date-widget": "Widget de fecha",
+  "mail-failed": "Algo salió mal al enviar el correo electrónico. Por favor, inténtelo de nuevo.",
+  "mail-status-head": "Siguiente paso: ¿Firmar su documento?",
+  "send-to-email": "Enviar por correo electrónico",
+  "date-pref-help-sub-title": "Las preferencias del widget de fecha le permiten definir la configuración predeterminada del widget de fecha. Estos valores se aplican automáticamente cada vez que añade un nuevo widget de fecha a un documento o plantilla. Aún puede personalizar cualquier widget de fecha individual en cualquier momento haciendo clic en el icono de engranaje.",
+  "date-pref-help-format": "Elija el formato de fecha predeterminado utilizado para los widgets de fecha.",
+  "date-pref-help-default-date": "Establezca un valor de fecha predeterminado para los widgets de fecha.",
+  "date-pref-help-signing-date": "Cuando está habilitado, el widget de fecha utiliza automáticamente la fecha en que el firmante firma el documento.",
+  "date-pref-help-read-only": "Cuando está habilitado, el widget de fecha es de solo lectura para el firmante."
 }

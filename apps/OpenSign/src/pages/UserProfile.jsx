@@ -6,7 +6,7 @@ import { Navigate, useNavigate } from "react-router";
 import Parse from "parse";
 import { SaveFileSize } from "../constant/saveFileSize";
 import dp from "../assets/images/dp.png";
-import { sanitizeFileName } from "../utils";
+import { sanitizeFileName, withSessionValidation } from "../utils";
 import axios from "axios";
 import Tooltip from "../primitives/Tooltip";
 import {
@@ -124,7 +124,7 @@ function UserProfile() {
   };
 
   //  `updateExtUser` is used to update user details in extended class
-  const updateExtUser = async (obj) => {
+  const updateExtUser = withSessionValidation(async (obj) => {
     try {
       const extData = JSON.parse(localStorage.getItem("Extand_Class"));
       const ExtUserId = extData?.[0]?.objectId;
@@ -152,10 +152,10 @@ function UserProfile() {
       const json = JSON.parse(JSON.stringify([res]));
       const extRes = JSON.stringify(json);
       localStorage.setItem("Extand_Class", extRes);
-    } catch (e) {
-      console.log("error in save data in contracts_Users class");
+    } catch (err) {
+      console.log("error in save data in contracts_Users class", err);
     }
-  };
+  });
   // file upload function
   const fileUpload = async (file) => {
     if (file) {

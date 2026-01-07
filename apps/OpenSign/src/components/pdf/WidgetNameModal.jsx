@@ -310,8 +310,7 @@ const WidgetNameModal = (props) => {
             </>
           )}
         {!props?.isSelfSign &&
-          !isSignOrInitials &&
-          props?.roleName !== "prefill" && (
+          !isSignOrInitials  && (
             <div className={showFontControls ? "mb-[0.5rem]" : "mb-[0.75rem]"}>
               <div className="flex flex-row gap-[10px] mb-[0.5rem]">
                 {statusArr.map((data, ind) => {

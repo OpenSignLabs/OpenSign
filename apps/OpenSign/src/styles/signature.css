@@ -31,7 +31,10 @@
   border: 1px solid #007bff;
   border-radius: 50px;
 }
-
+.prefillCanvas {
+  width: 205px;
+  height: 81px;
+}
 .signatureCanvas {
   width: 440px;
   height: 167px;
@@ -44,15 +47,11 @@
 }
 
 .mysignatureCanvas {
-  /* width: 456px;
-  height: 180px; */
   width: 370px;
   height: 146px;
 }
 
 .mystampCanvas {
-  /* width: 446px;
-  height: 180px; */
   width: 370px;
   height: 146px;
 }
@@ -60,8 +59,6 @@
 .intialSignature {
   border: 2px solid #888;
   background-color: rgb(255, 255, 255);
-  /* width: 180px;
-  height: 180px; */
   width: 150px;
   height: 150px;
 }

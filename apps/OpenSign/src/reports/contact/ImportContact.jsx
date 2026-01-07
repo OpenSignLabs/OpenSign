@@ -3,12 +3,10 @@ import { useTranslation } from "react-i18next";
 import * as XLSX from "xlsx";
 import Parse from "parse";
 import { emailRegex } from "../../constant/const";
-import { useDispatch } from "react-redux";
-import { sessionStatus } from "../../redux/reducers/userReducer";
+import { withSessionValidation } from "../../utils";
 
 const ImportContact = ({ setLoader, onImport, showAlert }) => {
   const { t } = useTranslation();
-  const dispatch = useDispatch();
   const [currentImportPage, setCurrentImportPage] = useState(1);
   const [importedData, setImportedData] = useState([]);
   const [invalidRecords, setInvalidRecords] = useState(0);
@@ -181,52 +179,42 @@ const ImportContact = ({ setLoader, onImport, showAlert }) => {
     }
   };
   // `handleImportData` is used to create batch in contact
-  const handleImportData = async (e) => {
+  const handleImportData = withSessionValidation(async (e) => {
     e.preventDefault();
     e.stopPropagation();
     setLoader(true);
     try {
-      const sessionToken = Parse.User?.current()?.getSessionToken();
-      if (localStorage.getItem("TenantId") && sessionToken) {
-        try {
-          const filterdata = importedData.map((x) => ({
-            Name: x.Name,
-            Email: x.Email,
-            Phone: x.Phone,
-            Company: x.Company,
-            JobTitle: x.JobTitle,
-            TenantId: localStorage.getItem("TenantId")
-          }));
-          const contacts = JSON.stringify(filterdata);
-          const res = await Parse.Cloud.run("createbatchcontact", { contacts });
-          if (res) {
-            showAlert(
-              "info",
-              t("contact-imported", {
-                imported: res?.success || 0,
-                failed: res?.failed || 0
-              })
-            );
-            if (res?.success > 0) {
-              setTimeout(() => window.location.reload(), 1500);
-            }
-          }
-        } catch (err) {
-          console.log("err while creating batch contact", err);
-          showAlert("danger", t("something-went-wrong-mssg"));
-        } finally {
-          onImport && onImport();
-          setImportedData([]);
-          setInvalidRecords(0);
+      const filterdata = importedData.map((x) => ({
+        Name: x.Name,
+        Email: x.Email,
+        Phone: x.Phone,
+        Company: x.Company,
+        JobTitle: x.JobTitle,
+        TenantId: localStorage.getItem("TenantId")
+      }));
+      const contacts = JSON.stringify(filterdata);
+      const res = await Parse.Cloud.run("createbatchcontact", { contacts });
+      if (res) {
+        showAlert(
+          "info",
+          t("contact-imported", {
+            imported: res?.success || 0,
+            failed: res?.failed || 0
+          })
+        );
+        if (res?.success > 0) {
+          setTimeout(() => window.location.reload(), 1500);
         }
-      } else {
-        dispatch(sessionStatus(false));
       }
     } catch (err) {
-      console.error("invalid session or missing tenantId ", err);
-      dispatch(sessionStatus(false));
+      console.log("err while creating batch contact", err);
+      showAlert("danger", t("something-went-wrong-mssg"));
+    } finally {
+      onImport && onImport();
+      setImportedData([]);
+      setInvalidRecords(0);
     }
-  };
+  });
 
   return (
     <form onSubmit={handleImportData} className="p-[20px] h-full">

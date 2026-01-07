@@ -2,27 +2,20 @@ export default async function TemplateAfterSave(request) {
   try {
     if (!request.original) {
       console.log('new entry is insert in contracts_Template');
-      // update acl of New Document If There are signers present in array
-      const signers = request.object.get('Signers');
-      const AutoReminder = request?.object?.get('AutomaticReminders') || false;
+      const obj = request.object;
+      const objId = obj?.id;
       const ip = request?.headers?.['x-real-ip'] || '';
-      const originIp = request?.object?.get('OriginIp') || '';
-      if (AutoReminder) {
-        const RemindOnceInEvery = request?.object?.get('RemindOnceInEvery') || 5;
-        const ReminderDate = new Date(request?.object?.get('createdAt'));
-        ReminderDate.setDate(ReminderDate.getDate() + RemindOnceInEvery);
-        request.object.set('NextReminderDate', ReminderDate);
-      }
-      if (!originIp) {
-        request.object.set('OriginIp', ip);
-      }
-      await request.object.save(null, { useMasterKey: true });
-      if (signers && signers.length > 0) {
-        await updateAclDoc(request.object.id);
-      } else {
-        if (request?.object?.id && request?.user) {
-          await updateSelfDoc(request.object.id);
-        }
+      const originIp = obj?.get?.('OriginIp') || '';
+      const createdAt = obj?.get?.('createdAt');
+
+      // update acl of New template If There are signers present in array
+      const signers = obj?.get('Signers');
+      const hasSigners = Array.isArray(signers) && signers.length > 0;
+      updateTemplateMeta({ objId, createdAt, ip, originIp });
+      if (hasSigners) {
+        await updateAclDoc(objId);
+      } else if (objId && request?.user) {
+        await updateSelfDoc(objId);
       }
     } else {
       if (request?.user) {
@@ -41,17 +34,33 @@ export default async function TemplateAfterSave(request) {
     console.log(err);
   }
 
+  async function updateTemplateMeta({ objId, createdAt, ip, originIp }) {
+    const templateQuery = new Parse.Query('contracts_Template');
+    templateQuery.include('ExtUserPtr.TenantId');
+
+    const obj = await templateQuery.get(objId, { useMasterKey: true });
+
+    // Automatic reminders
+    const AutoReminder = obj?.get('AutomaticReminders') || false;
+    if (AutoReminder) {
+      const RemindOnceInEvery = obj?.get('RemindOnceInEvery') || 5;
+      const ReminderDate = new Date(createdAt);
+      ReminderDate.setDate(ReminderDate.getDate() + RemindOnceInEvery);
+      obj.set('NextReminderDate', ReminderDate);
+    }
+    if (!originIp) {
+      obj.set('OriginIp', ip);
+    }
+
+    await obj.save(null, { useMasterKey: true });
+  }
   async function updateAclDoc(objId) {
-    // console.log("In side updateAclDoc func")
-    // console.log(objId)
     const Query = new Parse.Query('contracts_Template');
     Query.include('Signers');
     Query.include('CreatedBy');
     Query.include('ExtUserPtr.TenantId');
     const updateACL = await Query.get(objId, { useMasterKey: true });
     const res = JSON.parse(JSON.stringify(updateACL));
-    // console.log("res");
-    // console.log(JSON.stringify(res));
     const UsersPtr = res.Signers.map(item => item.UserId);
 
     if (res.Signers[0].ExtUserPtr) {
@@ -65,8 +74,6 @@ export default async function TemplateAfterSave(request) {
       updateACL.set('Signers', ExtUserSigners);
     }
 
-    // console.log("UsersPtr")
-    // console.log(JSON.stringify(UsersPtr))
     const newACL = new Parse.ACL();
     newACL.setPublicReadAccess(false);
     newACL.setPublicWriteAccess(false);
@@ -85,15 +92,11 @@ export default async function TemplateAfterSave(request) {
   }
 
   async function updateSelfDoc(objId) {
-    // console.log("Inside updateSelfDoc func")
-
     const Query = new Parse.Query('contracts_Template');
     Query.include('CreatedBy');
     Query.include('ExtUserPtr.TenantId');
     const updateACL = await Query.get(objId, { useMasterKey: true });
     const res = JSON.parse(JSON.stringify(updateACL));
-    // console.log("res");
-    // console.log(JSON.stringify(res));
     const newACL = new Parse.ACL();
     newACL.setPublicReadAccess(false);
     newACL.setPublicWriteAccess(false);

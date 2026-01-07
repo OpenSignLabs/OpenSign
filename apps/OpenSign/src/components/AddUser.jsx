@@ -11,6 +11,8 @@ import {
 import {
   useTranslation
 } from "react-i18next";
+import { withSessionValidation } from "../utils";
+
 function generatePassword(length) {
   const characters =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -67,7 +69,7 @@ const AddUser = (props) => {
     }
   };
   // Define a function to handle form submission
-  const handleSubmit = async (e) => {
+  const handleSubmit = withSessionValidation(async (e) => {
     e.preventDefault();
     e.stopPropagation();
     if (!emailRegex.test(formdata.email)) {
@@ -130,7 +132,7 @@ const AddUser = (props) => {
         }
       }
     }
-  };
+  });
 
   // Define a function to handle the "add yourself" checkbox
   const handleReset = () => {

@@ -14,6 +14,7 @@ import DeleteUserModal from "../primitives/DeleteUserModal";
 import axios from "axios";
 import PasswordResetModal from "../primitives/PasswordResetModal";
 import { usersActions } from "../json/ReportJson";
+import { withSessionValidation } from "../utils";
 
 const heading = ["Sr.No", "Name", "Email", "Phone", "Role", "Team", "Active"];
 const UserList = () => {
@@ -168,7 +169,7 @@ const UserList = () => {
   };
   const handleClose = () => setIsActiveModal({});
 
-  const handleToggleSubmit = async (user) => {
+  const handleToggleSubmit = withSessionValidation(async (user) => {
     const index = userList.findIndex((obj) => obj.objectId === user.objectId);
     if (index !== -1) {
       setIsActiveModal({});
@@ -193,7 +194,7 @@ const UserList = () => {
         setIsActLoader({});
       }
     }
-  };
+  });
   const handleToggleBtn = (user) => {
     setIsActiveModal({ [user.objectId]: true });
   };
@@ -204,7 +205,7 @@ const UserList = () => {
     setTimeout(() => setIsAlert({ type: "success", msg: "" }), timer);
   };
 
-  const handleDeleteAccount = async (item) => {
+  const handleDeleteAccount = withSessionValidation(async (item) => {
     setDeleting(true);
     if (item?.UserId?.objectId) {
       const url = localStorage.getItem("baseUrl")?.replace(/\/app\/?$/, "/");
@@ -230,16 +231,16 @@ const UserList = () => {
       setDeleteUserRes(t("something-went-wrong-mssg"));
       setDeleting(false);
     }
-  };
+  });
   const handleCloseModal = () => {
     setIsActModal({});
     setDeleteUserRes("");
     setDeleting(false);
   };
 
-  const handleActionBtn = async (act, item) => {
+  const handleActionBtn = withSessionValidation(async (act, item) => {
       setIsActModal({ [`${act.action}_${item.objectId}`]: true });
-  };
+  });
   const handleBtnVisibility = (act, item) => {
     if (act.restrictAdmin) {
       if (item?.UserRole === "contracts_Admin") {
@@ -264,7 +265,7 @@ const UserList = () => {
     }
   };
 
-  async function submitPassword(userId, password) {
+  const submitPassword = withSessionValidation(async (userId, password) => {
     setIsLoader(true);
     setIsActModal({});
     try {
@@ -277,7 +278,7 @@ const UserList = () => {
     } finally {
       setIsLoader(false);
     }
-  }
+  });
   return (
     <div className="relative">
       {isLoader && (

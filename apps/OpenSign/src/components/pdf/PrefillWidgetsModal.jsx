@@ -1,4 +1,4 @@
-import { forwardRef, useEffect, useMemo, useRef, useState } from "react";
+import React, { forwardRef, useEffect, useMemo, useRef, useState } from "react";
 import ModalUi from "../../primitives/ModalUi";
 import {
   getMonth,
@@ -10,6 +10,8 @@ import {
   changeDateToMomentFormat,
   convertBase64ToFile,
   generatePdfName,
+  drawWidget,
+  getBase64MimeType,
   isBase64
 } from "../../constant/Utils";
 import DatePicker from "react-datepicker";
@@ -27,6 +29,8 @@ import {
   setPrefillImg
 } from "../../redux/reducers/widgetSlice";
 import * as utils from "../../utils";
+import Draw from "./tab/Draw";
+import PenColorComponent from "./tab/PenColorComponent";
 
 const widgetTitle = "font-medium";
 
@@ -111,6 +115,8 @@ const ImageComponent = (props) => {
 function PrefillWidgetModal(props) {
   const { t } = useTranslation();
   const dispatch = useDispatch();
+  const canvasRefs = useRef({});
+  const [penColor, setPenColor] = useState("blue");
   // Track already loaded image keys so they don't increment multiple times
   const loadedSet = useRef(new Set());
   const initializedRef = useRef(false); // prevent rerun on state updates
@@ -164,6 +170,7 @@ function PrefillWidgetModal(props) {
   }, [props?.isPrefillModal]);
 
   useEffect(() => {
+    setLoading(true);
     //function is used to save all image base64 in redux state to display prefill images
     const savePrefillImg = async () => {
       const prefillImg = await utils?.savePrefillImg(props.xyPosition);
@@ -261,14 +268,15 @@ function PrefillWidgetModal(props) {
     handleWidgetDetails(position, newDate);
   };
 
-  const handleSavePrefillImg = async (widgetDetails) => {
+  const handleSavePrefillImg = async (base64) => {
     setLoading(true);
     try {
       const imageName = generatePdfName(16);
+      const imgType = image?.imgType || getBase64MimeType(base64);
       const imageUrl = await convertBase64ToFile(
         imageName,
-        image.src,
-        image.imgType
+        base64 || image.src,
+        imgType
       );
       if (imageUrl) {
         return imageUrl;
@@ -284,7 +292,7 @@ function PrefillWidgetModal(props) {
     const getPlaceholder = getPrefill?.placeHolder;
     let imgUrl;
     if (widgetDetails?.type === "image") {
-      imgUrl = await handleSavePrefillImg(widgetDetails);
+      imgUrl = await handleSavePrefillImg(response);
     }
     const updatedData = getPlaceholder.map((page) => ({
       ...page,
@@ -382,7 +390,7 @@ function PrefillWidgetModal(props) {
         if (item.options.name === position.options.name) {
           return {
             ...item,
-            SignUrl: "",
+            ...(item.SignUrl !== undefined && { SignUrl: "" }),
             options: {
               ...position.options,
               response: ""
@@ -411,6 +419,23 @@ function PrefillWidgetModal(props) {
       setLoadedImages((prev) => prev + 1);
     }
     setLoading(false);
+  };
+  //function for set signature url
+  const handleSignatureChange = (drawImage, position) => {
+    handleWidgetDetails(position, drawImage);
+  };
+  const getCanvasRef = (widgetId) => {
+    if (!canvasRefs.current[widgetId]) {
+      canvasRefs.current[widgetId] = React.createRef();
+    }
+    return canvasRefs.current[widgetId];
+  };
+  const clearCanvasById = (widgetId) => {
+    const canvasRef = canvasRefs.current?.[widgetId];
+
+    if (canvasRef?.current) {
+      canvasRef.current.clear();
+    }
   };
   const handleWidgetType = (position, id) => {
     switch (position?.type) {
@@ -558,6 +583,34 @@ function PrefillWidgetModal(props) {
             </div>
           </>
         );
+      case drawWidget:
+        return (
+          <div>
+            <span className={widgetTitle}>{position.options?.name}</span>
+            <Draw
+              penColor={penColor}
+              canvasRef={getCanvasRef(position.key)}
+              currWidgetsDetails={position}
+              handleSignatureChange={handleSignatureChange}
+              prefillCls={"prefillCanvas"}
+            />
+            <div className="flex flex-row justify-between mt-[10px]">
+              <PenColorComponent
+                penColor={penColor}
+                setPenColor={setPenColor}
+              />
+              <span
+                onClick={() => {
+                  clearCanvasById(position?.key);
+                  handleClearImage(position);
+                }}
+                className="flex justify-start text-blue-500 underline cursor-pointer"
+              >
+                {t("clear")}
+              </span>
+            </div>
+          </div>
+        );
       default:
         return position?.SignUrl ? (
           <div className="pointer-events-none">
@@ -577,6 +630,66 @@ function PrefillWidgetModal(props) {
   };
 
   const handleEmbedPrefill = async (item) => {
+    //checking is there any draw widget response have base64 url then generate that base64 to url and save it
+    const prefillWidgets = props.xyPosition?.find((x) => x.Role === "prefill");
+    let updatedXyPosition = [];
+    if (prefillWidgets) {
+      const isDrawWidget = (prefillWidgets.placeHolder ?? []).some((ph) =>
+        (ph?.pos ?? []).some((p) => p?.type === drawWidget)
+      );
+      if (isDrawWidget) {
+        const getPrefill = props.xyPosition.find((x) => x?.Role === "prefill");
+        const getPlaceholder = getPrefill?.placeHolder ?? [];
+        const updatedData = await Promise.all(
+          getPlaceholder.map(async (page) => ({
+            ...page,
+            pos: await Promise.all(
+              page.pos.map(async (item) => {
+                if (item?.type === drawWidget) {
+                  const widgetResponse = item?.options?.response;
+
+                  // Skip if no response
+                  if (!widgetResponse) return item;
+
+                  // If already URL, do not re-upload
+                  if (
+                    typeof widgetResponse === "string" &&
+                    widgetResponse.startsWith("http")
+                  ) {
+                    return item;
+                  }
+
+                  // Convert THIS widget's base64 → URL
+                  const drawUrl = await handleSavePrefillImg(widgetResponse);
+                  return {
+                    ...item,
+                    options: {
+                      ...item.options,
+                      response: drawUrl
+                    }
+                  };
+                }
+
+                return item;
+              })
+            )
+          }))
+        );
+
+        updatedXyPosition = props.xyPosition.map((obj) => {
+          if (obj.Role === "prefill") {
+            return {
+              ...obj,
+              placeHolder: updatedData
+            };
+          }
+          return obj;
+        });
+
+        props.setXyPosition(updatedXyPosition);
+      }
+    }
+
       await props.handleCreateDocument();
   };
   //`loadOptions` function to use show all list of signer in dropdown
@@ -584,9 +697,9 @@ function PrefillWidgetModal(props) {
     try {
       const baseURL = localStorage.getItem("baseUrl");
       const url = `${baseURL}functions/getsigners`;
-      const token = {
-        "X-Parse-Session-Token": localStorage.getItem("accesstoken")
-      };
+
+      const token =
+            { "X-Parse-Session-Token": localStorage.getItem("accesstoken") };
       const headers = {
         "Content-Type": "application/json",
         "X-Parse-Application-Id": localStorage.getItem("parseAppId"),

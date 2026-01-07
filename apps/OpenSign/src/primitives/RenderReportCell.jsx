@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { formatDate } from "../constant/Utils";
+import { formatDateToDdMmmYyyy } from "../constant/Utils";
 import SignerCell from "./SignerCell";
 
 function isValidDateString(str) {
@@ -14,12 +14,12 @@ const formatRow = (row) => {
   if (Array.isArray(row)) {
     return row.map((x) => x.Name).join(", ");
   } else if (typeof row === "object" && row !== null) {
-    return row?.iso ? formatDate(row?.iso) : row?.Name || "-";
+    return row?.iso ? formatDateToDdMmmYyyy(row?.iso) : row?.Name || "-";
   } else if (typeof row === "boolean" && row !== null) {
     return row ? row?.toString() : "false";
   } else if (isValidDateString(row) && row !== null) {
     // handle createdAt and updatedAt
-    return formatDate(row) || "-";
+    return formatDateToDdMmmYyyy(row) || "-";
   } else {
     return row || "-";
   }
@@ -53,7 +53,7 @@ export const RenderReportCell = ({
           <div className="font-semibold break-words">{rowData?.Name}</div>
           {rowData?.ExpiryDate?.iso && (
             <div className="text-gray-500">
-              {t("expires")} {formatDate(rowData?.ExpiryDate?.iso)}
+              {t("expires")} {formatDateToDdMmmYyyy(rowData?.ExpiryDate?.iso)}
             </div>
           )}
         </td>
@@ -133,25 +133,29 @@ export const RenderReportCell = ({
     case "Created Date":
       return (
         <td key={col} className="p-2 text-center">
-          {rowData?.createdAt ? formatDate(rowData?.createdAt) : "-"}
+          {rowData?.createdAt ? formatDateToDdMmmYyyy(rowData?.createdAt) : "-"}
         </td>
       );
     case "Updated Date":
       return (
         <td key={col} className="p-2 text-center">
-          {rowData?.updatedAt ? formatDate(rowData?.updatedAt) : "-"}
+          {rowData?.updatedAt ? formatDateToDdMmmYyyy(rowData?.updatedAt) : "-"}
         </td>
       );
     case "Expiry Date":
       return (
         <td key={col} className="p-2 text-center">
-          {rowData?.ExpiryDate ? formatDate(rowData?.ExpiryDate?.iso) : "-"}
+          {rowData?.ExpiryDate
+            ? formatDateToDdMmmYyyy(rowData?.ExpiryDate?.iso)
+            : "-"}
         </td>
       );
     case "Sent Date":
       return (
         <td key={col} className="p-2 text-center">
-          {rowData?.DocSentAt ? formatDate(rowData?.DocSentAt?.iso) : "-"}
+          {rowData?.DocSentAt
+            ? formatDateToDdMmmYyyy(rowData?.DocSentAt?.iso)
+            : "-"}
         </td>
       );
     case "Signers":

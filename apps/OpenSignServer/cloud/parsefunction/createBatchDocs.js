@@ -1,13 +1,14 @@
 import axios from 'axios';
 import { cloudServerUrl, mailTemplate, replaceMailVaribles, serverAppId } from '../../Utils.js';
+import { setDocumentCount } from '../../utils/CountUtils.js';
+
 const serverUrl = cloudServerUrl; //process.env.SERVER_URL;
 const appId = serverAppId;
 async function deductcount(docsCount, extUserId) {
   try {
-    const extCls = new Parse.Object('contracts_Users');
-    extCls.id = extUserId;
-    extCls.increment('DocumentCount', docsCount);
-    const resExt = await extCls.save(null, { useMasterKey: true });
+    if (extUserId) {
+      setDocumentCount(extUserId);
+    }
   } catch (err) {
     console.log('Err in deduct in quick send', err);
   }
