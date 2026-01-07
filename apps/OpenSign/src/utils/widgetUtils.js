@@ -1,4 +1,4 @@
-import { generateTitleFromFilename } from "../constant/Utils";
+import { generateTitleFromFilename, selectFormat } from "../constant/Utils";
 import { base64StringtoFile, uploadFile } from "./fileUtils";
 import { sanitizeFileName } from "./sanitizeFileName";
 import Parse from "parse";
@@ -135,3 +135,107 @@ export const getInitials = (name) => {
 
   return `${first[0].toUpperCase()} ${second[0].toUpperCase()}`;
 };
+
+// Function to check if a string is valid Base64 (supports data URL)
+export const isValidBase64 = (str) => {
+  if (!str || typeof str !== "string") return false;
+
+  // Remove data URL prefix if present
+  const cleanedStr = str.split(",").pop()?.trim();
+  if (!cleanedStr) return false;
+
+  // Length must be divisible by 4
+  if (cleanedStr.length % 4 !== 0) return false;
+
+  // Base64 or Base64URL regex
+  const base64Regex =
+    /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/;
+
+  if (!base64Regex.test(cleanedStr)) return false;
+
+  try {
+    // atob throws if invalid
+    atob(cleanedStr);
+    return true;
+  } catch {
+    return false;
+  }
+};
+export const addPreferenceOpt = (owner, type, role, isSignyourself) => {
+  const widget = owner?.WidgetPreferences?.find((w) => w.type === type) || {};
+  switch (type) {
+    case "date": {
+      const signingDate = widget?.isSigningDate ? "today" : widget?.date || "";
+      const isReadOnly = widget?.isReadOnly || false;
+      const isPrefill = role && role === "prefill";
+      const format =
+        widget?.format || selectFormat(owner?.DateFormat) || "MM/DD/YYYY";
+      const prefillDate = new Date();
+      const response = isPrefill
+        ? formatDate({ date: prefillDate, format: format })
+        : signingDate || "";
+      const option =
+        isSignyourself || isPrefill ? {} : { isReadOnly: isReadOnly };
+      return {
+        response: response,
+        ...option,
+        format: widget?.format || "MM/dd/yyyy"
+      };
+    }
+    default:
+      return {};
+  }
+};
+
+export function formatDate(dateObj) {
+  const format = dateObj?.format?.toLowerCase();
+  const date = new Date(dateObj.date);
+
+  // zero-padded day and month
+  const dd = String(date.getDate()).padStart(2, "0");
+  const mm = String(date.getMonth() + 1).padStart(2, "0");
+  const yyyy = date.getFullYear();
+
+  // month names
+  const shortNames = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec"
+  ];
+  const longNames = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December"
+  ];
+  const mmm = shortNames[date.getMonth()];
+  const mmmm = longNames[date.getMonth()];
+
+  // a map of token → replacement
+  const tokens = { yyyy: yyyy, mm: mm, dd: dd, mmm: mmm, mmmm: mmmm };
+
+  // Replace longer tokens first
+  return format
+    .replace(/yyyy/, tokens.yyyy)
+    .replace(/mmmm/, tokens.mmmm)
+    .replace(/mmm/, tokens.mmm)
+    .replace(/mm/, tokens.mm)
+    .replace(/dd/, tokens.dd);
+}

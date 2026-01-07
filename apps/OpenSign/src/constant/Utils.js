@@ -9,7 +9,11 @@ import fontkit from "@pdf-lib/fontkit";
 import { themeColor } from "./const";
 import { format, toZonedTime } from "date-fns-tz";
 import i18n from "../i18n";
-import { applyNumberFormulasToPages, buildDownloadFilename } from "../utils";
+import {
+  applyNumberFormulasToPages,
+  buildDownloadFilename,
+  addPreferenceOpt
+} from "../utils";
 
 export const fontsizeArr = [2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28];
 export const fontColorArr = ["red", "black", "blue", "yellow"];
@@ -18,6 +22,7 @@ export const isTab = 767 < window.innerWidth < 1023;
 export const isHighResolution = window.innerWidth > 1023;
 export const isTabAndMobile = window.innerWidth < 1023;
 export const textInputWidget = "text input";
+export const drawWidget = "draw";
 export const textWidget = "text";
 export const radioButtonWidget = "radio button";
 export const cellsWidget = "cells";
@@ -356,7 +361,8 @@ export const widgets = [
     iconSize: "19px"
   },
   { type: radioButtonWidget, icon: "fa-light fa-circle-dot", iconSize: "20px" },
-  { type: "image", icon: "fa-light fa-image", iconSize: "20px" }
+  { type: "image", icon: "fa-light fa-image", iconSize: "20px" },
+  { type: drawWidget, icon: "fa-light fa-pen-nib", iconSize: "20px" }
 ];
 
 export const getDate = (dateformat) => {
@@ -516,10 +522,15 @@ export const addWidgetOptions = (
       const dateFormat = signer?.DateFormat
         ? selectFormat(signer?.DateFormat)
         : "MM/dd/yyyy";
+      const options = addPreferenceOpt(signer, "date", role);
       return {
         ...defaultOpt,
-        response: role === "prefill" ? getDate(signer?.DateFormat) : "",
-        validation: { format: dateFormat, type: "date-format" }
+        response: options?.response || "",
+        isReadOnly: options?.isReadOnly || false,
+        validation: {
+          format: options?.format || dateFormat,
+          type: "date-format"
+        }
       };
     }
     case "image":
@@ -540,6 +551,8 @@ export const addWidgetOptions = (
       };
     case textWidget:
       return defaultOpt;
+    case drawWidget:
+      return defaultOpt;
     default:
       return {};
   }
@@ -549,7 +562,8 @@ export const addWidgetSelfsignOptions = (
   type,
   getWidgetValue,
   owner,
-  placeholder
+  placeholder,
+  isSignyourself
 ) => {
   let defaultOpt;
   //condition to handle widgets name field
@@ -604,10 +618,17 @@ export const addWidgetSelfsignOptions = (
       const dateFormat = owner?.DateFormat
         ? selectFormat(owner?.DateFormat)
         : "MM/dd/yyyy";
+      const options = addPreferenceOpt(owner, "date", "", isSignyourself);
       return {
         ...defaultOpt,
-        response: getDate(owner?.DateFormat),
-        validation: { format: dateFormat, type: "date-format" }
+        response: options?.response || "",
+        ...(!isSignyourself
+          ? { isReadOnly: options?.isReadOnly || false }
+          : {}),
+        validation: {
+          format: options?.format || dateFormat,
+          type: "date-format"
+        }
       };
     }
     case "image":
@@ -655,10 +676,13 @@ export const defaultWidthHeight = (type) => {
       return { width: 5, height: 10 };
     case textWidget:
       return { width: 150, height: 19 };
+    case drawWidget:
+      return { width: 150, height: 60 };
     default:
       return { width: 150, height: 60 };
   }
 };
+//convert url to base64
 export async function getBase64FromUrl(url, autosign) {
   const data = await fetch(url);
   const blob = await data.blob();
@@ -1458,19 +1482,26 @@ export function onSaveSign(
       const signImg = typedSignature
         ? convertTextToImg(typeFont, typedSignature, fontColor, widgetDims)
         : signatureImg;
-      return {
-        ...position,
-        ...(type === "type" ? { Width: posWidth } : {}),
-        ...(type === "type" ? { Height: posHeight } : {}),
-        SignUrl: signImg,
-        ...(isSignOrInitials && { signatureType: type || "" }),
-        options: { ...position.options, response: signImg },
-        ...(typedSignature && {
-          typeSignature: typedSignature,
-          typeFont: typeFont ?? "Fasthand",
-          fontColor: fontColor ?? "blue"
-        })
-      };
+      if (widgetsType === drawWidget) {
+        return {
+          ...position,
+          options: { ...position.options, response: signImg }
+        };
+      } else {
+        return {
+          ...position,
+          ...(type === "type" ? { Width: posWidth } : {}),
+          ...(type === "type" ? { Height: posHeight } : {}),
+          SignUrl: signImg,
+          ...(isSignOrInitials && { signatureType: type || "" }),
+          options: { ...position.options, response: signImg },
+          ...(typedSignature && {
+            typeSignature: typedSignature,
+            typeFont: typeFont ?? "Fasthand",
+            fontColor: fontColor ?? "blue"
+          })
+        };
+      }
     }
     return position;
   });
@@ -1482,7 +1513,7 @@ export function onSaveSign(
     return obj;
   });
   //condition  when draw/upload signature/initials then apply it all related to widgets (draw, typed signature or default signature)
-  if (isApplyAll || isAutoSign) {
+  if ((isApplyAll || isAutoSign) && widgetsType !== drawWidget) {
     const updatedArray = updateXYposition.map((page) => ({
       ...page,
       pos: page.pos.map((item) => {
@@ -1883,6 +1914,13 @@ export const embedWidgetsToDoc = async (
     } else {
       updateItem = item.pos;
     }
+    const ImgTypeWidget = [
+      "signature",
+      "stamp",
+      "initials",
+      "image",
+      drawWidget
+    ];
     const pageNo = item.pageNumber;
     const widgetsPositionArr = updateItem;
     const pages = pdfDoc.getPages();
@@ -1908,14 +1946,13 @@ export const embedWidgetsToDoc = async (
       images = await Promise.all(
         widgetsPositionArr.map(async (widget) => {
           // `SignUrl` this is wrong nomenclature and maintain for older code in this options we save base64 of signature image from sign pad
-          let signbase64 = widget.SignUrl && widget.SignUrl;
+          let signbase64 = widget?.options?.response;
           const widgetDims = { Width: widget.Width, Height: widget.Height };
-          if (signbase64) {
+          if (signbase64 && ImgTypeWidget.includes(widget.type)) {
             if (!isBase64(signbase64) && prefillImg) {
               const imgData = prefillImg?.find((x) => x?.id === widget?.key);
               signbase64 = imgData?.base64;
             }
-
             // let arr = signbase64.split(",");
             // const mime = arr[0].match(/:(.*?);/)[1];
             const signatureImg = await convertBase64ToImg(
@@ -1947,9 +1984,7 @@ export const embedWidgetsToDoc = async (
       if (hasError) break; // Stop the inner loop if an error occurred
       try {
         let img;
-        if (
-          ["signature", "stamp", "initials", "image"].includes(position.type)
-        ) {
+        if (ImgTypeWidget.includes(position.type)) {
           if (images[id].mimetype === "image/png") {
             img = await pdfDoc.embedPng(images[id].arrayBuffer);
           } else {
@@ -3333,8 +3368,8 @@ export async function handleSignatureType(tenantSignTypes, signatureType) {
   return updatedSignatureType;
 }
 
-// `formatDate` is used to format date to dd-mmm-yyy
-export const formatDate = (date) => {
+// `formatDateToDdMmmYyyy` is used to format date to dd-mmm-yyyy
+export const formatDateToDdMmmYyyy = (date) => {
   // Create a Date object
   const newDate = new Date(date);
   // Format the date
@@ -3479,7 +3514,7 @@ export const mailTemplate = (param) => {
   const appName = "OpenSign™";
   const logo = `<div style='padding:10px'><img src='https://qikinnovation.ams3.digitaloceanspaces.com/logo.png' height='50' /></div>`;
 
-  const opurl = ` <a href='https://www.opensignlabs.com' target=_blank>here</a>.</p></div></div></body></html>`;
+  const opurl = ` <a  href="mailto:complaint@opensiglabs.com" target=_blank>here</a>.</p></div></div></body></html>`;
   const subject = `${param.senderName} has requested you to sign "${param.title}"`;
   const body =
     "<html><head><meta http-equiv='Content-Type' content='text/html;charset=UTF-8' /></head><body><div style='background-color:#f5f5f5;padding:20px'><div style='background:white;padding-bottom:20px'>" +
@@ -3502,7 +3537,7 @@ export const mailTemplate = (param) => {
     appName +
     ". For any queries regarding this email, please contact the sender " +
     param.senderMail +
-    " directly. If you think this email is inappropriate or spam, you may file a complaint with " +
+    " directly. If you think this email is inappropriate or spam, you may file a complaints with " +
     appName +
     opurl;
 

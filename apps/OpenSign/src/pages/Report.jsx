@@ -10,6 +10,7 @@ import ColumnSelector from "../components/ColumnSelector";
 import TemplatesReport from "../reports/template/TemplatesReport";
 import DocumentsReport from "../reports/document/DocumentsReport";
 import { templateReportTour } from "../json/ReportTour";
+import { withSessionValidation } from "../utils";
 
 const Report = () => {
   const { id } = useParams();
@@ -31,6 +32,7 @@ const Report = () => {
   const [columnLabels, setColumnLabels] = useState({});
   const [defaultColumns, setDefaultColumns] = useState([]);
   const [isColumnModal, setIsColumnModal] = useState(false);
+  const [searchLoader, setSearchLoader] = useState(false);
   const debounceTimer = useRef(null);
   // Number of documents to display per page (should always be half of docLimit for proper pagination)
   const docPerPage = 10;
@@ -73,13 +75,14 @@ const Report = () => {
     // eslint-disable-next-line
   }, [isNextRecord]);
 
-  const handleSearchChange = async (e) => {
+  const handleSearchChange = withSessionValidation(async (e) => {
     const term = e.target.value.toLowerCase();
     setSearchTerm(term);
     if (debounceTimer.current) {
       clearTimeout(debounceTimer.current);
     }
     debounceTimer.current = setTimeout(async () => {
+      setSearchLoader(true);
       try {
         const headers = {
           "Content-Type": "application/json",
@@ -98,13 +101,15 @@ const Report = () => {
           setIsMoreDocs(data.length >= docPerPage);
           setIsNextRecord(false);
           setIsSearchResult(true);
+          setSearchLoader(false);
         }
       } catch (err) {
         console.error("Search error:", err);
+        setSearchLoader(false);
       }
     }, 300);
     setIsSearchResult(false);
-  };
+  });
 
   const handleSearchPaste = (e) => {
     setTimeout(() => {
@@ -119,113 +124,113 @@ const Report = () => {
       }
     };
   }, []);
-  const getReportData = async (
-    skipUserRecord = 0,
-    limit = 20,
-    term = searchTerm
-  ) => {
-    // setIsLoader(true);
-    const json = reportJson(id);
-    if (json) {
-      setActions(json.actions);
-      const savedCols = JSON.parse(
-        localStorage.getItem("reportColumns") || "{}"
-      );
-      const visible = savedCols[id]?.visible || json.heading;
-      const labels = savedCols[id]?.labels || {};
-      if (!savedCols[id] || id === "contacts") {
-        savedCols[id] = { visible: json.heading, labels: {} };
-        localStorage.setItem("reportColumns", JSON.stringify(savedCols));
-      }
-      setVisibleColumns(visible);
-      setColumnLabels(labels);
-      setHeading(visible);
-      setDefaultColumns(json.heading);
-      setReportName(json.reportName);
-      setReportHelp(json?.helpMsg);
-      const currentUser = Parse.User.current().id;
+  const getReportData = withSessionValidation(
+    async (skipUserRecord = 0, limit = 20, term = searchTerm) => {
+      // setIsLoader(true);
+      const json = reportJson(id);
+      if (json) {
+        setActions(json.actions);
+        const savedCols = JSON.parse(
+          localStorage.getItem("reportColumns") || "{}"
+        );
+        const visible = savedCols[id]?.visible || json.heading;
+        const labels = savedCols[id]?.labels || {};
+        if (!savedCols[id] || id === "contacts") {
+          savedCols[id] = { visible: json.heading, labels: {} };
+          localStorage.setItem("reportColumns", JSON.stringify(savedCols));
+        }
+        setVisibleColumns(visible);
+        setColumnLabels(labels);
+        setHeading(visible);
+        setDefaultColumns(json.heading);
+        setReportName(json.reportName);
+        setReportHelp(json?.helpMsg);
+        const currentUser = Parse.User.current().id;
 
-      const headers = {
-        "Content-Type": "application/json",
-        "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
-        sessiontoken: localStorage.getItem("accesstoken")
-      };
-      try {
-        const skipRecord = id === "4Hhwbp482K" ? 0 : skipUserRecord;
-        const limitRecord = id === "4Hhwbp482K" ? 200 : limit;
-        const params = { reportId: id, skip: skipRecord, limit: limitRecord };
-        if (term) {
-          params.searchTerm = term;
-        }
-        const url = `${localStorage.getItem("baseUrl")}functions/getReport`;
-        const res = await axios.post(url, params, {
-          headers: headers,
-          signal: abortController.signal // is used to cancel fetch query
-        });
-        const extraHeads =
-          id === "4Hhwbp482K" ? [...extraCols, "Expiry Date"] : extraCols;
-        setAllColumns(Array.from(new Set([...json.heading, ...extraHeads])));
-        if (id === "6TeaPr321t") {
-          setTourData(templateReportTour);
-        }
-        if (id === "4Hhwbp482K") {
-          const listData = res.data?.result.filter((x) => x.Signers.length > 0);
-          let arr = [];
-          for (const obj of listData) {
-            const isSigner = obj?.Signers?.some(
-              (item) => item.UserId.objectId === currentUser
+        const headers = {
+          "Content-Type": "application/json",
+          "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
+          sessiontoken: localStorage.getItem("accesstoken")
+        };
+        try {
+          const skipRecord = id === "4Hhwbp482K" ? 0 : skipUserRecord;
+          const limitRecord = id === "4Hhwbp482K" ? 200 : limit;
+          const params = { reportId: id, skip: skipRecord, limit: limitRecord };
+          if (term) {
+            params.searchTerm = term;
+          }
+          const url = `${localStorage.getItem("baseUrl")}functions/getReport`;
+          const res = await axios.post(url, params, {
+            headers: headers,
+            signal: abortController.signal // is used to cancel fetch query
+          });
+          const extraHeads =
+            id === "4Hhwbp482K" ? [...extraCols, "Expiry Date"] : extraCols;
+          setAllColumns(Array.from(new Set([...json.heading, ...extraHeads])));
+          if (id === "6TeaPr321t") {
+            setTourData(templateReportTour);
+          }
+          if (id === "4Hhwbp482K") {
+            const listData = res.data?.result.filter(
+              (x) => x.Signers.length > 0
             );
-            if (isSigner) {
-              let isRecord;
-              if (obj?.AuditTrail && obj?.AuditTrail.length > 0) {
-                isRecord = obj?.AuditTrail.some(
-                  (item) =>
-                    item?.UserPtr?.UserId?.objectId === currentUser &&
-                    item.Activity === "Signed"
-                );
-              } else {
-                isRecord = false;
-              }
-              if (isRecord === false) {
-                arr.push(obj);
+            let arr = [];
+            for (const obj of listData) {
+              const isSigner = obj?.Signers?.some(
+                (item) => item.UserId.objectId === currentUser
+              );
+              if (isSigner) {
+                let isRecord;
+                if (obj?.AuditTrail && obj?.AuditTrail.length > 0) {
+                  isRecord = obj?.AuditTrail.some(
+                    (item) =>
+                      item?.UserPtr?.UserId?.objectId === currentUser &&
+                      item.Activity === "Signed"
+                  );
+                } else {
+                  isRecord = false;
+                }
+                if (isRecord === false) {
+                  arr.push(obj);
+                }
               }
             }
-          }
-          if (arr.length === docPerPage) {
-            setIsMoreDocs(true);
-          } else {
-            setIsMoreDocs(false);
-          }
-          setList((prevRecord) =>
-            prevRecord.length > 0 ? [...prevRecord, ...arr] : arr
-          );
-        } else {
-          if (res.data.result.length >= docPerPage) {
-            setIsMoreDocs(true);
-          } else {
-            setIsMoreDocs(false);
-          }
-          if (!res.data.result.error) {
-            setIsNextRecord(false);
+            if (arr.length === docPerPage) {
+              setIsMoreDocs(true);
+            } else {
+              setIsMoreDocs(false);
+            }
             setList((prevRecord) =>
-              prevRecord.length > 0
-                ? [...prevRecord, ...res.data.result]
-                : res.data.result
+              prevRecord.length > 0 ? [...prevRecord, ...arr] : arr
             );
+          } else {
+            if (res.data.result.length >= docPerPage) {
+              setIsMoreDocs(true);
+            } else {
+              setIsMoreDocs(false);
+            }
+            if (!res.data.result.error) {
+              setIsNextRecord(false);
+              setList((prevRecord) =>
+                prevRecord.length > 0
+                  ? [...prevRecord, ...res.data.result]
+                  : res.data.result
+              );
+            }
+          }
+          setIsLoader(false);
+        } catch (err) {
+          const isCancel = axios.isCancel(err);
+          if (!isCancel) {
+            console.log("err ", err);
+            setIsLoader(false);
           }
         }
+      } else {
         setIsLoader(false);
-      } catch (err) {
-        const isCancel = axios.isCancel(err);
-        if (!isCancel) {
-          console.log("err ", err);
-          setIsLoader(false);
-        }
       }
-    } else {
-      setIsLoader(false);
     }
-  };
+  );
 
   const commonProps = {
     ReportName: reportName,
@@ -243,6 +248,7 @@ const Report = () => {
     handleSearchPaste,
     isSearchResult,
     columnLabels,
+    searchLoader,
     openColumnModal: () => setIsColumnModal(true)
   };
   return (

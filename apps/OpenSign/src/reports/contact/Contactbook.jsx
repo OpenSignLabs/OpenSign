@@ -11,6 +11,7 @@ import { serverUrl_fn } from "../../constant/appinfo";
 import { useElSize } from "../../hook/useElSize";
 import ImportContact from "./ImportContact";
 import AddContact from "../../primitives/AddContact";
+import { withSessionValidation } from "../../utils";
 
 const Contactbook = (props) => {
   const titleRef = useRef(null);
@@ -110,7 +111,7 @@ const Contactbook = (props) => {
     }
   }, [isMoreDocs, pageNumbers, currentPage, setIsNextRecord]);
 
-  const handleActionBtn = async (act, item) => {
+  const handleActionBtn = withSessionValidation(async (act, item) => {
     if (act.action === "delete") {
       setIsDeleteModal({ [item.objectId]: true });
     } else if (act.action === "option") {
@@ -119,7 +120,7 @@ const Contactbook = (props) => {
       setContact(item);
       setIsModal({ [`edit_${item.objectId}`]: true });
     }
-  };
+  });
   // Get current list
   const indexOfLastDoc = currentPage * props.docPerPage;
   const indexOfFirstDoc = indexOfLastDoc - props.docPerPage;
@@ -163,7 +164,7 @@ const Contactbook = (props) => {
     props.setList((prevData) => [data, ...prevData]);
   };
 
-  const handleDelete = async (item) => {
+  const handleDelete = withSessionValidation(async (item) => {
     setIsDeleteModal({});
     setActLoader({ [`${item.objectId}`]: true });
     try {
@@ -191,7 +192,7 @@ const Contactbook = (props) => {
       showAlert("danger", t("something-went-wrong-mssg"));
       setActLoader({});
     }
-  };
+  });
   const handleClose = () => {
     setIsDeleteModal({});
   };
@@ -336,6 +337,7 @@ const Contactbook = (props) => {
             </thead>
             <tbody className="text-[12px]">
               {props.List?.length > 0 &&
+                !props.searchLoader &&
                 currentList.map((item, index) => (
                   <tr className="last:border-none border-y-[1px]" key={index}>
                     {props.heading.includes("Sr.No") && (
@@ -409,18 +411,27 @@ const Contactbook = (props) => {
                 ))}
             </tbody>
           </table>
-          {props.List?.length <= 0 && (
+          {(props.searchLoader || props.List?.length <= 0) && (
             <div className="flex flex-col items-center justify-center w-ful bg-base-100 text-base-content rounded-xl py-4">
-              <div className="w-[60px] h-[60px] overflow-hidden">
-                <img
-                  className="w-full h-full object-contain"
-                  src={pad}
-                  alt={t("no-data-avaliable")}
-                />
-              </div>
-              <div className="text-sm font-semibold">
-                {t("no-data-avaliable")}
-              </div>
+              {props.searchLoader ? (
+                <>
+                  <Loader />
+                  <div className="text-sm ">{t("loading-mssg")}</div>
+                </>
+              ) : (
+                <>
+                  <div className="w-[60px] h-[60px] overflow-hidden">
+                    <img
+                      className="w-full h-full object-contain"
+                      src={pad}
+                      alt={t("no-data-avaliable")}
+                    />
+                  </div>
+                  <div className="text-sm font-semibold">
+                    {t("no-data-avaliable")}
+                  </div>
+                </>
+              )}
             </div>
           )}
         </div>

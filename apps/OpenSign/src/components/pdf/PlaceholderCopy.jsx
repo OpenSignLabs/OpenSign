@@ -1,11 +1,16 @@
 import { useState } from "react";
 import ModalUi from "../../primitives/ModalUi";
-import { handleCopyNextToWidget, randomId } from "../../constant/Utils";
+import {
+  drawWidget,
+  handleCopyNextToWidget,
+  randomId
+} from "../../constant/Utils";
 import { useTranslation } from "react-i18next";
 import { setPrefillImg } from "../../redux/reducers/widgetSlice";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 function PlaceholderCopy(props) {
+  const { prefillImg } = useSelector((state) => state.widget);
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const copyType = [
@@ -151,12 +156,17 @@ function PlaceholderCopy(props) {
         if (
           filterSignerPosition[0]?.Role === "prefill" &&
           currentPlaceholder?.options?.response &&
-          currentPlaceholder?.type === "image"
+          (currentPlaceholder?.type === "image" ||
+            currentPlaceholder?.type === drawWidget)
         ) {
+          const getPrefillImg = prefillImg?.find(
+            (x) => x.id === currentPlaceholder?.key
+          );
+          const base64Img = getPrefillImg?.base64;
           dispatch(
             setPrefillImg({
               id: newId,
-              base64: currentPlaceholder?.options?.response
+              base64: base64Img
             })
           );
         }
@@ -254,15 +264,20 @@ function PlaceholderCopy(props) {
           props.setXyPosition,
           props?.Id
         );
-          if (
+        if (
           filterSignerPosition[0]?.Role === "prefill" &&
           currentXYposition?.options?.response &&
-          currentXYposition?.type === "image"
+          (currentXYposition?.type === "image" ||
+            currentXYposition?.type === drawWidget)
         ) {
+          const getPrefillImg = prefillImg?.find(
+            (x) => x.id === currentXYposition?.key
+          );
+          const base64Img = getPrefillImg?.base64;
           dispatch(
             setPrefillImg({
               id: newId,
-              base64: currentXYposition?.options?.response
+              base64: base64Img
             })
           );
         }

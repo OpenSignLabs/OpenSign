@@ -1,4 +1,3 @@
-import React from "react";
 import Tooltip from "../../primitives/Tooltip";
 import ReactQuill from "react-quill-new";
 import "../../styles/quill.css";
@@ -37,7 +36,6 @@ export function EmailBody(props) {
             theme="snow"
             value={props.requestBody}
             placeholder={t("email-placeholder")}
-            ref={props.editorRef}
             modules={module1}
             formats={formats}
             onChange={props.handleOnchangeRequest}

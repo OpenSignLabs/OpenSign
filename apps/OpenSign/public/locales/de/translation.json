@@ -393,7 +393,8 @@
     "radio button": "Radiobutton",
     "image": "Bild",
     "email": "E-Mail",
-    "number": "Zahl"
+    "number": "Zahl",
+    "draw": "Zeichnen"
   },
   "fields": "Felder",
   "recipients": "Empfänger",
@@ -516,7 +517,7 @@
   "placeholder-alert-4": "Sie haben erfolgreich E-Mails an alle Empfänger gesendet!",
   "placeholder-mail-alert": "Sie haben erfolgreich eine E-Mail an {{name}} gesendet. Die nachfolgenden Unterzeichner erhalten eine E-Mail, sobald {{name}} das Dokument unterzeichnet.",
   "placeholder-mail-alert-you": "Nachfolgende Unterzeichner erhalten E-Mails, sobald Sie das Dokument unterschreiben.",
-  "placeholder-alert-5": "Möchten Sie die Dokumente jetzt unterschreiben?",
+  "placeholder-alert-5": "Sie können jetzt unterschreiben oder es an Ihre E-Mail senden, um es später abzuschließen.",
   "placeholder-alert-6": "Bitte richten Sie den E-Mail-Adapter ein, um E-Mails zu senden!",
   "placeholder-alert-7": "Bitte wählen Sie einen Unterzeichner aus, um Platzhalter hinzuzufügen!",
   "email-subject": "E-Mail-Betreff",
@@ -1243,6 +1244,7 @@
   },
   "read-only-date-error": "Das schreibgeschützte Datums-Widget muss ein Standarddatum haben.",
   "set-date": "Datum festlegen",
+  "default-date": "Standarddatum",
   "set-today": "Unterzeichnungsdatum",
   "enter-name": "Name eingeben",
   "enter-email": "E-Mail eingeben",
@@ -1328,5 +1330,15 @@
   "working": "In Bearbeitung",
   "test-security-key": "Sicherheitsschlüssel testen",
   "generate": "Generieren",
-  "regenerate": "Neu generieren"
+  "regenerate": "Neu generieren",
+  "signing-date": "Signierdatum",
+  "date-widget": "Datums-Widget",
+  "mail-failed": "Beim Senden der E-Mail ist etwas schiefgelaufen. Bitte versuchen Sie es erneut.",
+  "mail-status-head": "Nächster Schritt: Ihr Dokument unterschreiben?",
+  "send-to-email": "Per E-Mail senden",
+  "date-pref-help-sub-title": "Mit den Datums-Widget-Einstellungen können Sie die Standardkonfiguration für das Datums-Widget festlegen. Diese Standards werden automatisch angewendet, wenn Sie ein neues Datums-Widget zu einem Dokument oder einer Vorlage hinzufügen. Sie können jedes Datums-Widget jederzeit individuell anpassen, indem Sie auf das Zahnradsymbol klicken.",
+  "date-pref-help-format": "Wählen Sie das standardmäßige Datumsformat für Datums-Widgets.",
+  "date-pref-help-default-date": "Legen Sie einen Standard-Datumswert für Datums-Widgets fest.",
+  "date-pref-help-signing-date": "Wenn aktiviert, verwendet das Datums-Widget automatisch das Datum, an dem der Unterzeichner das Dokument signiert.",
+  "date-pref-help-read-only": "Wenn aktiviert, ist das Datums-Widget für den Unterzeichner schreibgeschützt."
 }

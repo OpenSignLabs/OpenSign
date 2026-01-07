@@ -58,15 +58,20 @@ async function sendMailProvider(req, plan, monthchange) {
                 });
             } else {
               const httpsAgent = new https.Agent({ rejectUnauthorized: false }); // Disable SSL validation
+              const localUrl = req.params.url;
+              const newlocalUrl = localUrl.replace(
+                'https://localhost:3001/api',
+                'http://localhost:8080'
+              );
               axios
-                .get(req.params.url, { responseType: 'stream', httpsAgent })
+                .get(newlocalUrl, { responseType: 'stream', httpsAgent: httpsAgent })
                 .then(response => {
                   response.data.pipe(Pdf);
                   Pdf.on('finish', () => resolve('success'));
                   Pdf.on('error', () => resolve('error'));
                 })
                 .catch(e => {
-                  console.log('error', e.message);
+                  console.log('error in localurl', e.message);
                   resolve('error');
                 });
             }

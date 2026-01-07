@@ -6,7 +6,8 @@ import {
   generatePdfName,
   embedWidgetsToDoc,
   randomId,
-  getBase64FromUrl
+  getBase64FromUrl,
+  drawWidget
 } from "../constant/Utils";
 import { PDFDocument } from "pdf-lib";
 
@@ -98,9 +99,9 @@ export const isValidPrefill = (prefillData) => {
     const emptyResponseObjects = getPlaceholder.flatMap((page) =>
       page.pos.filter(
         (item) =>
-          item?.type !== "checkbox" &&
           !item?.options?.defaultValue &&
-          !item?.options?.response
+          !item?.options?.response &&
+          item?.options?.status === "required"
       )
     );
     if (emptyResponseObjects.length > 0) {
@@ -175,21 +176,29 @@ export const savePrefillImg = async (Placeholders) => {
   const prefillData = Placeholders?.find((x) => x.Role === "prefill");
   if (prefillData) {
     const allImageFields = prefillData?.placeHolder.flatMap((p) =>
-      p.pos.filter((item) => item.type === "image")
+      p.pos.filter((item) => item.type === "image" || item.type === drawWidget)
     );
-    const hasImageType = allImageFields.some((p) => p.type === "image");
+    const hasImageType = allImageFields.some(
+      (p) => p.type === "image" || p.type === drawWidget
+    );
     if (hasImageType) {
       const imgArr = [];
       for (const ph of prefillData?.placeHolder || []) {
         for (const pos of ph?.pos || []) {
-          if (pos?.type === "image" && pos?.SignUrl) {
+          if (
+            (pos?.type === "image" || pos?.type === drawWidget) &&
+            pos?.options?.response
+          ) {
             const addSuffix = true;
-            const base64 = await getBase64FromUrl(pos?.SignUrl, addSuffix);
+            const base64 = await getBase64FromUrl(
+              pos?.options?.response,
+              addSuffix
+            );
             imgArr.push({
               id: pos?.key,
               base64: base64
             });
-          } else if (pos?.type === "image") {
+          } else if (pos?.type === "image" || pos?.type === drawWidget) {
             imgArr.push({
               id: pos?.key,
               base64: ""

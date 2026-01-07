@@ -64,10 +64,7 @@ import Alert from "../primitives/Alert";
 import LottieWithLoader from "../primitives/DotLottieReact";
 import * as utils from "../utils";
 import CustomizeMail from "../components/pdf/CustomizeMail";
-import {
-  resetWidgetState,
-  setPrefillImg
-} from "../redux/reducers/widgetSlice.js";
+import { resetWidgetState, setPrefillImg } from "../redux/reducers/widgetSlice";
 import ShareButton from "../primitives/ShareButton";
 
 const TemplatePlaceholder = () => {
@@ -235,7 +232,7 @@ const TemplatePlaceholder = () => {
     }
   };
   // `fetchTemplate` function in used to get Template from server and setPlaceholder ,setSigner if present
-  const fetchTemplate = async () => {
+  const fetchTemplate = utils.withSessionValidation(async () => {
     try {
       const tenantSignTypes = await fetchTenantDetails();
       const params = { templateId: templateId };
@@ -419,7 +416,7 @@ const TemplatePlaceholder = () => {
         setHandleError(t("something-went-wrong-mssg"));
       }
     }
-  };
+  });
 
   //function for setting position after drop signature button over pdf
   const addPositionOfSignature = (item, monitor) => {
@@ -974,6 +971,15 @@ const TemplatePlaceholder = () => {
         showAlert("danger", "please attach all role to signer");
       } else if (res?.status === "success") {
         setDocumentId(res.id);
+        const ownerId = pdfDetails[0].ExtUserPtr?.UserId?.objectId;
+        const firstSigner = signersdata[0];
+        const isOwner = firstSigner?.UserId?.objectId === ownerId;
+        if (pdfDetails[0]?.SendinOrder && isOwner) {
+          setCurrUserId(firstSigner?.objectId);
+          setIsSend(true);
+          return;
+        }
+
         setIsMailModal(true);
       }
     } catch (e) {
@@ -1333,6 +1339,9 @@ const TemplatePlaceholder = () => {
     isHideLabel,
     layout
   ) => {
+    const isPrefill = signerPos.some(
+      (x) => x?.Role === "prefill" && x.Id === uniqueId
+    );
     const filterSignerPos = signerPos.filter((data) => data.Id === uniqueId);
     if (filterSignerPos.length > 0) {
       const getPlaceHolder = filterSignerPos[0].placeHolder;
@@ -1400,16 +1409,21 @@ const TemplatePlaceholder = () => {
                     ...position.options,
                     name: dropdownName,
                     values: dropdownOptions,
-                    validation: {
-                      minRequiredCount: minCount,
-                      maxRequiredCount: maxCount
-                    },
+                    ...(!isPrefill
+                      ? {
+                          validation: {
+                            minRequiredCount: minCount,
+                            maxRequiredCount: maxCount
+                          }
+                        }
+                      : {}),
                     layout: layout,
                     isReadOnly: isReadOnly || false,
                     defaultValue: defaultValue,
                     isHideLabel: isHideLabel || false,
                     fontSize: textSize || 12,
-                    fontColor: textColor || "black"
+                    fontColor: textColor || "black",
+                    ...(isPrefill ? { status } : {})
                   }
                 };
               }
@@ -1704,7 +1718,6 @@ const TemplatePlaceholder = () => {
     setIsCreateDocModal(true);
     setIsUiLoading(false);
   };
-
   const handleUseButton = async () => {
     setIsCreateDocModal(false);
     //this function is used to open modal to show signers list
@@ -1713,8 +1726,9 @@ const TemplatePlaceholder = () => {
   };
 
   const handleRecipientSign = (docId, currUserId) => {
+    const docObjId = docId || documentId;
     if (currUserId) {
-      navigate(`/recipientSignPdf/${docId}/${currUserId}`);
+      navigate(`/recipientSignPdf/${docObjId}/${currUserId}`);
     } else {
       navigate(`/recipientSignPdf/${docId}`);
     }
@@ -2163,6 +2177,7 @@ const TemplatePlaceholder = () => {
           setUniqueId={setUniqueId}
           signatureTypes={signatureType}
           penColors={pdfDetails?.[0]?.PenColors}
+          role={roleName}
         />
       )}
       <RotateAlert
@@ -2187,11 +2202,13 @@ const TemplatePlaceholder = () => {
       <ModalUi
         isOpen={isSend}
         title={
-          mailStatus === "success"
-            ? t("mails-sent")
-            : mailStatus === "quotareached"
-              ? t("quota-mail-head")
-              : t("mail-not-delivered")
+          !pdfDetails[0]?.SendinOrder
+            ? mailStatus === "success"
+              ? t("mails-sent")
+              : mailStatus === "quotareached"
+                ? t("quota-mail-head")
+                : t("mail-not-delivered")
+            : t("mail-status-head")
         }
         handleClose={() => {
           setIsSend(false);
@@ -2199,66 +2216,103 @@ const TemplatePlaceholder = () => {
         }}
       >
         <div className="h-[100%] p-[20px] text-base-content">
-          {mailStatus === "success" ? (
-            <div className="text-center mb-[10px]">
-              <LottieWithLoader />
-              {documentDetails.SendinOrder ? (
-                <p>
-                  {currUserId
-                    ? t("placeholder-mail-alert-you")
-                    : t("placeholder-mail-alert", {
-                        name: signersdata[0]?.Name
-                      })}
-                </p>
+          <div className="flex flex-col items-center gap-5">
+            <div>
+              {mailStatus === "success" ? (
+                <div className="text-center mb-[10px]">
+                  <LottieWithLoader />
+                  {documentDetails.SendinOrder ? (
+                    <p>
+                      {currUserId
+                        ? t("placeholder-mail-alert-you")
+                        : t("placeholder-mail-alert", {
+                            name: signersdata[0]?.Name
+                          })}
+                    </p>
+                  ) : (
+                    <p>{t("placeholder-alert-4")}</p>
+                  )}
+                </div>
+              ) : mailStatus === "quotareached" ? (
+                <div className="flex flex-col gap-y-3">
+                  <div className="my-3">{handleShareList()}</div>
+                </div>
+              ) : mailStatus === "failed" ? (
+                <p>{t("mail-failed")} </p>
               ) : (
-                <p>{t("placeholder-alert-4")}</p>
+                <div className="mb-[10px]">
+                  {!pdfDetails[0]?.SendinOrder &&
+                    (mailStatus === "dailyquotareached" ? (
+                      <p>{t("daily-quota-reached")}</p>
+                    ) : (
+                      <p>{t("placeholder-alert-6")}</p>
+                    ))}
+                  {currUserId && (
+                    <span className="mt-1">{t("placeholder-alert-5")}</span>
+                  )}
+                </div>
               )}
-              {currUserId && <p>{t("placeholder-alert-5")}</p>}
-            </div>
-          ) : mailStatus === "quotareached" ? (
-            <div className="flex flex-col gap-y-3">
-              <div className="my-3">{handleShareList()}</div>
-            </div>
-          ) : (
-            <div className="mb-[10px]">
-              {mailStatus === "dailyquotareached" ? (
-                <p>{t("daily-quota-reached")}</p>
-              ) : (
-                <p>{t("placeholder-alert-6")}</p>
-              )}
-              {currUserId && <p className="mt-1">{t("placeholder-alert-5")}</p>}
-            </div>
-          )}
-          {!mailStatus && (
-            <div className="w-full h-[1px] bg-[#9f9f9f] my-[15px]"></div>
-          )}
-          {mailStatus !== "quotareached" && (
-            <div
-              className={
-                mailStatus === "success" ? "flex justify-center mt-1" : ""
-              }
-            >
-              {currUserId && (
-                <button
-                  onClick={() =>
-                    handleRecipientSign(documentDetails?.objectId, currUserId)
+              {mailStatus !== "quotareached" && (
+                <div
+                  className={
+                    mailStatus === "success"
+                      ? "flex justify-center mt-1"
+                      : "flex items-center justify-center mt-7"
                   }
-                  type="button"
-                  className="op-btn op-btn-primary mr-1"
                 >
-                  {t("yes")}
-                </button>
+                  {currUserId && (
+                    <button
+                      onClick={() =>
+                        handleRecipientSign(
+                          documentDetails?.objectId,
+                          currUserId
+                        )
+                      }
+                      type="button"
+                      className="op-btn op-btn-primary mr-1"
+                    >
+                      {t("sign-now")}
+                    </button>
+                  )}
+                  <button
+                    onClick={() => {
+                      navigate("/report/1MwEuxLEkF");
+                    }}
+                    type="button"
+                    className="op-btn op-btn-ghost text-base-content"
+                  >
+                    {currUserId ? t("no") : t("close")}
+                  </button>
+                </div>
               )}
-              <button
-                onClick={() => {
-                  navigate("/report/1MwEuxLEkF");
-                }}
-                type="button"
-                className="op-btn op-btn-ghost text-base-content"
-              >
-                {currUserId ? t("no") : t("close")}
-              </button>
             </div>
+            {mailStatus !== "success" &&
+              currUserId &&
+              pdfDetails[0]?.SendinOrder && (
+                <div className="op-divider text-base-content mx-[0%] my-1 font-medium">
+                  {t("or")}
+                </div>
+              )}
+            {mailStatus !== "success" &&
+              currUserId &&
+              pdfDetails[0]?.SendinOrder && (
+                <div
+                  className="op-btn op-btn-outline w-[50%] md:w-[35%] mt-1"
+                  onClick={() => {
+                    setIsSend(false);
+                    setIsMailModal(true);
+                  }}
+                >
+                  <i
+                    className="fa-regular fa-envelope"
+                    style={{ color: "#002864", fontSize: "19px" }}
+                  ></i>{" "}
+                  <span>{t("send-to-email")}</span>
+                </div>
+              )}
+          </div>
+          {!mailStatus && (
+            <div className="op-divider text-base-content mx-[0%] mt-3"></div>
           )}
         </div>
       </ModalUi>

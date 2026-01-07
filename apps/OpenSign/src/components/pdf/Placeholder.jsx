@@ -92,23 +92,25 @@ function Placeholder(props) {
 
   //function is used to convert date according to selected format
   const handleGetFormatDate = (data, isDateChange) => {
+    const format =
+      data?.format ||
+      selectDate?.format ||
+      props.pos?.options?.validation?.format;
     const isSpecialDateFormat =
       data?.format &&
-      ["dd-MM-yyyy", "dd.MM.yyyy", "dd/MM/yyyy"].includes(data?.format);
+      ["dd-MM-yyyy", "dd.MM.yyyy", "dd/MM/yyyy"].includes(format);
     let updateDate = data.date;
     let date = "";
     if (isSpecialDateFormat && updateDate) {
       date = isDateChange
-        ? moment(updateDate).format(changeDateToMomentFormat(data.format))
+        ? moment(updateDate).format(changeDateToMomentFormat(format))
         : updateDate;
     } else if (updateDate) {
       //using moment package is used to change date as per the format provided in selectDate obj e.g. - MM/dd/yyyy -> 03/12/2024
       const newDate = new Date(updateDate);
-      date = moment(newDate.getTime()).format(
-        changeDateToMomentFormat(data?.format)
-      );
+      date = moment(newDate.getTime()).format(changeDateToMomentFormat(format));
     }
-    setSelectDate({ date: date, format: data?.format });
+    setSelectDate({ date: date, format: format });
     return date;
   };
   const saveDateSetting = (data) => {
@@ -125,6 +127,10 @@ function Placeholder(props) {
   const handleSaveDate = (data, isDateChange) => {
     const date = isToday ? "today" : handleGetFormatDate(data, isDateChange);
     //`onChangeInput` is used to save data related to date in a placeholder field
+    const format =
+      data?.format ||
+      selectDate?.format ||
+      props.pos?.options?.validation?.format;
     onChangeInput(
       date,
       props.pos,
@@ -133,7 +139,7 @@ function Placeholder(props) {
       props.setXyPosition,
       props.data && props.data.Id,
       false,
-      data?.format,
+      format,
       props.fontSize || props.pos?.options?.fontSize || 12,
       props.fontColor || props.pos?.options?.fontColor || "black",
       formdata,
@@ -221,7 +227,7 @@ function Placeholder(props) {
         if (props?.currWidgetsDetails?.key === props.pos?.key) {
           props.handleLinkUser(props.data.Id);
         }
-        props.setUniqueId(props.data.Id);
+        props.setUniqueId && props.setUniqueId(props.data.Id);
         const checkIndex = props.xyPosition.findIndex(
           (data) => data.Id === props.data.Id
         );
@@ -938,14 +944,14 @@ function Placeholder(props) {
                   );
                 })}
               </select>
-              <span className="text-xs text-gray-400 ml-1">
+              <span className="text-xs text-gray-400 ml-1 uppercase">
                 {selectDate.format}
               </span>
             </div>
             {props?.data?.Role !== "prefill" && props?.isPlaceholder && (
               <>
                 <div className="flex flex-col md:flex-row md:items-center gap-2">
-                  <span>{t("set-date")} :</span>
+                  <span>{t("default-date")} :</span>
                   <DatePicker
                     renderCustomHeader={({ date, changeYear, changeMonth }) => (
                       <div className="flex justify-start md:ml-2">
@@ -1021,37 +1027,36 @@ function Placeholder(props) {
                     {t("clear")}
                   </span>
                 </div>
-                <div className="flex flex-row items-center gap-[10px]">
-                  {statusArr.map((data, ind) => {
-                    return (
-                      <div
-                        key={ind}
-                        className="flex flex-row gap-[5px] items-center"
-                      >
-                        <input
-                          className="mr-[2px] op-radio op-radio-xs"
-                          type="radio"
-                          name="status"
-                          onChange={() =>
-                            setFormdata({
-                              ...formdata,
-                              status: data.toLowerCase()
-                            })
-                          }
-                          checked={
-                            formdata.status.toLowerCase() === data.toLowerCase()
-                          }
-                        />
-                        <div className="text-[13px]">
-                          {t(`widget-status.${data}`)}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
               </>
             )}
-
+            <div className="flex flex-row items-center gap-[10px]">
+              {statusArr.map((data, ind) => {
+                return (
+                  <div
+                    key={ind}
+                    className="flex flex-row gap-[5px] items-center"
+                  >
+                    <input
+                      className="mr-[2px] op-radio op-radio-xs"
+                      type="radio"
+                      name="status"
+                      onChange={() =>
+                        setFormdata({
+                          ...formdata,
+                          status: data.toLowerCase()
+                        })
+                      }
+                      checked={
+                        formdata.status.toLowerCase() === data.toLowerCase()
+                      }
+                    />
+                    <div className="text-[13px]">
+                      {t(`widget-status.${data}`)}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
             <div className="flex flex-col md:flex-row gap-y-2 md:gap-y-0 gap-x-2">
               <div className="flex flex-row items-center">
                 <span className="capitalize">{t("font-size")} :</span>
@@ -1096,9 +1101,10 @@ function Placeholder(props) {
               </div>
             </div>
             {props?.isPlaceholder && props?.data?.Role !== "prefill" && (
-              <label className="flex items-center gap-1 cursor-pointer">
+              <div className="flex items-center gap-1 w-max">
                 <input
                   name="isReadOnly"
+                  id="isReadOnly"
                   type="checkbox"
                   checked={formdata?.isReadOnly}
                   className="op-checkbox op-checkbox-xs"
@@ -1109,8 +1115,13 @@ function Placeholder(props) {
                     })
                   }
                 />
-                <span className="capitalize ml-[2px]">{t("read-only")}</span>
-              </label>
+                <label
+                  htmlFor="isReadOnly"
+                  className="capitalize ml-[2px] mb-0 cursor-pointer"
+                >
+                  {t("read-only")}
+                </label>
+              </div>
             )}
           </div>
           <div className="h-[1px] w-full my-[15px] bg-[#9f9f9f]"></div>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import ModalUi from "../../primitives/ModalUi";
 import { radioButtonWidget } from "../../constant/Utils";
 import { useTranslation } from "react-i18next";
@@ -270,7 +270,8 @@ function DropdownWidgetOption(props) {
                   </select>
                 </>
               )}
-            {props.type !== "checkbox" && !isPrefillExist && (
+            {((props.type !== "checkbox" && !isPrefillExist) ||
+              isPrefillExist) && (
               <div className="flex flex-row gap-[10px] mt-[0.5rem]">
                 {statusArr.map((data, ind) => (
                   <div

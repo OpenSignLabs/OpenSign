@@ -7,6 +7,7 @@ import EditorToolbar, { module1, module2, formats } from "../pdf/EditorToolbar";
 import Tooltip from "../../primitives/Tooltip";
 import Alert from "../../primitives/Alert";
 import Loader from "../../primitives/Loader";
+import { withSessionValidation } from "../../utils";
 
 const MailTemplateEditor = ({
   info,
@@ -79,7 +80,7 @@ const MailTemplateEditor = ({
     }
   };
   //function to save completion email template
-  const handleSaveCompletionEmail = async (e) => {
+  const handleSaveCompletionEmail = withSessionValidation(async (e) => {
     e.preventDefault();
     try {
       const replacedHtmlBody = completionBody.replace(/"/g, "'");
@@ -103,9 +104,9 @@ const MailTemplateEditor = ({
       setIsAlert({ type: "danger", msg: t("something-went-wrong-mssg") });
       setTimeout(() => setIsAlert({ type: "", msg: "" }), 1500);
     }
-  };
+  });
   //function to save request email template
-  const handleSaveRequestEmail = async (e) => {
+  const handleSaveRequestEmail = withSessionValidation(async (e) => {
     e.preventDefault();
     try {
       const replacedHtmlBody = requestBody.replace(/"/g, "'");
@@ -135,10 +136,10 @@ const MailTemplateEditor = ({
       setIsAlert({ type: "danger", msg: t("something-went-wrong-mssg") });
       setTimeout(() => setIsAlert({ type: "", msg: "" }), 1500);
     }
-  };
+  });
 
   //function to use reset form
-  const handleReset = async (request, completion) => {
+  const handleReset = withSessionValidation(async (request, completion) => {
     let extUser =
       localStorage.getItem("Extand_Class") &&
       JSON.parse(localStorage.getItem("Extand_Class"))?.[0];
@@ -185,7 +186,7 @@ const MailTemplateEditor = ({
         setIsMailLoader((p) => ({ ...p, completion: false }));
       }
     }
-  };
+  });
   //function for handle ontext change and save again text in delta
   const handleOnchangeRequest = () => {
     if (editorRef.current) {

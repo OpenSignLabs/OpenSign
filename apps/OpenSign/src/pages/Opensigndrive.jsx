@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
-import { lazyWithRetry } from "../utils";
+import { lazyWithRetry, withSessionValidation } from "../utils";
 import "../styles/opensigndrive.css";
 import {
   getThemeIconColor,
@@ -279,7 +279,7 @@ function Opensigndrive() {
     setNewFolderName(value);
   };
   //function for create folder
-  const handleAddFolder = async (e) => {
+  const handleAddFolder = withSessionValidation(async (e) => {
     e.preventDefault();
     if (newFolderName) {
       setIsFolderLoader(true);
@@ -313,7 +313,12 @@ function Opensigndrive() {
           const template = new Parse.Object(foldercls);
           template.set("Name", newFolderName);
           template.set("Type", "Folder");
-
+          const ExtCls = JSON.parse(localStorage.getItem("Extand_Class"));
+          template.set("ExtUserPtr", {
+            __type: "Pointer",
+            className: "contracts_Users",
+            objectId: ExtCls[0].objectId
+          });
           if (parentId) {
             template.set("Folder", folderPtr);
           }
@@ -338,7 +343,7 @@ function Opensigndrive() {
     } else {
       setError(t("fill-field"));
     }
-  };
+  });
 
   //function to use sorting document list according to type and order
   const sortedBy = (appInfo, type, order) => {

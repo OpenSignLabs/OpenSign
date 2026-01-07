@@ -3,6 +3,7 @@ import Parse from "parse";
 import Alert from "../../../primitives/Alert";
 import Loader from "../../../primitives/Loader";
 import { useTranslation } from "react-i18next";
+import { withSessionValidation } from "../../../utils";
 
 const CreateFolder = ({ parentFolderId, onSuccess, folderCls, onBack }) => {
   const folderPtr = {
@@ -18,7 +19,7 @@ const CreateFolder = ({ parentFolderId, onSuccess, folderCls, onBack }) => {
     setAlert({ type: type, message: msg });
     setTimeout(() => setAlert({ type: type, message: "" }), 1000);
   };
-  const handleCreateFolder = async (event) => {
+  const handleCreateFolder = withSessionValidation(async (event) => {
     event.preventDefault();
     handleLoader(true);
     if (name) {
@@ -41,6 +42,12 @@ const CreateFolder = ({ parentFolderId, onSuccess, folderCls, onBack }) => {
           template.set("Folder", folderPtr);
         }
         template.set("CreatedBy", Parse.User.createWithoutData(currentUser.id));
+        const ExtCls = JSON.parse(localStorage.getItem("Extand_Class"));
+        template.set("ExtUserPtr", {
+          __type: "Pointer",
+          className: "contracts_Users",
+          objectId: ExtCls[0].objectId
+        });
         const res = await template.save();
         if (res) {
           handleLoader(false);
@@ -52,7 +59,7 @@ const CreateFolder = ({ parentFolderId, onSuccess, folderCls, onBack }) => {
       handleLoader(false);
       showToast("info", t("fill-folder-name"));
     }
-  };
+  });
   const handleLoader = (status) => setIsLoader(status);
 
   return (

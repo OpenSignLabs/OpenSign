@@ -393,7 +393,8 @@
     "radio button": "bouton radio",
     "image": "image",
     "email": "e-mail",
-    "number": "nombre"
+    "number": "nombre",
+    "draw": "Dessiner"
   },
   "fields": "Des champs",
   "recipients": "Destinataires",
@@ -516,7 +517,7 @@
   "placeholder-alert-4": "Vous avez envoyé avec succès des mails à tous les",
   "placeholder-mail-alert": "Vous avez envoyé un e-mail avec succès à {{name}}. Les signataires suivants recevront un e-mail une fois que {{name}} aura signé le document.",
   "placeholder-mail-alert-you": "Les signataires suivants recevront un e-mail une fois que vous aurez signé le document.",
-  "placeholder-alert-5": "Voulez-vous signer des documents maintenant ?",
+  "placeholder-alert-5": "Vous pouvez signer maintenant ou l’envoyer à votre e-mail pour le terminer plus tard.",
   "placeholder-alert-6": "Veuillez configurer l'adaptateur de messagerie pour envoyer du courrier !",
   "placeholder-alert-7": "Veuillez sélectionner le signataire pour ajouter un espace réservé !",
   "email-subject": "Sujet du courriel",
@@ -1243,6 +1244,7 @@
   },
   "read-only-date-error": "Le widget de date en lecture seule doit avoir une date par défaut.",
   "set-date": "Définir la date",
+  "default-date": "Date par défaut",
   "set-today": "Date de signature",
   "enter-name": "Saisir le nom",
   "enter-email": "Saisir l'e-mail",
@@ -1328,5 +1330,15 @@
   "working": "En cours",
   "test-security-key": "Tester la clé de sécurité",
   "generate": "Générer",
-  "regenerate": "Régénérer"
+  "regenerate": "Régénérer",
+  "signing-date": "Date de signature",
+  "date-widget": "Widget de date",
+  "mail-failed": "Une erreur s'est produite lors de l'envoi de l'e-mail. Veuillez réessayer.",
+  "mail-status-head": "Étape suivante : signer votre document ?",
+  "send-to-email": "Envoyer par e-mail",
+  "date-pref-help-sub-title": "Les préférences du widget de date vous permettent de définir les paramètres par défaut du widget de date. Ces paramètres sont automatiquement appliqués lorsque vous ajoutez un nouveau widget de date à un document ou à un modèle. Vous pouvez toujours personnaliser chaque widget de date individuellement en cliquant sur l'icône d'engrenage.",
+  "date-pref-help-format": "Choisissez le format de date par défaut utilisé pour les widgets de date.",
+  "date-pref-help-default-date": "Définissez une valeur de date par défaut pour les widgets de date.",
+  "date-pref-help-signing-date": "Lorsqu'elle est activée, le widget de date utilise automatiquement la date à laquelle le signataire signe le document.",
+  "date-pref-help-read-only": "Lorsqu'elle est activée, le widget de date est en lecture seule pour le signataire."
 }
