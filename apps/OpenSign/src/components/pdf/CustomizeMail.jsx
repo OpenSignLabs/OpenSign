@@ -132,7 +132,7 @@ function CustomizeMail(props) {
                       className="op-link op-link-accent text-sm"
                       onClick={() => setIsCustomize(true)}
                     >
-                      {t("cutomize-email")}
+                      {t("customize-email")}
                     </span>
                   )
               }
