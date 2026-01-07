@@ -12,7 +12,7 @@ import { SaveFileSize } from "../constant/saveFileSize";
 import Alert from "../primitives/Alert";
 import Loader from "../primitives/Loader";
 import { useTranslation } from "react-i18next";
-import { sanitizeFileName } from "../utils";
+import { sanitizeFileName, withSessionValidation } from "../utils";
 
 const COLOR_CLASS = {
   blue: "text-blue-600",
@@ -140,7 +140,7 @@ const ManageSign = () => {
       setIsValue(false);
     }
   };
-  const handleSubmit = async (e) => {
+  const handleSubmit = withSessionValidation(async (e) => {
     e.preventDefault();
     const isUrl = image?.includes("https") || image?.includes("http");
     if (!isvalue) {
@@ -205,7 +205,7 @@ const ManageSign = () => {
         });
       }
     }
-  };
+  });
   function base64StringtoFile(base64String, filename) {
     let arr = base64String.split(","),
       // type of uploaded image

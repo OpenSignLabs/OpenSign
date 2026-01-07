@@ -24,12 +24,13 @@ import {
   generatePdfName,
   getDefaultDate,
   getDefaultFormat,
-  getBase64MimeType
+  getBase64MimeType,
+  drawWidget,
+  getBase64FromUrl
 } from "../../constant/Utils";
 import CellsWidget from "./CellsWidget";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import SignatureCanvas from "react-signature-canvas";
 import moment from "moment";
 import {
   setSaveSignCheckbox,
@@ -49,7 +50,8 @@ import { emailRegex } from "../../constant/const";
 import RegexParser from "regex-parser";
 import {
   saveToMySign,
-  getInitials
+  getInitials,
+  isValidBase64
 } from "../../utils";
 import Draw from "./tab/Draw";
 import DefaultSignature from "./tab/DefaultSignature";
@@ -159,7 +161,6 @@ function WidgetsValueModal(props) {
   const blockedTab = ["mysignature", "myinitials", "myStamp"];
   const showClearbtn =
     (!blocked.includes(type) && !blockedTab.includes(isTab));
-
   const [cellsValue, setCellsValue] = useState(() => {
     const count = currWidgetsDetails?.options?.cellCount || 5;
     const val =
@@ -231,7 +232,9 @@ function WidgetsValueModal(props) {
       }
     }
     else if (isSignOrInitials) {
-      setIsTab(currWidgetsDetails?.signatureType);
+      if (currWidgetsDetails?.signatureType) {
+        setIsTab(currWidgetsDetails?.signatureType);
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currWidgetsDetails]); // Added currWidgetsDetails to dependency array for reset logic
@@ -298,17 +301,23 @@ function WidgetsValueModal(props) {
       compressedFileSize(file, setImage);
     }
   };
-  const handleSavePrefillImg = async () => {
+  const handleSavePrefillImg = async (drawImg) => {
     setIsLoader(true);
+
     try {
       dispatch(
-        setPrefillImg({ id: currWidgetsDetails?.key, base64: image?.src })
+        setPrefillImg({
+          id: currWidgetsDetails?.key,
+          base64: drawImg || image?.src
+        })
       );
       const imageName = generatePdfName(16);
+
+      const imgType = image?.imgType || getBase64MimeType(drawImg);
       const imageUrl = await convertBase64ToFile(
         imageName,
-        image.src,
-        image.imgType
+        drawImg || image.src,
+        imgType
       );
       setIsLoader(false);
       if (imageUrl) {
@@ -411,13 +420,20 @@ function WidgetsValueModal(props) {
         ? myInitial && (await convertJpegToPng(myInitial, "myinitials")) // default initials set through my signature tab
         : await convertJpegToPng(defaultSignImg, "mysign") // default signature set through my signature tab
       : signature; // signature done by user thorugh draw, upload, typed
-    const signatureImg = signUrl;
+    let signatureImg = signUrl;
     let imgWH = { width: width ? width : "", height: height ? height : "" };
     setIsImageSelect(false);
     setImage();
     // `isApplyAll` is used when user edit signature/initial then updated signature apply all existing drawn signatures
     const isApplyAll = true;
     if (uniqueId) {
+      const isPrefill = xyPosition.some(
+        (x) => x.Id === uniqueId && x?.Role === "prefill"
+      );
+      if (isPrefill) {
+        dispatch(setPrefillImgLoad({ [currWidgetsDetails?.key]: true }));
+        signatureImg = await handleSavePrefillImg(signatureImg);
+      }
       setXyPosition((prevState) =>
         prevState.map((signer) => {
           if (signer.Id !== uniqueId) return signer;
@@ -446,6 +462,7 @@ function WidgetsValueModal(props) {
           };
         })
       );
+      dispatch(setPrefillImgLoad({}));
     } else {
       const index = props?.xyPosition?.findIndex((object) => {
         return object.pageNumber === pageNumber;
@@ -535,7 +552,7 @@ function WidgetsValueModal(props) {
   //function for clear signature image
   const handleClear = () => {
     if (
-      ["signature", "initials", "stamp", "image"].includes(
+      ["signature", "initials", "stamp", "image", drawWidget].includes(
         currWidgetsDetails?.type
       )
     ) {
@@ -704,9 +721,25 @@ function WidgetsValueModal(props) {
   }, [fontSelect]);
 
   useEffect(() => {
+    handleWidgetsResponse();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isTab]);
+
+  const handleWidgetsResponse = async () => {
     if (currWidgetsDetails?.options?.response) {
       let url = currWidgetsDetails?.options?.response;
-      if (isSignOrInitials) {
+      if (currWidgetsDetails?.type === drawWidget) {
+        if (canvasRef.current) {
+          const iBase64 = isValidBase64(url);
+          if (iBase64) {
+            canvasRef.current.fromDataURL(url);
+          } else {
+            const isAddSuffix = true;
+            const base64Url = await getBase64FromUrl(url, isAddSuffix);
+            canvasRef.current.fromDataURL(base64Url);
+          }
+        }
+      } else if (isSignOrInitials) {
         if (isTab === "draw" && currWidgetsDetails?.signatureType === "draw") {
           setSignature(url);
           // Load the default signature after the component mounts
@@ -756,9 +789,7 @@ function WidgetsValueModal(props) {
       setTypedSignature(signatureValue || userName || "");
       convertToImg(fontSelect, signatureValue || userName || "");
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isTab]);
-
+  };
   // function for convert input text value in image
   const convertToImg = async (fontStyle, text, color) => {
     const maxWidth = currWidgetsDetails?.Width;
@@ -999,7 +1030,6 @@ function WidgetsValueModal(props) {
   const handleCellsBlur = (e, idx) => {
     handleInputBlur();
   };
-
 
   //function is used to show widgets on modal according to selected widget type checkbox/date/radio/drodown/textbox/signature/image
   const getWidgetType = (type) => {
@@ -1476,7 +1506,7 @@ function WidgetsValueModal(props) {
               />
             </div>
             <div className="flex justify-center">
-              <span className="text-gray-300">
+              <span className="text-gray-300 uppercase">
                 {currWidgetsDetails?.options?.validation?.format}
               </span>
             </div>
@@ -1538,6 +1568,23 @@ function WidgetsValueModal(props) {
             textInputcls={textInputcls}
             currWidgetsDetails={currWidgetsDetails}
           />
+        );
+      case drawWidget:
+        return (
+          <div>
+            <Draw
+              penColor={penColor}
+              canvasRef={canvasRef}
+              currWidgetsDetails={props?.currWidgetsDetails}
+              handleSignatureChange={handleSignatureChange}
+            />
+            <div className="flex flex-row justify-between mt-[10px]">
+              <PenColorComponent
+                penColor={penColor}
+                setPenColor={setPenColor}
+              />
+            </div>
+          </div>
         );
       default:
         return (
@@ -1668,7 +1715,7 @@ function WidgetsValueModal(props) {
   //function too use on click on next/finish button then update modal UI according to current widgets
   const handleClickOnNext = async (isFinishDoc) => {
     if (
-      ["signature", "stamp", "image", "initials"].includes(
+      ["signature", "stamp", "image", "initials", drawWidget].includes(
         currWidgetsDetails?.type
       ) &&
       (signature || image || myInitial || defaultSignImg || myStamp)
@@ -1733,7 +1780,7 @@ function WidgetsValueModal(props) {
       if (isOptional && uniqueId) {
         return false;
       } else if (
-        ["signature", "stamp", "image", "initials"].includes(
+        ["signature", "stamp", "image", "initials", drawWidget].includes(
           currWidgetsDetails?.type
         )
       ) {
@@ -1925,7 +1972,9 @@ function WidgetsValueModal(props) {
                   ></button>
                 )}
                 <div className="flex items-center gap-2">
-                  {!isSave && <HandleRequiredField />}
+                  {(!isSave || props?.role === "prefill") && (
+                    <HandleRequiredField />
+                  )}
                   {isSave ? (
                     <button
                       type="button"

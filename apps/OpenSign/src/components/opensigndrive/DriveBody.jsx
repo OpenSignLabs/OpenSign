@@ -10,6 +10,7 @@ import FolderModal from "../shared/fields/FolderModal";
 import { useTranslation } from "react-i18next";
 import { handleDownloadPdf, isMobile } from "../../constant/Utils";
 import Parse from "parse";
+import { withSessionValidation } from "../../utils";
 
 function DriveBody(props) {
   const { t } = useTranslation();
@@ -52,7 +53,7 @@ function DriveBody(props) {
     props.setSkip(0);
   };
   //function for change doc name and update doc name in  _document class
-  const handledRenameDoc = async (data) => {
+  const handledRenameDoc = withSessionValidation(async (data) => {
     setRename("");
     const trimmedValue = renameValue.trim();
     if (trimmedValue.length > 0) {
@@ -89,7 +90,7 @@ function DriveBody(props) {
         });
       }
     }
-  };
+  });
 
   //function for navigate user to microapp-signature component
   const checkPdfStatus = async (data) => {
@@ -155,7 +156,7 @@ function DriveBody(props) {
     }
   };
   //function for delete document
-  const handleDeleteDocument = async (docData) => {
+  const handleDeleteDocument = withSessionValidation(async (docData) => {
     setIsDeleteDoc({});
     const docId = docData.objectId;
     const data = { IsArchive: true };
@@ -186,13 +187,13 @@ function DriveBody(props) {
           alertMessage: t("something-went-wrong-mssg")
         });
       });
-  };
+  });
   const handleMoveDocument = async (docData) => {
     setIsOpenMoveModal(true);
     setSelectDoc(docData);
   };
   //function for move document from one folder to another folder
-  const handleMoveFolder = async (selectFolderData) => {
+  const handleMoveFolder = withSessionValidation(async (selectFolderData) => {
     const selecFolderId = selectDoc?.Folder?.objectId;
     const moveFolderId = selectFolderData?.ObjectId;
     let updateDocId = selectDoc?.objectId;
@@ -229,7 +230,6 @@ function DriveBody(props) {
             }
           }
         )
-
         .then((Listdata) => {
           const res = Listdata.data;
           if (res) {
@@ -248,7 +248,7 @@ function DriveBody(props) {
       alert(t("folder-already-exist!"));
       setIsOpenMoveModal(false);
     }
-  };
+  });
   const handleEnterPress = (e, data) => {
     if (e.key === "Enter") {
       handledRenameDoc(data);

@@ -45,7 +45,8 @@ function PenColorComponent({
             aria-label={`Select ${color} pen`}
             onClick={() => {
               setPenColor?.(color);
-              convertToImg?.(fontSelect, typedSignature, color);
+              convertToImg &&
+                convertToImg?.(fontSelect, typedSignature, color);
             }}
             className={`${COLOR_CLASS[color] || "text-base-content"} ${selected ? "border-current" : "border-white"} border-b-[2px] pb-0.5 cursor-pointer text-[16px] fa-light fa-pen-nib`}
           ></i>

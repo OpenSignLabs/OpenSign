@@ -98,11 +98,6 @@ export default function reportJson(id, currentUserId) {
           IsCompleted: true,
           IsDeclined: { $ne: true },
           IsArchive: { $ne: true },
-          // CreatedBy: {
-          //   __type: 'Pointer',
-          //   className: '_User',
-          //   objectId: currentUserId,
-          // },
           $or: [
             // Condition 1: If `CreatedBy` exists, no need for `Signers` filter
             { CreatedBy: { __type: 'Pointer', className: '_User', objectId: currentUserId } },
@@ -229,4 +224,37 @@ export default function reportJson(id, currentUserId) {
     default:
       return null;
   }
+}
+
+// Escape regex special characters. Copied from filterDocs.js
+function escapeRegExp(str) {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+/**
+ * Applies searchTerm rules; combines existing access $or with search $or using $and.
+ */
+export function applySearch({ reportId, baseWhere, searchTerm }) {
+  if (!searchTerm) return baseWhere;
+
+  const escaped = escapeRegExp(searchTerm);
+  const nameMatch = { Name: { $regex: `.*${escaped}.*`, $options: 'i' } };
+  const emailMatch = { Email: { $regex: `.*${escaped}.*`, $options: 'i' } };
+
+  if (reportId === 'contacts') {
+    return { ...baseWhere, $or: [nameMatch, emailMatch] };
+  }
+
+  const searchOr = [
+    nameMatch,
+    { Signers: { $inQuery: { className: 'contracts_Contactbook', where: emailMatch } } },
+  ];
+
+  // If baseWhere already has an access-control $or, combine using $and
+  if (baseWhere.$or) {
+    const { $or: accessOr, ...rest } = baseWhere;
+    return { ...rest, $and: [{ $or: accessOr }, { $or: searchOr }] };
+  }
+
+  return { ...baseWhere, $or: searchOr };
 }

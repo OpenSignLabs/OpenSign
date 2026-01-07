@@ -13,7 +13,6 @@ import { useNavigate } from "react-router";
 
 function CustomizeMail(props) {
   const { t } = useTranslation();
-  const editorRef = useRef();
   const navigate = useNavigate();
   const copyUrlRef = useRef(null);
   const [isCustomize, setIsCustomize] = useState(false);
@@ -27,20 +26,17 @@ function CustomizeMail(props) {
     props?.setIsMailModal(false);
     navigate("/report/1MwEuxLEkF");
   };
-  const handleOnchangeRequest = () => {
-    if (editorRef.current) {
-      const html = editorRef.current.editor.root.innerHTML;
-      props?.setCustomizeMail((prev) => ({
-        ...prev,
-        body: html
-      }));
-    }
+  const handleOnchangeRequest = (value) => {
+    props?.setCustomizeMail((prev) => ({
+      ...prev,
+      body: value
+    }));
   };
   const handleEmailSendToSigners = async () => {
     setIsLoader(true);
     const documentData = await contractDocument(props?.documentId);
     if (documentData && documentData?.length > 0) {
-      props?.setDocumentDetails(documentData[0]);
+      props?.setDocumentDetails && props?.setDocumentDetails(documentData[0]);
       if (
         documentData?.[0]?.SendinOrder &&
         documentData?.[0]?.SendinOrder === true
@@ -49,7 +45,7 @@ function CustomizeMail(props) {
         const ownerDetails = documentData[0].Signers.find(
           (x) => x.Email === ownerEmail
         );
-        props?.setCurrUserId(ownerDetails?.objectId);
+        props?.setCurrUserId && props?.setCurrUserId(ownerDetails?.objectId);
       }
       //function is used to send email to signers for sign the document
       const mailRes = await sendEmailToSigners(
@@ -94,9 +90,8 @@ function CustomizeMail(props) {
                 isCustomize && (
                   <>
                     <EmailBody
-                      editorRef={editorRef}
-                      requestBody={props?.customizeMail.body}
-                      requestSubject={props?.customizeMail.subject}
+                      requestBody={props?.customizeMail?.body}
+                      requestSubject={props?.customizeMail?.subject}
                       handleOnchangeRequest={handleOnchangeRequest}
                       setCustomizeMail={props?.setCustomizeMail}
                     />
@@ -135,7 +130,7 @@ function CustomizeMail(props) {
                   !isCustomize && (
                     <span
                       className="op-link op-link-accent text-sm"
-                      onClick={() => setIsCustomize(!isCustomize)}
+                      onClick={() => setIsCustomize(true)}
                     >
                       {t("cutomize-email")}
                     </span>

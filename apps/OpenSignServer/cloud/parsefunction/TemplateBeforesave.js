@@ -1,4 +1,5 @@
 import { MAX_DESCRIPTION_LENGTH, MAX_NAME_LENGTH, MAX_NOTE_LENGTH } from '../../Utils.js';
+import { setTemplateCount } from '../../utils/CountUtils.js';
 
 async function TemplateBeforeSave(request) {
   if (!request.original) {
@@ -31,24 +32,8 @@ async function TemplateBeforeSave(request) {
       // below code is used to update template when user sent template or self signed
       const template = request.object;
 
-      // Update count in contracts_Users class
-      const query = new Parse.Query('contracts_Users');
-      query.equalTo('objectId', template.get('ExtUserPtr').id);
-
-      try {
-        const contractUser = await query.first({ useMasterKey: true });
-        if (contractUser) {
-          contractUser.increment('TemplateCount', 1);
-          await contractUser.save(null, { useMasterKey: true });
-        } else {
-          // Create new entry if not found
-          const ContractsUsers = Parse.Object.extend('contracts_Users');
-          const newContractUser = new ContractsUsers();
-          newContractUser.set('TemplateCount', 1);
-          await newContractUser.save(null, { useMasterKey: true });
-        }
-      } catch (error) {
-        console.log('Error updating template count in contracts_Users: ' + error.message);
+      if (template?.get('ExtUserPtr')?.id) {
+        setTemplateCount(template?.get('ExtUserPtr')?.id);
       }
     }
   } catch (err) {

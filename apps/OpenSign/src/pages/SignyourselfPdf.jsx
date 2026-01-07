@@ -381,7 +381,8 @@ function SignYourSelf() {
           dragTypeValue,
           getWidgetValue,
           owner,
-          xyPosition
+          xyPosition,
+          true
         )
       };
       dropData.push(dropObj);
@@ -434,7 +435,9 @@ function SignYourSelf() {
           dragTypeValue,
           getWidgetValue,
           owner,
-          xyPosition
+          xyPosition,
+          pdfDetails?.[0],
+          true
         ),
         scale: containerScale
       };

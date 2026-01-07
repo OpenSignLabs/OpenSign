@@ -393,7 +393,8 @@
     "radio button": "radio button",
     "image": "image",
     "email": "email",
-    "number": "number"
+    "number": "number",
+    "draw": "draw"
   },
   "fields": "Fields",
   "recipients": "Recipients",
@@ -517,7 +518,7 @@
   "placeholder-alert-4": "You have successfully sent mails to all recipients!",
   "placeholder-mail-alert": "You have successfully sent email to {{name}}. Subsequent signers will get email(s) once {{name}} signs the document",
   "placeholder-mail-alert-you": "Subsequent signers will get email(s) once you sign the document.",
-  "placeholder-alert-5": "Do you want to sign the document right now?",
+  "placeholder-alert-5": "You can sign now or send it to your email to complete later.",
   "placeholder-alert-6": "Please setup mail adapter to send mail!",
   "placeholder-alert-7": "Please select signer for add placeholder!",
   "email-subject": "email subject",
@@ -1244,6 +1245,7 @@
   },
   "read-only-date-error": "Read-only date widget must have a default date.",
   "set-date": "Set Date",
+  "default-date": "Default Date",
   "set-today": "Signing Date",
   "enter-name": "Enter name",
   "enter-email": "Enter email",
@@ -1329,5 +1331,15 @@
   "working": "Working",
   "test-security-key": "Test security key",
   "generate": "Generate",
-  "regenerate": "Regenerate"
+  "regenerate": "Regenerate",
+  "signing-date": "Signing Date",
+  "date-widget": "Date Widget",
+  "mail-failed": "Something went wrong while sending the email. Please try again.",
+  "mail-status-head": "Next step: Sign your document ?",
+  "send-to-email": "Send to Email",
+  "date-pref-help-sub-title": "Date Widget Preferences let you define the default settings for the Date widget. These defaults are automatically applied whenever you add a new Date widget to a document or template. You can still customize any individual Date widget at any time by clicking the gear icon.",
+  "date-pref-help-format": "Choose the default date format used for Date widgets.",
+  "date-pref-help-default-date": "Set a default date value for Date widgets.",
+  "date-pref-help-signing-date": "When enabled, the Date widget automatically uses the  date the signer signs the document.",
+  "date-pref-help-read-only": "When enabled, the Date widget is read-only for the signer."
 }

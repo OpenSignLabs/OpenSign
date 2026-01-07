@@ -36,13 +36,15 @@ import { useElSize } from "../../hook/useElSize";
 import LottieWithLoader from "../../primitives/DotLottieReact";
 import PrefillWidgetModal from "../../components/pdf/PrefillWidgetsModal";
 import * as utils from "../../utils";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RenderReportCell } from "../../primitives/RenderReportCell";
 import CustomizeMail from "../../components/pdf/CustomizeMail";
+import { resetWidgetState } from "../../redux/reducers/widgetSlice";
 
 const TemplatesReport = (props) => {
   const copyUrlRef = useRef(null);
   const titleRef = useRef(null);
+  const dispatch = useDispatch();
   const titleElement = useElSize(titleRef);
   const prefillImg = useSelector((state) => state.widget.prefillImg);
   const appName =
@@ -92,8 +94,9 @@ const TemplatesReport = (props) => {
   const [isMailModal, setIsMailModal] = useState(false);
   const [customizeMail, setCustomizeMail] = useState({ body: "", subject: "" });
   const [defaultMail, setDefaultMail] = useState({ body: "", subject: "" });
-  const [currUserId, setCurrUserId] = useState(false);
+  const [currUserId, setCurrUserId] = useState("");
   const [documentDetails, setDocumentDetails] = useState();
+  const [docId, setDocId] = useState();
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -160,6 +163,7 @@ const TemplatesReport = (props) => {
   const pageNumbers = getPaginationRange();
   //  below useEffect reset currenpage to 1 if user change route
   useEffect(() => {
+    dispatch(resetWidgetState([]));
     checkTourStatus();
     fetchTeamList();
     return () => setCurrentPage(1);
@@ -206,7 +210,7 @@ const TemplatesReport = (props) => {
   }, [isMoreDocs, pageNumbers, currentPage, setIsNextRecord]);
 
   //function to fetch tenant Details
-  const fetchTenantDetails = async () => {
+  const fetchTenantDetails = utils.withSessionValidation(async () => {
     const user = JSON.parse(
       localStorage.getItem(
         `Parse/${localStorage.getItem("parseAppId")}/currentUser`
@@ -230,7 +234,7 @@ const TemplatesReport = (props) => {
     } else {
       alert(t("user-not-exist"));
     }
-  };
+  });
 
   // `handleURL` is used to open microapp
   const handleURL = async (item, act) => {
@@ -276,7 +280,7 @@ const TemplatesReport = (props) => {
     }
   };
 
-  const fetchTemplate = async (templateId) => {
+  const fetchTemplate = utils.withSessionValidation(async (templateId) => {
     try {
       const params = {
         templateId: templateId,
@@ -301,26 +305,28 @@ const TemplatesReport = (props) => {
       showAlert("danger", t("something-went-wrong-mssg"));
       setActLoader({});
     }
-  };
+  });
   //function is called when there ther no any prefill role widget exist then create direct document and navigate
-  const navigatePageToDoc = async (templateRes, placeholder, signer) => {
-    setIsPrefillModal({});
-    const res = await createDocument(
-      [templateRes || templateDetails],
-      placeholder || xyPosition,
-      signer || signerList,
-      templateRes?.URL || templateDetails?.URL,
-    );
-    if (res.status === "success") {
-      navigate(`/placeHolderSign/${res.id}`, {
-        state: { title: "Use Template" }
-      });
-    } else {
-      alert(t("something-went-wrong-mssg"));
+  const navigatePageToDoc = utils.withSessionValidation(
+    async (templateRes, placeholder, signer) => {
+      setIsPrefillModal({});
+      const res = await createDocument(
+        [templateRes || templateDetails],
+        placeholder || xyPosition,
+        signer || signerList,
+        templateRes?.URL || templateDetails?.URL,
+      );
+      if (res.status === "success") {
+        navigate(`/placeHolderSign/${res.id}`, {
+          state: { title: "Use Template" }
+        });
+      } else {
+        alert(t("something-went-wrong-mssg"));
+      }
     }
-  };
+  );
 
-  const handleActionBtn = async (act, item) => {
+  const handleActionBtn = utils.withSessionValidation(async (act, item) => {
     setIsTour(false);
     if (act.action === "redirect") {
       handleURL(item, act);
@@ -362,7 +368,7 @@ const TemplatesReport = (props) => {
     } else if (act.action === "extendexpiry") {
       setIsModal({ [`extendexpiry_${item.objectId}`]: true });
     }
-  };
+  });
   // Get current list
   const indexOfLastDoc = currentPage * props.docPerPage;
   const indexOfFirstDoc = indexOfLastDoc - props.docPerPage;
@@ -383,7 +389,7 @@ const TemplatesReport = (props) => {
     }
   };
 
-  const handleDelete = async (item) => {
+  const handleDelete = utils.withSessionValidation(async (item) => {
     setIsDeleteModal({});
     setActLoader({ [`${item.objectId}`]: true });
     try {
@@ -411,7 +417,7 @@ const TemplatesReport = (props) => {
       showAlert("danger", t("something-went-wrong-mssg"));
       setActLoader({});
     }
-  };
+  });
   const handleClose = (
   ) => {
     setIsDeleteModal({});
@@ -608,7 +614,7 @@ const TemplatesReport = (props) => {
   };
   // `handleNextBtn` is used to open edit mail template screen in resend mail modal
   // as well as replace variable with original one
-  const handleNextBtn = (user, doc) => {
+  const handleNextBtn = utils.withSessionValidation((user, doc) => {
     const userdata = {
       Name: user?.signerPtr?.Name,
       Email: user.email ? user?.email : user.signerPtr?.Email,
@@ -655,8 +661,8 @@ const TemplatesReport = (props) => {
     const res = replaceMailVaribles(subject, body, variables);
     setMail((prev) => ({ ...prev, subject: res.subject, body: res.body }));
     setIsNextStep({ [user.Id]: true });
-  };
-  const handleResendMail = async (e, doc, user) => {
+  });
+  const handleResendMail = utils.withSessionValidation(async (e, doc, user) => {
     e.preventDefault();
     setActLoader({ [user?.Id]: true });
     const url = `${localStorage.getItem("baseUrl")}functions/sendmailv3`;
@@ -693,7 +699,7 @@ const TemplatesReport = (props) => {
       setUserDetails({});
       setActLoader({});
     }
-  };
+  });
   const fetchUserStatus = (user, doc) => {
     const email = user.email ? user.email : user.signerPtr.Email;
     const audit = doc?.AuditTrail?.find((x) => x.UserPtr.Email === email);
@@ -762,7 +768,7 @@ const TemplatesReport = (props) => {
 
 
   // `handleShareWith` is used to save teams in sharedWith field
-  const handleShareWith = async (e, template) => {
+  const handleShareWith = utils.withSessionValidation(async (e, template) => {
     e.preventDefault();
     e.stopPropagation();
     setIsShareWith({});
@@ -785,10 +791,10 @@ const TemplatesReport = (props) => {
     } finally {
       setActLoader({});
     }
-  };
+  });
 
   // `handleCreateDuplicate` is used to create duplicate from current entry using objectId
-  const handleCreateDuplicate = async (item) => {
+  const handleCreateDuplicate = utils.withSessionValidation(async (item) => {
     setActLoader({ [item.objectId]: true });
     setIsModal({});
     try {
@@ -806,9 +812,9 @@ const TemplatesReport = (props) => {
     } finally {
       setActLoader({});
     }
-  };
+  });
   // `handleRenameDoc` is used to update document name
-  const handleRenameDoc = async (item) => {
+  const handleRenameDoc = utils.withSessionValidation(async (item) => {
     setActLoader({ [item.objectId]: true });
     setIsModal({});
     const className = "contracts_Template";
@@ -829,7 +835,7 @@ const TemplatesReport = (props) => {
       showAlert("danger", t("something-went-wrong-mssg"), 2000);
       setActLoader({});
     }
-  };
+  });
 
   const handleCloseModal = () => {
     setIsModal({});
@@ -885,7 +891,7 @@ const TemplatesReport = (props) => {
     setXyPosition([]);
   };
   //`handlePrefillWidgetCreateDoc` is used to embed prefill all widgets on document, create document, and send document
-  const handlePrefillWidgetCreateDoc = async () => {
+  const handlePrefillWidgetCreateDoc = utils.withSessionValidation(async () => {
     setIsSubmit(true);
     const scale = 1;
     const res = await utils?.handleCheckPrefillCreateDoc(
@@ -915,12 +921,21 @@ const TemplatesReport = (props) => {
     } else if (res?.status === "success") {
       setDocumentId(res.id);
       setActLoader({});
-      setIsMailModal(true);
       const user = JSON.parse(
         localStorage.getItem(
           `Parse/${localStorage.getItem("parseAppId")}/currentUser`
         )
       );
+      const ownerId = templateDetails.ExtUserPtr?.UserId?.objectId;
+      const firstSigner = signerList[0];
+      const isOwner = firstSigner?.UserId?.objectId === ownerId;
+      setDocId(res.id);
+      if (templateDetails?.SendinOrder && isOwner) {
+        setCurrUserId(firstSigner?.objectId);
+        setIsSend(true);
+      } else {
+        setIsMailModal(true);
+      }
       if (user) {
         try {
           const tenantDetails = await getTenantDetails(user?.objectId);
@@ -951,7 +966,7 @@ const TemplatesReport = (props) => {
       }
     }
     setIsSubmit(false);
-  };
+  });
   //function show signer list and share link to share signUrl
   const handleShareList = () => {
     const shareLinkList = [];
@@ -1132,6 +1147,7 @@ const TemplatesReport = (props) => {
             </thead>
             <tbody className="text-[12px]">
               {props.List?.length > 0 &&
+                !props.searchLoader &&
                 currentList.map((item, index) => (
                   <tr
                     className={`${
@@ -1544,22 +1560,31 @@ const TemplatesReport = (props) => {
                 ))}
             </tbody>
           </table>
-          {props.List?.length <= 0 && (
+          {(props.searchLoader || props.List?.length <= 0) && (
             <div
               className={`${
                 isDashboard ? "h-[317px]" : ""
               } flex flex-col items-center justify-center w-ful bg-base-100 text-base-content rounded-xl py-4`}
             >
-              <div className="w-[60px] h-[60px] overflow-hidden">
-                <img
-                  className="w-full h-full object-contain"
-                  src={pad}
-                  alt="img"
-                />
-              </div>
-              <div className="text-sm font-semibold">
-                {t("no-data-avaliable")}
-              </div>
+              {props.searchLoader ? (
+                <>
+                  <Loader />
+                  <div className="text-sm ">{t("loading-mssg")}</div>
+                </>
+              ) : (
+                <>
+                  <div className="w-[60px] h-[60px] overflow-hidden">
+                    <img
+                      className="w-full h-full object-contain"
+                      src={pad}
+                      alt={t("no-data-avaliable")}
+                    />
+                  </div>
+                  <div className="text-sm font-semibold">
+                    {t("no-data-avaliable")}
+                  </div>
+                </>
+              )}
             </div>
           )}
         </div>
@@ -1610,11 +1635,13 @@ const TemplatesReport = (props) => {
         <ModalUi
           isOpen={isSend}
           title={
-            mailStatus === "success"
-              ? t("mails-sent")
-              : mailStatus === "quotareached"
-                ? t("quota-mail-head")
-                : t("mail-not-delivered")
+            !templateDetails?.SendinOrder
+              ? mailStatus === "success"
+                ? t("mails-sent")
+                : mailStatus === "quotareached"
+                  ? t("quota-mail-head")
+                  : t("mail-not-delivered")
+              : t("mail-status-head")
           }
           handleClose={() => {
             setIsSend(false);
@@ -1622,68 +1649,102 @@ const TemplatesReport = (props) => {
           }}
         >
           <div className="h-[100%] p-[20px] text-base-content">
-            {mailStatus === "success" ? (
-              <div className="text-center mb-[10px]">
-                <LottieWithLoader />
-                {documentDetails.SendinOrder ? (
-                  <p>
-                    {currUserId
-                      ? t("placeholder-mail-alert-you")
-                      : t("placeholder-mail-alert", {
-                          name: signerList[0]?.Name
-                        })}
-                  </p>
+            <div className="flex flex-col items-center gap-5">
+              <div>
+                {mailStatus === "success" ? (
+                  <div className="text-center mb-[10px]">
+                    <LottieWithLoader />
+                    {documentDetails.SendinOrder ? (
+                      <p>
+                        {currUserId
+                          ? t("placeholder-mail-alert-you")
+                          : t("placeholder-mail-alert", {
+                              name: signerList[0]?.Name
+                            })}
+                      </p>
+                    ) : (
+                      <p>{t("placeholder-alert-4")}</p>
+                    )}
+                  </div>
+                ) : mailStatus === "quotareached" ? (
+                  <div className="flex flex-col gap-y-3">
+                    <div className="my-3">{handleShareList()}</div>
+                  </div>
+                ) : mailStatus === "failed" ? (
+                  <p>{t("mail-failed")} </p>
                 ) : (
-                  <p>{t("placeholder-alert-4")}</p>
+                  <div className="mb-[10px]">
+                    {!templateDetails?.SendinOrder &&
+                      (mailStatus === "dailyquotareached" ? (
+                        <p>{t("daily-quota-reached")}</p>
+                      ) : (
+                        <p>{t("placeholder-alert-6")}</p>
+                      ))}
+                    {currUserId && (
+                      <span className="mt-1">{t("placeholder-alert-5")}</span>
+                    )}
+                  </div>
                 )}
-                {currUserId && <p>{t("placeholder-alert-5")}</p>}
-              </div>
-            ) : mailStatus === "quotareached" ? (
-              <div className="flex flex-col gap-y-3">
-                <div className="my-3">{handleShareList()}</div>
-              </div>
-            ) : (
-              <div className="mb-[10px]">
-                {mailStatus === "dailyquotareached" ? (
-                  <p>{t("daily-quota-reached")}</p>
-                ) : (
-                  <p>{t("placeholder-alert-6")}</p>
-                )}
-                {currUserId && (
-                  <p className="mt-1">{t("placeholder-alert-5")}</p>
-                )}
-              </div>
-            )}
-            {!mailStatus && (
-              <div className="w-full h-[1px] bg-[#9f9f9f] my-[15px]"></div>
-            )}
-            {mailStatus !== "quotareached" && (
-              <div
-                className={
-                  mailStatus === "success" ? "flex justify-center mt-1" : ""
-                }
-              >
-                {currUserId && (
-                  <button
-                    onClick={() =>
-                      handleRecipientSign(documentDetails?.objectId, currUserId)
+
+                {mailStatus !== "quotareached" && mailStatus !== "failed" && (
+                  <div
+                    className={
+                      mailStatus === "success"
+                        ? "flex justify-center mt-1"
+                        : "flex items-center justify-center mt-7"
                     }
-                    type="button"
-                    className="op-btn op-btn-primary mr-1"
                   >
-                    {t("yes")}
-                  </button>
+                    {currUserId && (
+                      <button
+                        onClick={() => handleRecipientSign(docId, currUserId)}
+                        type="button"
+                        className="op-btn op-btn-primary mr-1"
+                      >
+                        {t("sign-now")}
+                      </button>
+                    )}
+                    <button
+                      onClick={() => {
+                        navigate("/report/1MwEuxLEkF");
+                      }}
+                      type="button"
+                      className="op-btn op-btn-ghost text-base-content"
+                    >
+                      {currUserId ? t("no") : t("close")}
+                    </button>
+                  </div>
                 )}
-                <button
-                  onClick={() => {
-                    navigate("/report/1MwEuxLEkF");
-                  }}
-                  type="button"
-                  className="op-btn op-btn-ghost text-base-content"
-                >
-                  {currUserId ? t("no") : t("close")}
-                </button>
               </div>
+              {mailStatus !== "success" &&
+                currUserId &&
+                templateDetails?.SendinOrder && (
+                  <div className="op-divider text-base-content mx-[0%] my-1 font-medium">
+                    {t("or")}
+                  </div>
+                )}
+
+              {mailStatus !== "success" &&
+                currUserId &&
+                templateDetails?.SendinOrder && (
+                  <>
+                    <div
+                      className="op-btn op-btn-outline w-[50%] md:w-[35%] mt-1"
+                      onClick={() => {
+                        setIsSend(false);
+                        setIsMailModal(true);
+                      }}
+                    >
+                      <i
+                        className="fa-regular fa-envelope"
+                        style={{ color: "#002864", fontSize: "19px" }}
+                      ></i>{" "}
+                      <span>{t("send-to-email")}</span>
+                    </div>
+                  </>
+                )}
+            </div>
+            {!mailStatus && (
+              <div className="op-divider text-base-content mx-[0%] mt-3"></div>
             )}
           </div>
         </ModalUi>

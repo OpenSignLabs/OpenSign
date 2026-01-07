@@ -11,7 +11,6 @@ import SignerListPlace from "../components/pdf/SignerListPlace";
 import Header from "../components/pdf/PdfHeader";
 import ShareButton from "../primitives/ShareButton";
 import {
-  replaceMailVaribles,
   pdfNewWidthFun,
   contractDocument,
   contractUsers,
@@ -39,7 +38,6 @@ import {
   handleSignatureType,
   getBase64FromUrl,
   generatePdfName,
-  mailTemplate,
   getOriginalWH,
   defaultMailBody,
   defaultMailSubject
@@ -60,13 +58,13 @@ import TourContentWithBtn from "../primitives/TourContentWithBtn";
 import HandleError from "../primitives/HandleError";
 import LoaderWithMsg from "../primitives/LoaderWithMsg";
 import LinkUserModal from "../primitives/LinkUserModal";
-import { EmailBody } from "../components/pdf/EmailBody";
 import LottieWithLoader from "../primitives/DotLottieReact";
 import Alert from "../primitives/Alert";
 import WidgetsValueModal from "../components/pdf/WidgetsValueModal";
 import * as utils from "../utils";
 import { resetWidgetState, setPrefillImg } from "../redux/reducers/widgetSlice";
 import EditDocument from "../components/pdf/EditTemplate";
+import CustomizeMail from "../components/pdf/CustomizeMail";
 
 function PlaceHolderSign() {
   const { t } = useTranslation();
@@ -76,14 +74,9 @@ function PlaceHolderSign() {
   const isShowModal = useSelector((state) => state.widget.isShowModal);
   const editorRef = useRef();
   const navigate = useNavigate();
-  const [defaultBody, setDefaultBody] = useState("");
-  const [defaultSubject, setDefaultSubject] = useState("");
-  const [requestSubject, setRequestSubject] = useState("");
-  const [requestBody, setRequestBody] = useState("");
-  const [tenantMailTemplate, setTenantMailTemplate] = useState({
-    body: "",
-    subject: ""
-  });
+  const [isMailModal, setIsMailModal] = useState(false);
+  const [customizeMail, setCustomizeMail] = useState({ body: "", subject: "" });
+  const [defaultMail, setDefaultMail] = useState({ body: "", subject: "" });
   const [pdfDetails, setPdfDetails] = useState([]);
   const [isMailSend, setIsMailSend] = useState(false);
   const [allPages, setAllPages] = useState(null);
@@ -148,7 +141,6 @@ function PlaceHolderSign() {
     status: false,
     message: ""
   });
-  const [isCustomize, setIsCustomize] = useState(false);
   const [zoomPercent, setZoomPercent] = useState(0);
   const [scale, setScale] = useState(1);
   const [pdfBase64Url, setPdfBase64Url] = useState("");
@@ -184,12 +176,6 @@ function PlaceHolderSign() {
     );
     if (user) {
       try {
-        const defaultRequestBody = defaultMailBody;
-        const defaultSubject = defaultMailSubject;
-        setDefaultBody(defaultRequestBody);
-        setDefaultSubject(defaultSubject);
-        setRequestBody(defaultRequestBody);
-        setRequestSubject(defaultSubject);
         const tenantDetails = await getTenantDetails(user?.objectId);
         if (tenantDetails && tenantDetails === "user does not exist!") {
           alert(t("user-not-exist"));
@@ -198,14 +184,22 @@ function PlaceHolderSign() {
           const filterSignTypes = signatureType?.filter(
             (x) => x.enabled === true
           );
-          if (tenantDetails?.RequestBody) {
-            setRequestBody(tenantDetails?.RequestBody);
-            setRequestSubject(tenantDetails?.RequestSubject);
-            setTenantMailTemplate({
-              body: tenantDetails?.RequestBody,
-              subject: tenantDetails?.RequestSubject
-            });
-          }
+          const extUser =
+            localStorage.getItem("Extand_Class") &&
+            JSON.parse(localStorage.getItem("Extand_Class"))?.[0];
+          const subject = tenantDetails?.RequestSubject ?? "";
+          const body = tenantDetails?.RequestBody ?? "";
+          //customize mail state is handle to when user want to customize already set tenant email format then use that format
+          const userSubject =
+                subject;
+          const userBody =
+                body;
+
+          setCustomizeMail({
+            subject: userSubject ?? defaultMailSubject,
+            body: userBody ?? defaultMailBody
+          });
+          setDefaultMail({ subject: userSubject, body: userBody });
           return filterSignTypes;
         }
       } catch (e) {
@@ -319,9 +313,9 @@ function PlaceHolderSign() {
       updatedPdfDetails[0].SignatureType = updatedSignatureType;
       setPdfDetails(updatedPdfDetails);
       if (documentData?.[0]?.RequestBody && documentData?.[0]?.RequestSubject) {
-        setTenantMailTemplate({
-          body: documentData?.[0]?.RequestBody,
-          subject: documentData?.[0]?.RequestSubject
+        setDefaultMail({
+          subject: documentData?.[0]?.RequestSubject,
+          body: documentData?.[0]?.RequestBody
         });
       }
       if (
@@ -872,7 +866,6 @@ function PlaceHolderSign() {
       });
       const isSignYourSelfFlow = false;
       try {
-        const docId = pdfDetails[0]?.objectId;
         //pdfOriginalWH contained all pdf's pages width,height & pagenumber in array format
         const pdfBase64 = await embedWidgetsToDoc(
           placeholder,
@@ -924,12 +917,16 @@ function PlaceHolderSign() {
       //if empty widget exist and user try to send document then throw tour message
       for (const placeholder of getPlaceholder || []) {
         const requiredWidgets = placeholder.pos.filter(
-          (position) => position.type !== "checkbox"
+          (position) => position?.options?.status === "required"
         );
         for (const widget of requiredWidgets) {
-          const hasResponse = widget?.options?.response;
-          const hasDefault = widget?.options?.defaultValue;
-          if (!hasResponse && !hasDefault && !isPrefillEmpty) {
+          const response =
+            widget?.options?.response || widget?.options?.defaultValue;
+          const isEmptyResponse =
+            !response ||
+            (typeof response === "string" && response.trim() === "") ||
+            (Array.isArray(response) && response.length === 0);
+          if (isEmptyResponse && !isPrefillEmpty) {
             isPrefillEmpty = true;
             unfilledTextWidgetId = widget.key;
             setPageNumber(placeholder.pageNumber);
@@ -1034,7 +1031,7 @@ function PlaceHolderSign() {
     }
   };
   //function to use save placeholder details in contracts_document
-  const saveDocumentDetails = async () => {
+  const saveDocumentDetails = utils.withSessionValidation(async () => {
     setIsUiLoading(true);
     let signerMail = signersdata.slice();
     // For "Send in order", only consider the first signer
@@ -1093,7 +1090,6 @@ function PlaceHolderSign() {
             }
           }
         );
-        setIsMailSend(true);
         setIsLoading({ isLoad: false });
         setIsUiLoading(false);
         setIsSendAlert({ mssg: "confirm", alert: true });
@@ -1102,6 +1098,17 @@ function PlaceHolderSign() {
           updatedPdfDetails[0].Name = docTitle;
           setPdfDetails(updatedPdfDetails);
         }
+        const ownerId = pdfDetails[0].ExtUserPtr?.UserId?.objectId;
+        const firstSigner = signersdata[0];
+        const isOwner = firstSigner?.UserId?.objectId === ownerId;
+        const currentUserMail = Parse.User.current()?.getEmail();
+        const isCurrentUser = signerMail?.[0]?.Email === currentUserMail;
+        if (pdfDetails[0]?.SendinOrder && isOwner) {
+          setIsSend(true);
+          setIsCurrUser(isCurrentUser);
+        } else {
+          setIsMailModal(true);
+        }
       } catch (e) {
         console.log("error", e);
         alert(t("something-went-wrong-mssg"));
@@ -1109,7 +1116,7 @@ function PlaceHolderSign() {
     } else {
       setIsUiLoading(false);
     }
-  };
+  });
 
   const copytoclipboard = (text) => {
     copytoData(text);
@@ -1151,7 +1158,7 @@ function PlaceHolderSign() {
               className="flex flex-row items-center op-link op-link-primary"
             >
               <i className="fa-light fa-copy" />
-              <span className="hidden md:block ml-1">{t("copy-link")}</span>
+              <span className="hidden md:block ml-1 ">{t("copy-link")}</span>
             </button>
             <ShareButton
               title={t("sign-url")}
@@ -1165,201 +1172,10 @@ function PlaceHolderSign() {
       );
     });
   };
-  const sendEmailToSigners = async () => {
-    let htmlReqBody;
-    setIsUiLoading(true);
-    setIsSendAlert({});
-    let sendMail;
-    const expireDate = pdfDetails?.[0].ExpiryDate.iso;
-    const newDate = new Date(expireDate);
-    const localExpireDate = newDate.toLocaleDateString("en-US", {
-      day: "numeric",
-      month: "long",
-      year: "numeric"
-    });
-
-    let senderEmail =
-      pdfDetails?.[0]?.ExtUserPtr?.Email;
-    let senderPhone = pdfDetails?.[0]?.ExtUserPtr?.Phone;
-    let signerMail = signersdata.slice();
-    if (pdfDetails?.[0]?.SendinOrder && pdfDetails?.[0]?.SendinOrder === true) {
-      signerMail.splice(1);
-    }
-
-    for (let i = 0; i < signerMail.length; i++) {
-      try {
-        let url = `${localStorage.getItem("baseUrl")}functions/sendmailv3`;
-        const headers = {
-          "Content-Type": "application/json",
-          "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
-          sessionToken: localStorage.getItem("accesstoken")
-        };
-        const objectId = signerMail[i].objectId;
-        const hostUrl = window.location.origin;
-        //encode this url value `${pdfDetails?.[0].objectId}/${signerMail[i].Email}/${objectId}` to base64 using `btoa` function
-        const encodeBase64 = btoa(
-          `${pdfDetails?.[0].objectId}/${signerMail[i].Email}/${objectId}`
-        );
-        let signPdf = `${hostUrl}/login/${encodeBase64}`;
-        const orgName = pdfDetails[0]?.ExtUserPtr.Company
-          ? pdfDetails[0].ExtUserPtr.Company
-          : "";
-        const senderName =
-          pdfDetails?.[0].ExtUserPtr.Name;
-        const documentName = `${pdfDetails?.[0].Name}`;
-        let replaceVar;
-
-        if (
-          requestBody &&
-          requestSubject &&
-          isCustomize
-        ) {
-          const replacedRequestBody = requestBody.replace(/"/g, "'");
-          htmlReqBody =
-            "<html><head><meta http-equiv='Content-Type' content='text/html; charset=UTF-8' /></head><body>" +
-            replacedRequestBody +
-            "</body> </html>";
-
-          const variables = {
-            document_title: documentName,
-            note: pdfDetails?.[0]?.Note,
-            sender_name: senderName,
-            sender_mail: senderEmail,
-            sender_phone: senderPhone || "",
-            receiver_name: signerMail[i]?.Name || "",
-            receiver_email: signerMail[i].Email,
-            receiver_phone: signerMail[i]?.Phone || "",
-            expiry_date: localExpireDate,
-            company_name: orgName,
-            signing_url: signPdf
-          };
-          replaceVar = replaceMailVaribles(
-            requestSubject,
-            htmlReqBody,
-            variables
-          );
-        } else if (
-          tenantMailTemplate?.body &&
-          tenantMailTemplate?.subject
-        ) {
-          const mailBody = tenantMailTemplate?.body;
-          const mailSubject = tenantMailTemplate?.subject;
-          const replacedRequestBody = mailBody.replace(/"/g, "'");
-          const htmlReqBody =
-            "<html><head><meta http-equiv='Content-Type' content='text/html; charset=UTF-8' /></head><body>" +
-            replacedRequestBody +
-            "</body> </html>";
-          const variables = {
-            document_title: documentName,
-            note: pdfDetails?.[0]?.Note,
-            sender_name: senderName,
-            sender_mail: senderEmail,
-            sender_phone: senderPhone || "",
-            receiver_name: signerMail[i]?.Name || "",
-            receiver_email: signerMail[i].Email,
-            receiver_phone: signerMail[i]?.Phone || "",
-            expiry_date: localExpireDate,
-            company_name: orgName,
-            signing_url: signPdf
-          };
-          replaceVar = replaceMailVaribles(mailSubject, htmlReqBody, variables);
-        }
-        const mailparam = {
-          senderName: senderName,
-          note: pdfDetails?.[0]?.Note || "",
-          senderMail: senderEmail,
-          title: documentName,
-          organization: orgName,
-          localExpireDate: localExpireDate,
-          signingUrl: signPdf
-        };
-        let params = {
-          extUserId: owner?.objectId,
-          recipient: signerMail[i].Email,
-          subject: replaceVar?.subject
-            ? replaceVar?.subject
-            : mailTemplate(mailparam).subject,
-          replyto: senderEmail,
-          from:
-            senderEmail,
-          html: replaceVar?.body
-            ? replaceVar?.body
-            : mailTemplate(mailparam).body
-        };
-
-        sendMail = await axios.post(url, params, { headers: headers });
-      } catch (error) {
-        console.log("error", error);
-      }
-    }
-    if (sendMail?.data?.result?.status === "success") {
-      setMailStatus("success");
-      try {
-        let data;
-        if (
-          requestBody &&
-          requestSubject &&
-          isCustomize
-        ) {
-          data = {
-            RequestBody: htmlReqBody,
-            RequestSubject: requestSubject,
-            SendMail: true
-          };
-        } else if (
-          tenantMailTemplate?.body &&
-          tenantMailTemplate?.subject
-        ) {
-          data = {
-            RequestBody: tenantMailTemplate?.body,
-            RequestSubject: tenantMailTemplate?.subject,
-            SendMail: true
-          };
-        } else {
-          data = { SendMail: true };
-        }
-        try {
-          await axios.put(
-            `${localStorage.getItem(
-              "baseUrl"
-            )}classes/contracts_Document/${documentId}`,
-            data,
-            {
-              headers: {
-                "Content-Type": "application/json",
-                "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
-                "X-Parse-Session-Token": localStorage.getItem("accesstoken")
-              }
-            }
-          );
-        } catch (err) {
-          console.log("axois err ", err);
-        }
-      } catch (e) {
-        console.log("error", e);
-      }
-      setIsSend(true);
-      setIsMailSend(true);
-      setIsLoading({ isLoad: false });
-      setIsUiLoading(false);
-    } else if (sendMail?.data?.result?.status === "quota-reached") {
-      setMailStatus("quotareached");
-      setIsSend(true);
-      setIsMailSend(true);
-      setIsUiLoading(false);
-    }
-    else {
-      setMailStatus("failed");
-      setIsSend(true);
-      setIsMailSend(true);
-      setIsUiLoading(false);
-    }
-  };
   const handleDontShow = (isChecked) => {
     setIsDontShow(isChecked);
   };
   //here you can add your messages in content and selector is key of particular steps
-
   const tourConfig = [
     {
       selector: '[data-tut="prefillTour"]',
@@ -1460,6 +1276,9 @@ function PlaceHolderSign() {
     isHideLabel,
     layout
   ) => {
+    const isPrefill = signerPos.some(
+      (x) => x?.Role === "prefill" && x.Id === uniqueId
+    );
     const filterSignerPos = signerPos.filter((data) => data.Id === uniqueId);
     if (filterSignerPos.length > 0) {
       const getPlaceHolder = filterSignerPos[0].placeHolder;
@@ -1525,16 +1344,21 @@ function PlaceHolderSign() {
                     ...position.options,
                     name: dropdownName,
                     values: dropdownOptions,
-                    validation: {
-                      minRequiredCount: minCount,
-                      maxRequiredCount: maxCount
-                    },
+                    ...(!isPrefill
+                      ? {
+                          validation: {
+                            minRequiredCount: minCount,
+                            maxRequiredCount: maxCount
+                          }
+                        }
+                      : {}),
                     defaultValue: defaultValue,
                     layout: layout,
                     isReadOnly: isReadOnly || false,
                     isHideLabel: isHideLabel || false,
                     fontSize: textSize || 12,
-                    fontColor: textColor || "black"
+                    fontColor: textColor || "black",
+                    ...(isPrefill ? { status } : {})
                   }
                 };
               }
@@ -2076,90 +1900,17 @@ function PlaceHolderSign() {
               pdfDetails={pdfDetails}
             />
             <div className=" w-full md:w-[95%] ">
-              {/* this modal is used show alert set placeholder for all signers before send mail */}
-              <ModalUi
-                isOpen={isSendAlert.alert && isSendAlert.mssg === "confirm"}
-                title={isSendAlert.mssg === "confirm" && t("send-mail")}
-                handleClose={() => handleCloseSendmailModal()}
-              >
-                <div className="max-h-96 overflow-y-scroll scroll-hide p-[20px] text-base-content">
-                  {isSendAlert.mssg === "confirm" && (
-                    <>
-                      {!isCustomize && <span>{t("placeholder-alert-3")}</span>}
-                      {
-                          isCustomize && (
-                            <>
-                              <EmailBody
-                                editorRef={editorRef}
-                                requestBody={requestBody}
-                                requestSubject={requestSubject}
-                                handleOnchangeRequest={handleOnchangeRequest}
-                                setRequestSubject={setRequestSubject}
-                              />
-                              <div
-                                className="flex justify-end items-center gap-1 mt-2 op-link op-link-primary"
-                                onClick={() => {
-                                  setRequestBody(defaultBody);
-                                  setRequestSubject(defaultSubject);
-                                }}
-                              >
-                                <span>{t("reset-to-default")}</span>
-                              </div>
-                            </>
-                          )
-                      }
-                      <div className="flex flex-row items-center gap-2 md:gap-6 mt-2">
-                        <div className="flex flex-row gap-2">
-                          <button
-                            onClick={() => sendEmailToSigners()}
-                            className="op-btn op-btn-primary font-[500] text-sm shadow"
-                          >
-                            {t("send")}
-                          </button>
-                          {isCustomize && (
-                            <button
-                              onClick={() => setIsCustomize(false)}
-                              className="op-btn op-btn-ghost font-[500] text-sm"
-                            >
-                              {t("close")}
-                            </button>
-                          )}
-                        </div>
-                        {
-                            !isCustomize && (
-                              <span
-                                className="op-link op-link-accent text-sm"
-                                onClick={() => setIsCustomize(!isCustomize)}
-                              >
-                                {t("cutomize-email")}
-                              </span>
-                            )
-                        }
-                      </div>
-                    </>
-                  )}
-                  {isSendAlert.mssg === "confirm" && (
-                    <>
-                      <div className="flex justify-center items-center mt-3">
-                        <span className="h-[1px] w-[20%] bg-[#ccc]"></span>
-                        <span className="ml-[5px] mr-[5px]">{t("or")}</span>
-                        <span className="h-[1px] w-[20%] bg-[#ccc]"></span>
-                      </div>
-                      <div className="my-3">{handleShareList()}</div>
-                      <p id="copyUrl" ref={copyUrlRef} className="hidden"></p>
-                    </>
-                  )}
-                </div>
-              </ModalUi>
               {/* this modal is used show send mail  message and after send mail success message */}
               <ModalUi
                 isOpen={isSend}
                 title={
-                  mailStatus === "success"
-                    ? t("mails-sent")
-                    : mailStatus === "quotareached"
-                      ? t("quota-mail-head")
-                      : t("mail-not-delivered")
+                  !pdfDetails[0]?.SendinOrder
+                    ? mailStatus === "success"
+                      ? t("mails-sent")
+                      : mailStatus === "quotareached"
+                        ? t("quota-mail-head")
+                        : t("mail-not-delivered")
+                    : t("mail-status-head")
                 }
                 handleClose={() => {
                   setIsSend(false);
@@ -2168,70 +1919,103 @@ function PlaceHolderSign() {
                 }}
               >
                 <div className="h-[100%] p-[20px] text-base-content">
-                  {mailStatus === "success" ? (
-                    <div className="text-center mb-[10px]">
-                      <LottieWithLoader />
-                      {pdfDetails[0].SendinOrder ? (
-                        <p>
-                          {isCurrUser
-                            ? t("placeholder-mail-alert-you")
-                            : t("placeholder-mail-alert", {
-                                name: signersdata[0]?.Name
-                              })}
-                        </p>
+                  <div className="flex flex-col items-center gap-5">
+                    <div>
+                      {mailStatus === "success" ? (
+                        <div className="text-center mb-[10px]">
+                          <LottieWithLoader />
+                          {pdfDetails[0].SendinOrder ? (
+                            <p>
+                              {isCurrUser
+                                ? t("placeholder-mail-alert-you")
+                                : t("placeholder-mail-alert", {
+                                    name: signersdata[0]?.Name
+                                  })}
+                            </p>
+                          ) : (
+                            <p>{t("placeholder-alert-4")}</p>
+                          )}
+                        </div>
+                      ) : mailStatus === "quotareached" ? (
+                        <div className="flex flex-col gap-y-3">
+                          <div className="my-3">{handleShareList()}</div>
+                        </div>
+                      ) : mailStatus === "failed" ? (
+                        <p>{t("mail-failed")} </p>
                       ) : (
-                        <p>{t("placeholder-alert-4")}</p>
+                        <div className="mb-[10px]">
+                          {!pdfDetails[0]?.SendinOrder &&
+                            (mailStatus === "dailyquotareached" ? (
+                              <p>{t("daily-quota-reached")}</p>
+                            ) : (
+                              <p>{t("placeholder-alert-6")}</p>
+                            ))}
+                          {isCurrUser && (
+                            <span className="mt-1">
+                              {t("placeholder-alert-5")}
+                            </span>
+                          )}
+                        </div>
                       )}
-                      {isCurrUser && <p>{t("placeholder-alert-5")}</p>}
-                    </div>
-                  ) : mailStatus === "quotareached" ? (
-                    <div className="flex flex-col gap-y-3">
-                      <div className="my-3">{handleShareList()}</div>
-                    </div>
-                  ) : (
-                    <div className="mb-[10px]">
-                      {mailStatus === "dailyquotareached" ? (
-                        <p>{t("daily-quota-reached")}</p>
-                      ) : (
-                        <p>{t("placeholder-alert-6")}</p>
-                      )}
-                      {isCurrUser && (
-                        <p className="mt-1">{t("placeholder-alert-5")}</p>
-                      )}
-                    </div>
-                  )}
-                  {!mailStatus && (
-                    <div className="w-full h-[1px] bg-[#9f9f9f] my-[15px]"></div>
-                  )}
-                  {mailStatus !== "quotareached" && (
-                    <div
-                      className={
-                        mailStatus === "success"
-                          ? "flex justify-center mt-1"
-                          : ""
-                      }
-                    >
-                      {isCurrUser && (
-                        <button
-                          onClick={() => handleRecipientSign()}
-                          type="button"
-                          className="op-btn op-btn-primary mr-1"
+
+                      {mailStatus !== "quotareached" && (
+                        <div
+                          className={
+                            mailStatus === "success"
+                              ? "flex justify-center mt-1"
+                              : "flex items-center justify-center mt-7"
+                          }
                         >
-                          {t("yes")}
-                        </button>
+                          {isCurrUser && (
+                            <button
+                              onClick={() => handleRecipientSign()}
+                              type="button"
+                              className="op-btn op-btn-primary mr-1"
+                            >
+                              {t("sign-now")}
+                            </button>
+                          )}
+                          <button
+                            onClick={() => {
+                              setIsSend(false);
+                              setSignerPos([]);
+                              navigate("/report/1MwEuxLEkF");
+                            }}
+                            type="button"
+                            className="op-btn op-btn-ghost text-base-content"
+                          >
+                            {isCurrUser ? t("no") : t("close")}
+                          </button>
+                        </div>
                       )}
-                      <button
-                        onClick={() => {
-                          setIsSend(false);
-                          setSignerPos([]);
-                          navigate("/report/1MwEuxLEkF");
-                        }}
-                        type="button"
-                        className="op-btn op-btn-ghost text-base-content"
-                      >
-                        {isCurrUser ? t("no") : t("close")}
-                      </button>
                     </div>
+                    {mailStatus !== "success" &&
+                      isCurrUser &&
+                      pdfDetails[0]?.SendinOrder && (
+                        <div className="op-divider text-base-content mx-[0%] my-1 font-medium">
+                          {t("or")}
+                        </div>
+                      )}
+                    {mailStatus !== "success" &&
+                      pdfDetails[0]?.SendinOrder &&
+                      isCurrUser && (
+                        <div
+                          className="op-btn op-btn-outline w-[50%] md:w-[35%] mt-1"
+                          onClick={() => {
+                            setIsSend(false);
+                            setIsMailModal(true);
+                          }}
+                        >
+                          <i
+                            className="fa-regular fa-envelope"
+                            style={{ color: "#002864", fontSize: "19px" }}
+                          ></i>{" "}
+                          <span>{t("send-to-email")}</span>
+                        </div>
+                      )}
+                  </div>
+                  {!mailStatus && (
+                    <div className="op-divider text-base-content mx-[0%] mt-3"></div>
                   )}
                 </div>
               </ModalUi>
@@ -2478,6 +2262,18 @@ function PlaceHolderSign() {
               )}
             </div>
           </div>
+          <CustomizeMail
+            setIsMailModal={setIsMailModal}
+            setCustomizeMail={setCustomizeMail}
+            documentId={documentId}
+            signerList={signersdata}
+            setIsSend={setIsSend}
+            setMailStatus={setMailStatus}
+            customizeMail={customizeMail}
+            defaultMail={defaultMail}
+            isMailModal={isMailModal}
+            handleShareList={handleShareList}
+          />
         </div>
       )}
       {isShowModal[currWidgetsDetails?.key] && (
@@ -2495,6 +2291,7 @@ function PlaceHolderSign() {
           setUniqueId={setUniqueId}
           signatureTypes={signatureType}
           penColors={pdfDetails?.[0]?.PenColors}
+          role={roleName}
         />
       )}
       <ModalUi

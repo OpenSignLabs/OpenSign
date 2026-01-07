@@ -15,7 +15,8 @@ import {
   months,
   years,
   selectCheckbox,
-  isBase64
+  isBase64,
+  drawWidget
 } from "../../constant/Utils";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -463,7 +464,7 @@ function PlaceholderType(props) {
       ) : (
         <div
           style={textWidgetStyle}
-          className="select-none-cls overflow-hidden"
+          className="select-none-cls overflow-hidden uppercase"
         >
           <span>
             {props?.selectDate?.format ||
@@ -580,6 +581,34 @@ function PlaceholderType(props) {
           }}
           className="w-full resize-none overflow-hidden text-base-content item-center outline-none"
         />
+      );
+    case drawWidget:
+      return prefillImgLoad[props.pos?.key] ? (
+        <div className="absolute w-full h-full inset-0 flex justify-center items-center bg-white/30 z-50">
+          <Loader />
+        </div>
+      ) : widgetValue ? (
+        <img
+          alt="signature"
+          draggable="false"
+          src={widgetValue}
+          className={`${props.pos.signatureType !== "type" ? "object-contain" : ""} w-full h-full select-none-cls`}
+        />
+      ) : (
+        <div className={widgetCls}>
+          {props.pos.type && (
+            <div
+              style={{
+                fontSize: props.pos
+                  ? props.calculateFontsize(props.pos)
+                  : "11px"
+              }}
+              className="font-medium"
+            >
+              {formatWidgetName()}
+            </div>
+          )}
+        </div>
       );
     default:
       return props.pos.SignUrl ? (
