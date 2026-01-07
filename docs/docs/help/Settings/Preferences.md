@@ -242,7 +242,7 @@ Please note that once merged, the certificate cannot be separated from the main 
 > **Note:** This feature is available only in the **paid plans** of OpenSign.
 
 ## Widgets
-### Date Widget Settings
+### Date Widget Setting
 Date Widget Preferences allow you to configure the default behavior of Date widgets across documents and templates. These settings are automatically applied whenever you add a new Date widget. You can still customize individual Date widgets later using the widget settings (gear icon).
 
 - **Format**: Select the default date format that will be used for all Date widgets.
