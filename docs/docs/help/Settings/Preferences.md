@@ -61,7 +61,7 @@ Navigate to **Settings > Preferences** to configure user-level signature types.
 
 If a user sets preferred types here, only those will appear when adding signature or initial widgets during document creation.
 
-<img width="861" height="480" alt="signatures" src="https://github.com/user-attachments/assets/69d0851c-57f2-42e5-af6e-419f6d8821c2" />
+<img width="1722" height="806" alt="signatures" src="https://github.com/user-attachments/assets/69d0851c-57f2-42e5-af6e-419f6d8821c2" />
 
 ### 📄 Document-Level
 
@@ -137,7 +137,7 @@ Use this option if you prefer sending emails directly from your own email addres
    
 Once a user selects and configures any SMTP option, all emails will be sent using the user-level SMTP.
 
-<img width="861" height="409" alt="smtp at user level" src="https://github.com/user-attachments/assets/27c459f3-5ae6-41e8-966d-43785e67f192" />
+<img width="1722" height="806" alt="smtp at user level" src="https://github.com/user-attachments/assets/27c459f3-5ae6-41e8-966d-43785e67f192" />
 
 ---
 ### 🔗 Connect to Gmail
@@ -163,7 +163,7 @@ Configure any third-party SMTP provider such as SMTP2GO or Mailgun.
   - **Username:** SMTP username  
   - **Password:** SMTP password  
 
-<img width="820" alt="Custom smtp" src="https://github.com/user-attachments/assets/a3c33510-11b9-4a32-bd44-99614182b089"></img>
+<img width="1722" height="806" alt="Custom smtp" src="https://github.com/user-attachments/assets/a3c33510-11b9-4a32-bd44-99614182b089"></img>
 
 ---
 
@@ -204,7 +204,7 @@ These settings are reflected in:
 - Supports **12-hour** and **24-hour** formats.
 - Affects timestamps in certificates, logs, and webhooks.
 
-<img width="820" alt="Time zone" src="https://github.com/user-attachments/assets/bc1f29a2-565a-4ac2-96a4-9aa18b80b064"></img>
+<img width="1722" height="806" alt="Time zone" src="https://github.com/user-attachments/assets/bc1f29a2-565a-4ac2-96a4-9aa18b80b064"></img>
 
 ---
 
@@ -241,6 +241,16 @@ Please note that once merged, the certificate cannot be separated from the main 
 
 > **Note:** This feature is available only in the **paid plans** of OpenSign.
 
+## Widgets
+### Date Widget Setting
+Date Widget Preferences allow you to configure the default behavior of Date widgets across documents and templates. These settings are automatically applied whenever you add a new Date widget. You can still customize individual Date widgets later using the widget settings (gear icon).
+
+- **Format**: Select the default date format that will be used for all Date widgets.
+- **Default Date**: Set a predefined date that will automatically appear in the Date widget.
+- **Signing Date**: When enabled, the Date widget automatically captures the date on which the signer signs the document.
+- **Read Only**: When enabled, the Date widget becomes non-editable for the signer.
+  <img width="1722" height="806" alt="image" src="https://github.com/user-attachments/assets/4be15ebd-4965-4dff-add6-94e8451461ce" />
+
 ## 🔄 Multi-Level Custom Email Templates
 
 **OpenSign™** offers flexible control over email templates at two different levels:
@@ -264,7 +274,7 @@ If Adam enables **Allow email template customization for users individually** bu
 
 **Note:** Organization-level email management is available only on **Paid** plans. This feature is **not** included in **Free** plans.
 
-<img width="861" height="409" alt="Email_templates" src="https://github.com/user-attachments/assets/0b15e356-cfba-46d5-9e97-c73d32b879f4" />
+<img width="1722" height="806" alt="Email_templates" src="https://github.com/user-attachments/assets/0b15e356-cfba-46d5-9e97-c73d32b879f4" />
 
 ---
 
@@ -274,7 +284,7 @@ Users can configure their own email templates by navigating to **Settings → Pr
 
 If a user sets up templates here, those templates will be used for sending request-signature emails and document-completion emails.
 
-<img width="861" height="480" alt="signatures" src="https://github.com/user-attachments/assets/dda05d4f-aa43-435d-bdb2-e68dca6f2b00" />
+<img width="1722" height="806" alt="signatures" src="https://github.com/user-attachments/assets/dda05d4f-aa43-435d-bdb2-e68dca6f2b00" />
 
 **Note:** Customize email management is only available on **Paid** plans. This feature is not included in **Free** plans.
 
