@@ -577,6 +577,7 @@ const EditTemplate = ({
                   e.target.setCustomValidity(t("input-required"))
                 }
                 onInput={(e) => e.target.setCustomValidity("")}
+                min={1}
                 required
               />
             </div>

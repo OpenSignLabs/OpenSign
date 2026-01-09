@@ -960,6 +960,7 @@ const Forms = (props) => {
                                 e.target.setCustomValidity(t("input-required"))
                               }
                               onInput={(e) => e.target.setCustomValidity("")}
+                              min={1}
                               required
                             />
                           </div>
@@ -1059,6 +1060,7 @@ const Forms = (props) => {
                                 e.target.setCustomValidity(t("input-required"))
                               }
                               onInput={(e) => e.target.setCustomValidity("")}
+                              min={1}
                               required
                             />
                           </div>
@@ -1109,6 +1111,7 @@ const Forms = (props) => {
                               e.target.setCustomValidity(t("input-required"))
                             }
                             onInput={(e) => e.target.setCustomValidity("")}
+                            min={1}
                             required
                           />
                         </div>
