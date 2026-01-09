@@ -25,13 +25,13 @@ import {
 import PlaceholderType from "./PlaceholderType";
 import moment from "moment";
 import "../../styles/opensigndrive.css";
-import ModalUi from "../../primitives/ModalUi";
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 import { setIsShowModal } from "../../redux/reducers/widgetSlice";
 import { themeColor } from "../../constant/const";
 import { useGuidelinesContext } from "../../context/GuidelinesContext";
 import DatePicker from "react-datepicker";
+import DateWidgetModal from "../../primitives/DateWidgetModal";
 
 function Placeholder(props) {
   const { t } = useTranslation();
@@ -655,6 +655,9 @@ function Placeholder(props) {
     setIsToday(false);
     setSelectDate((prev) => ({ ...prev, date: "" }));
   };
+  const handleCloseDateModal = () => {
+    setIsDateModal(false);
+  };
   return (
     <>
       {/*  Check if a text widget (prefill type) exists. Once the user enters a value and clicks outside or the widget becomes non-selectable, it should appear as plain text (just like embedded text in a document). When the user clicks on the text again, it should become editable. */}
@@ -923,7 +926,7 @@ function Placeholder(props) {
           </div>
         </Rnd>
       )}
-      <ModalUi isOpen={isDateModal} title={t("widget-info")} showClose={false}>
+      <DateWidgetModal isOpen={isDateModal} title={t("widget-info")}>
         <div className="text-base-content h-[100%] p-[20px]">
           <div className="flex flex-col gap-3">
             <div className="flex flex-col md:items-center md:flex-row gap-y-3">
@@ -1132,8 +1135,15 @@ function Placeholder(props) {
           >
             {t("save")}
           </button>
+          <button
+            type="button"
+            className="op-btn op-btn-ghost text-base-content ml-1"
+            onClick={() => handleCloseDateModal()}
+          >
+            {t("cancel")}
+          </button>
         </div>
-      </ModalUi>
+      </DateWidgetModal>
     </>
   );
 }
