@@ -36,7 +36,7 @@
     "react-dnd-multi-backend": "^9.0.0",
     "react-dom": "^19.2.3",
     "react-gtm-module": "^2.0.11",
-    "react-i18next": "^16.5.0",
+    "react-i18next": "^16.5.2",
     "react-konva": "^19.2.1",
     "react-pdf": "^10.2.0",
     "react-quill-new": "^3.7.0",
