@@ -14,7 +14,7 @@
     "body-scroll-lock": "^4.0.0-beta.0",
     "date-fns-tz": "^3.2.0",
     "file-saver": "^2.0.5",
-    "i18next": "^25.7.3",
+    "i18next": "^25.7.4",
     "i18next-browser-languagedetector": "^8.2.0",
     "i18next-http-backend": "^3.0.2",
     "jszip": "^3.10.1",
