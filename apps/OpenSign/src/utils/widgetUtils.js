@@ -1,7 +1,25 @@
-import { generateTitleFromFilename, selectFormat } from "../constant/Utils";
+import moment from "moment";
+import {
+  generateTitleFromFilename,
+  selectFormat,
+  changeDateToMomentFormat
+} from "../constant/Utils";
 import { base64StringtoFile, uploadFile } from "./fileUtils";
 import { sanitizeFileName } from "./sanitizeFileName";
 import Parse from "parse";
+export const dateFormat = [
+  "L",
+  "MM-DD-YYYY",
+  "MM.DD.YYYY",
+  "DD/MM/YYYY",
+  "DD-MM-YYYY",
+  "DD.MM.YYYY",
+  "YYYY-MM-DD",
+  "MMM DD, YYYY",
+  "LL",
+  "DD MMM, YYYY",
+  "DD MMMM, YYYY"
+];
 // `handlesavesign` is used to save signature, initials, stamp as a default
 export const saveToMySign = async (widget) => {
   const base64 = widget?.base64;
@@ -239,3 +257,122 @@ export function formatDate(dateObj) {
     .replace(/mm/, tokens.mm)
     .replace(/dd/, tokens.dd);
 }
+
+// The getDatePickerDate function retrieves the date in the correct format supported by the DatePicker.
+export const getDatePickerDate = (selectedDate, format = "dd-MM-yyyy") => {
+  let date;
+  if (!selectedDate) {
+    return;
+  }
+  if (format && format === "dd-MM-yyyy") {
+    const [day, month, year] = selectedDate?.split("-");
+    date = new Date(`${year}-${month}-${day}`);
+  } else if (format && format === "dd.MM.yyyy") {
+    const [day, month, year] = selectedDate?.split(".");
+    date = new Date(`${year}.${month}.${day}`);
+  } else if (format && format === "dd/MM/yyyy") {
+    const [day, month, year] = selectedDate?.split("/");
+    date = new Date(`${year}/${month}/${day}`);
+  } else {
+    date = new Date(selectedDate);
+  }
+  return date;
+};
+
+// Parses strictly "mm/dd/yyyy" (e.g., "01/30/2026")
+// Returns "YYYY-MM-DD" (e.g., "2026-01-30") or null if invalid.
+export function parseMMDDYYYY(input) {
+  if (typeof input !== "string") return null;
+
+  const match = input.trim().match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  if (!match) return null;
+
+  const month = Number(match[1]); // 1..12
+  const day = Number(match[2]); // 1..31
+  const year = Number(match[3]);
+
+  if (month < 1 || month > 12) return null;
+  if (day < 1 || day > 31) return null;
+
+  // Strict calendar validation (rejects 02/30/2026 etc.)
+  const dt = new Date(year, month - 1, day);
+  if (
+    dt.getFullYear() !== year ||
+    dt.getMonth() !== month - 1 ||
+    dt.getDate() !== day
+  ) {
+    return null;
+  }
+
+  const MM = String(month).padStart(2, "0");
+  const DD = String(day).padStart(2, "0");
+  return `${year}-${MM}-${DD}`; // ISO-like (date-only)
+}
+
+// Parses strictly "dd-mm-yyyy" (e.g., "30-01-2026")
+// Returns "YYYY-MM-DD" (e.g., "2026-01-30") or null if invalid.
+export function parseDDMMYYYY(input) {
+  if (typeof input !== "string") return null;
+
+  const match = input.trim().match(/^(\d{1,2})-(\d{1,2})-(\d{4})$/);
+  if (!match) return null;
+
+  const day = Number(match[1]); // 1..31
+  const month = Number(match[2]); // 1..12
+  const year = Number(match[3]);
+
+  if (month < 1 || month > 12) return null;
+  if (day < 1 || day > 31) return null;
+
+  // Strict calendar validation (rejects 31-02-2026 etc.)
+  const dt = new Date(year, month - 1, day);
+  if (
+    dt.getFullYear() !== year ||
+    dt.getMonth() !== month - 1 ||
+    dt.getDate() !== day
+  ) {
+    return null;
+  }
+
+  const MM = String(month).padStart(2, "0");
+  const DD = String(day).padStart(2, "0");
+  return `${year}-${MM}-${DD}`; // ISO-like (date-only)
+}
+
+// Turn "/^[A-Z]+$/i" OR "^[A-Z]+$" into a real RegExp
+export function toRegExp(maybeRegex, defaultFlags = "") {
+  if (maybeRegex instanceof RegExp) return maybeRegex;
+
+  const s = String(maybeRegex ?? "").trim();
+  const m = s.match(/^\/([\s\S]*)\/([gimsuy]*)$/); // /pattern/flags
+
+  if (m) {
+    const [, pattern, flags] = m;
+    return new RegExp(pattern, flags);
+  }
+  return new RegExp(s, defaultFlags);
+}
+
+// For <input pattern="..."> (must NOT include /.../ delimiters)
+export function toHtmlPattern(maybeRegex) {
+  if (!maybeRegex) return;
+
+  const re = toRegExp(maybeRegex);
+  // pattern attribute is implicitly full-match; stripping anchors is optional
+  return re.source.replace(/^\^/, "").replace(/\$$/, "");
+}
+
+export const formatCSVDate = (widget, response, formatInISO = false) => {
+  const format = widget?.options?.validation?.format ?? "dd-MM-yyyy";
+  const input = response === "today" ? new Date() : response;
+  // moment strict parse; fallback to "today" if invalid
+  const m = moment(input, changeDateToMomentFormat(format), true);
+  const date = m.isValid()
+    ? m
+    : moment(new Date(), changeDateToMomentFormat(format), true);
+
+  const finalResponse = formatInISO
+    ? date.format("DD-MM-YYYY")
+    : date.format(format?.toUpperCase());
+  return finalResponse;
+};

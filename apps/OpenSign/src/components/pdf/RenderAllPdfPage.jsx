@@ -48,7 +48,7 @@ function RenderAllPdfPage(props) {
     };
 
     // Use setTimeout to wait for the transition to complete
-    const timer = setTimeout(updateSize, 100); // match the transition duration
+    const timer = setTimeout(updateSize, 150); // match the transition duration
 
     return () => clearTimeout(timer);
   }, [isSidebar, pageContainer, props?.containerWH]);

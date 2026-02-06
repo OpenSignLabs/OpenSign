@@ -123,3 +123,56 @@ export function buildDownloadFilename(formatId, ctx) {
   const safeExt = ext.replace(/\.+/g, "").toLowerCase() || "pdf";
   return `${stem}.${safeExt}`;
 }
+
+export function parseCSV(text) {
+  const rows = [];
+  let row = [];
+  let field = "";
+  let inQuotes = false;
+
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+    const next = text[i + 1];
+
+    if (ch === '"') {
+      // If inside quotes and next is also quote => escaped quote
+      if (inQuotes && next === '"') {
+        field += '"';
+        i++; // skip next quote
+      } else {
+        inQuotes = !inQuotes;
+      }
+      continue;
+    }
+
+    if (ch === "," && !inQuotes) {
+      row.push(field.trim());
+      field = "";
+      continue;
+    }
+
+    if ((ch === "\n" || ch === "\r") && !inQuotes) {
+      // handle CRLF (\r\n)
+      if (ch === "\r" && next === "\n") i++;
+
+      row.push(field.trim());
+      field = "";
+
+      // ignore completely empty lines
+      const hasAny = row.some((c) => c !== "");
+      if (hasAny) rows.push(row);
+
+      row = [];
+      continue;
+    }
+
+    field += ch;
+  }
+
+  // last field
+  row.push(field.trim());
+  const hasAny = row.some((c) => c !== "");
+  if (hasAny) rows.push(row);
+
+  return rows;
+}

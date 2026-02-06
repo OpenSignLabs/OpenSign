@@ -25,7 +25,7 @@ async function sendMail(document, publicUrl) {
     month: 'long',
     year: 'numeric',
   });
-  let signerMail = document.Placeholders;
+  let signerMail = document.Placeholders?.filter(x => x?.Role !== 'prefill');
   const senderName = document.ExtUserPtr.Name;
   const senderEmail = document.ExtUserPtr.Email;
 
@@ -109,9 +109,12 @@ async function batchQuery(userId, Documents, Ip, parseConfig, type, publicUrl) {
     try {
       const requests = Documents.map(x => {
         const Signers = x.Signers;
-        const allSigner = x?.Placeholders?.map(
-          item => Signers?.find(e => item?.signerPtr?.objectId === e?.objectId) || item?.signerPtr
-        ).filter(signer => Object.keys(signer).length > 0);
+        const placeholders = x?.Placeholders?.filter(p => p?.Role !== 'prefill');
+        const allSigner = placeholders
+          ?.map(
+            item => Signers?.find(e => item?.signerPtr?.objectId === e?.objectId) || item?.signerPtr
+          )
+          .filter(signer => Object.keys(signer).length > 0);
         const date = new Date();
         const isoDate = date.toISOString();
         let Acl = { [x.CreatedBy.objectId]: { read: true, write: true } };
@@ -140,7 +143,7 @@ async function batchQuery(userId, Documents, Ip, parseConfig, type, publicUrl) {
               className: x.ExtUserPtr.className,
               objectId: x.ExtUserPtr?.objectId,
             },
-            Placeholders: x.Placeholders.map(y =>
+            Placeholders: placeholders.map(y =>
               y?.signerPtr?.objectId
                 ? {
                     ...y,

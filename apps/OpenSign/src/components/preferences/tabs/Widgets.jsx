@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { formatDate, withSessionValidation } from "../../../utils";
+import { dateFormat, formatDate, withSessionValidation } from "../../../utils";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -16,19 +16,6 @@ import {
 import moment from "moment";
 import { Tooltip as ReactTooltip } from "react-tooltip";
 
-const dateFormatArr = [
-  "L",
-  "DD-MM-YYYY",
-  "YYYY-MM-DD",
-  "MM.DD.YYYY",
-  "MM-DD-YYYY",
-  "MMM DD, YYYY",
-  "LL",
-  "DD MMM, YYYY",
-  "DD MMMM, YYYY",
-  "DD.MM.YYYY",
-  "DD/MM/YYYY"
-];
 
 const WidgetsTab = () => {
   const { t } = useTranslation();
@@ -146,7 +133,7 @@ const WidgetsTab = () => {
 
   const formatDateList = (selecteddate) => {
     let date = selecteddate || new Date();
-    const list = dateFormatArr.map((dateFormat) => {
+    const list = dateFormat.map((dateFormat) => {
       const format = selectFormat(dateFormat);
       return { date: formatDate({ date, format }), format: format };
     });

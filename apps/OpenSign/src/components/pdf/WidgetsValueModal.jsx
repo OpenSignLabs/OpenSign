@@ -26,7 +26,8 @@ import {
   getDefaultFormat,
   getBase64MimeType,
   drawWidget,
-  getBase64FromUrl
+  getBase64FromUrl,
+  clearResponse
 } from "../../constant/Utils";
 import CellsWidget from "./CellsWidget";
 import DatePicker from "react-datepicker";
@@ -41,6 +42,7 @@ import {
   setScrollTriggerId,
   setPrefillImg,
   setPrefillImgLoad,
+  setSignatureRes,
   setTypedSignFont,
   setMyStamp
 } from "../../redux/reducers/widgetSlice";
@@ -74,6 +76,7 @@ const isTabCls = "bg-[#002864] text-white rounded-[15px] px-[10px] py-[4px]";
 function WidgetsValueModal(props) {
   const dispatch = useDispatch();
   const {
+    signatureResponse,
     prefillImg,
     defaultSignImg,
     myInitial,
@@ -96,20 +99,26 @@ function WidgetsValueModal(props) {
     allowCellResize = true,
     penColors
   } = props;
+  const previousWidgetRes = signatureResponse?.find(
+    (item) => item.type === currWidgetsDetails?.type
+  );
   const [penColor, setPenColor] = useState("");
   const [isOptional, setIsOptional] = useState(true);
-  const [isDefaultSign, setIsDefaultSign] = useState(false);
   const [isTab, setIsTab] = useState("");
   const [textWidth, setTextWidth] = useState(0);
   const [textHeight, setTextHeight] = useState(0);
   const [isSignTypes, setIsSignTypes] = useState(true);
-  const [typedSignature, setTypedSignature] = useState("");
+  const [typedSignature, setTypedSignature] = useState(
+    previousWidgetRes?.value || ""
+  );
   const [selectDate, setSelectDate] = useState({});
   const [isLastWidget, setIsLastWidget] = useState(false);
   const [signature, setSignature] = useState();
   const [isImageSelect, setIsImageSelect] = useState(false);
   const [isFinish, setIsFinish] = useState(false);
-  const [fontSelect, setFontSelect] = useState(fontOptions[0].value);
+  const [fontSelect, setFontSelect] = useState(
+    previousWidgetRes?.font || fontOptions[0].value
+  );
   const [isSavedSign, setIsSavedSign] = useState(false);
   const [isAutoSign, setIsAutoSign] = useState(false);
   const [image, setImage] = useState(null);
@@ -330,8 +339,6 @@ function WidgetsValueModal(props) {
   //function is used to save image,stamp widgets data
   const handleSaveImage = async (signatureType) => {
     const widgetsType = currWidgetsDetails?.type;
-    //`isApplyAll` is used when user edit stamp then updated signature apply all existing drawn signatures
-    const isApplyAll = true;
     let imgUrl;
     const isPrefill = xyPosition.some(
       (x) => x.Id === uniqueId && x?.Role === "prefill"
@@ -362,7 +369,6 @@ function WidgetsValueModal(props) {
             image,
             isAutoSign,
             widgetsType,
-            isApplyAll,
             isPrefill && imgUrl,
             defaultStampImg,
             defaultStampType
@@ -375,6 +381,23 @@ function WidgetsValueModal(props) {
         })
       );
       dispatch(setPrefillImgLoad({}));
+
+      if (
+        ["image", "myStamp", "uploadStamp"].includes(isTab) &&
+        ["signature", "initials", "stamp"].includes(currWidgetsDetails?.type)
+      ) {
+        if (defaultStampImg || image?.src) {
+          dispatch(
+            setSignatureRes({
+              tab: isTab,
+              value: isTab === "myStamp" ? defaultStampImg : image?.src,
+              imageType:
+                isTab === "myStamp" ? defaultStampType : image?.imgType,
+              type: currWidgetsDetails?.type
+            })
+          );
+        }
+      }
     } else {
       const index = props?.xyPosition?.findIndex((object) => {
         return object.pageNumber === pageNumber;
@@ -387,7 +410,6 @@ function WidgetsValueModal(props) {
         image,
         false,
         widgetsType,
-        null,
         null,
         defaultStampImg,
         defaultStampType
@@ -424,8 +446,6 @@ function WidgetsValueModal(props) {
     let imgWH = { width: width ? width : "", height: height ? height : "" };
     setIsImageSelect(false);
     setImage();
-    // `isApplyAll` is used when user edit signature/initial then updated signature apply all existing drawn signatures
-    const isApplyAll = true;
     if (uniqueId) {
       const isPrefill = xyPosition.some(
         (x) => x.Id === uniqueId && x?.Role === "prefill"
@@ -452,7 +472,6 @@ function WidgetsValueModal(props) {
             typedSignature,
             isAutoSign,
             widgetsType,
-            isApplyAll,
             fontSelect,
             penColor
           );
@@ -463,6 +482,19 @@ function WidgetsValueModal(props) {
         })
       );
       dispatch(setPrefillImgLoad({}));
+      if (
+        ["signature", "initials"].includes(currWidgetsDetails?.type) &&
+        (typedSignature || signatureImg)
+      ) {
+        dispatch(
+          setSignatureRes({
+            tab: isTab,
+            value: isTab === "type" ? typedSignature : signatureImg,
+            type: currWidgetsDetails?.type,
+            ...(isTab === "type" && fontSelect && { font: fontSelect })
+          })
+        );
+      }
     } else {
       const index = props?.xyPosition?.findIndex((object) => {
         return object.pageNumber === pageNumber;
@@ -478,7 +510,6 @@ function WidgetsValueModal(props) {
         typedSignature,
         false,
         widgetsType,
-        false,
         fontSelect,
         penColor
       );
@@ -507,35 +538,42 @@ function WidgetsValueModal(props) {
       if (getIndex !== -1) {
         setIsSignTypes(true);
         const tab = signatureTypes?.[getIndex].name;
-        if (currWidgetsDetails?.signatureType === "type") {
-          setIsTab("type");
+        const previousWidgetRes = signatureResponse.find(
+          (item) => item.type === currWidgetsDetails?.type
+        );
+        if (
+          previousWidgetRes?.tab &&
+          previousWidgetRes?.type === currWidgetsDetails?.type
+        ) {
+          setIsTab(previousWidgetRes?.tab || "draw");
+        } else if (currWidgetsDetails?.signatureType) {
+          setIsTab(currWidgetsDetails?.signatureType);
         } else if (tab === "draw") {
           setIsTab("draw");
         } else if (tab === "upload") {
           setIsImageSelect(true);
-          setIsTab("uploadImage");
+          setIsTab("image");
         } else if (tab === "typed") {
           setIsTab("type");
         } else if (tab === "default") {
           if (currWidgetsDetails?.type !== "initials" && defaultSignImg) {
-            setIsDefaultSign(true);
             setIsTab("mysignature");
           } else if (currWidgetsDetails?.type === "initials" && myInitial) {
-            setIsDefaultSign(true);
             setIsTab("myinitials");
           } else {
             setIsTab("draw");
           }
-        } else {
-          setIsTab(true);
         }
       } else {
         setIsSignTypes(false);
       }
     } else if (currWidgetsDetails?.type === "image") {
-      setIsTab("uploadImage");
+      setIsTab("image");
     } else if (currWidgetsDetails?.type === "stamp") {
-      if (currWidgetsDetails?.options?.response) {
+      const previousWidgetRes = signatureResponse.find(
+        (item) => item.type === currWidgetsDetails?.type
+      );
+      if (previousWidgetRes?.tab === "uploadStamp") {
         setIsTab("uploadStamp");
       } else if (myStamp) {
         setIsTab("myStamp");
@@ -638,7 +676,10 @@ function WidgetsValueModal(props) {
   };
   const resetToDefault = () => {
     props?.setCurrWidgetsDetails({});
-    if (!image) {
+    if (
+      isTab !== "image" &&
+      !["stamp", "image"].includes(currWidgetsDetails?.type)
+    ) {
       if (isTab === "myStamp" && myStamp) {
         handleSaveImage();
       } else if (isTab === "mysignature") {
@@ -674,17 +715,15 @@ function WidgetsValueModal(props) {
       } else {
         setSignature("");
         canvasRef?.current?.clear();
-        const tab = isTab === "uploadImage" ? "image" : isTab;
+        const tab = isTab;
         handleSaveSignature(tab);
       }
-      // setPenColor("blue");
       handlePenColor();
     } else {
       setSignature("");
       handleSaveImage("image");
     }
     setIsImageSelect(false);
-    setIsDefaultSign(false);
     setImage();
     handleTab();
   };
@@ -719,15 +758,19 @@ function WidgetsValueModal(props) {
     loadFont();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fontSelect]);
-
   useEffect(() => {
     handleWidgetsResponse();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isTab]);
 
   const handleWidgetsResponse = async () => {
-    if (currWidgetsDetails?.options?.response) {
-      let url = currWidgetsDetails?.options?.response;
+    //'signatureResponse' is save signature/initials widget response to show on response in signature pad
+    const previousWidgetRes = signatureResponse.find(
+      (item) => item.type === currWidgetsDetails?.type
+    );
+    let url = currWidgetsDetails?.options?.response;
+    if (currWidgetsDetails?.options?.response || previousWidgetRes) {
+      //draw widget
       if (currWidgetsDetails?.type === drawWidget) {
         if (canvasRef.current) {
           const iBase64 = isValidBase64(url);
@@ -739,17 +782,36 @@ function WidgetsValueModal(props) {
             canvasRef.current.fromDataURL(base64Url);
           }
         }
-      } else if (isSignOrInitials) {
-        if (isTab === "draw" && currWidgetsDetails?.signatureType === "draw") {
-          setSignature(url);
-          // Load the default signature after the component mounts
-          if (canvasRef.current) {
-            canvasRef.current.fromDataURL(url);
+      }
+      //signature and initial widgets
+      if (isSignOrInitials) {
+        if (isTab === "draw" || isTab === "image") {
+          if (
+            (previousWidgetRes?.tab === "draw" &&
+              currWidgetsDetails?.signatureType !== "draw" &&
+              previousWidgetRes?.type === currWidgetsDetails?.type) ||
+            currWidgetsDetails?.signatureType === "draw"
+          ) {
+            url = url || previousWidgetRes?.value;
+            setSignature(url);
+            canvasRef.current && canvasRef.current.fromDataURL(url);
+            return;
+          } else if (
+            previousWidgetRes?.tab === "image" &&
+            previousWidgetRes?.type === currWidgetsDetails?.type
+          ) {
+            setImage({
+              src: previousWidgetRes?.value,
+              imgType: previousWidgetRes?.imageType
+            });
           }
-        } else if (isTab === "uploadImage" && currWidgetsDetails?.ImageType) {
+        }
+        if (isTab === "image" && currWidgetsDetails?.ImageType) {
           setImage({ imgType: currWidgetsDetails?.ImageType, src: url });
         }
-      } else if (isImageOrStamp) {
+      }
+      //image and stamp widget
+      if (isImageOrStamp) {
         const isPrefill = xyPosition.some(
           (x) => x.Id === uniqueId && x?.Role === "prefill"
         );
@@ -759,9 +821,20 @@ function WidgetsValueModal(props) {
           );
           url = getPrefillImg?.base64;
         }
-        if (isTab === "myStamp") {
+        if (
+          ["myStamp", "uploadStamp"].includes(previousWidgetRes?.tab) &&
+          previousWidgetRes?.type === currWidgetsDetails?.type
+        ) {
+          setImage({
+            imgType: previousWidgetRes?.ImageType,
+            src: previousWidgetRes?.value
+          });
+        } else if (isTab === "myStamp") {
           setImage(null);
-        } else {
+        } else if (
+          currWidgetsDetails?.options?.response &&
+          currWidgetsDetails?.type === "image"
+        ) {
           setImage({ imgType: currWidgetsDetails?.ImageType, src: url });
         }
       }
@@ -798,7 +871,7 @@ function WidgetsValueModal(props) {
     const fontFamily = fontStyle || typedSignFont || fontSelect || "Fasthand";
     const fillColor = color || penColor;
     const dataUrl = convertTextToImg(fontFamily, text, fillColor, widgetDims);
-    setSignature(dataUrl);
+    // setSignature(dataUrl);
     setTextWidth(maxWidth);
     setTextHeight(maxHeight);
     dispatch(setTypedSignFont(fontFamily));
@@ -1124,10 +1197,10 @@ function WidgetsValueModal(props) {
       },
       //Upload Image tab
       {
-        id: "uploadImage",
+        id: "image",
         label: t("upload-image"),
         onClick: () => {
-          setIsTab("uploadImage");
+          setIsTab("image");
           setIsImageSelect(true);
         },
         show:
@@ -1178,7 +1251,12 @@ function WidgetsValueModal(props) {
       {
         id: "type",
         label: t("type"),
-        onClick: () => setIsTab("type"),
+        onClick: () => {
+          setIsTab("type");
+          if (previousWidgetRes?.tab !== "type") {
+            setTypedSignature("");
+          }
+        },
         show: isTabEnabled("typed") && !isStampOrImage,
         render: () => (
           <>
@@ -1603,7 +1681,7 @@ function WidgetsValueModal(props) {
     const isCheckBox =
       !currWidgetsDetails.options?.isReadOnly &&
       currWidgetsDetails.type === "checkbox";
-    if (isCheckBox) {
+    if (isCheckBox && props?.role !== "prefill") {
       //get minimum required count if  exist
       const minCount =
         currWidgetsDetails?.options?.validation?.minRequiredCount;
@@ -1711,17 +1789,55 @@ function WidgetsValueModal(props) {
     }
   };
 
-  // focusNextWidget(currWidgetsDetails?.key, xyPosition)
+  // `clearWidgetResponse` is used to clear response of signature, stamp, image, initials, draw widget based on id
+  const clearWidgetResponse = () => {
+    const widgetKey = currWidgetsDetails?.key;
+    const isOptional =
+      currWidgetsDetails?.options?.status === "optional" || false;
+    if (widgetKey && isOptional) {
+      const isPrefill = xyPosition.some(
+        ({ Id, Role }) => Id === uniqueId && Role === "prefill"
+      );
+      if (isPrefill) dispatch(setPrefillImg({ id: widgetKey, base64: "" }));
+
+      setXyPosition((prev) =>
+        prev.map((signer) => {
+          if (signer.Id !== uniqueId) return signer;
+
+          const idx = signer?.placeHolder?.findIndex(
+            (p) => p.pageNumber === pageNumber
+          );
+          if (idx === -1) return signer;
+
+          return {
+            ...signer,
+            placeHolder: clearResponse(widgetKey, signer.placeHolder, idx)
+          };
+        })
+      );
+    }
+  };
+
   //function too use on click on next/finish button then update modal UI according to current widgets
   const handleClickOnNext = async (isFinishDoc) => {
     if (
       ["signature", "stamp", "image", "initials", drawWidget].includes(
         currWidgetsDetails?.type
-      ) &&
-      (signature || image || myInitial || defaultSignImg || myStamp)
+      )
     ) {
-      //function to save all type draw or image
-      handleSaveBtn();
+      if (
+        signature ||
+        image ||
+        myInitial ||
+        defaultSignImg ||
+        myStamp ||
+        typedSignature
+      ) {
+        //function to save all type draw or image
+        handleSaveBtn();
+      } else {
+        clearWidgetResponse();
+      }
     }
     if (isSave) {
       handleclose();
@@ -1787,9 +1903,8 @@ function WidgetsValueModal(props) {
         const { type } = currWidgetsDetails || {};
         //conditions based on widget type or active tab
         const conditions = {
-          image: !image, // Image widget also requires an image
           draw: !signature, // Draw tab requires a drawn signature
-          uploadImage: !image, // Upload tab requires an image
+          image: !image, // Upload tab requires an image
           mysignature: !defaultSignImg, // My Signature tab requires a saved/default signature
           type: !(typedSignature?.trim()?.length > 0), // Type tab requires non-empty typed signature
           myinitials: !myInitial,
