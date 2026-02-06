@@ -3966,7 +3966,411 @@ paths:
       tags:
       - Templates
       summary: Get Template
-      description: The Get Template API allows you to retrieve details about a specific template. Templates serve as blueprints for creating documents with predefined structures.
+      description: |
+        The Get Template API allows you to retrieve details about a specific template. Templates serve as blueprints for creating documents with predefined structures.
+
+        **Responses of Signer Widgets:**
+
+        1. **signature**
+        ```
+        {
+          "type": "signature",
+          "page": 1,
+          "x": 327,
+          "y": 628,
+          "w": 114,
+          "h": 21
+        }
+        ```
+
+        2. **stamp**
+        ```
+        {
+          "type": "stamp",
+          "page": 1,
+          "x": 327,
+          "y": 628,
+          "w": 114,
+          "h": 21,
+          "options": {
+            "required": true,
+            "name": "stamp"
+          }
+        }
+        ```
+
+        3. **initials**
+        ```
+        {
+          "type": "initials",
+          "page": 1,
+          "x": 327,
+          "y": 628,
+          "w": 114,
+          "h": 21,
+          "options": {
+            "required": true,
+            "name": "initials"
+          }
+        }
+        ```
+
+        4. **email**
+        ```
+        {
+          "type": "email",
+          "page": 1,
+          "x": 327,
+          "y": 628,
+          "w": 114,
+          "h": 21,
+          "options": {
+            "required": true,
+            "name": "email",
+            "color": "black",
+            "fontsize": 12,
+            "hide_text_with_asterisks": false
+          }
+        }
+        ```
+
+        5. **name**
+        ```
+        {
+          "type": "name",
+          "page": 1,
+          "x": 327,
+          "y": 628,
+          "w": 114,
+          "h": 21,
+          "options": {
+            "required": true,
+            "name": "name",
+            "color": "black",
+            "fontsize": 12,
+            "hide_text_with_asterisks": false
+          }
+        }
+        ```
+
+        6. **job Title**
+        ```
+        {
+          "type": "job title",
+          "page": 1,
+          "x": 327,
+          "y": 628,
+          "w": 114,
+          "h": 21,
+          "options": {
+            "required": true,
+            "name": "job title",
+            "color": "black",
+            "fontsize": 12,
+            "hide_text_with_asterisks": false
+          }
+        }
+        ```
+
+        7. **company**
+        ```
+        {
+          "type": "company",
+          "page": 1,
+          "x": 327,
+          "y": 628,
+          "w": 114,
+          "h": 21,
+          "options": {
+            "required": true,
+            "name": "company",
+            "color": "black",
+            "fontsize": 12,
+            "hide_text_with_asterisks": false
+          }
+        }
+        ```
+
+        8. **date**
+        ```
+        {
+          "type": "date",
+          "page": 1,
+          "x": 327,
+          "y": 628,
+          "w": 114,
+          "h": 21,
+          "options": {
+            "required": true,
+            "name": "date",
+            "default": "04-15-2024",
+            "format": "mm-dd-yyyy",
+            "color": "black",
+            "fontsize": 12,
+            "min_date": "",
+            "max_date": "",
+            "readonly": false,
+            "signing_date": false
+          }
+        }
+        ```
+
+        9. **textbox**
+        ```
+        {
+          "type": "textbox",
+          "page": 1,
+          "x": 327,
+          "y": 628,
+          "w": 114,
+          "h": 21,
+          "options": {
+            "name": "textbox",
+            "required": true,
+            "readonly": false,
+            "default": "name",
+            "hint": "provide name",
+            "regularexpression": "",
+            "color": "black",
+            "fontsize": 12,
+            "hide_text_with_asterisks": false
+          }
+        }
+        ```
+
+        10. **checkbox**
+        ```
+        {
+          "type": "checkbox",
+          "page": 1,
+          "x": 327,
+          "y": 628,
+          "w": 114,
+          "h": 21,
+          "options": {
+            "required": true,
+            "name": "checkbox",
+            "values": ["male", "female", "other"],
+            "selectedvalues": ["male", "female"],
+            "readonly": false,
+            "hidelabel": false,
+            "color": "black",
+            "fontsize": 12,
+            "layout": "vertical",
+            "validation": {
+              "minselections": 0,
+              "maxselections": 0
+            }
+          }
+        }
+        ```
+
+        11. **dropdown**
+        ```
+        {
+          "type": "dropdown",
+          "page": 1,
+          "x": 327,
+          "y": 628,
+          "w": 114,
+          "h": 21,
+          "options": {
+            "required": true,
+            "name": "dropdown",
+            "readonly": false,
+            "values": ["male", "female", "other"],
+            "default": "",
+            "color": "black",
+            "fontsize": 12
+          }
+        }
+        ```
+
+        12. **radio button**
+        ```
+        {
+          "type": "radio button",
+          "page": 1,
+          "x": 327,
+          "y": 628,
+          "w": 114,
+          "h": 21,
+          "options": {
+            "required": true,
+            "name": "radio button",
+            "readonly": false,
+            "values": ["male", "female", "other"],
+            "default": "male",
+            "color": "black",
+            "fontsize": 12,
+            "layout": "vertical"
+          }
+        }
+        ```
+
+        13. **image**
+        ```
+        {
+          "type": "image",
+          "page": 1,
+          "x": 327,
+          "y": 628,
+          "w": 114,
+          "h": 21,
+          "options": {
+            "required": true,
+            "name": "image"
+          }
+        }
+        ```
+  
+        14. **number**
+        ```
+        {
+          "type": "number",
+          "page": 1,
+          "x": 107,
+          "y": 528,
+          "w": 60,
+          "h": 21,
+          "options": {
+            "name": "number",
+            "required": true,
+            "readonly": false,
+            "default": 0,
+            "hint": "Enter number",
+            "formula": "",
+            "decimalplaces": 2,
+            "color": "black",
+            "fontsize": 12,
+            "hide_text_with_asterisks": false
+          }
+        }
+        ```
+
+        15. **cells**
+        ```
+        {
+          "type": "cells",
+          "page": 1,
+          "x": 100,
+          "y": 100,
+          "w": 114,
+          "h": 50,
+          "options": {
+            "name": "cells",
+            "required": true,
+            "readonly": false,
+            "cell_count": 5,
+            "default": "",
+            "hint": "",
+            "regularexpression": "",
+            "color": "black",
+            "fontsize": 12,
+            "hide_text_with_asterisks": false
+          }
+        }
+        ```
+
+        **Responses of Prefill widgets**
+        1. **textbox**
+        ```
+        {
+          "type": "textbox",
+          "page": 1,
+          "x": 290,
+          "y": 165,
+          "w": 150,
+          "h": 20,
+          "options": {
+           "required": true,
+           "name": "textbox",
+           "response": "joe",
+           "color": "red",
+           "fontsize": 12
+           }
+        }
+        ```
+
+        2. **date**
+        ```
+        {
+          "type": "date",
+          "page": 1,
+          "x": 173,
+          "y": 588,
+          "w": 114,
+          "h": 21,
+          "options": {
+            "required": true,
+            "name": "date",
+            "response": "04/15/2024",
+            "format": "mm/dd/yyyy",
+            "color": "black",
+            "fontsize": 12
+          }  
+        }
+        ```
+
+        3. **checkbox**
+        ```
+        {
+          "type": "checkbox",
+          "page": 1,
+          "x": 172,
+          "y": 630,
+          "w": 114,
+          "h": 21,
+          "options": {
+            "required": true,
+            "name": "checkbox",
+            "values": ["male", "female", "other"],
+            "response": ["male", "female"],
+            "hidelabel": false,
+            "color": "black",
+            "fontsize": 12
+          }
+        }
+        ```
+
+        4. **radio button**
+        ```
+        {
+          "type": "radio button",
+          "page": 1,
+          "x": 173,
+          "y": 718,
+          "w": 114,
+          "h": 21,
+          "options": {
+            "required": true,
+            "name": "radio button",
+            "values": ["male", "female", "other"],
+            "response": "male",
+            "hidelabel": false,
+            "color": "black",
+            "fontsize": 12
+          } 
+        }
+        ```
+
+        5. **image**
+        ```
+        {
+          "type": "image",
+          "page": 1,
+          "x": 100,
+          "y": 95,
+          "w": 92,
+          "h": 55,
+          "options": {
+            "required": true,
+            "name": "image",
+            "response":"iVBORw0KGgoAAAANSUhEUgAAAmoAAA..."
+          }
+        }
+        ```
+
       operationId: getTemplate
       parameters:
       - name: template_id
@@ -3984,7 +4388,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/template'
+                $ref: '#/components/schemas/template_details'
         "400":
           description: "Something went wrong, please try again later!"
           content:
@@ -4665,6 +5069,75 @@ components:
           example: 0          
       xml:
         name: template
+    template_details:
+      type: object
+      properties:
+        objectId:
+          type: string
+          format: string
+          example: x1Hbnms2Pg
+        title:
+          type: string
+          example: sample template
+        note:
+          type: string
+          example: template note
+        description:
+          type: string
+          example: template description
+        pen_colors:
+          type: array
+          items:
+            type: string
+          example: ["blue", "red", "black"]
+        sender_name:
+          type: string
+          example: "opensign"
+        sender_email: 
+          type: string
+          example: "mailer@opensignlabs.com"
+        notify_on_signatures:
+          type: boolean
+          example: true
+        folder:
+          $ref: '#/components/schemas/template_folder'
+        file:
+          type: string
+          example: https://templateuser.com
+        owner:
+          type: string
+          example: template creator name
+        signers:
+          type: array
+          items:
+            $ref: '#/components/schemas/template_Signers_details'
+        sendInOrder:
+          type: boolean
+          example: true
+        createdAt:
+          $ref: '#/components/schemas/date'
+        updatedAt:
+          $ref: '#/components/schemas/date'
+        enableTour:
+          type: boolean
+          example: true
+        redirect_url:
+          type: string
+          format: string
+          example: ""
+        allow_modifications:
+          type: boolean
+          example: false
+        auto_reminder:
+          type: boolean
+          example: false
+        remind_once_in_every:
+          type: number
+          example: 0
+        prefill: 
+          $ref: '#/components/schemas/prefill'    
+      xml:
+        name: template_details
     contact:
       type: object
       properties:
@@ -5926,6 +6399,25 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/template_Signers_widgets'
+    template_Signers_details:
+      type: object
+      properties:
+        role:
+          type: string
+          example: ceo
+        name:
+          type: string
+          example: joe bee
+        email:
+          type: string
+          example: joebee@example.com
+        phone:
+          type: string
+          example: "456213871"
+        widgets:
+          type: array
+          items:
+            $ref: '#/components/schemas/template_Signers_widgets_details'
     inline_response_400_cc:
       type: object
       properties:
@@ -6116,6 +6608,52 @@ components:
               type: string
               format: string
               example: "textbox"
+    template_Signers_widgets_details:
+      type: object
+      properties:
+        type:
+          type: string
+          format: string
+          example: textbox
+        page:
+          type: number
+          format: number
+          example: 1
+        x:
+          type: number
+          format: number
+          example: 244
+        y:
+          type: number
+          format: number
+          example: 71
+        w:
+          type: number
+          format: number
+          example: 38
+        h:
+          type: number
+          format: number
+          example: 46
+        options:
+          type: object
+          properties:
+            name:
+              type: string
+              format: string
+              example: "textbox"
+            color:
+              type: string
+              format: string
+              example: "black"
+            fontSize:
+              type: number
+              format: number
+              example: 12
+            hide_text_with_asterisks:
+              type: boolean
+              format: boolean
+              example: false
     inline_response_200_10:
       type: object
       properties:
