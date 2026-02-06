@@ -10,16 +10,16 @@ const DateFormatSelector = (props) => {
 
   const dateFormats = [
     "MM/DD/YYYY",
-    "MMMM DD, YYYY",
-    "DD MMMM, YYYY",
-    "DD-MM-YYYY",
-    "DD MMM, YYYY",
-    "YYYY-MM-DD",
     "MM-DD-YYYY",
     "MM.DD.YYYY",
-    "MMM DD, YYYY",
+    "DD/MM/YYYY",
+    "DD-MM-YYYY",
     "DD.MM.YYYY",
-    "DD/MM/YYYY"
+    "YYYY-MM-DD",
+    "MMM DD, YYYY",
+    "MMMM DD, YYYY",
+    "DD MMM, YYYY",
+    "DD MMMM, YYYY"
   ];
 
   // Handle format change

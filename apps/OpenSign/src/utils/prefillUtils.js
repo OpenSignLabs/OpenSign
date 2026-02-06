@@ -45,6 +45,9 @@ export const handleEmbedPrefillToDoc = async (
         scale,
         prefillImg
       );
+      if (pdfBase64?.error) {
+        return { error: pdfBase64.error };
+      }
       const pdfName = generatePdfName(16);
       const pdfUrl = await convertBase64ToFile(pdfName, pdfBase64);
       const tenantId = localStorage.getItem("TenantId");
@@ -232,3 +235,5 @@ export const handleSignersList = (item) => {
   });
   return updatedSigners;
 };
+
+export const normalizeKey = (value) => value?.trim()?.toLowerCase() || "";

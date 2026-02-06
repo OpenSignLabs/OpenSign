@@ -26,7 +26,9 @@ const DatePicker = ({
       ref={ref}
     >
       {value}
-      <i className={`${value ? "ml-[5px]" : ""} fa-light fa-calendar `}></i>
+      <i
+        className={`${value ? "ml-[15px]" : "w-20"} fa-light fa-calendar `}
+      ></i>
     </div>
   ));
   CustomInput.displayName = "CustomInput";

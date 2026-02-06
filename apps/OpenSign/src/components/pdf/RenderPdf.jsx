@@ -29,12 +29,15 @@ import WidgetsDragPreview from "./WidgetsDragPreview";
 function RenderPdf(props) {
   const { t } = useTranslation();
   const dispatch = useDispatch();
+  const { guideline, showGuidelines } = useGuidelinesContext();
   const [, drop] = useDrop({
     accept: "BOX",
-    drop: (item, monitor) => props?.addPositionOfSignature(item, monitor)
+    drop: (item, monitor) => {
+      props?.addPositionOfSignature(item, monitor);
+      showGuidelines(false);
+    }
   });
   const [scaledHeight, setScaledHeight] = useState();
-  const { guideline, showGuidelines } = useGuidelinesContext();
   //check isGuestSigner is present in local if yes than handle login flow header in mobile view
   const isGuestSigner = localStorage.getItem("isGuestSigner");
   const scrollTriggerId = useSelector((state) => state.widget.scrollTriggerId);
@@ -511,9 +514,10 @@ function RenderPdf(props) {
               props.setPdfLoad(true);
               props.pageDetails(pdf);
             }}
-            onClick={() =>
-              props.setCurrWidgetsDetails && props.setCurrWidgetsDetails({})
-            }
+            onClick={() => {
+              props.setCurrWidgetsDetails && props.setCurrWidgetsDetails({});
+              showGuidelines(false);
+            }}
             file={pdfDataBase64}
           >
             <Page

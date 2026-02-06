@@ -32,6 +32,7 @@ import { themeColor } from "../../constant/const";
 import { useGuidelinesContext } from "../../context/GuidelinesContext";
 import DatePicker from "react-datepicker";
 import DateWidgetModal from "../../primitives/DateWidgetModal";
+import { dateFormat } from "../../utils";
 
 function Placeholder(props) {
   const { t } = useTranslation();
@@ -47,11 +48,18 @@ function Placeholder(props) {
   const [clickonWidget, setClickonWidget] = useState({});
   const [formdata, setFormdata] = useState({
     status: props?.pos?.options?.status || "required",
-    isReadOnly: props?.pos?.options?.isReadOnly || false
+    isReadOnly: props?.pos?.options?.isReadOnly || false,
+    name: props?.pos?.options?.name
   });
   const [isToday, setIsToday] = useState(
     props.pos?.options?.response === "today" ? true : false
   );
+  const selectedFormatIndex = dateFormatList?.findIndex(
+    (item) =>
+      item.format === selectDate?.format ||
+      item?.format === props.pos?.options?.validation?.format
+  );
+  const isSelfSign = props.isSignYourself || props.isSelfSign;
   const startDate = props?.pos?.options?.response
     ? getDefaultDate(
         props?.pos?.options?.response,
@@ -65,20 +73,6 @@ function Placeholder(props) {
     setContainerScale(props.containerWH.width / getPdfPageWidth.width);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.containerWH.width, props.pdfOriginalWH]);
-  const dateFormatArr = [
-    "L",
-    "DD-MM-YYYY",
-    "YYYY-MM-DD",
-    "MM.DD.YYYY",
-    "MM-DD-YYYY",
-    "MMM DD, YYYY",
-    "LL",
-    "DD MMM, YYYY",
-    "DD MMMM, YYYY",
-    "DD.MM.YYYY",
-    "DD/MM/YYYY"
-  ];
-
   useEffect(() => {
     if (props?.pos?.type === "date") {
       const isDateChange = true;
@@ -91,7 +85,7 @@ function Placeholder(props) {
   }, [widgetData]);
 
   //function is used to convert date according to selected format
-  const handleGetFormatDate = (data, isDateChange) => {
+  const handleGetFormatDate = (data, isDateChange, isNewDate) => {
     const format =
       data?.format ||
       selectDate?.format ||
@@ -109,6 +103,10 @@ function Placeholder(props) {
       //using moment package is used to change date as per the format provided in selectDate obj e.g. - MM/dd/yyyy -> 03/12/2024
       const newDate = new Date(updateDate);
       date = moment(newDate.getTime()).format(changeDateToMomentFormat(format));
+    } else if (isNewDate) {
+      //using moment package is used to change date as per the format provided in selectDate obj e.g. - MM/dd/yyyy -> 03/12/2024
+      const newDate = new Date();
+      date = moment(newDate.getTime()).format(changeDateToMomentFormat(format));
     }
     setSelectDate({ date: date, format: format });
     return date;
@@ -125,7 +123,10 @@ function Placeholder(props) {
   };
   //function to save date and format on local array onchange date and onclick format
   const handleSaveDate = (data, isDateChange) => {
-    const date = isToday ? "today" : handleGetFormatDate(data, isDateChange);
+    const date =
+      props.isPlaceholder && isToday
+        ? "today"
+        : handleGetFormatDate(data, isDateChange);
     //`onChangeInput` is used to save data related to date in a placeholder field
     const format =
       data?.format ||
@@ -145,7 +146,6 @@ function Placeholder(props) {
       formdata,
     );
   };
-
   //Date-picker- accept date - Thu Dec 30 2025 00:00:00 GMT+0530 (India Standard Time)
   //if date have in this format - "30/12/2025"
   //then first need to be convert in this format - Tue Dec 30 2025 00:00:00 GMT+0530 (India Standard Time)
@@ -156,7 +156,7 @@ function Placeholder(props) {
   //function change format array list with selected date and format
   const changeDateFormat = () => {
     const updateDate = [];
-    dateFormatArr.map((data) => {
+    dateFormat.map((data) => {
       let date = selectDate?.date || new Date();
       const isString = typeof date === "string";
       if (selectDate.format === "dd-MM-yyyy" && isString) {
@@ -180,7 +180,7 @@ function Placeholder(props) {
   };
 
   useEffect(() => {
-    if (props.isPlaceholder || props.isSignYourself || props.isSelfSign) {
+    if (props.isPlaceholder || isSelfSign) {
       selectDate && changeDateFormat();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -250,10 +250,7 @@ function Placeholder(props) {
       props?.setIsCheckbox(true);
     }
     // cells widget settings in sign yourself flow
-    else if (
-      props.pos.type === cellsWidget &&
-      (props.isSignYourself || props.isSelfSign)
-    ) {
+    else if (props.pos.type === cellsWidget && isSelfSign) {
       props.handleCellSettingModal && props.handleCellSettingModal();
     }
     //condition to handle setting icon for signyour-self flow for all type text widgets
@@ -266,7 +263,7 @@ function Placeholder(props) {
         "job title",
         "email"
       ].includes(props.pos.type) &&
-      (props.isSignYourself || props.isSelfSign)
+      isSelfSign
     ) {
       props.handleTextSettingModal(true);
     }
@@ -379,8 +376,7 @@ function Placeholder(props) {
                 "job title",
                 "email",
                 ...isSettingForCells
-              ].includes(props.pos.type) &&
-              (props.isSignYourself || props.isSelfSign) ? (
+              ].includes(props.pos.type) && isSelfSign ? (
                 <i
                   onPointerDown={(e) => {
                     e.stopPropagation();
@@ -502,6 +498,7 @@ function Placeholder(props) {
             className="fa-light fa-circle-xmark icon text-[#188ae2] -right-[8px] -top-[18px] "
             onClick={(e) => {
               e.stopPropagation();
+              showGuidelines(false);
               //condition for template and placeholder flow
               if (props.data) {
                 props.handleDeleteWidget(props.pos.key, props.data.Id);
@@ -514,6 +511,7 @@ function Placeholder(props) {
             //for mobile and tablet touch event
             onTouchEnd={(e) => {
               e.stopPropagation();
+              showGuidelines(false);
               //condition for template and placeholder flow
               if (props.data) {
                 props.handleDeleteWidget(props.pos.key, props.data?.Id);
@@ -624,6 +622,7 @@ function Placeholder(props) {
       return false;
     }
   };
+
   const ExampleCustomInput = forwardRef(({ value, onClick }, ref) => (
     <div
       className="border-gray-400 rounded-[50px] border-[1px] px-3  text-xs py-2 focus:outline-none hover:border-base-content "
@@ -631,10 +630,11 @@ function Placeholder(props) {
       ref={ref}
     >
       {value}
-      <i className={`${value ? "ml-[5px]" : ""} fa-light fa-calendar `}></i>
+      <i className={`${value ? "ml-[5px]" : "w-20"} fa-light fa-calendar `}></i>
     </div>
   ));
   ExampleCustomInput.displayName = "ExampleCustomInput";
+
   const handleChangeFormat = (e) => {
     const selectedIndex = e.target.value;
     e.stopPropagation();
@@ -648,6 +648,17 @@ function Placeholder(props) {
         format: dateFormatList[selectedIndex]?.format
       }));
     } else {
+      if (
+        props?.data?.Role === "prefill" &&
+        (formdata.status === "optional" || props.pos?.status === "optional")
+      ) {
+        setSelectDate({
+          date: "",
+          format: dateFormatList[selectedIndex]?.format
+        });
+        return;
+      }
+
       setSelectDate(dateFormatList[selectedIndex]);
     }
   };
@@ -658,6 +669,23 @@ function Placeholder(props) {
   const handleCloseDateModal = () => {
     setIsDateModal(false);
   };
+  const handleDateStatus = (data) => {
+    if (data === "Optional" && props?.data?.Role === "prefill") {
+      setSelectDate((prev) => ({ ...prev, date: "" }));
+    } else if (
+      props?.data?.Role === "prefill" &&
+      data === "Required" &&
+      props?.pos?.options?.status === "optional"
+    ) {
+      const isNewDate = true;
+      handleGetFormatDate(selectDate, null, isNewDate);
+    }
+    setFormdata({
+      ...formdata,
+      status: data.toLowerCase()
+    });
+  };
+
   return (
     <>
       {/*  Check if a text widget (prefill type) exists. Once the user enters a value and clicks outside or the widget becomes non-selectable, it should appear as plain text (just like embedded text in a document). When the user clicks on the text again, it should become editable. */}
@@ -848,7 +876,7 @@ function Placeholder(props) {
               top={-11}
               pos={props.pos}
               posHeight={props.posHeight}
-              isSignYourself={props.isSignYourself || props.isSelfSign}
+              isSignYourself={isSelfSign}
             />
           ) : props.data &&
             props.isNeedSign &&
@@ -928,220 +956,252 @@ function Placeholder(props) {
       )}
       <DateWidgetModal isOpen={isDateModal} title={t("widget-info")}>
         <div className="text-base-content h-[100%] p-[20px]">
-          <div className="flex flex-col gap-3">
-            <div className="flex flex-col md:items-center md:flex-row gap-y-3">
-              <span className="capitalize">{t("format")} :</span>
-              <select
-                className="op-select op-select-bordered op-select-sm focus:outline-none hover:border-base-content text-xs md:ml-4"
-                defaultValue={""}
-                onChange={(e) => handleChangeFormat(e)}
-              >
-                <option value="" disabled>
-                  {t("select-date-format")}
-                </option>
-                {dateFormatList.map((data, ind) => {
-                  return (
-                    <option className="text-[13px]" value={ind} key={ind}>
-                      {data?.date ? data?.date : "nodata"}
-                    </option>
-                  );
-                })}
-              </select>
-              <span className="text-xs text-gray-400 ml-1 uppercase">
-                {selectDate.format}
-              </span>
-            </div>
-            {props?.data?.Role !== "prefill" && props?.isPlaceholder && (
-              <>
-                <div className="flex flex-col md:flex-row md:items-center gap-2">
-                  <span>{t("default-date")} :</span>
-                  <DatePicker
-                    renderCustomHeader={({ date, changeYear, changeMonth }) => (
-                      <div className="flex justify-start md:ml-2">
-                        <select
-                          className="bg-transparent outline-none"
-                          value={months[getMonth(date)]}
-                          onChange={({ target: { value } }) =>
-                            changeMonth(months.indexOf(value))
-                          }
-                        >
-                          {months.map((option) => (
-                            <option key={option} value={option}>
-                              {option}
-                            </option>
-                          ))}
-                        </select>
-                        <select
-                          className="bg-transparent outline-none"
-                          value={getYear(date)}
-                          onChange={({ target: { value } }) =>
-                            changeYear(value)
-                          }
-                        >
-                          {years.map((option) => (
-                            <option key={option} value={option}>
-                              {option}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-                    )}
-                    closeOnScroll={true}
-                    selected={getDefaultDate(
-                      selectDate?.date,
-                      selectDate?.format
-                    )}
-                    popperPlacement="top-end"
-                    customInput={<ExampleCustomInput />}
-                    onChange={(date) => {
-                      setIsToday(false);
-                      const isDateChange = true;
-                      const dateObj = {
-                        date: date,
-                        format: selectDate.format
-                      };
-                      handleGetFormatDate(dateObj, isDateChange);
-                    }}
-                    dateFormat={
-                      selectDate
-                        ? selectDate?.format
-                        : props.pos?.options?.validation?.format
-                          ? props.pos?.options?.validation?.format
-                          : "MM/dd/yyyy"
-                    }
-                    portalId="root-portal"
-                  />
-                  <label className="flex items-center gap-1 cursor-pointer mb-0">
-                    <input
-                      checked={isToday}
-                      type="checkbox"
-                      className="op-checkbox op-checkbox-xs"
-                      onClick={() => {
-                        setSelectDate((prev) => ({ ...prev, date: "" }));
-                        setIsToday(!isToday);
-                      }}
-                    />
-                    <span className="ml-[2px]">{t("set-today")}</span>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              saveDateSetting(selectDate);
+            }}
+          >
+            <div className="flex flex-col gap-3">
+              {!isSelfSign && (
+                <div className="mb-[0.75rem] text-[13px] md:w-[60%] w-full">
+                  <label htmlFor="name">
+                    {t("name")}
+                    <span className="text-[red]"> *</span>
                   </label>
-                  <span
-                    onClick={() => handleClearDate()}
-                    className="underline text-blue-500 cursor-pointer ml-2"
-                  >
-                    {t("clear")}
-                  </span>
+                  <input
+                    className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
+                    name="name"
+                    value={formdata.name}
+                    onChange={(e) =>
+                      setFormdata({
+                        ...formdata,
+                        name: e.target.value
+                      })
+                    }
+                    onInvalid={(e) =>
+                      e.target.setCustomValidity(t("input-required"))
+                    }
+                    onInput={(e) => e.target.setCustomValidity("")}
+                    required
+                  />
                 </div>
-              </>
-            )}
-            <div className="flex flex-row items-center gap-[10px]">
-              {statusArr.map((data, ind) => {
-                return (
-                  <div
-                    key={ind}
-                    className="flex flex-row gap-[5px] items-center"
-                  >
-                    <input
-                      className="mr-[2px] op-radio op-radio-xs"
-                      type="radio"
-                      name="status"
-                      onChange={() =>
-                        setFormdata({
-                          ...formdata,
-                          status: data.toLowerCase()
-                        })
+              )}
+              <div className="flex flex-col md:items-center md:flex-row gap-y-3">
+                <span className="capitalize">{t("format")} :</span>
+                <select
+                  className="op-select op-select-bordered op-select-sm focus:outline-none hover:border-base-content text-xs md:ml-4"
+                  value={selectedFormatIndex >= 0 ? selectedFormatIndex : ""}
+                  onChange={(e) => handleChangeFormat(e)}
+                >
+                  <option value="" disabled>
+                    {t("select-date-format")}
+                  </option>
+                  {dateFormatList.map((data, ind) => {
+                    return (
+                      <option className="text-[13px]" value={ind} key={ind}>
+                        {data?.date ? data?.date : "nodata"}
+                      </option>
+                    );
+                  })}
+                </select>
+                <span className="text-xs text-gray-400 ml-1 uppercase">
+                  {selectDate.format || props.pos?.options?.validation?.format}
+                </span>
+              </div>
+              {props?.data?.Role !== "prefill" && props?.isPlaceholder && (
+                <>
+                  <div className="flex flex-col md:flex-row md:items-center gap-2">
+                    <span>{t("default-date")} :</span>
+                    <DatePicker
+                      renderCustomHeader={({
+                        date,
+                        changeYear,
+                        changeMonth
+                      }) => (
+                        <div className="flex justify-start md:ml-2">
+                          <select
+                            className="bg-transparent outline-none"
+                            value={months[getMonth(date)]}
+                            onChange={({ target: { value } }) =>
+                              changeMonth(months.indexOf(value))
+                            }
+                          >
+                            {months.map((option) => (
+                              <option key={option} value={option}>
+                                {option}
+                              </option>
+                            ))}
+                          </select>
+                          <select
+                            className="bg-transparent outline-none"
+                            value={getYear(date)}
+                            onChange={({ target: { value } }) =>
+                              changeYear(value)
+                            }
+                          >
+                            {years.map((option) => (
+                              <option key={option} value={option}>
+                                {option}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                      )}
+                      closeOnScroll={true}
+                      selected={getDefaultDate(
+                        selectDate?.date,
+                        selectDate?.format
+                      )}
+                      popperPlacement="top-end"
+                      customInput={<ExampleCustomInput />}
+                      onChange={(date) => {
+                        setIsToday(false);
+                        const isDateChange = true;
+                        const dateObj = {
+                          date: date,
+                          format: selectDate.format
+                        };
+                        handleGetFormatDate(dateObj, isDateChange);
+                      }}
+                      dateFormat={
+                        selectDate
+                          ? selectDate?.format
+                          : props.pos?.options?.validation?.format
+                            ? props.pos?.options?.validation?.format
+                            : "MM/dd/yyyy"
                       }
-                      checked={
-                        formdata.status.toLowerCase() === data.toLowerCase()
-                      }
+                      portalId="root-portal"
                     />
-                    <div className="text-[13px]">
-                      {t(`widget-status.${data}`)}
-                    </div>
+                    <label className="flex items-center gap-1 cursor-pointer mb-0">
+                      <input
+                        checked={isToday}
+                        type="checkbox"
+                        className="op-checkbox op-checkbox-xs"
+                        onClick={() => {
+                          setSelectDate((prev) => ({ ...prev, date: "" }));
+                          setIsToday(!isToday);
+                        }}
+                      />
+                      <span className="ml-[2px]">{t("set-today")}</span>
+                    </label>
+                    <span
+                      onClick={() => handleClearDate()}
+                      className="underline text-blue-500 cursor-pointer ml-2"
+                    >
+                      {t("clear")}
+                    </span>
                   </div>
-                );
-              })}
+                </>
+              )}
+              {!isSelfSign && (
+                <div className="flex flex-row items-center gap-[10px]">
+                  {statusArr.map((data, ind) => {
+                    return (
+                      <div
+                        key={ind}
+                        className="flex flex-row gap-[5px] items-center"
+                      >
+                        <input
+                          className="mr-[2px] op-radio op-radio-xs"
+                          type="radio"
+                          name="status"
+                          onChange={() => handleDateStatus(data)}
+                          checked={
+                            formdata.status.toLowerCase() === data.toLowerCase()
+                          }
+                        />
+                        <div className="text-[13px]">
+                          {t(`widget-status.${data}`)}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+              <div className="flex flex-col md:flex-row gap-y-2 md:gap-y-0 gap-x-2">
+                <div className="flex flex-row items-center">
+                  <span className="capitalize">{t("font-size")} :</span>
+                  <select
+                    className="ml-[3px] md:ml:[7px] op-select op-select-bordered op-select-sm focus:outline-none hover:border-base-content text-xs"
+                    value={
+                      props.fontSize || clickonWidget.options?.fontSize || 12
+                    }
+                    onChange={(e) =>
+                      props.setFontSize(parseInt(e.target.value))
+                    }
+                  >
+                    {fontsizeArr.map((size, ind) => (
+                      <option className="text-[13px]" value={size} key={ind}>
+                        {size}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="flex flex-row gap-1 items-center">
+                  <span className="capitalize">{t("color")} :</span>
+                  <select
+                    value={
+                      props.fontColor ||
+                      clickonWidget.options?.fontColor ||
+                      "black"
+                    }
+                    onChange={(e) => props.setFontColor(e.target.value)}
+                    className="ml-[4px] md:ml[7px] op-select op-select-bordered op-select-sm focus:outline-none hover:border-base-content text-xs"
+                  >
+                    {fontColorArr.map((color, ind) => (
+                      <option value={color} key={ind}>
+                        {t(`color-type.${color}`)}
+                      </option>
+                    ))}
+                  </select>
+                  <span
+                    style={{
+                      background:
+                        props.fontColor ||
+                        props.pos.options?.fontColor ||
+                        "black"
+                    }}
+                    className="w-5 h-[19px] ml-1"
+                  ></span>
+                </div>
+              </div>
+              {props?.isPlaceholder && props?.data?.Role !== "prefill" && (
+                <div className="flex items-center gap-1 w-max">
+                  <input
+                    name="isReadOnly"
+                    id="isReadOnly"
+                    type="checkbox"
+                    checked={formdata?.isReadOnly}
+                    className="op-checkbox op-checkbox-xs"
+                    onChange={() =>
+                      setFormdata({
+                        ...formdata,
+                        isReadOnly: !formdata?.isReadOnly
+                      })
+                    }
+                  />
+                  <label
+                    htmlFor="isReadOnly"
+                    className="capitalize ml-[2px] mb-0 cursor-pointer"
+                  >
+                    {t("read-only")}
+                  </label>
+                </div>
+              )}
             </div>
-            <div className="flex flex-col md:flex-row gap-y-2 md:gap-y-0 gap-x-2">
-              <div className="flex flex-row items-center">
-                <span className="capitalize">{t("font-size")} :</span>
-                <select
-                  className="ml-[3px] md:ml:[7px] op-select op-select-bordered op-select-sm focus:outline-none hover:border-base-content text-xs"
-                  value={
-                    props.fontSize || clickonWidget.options?.fontSize || 12
-                  }
-                  onChange={(e) => props.setFontSize(parseInt(e.target.value))}
-                >
-                  {fontsizeArr.map((size, ind) => (
-                    <option className="text-[13px]" value={size} key={ind}>
-                      {size}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="flex flex-row gap-1 items-center">
-                <span className="capitalize">{t("color")} :</span>
-                <select
-                  value={
-                    props.fontColor ||
-                    clickonWidget.options?.fontColor ||
-                    "black"
-                  }
-                  onChange={(e) => props.setFontColor(e.target.value)}
-                  className="ml-[4px] md:ml[7px] op-select op-select-bordered op-select-sm focus:outline-none hover:border-base-content text-xs"
-                >
-                  {fontColorArr.map((color, ind) => (
-                    <option value={color} key={ind}>
-                      {t(`color-type.${color}`)}
-                    </option>
-                  ))}
-                </select>
-                <span
-                  style={{
-                    background:
-                      props.fontColor || props.pos.options?.fontColor || "black"
-                  }}
-                  className="w-5 h-[19px] ml-1"
-                ></span>
-              </div>
-            </div>
-            {props?.isPlaceholder && props?.data?.Role !== "prefill" && (
-              <div className="flex items-center gap-1 w-max">
-                <input
-                  name="isReadOnly"
-                  id="isReadOnly"
-                  type="checkbox"
-                  checked={formdata?.isReadOnly}
-                  className="op-checkbox op-checkbox-xs"
-                  onChange={() =>
-                    setFormdata({
-                      ...formdata,
-                      isReadOnly: !formdata?.isReadOnly
-                    })
-                  }
-                />
-                <label
-                  htmlFor="isReadOnly"
-                  className="capitalize ml-[2px] mb-0 cursor-pointer"
-                >
-                  {t("read-only")}
-                </label>
-              </div>
-            )}
-          </div>
-          <div className="h-[1px] w-full my-[15px] bg-[#9f9f9f]"></div>
-          <button
-            type="button"
-            className="op-btn op-btn-primary"
-            onClick={() => saveDateSetting(selectDate)}
-          >
-            {t("save")}
-          </button>
-          <button
-            type="button"
-            className="op-btn op-btn-ghost text-base-content ml-1"
-            onClick={() => handleCloseDateModal()}
-          >
-            {t("cancel")}
-          </button>
+            <div className="h-[1px] w-full my-[15px] bg-[#9f9f9f]"></div>
+            <button className="op-btn op-btn-primary" type="submit">
+              {t("save")}
+            </button>
+            <button
+              type="button"
+              className="op-btn op-btn-ghost text-base-content ml-1"
+              onClick={() => handleCloseDateModal()}
+            >
+              {t("cancel")}
+            </button>
+          </form>
         </div>
       </DateWidgetModal>
     </>

@@ -2,6 +2,7 @@ import AWS from 'aws-sdk';
 import { useLocal } from '../../Utils.js';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
+import { isAuthenticated } from '../../utils/AuthUtils.js';
 dotenv.config({ quiet: true });
 
 export default function getPresignedUrl(url) {
@@ -42,6 +43,7 @@ export async function getSignedUrl(request) {
     const docId = request.params.docId || '';
     const templateId = request.params.templateId || '';
     const url = request.params.url;
+
     if (docId || templateId) {
       try {
         if (url?.includes('files')) {
@@ -56,8 +58,14 @@ export async function getSignedUrl(request) {
 
           const _resDoc = res?.toJSON();
           // Ensure user is authenticated if OTP is required
-          if (_resDoc?.IsEnableOTP && !request?.user) {
-            throw new Parse.Error(Parse.Error.INVALID_SESSION_TOKEN, 'User is not authenticated.');
+          if (_resDoc?.IsEnableOTP) {
+            const isAuth = await isAuthenticated(request?.user);
+            if (!isAuth) {
+              throw new Parse.Error(
+                Parse.Error.INVALID_SESSION_TOKEN,
+                'User is not authenticated.'
+              );
+            }
           }
 
           const presignedUrl = getPresignedUrl(url);
@@ -70,7 +78,8 @@ export async function getSignedUrl(request) {
         throw err;
       }
     } else {
-      if (!request?.user) {
+      const isAuth = await isAuthenticated(request?.user);
+      if (!isAuth) {
         throw new Parse.Error(Parse.Error.INVALID_SESSION_TOKEN, 'User is not authenticated.');
       } else {
         if (url?.includes('files')) {

@@ -33,7 +33,9 @@ import Draw from "./tab/Draw";
 import PenColorComponent from "./tab/PenColorComponent";
 
 const widgetTitle = "font-medium";
-
+const widgetLabelCss = (isRequired = false) => {
+  return `${isRequired ? "after:content-['_*'] after:text-red-500" : ""} block text-xs font-semibold`;
+};
 const ShowTextWidget = ({ position, handleWidgetDetails }) => {
   const inputRef = useRef(null);
   const [inputValue, setInputValue] = useState(position.options.response || "");
@@ -51,7 +53,6 @@ const ShowTextWidget = ({ position, handleWidgetDetails }) => {
     />
   );
 };
-
 const ImageComponent = (props) => {
   const { t } = useTranslation();
   const prefillImg = useSelector((state) => state.widget.prefillImg);
@@ -70,7 +71,11 @@ const ImageComponent = (props) => {
 
   return (
     <>
-      <span className={widgetTitle}>{props?.position.options?.name}</span>
+      <span
+        className={`${widgetLabelCss(props?.position?.options?.status === "required")} ${widgetTitle}`}
+      >
+        {props?.position.options?.name}
+      </span>
       {imgUrl ? (
         <>
           <div className="cursor-pointer op-card border-[1px] border-gray-400 flex flex-col w-full h-full justify-center items-center ">
@@ -168,13 +173,12 @@ function PrefillWidgetModal(props) {
       setLoading(false);
     }
   }, [props?.isPrefillModal]);
-
   useEffect(() => {
-    setLoading(true);
     //function is used to save all image base64 in redux state to display prefill images
     const savePrefillImg = async () => {
       const prefillImg = await utils?.savePrefillImg(props.xyPosition);
       if (Array.isArray(prefillImg)) {
+        setLoading(true);
         prefillImg.forEach((img) => dispatch(setPrefillImg(img)));
       }
       setLoading(false);
@@ -209,25 +213,7 @@ function PrefillWidgetModal(props) {
       }
     }
   }, [props?.isPrefillModal, uniqueWidget]);
-
-  // The getDatePickerDate function retrieves the date in the correct format supported by the DatePicker.
-  const getDatePickerDate = (selectedDate, format = "dd-MM-yyyy") => {
-    let date;
-    if (format && format === "dd-MM-yyyy") {
-      const [day, month, year] = selectedDate?.split("-");
-      date = new Date(`${year}-${month}-${day}`);
-    } else if (format && format === "dd.MM.yyyy") {
-      const [day, month, year] = selectedDate?.split(".");
-      date = new Date(`${year}.${month}.${day}`);
-    } else if (format && format === "dd/MM/yyyy") {
-      const [day, month, year] = selectedDate?.split("/");
-      date = new Date(`${year}/${month}/${day}`);
-    } else {
-      date = new Date(selectedDate);
-    }
-    return date;
-  };
-
+ 
   const ExampleCustomInput = forwardRef(({ value, onClick }, ref) => (
     <div
       style={{ fontFamily: "Arial, sans-serif" }}
@@ -243,8 +229,8 @@ function PrefillWidgetModal(props) {
 
   const handleDate = (position) => {
     // The getDatePickerDate function retrieves the date in the correct format supported by the DatePicker.
-    const getDate = getDatePickerDate(
-      position?.options.response || new Date(),
+    const getDate = utils.getDatePickerDate(
+      position?.options.response,
       position?.options?.validation?.format
     );
     return getDate;
@@ -442,7 +428,11 @@ function PrefillWidgetModal(props) {
       case "checkbox":
         return (
           <>
-            <span className={widgetTitle}>{position.options?.name}</span>
+            <span
+              className={`${widgetLabelCss(position?.options?.status === "required")} ${widgetTitle}`}
+            >
+              {position.options?.name}
+            </span>
             <div className="flex flex-col gap-y-1">
               {position.options?.values?.map((data, ind) => (
                 <div
@@ -472,7 +462,11 @@ function PrefillWidgetModal(props) {
       case textWidget:
         return (
           <>
-            <span className={widgetTitle}>{position.options?.name}</span>
+            <span
+              className={`${widgetLabelCss(position?.options?.status === "required")} ${widgetTitle}`}
+            >
+              {position.options?.name}
+            </span>
             <ShowTextWidget
               position={position}
               handleWidgetDetails={handleWidgetDetails}
@@ -482,7 +476,11 @@ function PrefillWidgetModal(props) {
       case "dropdown":
         return (
           <>
-            <span className={widgetTitle}>{position.options?.name}</span>
+            <span
+              className={`${widgetLabelCss(position?.options?.status === "required")} ${widgetTitle}`}
+            >
+              {position.options?.name}
+            </span>
             <select
               className="op-select op-select-bordered op-select-sm focus:outline-none hover:border-base-content text-base-content w-full"
               id="myDropdown"
@@ -506,7 +504,11 @@ function PrefillWidgetModal(props) {
       case "date":
         return (
           <>
-            <span className={widgetTitle}>{position.options?.name}</span>
+            <span
+              className={`${widgetLabelCss(position?.options?.status === "required")} ${widgetTitle}`}
+            >
+              {position.options?.name}
+            </span>
             <DatePicker
               portalId="datepicker-portal-root"
               renderCustomHeader={({ date, changeYear, changeMonth }) => (
@@ -558,7 +560,11 @@ function PrefillWidgetModal(props) {
       case radioButtonWidget:
         return (
           <>
-            <span className={widgetTitle}>{position.options?.name}</span>
+            <span
+              className={`${widgetLabelCss(position?.options?.status === "required")} ${widgetTitle}`}
+            >
+              {position.options?.name}
+            </span>
             <div className="flex flex-col gap-y-1">
               {position.options?.values.map((data, ind) => (
                 <div
@@ -586,7 +592,11 @@ function PrefillWidgetModal(props) {
       case drawWidget:
         return (
           <div>
-            <span className={widgetTitle}>{position.options?.name}</span>
+            <span
+              className={`${widgetLabelCss(position?.options?.status === "required")} ${widgetTitle}`}
+            >
+              {position.options?.name}
+            </span>
             <Draw
               penColor={penColor}
               canvasRef={getCanvasRef(position.key)}
@@ -777,7 +787,7 @@ function PrefillWidgetModal(props) {
                     {t("recipients")}
                   </h1>
                 )}
-                <div className="py-3 px-[10px] op-card border-[1px] border-gray-400 md:mx-3 text-base-content flex flex-col relative">
+                <div className="py-3 px-[10px] op-card border-[1px] border-gray-400 text-base-content flex flex-col relative">
                   {props.forms?.map((field, id) => {
                     return (
                       <div className="flex flex-col" key={field?.value}>

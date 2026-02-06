@@ -1,7 +1,30 @@
 import axios from 'axios';
 import multer from 'multer';
 import libre from 'libreoffice-convert';
+import { exec } from 'child_process';
+import { promisify } from 'util';
 import { cloudServerUrl, getSecureUrl, serverAppId } from '../../Utils.js';
+
+const execAsync = promisify(exec);
+
+// -------------------- Process Management --------------------
+/**
+ * Kill stuck LibreOffice processes
+ */
+async function killStuckProcesses() {
+  try {
+    // Kill soffice processes older than 2 minutes
+    if (process.platform === 'linux' || process.platform === 'darwin') {
+      await execAsync("pkill -9 -f 'soffice.*--headless' || true");
+      console.log('[DOCX2PDF] Cleaned up stuck processes');
+    } else if (process.platform === 'win32') {
+      await execAsync('taskkill /F /IM soffice.bin /T || exit 0');
+      console.log('[DOCX2PDF] Cleaned up stuck processes (Windows)');
+    }
+  } catch (err) {
+    console.error('[DOCX2PDF] Error killing processes:', err.message);
+  }
+}
 
 /** @returns {Promise<Buffer>} */
 async function convertLibre(input, ext, opts) {
@@ -14,7 +37,7 @@ async function convertLibre(input, ext, opts) {
   });
 }
 
-// -------------------- Concurrency limiter --------------------
+// -------------------- Concurrency limiter with queue limits --------------------
 // CRITICAL FIX: Reduced to 1 for CPU-intensive LibreOffice conversions
 const MAX_CONCURRENCY = Number(process.env.DOCX2PDF_CONCURRENCY || 1);
 let active = 0;
@@ -22,22 +45,27 @@ const queue = [];
 
 function runWithLimit(task) {
   return new Promise((resolve, reject) => {
-    const run = () => {
+    const run = async () => {
       active++;
-      Promise.resolve()
-        .then(task)
-        .then(resolve, reject)
-        .finally(() => {
-          active--;
-          if (queue.length) queue.shift()();
-        });
+      try {
+        const result = await task();
+        resolve(result);
+      } catch (error) {
+        reject(error);
+      } finally {
+        active--;
+        if (queue.length) {
+          const next = queue.shift();
+          next();
+        }
+      }
     };
     if (active < MAX_CONCURRENCY) run();
     else queue.push(run);
   });
 }
 
-// -------------------- Timeout helper --------------------
+// -------------------- Timeout helper with cleanup --------------------
 /**
  * @template T
  * @param {Promise<T>} promise
@@ -49,7 +77,11 @@ export async function withTimeout(promise, ms, label = 'operation') {
   let timer;
   try {
     const timeout = new Promise((_, reject) => {
-      timer = setTimeout(() => reject(new Error(`${label} timed out after ${ms}ms`)), ms);
+      timer = setTimeout(async () => {
+        // Kill stuck processes on timeout
+        await killStuckProcesses();
+        reject(new Error(`${label} timed out after ${ms}ms`));
+      }, ms);
     });
     return await Promise.race([promise, timeout]);
   } finally {
@@ -116,22 +148,29 @@ export default async function docxtopdf(req, res) {
     // ---- DOCX -> PDF conversion with concurrency control and timeout ----
     const fileName = `${generatePdfName(16)}.pdf`;
 
-    // FIX: Increased timeout to 90s for large files, added nice priority
+    // Adjust timeout based on file size
+    const timeoutMs = uploadedSizeBytes > 10 * 1024 * 1024 ? 120_000 : 90_000;
+
+    // FIX: Increased timeout for large files, added nice priority
     const pdfBuffer = await runWithLimit(async () => {
       // Log for monitoring
-      console.log(`[DOCX2PDF] Starting conversion, active: ${active}, queued: ${queue.length}`);
+      console.log(
+        `[DOCX2PDF] Starting conversion, size: ${(uploadedSizeBytes / 1024 / 1024).toFixed(2)}MB, active: ${active}, queued: ${queue.length}`
+      );
 
       const startTime = Date.now();
       try {
         const result = await withTimeout(
           convertLibre(req.file.buffer, '.pdf', undefined),
-          90_000, // Increased from 60s to 90s
+          timeoutMs,
           'DOCX->PDF'
         );
         console.log(`[DOCX2PDF] Completed in ${Date.now() - startTime}ms`);
         return result;
       } catch (error) {
         console.error(`[DOCX2PDF] Failed after ${Date.now() - startTime}ms:`, error.message);
+        // Clean up on error
+        await killStuckProcesses();
         throw error;
       }
     });

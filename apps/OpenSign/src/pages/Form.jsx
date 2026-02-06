@@ -699,7 +699,7 @@ const Forms = (props) => {
                   value={formData.password}
                   onChange={(e) => handleStrInput(e)}
                   className="w-full op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content text-xs"
-                  placeholder="Enter pdf password"
+                  placeholder={t("enter-pdf-password")}
                   onInvalid={(e) =>
                     e.target.setCustomValidity(t("input-required"))
                   }
@@ -769,16 +769,16 @@ const Forms = (props) => {
                 <div className="flex gap-1 justify-center items-center">
                   <div className="flex justify-between items-center op-input op-input-bordered op-input-sm w-full h-full text-[13px]">
                     <div className="break-all cursor-default">
-                      {t("file-selected")}: {selectedFiles.join(", ")}
+                      {t("files-selected")}: {selectedFiles.join(", ")}
                     </div>
                     <div
                       onClick={() => {
                         setFileUpload("");
                         setSelectedFiles([]);
                       }}
-                      className="cursor-pointer px-[10px] text-[20px] font-bold text-red-500"
+                      className="cursor-pointer ml-[10px] text-[20px] font-bold"
                     >
-                      <i className="fa-light fa-xmark"></i>
+                      <i className="fa-light fa-xmark inline-flex h-7 w-7 items-center justify-center rounded-full hover:bg-red-100 text-red-500" />
                     </div>
                   </div>
                 </div>

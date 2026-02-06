@@ -26,7 +26,7 @@ import EditorToolbar, {
 } from "../../components/pdf/EditorToolbar";
 import ReactQuill from "react-quill-new";
 import "../../styles/quill.css";
-import BulkSendUi from "../../components/BulkSendUi";
+import BulkSendUi from "../../components/bulksend/BulkSendUi";
 import Loader from "../../primitives/Loader";
 import { serverUrl_fn } from "../../constant/appinfo";
 import {
@@ -46,7 +46,7 @@ const TemplatesReport = (props) => {
   const titleRef = useRef(null);
   const dispatch = useDispatch();
   const titleElement = useElSize(titleRef);
-  const prefillImg = useSelector((state) => state.widget.prefillImg);
+  const { prefillImg, isBulkLoader } = useSelector((state) => state.widget);
   const appName =
     "OpenSign™";
   const { t } = useTranslation();
@@ -198,7 +198,7 @@ const TemplatesReport = (props) => {
         }
       }
     } catch (err) {
-      console.log("Err in fetch top level teamlist", err);
+      console.error("fetch top level teamlist error", err);
     }
   };
   // below useEffect is used to render next record if IsMoreDoc is true
@@ -301,7 +301,7 @@ const TemplatesReport = (props) => {
         return axiosRes;
       }
     } catch (e) {
-      console.log("Error to fetch template in report", e);
+      console.error("fetch template in report error", e);
       showAlert("danger", t("something-went-wrong-mssg"));
       setActLoader({});
     }
@@ -413,7 +413,7 @@ const TemplatesReport = (props) => {
         props.setList(upldatedList);
       }
     } catch (err) {
-      console.log("err", err);
+      console.error("delete template error", err);
       showAlert("danger", t("something-went-wrong-mssg"));
       setActLoader({});
     }
@@ -540,7 +540,7 @@ const TemplatesReport = (props) => {
 
         setActLoader({});
       } catch (err) {
-        console.log("err in getsignedurl", err);
+        console.error("getsignedurl error", err);
         alert(t("something-went-wrong-mssg"));
         setActLoader({});
       }
@@ -692,7 +692,7 @@ const TemplatesReport = (props) => {
         showAlert("danger", t("something-went-wrong-mssg"));
       }
     } catch (err) {
-      console.log("err in sendmail", err);
+      console.error("sendmail error", err);
       showAlert("danger", t("something-went-wrong-mssg"));
     } finally {
       setIsNextStep({});
@@ -737,32 +737,25 @@ const TemplatesReport = (props) => {
   // `handleBulkSend` is used to open modal as well as fetch template
   // and show Ui on the basis template response handleBulkSendTemplate
   const handleBulkSend = async (template) => {
-    const isPrefillExist = template?.Placeholders?.some(
-      (x) => x.Role === "prefill"
-    );
-    if (isPrefillExist) {
-      showAlert("danger", t("prefill-bulk-error"));
-    } else {
-      setIsBulkSend({ [template.objectId]: true });
-      setIsLoader({ [template.objectId]: true });
-      try {
-        const axiosRes = await fetchTemplate(template.objectId);
-        const templateRes = axiosRes.data && axiosRes.data.result;
-        const tenantSignTypes = await fetchTenantDetails();
-        const docSignTypes = templateRes?.SignatureType || signatureTypes;
-        const updatedSignatureType = await handleSignatureType(
-          tenantSignTypes,
-          docSignTypes
-        );
-        setSignatureType(updatedSignatureType);
-        setPlaceholders(templateRes?.Placeholders);
-        setTemplateDetails(templateRes);
-        setIsLoader({});
-      } catch (err) {
-        console.log("err in fetch template in bulk modal", err);
-        setIsBulkSend({});
-        showAlert("danger", t("something-went-wrong-mssg"));
-      }
+    setIsBulkSend({ [template.objectId]: true });
+    setIsLoader({ [template.objectId]: true });
+    try {
+      const axiosRes = await fetchTemplate(template.objectId);
+      const templateRes = axiosRes.data && axiosRes.data.result;
+      const tenantSignTypes = await fetchTenantDetails();
+      const docSignTypes = templateRes?.SignatureType || signatureTypes;
+      const updatedSignatureType = await handleSignatureType(
+        tenantSignTypes,
+        docSignTypes
+      );
+      setSignatureType(updatedSignatureType);
+      setPlaceholders(templateRes?.Placeholders);
+      setTemplateDetails(templateRes);
+      setIsLoader({});
+    } catch (err) {
+      console.error("fetch template in bulk modal err", err);
+      setIsBulkSend({});
+      showAlert("danger", t("something-went-wrong-mssg"));
     }
   };
 
@@ -808,7 +801,7 @@ const TemplatesReport = (props) => {
       }
     } catch (err) {
       showAlert("danger", t("something-went-wrong-mssg"));
-      console.log("Err while create duplicate template", err);
+      console.error("create duplicate template error", err);
     } finally {
       setActLoader({});
     }
@@ -935,6 +928,12 @@ const TemplatesReport = (props) => {
         setIsSend(true);
       } else {
         setIsMailModal(true);
+        const currentSigner = signerList?.find(
+          (x) => x?.UserId?.objectId === ownerId
+        );
+        if (currentSigner) {
+          setCurrUserId(currentSigner?.objectId);
+        }
       }
       if (user) {
         try {
@@ -1350,9 +1349,12 @@ const TemplatesReport = (props) => {
                       {isBulkSend[item.objectId] && (
                         <ModalUi
                           isOpen
+                          showScrollBar
                           title={
                                 t("quick-send")
                           }
+                          reduceWidth={"md:min-w-[80%]"}
+                          isLoader={isBulkLoader}
                           handleClose={() => setIsBulkSend({})}
                         >
                           {isLoader[item.objectId] ? (

@@ -56,6 +56,7 @@ export default async function saveAsTemplate(request) {
             pos: pageItem.pos.map(p => ({
               ...p,
               type: p.type === 'text' ? 'text input' : p.type,
+              signatureType: '',
               options: {
                 ...p.options,
                 status: 'required',
@@ -92,6 +93,7 @@ export default async function saveAsTemplate(request) {
                 if (widget.options && widget.options.defaultValue !== undefined) {
                   return {
                     ...widget,
+                    signatureType: '',
                     options: {
                       ...widget.options,
                       defaultValue: '',
