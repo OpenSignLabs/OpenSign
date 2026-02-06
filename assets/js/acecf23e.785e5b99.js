@@ -1,0 +1,1 @@
+"use strict";(globalThis.webpackChunkOpenSign_Docs=globalThis.webpackChunkOpenSign_Docs||[]).push([[1903],{1912(s){s.exports=JSON.parse('{"blogBasePath":"/blog","blogTitle":"Blog","authorsListPath":"/blog/authors"}')}}]);
