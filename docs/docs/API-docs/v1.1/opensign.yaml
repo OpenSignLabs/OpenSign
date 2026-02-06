@@ -5098,7 +5098,10 @@ components:
           example: "mailer@opensignlabs.com"
         notify_on_signatures:
           type: boolean
-          example: true
+          example: false
+        merge_certificate:
+          type: boolean
+          example: false
         folder:
           $ref: '#/components/schemas/template_folder'
         file:
