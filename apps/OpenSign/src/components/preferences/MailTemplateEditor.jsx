@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import Parse from "parse";
 import ReactQuill from "react-quill-new";
@@ -15,8 +15,6 @@ const MailTemplateEditor = ({
 }) => {
   const appName = localStorage.getItem("appname") || "OpenSign™";
   const { t } = useTranslation();
-  const editorRef = useRef();
-  const editorRefCom = useRef();
   const [requestBody, setRequestBody] = useState("");
   const [requestSubject, setRequestSubject] = useState("");
   const [completionBody, setCompletionBody] = useState("");
@@ -188,15 +186,13 @@ const MailTemplateEditor = ({
     }
   });
   //function for handle ontext change and save again text in delta
-  const handleOnchangeRequest = () => {
-    if (editorRef.current) {
-      const html = editorRef.current.editor.root.innerHTML;
+  const handleOnchangeRequest = (html) => {
+    if (html) {
       setRequestBody(html);
     }
   };
-  const handleOnchangeCompletion = () => {
-    if (editorRefCom.current) {
-      const html = editorRefCom.current.editor.root.innerHTML;
+  const handleOnchangeCompletion = (html) => {
+    if (html) {
       setCompletionBody(html);
     }
   };
@@ -259,10 +255,9 @@ const MailTemplateEditor = ({
                   theme="snow"
                   value={requestBody}
                   placeholder="add body of email"
-                  ref={editorRef}
                   modules={module1}
                   formats={formats}
-                  onChange={handleOnchangeRequest}
+                  onChange={(value) => handleOnchangeRequest(value)}
                 />
               </div>
               <div className="flex items-center mt-3 gap-2">
@@ -337,10 +332,9 @@ const MailTemplateEditor = ({
                   theme="snow"
                   value={completionBody}
                   placeholder="add body of email"
-                  ref={editorRefCom}
                   modules={module2}
                   formats={formats}
-                  onChange={handleOnchangeCompletion}
+                  onChange={(value) => handleOnchangeCompletion(value)}
                 />
               </div>
               <div className="flex items-center mt-3 gap-2">

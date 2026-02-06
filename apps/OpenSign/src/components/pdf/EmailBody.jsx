@@ -18,7 +18,6 @@ export function EmailBody(props) {
           onInput={(e) => e.target.setCustomValidity("")}
           value={props.requestSubject}
           onChange={(e) => {
-            props?.setRequestSubject(e.target.value);
             props?.setCustomizeMail((prev) => ({
               ...prev,
               subject: e.target.value

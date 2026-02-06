@@ -28,7 +28,7 @@ import EditorToolbar, {
 } from "../../components/pdf/EditorToolbar";
 import ReactQuill from "react-quill-new";
 import "../../styles/quill.css";
-import BulkSendUi from "../../components/BulkSendUi";
+import BulkSendUi from "../../components/bulksend/BulkSendUi";
 import Loader from "../../primitives/Loader";
 import { serverUrl_fn } from "../../constant/appinfo";
 import { useTranslation } from "react-i18next";
@@ -50,7 +50,7 @@ const DocumentsReport = (props) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
-  const prefillImg = useSelector((state) => state.widget.prefillImg);
+  const { prefillImg, isBulkLoader } = useSelector((state) => state.widget);
   const isDashboard =
     location?.pathname === "/dashboard/35KBoSgoAK" ? true : false;
   const [currentPage, setCurrentPage] = useState(1);
@@ -252,10 +252,9 @@ const DocumentsReport = (props) => {
         return axiosRes;
       }
     } catch (e) {
-      console.log("Error to fetch template in report", e);
+      console.error("fetch template in report error", e);
       showAlert("danger", t("something-went-wrong-mssg"));
       setActLoader({});
-      console.log("Error to fetch template in report", e);
     }
   });
   //function is called when there ther no any prefill role widget exist then create direct document and navigate
@@ -300,7 +299,7 @@ const DocumentsReport = (props) => {
         setActLoader({});
       }
     } catch (err) {
-      console.log("err", err);
+      console.error("use template error", err);
       showAlert("danger", t("something-went-wrong-mssg"));
       setActLoader({});
     }
@@ -378,7 +377,7 @@ const DocumentsReport = (props) => {
         props.setList(upldatedList);
       }
     } catch (err) {
-      console.log("err", err);
+      console.error("delete document error", err);
       showAlert("danger", t("something-went-wrong-mssg"));
       setActLoader({});
     }
@@ -474,7 +473,7 @@ const DocumentsReport = (props) => {
         setReason("");
       })
       .catch((err) => {
-        console.log("err", err);
+        console.error("decline document error", err);
         setReason("");
         showAlert("danger", t("something-went-wrong-mssg"));
         setActLoader({});
@@ -514,7 +513,7 @@ const DocumentsReport = (props) => {
         }
         setActLoader({});
       } catch (err) {
-        console.log("err in getsignedurl", err);
+        console.error("getsignedurl error", err);
         alert(t("something-went-wrong-mssg"));
         setActLoader({});
       }
@@ -667,7 +666,7 @@ const DocumentsReport = (props) => {
         showAlert("danger", t("something-went-wrong-mssg"));
       }
     } catch (err) {
-      console.log("err in sendmail", err);
+      console.error("sendmail error", err);
       showAlert("danger", t("something-went-wrong-mssg"));
     } finally {
       setIsNextStep({});
@@ -747,7 +746,7 @@ const DocumentsReport = (props) => {
             }
           }
         } catch (err) {
-          console.log("err", err);
+          console.error("update expiry doc error", err);
           showAlert("danger", t("something-went-wrong-mssg"), 2000);
         } finally {
           setActLoader({});
@@ -806,7 +805,7 @@ const DocumentsReport = (props) => {
       setTemplateId(templateRes?.id);
       setIsSuccess({ [doc.objectId]: true });
     } catch (err) {
-      console.log("Err in saveastemplate", err);
+      console.error("saveastemplate error", err);
     } finally {
       setActLoader({});
     }
@@ -828,27 +827,18 @@ const DocumentsReport = (props) => {
       try {
         const axiosRes = await fetchTemplate(templateId);
         const templateRes = axiosRes.data && axiosRes.data.result;
-        const isPrefillExist = templateRes?.Placeholders.some(
-          (x) => x.Role === "prefill"
+        const tenantSignTypes = await fetchTenantDetails();
+        const docSignTypes = templateRes?.SignatureType || signatureTypes;
+        const updatedSignatureType = await handleSignatureType(
+          tenantSignTypes,
+          docSignTypes
         );
-        if (isPrefillExist) {
-          setIsBulkSend({});
-          setIsLoader({});
-          showAlert("danger", t("prefill-bulk-error"));
-        } else {
-          const tenantSignTypes = await fetchTenantDetails();
-          const docSignTypes = templateRes?.SignatureType || signatureTypes;
-          const updatedSignatureType = await handleSignatureType(
-            tenantSignTypes,
-            docSignTypes
-          );
-          setSignatureType(updatedSignatureType);
-          setPlaceholders(templateRes?.Placeholders);
-          setTemplateDetails(templateRes);
-          setIsLoader({});
-        }
+        setSignatureType(updatedSignatureType);
+        setPlaceholders(templateRes?.Placeholders);
+        setTemplateDetails(templateRes);
+        setIsLoader({});
       } catch (err) {
-        console.log("err in fetch template in bulk modal", err);
+        console.error("fetch template in bulk modal error", err);
         setIsBulkSend({});
         showAlert("danger", t("something-went-wrong-mssg"));
       }
@@ -874,7 +864,7 @@ const DocumentsReport = (props) => {
       handleCloseModal();
       showAlert("danger", err.message);
       // showAlert("danger", t("something-went-wrong-mssg"));
-      console.log("Err while create duplicate template", err);
+      console.error("create duplicate template error", err);
     } finally {
       setActLoader({});
     }
@@ -966,7 +956,7 @@ const DocumentsReport = (props) => {
       try {
         await fetchTenantDetails();
       } catch (e) {
-        console.log("error in fetchTenantDetails", e);
+        console.error("fetchTenantDetails error", e);
         alert(t("user-not-exist"));
       }
     }
@@ -1457,9 +1447,12 @@ const DocumentsReport = (props) => {
                       {isBulkSend[item.objectId] && (
                         <ModalUi
                           isOpen
+                          showScrollBar
                           title={
                                 t("quick-send")
                           }
+                          reduceWidth={"md:min-w-[80%]"}
+                          isLoader={isBulkLoader}
                           handleClose={() => setIsBulkSend({})}
                         >
                           {isLoader[item.objectId] ? (

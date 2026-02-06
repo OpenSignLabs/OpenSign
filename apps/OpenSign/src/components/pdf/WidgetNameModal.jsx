@@ -309,65 +309,64 @@ const WidgetNameModal = (props) => {
               </div>
             </>
           )}
-        {!props?.isSelfSign &&
-          !isSignOrInitials  && (
-            <div className={showFontControls ? "mb-[0.5rem]" : "mb-[0.75rem]"}>
-              <div className="flex flex-row gap-[10px] mb-[0.5rem]">
-                {statusArr.map((data, ind) => {
-                  return (
-                    <div
-                      key={ind}
-                      className="flex flex-row gap-[5px] items-center"
-                    >
-                      <input
-                        className="mr-[2px] op-radio op-radio-xs"
-                        type="radio"
-                        name="status"
-                        onChange={() =>
-                          setFormdata({
-                            ...formdata,
-                            status: data.toLowerCase()
-                          })
-                        }
-                        checked={
-                          formdata.status.toLowerCase() === data.toLowerCase()
-                        }
-                      />
-                      <div className="text-[13px] font-medium">
-                        {t(`widget-status.${data}`)}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-              {[
-                textInputWidget,
-                cellsWidget,
-              ].includes(props.defaultdata?.type) && (
-                <div className="flex items-center">
-                  <input
-                    id="isReadOnly"
-                    name="isReadOnly"
-                    type="checkbox"
-                    checked={formdata.isReadOnly}
-                    className="op-checkbox op-checkbox-xs"
-                    onChange={() =>
-                      setFormdata((prev) => ({
-                        ...formdata,
-                        isReadOnly: !prev.isReadOnly
-                      }))
-                    }
-                  />
-                  <label
-                    className="ml-1.5 mb-0 capitalize text-[13px]"
-                    htmlFor="isreadonly"
+        {!props?.isSelfSign && !isSignOrInitials && (
+          <div className={showFontControls ? "mb-[0.5rem]" : "mb-[0.75rem]"}>
+            <div className="flex flex-row gap-[10px] mb-[0.5rem]">
+              {statusArr.map((data, ind) => {
+                return (
+                  <div
+                    key={ind}
+                    className="flex flex-row gap-[5px] items-center"
                   >
-                    {t("read-only")}
-                  </label>
-                </div>
-              )}
+                    <input
+                      className="mr-[2px] op-radio op-radio-xs"
+                      type="radio"
+                      name="status"
+                      onChange={() =>
+                        setFormdata({
+                          ...formdata,
+                          status: data.toLowerCase()
+                        })
+                      }
+                      checked={
+                        formdata.status.toLowerCase() === data.toLowerCase()
+                      }
+                    />
+                    <div className="text-[13px] font-medium">
+                      {t(`widget-status.${data}`)}
+                    </div>
+                  </div>
+                );
+              })}
             </div>
-          )}
+            {[
+              textInputWidget,
+              cellsWidget,
+            ].includes(props.defaultdata?.type) && (
+              <div className="flex items-center">
+                <input
+                  id="isReadOnly"
+                  name="isReadOnly"
+                  type="checkbox"
+                  checked={formdata.isReadOnly}
+                  className="op-checkbox op-checkbox-xs"
+                  onChange={() =>
+                    setFormdata((prev) => ({
+                      ...formdata,
+                      isReadOnly: !prev.isReadOnly
+                    }))
+                  }
+                />
+                <label
+                  className="ml-1.5 mb-0 capitalize text-[13px]"
+                  htmlFor="isreadonly"
+                >
+                  {t("read-only")}
+                </label>
+              </div>
+            )}
+          </div>
+        )}
         {isSignOrInitials && (
           <div className="mb-[0.75rem]">
             <label htmlFor="signaturetype" className="text-[14px] mb-[0.7rem]">

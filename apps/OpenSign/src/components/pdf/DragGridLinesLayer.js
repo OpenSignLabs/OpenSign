@@ -5,12 +5,17 @@ import { useEffect, useRef } from "react";
 function DragGuideLinesLayer(props) {
   const { showGuidelines } = props;
   const prevDragState = useRef({ isDragging: false, x: 0, y: 0 });
-  const { isDraggingWidgets, offset, itemType } = useDragLayer((monitor) => ({
-    isDraggingWidgets: monitor.isDragging(),
+  const { isDraggingWidget, offset, itemType } = useDragLayer((monitor) => ({
+    isDraggingWidget: monitor.isDragging(),
     offset: monitor.getClientOffset(),
     itemType: monitor.getItem()
   }));
   useEffect(() => {
+    //  Hide guidelines when dragging stops
+    if (!isDraggingWidget) {
+      showGuidelines(false);
+      return;
+    }
     if (!offset) return;
     //getting container by id
     const container = document.getElementById("container");
@@ -28,15 +33,14 @@ function DragGuideLinesLayer(props) {
       //  Check if there’s any change in the dragging state or the dragged element’s position
       // Compare the current drag state with the previously stored one
       const hasStateChanged =
-        prevDragState.current.isDragging !== isDraggingWidgets || // Drag started or stopped
+        prevDragState.current.isDragging !== isDraggingWidget || // Drag started or stopped
         prevDragState.current.x !== x || // X position changed
         prevDragState.current.y !== y; // Y position changed
 
       if (hasStateChanged) {
         //  Update the previous drag state with the latest values
-        prevDragState.current = { isDragging: isDraggingWidgets, x, y };
-
-        if (isDraggingWidgets) {
+        prevDragState.current = { isDragging: isDraggingWidget, x, y };
+        if (isDraggingWidget) {
           //  Adjust the current drag coordinates relative to the initial widgets button position
           const getXPosition = props?.signBtnPosition?.[0]
             ? x - props.signBtnPosition[0].xPos
@@ -64,13 +68,10 @@ function DragGuideLinesLayer(props) {
 
           //  Display the alignment guidelines based on the current drag position and widget size
           showGuidelines(true, getXPosition, getYPosition, getWidth, getHeight);
-        } else {
-          //  Hide guidelines when dragging stops
-          showGuidelines(false);
         }
       }
     }
-  }, [isDraggingWidgets, offset, itemType, showGuidelines]);
+  }, [isDraggingWidget, offset, itemType, showGuidelines]);
 }
 
 export default DragGuideLinesLayer;

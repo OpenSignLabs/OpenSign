@@ -144,7 +144,7 @@ export default function PasswordResetModal({
               <input
                 type="text"
                 className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
-                placeholder="Enter password or click Autogenerate"
+                placeholder={t("enter-password-or-click-autogenerate")}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 autoFocus

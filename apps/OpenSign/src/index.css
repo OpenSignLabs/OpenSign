@@ -22,7 +22,7 @@ body {
 }
 
 @media screen and (max-width: 766px) {
-  .reactour__close {
+  .reactour__close-button {
     width: 17px !important;
     padding-left: 3px !important;
   }
@@ -119,47 +119,24 @@ body {
   }
 
   /* React-tour modal styling */
-  .reactour__helper {
+  .reactour__popover {
     background-color: #1f2937 !important;
     color: #e5e7eb !important;
     border: 1px solid #374151 !important;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5) !important;
   }
 
-  .reactour__close {
+  .reactour__close-button {
     color: #e5e7eb !important;
     background-color: #374151 !important;
     border: 1px solid #4b5563 !important;
   }
 
-  .reactour__close:hover {
+  .reactour__close-button:hover {
     background-color: #4b5563 !important;
     color: #ffffff !important;
   }
 
-  /* React-tour navigation buttons */
-  .reactour__controls {
-    background-color: #1f2937 !important;
-    border-top: 1px solid #374151 !important;
-  }
-
-  .reactour__controls button {
-    background-color: #374151 !important;
-    color: #e5e7eb !important;
-    border: 1px solid #4b5563 !important;
-  }
-
-  .reactour__controls button:hover {
-    background-color: #4b5563 !important;
-    color: #ffffff !important;
-  }
-
-  .reactour__controls button:disabled {
-    background-color: #3c3c3c !important;
-    color: #858585 !important;
-    border-color: #565656 !important;
-    cursor: not-allowed !important;
-  }
 
   /* ReactTooltip styling */
   .react-tooltip {
@@ -187,41 +164,19 @@ body {
     color: #ffffff !important;
   }
 
-  .reactour__helper h1,
-  .reactour__helper h2,
-  .reactour__helper h3,
-  .reactour__helper h4,
-  .reactour__helper h5,
-  .reactour__helper h6 {
+  .reactour__popover h1,
+  .reactour__popover h2,
+  .reactour__popover h3,
+  .reactour__popover h4,
+  .reactour__popover h5,
+  .reactour__popover h6 {
     color: #ffffff !important;
   }
 
-  .reactour__helper p {
+  .reactour__popover p {
     color: #e5e7eb !important;
   }
 
-  /* VS Code-style tour buttons */
-  .reactour__controls .op-btn {
-    background-color: #007acc !important;
-    color: #ffffff !important;
-    border: 1px solid #007acc !important;
-  }
-
-  .reactour__controls .op-btn:hover {
-    background-color: #0086d1 !important;
-    border-color: #0086d1 !important;
-  }
-
-  .reactour__controls .op-btn-secondary {
-    background-color: #374151 !important;
-    color: #e5e7eb !important;
-    border: 1px solid #4b5563 !important;
-  }
-
-  .reactour__controls .op-btn-secondary:hover {
-    background-color: #4b5563 !important;
-    color: #ffffff !important;
-  }
 
   /* React-datepicker dark mode styling */
   .react-datepicker {

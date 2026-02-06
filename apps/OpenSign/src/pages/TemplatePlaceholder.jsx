@@ -66,12 +66,14 @@ import * as utils from "../utils";
 import CustomizeMail from "../components/pdf/CustomizeMail";
 import { resetWidgetState, setPrefillImg } from "../redux/reducers/widgetSlice";
 import ShareButton from "../primitives/ShareButton";
+import { useWindowSize } from "../hook/useWindowSize";
 
 const TemplatePlaceholder = () => {
   const { t } = useTranslation();
   const { templateId } = useParams();
+  const windowSize = useWindowSize();
   const dispatch = useDispatch();
-  const prefillImg = useSelector((state) => state.widget.prefillImg);
+  const { prefillImg, isBulkLoader } = useSelector((state) => state.widget);
   const divRef = useRef(null);
   const navigate = useNavigate();
   const numPages = 1;
@@ -183,11 +185,11 @@ const TemplatePlaceholder = () => {
     };
 
     // Use setTimeout to wait for the transition to complete
-    const timer = setTimeout(updateSize, 100); // match the transition duration
+    const timer = setTimeout(updateSize, 150); // match the transition duration
 
     return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [divRef.current, isSidebar]);
+  }, [divRef.current, isSidebar, windowSize?.width]);
 
 
   //function to fetch tenant Details
@@ -978,6 +980,13 @@ const TemplatePlaceholder = () => {
           setCurrUserId(firstSigner?.objectId);
           setIsSend(true);
           return;
+        } else {
+          const currentSigner = signersdata?.find(
+            (x) => x?.UserId?.objectId === ownerId
+          );
+          if (currentSigner) {
+            setCurrUserId(currentSigner?.objectId);
+          }
         }
 
         setIsMailModal(true);
@@ -1606,10 +1615,10 @@ const TemplatePlaceholder = () => {
   };
 
   const clickOnZoomIn = () => {
-    onClickZoomIn(scale, zoomPercent, setScale, setZoomPercent);
+    onClickZoomIn(zoomPercent, setScale, setZoomPercent);
   };
   const clickOnZoomOut = () => {
-    onClickZoomOut(zoomPercent, scale, setZoomPercent, setScale);
+    onClickZoomOut(zoomPercent, setZoomPercent, setScale);
   };
   //`handleRotationFun` function is used to roatate pdf particular page
   const handleRotationFun = async (rotateDegree) => {
