@@ -1,1 +1,0 @@
-Account Notice - {{appName}}

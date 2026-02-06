@@ -1,7 +1,0 @@
-node_modules/
-public/
-build/
-package.json
-package-lock.json
-dist/
-docs/
