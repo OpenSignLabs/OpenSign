@@ -382,3 +382,396 @@
 - **Impact:** The `masterKeyIps` configuration allows Master Key usage from ANY IP address (`0.0.0.0/0` and `::/0`). The Master Key provides unrestricted administrative access to the Parse Server (bypassing all ACLs, CLPs, and authentication). Any client that knows the Master Key can perform any operation from any network location. The commented-out `'::1'` suggests localhost-only was considered but not implemented.
 - **Recommendation:** Restrict `masterKeyIps` to localhost only (`['127.0.0.1', '::1']`) or to specific trusted server IPs. The Master Key should never be usable from external networks.
 
+---
+
+## Part 4: Token & Session Security
+
+### FINDING TOKEN-01: `generate-api-key` Package Included but Never Used (LOW)
+
+- **Severity:** LOW
+- **File:** `/home/user/OpenSign/apps/OpenSignServer/package.json`, line 38
+- **Code:**
+  ```json
+  "generate-api-key": "^1.0.2",
+  ```
+- **Impact:** The `generate-api-key` package is listed as a dependency in the OpenSignServer `package.json`, but a thorough search of all server-side source files reveals that it is never imported or used anywhere. The package remains installed, increasing the attack surface (supply chain risk) without providing any functionality. This also suggests that API token generation may have been planned but never implemented with this library, or that tokens are generated using a different (potentially weaker) method.
+- **Recommendation:** Remove the unused dependency to reduce supply chain attack surface. If API key generation is needed, use a well-vetted approach such as `crypto.randomBytes(32).toString('hex')`.
+
+### FINDING TOKEN-02: Session Tokens Stored in localStorage (HIGH)
+
+- **Severity:** HIGH
+- **Files:**
+  - `/home/user/OpenSign/apps/OpenSign/src/pages/Login.jsx`, lines 60, 161
+  - `/home/user/OpenSign/apps/OpenSign/src/pages/AddAdmin.jsx`, lines 177, 179
+  - `/home/user/OpenSign/apps/OpenSign/src/pages/GuestLogin.jsx`, line 188
+  - `/home/user/OpenSign/apps/OpenSign/src/pages/ChangePassword.jsx`, line 54
+- **Code:**
+  ```javascript
+  localStorage.setItem("accesstoken", user.sessionToken);
+  localStorage.setItem("UserInformation", JSON.stringify(user));
+  ```
+- **Impact:** Parse Server session tokens are stored in `localStorage` under the key `accesstoken`. The `localStorage` API is accessible to any JavaScript running on the same origin, making these tokens vulnerable to:
+  1. **Cross-Site Scripting (XSS):** Any XSS vulnerability allows an attacker to steal the session token via `localStorage.getItem("accesstoken")` and hijack the user's session.
+  2. **No expiration enforcement on the client:** `localStorage` data persists indefinitely until explicitly cleared, even after the browser is closed.
+  3. **No `HttpOnly` protection:** Unlike cookies with the `HttpOnly` flag, `localStorage` cannot be made inaccessible to JavaScript.
+  4. **User information exposure:** The full `UserInformation` JSON object (including email, name, and potentially role data) is also stored in `localStorage`.
+  The session token is then read back and sent as `X-Parse-Session-Token` header in API requests, making it the sole authentication credential.
+- **Recommendation:** Store session tokens in `HttpOnly`, `Secure`, `SameSite=Strict` cookies instead of `localStorage`. If `localStorage` must be used for the Parse SDK, implement additional XSS protections (Content Security Policy, input sanitization) and ensure tokens have a short TTL.
+
+### FINDING TOKEN-03: No Explicit Session Expiration Configuration (MEDIUM)
+
+- **Severity:** MEDIUM
+- **File:** `/home/user/OpenSign/apps/OpenSignServer/index.js`, lines 102-162
+- **Impact:** The Parse Server configuration in `index.js` does not set `sessionLength`, `expireInactiveSessions`, or any session timeout parameters. Parse Server defaults apply:
+  - Default session length: 1 year (31536000 seconds)
+  - `expireInactiveSessions`: true by default, but with a 1-year window
+  This means a stolen session token remains valid for up to 1 year unless the user explicitly logs out. Combined with TOKEN-02 (tokens in `localStorage`), this creates a very long window of opportunity for session hijacking.
+- **Recommendation:** Configure `sessionLength` to a reasonable value (e.g., 86400 for 24 hours or less). Enable `expireInactiveSessions` with a short inactivity timeout (e.g., 30 minutes). Implement session rotation on sensitive operations.
+
+### FINDING TOKEN-04: Session Token Passed in Custom HTTP Header Without CSRF Protection (MEDIUM)
+
+- **Severity:** MEDIUM
+- **Files:**
+  - `/home/user/OpenSign/apps/OpenSign/src/pages/PdfRequestFiles.jsx`, lines 1142, 1234, 1452
+  - `/home/user/OpenSign/apps/OpenSign/src/constant/Utils.js`, line 249
+- **Code:**
+  ```javascript
+  headers: {
+    "Content-Type": "application/json",
+    "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
+    "X-Parse-Session-Token": localStorage.getItem("accesstoken")
+  }
+  ```
+- **Impact:** The session token is transmitted via the `X-Parse-Session-Token` custom header. While custom headers provide inherent CSRF protection (browsers do not include custom headers in cross-origin requests without CORS preflight), the application uses `app.use(cors())` with no origin restrictions (see `/home/user/OpenSign/apps/OpenSignServer/index.js`, line 168), which means ANY origin can make authenticated requests if it knows the session token. The unrestricted CORS policy negates the CSRF protection that custom headers would normally provide.
+- **Recommendation:** Configure CORS with a strict origin allowlist instead of the default permissive configuration. At minimum: `app.use(cors({ origin: [allowedDomain], credentials: true }))`.
+
+### FINDING TOKEN-05: `signPayload` Webhook Function Defined but Never Called (LOW)
+
+- **Severity:** LOW
+- **File:** `/home/user/OpenSign/apps/OpenSignServer/Utils.js`, lines 163-173
+- **Impact:** The `signPayload()` function (documented in HASH-01) for HMAC-SHA256 webhook signing is exported from `Utils.js` but is never imported or called anywhere in the codebase. This means webhook payloads are sent **without any signature at all**. The `Webhook` field exists in the `contracts_Users` schema (added in database migration `20240306123606`), but no code reads this field to send webhooks. This means the webhook feature is either incomplete or broken, and any webhook integration lacks authentication entirely.
+- **Recommendation:** If webhooks are a feature, implement the full webhook sending flow with `signPayload()`. If webhooks are not needed, remove the dead code and the database field.
+
+### FINDING TOKEN-06: SSO Auth Adapter Does Not Validate App ID (LOW)
+
+- **Severity:** LOW
+- **File:** `/home/user/OpenSign/apps/OpenSignServer/auth/authadapter.js`, lines 29-31
+- **Code:**
+  ```javascript
+  validateAppId: () => {
+    return Promise.resolve();
+  },
+  ```
+- **Impact:** The SSO authentication adapter's `validateAppId()` method unconditionally resolves without performing any validation. While this is common in single-application deployments, it means any application ID will be accepted for SSO authentication. If the Parse Server were to serve multiple applications, this would allow cross-application authentication bypass.
+- **Recommendation:** Implement proper app ID validation if multi-tenant SSO is planned. For single-application deployments, this is acceptable but should be documented.
+
+---
+
+## Part 5: TLS/Transport Security
+
+### FINDING TLS-01: Caddy TLS Configuration Relies Entirely on Defaults (INFO)
+
+- **Severity:** INFO
+- **File:** `/home/user/OpenSign/Caddyfile`
+- **Code:**
+  ```
+  {$HOST_URL} {
+      reverse_proxy client:3000
+      handle_path /api/* {
+          reverse_proxy server:8080
+              rewrite * {uri}
+      }
+  }
+  ```
+- **Impact:** The Caddyfile uses Caddy's automatic HTTPS with default TLS settings. Caddy's defaults are generally strong (TLS 1.2+, modern cipher suites, automatic certificate management via Let's Encrypt). However, the configuration:
+  1. Does not explicitly set minimum TLS version (e.g., `tls { protocols tls1.2 tls1.3 }`)
+  2. Does not configure HSTS (HTTP Strict Transport Security) headers
+  3. Does not set cipher suite preferences
+  4. Uses `{$HOST_URL}` environment variable, which defaults to `localhost:3001` in Docker Compose -- meaning in default deployment, Caddy serves on a non-standard port without a real hostname
+  While Caddy's defaults are acceptable, explicit configuration provides defense-in-depth and makes the security posture auditable.
+- **Recommendation:** Add explicit TLS configuration to the Caddyfile: minimum TLS 1.2, prefer TLS 1.3, add HSTS header (`Strict-Transport-Security: max-age=31536000; includeSubDomains`), and document the expected `HOST_URL` for production.
+
+### FINDING TLS-02: Internal Server Communication Uses Plaintext HTTP (MEDIUM)
+
+- **Severity:** MEDIUM
+- **File:** `/home/user/OpenSign/apps/OpenSignServer/Utils.js`, line 10
+- **Code:**
+  ```javascript
+  export const cloudServerUrl = 'http://localhost:8080/app';
+  ```
+- **Also used in:** `/home/user/OpenSign/apps/OpenSignServer/index.js` (line 114, `serverURL: cloudServerUrl`) and throughout the codebase for internal Parse Server API calls.
+- **Impact:** All internal server-to-server communication (Parse Server API calls, cloud function invocations, migration commands) uses plaintext HTTP on `localhost:8080`. In the Docker Compose setup, `localhost` resolves correctly within the same container, but cross-container references use the Docker network name `server:8080`. While traffic within a Docker bridge network is not exposed to the host network, it is:
+  1. Visible to any container on the same Docker bridge network (`app-network`)
+  2. Not encrypted, so a compromised container could sniff traffic including session tokens and Master Keys
+  3. The server port 8080 is also published to the host (`ports: "8080:8080"` in docker-compose.yml), meaning the Parse Server is directly accessible from the host without TLS
+- **Recommendation:** Do not publish port 8080 to the host; use `expose: 8080` instead of `ports: "8080:8080"` so only containers on the Docker network can reach the server. Consider adding TLS for inter-container communication in high-security environments.
+
+### FINDING TLS-03: MongoDB Exposed on Host Without Authentication (HIGH)
+
+- **Severity:** HIGH
+- **File:** `/home/user/OpenSign/docker-compose.yml`, lines 18-26
+- **Code:**
+  ```yaml
+  mongo:
+    image: mongo:latest
+    container_name: mongo-container
+    volumes:
+      - data-volume:/data/db
+    ports:
+      - "27018:27017"
+    networks:
+      - app-network
+  ```
+- **Impact:** The MongoDB instance is:
+  1. Published to the host on port 27018 (`ports: "27018:27017"`), making it accessible from outside the container
+  2. Not configured with authentication (no `--auth` flag, no `MONGO_INITDB_ROOT_USERNAME`/`MONGO_INITDB_ROOT_PASSWORD` environment variables)
+  3. Connected via the database URI `mongodb://localhost:27017/dev` (from `config.databaseURI` default), which has no authentication credentials
+  4. No TLS/SSL configured for MongoDB connections
+  This means anyone with network access to the host on port 27018 can read and write all database data, including user credentials, session tokens, documents, PFX passphrases, and OTPs.
+- **Recommendation:** Remove the published port (use `expose` instead of `ports`). Enable MongoDB authentication. Configure TLS for MongoDB connections. Use a strong, randomly generated password for the database.
+
+### FINDING TLS-04: SSL Certificate Validation Disabled for PDF Downloads (HIGH)
+
+- **Severity:** HIGH
+- **Files:**
+  - `/home/user/OpenSign/apps/OpenSignServer/cloud/parsefunction/sendMailv3.js`, line 60
+  - `/home/user/OpenSign/apps/OpenSignServer/cloud/parsefunction/sendMailGmailProvider.js`, line 66
+- **Code:**
+  ```javascript
+  const httpsAgent = new https.Agent({ rejectUnauthorized: false });
+  axios.get(url, { responseType: 'stream', httpsAgent })
+  ```
+- **Impact:** When downloading PDFs for email attachments, SSL certificate validation is explicitly disabled via `rejectUnauthorized: false`. This is applied for any URL where `isSecure` is false (non-HTTPS or localhost URLs). This makes the download vulnerable to man-in-the-middle attacks where an attacker could:
+  1. Intercept the PDF download and replace it with a malicious document
+  2. Steal the contents of the PDF being sent
+  3. Inject content into signed documents before they are emailed to recipients
+  This is particularly dangerous because these are the final signed PDF documents being distributed to signers.
+- **Recommendation:** Remove `rejectUnauthorized: false` entirely. If self-signed certificates are needed for development, make this configurable via an environment variable that defaults to `true` (validation enabled) and is never disabled in production.
+
+### FINDING TLS-05: SMTP TLS Configuration Uses Inverted Logic (MEDIUM)
+
+- **Severity:** MEDIUM
+- **File:** `/home/user/OpenSign/apps/OpenSignServer/Utils.js`, line 159
+- **Code:**
+  ```javascript
+  export const smtpsecure = process.env.SMTP_PORT && process.env.SMTP_PORT !== '465' ? false : true;
+  ```
+- **Also used in:** `/home/user/OpenSign/apps/OpenSignServer/index.js`, line 67: `secure: smtpsecure`
+- **Impact:** The SMTP TLS configuration logic is confusing and potentially insecure:
+  1. If `SMTP_PORT` is not set at all, `smtpsecure` is `true` (because the first condition fails)
+  2. If `SMTP_PORT` is `465`, `smtpsecure` is `true` (implicit TLS -- correct)
+  3. If `SMTP_PORT` is any other value (e.g., `587`), `smtpsecure` is `false`
+  When `secure: false`, Nodemailer does not use TLS at all by default -- it connects in plaintext. For port 587 (STARTTLS), the correct approach is `secure: false` with `requireTLS: true` to upgrade the connection via STARTTLS. Without `requireTLS: true`, SMTP credentials and email content (including OTPs, document links, and signed PDFs) are sent in plaintext.
+  The `.env.local_dev` file shows `SMTP_PORT=443`, which is a non-standard SMTP port and would set `smtpsecure` to `false`.
+- **Recommendation:** Add explicit STARTTLS support: when `SMTP_PORT` is 587, set `secure: false` AND `requireTLS: true`. Add a `SMTP_SECURE` environment variable to give operators explicit control. Never send SMTP traffic in plaintext in production.
+
+### FINDING TLS-06: Unrestricted CORS Configuration (MEDIUM)
+
+- **Severity:** MEDIUM
+- **File:** `/home/user/OpenSign/apps/OpenSignServer/index.js`, line 168
+- **Code:**
+  ```javascript
+  app.use(cors());
+  ```
+- **Impact:** The Express server uses `cors()` with no configuration, which means:
+  1. `Access-Control-Allow-Origin: *` is set for all responses
+  2. Any website on the internet can make cross-origin requests to the API
+  3. Combined with session tokens stored in `localStorage` (TOKEN-02), any XSS vulnerability on any site visited by the user could make authenticated API requests
+  4. This effectively disables the Same-Origin Policy protection for the entire API
+- **Recommendation:** Configure CORS with explicit origin allowlist: `cors({ origin: ['https://your-app-domain.com'], credentials: true })`. In development, allow `localhost` origins explicitly.
+
+---
+
+## Part 6: Frontend Crypto
+
+### FINDING FRONT-01: Client-Side Signature Verification Is Cosmetic, Not Cryptographic (HIGH)
+
+- **Severity:** HIGH
+- **File:** `/home/user/OpenSign/apps/OpenSign/src/pages/VerifyDocument.jsx`, lines 380-555
+- **Code:**
+  ```javascript
+  const signedData = new SignedData({ schema: cmsContentInfo.content });
+  // ...
+  const notBefore = signerCertificate.notBefore.value;
+  const notAfter = signerCertificate.notAfter.value;
+  const currentDate = new Date();
+  if (currentDate < notBefore || currentDate > notAfter) {
+    isValid = false;
+  } else {
+    isValid = true;
+  }
+  ```
+- **Impact:** The `VerifyDocument` component uses `pkijs` to parse PKCS#7/CMS signature structures and display certificate information. However, the verification is purely cosmetic:
+  1. **No cryptographic signature verification:** The code never calls `signedData.verify()` to actually verify the cryptographic signature over the document content. It only parses the ASN.1 structure and reads certificate fields.
+  2. **No document hash verification:** The code does not compute the hash of the PDF content and compare it against the signed hash in the PKCS#7 structure. A modified document with the original signature attached would show as "valid."
+  3. **No trust chain validation:** The code does not verify the certificate chain against any trusted CA store. A self-signed certificate with valid dates would show as "Valid."
+  4. **No revocation checking:** No CRL or OCSP check is performed.
+  5. **Only date-based validity:** The sole check is whether the current date falls within the certificate's `notBefore`/`notAfter` range.
+  This gives users a false sense of security. A document with a forged or self-issued certificate and valid dates will display as having a valid signature. This is already documented in PDF-7 but deserves emphasis as a frontend-specific finding.
+- **Recommendation:** Implement full signature verification using `pkijs`'s `SignedData.verify()` method with proper `CertificateChainValidationEngine`. At minimum, clearly label the current verification as "basic certificate parsing" rather than "signature verification" to avoid misleading users.
+
+### FINDING FRONT-02: Extensive Sensitive Data Stored in localStorage (HIGH)
+
+- **Severity:** HIGH
+- **Files:** 54+ files across `/home/user/OpenSign/apps/OpenSign/src/`
+- **Key localStorage entries:**
+  ```
+  accesstoken          - Parse session token (authentication credential)
+  UserInformation      - Full user JSON object (email, name, profile data)
+  Extand_Class         - Extended user class data (organization, role, tenant info)
+  userEmail            - User's email address
+  username             - User's display name
+  TenantId             - Tenant identifier
+  TenantName           - Tenant name
+  _user_role           - User's role in the application
+  parseAppId           - Parse Application ID
+  baseUrl              - API base URL
+  ```
+- **Impact:** The application stores an extensive amount of sensitive data in `localStorage`:
+  1. **Session token** (`accesstoken`): The primary authentication credential, accessible to any JavaScript on the page (see TOKEN-02).
+  2. **Full user object** (`UserInformation`): Contains the complete Parse User object serialized as JSON, which may include session tokens, email, and other PII.
+  3. **Extended user data** (`Extand_Class`): Organization membership, role, and tenant information -- useful for privilege escalation if stolen.
+  4. **70+ reads** of `accesstoken` across 27 files, showing pervasive reliance on `localStorage` for authentication state.
+  All of this data persists across browser sessions, survives tab closure, and is accessible to any script running on the same origin. An XSS vulnerability would expose all of this data.
+- **Recommendation:** Minimize data stored in `localStorage`. Move session tokens to `HttpOnly` cookies. Store user profile data in memory (React state/context) rather than persistent storage. Implement Content Security Policy (CSP) headers to mitigate XSS risk.
+
+### FINDING FRONT-03: `jwt-decode` Dependency Present but Unused (LOW)
+
+- **Severity:** LOW
+- **File:** `/home/user/OpenSign/apps/OpenSign/package.json`, line 21
+- **Code:**
+  ```json
+  "jwt-decode": "^4.0.0",
+  ```
+- **Impact:** The `jwt-decode` package is listed as a frontend dependency but is never imported or used in any source file under `apps/OpenSign/src/`. This package decodes JWT tokens without verifying signatures. Its presence as an unused dependency:
+  1. Increases the attack surface through supply chain risk
+  2. May indicate that JWT decoding on the client was planned but not implemented
+  3. If it were to be used for security decisions (e.g., checking token expiry) without server-side verification, it would be a vulnerability
+- **Recommendation:** Remove the unused dependency. If JWT decoding is needed on the client, ensure it is used only for non-security purposes (e.g., displaying user info) and never for authorization decisions.
+
+### FINDING FRONT-04: Web Crypto API Used Correctly for PDF Metadata Hashing (INFO)
+
+- **Severity:** INFO
+- **File:** `/home/user/OpenSign/apps/OpenSign/src/components/pdf/EditTemplate.jsx`, lines 101-116
+- **Code:**
+  ```javascript
+  const getPdfMetadataHash = async (pdfBytes) => {
+    const pdfDoc = await PDFDocument.load(pdfBytes);
+    const pages = pdfDoc.getPages();
+    const metaString = pages
+      .map((page, index) => {
+        const { width, height } = page.getSize();
+        return `${index + 1}:${Math.round(width)}x${Math.round(height)}`;
+      })
+      .join("|");
+    const encoder = new TextEncoder();
+    const data = encoder.encode(metaString);
+    const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+    return Array.from(new Uint8Array(hashBuffer))
+      .map((b) => b.toString(16).padStart(2, "0"))
+      .join("");
+  };
+  ```
+- **Impact:** The `EditTemplate` component correctly uses the Web Crypto API (`crypto.subtle.digest("SHA-256", ...)`) to compute a SHA-256 hash of PDF page metadata. This is used to validate that a replacement PDF has the same page structure as the original. This is a correct use of the Web Crypto API for integrity checking.
+- **Recommendation:** None -- this is an appropriate use of client-side cryptography.
+
+### FINDING FRONT-05: Frontend CSPRNG Implementation Has Modulo Bias (LOW)
+
+- **Severity:** LOW
+- **File:** `/home/user/OpenSign/apps/OpenSign/src/constant/Utils.js`, lines 42-55
+- **Code:**
+  ```javascript
+  export const randomId = (digit = 8) => {
+    const randomBytes = crypto.getRandomValues(new Uint32Array(1));
+    const raw = randomBytes[0]; // 0 ... 4,294,967,295
+    const min = Math.pow(10, digit - 1);
+    const max = Math.pow(10, digit) - 1;
+    const range = max - min + 1;
+    return min + (raw % range);
+  };
+  ```
+- **Impact:** The frontend `randomId()` function correctly uses `crypto.getRandomValues()` for cryptographic randomness, which is a significant improvement over `Math.random()`. However, it uses the modulo operator (`raw % range`) to reduce the random value to the desired range. This introduces a slight modulo bias because `2^32` (4,294,967,296) is not evenly divisible by typical range values (e.g., for 8 digits, range = 90,000,000). The bias is small (approximately `range / 2^32` per value, or about 2% for 8-digit numbers) and acceptable for non-security ID generation, but not for security-critical purposes.
+  Note: The server-side `randomId()` in `/home/user/OpenSign/apps/OpenSignServer/Utils.js` (lines 326-331) has the same modulo bias issue but with `Uint16Array`, making the bias much worse (range/65536).
+- **Recommendation:** For security-critical random number generation, use rejection sampling to eliminate modulo bias. For non-security IDs, the current implementation is acceptable.
+
+### FINDING FRONT-06: Parse SDK Stores Session Token in localStorage Redundantly (INFO)
+
+- **Severity:** INFO
+- **Files:**
+  - `/home/user/OpenSign/apps/OpenSign/src/pages/GuestLogin.jsx`, lines 190-196
+  - `/home/user/OpenSign/apps/OpenSign/src/pages/Login.jsx`, line 160
+- **Code:**
+  ```javascript
+  localStorage.setItem(
+    `Parse/${parseId}/currentUser`,
+    JSON.stringify(_user)
+  );
+  // ...
+  await Parse.User.become(sessionToken);
+  ```
+- **Impact:** The Parse JavaScript SDK itself stores the current user (including session token) in `localStorage` under the key `Parse/{appId}/currentUser`. The application also redundantly stores the session token under `accesstoken` and the user object under `UserInformation`. This means the session token is stored in at least two (and sometimes three) different `localStorage` keys, increasing the attack surface. Even if the application were to switch to `HttpOnly` cookies for `accesstoken`, the Parse SDK's own `localStorage` storage would still expose the token.
+- **Recommendation:** If migrating away from `localStorage` for session tokens, configure the Parse SDK to use a custom storage adapter that does not persist to `localStorage`. Alternatively, accept the Parse SDK's `localStorage` usage and remove the redundant `accesstoken` key.
+
+---
+
+## Full Audit Summary
+
+### Findings by Severity
+
+| Severity | Count | Finding IDs |
+|----------|-------|-------------|
+| **CRITICAL** | 3 | PDF-1, RNG-1, RNG-2 |
+| **HIGH** | 14 | PDF-2, PDF-4, RNG-3, RNG-4, RNG-5, RNG-9, HASH-01, HASH-05, HASH-07, TOKEN-02, TLS-03, TLS-04, FRONT-01, FRONT-02 |
+| **MEDIUM** | 12 | PDF-3, PDF-5, PDF-7, RNG-6, RNG-8, HASH-04, HASH-06, TOKEN-03, TOKEN-04, TLS-02, TLS-05, TLS-06 |
+| **LOW** | 7 | PDF-6, RNG-7, TOKEN-01, TOKEN-05, TOKEN-06, FRONT-03, FRONT-05 |
+| **INFO** | 5 | HASH-02, HASH-03, TLS-01, FRONT-04, FRONT-06 |
+| **TOTAL** | **41** | |
+
+### Findings by Section
+
+| Section | Count | Critical | High | Medium | Low | Info |
+|---------|-------|----------|------|--------|-----|------|
+| Part 1: PDF Digital Signing | 7 | 1 | 2 | 3 | 1 | 0 |
+| Part 2: Random Number Generation | 9 | 2 | 4 | 2 | 1 | 0 |
+| Part 3: Hashing & Encryption | 7 | 0 | 3 | 2 | 0 | 2 |
+| Part 4: Token & Session Security | 6 | 0 | 1 | 2 | 3 | 0 |
+| Part 5: TLS/Transport Security | 6 | 0 | 2 | 3 | 0 | 1 |
+| Part 6: Frontend Crypto | 6 | 0 | 2 | 0 | 2 | 2 |
+| **Total** | **41** | **3** | **14** | **12** | **7** | **5** |
+
+### Top Priority Remediation Items
+
+The following issues should be addressed immediately due to their severity and exploitability:
+
+1. **Revoke the hardcoded PFX certificate** (PDF-1): The signing private key and passphrase are committed to the repository. This certificate must be revoked and regenerated immediately.
+
+2. **Replace all `Math.random()` usage in security contexts** (RNG-1, RNG-2, RNG-3, RNG-4, RNG-5): OTP generation, password generation, and server-side ID generation all use the cryptographically insecure `Math.random()`. Replace with `crypto.randomInt()` (server) or `crypto.getRandomValues()` (client).
+
+3. **Secure session token storage** (TOKEN-02, FRONT-02): Session tokens stored in `localStorage` are vulnerable to XSS. Migrate to `HttpOnly` cookies or implement robust Content Security Policy.
+
+4. **Secure the MongoDB instance** (TLS-03): The database is exposed on the host without authentication. Add authentication, remove the published port, and configure TLS.
+
+5. **Fix SSL certificate validation** (TLS-04): Remove `rejectUnauthorized: false` from production code paths to prevent man-in-the-middle attacks on document downloads.
+
+6. **Restrict Master Key access** (HASH-07): Change `masterKeyIps` from `0.0.0.0/0` to localhost only.
+
+7. **Implement real signature verification** (FRONT-01, PDF-7): The client-side document verification only checks certificate dates, not the actual cryptographic signature. Users are given a false sense of security.
+
+### Systemic Issues
+
+Several patterns appear across multiple findings, suggesting systemic issues rather than isolated bugs:
+
+- **Pervasive use of `Math.random()`**: Found in OTP generation, password generation, ID generation, and temp file naming across both frontend and backend. A project-wide policy to ban `Math.random()` for anything beyond purely cosmetic purposes is recommended.
+
+- **No application-level encryption**: The codebase has zero uses of `createCipheriv`/`createDecipheriv`. All sensitive data (PFX passphrases, OAuth tokens, OTPs, webhook secrets) is stored in plaintext in the database.
+
+- **Excessive reliance on `localStorage`**: 54+ files read from or write to `localStorage`, storing session tokens, user data, and application configuration. This creates a large XSS attack surface.
+
+- **Dead cryptographic code**: Both `signPayload()` (webhook signing) and `generate-api-key` (API key generation) are defined/installed but never used, suggesting incomplete security features.
+
+- **Key reuse**: The `MASTER_KEY` is used for Parse Server admin access, JWT file URL signing, and is exposed in process arguments during migration.
+
+---
+
+*End of cryptographic security audit. Report generated 2026-02-10.*
+
