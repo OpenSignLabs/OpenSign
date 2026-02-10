@@ -1,13 +1,50 @@
 # OpenSign Security Review
 
-**Date:** 2026-02-09
+**Date:** 2026-02-09 (updated 2026-02-10)
 **Scope:** Full codebase review of `apps/OpenSign/` (frontend) and `apps/OpenSignServer/` (backend)
 
 ---
 
 ## Executive Summary
 
-This review identified **8 critical**, **7 high**, and **6 medium** severity security issues across the OpenSign codebase. The most severe findings involve insecure OTP generation that could allow account takeover, missing authentication on sensitive cloud functions (IDOR vulnerabilities), overly permissive CORS and master key configurations, and path traversal in file upload handling.
+This comprehensive security review identified **127 unique findings** across four deep-dive audits covering authentication, injection, secrets/API, and cryptography. The findings break down as:
+
+| Severity | Count |
+|----------|-------|
+| **Critical** | 17 |
+| **High** | 42 |
+| **Medium** | 37 |
+| **Low** | 19 |
+| **Info** | 12 |
+
+The most severe findings involve:
+- **Unauthenticated admin creation** (`AddAdmin` cloud function callable without auth)
+- **Arbitrary file read & exfiltration** via `certificatePath` parameter in email functions
+- **SSRF** via user-controlled URL fetching in `sendMailv3` / `sendMailGmailProvider`
+- **Hardcoded PFX signing certificate** committed to repository with trivial passphrase
+- **No rate limiting anywhere** despite `rate-limiter-flexible` being a dependency
+- **Insecure OTP** (4-digit, `Math.random()`, no expiry, no attempt limiting, logged to console)
+- **18+ cloud functions lacking authentication**, enabling IDOR across contacts, documents, tenants
+- **Password set to email** for auto-created contact accounts (trivial account takeover)
+- **MongoDB exposed without authentication** in Docker Compose
+- **Session tokens stored in localStorage** (vulnerable to XSS exfiltration)
+
+## Detailed Findings
+
+The full findings are organized in four detailed reports in the `.security-review/` directory:
+
+| Report | Findings | Focus Areas |
+|--------|----------|-------------|
+| [`01-auth-findings.md`](.security-review/01-auth-findings.md) | 27 findings | Auth checks on all 38+ cloud functions, session management, admin escalation, password handling |
+| [`02-injection-findings.md`](.security-review/02-injection-findings.md) | 26 findings | NoSQL injection, XSS, command injection, SSRF, path traversal, email injection, regex DoS |
+| [`03-secrets-api-findings.md`](.security-review/03-secrets-api-findings.md) | 33 findings | Hardcoded secrets, master key exposure, file upload security, CORS, rate limiting, security headers |
+| [`04-crypto-findings.md`](.security-review/04-crypto-findings.md) | 41 findings | PDF signing, RNG security, hashing, token/session management, TLS, frontend crypto |
+
+---
+
+## Top 21 Findings (Original Summary)
+
+The following is the original summary of the highest-impact findings. For the complete set, see the detailed reports above.
 
 ---
 
@@ -433,24 +470,44 @@ app.use(express.urlencoded({ limit: '100mb', extended: true }));
 
 ## Prioritized Remediation Plan
 
+### Emergency (Immediate)
+1. **Revoke the hardcoded PFX certificate** in `.env.local_dev` and rotate it — the private key and passphrase ("opensign") are in version control
+2. **Remove `certificatePath` parameter** from `sendMailv3`/`sendMailGmailProvider` — enables arbitrary file read + exfiltration via email
+3. **Add auth to `AddAdmin`** — currently any unauthenticated user can create an admin account
+4. **Add auth to `sendmailv3`** — unauthenticated email relay with SSRF capability
+5. **Add auth to `linkContactToDoc`** — unauthenticated document/user modification with `password = email`
+
 ### Immediate (Week 1)
-1. Replace all `Math.random()` with `crypto.randomInt()` for OTPs and security-sensitive IDs
-2. Increase OTP to 6 digits minimum
-3. Remove OTP from console logs
-4. Add `requireUser: true` to all cloud functions that need authentication
-5. Sanitize filename and add file validation in `decryptpdf`
+6. Replace all `Math.random()` with `crypto.randomInt()` for OTPs and security-sensitive IDs
+7. Increase OTP to 6 digits minimum
+8. Remove OTP from console logs
+9. Add `requireUser: true` to all cloud functions that need authentication (18+ functions affected)
+10. Sanitize filename and add file validation in `decryptpdf`
+11. Add MongoDB authentication in Docker Compose
+12. Restrict `masterKeyIps` to `['127.0.0.1', '::1']`
+13. Remove `UpdateExistUserAsAdmin` master key client parameter pattern
 
 ### Short-Term (Weeks 2-3)
-6. Implement rate limiting on OTP sending and verification endpoints
-7. Add OTP expiration (5-10 minutes)
-8. Restrict CORS to application origin
-9. Restrict `masterKeyIps` to localhost
-10. Validate `role` parameter against allowlist in `usersignup`
-11. Add password complexity requirements
+14. Implement rate limiting using already-installed `rate-limiter-flexible` (login, OTP, signup, password reset)
+15. Add OTP expiration (5-10 minutes) and attempt limiting to `AuthLoginAsMail`
+16. Restrict CORS to application origin
+17. Validate `role` parameter against allowlist in `usersignup`
+18. Add password complexity requirements
+19. Stop setting `password = email` for auto-created contacts (use random passwords)
+20. Implement SSRF protection: URL allowlist for PDF fetching, block private IP ranges
+21. Add `helmet.js` for security headers (HSTS, CSP, X-Frame-Options, etc.)
+22. Sanitize Quill HTML editor output with DOMPurify before storing/sending
+23. Use separate JWT signing secret instead of reusing MASTER_KEY
 
 ### Medium-Term (Month 1-2)
-12. Hash OTPs before storing in database
-13. Audit all cloud functions for proper authorization (ownership checks)
-14. Replace `exec()` with `execFile()` and environment variables
-15. Reduce JSON body size limits on non-upload routes
-16. Sanitize all error messages returned to clients
+24. Hash OTPs before storing in database
+25. Add ownership verification to all cloud functions (not just auth checks)
+26. Implement application-level encryption for PFX passphrases, OAuth tokens, webhook secrets
+27. Replace `exec()` with `execFile()` and environment variables
+28. Reduce JSON body size limits on non-upload routes
+29. Sanitize all error messages returned to clients
+30. Implement real cryptographic signature verification in `VerifyDocument.jsx` (currently cosmetic)
+31. Add `beforeSaveFile` trigger for server-side file type validation
+32. Move session tokens from `localStorage` to `httpOnly` cookies or secure alternatives
+33. HTML-encode all user data in email templates
+34. Add `.env.local_dev` to `.gitignore` and remove from tracking
