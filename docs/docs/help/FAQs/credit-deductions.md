@@ -1,4 +1,4 @@
-## FAQ: Where Are OpenSign Premium Credits Deducted?
+## Where Are OpenSign Premium Credits Deducted?
 
 ### 1. When are Premium Credits deducted? Which actions use Premium Credits?
 
@@ -8,7 +8,7 @@ The following features consume Premium Credits:
 
 - **API Signature** – Sending documents for signing via API  
 - **Bulk Send** – Sending documents in bulk to multiple recipients  
-- **Public Link Signing** – Sharing documents using a public signing link  
+- **Public Template Signing** – Sign documents using a public template.
 - **Kiosk Mode** – Using Kiosk Mode for in-person signing  
 - **Embedded Signing** – Integrating OpenSign into your website or application for signing  
 
