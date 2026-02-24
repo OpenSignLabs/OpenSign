@@ -1,4 +1,3 @@
-## Where Are OpenSign Premium Credits Deducted?
 
 ### 1. When are Premium Credits deducted? Which actions use Premium Credits?
 
