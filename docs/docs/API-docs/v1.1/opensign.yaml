@@ -5134,6 +5134,11 @@ components:
         auto_reminder:
           type: boolean
           example: false
+        timeToCompleteDays:
+          type: number
+          description: time to complete days is used to calculate expiry date of your document
+          format: number
+          example: 15  
         remind_once_in_every:
           type: number
           example: 0
@@ -6216,6 +6221,11 @@ components:
           type: boolean
           description: "Set to true to enable automatic reminders. Set to false to disable them (default behavior)."
           example: false
+        timeToCompleteDays:
+          type: number
+          description: time to complete days is used to calculate expiry date of your document
+          format: number
+          example: 15
         remind_once_in_every:
           type: number
           description: "Number of days between reminders. This is only applicable when auto_reminder is set to true."
