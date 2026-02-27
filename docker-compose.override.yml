@@ -1,0 +1,36 @@
+services:
+  server:
+    env_file: .env.local_dev
+    depends_on:
+      maildev:
+        condition: service_healthy
+    # Uncomment to build from local source for contributors
+    # build:
+    #   context: .
+    #   dockerfile: apps/OpenSignServer/Dockerhubfile
+
+  client:
+    env_file: .env.local_dev
+    # Uncomment to build from local source for contributors
+    # build:
+    #   context: .
+    #   dockerfile: apps/OpenSign/Dockerhubfile
+
+  maildev:
+    image: maildev/maildev:latest
+    container_name: opensign-maildev
+    ports:
+      - "1080:1080" # Web UI
+      - "1025:1025" # SMTP server
+    environment:
+      - MAILDEV_UI=true
+      - MAILDEV_WEB_PORT=1080
+      - MAILDEV_SMTP_PORT=1025
+    restart: unless-stopped
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "nc", "-z", "127.0.0.1", "1025"]
+      interval: 5s
+      timeout: 2s
+      retries: 6
