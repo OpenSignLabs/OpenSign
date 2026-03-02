@@ -489,8 +489,8 @@ paths:
             "fontsize": 12,
             "min_date": "",
             "max_date": "",
-            "hint": "Provide date",
-            "signing_date": false
+            "signing_date": false,
+            "hint": "Provide date"
           }
         }
         ```
@@ -1370,7 +1370,7 @@ paths:
             "max_date": "",
             "readonly": false,
             "signing_date": false,
-            "hint": "Provide date",
+            "hint": "Provide date"
           }
         }
         ```
@@ -1511,7 +1511,7 @@ paths:
           "options": {
             "required": true,
             "name": "image",
-            "hint": "Provide image",
+            "hint": "Provide image"
           }
         }
         ```
@@ -1790,8 +1790,8 @@ paths:
           "default": "11-05-2025",
           "min_date": "",
           "max_date": "",
-          "hint": "Provide date",
-          "signing_date": false
+          "signing_date": false,
+          "hint": "Provide date"
         }
         ```
         - **min_date:**  Provide the minimum restriction date. The date must be in **YYYY-MM-DD** format.
@@ -2418,7 +2418,7 @@ paths:
           "w": 114,
           "h": 21,
           "options": {
-            "hint": "Provide signature",
+            "hint": "Provide signature"
           }
 
         }
@@ -2558,7 +2558,7 @@ paths:
             "max_date": "",
             "readonly": false,
             "signing_date": false,
-            "hint": "Provide date",
+            "hint": "Provide date"
           }
         }
         ```
@@ -2699,7 +2699,7 @@ paths:
           "options": {
             "required": true,
             "name": "image",
-            "hint": "Provide image",
+            "hint": "Provide image"
           }
         }
         ```
@@ -3109,7 +3109,7 @@ paths:
             "max_date": "",
             "readonly": false,
             "signing_date": false,
-            "hint": "Provide date",
+            "hint": "Provide date"
           }
         }
         ```
@@ -3250,7 +3250,7 @@ paths:
           "options": {
             "required": true,
             "name": "image",
-            "hint": "Provide image",
+            "hint": "Provide image"
           }
         }
         ```
@@ -3659,8 +3659,8 @@ paths:
             "min_date": "",
             "max_date": "",
             "readonly": false,
-            "hint": "Provide date",
-            "signing_date": false
+            "signing_date": false,
+            "hint": "Provide date"
           }
         }
         ```
