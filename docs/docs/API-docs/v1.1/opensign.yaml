@@ -338,6 +338,7 @@ paths:
         - **color:** Specifies the color of the widget content. Available options include black, blue, red, and yellow, with black as the default selection if no color is specified. This parameter is optional and is applicable to the following widgets: email, name, job title, company, date, textbox, checkbox.
         - **fontsize:** Specifies the fontsize of the widget content. Available options include 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, and 28, with a default fontsize of 12 if not specified. This parameter is optional and is applicable to the following widgets: email, name, job title, company, date, textbox, checkbox.
         - **hide_text_with_asterisks:** When enabled, the text on the signed document is hidden from recipients using asterisks, but remains fully visible to the document owner in their OpenSign account. This option is available only on Teams and Enterprise plans.
+        - **hint:** Specify the hint for widgets. This parameter is optional and is not applicable to the following widgets: checkbox, radio button, dropdown.
 
         **List of all supported widgets:**
 
@@ -349,7 +350,10 @@ paths:
           "x": 327,
           "y": 628,
           "w": 114,
-          "h": 21
+          "h": 21,
+          "options":{
+            "hint": "Provide signature"
+          }
         }
         ```
 
@@ -364,7 +368,8 @@ paths:
           "h": 21,
           "options": {
             "required": true,
-            "name": "stamp"
+            "name": "stamp",
+            "hint": "Provide stamp"
           }
         }
         ```
@@ -380,7 +385,8 @@ paths:
           "h": 21,
           "options": {
             "required": true,
-            "name": "initials"
+            "name": "initials",
+            "hint": "Provide initials"
           }
         }
         ```
@@ -399,6 +405,7 @@ paths:
             "name": "email",
             "color": "black",
             "fontsize": 12,
+            "hint": "Provide email",
             "hide_text_with_asterisks": false
           }
         }
@@ -418,6 +425,7 @@ paths:
             "name": "name",
             "color": "black",
             "fontsize": 12,
+            "hint": "Provide name",
             "hide_text_with_asterisks": false
           }
         }
@@ -437,6 +445,7 @@ paths:
             "name": "job title",
             "color": "black",
             "fontsize": 12,
+            "hint": "Provide job title",
             "hide_text_with_asterisks": false
           }
         }
@@ -456,6 +465,7 @@ paths:
             "name": "company",
             "color": "black",
             "fontsize": 12,
+            "hint": "Provide company",
             "hide_text_with_asterisks": false
           }
         }
@@ -479,6 +489,7 @@ paths:
             "fontsize": 12,
             "min_date": "",
             "max_date": "",
+            "hint": "Provide date",
             "signing_date": false
           }
         }
@@ -523,7 +534,6 @@ paths:
         }
         ```
         - **default:** Provide a default value for the textbox (Optional).
-        - **hint:** Provide a hint for the textbox (Optional).
         - **regularexpression:** A custom regex pattern for validation - for example, /^\d+$/ to permit only digits, /^[A-Z]+$/ to permit only uppercase letters, etc. [help](https://www.w3schools.com/jsref/jsref_obj_regexp.asp) (Optional).
         - **readonly:** Set to true if you want to set the textbox as readonly. By default, it's false.
 
@@ -571,7 +581,8 @@ paths:
           "h": 21,
           "options": {
             "required": true,
-            "name": "image"
+            "name": "image",
+            "hint": "Provide image"
           }
         }
         ```
@@ -593,6 +604,7 @@ paths:
             "decimalplaces": 2,
             "color": "black",
             "fontsize": 12,
+            "hint": "Provide number",
             "hide_text_with_asterisks": false
           }
         }
@@ -676,6 +688,7 @@ paths:
         - **color:** Specifies the color of the widget content. Available options include black, blue, red, and yellow, with black as the default selection if no color is specified. This parameter is optional and is applicable to the following widgets: email, name, job title, company, date, textbox, checkbox, radio button, and dropdown.
         - **fontsize:** Specifies the fontsize of the widget content. Available options include 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, and 28, with a default fontsize of 12 if not specified. This parameter is optional and is applicable to the following widgets: email, name, job title, company, date, textbox, checkbox, radio button, and dropdown.
         - **hide_text_with_asterisks:** When enabled, the text on the signed document is hidden from recipients using asterisks, but remains fully visible to the document owner in their OpenSign account. This option is available only on Teams and Enterprise plans.
+        - **hint:** Specify the hint for widgets. This parameter is optional and is not applicable to the following widgets: checkbox, radio button, dropdown.
 
         **List of all supported widgets:**
 
@@ -687,7 +700,10 @@ paths:
           "x": 327,
           "y": 628,
           "w": 114,
-          "h": 21
+          "h": 21,
+          "options":{
+            "hint": "Provide signature"
+          }
         }
         ```
 
@@ -702,7 +718,8 @@ paths:
           "h": 21,
           "options": {
             "required": true,
-            "name": "stamp"
+            "name": "stamp",
+            "hint": "Provide stamp"
           }
         }
         ```
@@ -718,7 +735,8 @@ paths:
           "h": 21,
           "options": {
             "required": true,
-            "name": "initials"
+            "name": "initials",
+            "hint": "Provide initials"
           }
         }
         ```
@@ -737,6 +755,7 @@ paths:
             "name": "email",
             "color": "black",
             "fontsize": 12,
+            "hint": "Provide email",
             "hide_text_with_asterisks": false
           }
         }
@@ -756,6 +775,7 @@ paths:
             "name": "name",
             "color": "black",
             "fontsize": 12,
+            "hint": "Provide name",
             "hide_text_with_asterisks": false
           }
         }
@@ -775,6 +795,7 @@ paths:
             "name": "job title",
             "color": "black",
             "fontsize": 12,
+            "hint": "Provide job title",
             "hide_text_with_asterisks": false
           }
         }
@@ -794,6 +815,7 @@ paths:
             "name": "company",
             "color": "black",
             "fontsize": 12,
+            "hint": "Provide company",
             "hide_text_with_asterisks": false
           }
         }
@@ -818,7 +840,8 @@ paths:
             "min_date": "",
             "max_date": "",
             "readonly": false,
-            "signing_date": false
+            "signing_date": false,
+            "hint": "Provide date"
           }
         }
         ```
@@ -862,7 +885,6 @@ paths:
         }
         ```
         - **default:** Provide a default value for the textbox (Optional).
-        - **hint:** Provide a hint for the textbox (Optional).
         - **regularexpression:** A custom regex pattern for validation - for example, /^\d+$/ to permit only digits, /^[A-Z]+$/ to permit only uppercase letters, etc. [help](https://www.w3schools.com/jsref/jsref_obj_regexp.asp) (Optional).
         - **readonly:** Set to true if you want to set the textbox as readonly. By default, it's false.
 
@@ -959,7 +981,8 @@ paths:
           "h": 21,
           "options": {
             "required": true,
-            "name": "image"
+            "name": "image",
+            "hint": "Provide image"
           }
         }
         ```
@@ -978,7 +1001,7 @@ paths:
             "required": true,
             "readonly": false,
             "default": 0,
-            "hint": "Enter number",
+            "hint": "Provide number",
             "formula": "",
             "decimalplaces": 2,
             "color": "black",
@@ -989,7 +1012,6 @@ paths:
         ```
         - **formula:** Compute the value from other number widgets using +, -, *, /, (, ). Reference widgets by their name in double curly braces, e.g. {{quantity}} * {{rate}}. to know more [visit here](https://docs.opensignlabs.com/docs/help/New-Document/widgets) (optional).
         - **default:** Provide a default number (Optional).
-        - **hint:** Provide a hint for the number (Optional).
         - **readonly:** Set to true if you want to set the textbox as readonly. By default, it's false.
         - **decimalplaces:** Number of digits to display after the decimal point. e.g: 2 => 12.00, 0 => 12 (default 2)
         
@@ -1195,6 +1217,7 @@ paths:
         - **color:** Specifies the color of the widget content. Available options include black, blue, red, and yellow, with black as the default selection if no color is specified. This parameter is optional and is applicable to the following widgets: email, name, job title, company, date, textbox, checkbox, radio button, and dropdown.
         - **fontsize:** Specifies the fontsize of the widget content. Available options include 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, and 28, with a default fontsize of 12 if not specified. This parameter is optional and is applicable to the following widgets: email, name, job title, company, date, textbox, checkbox, radio button, and dropdown.
         - **hide_text_with_asterisks:** When enabled, the text on the signed document is hidden from recipients using asterisks, but remains fully visible to the document owner in their OpenSign account. This option is available only on Teams and Enterprise plans.
+        - **hint:** Specify the hint for widgets. This parameter is optional and is not applicable to the following widgets: checkbox, radio button, dropdown.
 
         **List of all supported widgets:**
 
@@ -1206,7 +1229,10 @@ paths:
           "x": 327,
           "y": 628,
           "w": 114,
-          "h": 21
+          "h": 21,
+          "options":{
+            "hint": "Provide signature"
+          }
         }
         ```
 
@@ -1221,7 +1247,8 @@ paths:
           "h": 21,
           "options": {
             "required": true,
-            "name": "stamp"
+            "name": "stamp",
+            "hint": "Provide stamp"
           }
         }
         ```
@@ -1237,7 +1264,8 @@ paths:
           "h": 21,
           "options": {
             "required": true,
-            "name": "initials"
+            "name": "initials",
+            "hint": "Provide initials"
           }
         }
         ```
@@ -1256,6 +1284,7 @@ paths:
             "name": "email",
             "color": "black",
             "fontsize": 12,
+            "hint": "Provide email",
             "hide_text_with_asterisks": false
           }
         }
@@ -1275,6 +1304,7 @@ paths:
             "name": "name",
             "color": "black",
             "fontsize": 12,
+            "hint": "Provide name",
             "hide_text_with_asterisks": false
           }
         }
@@ -1294,6 +1324,7 @@ paths:
             "name": "job title",
             "color": "black",
             "fontsize": 12,
+            "hint": "Provide job title",
             "hide_text_with_asterisks": false
           }
         }
@@ -1313,6 +1344,7 @@ paths:
             "name": "company",
             "color": "black",
             "fontsize": 12,
+            "hint": "Provide company",
             "hide_text_with_asterisks": false
           }
         }
@@ -1337,7 +1369,8 @@ paths:
             "min_date": "",
             "max_date": "",
             "readonly": false,
-            "signing_date": false
+            "signing_date": false,
+            "hint": "Provide date",
           }
         }
         ```
@@ -1381,7 +1414,6 @@ paths:
         }
         ```
         - **default:** Provide a default value for the textbox (Optional).
-        - **hint:** Provide a hint for the textbox (Optional).
         - **regularexpression:** A custom regex pattern for validation - for example, /^\d+$/ to permit only digits, /^[A-Z]+$/ to permit only uppercase letters, etc. [help](https://www.w3schools.com/jsref/jsref_obj_regexp.asp) (Optional).
         - **readonly:** Set to true if you want to set the textbox as readonly. By default, it's false.
 
@@ -1478,7 +1510,8 @@ paths:
           "h": 21,
           "options": {
             "required": true,
-            "name": "image"
+            "name": "image",
+            "hint": "Provide image",
           }
         }
         ```
@@ -1497,7 +1530,7 @@ paths:
             "required": true,
             "readonly": false,
             "default": 0,
-            "hint": "Enter number",
+            "hint": "Provide number",
             "formula": "",
             "decimalplaces": 2,
             "color": "black",
@@ -1508,7 +1541,6 @@ paths:
         ```
         - **formula:** Compute the value from other number widgets using +, -, *, /, (, ). Reference widgets by their name in double curly braces, e.g. {{quantity}} * {{rate}}. to know more [visit here](https://docs.opensignlabs.com/docs/help/New-Document/widgets) (optional).
         - **default:** Provide a default number (Optional).
-        - **hint:** Provide a hint for the number (Optional).
         - **readonly:** Set to true if you want to set the textbox as readonly. By default, it's false.
         - **decimalplaces:** Number of digits to display after the decimal point. e.g: 2 => 12.00, 0 => 12 (default 2)
 
@@ -1704,12 +1736,15 @@ paths:
 
         **hide_text_with_asterisks:** When enabled, the text on the signed document is hidden from recipients using asterisks, but remains fully visible to the document owner in their OpenSign account. This option is available only on Teams and Enterprise plans.
 
+        **hint:** Specify the hint for widgets. This parameter is optional and is not applicable to the following widgets: checkbox, radio button, dropdown.
+
         1. **email**
         ```
         {
           "name": "email",
           "readonly": false,
           "default": "email@example.com",
+          "hint": "Provide email",
           "hide_text_with_asterisks": false
         }
         ```
@@ -1720,6 +1755,7 @@ paths:
           "name": "name",
           "readonly": false,
           "default": "joe",
+          "hint": "Provide name",
           "hide_text_with_asterisks": false
         }
         ```
@@ -1730,6 +1766,7 @@ paths:
           "name": "job title",
           "readonly": false,
           "default": "ceo",
+          "hint": "Provide job title",
           "hide_text_with_asterisks": false
         }
         ```
@@ -1740,6 +1777,7 @@ paths:
           "name": "company",
           "readonly": false,
           "default": "example pvt ltd",
+          "hint": "Provide company",
           "hide_text_with_asterisks": false
         }
         ```
@@ -1752,6 +1790,7 @@ paths:
           "default": "11-05-2025",
           "min_date": "",
           "max_date": "",
+          "hint": "Provide date",
           "signing_date": false
         }
         ```
@@ -1765,6 +1804,7 @@ paths:
           "name": "textbox",
           "readonly": false,
           "default": "my text",
+          "hint": "Provide text",
           "hide_text_with_asterisks": false
         }
         ```
@@ -1805,6 +1845,7 @@ paths:
           "default": 0,
           "formula": "",
           "decimalplaces": 2,
+          "hint": "Provide number",
           "hide_text_with_asterisks": false
         }
         ```
@@ -1816,6 +1857,7 @@ paths:
           "readonly": false,
           "cell_count": 5,
           "default": "",
+          "hint": "",
           "hide_text_with_asterisks": false 
         }
         ```
@@ -2362,6 +2404,7 @@ paths:
         - **color:** Specifies the color of the widget content. Available options include black, blue, red, and yellow, with black as the default selection if no color is specified. This parameter is optional and is applicable to the following widgets: email, name, job title, company, date, textbox, checkbox, radio button, and dropdown.
         - **fontsize:** Specifies the fontsize of the widget content. Available options include 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, and 28, with a default fontsize of 12 if not specified. This parameter is optional and is applicable to the following widgets: email, name, job title, company, date, textbox, checkbox, radio button, and dropdown.
         - **hide_text_with_asterisks:** When enabled, the text on the signed document is hidden from recipients using asterisks, but remains fully visible to the document owner in their OpenSign account. This option is available only on Teams and Enterprise plans.
+        - **hint:** Specify the hint for widgets. This parameter is optional and is not applicable to the following widgets: checkbox, radio button, dropdown.
 
         **List of all supported widgets:**
 
@@ -2373,7 +2416,11 @@ paths:
           "x": 327,
           "y": 628,
           "w": 114,
-          "h": 21
+          "h": 21,
+          "options": {
+            "hint": "Provide signature",
+          }
+
         }
         ```
 
@@ -2388,7 +2435,8 @@ paths:
           "h": 21,
           "options": {
             "required": true,
-            "name": "stamp"
+            "name": "stamp",
+            "hint": "Provide stamp"
           }
         }
         ```
@@ -2404,7 +2452,8 @@ paths:
           "h": 21,
           "options": {
             "required": true,
-            "name": "initials"
+            "name": "initials",
+            "hint": "Provide initials"
           }
         }
         ```
@@ -2423,6 +2472,7 @@ paths:
             "name": "email",
             "color": "black",
             "fontsize": 12,
+            "hint": "Provide email",
             "hide_text_with_asterisks": false
           }
         }
@@ -2442,6 +2492,7 @@ paths:
             "name": "name",
             "color": "black",
             "fontsize": 12,
+            "hint": "Provide name",
             "hide_text_with_asterisks": false
           }
         }
@@ -2461,6 +2512,7 @@ paths:
             "name": "job title",
             "color": "black",
             "fontsize": 12,
+            "hint": "Provide job title",
             "hide_text_with_asterisks": false
           }
         }
@@ -2480,6 +2532,7 @@ paths:
             "name": "company",
             "color": "black",
             "fontsize": 12,
+            "hint": "Provide company",
             "hide_text_with_asterisks": false
           }
         }
@@ -2504,7 +2557,8 @@ paths:
             "min_date": "",
             "max_date": "",
             "readonly": false,
-            "signing_date": false
+            "signing_date": false,
+            "hint": "Provide date",
           }
         }
         ```
@@ -2548,7 +2602,6 @@ paths:
         }
         ```
         - **default:** Provide a default value for the textbox (Optional).
-        - **hint:** Provide a hint for the textbox (Optional).
         - **regularexpression:** A custom regex pattern for validation - for example, /^\d+$/ to permit only digits, /^[A-Z]+$/ to permit only uppercase letters, etc. [help](https://www.w3schools.com/jsref/jsref_obj_regexp.asp) (Optional).
         - **readonly:** Set to true if you want to set the textbox as readonly. By default, it's false.
 
@@ -2645,7 +2698,8 @@ paths:
           "h": 21,
           "options": {
             "required": true,
-            "name": "image"
+            "name": "image",
+            "hint": "Provide image",
           }
         }
         ```
@@ -2664,7 +2718,7 @@ paths:
             "required": true,
             "readonly": false,
             "default": 0,
-            "hint": "Enter number",
+            "hint": "Provide number",
             "formula": "",
             "decimalplaces": 2,
             "color": "black",
@@ -2675,7 +2729,6 @@ paths:
         ```
         - **formula:** Compute the value from other number widgets using +, -, *, /, (, ). Reference widgets by their name in double curly braces, e.g. {{quantity}} * {{rate}}. to know more [visit here](https://docs.opensignlabs.com/docs/help/New-Document/widgets) (optional).
         - **default:** Provide a default number (Optional).
-        - **hint:** Provide a hint for the number (Optional).
         - **readonly:** Set to true if you want to set the textbox as readonly. By default, it's false.
         - **decimalplaces:** Number of digits to display after the decimal point. e.g: 2 => 12.00, 0 => 12 (default 2)
         
@@ -2903,6 +2956,7 @@ paths:
         - **color:** Specifies the color of the widget content. Available options include black, blue, red, and yellow, with black as the default selection if no color is specified. This parameter is optional and is applicable to the following widgets: email, name, job title, company, date, textbox, checkbox, radio button, and dropdown.
         - **fontsize:** Specifies the fontsize of the widget content. Available options include 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, and 28, with a default fontsize of 12 if not specified. This parameter is optional and is applicable to the following widgets: email, name, job title, company, date, textbox, checkbox, radio button, and dropdown.
         - **hide_text_with_asterisks:** When enabled, the text on the signed document is hidden from recipients using asterisks, but remains fully visible to the document owner in their OpenSign account. This option is available only on Teams and Enterprise plans.
+        - **hint:** Specify the hint for widgets. This parameter is optional and is not applicable to the following widgets: checkbox, radio button, dropdown.
 
         **List of all supported widgets:**
 
@@ -2914,7 +2968,10 @@ paths:
           "x": 327,
           "y": 628,
           "w": 114,
-          "h": 21
+          "h": 21,
+          "options": {
+            "hint": "Provide signature"
+          }
         }
         ```
 
@@ -2929,7 +2986,8 @@ paths:
           "h": 21,
           "options": {
             "required": true,
-            "name": "stamp"
+            "name": "stamp",
+            "hint": "Provide stamp"
           }
         }
         ```
@@ -2945,7 +3003,8 @@ paths:
           "h": 21,
           "options": {
             "required": true,
-            "name": "initials"
+            "name": "initials",
+            "hint": "Provide initials"
           }
         }
         ```
@@ -2964,6 +3023,7 @@ paths:
             "name": "email",
             "color": "black",
             "fontsize": 12,
+            "hint": "Provide email",
             "hide_text_with_asterisks": false
           }
         }
@@ -2983,6 +3043,7 @@ paths:
             "name": "name",
             "color": "black",
             "fontsize": 12,
+            "hint": "Provide name",
             "hide_text_with_asterisks": false
           }
         }
@@ -3002,6 +3063,7 @@ paths:
             "name": "job title",
             "color": "black",
             "fontsize": 12,
+            "hint": "Provide job title",
             "hide_text_with_asterisks": false
           }
         }
@@ -3021,6 +3083,7 @@ paths:
             "name": "company",
             "color": "black",
             "fontsize": 12,
+            "hint": "Provide company",
             "hide_text_with_asterisks": false
           }
         }
@@ -3045,7 +3108,8 @@ paths:
             "min_date": "",
             "max_date": "",
             "readonly": false,
-            "signing_date": false
+            "signing_date": false,
+            "hint": "Provide date",
           }
         }
         ```
@@ -3089,7 +3153,6 @@ paths:
         }
         ```
         - **default:** Provide a default value for the textbox (Optional).
-        - **hint:** Provide a hint for the textbox (Optional).
         - **regularexpression:** A custom regex pattern for validation - for example, /^\d+$/ to permit only digits, /^[A-Z]+$/ to permit only uppercase letters, etc. [help](https://www.w3schools.com/jsref/jsref_obj_regexp.asp) (Optional).
         - **readonly:** Set to true if you want to set the textbox as readonly. By default, it's false.
 
@@ -3186,7 +3249,8 @@ paths:
           "h": 21,
           "options": {
             "required": true,
-            "name": "image"
+            "name": "image",
+            "hint": "Provide image",
           }
         }
         ```
@@ -3205,7 +3269,7 @@ paths:
             "required": true,
             "readonly": false,
             "default": 0,
-            "hint": "Enter number",
+            "hint": "Provide number",
             "formula": "",
             "decimalplaces": 2,
             "color": "black",
@@ -3216,7 +3280,6 @@ paths:
         ```
         - **formula:** Compute the value from other number widgets using +, -, *, /, (, ). Reference widgets by their name in double curly braces, e.g. {{quantity}} * {{rate}}. to know more [visit here](https://docs.opensignlabs.com/docs/help/New-Document/widgets) (optional).
         - **default:** Provide a default number (Optional).
-        - **hint:** Provide a hint for the number (Optional).
         - **readonly:** Set to true if you want to set the textbox as readonly. By default, it's false.
         - **decimalplaces:** Number of digits to display after the decimal point. e.g: 2 => 12.00, 0 => 12 (default 2)
         
@@ -3444,6 +3507,7 @@ paths:
         - **color:** Specifies the color of the widget content. Available options include black, blue, red, and yellow, with black as the default selection if no color is specified. This parameter is optional and is applicable to the following widgets: email, name, job title, company, date, textbox, checkbox, radio button, and dropdown.
         - **fontsize:** Specifies the fontsize of the widget content. Available options include 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, and 28, with a default fontsize of 12 if not specified. This parameter is optional and is applicable to the following widgets: email, name, job title, company, date, textbox, checkbox, radio button, and dropdown.
         - **hide_text_with_asterisks:** When enabled, the text on the signed document is hidden from recipients using asterisks, but remains fully visible to the document owner in their OpenSign account. This option is available only on Teams and Enterprise plans.
+        - **hint:** Specify the hint for widgets. This parameter is optional and is not applicable to the following widgets: checkbox, radio button, dropdown.
 
         **List of all supported widgets:**
 
@@ -3455,7 +3519,10 @@ paths:
           "x": 327,
           "y": 628,
           "w": 114,
-          "h": 21
+          "h": 21,
+          "options": {
+            "hint": "Provide signature"
+          }
         }
         ```
 
@@ -3470,7 +3537,8 @@ paths:
           "h": 21,
           "options": {
             "required": true,
-            "name": "stamp"
+            "name": "stamp",
+            "hint": "Provide stamp"
           }
         }
         ```
@@ -3486,7 +3554,8 @@ paths:
           "h": 21,
           "options": {
             "required": true,
-            "name": "initials"
+            "name": "initials",
+            "hint": "Provide initials"
           }
         }
         ```
@@ -3505,6 +3574,7 @@ paths:
             "name": "email",
             "color": "black",
             "fontsize": 12,
+            "hint": "Provide email",
             "hide_text_with_asterisks": false
           }
         }
@@ -3524,6 +3594,7 @@ paths:
             "name": "name",
             "color": "black",
             "fontsize": 12,
+            "hint": "Provide name",
             "hide_text_with_asterisks": false
           }
         }
@@ -3543,6 +3614,7 @@ paths:
             "name": "job title",
             "color": "black",
             "fontsize": 12,
+            "hint": "Provide job title",
             "hide_text_with_asterisks": false
           }
         }
@@ -3562,6 +3634,7 @@ paths:
             "name": "company",
             "color": "black",
             "fontsize": 12,
+            "hint": "Provide company",
             "hide_text_with_asterisks": false
           }
         }
@@ -3586,6 +3659,7 @@ paths:
             "min_date": "",
             "max_date": "",
             "readonly": false,
+            "hint": "Provide date",
             "signing_date": false
           }
         }
@@ -3630,7 +3704,6 @@ paths:
         }
         ```
         - **default:** Provide a default value for the textbox (Optional).
-        - **hint:** Provide a hint for the textbox (Optional).
         - **regularexpression:** A custom regex pattern for validation - for example, /^\d+$/ to permit only digits, /^[A-Z]+$/ to permit only uppercase letters, etc. [help](https://www.w3schools.com/jsref/jsref_obj_regexp.asp) (Optional).
         - **readonly:** Set to true if you want to set the textbox as readonly. By default, it's false.
 
@@ -3746,7 +3819,7 @@ paths:
             "required": true,
             "readonly": false,
             "default": 0,
-            "hint": "Enter number",
+            "hint": "Provide number",
             "formula": "",
             "decimalplaces": 2,
             "color": "black",
@@ -3757,7 +3830,6 @@ paths:
         ```
         - **formula:** Compute the value from other number widgets using +, -, *, /, (, ). Reference widgets by their name in double curly braces, e.g. {{quantity}} * {{rate}}. to know more [visit here](https://docs.opensignlabs.com/docs/help/New-Document/widgets) (optional).
         - **default:** Provide a default number (Optional).
-        - **hint:** Provide a hint for the number (Optional).
         - **readonly:** Set to true if you want to set the textbox as readonly. By default, it's false.
         - **decimalplaces:** Number of digits to display after the decimal point. e.g: 2 => 12.00, 0 => 12 (default 2)
         
