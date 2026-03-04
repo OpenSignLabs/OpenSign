@@ -14,13 +14,28 @@ function findScrollParent(el) {
   return window; // fallback
 }
 
+const normalizeEmailQuery = (v) => v?.toLowerCase?.().replace(/\s/g, "") ?? "";
+
 const SuggestionInput = (props) => {
   const { t } = useTranslation();
+
   const [inputValue, setInputValue] = useState(props?.value || "");
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
+
   const inputRef = useRef(null);
   const dropdownRef = useRef(null);
+
+  const hasInteractedRef = useRef(false);
+  const skipNextSearchRef = useRef(false);
+  const isFocusedRef = useRef(false);
+
+  // ✅ keep latest input value in a ref (so props-sync can compare without depending on state)
+  const inputValueRef = useRef(inputValue);
+  useEffect(() => {
+    inputValueRef.current = inputValue;
+  }, [inputValue]);
+
   const [dropdownPos, setDropdownPos] = useState({
     top: 0,
     left: 0,
@@ -50,6 +65,22 @@ const SuggestionInput = (props) => {
       placement: openUpwards ? "top" : "bottom"
     });
   };
+
+  // ✅ Sync from props ONLY when it's not the echo of user typing
+  useEffect(() => {
+    const next = props?.value ?? "";
+    const current = inputValueRef.current ?? "";
+
+    // nothing to do
+    if (next === current) return;
+
+    // if the user is focused/typing, DO NOT override local value,
+    // otherwise you will kill search + cursor behavior
+    if (isFocusedRef.current && hasInteractedRef.current) return;
+
+    skipNextSearchRef.current = true;
+    setInputValue(next);
+  }, [props?.value]);
 
   useLayoutEffect(() => {
     if (!showSuggestions) return;
@@ -93,50 +124,79 @@ const SuggestionInput = (props) => {
         scrollParent.removeEventListener("scroll", onScroll);
     };
   }, [showSuggestions]);
-  // create debounce to avoid unnecessay api calls
+
+  // ✅ Debounced search
   useEffect(() => {
-    let timer;
-    if (inputValue) {
-      if (timer) clearTimeout(timer);
-      timer = setTimeout(() => {
-        (async () => {
-          const res = await findContact(
-            inputValue,
-          );
-          if (res?.length > 0) {
-            setSuggestions(res);
-            setShowSuggestions(true);
-          } else {
-            setSuggestions(res);
-            setShowSuggestions(false);
-          }
-        })();
-      }, 1000);
-    }
-    return () => clearTimeout(timer);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [inputValue]);
-
-  const handleInputChange = async (e) => {
-    const value = e.target.value;
-    setInputValue(value?.toLowerCase()?.replace(/\s/g, ""));
-    if (props.onChange) {
-      props.onChange(value?.toLowerCase()?.replace(/\s/g, ""));
+    if (skipNextSearchRef.current) {
+      skipNextSearchRef.current = false;
+      return;
     }
 
-    if (value.trim() === "") {
+    // ✅ don’t search unless user typed at least once
+    if (!hasInteractedRef.current) return;
+
+    // ✅ optional: keep this so blur won’t trigger searches
+    if (!isFocusedRef.current) return;
+
+    const q = normalizeEmailQuery(inputValue);
+    if (!q) {
       setSuggestions([]);
       setShowSuggestions(false);
       return;
     }
+
+    let cancelled = false;
+    const timer = setTimeout(() => {
+      (async () => {
+        try {
+          const res = await findContact(
+            q,
+          );
+
+          if (cancelled) return;
+
+          if (res?.length > 0) {
+            setSuggestions(res);
+            setShowSuggestions(true); // ✅ show only after typing + results
+          } else {
+            setSuggestions([]);
+            setShowSuggestions(false);
+          }
+        } catch {
+          if (cancelled) return;
+          setSuggestions([]);
+          setShowSuggestions(false);
+        }
+      })();
+    }, 500);
+
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
+  }, [inputValue, props.jwttoken]);
+
+  const handleInputChange = (e) => {
+    hasInteractedRef.current = true; // ✅ only typing enables search
+
+    const raw = e.target.value;
+    const normalized = normalizeEmailQuery(raw);
+
+    setInputValue(normalized);
+    props.onChange?.(normalized);
+
+    if (!raw.trim()) {
+      setSuggestions([]);
+      setShowSuggestions(false);
+    }
   };
+
   const handleSuggestionClick = (suggestion) => {
+    skipNextSearchRef.current = true; // ✅ prevents searching for selected value
     setInputValue(suggestion.Email);
     setSuggestions([]);
     setShowSuggestions(false);
-    if (props.onChange) {
-      props.onChange(suggestion);
-    }
+    props.onChange?.(suggestion);
   };
 
   const dropdown =
@@ -180,10 +240,16 @@ const SuggestionInput = (props) => {
         autoCorrect="off"
         autoCapitalize="none"
         placeholder={`${t("enter-value", { value: t("Email") })}...`}
-        className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs lowercase placeholder:capitalize"
+        className={[
+          "op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full min-w-[150px] text-xs lowercase placeholder:capitalize",
+        ].join(" ")}
         required={props.required}
         onFocus={() => {
-          if (suggestions.length) setShowSuggestions(true);
+          // ✅ focus should NOT trigger suggestions OR server call
+          isFocusedRef.current = true;
+        }}
+        onBlur={() => {
+          isFocusedRef.current = false;
         }}
       />
       {dropdown}

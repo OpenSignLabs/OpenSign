@@ -1,13 +1,16 @@
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import Parse from "parse";
-import ReactQuill from "react-quill-new";
-import "../../styles/quill.css";
-import EditorToolbar, { module1, module2, formats } from "../pdf/EditorToolbar";
+// import ReactQuill from "react-quill-new";
+// import "../../styles/quill.css";
+// import EditorToolbar, { module1, module2, formats } from "../pdf/EditorToolbar";
 import Tooltip from "../../primitives/Tooltip";
 import Alert from "../../primitives/Alert";
 import Loader from "../../primitives/Loader";
 import { withSessionValidation } from "../../utils";
+import EmailBodyEditor from "../EmailBodyEditor";
+import { useDispatch } from "react-redux";
+import { setTenantInfo, setUserInfo } from "../../redux/reducers/userReducer";
 
 const MailTemplateEditor = ({
   info,
@@ -15,10 +18,12 @@ const MailTemplateEditor = ({
 }) => {
   const appName = localStorage.getItem("appname") || "OpenSign™";
   const { t } = useTranslation();
+  const dispatch = useDispatch();
   const [requestBody, setRequestBody] = useState("");
   const [requestSubject, setRequestSubject] = useState("");
   const [completionBody, setCompletionBody] = useState("");
   const [completionSubject, setCompletionSubject] = useState("");
+  const [isTemplateLoaded, setIsTemplateLoaded] = useState(false);
   const [isDefaultMail, setIsDefaultMail] = useState({
     requestMail: false,
     completionMail: false
@@ -75,7 +80,17 @@ const MailTemplateEditor = ({
         setCompletionSubject(defaultCompletionSubject);
         setIsDefaultMail((prev) => ({ ...prev, completionMail: true }));
       }
+      setIsTemplateLoaded((prev) => !prev);
     }
+  };
+
+  const updateValuesInRedux = (subject, body, response) => {
+    const action =
+          setTenantInfo;
+    const updatedInfo = { ...info };
+    updatedInfo[subject] = response?.[subject] ?? "";
+    updatedInfo[body] = response?.[body] ?? "";
+    dispatch(action(updatedInfo));
   };
   //function to save completion email template
   const handleSaveCompletionEmail = withSessionValidation(async (e) => {
@@ -94,6 +109,7 @@ const MailTemplateEditor = ({
         const updateRes = JSON.parse(JSON.stringify(updateTenant));
         setCompletionBody(updateRes?.CompletionBody);
         setCompletionSubject(updateRes?.CompletionSubject);
+        updateValuesInRedux("CompletionSubject", "CompletionBody", updateRes);
         setIsAlert({ type: "success", msg: t("saved-successfully") });
         setTimeout(() => setIsAlert({ type: "", msg: "" }), 1500);
       }
@@ -126,6 +142,7 @@ const MailTemplateEditor = ({
           const _extUser = JSON.parse(JSON.stringify(extUser));
           localStorage.setItem("Extand_Class", JSON.stringify([_extUser]));
         }
+        updateValuesInRedux("RequestSubject", "RequestBody", updateRes);
         setIsAlert({ type: "success", msg: t("saved-successfully") });
         setTimeout(() => setIsAlert({ type: "", msg: "" }), 1500);
       }
@@ -157,6 +174,9 @@ const MailTemplateEditor = ({
             extUser.TenantId.RequestSubject = "";
           const _extUser = JSON.parse(JSON.stringify(extUser));
           localStorage.setItem("Extand_Class", JSON.stringify([_extUser]));
+          dispatch(
+            setUserInfo({ ...info, RequestSubject: "", RequestBody: "" })
+          );
         }
       } catch (err) {
         console.error("Error while resetting request mail: ", err);
@@ -177,6 +197,9 @@ const MailTemplateEditor = ({
             extUser.TenantId.CompletionSubject = "";
           const _extUser = JSON.parse(JSON.stringify(extUser));
           localStorage.setItem("Extand_Class", JSON.stringify([_extUser]));
+          dispatch(
+            setUserInfo({ ...info, CompletionSubject: "", CompletionBody: "" })
+          );
         }
       } catch (err) {
         console.error("Error while resetting completion mail: ", err);
@@ -231,7 +254,7 @@ const MailTemplateEditor = ({
                   {t("subject")}{" "}
                   <Tooltip
                     id={"request-sub-tooltip"}
-                    message={`${t("variables-use")}: {{sender_name}} {{document_title}}`}
+                    message={`${t("variables-use")}: {{document_title}} {{sender_name}}, {{sender_mail}}, {{sender_phone}}, {{receiver_name}}, {{receiver_email}}, {{receiver_phone}}, {{expiry_date}}, {{company_name}}, {{signing_url}}, {{note}}`}
                   />
                 </label>
                 <input
@@ -247,17 +270,24 @@ const MailTemplateEditor = ({
                   {t("body")}{" "}
                   <Tooltip
                     id={"request-body-tooltip"}
-                    message={`${t("variables-use")}: {{sender_name}} {{document_title}}`}
+                    message={`${t("variables-use")}: {{document_title}} {{sender_name}}, {{sender_mail}}, {{sender_phone}}, {{receiver_name}}, {{receiver_email}}, {{receiver_phone}}, {{expiry_date}}, {{company_name}}, {{signing_url}}, {{note}}`}
                   />
                 </label>
-                <EditorToolbar containerId="toolbar1" />
-                <ReactQuill
+                {/* <EditorToolbar containerId="toolbar1" /> */}
+                {/* <ReactQuill
                   theme="snow"
                   value={requestBody}
                   placeholder="add body of email"
                   modules={module1}
                   formats={formats}
                   onChange={(value) => handleOnchangeRequest(value)}
+                /> */}
+                <EmailBodyEditor
+                  value={requestBody}
+                  onChange={handleOnchangeRequest}
+                  bodyName="request"
+                  isReset={isMailLoader?.request}
+                  isTemplateLoaded={isTemplateLoaded}
                 />
               </div>
               <div className="flex items-center mt-3 gap-2">
@@ -308,7 +338,7 @@ const MailTemplateEditor = ({
                   {t("subject")}{" "}
                   <Tooltip
                     id={"complete-sub-tooltip"}
-                    message={`${t("variables-use")}:{{sender_name}} {{document_title}}`}
+                    message={`${t("variables-use")}: {{document_title}} {{sender_name}}, {{sender_mail}}, {{sender_phone}}, {{receiver_name}}, {{receiver_email}}, {{receiver_phone}}, {{company_name}}, {{signing_url}}, {{note}}`}
                   />
                 </label>
                 <input
@@ -324,17 +354,24 @@ const MailTemplateEditor = ({
                   {t("body")}{" "}
                   <Tooltip
                     id={"complete-body-tooltip"}
-                    message={`${t("variables-use")}:{{sender_name}} {{document_title}} {{signing_url}}`}
+                    message={`${t("variables-use")}: {{document_title}} {{sender_name}}, {{sender_mail}}, {{sender_phone}}, {{receiver_name}}, {{receiver_email}}, {{receiver_phone}}, {{company_name}}, {{signing_url}}, {{note}}`}
                   />
                 </label>
-                <EditorToolbar containerId="toolbar2" />
-                <ReactQuill
+                {/* <EditorToolbar containerId="toolbar2" /> */}
+                {/* <ReactQuill
                   theme="snow"
                   value={completionBody}
                   placeholder="add body of email"
                   modules={module2}
                   formats={formats}
                   onChange={(value) => handleOnchangeCompletion(value)}
+                /> */}
+                <EmailBodyEditor
+                  value={completionBody}
+                  onChange={handleOnchangeCompletion}
+                  bodyName="completion"
+                  isReset={isMailLoader?.completion}
+                  isTemplateLoaded={isTemplateLoaded}
                 />
               </div>
               <div className="flex items-center mt-3 gap-2">

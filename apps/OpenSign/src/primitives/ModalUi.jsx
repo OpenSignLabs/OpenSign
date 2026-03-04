@@ -1,5 +1,7 @@
+import { useTranslation } from "react-i18next";
 import "../styles/signature.css";
 import Loader from "./Loader";
+import Tooltip from "./Tooltip";
 
 const ModalUi = ({
   children,
@@ -12,8 +14,10 @@ const ModalUi = ({
   position,
   crossColor,
   showScrollBar = false,
-  isLoader = false
+  isLoader = false,
+  helpText = ""
 }) => {
+  const { t } = useTranslation();
   const width = reduceWidth;
   const isBottom = position === "bottom" ? "items-end pb-2 !bg-black/10" : "";
   const crossBtnColor = crossColor ?? "text-base-content";
@@ -42,6 +46,11 @@ const ModalUi = ({
                 {title && (
                   <h3 className="text-base-content text-left font-bold text-lg pt-[15px] px-[20px]">
                     {title}
+                    {helpText && (
+                      <span className="ml-0.5 text-sm font-medium">
+                        <Tooltip id={title} message={t(helpText)} />
+                      </span>
+                    )}
                   </h3>
                 )}
                 {showClose && (

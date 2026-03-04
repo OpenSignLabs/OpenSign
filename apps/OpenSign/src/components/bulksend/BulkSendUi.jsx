@@ -4,26 +4,33 @@ import {
   useMemo
 } from "react";
 import axios from "axios";
-import SuggestionInput from "../shared/fields/SuggestionInput";
 import Loader from "../../primitives/Loader";
 import { useTranslation } from "react-i18next";
 import {
   emailRegex,
 } from "../../constant/const";
 import {
-  convertPdfArrayBuffer,
   getSignedUrl,
   isBase64,
   getBase64FromUrl,
+  generateId,
 } from "../../constant/Utils";
 import {
-  formatCSVDate,
   handleEmbedPrefillToDoc,
-  normalizeKey
+  isWidgetResponseCompatible,
+  formatCSVDate,
+  normalizeKey,
+  loadPdfOnce,
 } from "../../utils";
-import RenderWidgets from "./components/RenderWidgets";
 import { useDispatch, useSelector } from "react-redux";
-import { setBulkLoader } from "../../redux/reducers/widgetSlice";
+import {
+  setBulkLoader,
+} from "../../redux/reducers/widgetSlice";
+import Table from "./components/Table";
+import PrefillWidgets from "./components/PrefillWidgets";
+import WizardHeader from "./components/WizardHeader";
+import ResponseTab from "./components/ResponseTab";
+import { steps } from "../../json/BulkSendSteps";
 
 const EXCLUDED_PREFILL_TYPES = new Set(["image", "draw"]);
 const EXCLUDED_WIDGET_TYPES = new Set([
@@ -37,9 +44,6 @@ const ALL_EXCLUDED_TYPES = new Set([
   ...EXCLUDED_WIDGET_TYPES
 ]);
 
-const requiredAsteriskCls = (isRequired = false) => {
-  return isRequired ? "after:content-['_*'] after:text-red-500" : "";
-};
 const BulkSendUi = (props) => {
   const { t } = useTranslation();
   const appName =
@@ -54,6 +58,11 @@ const BulkSendUi = (props) => {
   const [isVacantRoles, setIsVacantRoles] = useState(false);
   const [fields, setFields] = useState([]);
   const [headers, setHeaders] = useState([]);
+  const [prefillWidgets, setPrefillWidgets] = useState([]);
+  const [step, setStep] = useState(0);
+  const [stepsList, setStepsList] = useState(steps(t));
+  const [stepKey, setStepKey] = useState(steps(t)?.[0]?.key || "");
+  const [message, setMessage] = useState({ status: "", message: "" });
 
   const tokenHeader = useMemo(() => {
     const headers = {
@@ -71,9 +80,10 @@ const BulkSendUi = (props) => {
     if (props?.Placeholders?.length > 0) {
       const roles = props?.Placeholders?.filter((p) => !p.signerObjId) || [];
       const emails = [];
+
       const users = await Promise.all(
-        roles.map(async (role) => {
-          const isPrefill = role?.Role?.toLowerCase() === "prefill";
+        roles?.map(async (role) => {
+          const isPrefill = role.Role?.toLowerCase() === "prefill";
           const uniqueNames = new Set();
           const pages = role?.placeHolder ?? [];
           const widgets = await Promise.all(
@@ -85,6 +95,7 @@ const BulkSendUi = (props) => {
                   // exclude certain widget types for non-prefill
                   if (EXCLUDED_WIDGET_TYPES.has(widget.type) && !isPrefill)
                     return false;
+                  if (widget?.options?.formula) return false;
                   // unique by widget name
                   if (uniqueNames.has(widgetName)) return false;
                   uniqueNames.add(widgetName);
@@ -126,6 +137,7 @@ const BulkSendUi = (props) => {
 
                   return {
                     ...widget,
+                    options: { ...widget.options, response: response },
                     label: label,
                     response,
                     pageNumber: page.pageNumber
@@ -146,7 +158,18 @@ const BulkSendUi = (props) => {
           };
         })
       );
-      setFields(users);
+      const prefills = users.find((r) => r?.label?.toLowerCase() === "prefill");
+      const signers = users.filter(
+        (r) => r?.label?.toLowerCase() !== "prefill"
+      );
+      setFields(signers);
+      if (prefills && prefills?.widgets?.length) {
+        setPrefillWidgets(prefills?.widgets);
+      } else {
+        setStepsList((s) => s.filter((step) => step.key !== "prefill"));
+        setStepKey("recipients");
+        setStep(0);
+      }
       setEmails(emails);
 
       // Build headers with required ordering:
@@ -154,7 +177,7 @@ const BulkSendUi = (props) => {
       // 2) then all widgets
       const emailHeaders = [];
       const widgetHeaders = [];
-      for (const role of users) {
+      for (const role of signers) {
         const isPrefill = role?.label?.toLowerCase() === "prefill";
 
         if (!isPrefill) {
@@ -179,7 +202,7 @@ const BulkSendUi = (props) => {
         }
       }
       setHeaders([...emailHeaders, ...widgetHeaders]);
-      setForms((prev) => [...prev, { Id: 1, fields: users }]);
+      setForms((prev) => [...prev, { Id: generateId(8), fields: signers }]);
       const signer = props.item?.Signers?.filter((x) => x?.objectId);
       setSigners(signer);
     }
@@ -193,12 +216,15 @@ const BulkSendUi = (props) => {
   const checkSignatureAndRoles = (placeholders = []) => {
     const filtered = placeholders.filter((x) => x?.Role !== "prefill");
 
-    const isSignExist = filtered.every((p) =>
-      p?.placeHolder?.some((h) => h?.pos?.some((p) => p?.type === "signature"))
-    );
-
+    const isSignExist =
+      filtered?.length > 0 &&
+      filtered.every((p) =>
+        p?.placeHolder?.some((h) =>
+          h?.pos?.some((x) => x?.type === "signature")
+        )
+      );
     setIsSignatureExist(isSignExist);
-    setIsVacantRoles(placeholders.some((x) => !x.signerObjId));
+    setIsVacantRoles(filtered?.some((x) => !x.signerObjId));
   };
 
   //function to check at least one signature field exist
@@ -210,38 +236,77 @@ const BulkSendUi = (props) => {
   };
 
   const handleInputChange = (formIndex, signer, role) => {
-    const newForms = [...forms];
-    const email = signer?.Email ? signer?.Email : signer || "";
-    const fieldId = newForms[formIndex].fields.findIndex(
-      (f) => f.label === role
-    );
-    newForms[formIndex].fields[fieldId].email = normalizeKey(email);
-    newForms[formIndex].fields[fieldId].signer = signer?.objectId ? signer : "";
-    setForms(newForms);
+    setForms((prev) => {
+      const next = [...prev];
+      const form = next[formIndex];
+      if (!form) return prev;
+
+      const fields = [...(form.fields ?? [])];
+      const fieldId = fields.findIndex((f) => f.label === role);
+      if (fieldId < 0) return prev;
+
+      const email = signer?.Email ? signer.Email : signer || "";
+
+      fields[fieldId] = {
+        ...fields[fieldId],
+        email: normalizeKey(email),
+        signer: signer?.objectId ? signer : ""
+      };
+
+      next[formIndex] = { ...form, fields };
+      return next;
+    });
   };
 
   const handleWidgetDetails = (
     value = "",
     formIndex,
-    RoleIndex = 0,
+    roleIndex = 0,
     widgetIndex
   ) => {
-    const newForms = [...forms];
-    newForms[formIndex].fields[RoleIndex].widgets[widgetIndex].response = value;
-    setForms(newForms);
+    setForms((prev) => {
+      const next = [...prev];
+      const form = next[formIndex];
+      if (!form) return prev;
+
+      const fields = [...(form.fields ?? [])];
+      const field = fields[roleIndex];
+      if (!field) return prev;
+
+      const widgets = [...(field.widgets ?? [])];
+      const w = widgets[widgetIndex];
+      if (!w) return prev;
+
+      widgets[widgetIndex] = {
+        ...w,
+        options: { ...w?.options, response: value },
+        response: value
+      };
+      fields[roleIndex] = { ...field, widgets };
+      next[formIndex] = { ...form, fields };
+
+      return next;
+    });
   };
 
 
   function validateEmails(data) {
-    for (const item of data) {
+    for (const [rowIndex, item] of data.entries()) {
       let email = "";
-      const filterFields = item.fields.filter((p) => p.label !== "prefill");
+      const rowNumber = rowIndex + 1;
+      const filterFields = item?.fields || [];
       for (const field of filterFields) {
-        if (!emailRegex.test(field.email)) {
-          alert(t("invalid-email-found", { email: field.email }));
+        // skip prefill
+        if (field?.label === "prefill") continue;
+        const params = { email: field.email, row: rowNumber };
+        if (!field.email) {
+          alert(t("email-not-found-in-row", { ...params }));
+          return false;
+        } else if (!emailRegex.test(field.email)) {
+          alert(t("invalid-email-found-in-row", { ...params }));
           return false;
         } else if (email === field.email || emails?.includes(field.email)) {
-          alert(t("duplicate-email-found", { email: field.email }));
+          alert(t("duplicate-email-found-in-row", { ...params }));
           return false;
         } else {
           email = field.email;
@@ -266,7 +331,13 @@ const BulkSendUi = (props) => {
           const name = widgetDetails?.options?.name;
           if (!name || !responseByName.has(name)) return widgetDetails;
 
-          const newResponse = responseByName.get(name);
+          const newResponse = responseByName?.get(name) || "";
+          const isValidResponse = isWidgetResponseCompatible(
+            widgetDetails,
+            newResponse
+          );
+
+          if (!isValidResponse) return widgetDetails;
 
           return {
             ...widgetDetails,
@@ -327,6 +398,49 @@ const BulkSendUi = (props) => {
       if (validateEmails(forms)) {
         // Create a copy of Placeholders array from props.item
         let Placeholders = [...props.Placeholders];
+
+        let pdfUrl = props.item?.URL || props.item?.SignedUrl;
+        const prefillExist = Placeholders?.some(
+          (data) => data.Role === "prefill"
+        );
+        if (prefillExist) {
+          const updatedPrefills = updateWidgetValues(
+            prefillWidgets,
+            Placeholders
+          );
+          const prefillDetails = updatedPrefills?.find(
+            (data) => data.Role === "prefill"
+          );
+          const pdfSignedUrl = await getSignedUrl(
+            pdfUrl,
+            "", //docId
+            props.item.objectId, // templateId
+          );
+          const pdfArrayBuffer = await loadPdfOnce(pdfSignedUrl);
+          if (pdfArrayBuffer === "Error") {
+            const error = t("something-went-wrong-mssg");
+            alert(error);
+            dispatch(setBulkLoader(false));
+            return;
+          }
+          pdfUrl = await handleEmbedPrefillToDoc(
+            prefillDetails,
+            1, // scale
+            pdfArrayBuffer,
+            [], // prefillImg,
+            props.item?.ExtUserPtr?.UserId?.objectId // userId
+          );
+
+          if (pdfUrl?.error) {
+            const error = pdfUrl?.error?.includes("not compatible")
+              ? t("pdf-uncompatible", { appName: appName })
+              : pdfUrl?.error;
+            alert(error);
+            dispatch(setBulkLoader(false));
+            return;
+          }
+        }
+
         // Initialize an empty array to store updated documents
         let Documents = [];
         let error = "";
@@ -371,39 +485,7 @@ const BulkSendUi = (props) => {
             widgetValues,
             updatedPlaceholders
           );
-          const url = props.item?.URL || props.item?.SignedUrl;
-          let signedUrl = await getSignedUrl(
-            url,
-            "", //docId
-            props.item.objectId, // templateId
-          );
-          const prefillField = form?.fields?.find((f) => f.label === "prefill");
-          const prefills = prefillField?.widgets ?? [];
-          if (prefills?.length > 0) {
-            const prefillDetails = updateWidgetPlaceholder?.find(
-              (x) => x.Role === "prefill"
-            );
-            const pdfArrayBuffer = await convertPdfArrayBuffer(signedUrl);
-            if (pdfArrayBuffer === "Error") {
-              error = t("something-went-wrong-mssg");
-              dispatch(setBulkLoader(false));
-              break;
-            }
-            signedUrl = await handleEmbedPrefillToDoc(
-              prefillDetails,
-              1, // scale
-              pdfArrayBuffer,
-              [], // prefillImg,
-              props.item?.ExtUserPtr?.UserId?.objectId // userId
-            );
-            if (signedUrl?.error) {
-              error = signedUrl.error.includes("not compatible")
-                ? t("pdf-uncompatible", { appName: appName })
-                : signedUrl?.error;
-              dispatch(setBulkLoader(false));
-              break;
-            }
-          }
+          let signedUrl = pdfUrl;
           const placeholders = removeWidgetValues(
             widgetValues,
             updateWidgetPlaceholder
@@ -450,13 +532,20 @@ const BulkSendUi = (props) => {
     try {
       const res = await axios.post(functionsUrl, params, { headers: headers });
       if (res.data && res.data.result) {
-        props.handleClose("success", Documents?.length);
+        setStep((s) => Math.min(2, s + 1));
+        setStepKey("response");
+        setMessage({
+          status: "success",
+          message: "Documents sent successfully."
+        });
+        // props.handleClose("success", Documents?.length);
       }
     } catch (err) {
       const message =
         err?.response?.data?.error || err?.message || "something went wrong.";
       console.error("Error sending documents:", message);
-        props.handleClose("error", 0, message);
+        setMessage({ status: "failed", message });
+        // props.handleClose("error", 0, message);
     } finally {
       dispatch(setBulkLoader(false));
     }
@@ -473,115 +562,66 @@ const BulkSendUi = (props) => {
 
   return (
     <div className="relative">
-      {/* {isBulkLoader && (
-        <div className="absolute z-[999] h-full w-full flex justify-center items-center bg-black bg-opacity-30">
-          <Loader />
-        </div>
-      )} */}
       {props.Placeholders?.length > 0 ? (
         isSignatureExist ? (
           isVacantRoles ? (
             <>
-              <form onSubmit={handleSubmit}>
-                <div className="min-h-max max-h-[250px] overflow-auto">
-                  {
-                      forms?.length > 0 && (
-                        <div className="mx-4">
-                          <table className="op-table border-collapse w-full">
-                            <thead className="text-[13px] text-center">
-                              <tr className="border-y-[1px]">
-                                {/* Roles + widgets */}
-                                {headers?.map((header) => (
-                                  <th
-                                    key={header.label}
-                                    className={`${requiredAsteriskCls(header?.isRequired)} p-2`}
-                                  >
-                                    {header.label}
-                                  </th>
-                                ))}
-                                {forms?.length > 1 && (
-                                  <th className="p-2">{t("action")}</th>
-                                )}
-                              </tr>
-                            </thead>
-                            <tbody className="text-[12px] text-base-content">
-                              {forms.map((form, formIndex) => {
-                                const fields = form?.fields ?? [];
-                                const emailFields = fields.filter(
-                                  (f) => f.label !== "prefill"
-                                );
-                                const widgets = fields.flatMap(
-                                  (f, fieldIndex) =>
-                                    (f.widgets ?? []).map(
-                                      (widget, widgetIndex) => ({
-                                        widget,
-                                        fieldIndex, // keep the fieldIndex that produced this widget
-                                        widgetIndex
-                                      })
-                                    )
-                                );
+              <div className="border-t mt-3" />
+              {/* Wizard header */}
+              <div className="px-6 py-3">
+                <WizardHeader
+                  steps={stepsList}
+                  step={step}
+                  // onStepClick={(i) => i <= step && setStep(i)}
+                />
+              </div>
 
-                                return (
-                                  <tr key={form.Id}>
-                                    {/* Email cell (label + SuggestionInput) */}
-                                    {emailFields?.map((field, fieldIndex) => (
-                                      <td key={field.fieldId} className="p-2">
-                                        <div className="flex flex-col min-w-max">
-                                          <SuggestionInput
-                                            required
-                                            type="email"
-                                            value={field.email ?? ""}
-                                            index={fieldIndex}
-                                            onChange={(signer) =>
-                                              handleInputChange(
-                                                formIndex,
-                                                signer,
-                                                field.label
-                                              )
-                                            }
-                                          />
-                                        </div>
-                                      </td>
-                                    ))}
-
-                                    {widgets.map(
-                                      ({ widget, fieldIndex, widgetIndex }) => (
-                                        <td key={widget.key} className="p-2">
-                                          <RenderWidgets
-                                            widget={widget}
-                                            formIndex={formIndex}
-                                            prefillIndex={widgetIndex}
-                                            handleWidgetDetails={(value) =>
-                                              handleWidgetDetails(
-                                                value,
-                                                formIndex,
-                                                fieldIndex,
-                                                widgetIndex
-                                              )
-                                            }
-                                          />
-                                        </td>
-                                      )
-                                    )}
-                                  </tr>
-                                );
-                              })}
-                            </tbody>
-                          </table>
-                        </div>
-                      )
-                  }
-                </div>
-                <div className="flex flex-row flex-wrap pb-3 pt-2 px-3 gap-3 justify-center">
-                  <button
-                    type="submit"
-                    className="op-btn op-btn-accent w-[150px] focus:outline-none"
-                  >
-                    <i className="fa-light fa-paper-plane"></i>
-                    <span>{t("send")}</span>
-                  </button>
-                </div>
-              </form>
+              {stepKey === "prefill" && (
+                <PrefillWidgets
+                  prefills={prefillWidgets}
+                  setPrefills={setPrefillWidgets}
+                  onNext={() => {
+                    setStep((s) => Math.min(2, s + 1));
+                    setStepKey("recipients");
+                  }}
+                />
+              )}
+              {stepKey === "recipients" && (
+                <>
+                  <form onSubmit={handleSubmit}>
+                    <div className="min-h-max max-h-[250px] overflow-auto">
+                      {
+                          forms?.length > 0 && (
+                            <div className="mx-4">
+                              <Table
+                                headers={headers}
+                                rowData={forms}
+                                handleInputChange={handleInputChange}
+                                handleWidgetDetails={handleWidgetDetails}
+                              />
+                            </div>
+                          )
+                      }
+                    </div>
+                    <div className="flex flex-row flex-wrap pb-3 pt-2 px-3 gap-3 justify-center">
+                      <button
+                        type="submit"
+                        className="op-btn op-btn-accent w-[150px] focus:outline-none"
+                      >
+                        <i className="fa-light fa-paper-plane"></i>
+                        <span>{t("send")}</span>
+                      </button>
+                    </div>
+                  </form>
+                </>
+              )}
+              {stepKey === "response" && (
+                <ResponseTab
+                  prefillCount={prefillWidgets?.length}
+                  documentCount={forms?.length}
+                  message={message}
+                />
+              )}
             </>
           ) : (
             <div className="text-black p-3 bg-white w-full text-sm md:text-base flex justify-center items-center">

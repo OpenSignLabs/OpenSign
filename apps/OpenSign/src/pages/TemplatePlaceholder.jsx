@@ -70,6 +70,7 @@ import { useWindowSize } from "../hook/useWindowSize";
 
 const TemplatePlaceholder = () => {
   const { t } = useTranslation();
+  const copyUrlRef = useRef(null);
   const { templateId } = useParams();
   const windowSize = useWindowSize();
   const dispatch = useDispatch();
@@ -107,7 +108,7 @@ const TemplatePlaceholder = () => {
   const [tourStatus, setTourStatus] = useState([]);
   const [signerUserId, setSignerUserId] = useState();
   const [pdfOriginalWH, setPdfOriginalWH] = useState([]);
-  const [containerWH, setContainerWH] = useState();
+  const [containerWH, setContainerWH] = useState({ width: 0, height: 0 });
   const [isShowEmail, setIsShowEmail] = useState(false);
   const [selectedEmail, setSelectedEmail] = useState(false);
   const [isResize, setIsResize] = useState(false);
@@ -220,8 +221,8 @@ const TemplatePlaceholder = () => {
           const userBody =
                 body;
           setCustomizeMail({
-            subject: userSubject ?? defaultMailSubject,
-            body: userBody ?? defaultMailBody
+            subject: userSubject || defaultMailSubject,
+            body: userBody || defaultMailBody
           });
           setDefaultMail({ subject: userSubject, body: userBody });
           return filterSignTypes;
@@ -387,7 +388,7 @@ const TemplatePlaceholder = () => {
         setHandleError(t("something-went-wrong-mssg"));
         setIsLoading({ isLoad: false });
       } else {
-        setHandleError(t("no-data-avaliable"));
+        setHandleError(t("no-data-available"));
         setIsLoading({ isLoad: false });
       }
       const res = await contractUsers();
@@ -407,13 +408,13 @@ const TemplatePlaceholder = () => {
         setHandleError(t("something-went-wrong-mssg"));
         setIsLoading({ isLoad: false });
       } else if (res.length === 0) {
-        setHandleError(t("no-data-avaliable"));
+        setHandleError(t("no-data-available"));
         setIsLoading({ isLoad: false });
       }
     } catch (err) {
       console.log("err ", err);
       if (err?.response?.data?.code === 101) {
-        setHandleError(t("no-data-avaliable"));
+        setHandleError(t("no-data-available"));
       } else {
         setHandleError(t("something-went-wrong-mssg"));
       }
@@ -1316,9 +1317,12 @@ const TemplatePlaceholder = () => {
             : false,
         TimeToCompleteDays:
           parseInt(updateTemplate?.[0]?.TimeToCompleteDays) || 15,
+        RemindOnceInEvery:
+          parseInt(updateTemplate?.[0]?.RemindOnceInEvery) || 0,
         ...penColors,
         ...Bcc,
-        ...RedirectUrl
+        ...RedirectUrl,
+        AllowModifications: updateTemplate?.[0]?.AllowModifications || false
       };
       const updateTemplateObj = new Parse.Object("contracts_Template");
       updateTemplateObj.id = templateId;
@@ -1673,6 +1677,9 @@ const TemplatePlaceholder = () => {
   ];
   const copytoclipboard = (text) => {
     copytoData(text);
+    if (copyUrlRef.current) {
+      copyUrlRef.current.textContent = text; // Update text safely
+    }
     setCopied(true);
     setTimeout(() => setCopied(false), 1500); // Reset copied state after 1.5 seconds
   };
@@ -1939,6 +1946,7 @@ const TemplatePlaceholder = () => {
                 Id={uniqueId}
                 widgetType={currWidgetsDetails?.type}
                 setUniqueId={setUniqueId}
+                pdfOriginalWH={pdfOriginalWH}
               />
               {/* pdf header which contain funish back button */}
               <Header
@@ -1966,8 +1974,8 @@ const TemplatePlaceholder = () => {
                 userId={uniqueId}
                 pdfBase64={pdfBase64Url}
               />
-              <div ref={divRef} data-tut="reactourThird" className="h-[95%]">
-                {containerWH && (
+              <div ref={divRef} data-tut="reactourThird" className="h-fit">
+                {containerWH?.width && (
                   <RenderPdf
                     pageNumber={pageNumber}
                     pdfNewWidth={pdfNewWidth}
@@ -2207,18 +2215,17 @@ const TemplatePlaceholder = () => {
         setCurrUserId={setCurrUserId}
         handleShareList={handleShareList}
         setDocumentDetails={setDocumentDetails}
+        copyUrlRef={copyUrlRef}
       />
       <ModalUi
         isOpen={isSend}
-        title={
-          !pdfDetails[0]?.SendinOrder
-            ? mailStatus === "success"
-              ? t("mails-sent")
-              : mailStatus === "quotareached"
-                ? t("quota-mail-head")
-                : t("mail-not-delivered")
-            : t("mail-status-head")
-        }
+        title={t(
+          utils.mailModalHead(
+            pdfDetails?.[0]?.SendinOrder,
+            mailStatus,
+            currUserId
+          )
+        )}
         handleClose={() => {
           setIsSend(false);
           navigate("/report/1MwEuxLEkF");

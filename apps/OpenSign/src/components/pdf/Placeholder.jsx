@@ -49,16 +49,14 @@ function Placeholder(props) {
   const [formdata, setFormdata] = useState({
     status: props?.pos?.options?.status || "required",
     isReadOnly: props?.pos?.options?.isReadOnly || false,
-    name: props?.pos?.options?.name
+    name: props?.pos?.options?.name,
+    hint: props?.pos?.options?.hint
   });
   const [isToday, setIsToday] = useState(
     props.pos?.options?.response === "today" ? true : false
   );
-  const selectedFormatIndex = dateFormatList?.findIndex(
-    (item) =>
-      item.format === selectDate?.format ||
-      item?.format === props.pos?.options?.validation?.format
-  );
+  const [selectedFormatIndex, setselectedFormatIndex] = useState(0);
+
   const isSelfSign = props.isSignYourself || props.isSelfSign;
   const startDate = props?.pos?.options?.response
     ? getDefaultDate(
@@ -177,6 +175,13 @@ function Placeholder(props) {
       updateDate.push(dateObj);
     });
     setDateFormatList(updateDate);
+    setselectedFormatIndex(
+      updateDate?.findIndex(
+        (item) =>
+          item.format === selectDate?.format ||
+          item?.format === props.pos?.options?.validation?.format
+      )
+    );
   };
 
   useEffect(() => {
@@ -228,10 +233,6 @@ function Placeholder(props) {
           props.handleLinkUser(props.data.Id);
         }
         props.setUniqueId && props.setUniqueId(props.data.Id);
-        const checkIndex = props.xyPosition.findIndex(
-          (data) => data.Id === props.data.Id
-        );
-        props.setIsSelectId(checkIndex || 0);
         props?.setRoleName("");
       } else if (props?.data?.Role === "prefill") {
         dispatch(setIsShowModal({ [props.pos.key]: true }));
@@ -715,6 +716,7 @@ function Placeholder(props) {
             resize: "none",
             background: "transparent",
             width: props.posWidth(props.pos, props.isSignYourself),
+            height: props.posHeight(props.pos, props.isSignYourself),
             whiteSpace: "pre-wrap",
             overflow: "hidden",
             outline: "none",
@@ -1167,27 +1169,47 @@ function Placeholder(props) {
                 </div>
               </div>
               {props?.isPlaceholder && props?.data?.Role !== "prefill" && (
-                <div className="flex items-center gap-1 w-max">
-                  <input
-                    name="isReadOnly"
-                    id="isReadOnly"
-                    type="checkbox"
-                    checked={formdata?.isReadOnly}
-                    className="op-checkbox op-checkbox-xs"
-                    onChange={() =>
-                      setFormdata({
-                        ...formdata,
-                        isReadOnly: !formdata?.isReadOnly
-                      })
-                    }
-                  />
-                  <label
-                    htmlFor="isReadOnly"
-                    className="capitalize ml-[2px] mb-0 cursor-pointer"
-                  >
-                    {t("read-only")}
-                  </label>
-                </div>
+                <>
+                  <div className="flex items-center gap-1 w-max">
+                    <input
+                      name="isReadOnly"
+                      id="isReadOnly"
+                      type="checkbox"
+                      checked={formdata?.isReadOnly}
+                      className="op-checkbox op-checkbox-xs"
+                      onChange={() =>
+                        setFormdata({
+                          ...formdata,
+                          isReadOnly: !formdata?.isReadOnly
+                        })
+                      }
+                    />
+                    <label
+                      htmlFor="isReadOnly"
+                      className="capitalize ml-[2px] mb-0 cursor-pointer"
+                    >
+                      {t("read-only")}
+                    </label>
+                  </div>
+                  <div className="mb-[0.75rem]">
+                    <label htmlFor="hint" className="text-[13px]">
+                      {t("hint")}
+                    </label>
+                    <input
+                      maxLength={40}
+                      className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
+                      name="hint"
+                      placeholder={"Enter date hint"}
+                      value={formdata?.hint}
+                      onChange={(e) =>
+                        setFormdata({
+                          ...formdata,
+                          hint: e.target?.value
+                        })
+                      }
+                    />
+                  </div>
+                </>
               )}
             </div>
             <div className="h-[1px] w-full my-[15px] bg-[#9f9f9f]"></div>

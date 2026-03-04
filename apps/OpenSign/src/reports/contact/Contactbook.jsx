@@ -162,6 +162,7 @@ const Contactbook = (props) => {
 
   const handleUserData = (data) => {
     props.setList((prevData) => [data, ...prevData]);
+    showAlert("success", t("contact-saved"));
   };
 
   const handleDelete = withSessionValidation(async (item) => {
@@ -424,11 +425,11 @@ const Contactbook = (props) => {
                     <img
                       className="w-full h-full object-contain"
                       src={pad}
-                      alt={t("no-data-avaliable")}
+                      alt={t("no-data-available")}
                     />
                   </div>
                   <div className="text-sm font-semibold">
-                    {t("no-data-avaliable")}
+                    {t("no-data-available")}
                   </div>
                 </>
               )}

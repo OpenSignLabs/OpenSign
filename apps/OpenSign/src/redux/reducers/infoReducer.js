@@ -12,6 +12,7 @@ const infoSlice = createSlice({
       localStorage.removeItem("userSettings");
       localStorage.setItem("userSettings", JSON.stringify(appInfo.settings));
       localStorage.setItem("fev_Icon", appInfo.fev_Icon);
+      localStorage.setItem("favicon", appInfo.fev_Icon);
       return appInfo;
     }
   }

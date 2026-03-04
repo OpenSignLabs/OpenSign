@@ -207,11 +207,13 @@ const WidgetsTab = () => {
               dateFormatList={dateFormatList}
               handleChangeFormat={handleChangeFormat}
             />
+            <div className="flex flex-col md:flex-row md:items-center gap-1 md:w-[300px]">
             <DatePicker
               selectDate={selectDate}
               onChange={handleDateChange}
               handleClear={handleClear}
             />
+            </div>
             <div className="mt-3 flex flex-col gap-2">
               <div className="flex flex-row gap-2 items-center">
                 <input

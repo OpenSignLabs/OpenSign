@@ -6,7 +6,11 @@ import { Navigate, useNavigate } from "react-router";
 import Parse from "parse";
 import { SaveFileSize } from "../constant/saveFileSize";
 import dp from "../assets/images/dp.png";
-import { sanitizeFileName, withSessionValidation } from "../utils";
+import {
+  compressImage,
+  sanitizeFileName,
+  withSessionValidation
+} from "../utils";
 import axios from "axios";
 import Tooltip from "../primitives/Tooltip";
 import {
@@ -157,9 +161,15 @@ function UserProfile() {
     }
   });
   // file upload function
-  const fileUpload = async (file) => {
-    if (file) {
-      await handleFileUpload(file);
+  const fileUpload = async (event) => {
+    if (event.target.files && event.target.files[0]) {
+      const file = event.target.files[0];
+      const compressedfile = await compressImage(
+        file,
+        { width: 200, height: 200 },
+        "file"
+      );
+      await handleFileUpload(compressedfile);
     }
   };
 
@@ -307,10 +317,7 @@ function UserProfile() {
                   type="file"
                   className="op-file-input op-file-input-bordered op-file-input-sm max-w-[270px] mt-4 text-sm"
                   accept="image/png, image/gif, image/jpeg"
-                  onChange={(e) => {
-                    let files = e.target.files;
-                    fileUpload(files[0]);
-                  }}
+                  onChange={fileUpload}
                 />
               )}
               {percentage !== 0 && (

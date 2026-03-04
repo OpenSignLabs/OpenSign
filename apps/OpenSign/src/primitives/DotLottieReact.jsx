@@ -36,7 +36,7 @@ const LottieWithLoader = () => {
           <Loader />
         </div>
       )}
-      {hasError && <div className="error">{t("faild-animation")}</div>}
+      {hasError && <div className="error">{t("failed-animation")}</div>}
       {isLoaded && animationSrc && (
         <DotLottieReact
           src={animationSrc}

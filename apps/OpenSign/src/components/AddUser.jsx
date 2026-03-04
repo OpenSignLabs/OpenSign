@@ -218,7 +218,7 @@ const AddUser = (props) => {
                           ></i>
                         </div>
                         <div className="text-[12px] ml-2 mb-0 text-[red] select-none">
-                          {t("password-generateed")}
+                          {t("password-generated")}
                         </div>
                       </div>
                       <div className="mb-3">

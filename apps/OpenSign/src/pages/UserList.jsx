@@ -516,7 +516,7 @@ const UserList = () => {
                         />
                       </div>
                       <div className="text-sm font-semibold">
-                        {t("no-data-avaliable")}
+                        {t("no-data-available")}
                       </div>
                     </div>
                   )}

@@ -402,6 +402,7 @@ export const deleteUserByAdmin = async (req, res) => {
     const response = await deleteUser(userId, adminId, tenantId, isOrgAdmin, orgPtr);
     const code = response?.code || 400;
     const message = response?.message || 'An error occurred while deleting your account.';
+    console.log('delete user ', code, message);
     return res.status(code).json({ message: message });
   } catch (error) {
     const code = error?.response?.data?.code || 400;

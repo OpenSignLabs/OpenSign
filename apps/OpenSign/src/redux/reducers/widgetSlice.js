@@ -3,10 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   isShowModal: false,
-  saveSignCheckbox: {
-    isVisible: false,
-    signId: ""
-  },
+  saveSignCheckbox: { isVisible: false, signId: "" },
   signatureTypes: null,
   defaultSignImg: null,
   myInitial: null,
@@ -17,7 +14,8 @@ const initialState = {
   prefillImgLoad: {},
   typedSignFont: "Fasthand",
   signatureResponse: [],
-  isBulkLoader: false
+  isBulkLoader: false,
+  invalidRow: { record: null, page: null, label: "" }
 };
 
 const widgetSlice = createSlice({
@@ -91,6 +89,9 @@ const widgetSlice = createSlice({
     setBulkLoader: (state, action) => {
       state.isBulkLoader = action.payload;
     },
+    setInvalidRow: (state, action) => {
+      state.invalidRow = action.payload;
+    },
     resetWidgetState: () => initialState
   }
 });
@@ -109,7 +110,8 @@ export const {
   setTypedSignFont,
   setMyStamp,
   setSignatureRes,
-  setBulkLoader
+  setBulkLoader,
+  setInvalidRow
 } = widgetSlice.actions;
 
 export default widgetSlice.reducer;

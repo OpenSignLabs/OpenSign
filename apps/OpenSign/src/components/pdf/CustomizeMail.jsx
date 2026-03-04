@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useState } from "react";
 import ModalUi from "../../primitives/ModalUi";
 import { EmailBody } from "./EmailBody";
 import {
@@ -11,11 +11,15 @@ import { useTranslation } from "react-i18next";
 import Loader from "../../primitives/Loader";
 import { useNavigate } from "react-router";
 
+const statusMap = {
+  success: "success",
+  "quota-reached": "quotareached",
+};
 function CustomizeMail(props) {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const copyUrlRef = useRef(null);
   const [isCustomize, setIsCustomize] = useState(false);
+  const [isReset, setIsReset] = useState(false);
   const [isLoader, setIsLoader] = useState(false);
 
   const handleCloseSendmailModal = () => {
@@ -26,12 +30,7 @@ function CustomizeMail(props) {
     props?.setIsMailModal(false);
     navigate("/report/1MwEuxLEkF");
   };
-  const handleOnchangeRequest = (value) => {
-    props?.setCustomizeMail((prev) => ({
-      ...prev,
-      body: value
-    }));
-  };
+
   const handleEmailSendToSigners = async () => {
     setIsLoader(true);
     const documentData = await contractDocument(props?.documentId);
@@ -58,19 +57,26 @@ function CustomizeMail(props) {
       props?.setIsMailModal(false);
       props?.setIsSend(true);
       setIsLoader(false);
-      if (mailRes?.status === "success") {
-        props?.setMailStatus("success");
-      } else if (mailRes?.status === "quota-reached") {
-        props?.setMailStatus("quotareached");
-      } else if (mailRes?.status === "daily-quota-reached") {
-        props?.setMailStatus("dailyquotareached");
-      } else {
-        props?.setMailStatus("failed");
-      }
-      // setMailStatus(mail_status);
+      props?.setMailStatus(statusMap[mailRes?.status] ?? "failed");
     } else {
       alert("something-went-wrong-mssg");
     }
+  };
+
+  const handleReset = () => {
+    setIsReset(true);
+    props?.setCustomizeMail({
+      subject: defaultMailSubject,
+      body: defaultMailBody
+    });
+  };
+  const onChangeSubject = (value) => {
+    setIsReset(false);
+    props?.setCustomizeMail((prev) => ({ ...prev, subject: value }));
+  };
+  const onChangeBody = (value) => {
+    setIsReset(false);
+    props?.setCustomizeMail((prev) => ({ ...prev, body: value }));
   };
   return (
     <>
@@ -92,17 +98,13 @@ function CustomizeMail(props) {
                     <EmailBody
                       requestBody={props?.customizeMail?.body}
                       requestSubject={props?.customizeMail?.subject}
-                      handleOnchangeRequest={handleOnchangeRequest}
-                      setCustomizeMail={props?.setCustomizeMail}
+                      onChangeBody={onChangeBody}
+                      onChangeSubject={onChangeSubject}
+                      isReset={isReset}
                     />
                     <div
                       className="flex justify-end items-center gap-1 mt-2 op-link op-link-primary"
-                      onClick={() => {
-                        props?.setCustomizeMail({
-                          subject: defaultMailSubject,
-                          body: defaultMailBody
-                        });
-                      }}
+                      onClick={() => handleReset()}
                     >
                       <span>{t("reset-to-default")}</span>
                     </div>
@@ -144,7 +146,7 @@ function CustomizeMail(props) {
               <span className="h-[1px] w-[20%] bg-[#ccc]"></span>
             </div>
             <div className="my-3">{props?.handleShareList()}</div>
-            <p id="copyUrl" ref={copyUrlRef} className="hidden"></p>
+            <p id="copyUrl" ref={props?.copyUrlRef} className="hidden"></p>
           </div>
         </ModalUi>
       )}

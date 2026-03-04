@@ -22,12 +22,15 @@ export function getWidgetOptions(option, type, role) {
   const status = option?.status === 'required' ? true : false;
   const widgetname = option?.name;
   const defaultValue = option?.defaultValue || option?.response || '';
+  const hint = option?.hint || '';
 
   switch (type) {
+    case 'signature':
+      return { hint: hint };
     case 'stamp':
-      return { required: status, name: widgetname };
+      return { required: status, name: widgetname, hint: hint };
     case 'initials':
-      return { required: status, name: widgetname };
+      return { required: status, name: widgetname, hint: hint };
     case 'image':
       return {
         required: status,
@@ -36,6 +39,7 @@ export function getWidgetOptions(option, type, role) {
           option?.response && {
             response: option.response,
           }),
+        hint: hint,
       };
     case 'email':
       return {
@@ -44,6 +48,7 @@ export function getWidgetOptions(option, type, role) {
         color: option?.fontColor || 'black',
         fontSize: option?.fontSize || 12,
         hide_text_with_asterisks: option?.isHideText || false,
+        hint: hint,
       };
     case 'name':
       return {
@@ -52,6 +57,7 @@ export function getWidgetOptions(option, type, role) {
         color: option?.fontColor || 'black',
         fontSize: option?.fontSize || 12,
         hide_text_with_asterisks: option?.isHideText || false,
+        hint: hint,
       };
     case 'job title':
       return {
@@ -60,6 +66,7 @@ export function getWidgetOptions(option, type, role) {
         color: option?.fontColor || 'black',
         fontSize: option?.fontSize || 12,
         hide_text_with_asterisks: option?.isHideText || false,
+        hint: hint,
       };
     case 'company':
       return {
@@ -68,6 +75,7 @@ export function getWidgetOptions(option, type, role) {
         color: option?.fontColor || 'black',
         fontSize: option?.fontSize || 12,
         hide_text_with_asterisks: option?.isHideText || false,
+        hint: hint,
       };
     case 'date': {
       const format = option?.validation?.format;
@@ -77,6 +85,7 @@ export function getWidgetOptions(option, type, role) {
         color: option?.fontColor || 'black',
         fontSize: option?.fontSize || 12,
         format: format || 'mm-dd-yyyy',
+        hint: hint,
         ...(!isPrefill && {
           ...{ min_date: option?.minDate || '' },
           ...{ max_date: option?.maxDate || '' },
@@ -97,6 +106,7 @@ export function getWidgetOptions(option, type, role) {
         name: widgetname,
         color: option?.fontColor || 'black',
         fontSize: option?.fontSize || 12,
+        hint: hint,
         ...(!isPrefill && {
           ...{ hint: option?.hint || '' },
           ...{ hide_text_with_asterisks: option?.isHideText || false },
@@ -190,7 +200,7 @@ export function getWidgetOptions(option, type, role) {
         fontSize: option?.fontSize || 12,
         readonly: option?.isReadOnly || false,
         default: defaultValue || '',
-        hint: option?.hint || '',
+        hint: hint,
         formula: option?.formula || '',
         decimalplaces: option?.decimalPlaces || 0,
         hide_text_with_asterisks: option?.isHideText || false,
@@ -204,7 +214,7 @@ export function getWidgetOptions(option, type, role) {
         hide_text_with_asterisks: option?.isHideText || false,
         readonly: option?.isReadOnly || false,
         default: defaultValue || '',
-        hint: option?.hint || '',
+        hint: hint,
         cell_count: option?.cellCount || 0,
         regularexpression: getPattern(option),
       };

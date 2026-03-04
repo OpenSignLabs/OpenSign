@@ -67,7 +67,7 @@ const RecipientList = (props) => {
     props?.setIsSelectId(index);
     props?.setUniqueId(remainingItems[index]?.Id);
     props?.setRoleName(remainingItems[index]?.Role);
-    props?.setBlockColor(obj.blockColor);
+    props.setBlockColor?.(obj?.blockColor);
     //change order of placeholder's list using sorting method
     //`remainingItems` is correct order of signers after change order
     const changeOrderSignerList = props?.signerPos.sort((a, b) => {
@@ -86,7 +86,7 @@ const RecipientList = (props) => {
     props?.setIsSelectId(index);
     props?.setUniqueId(obj.Id);
     props?.setRoleName(obj.Role);
-    props?.setBlockColor(obj?.blockColor);
+    props.setBlockColor?.(obj?.blockColor);
     props?.handleModal && props?.handleModal();
     setIsPrefill(prefill ?? false);
     props.setIsTour && props?.setIsTour(false);
