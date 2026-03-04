@@ -16,8 +16,8 @@ export default async function triggerEvent(request) {
     const docRes = await docQuery.get(docId, { useMasterKey: true });
     const _docRes = docRes && docRes?.toJSON();
     const isEnableOTP = docRes?.get('IsEnableOTP') || false;
+    const ipAddress = request.headers['x-real-ip'] || '';
 
-    let userId;
     if (isEnableOTP) {
       let userId;
       if (sessiontoken) {
@@ -36,29 +36,44 @@ export default async function triggerEvent(request) {
 
     if (event === 'viewed' && contactId) {
       const auditTrail = Array.isArray(_docRes.AuditTrail) ? _docRes.AuditTrail : [];
-      const isUserExist = auditTrail.some(x => x?.UserPtr?.objectId === contactId && x?.ViewedOn);
-      if (!isUserExist) {
-        const contactPtr = {
-          __type: 'Pointer',
-          className: 'contracts_Contactbook',
-          objectId: contactId,
-        };
+      const contactPtr = {
+        __type: 'Pointer',
+        className: 'contracts_Contactbook',
+        objectId: contactId,
+      };
+      const date = new Date().toISOString();
+      const newEntry = {
+        UserPtr: contactPtr,
+        SignedUrl: _docRes?.SignedUrl || '',
+        Activity: 'Viewed',
+        ipAddress,
+        ViewedOn: date,
+      };
 
-        const date = new Date().toISOString();
-        const newEntry = {
-          UserPtr: contactPtr,
-          SignedUrl: _docRes?.SignedUrl || '',
+      const existingIndex = auditTrail.findIndex(x => x?.UserPtr?.objectId === contactId);
+
+      let updatedAuditTrail;
+
+      if (existingIndex !== -1) {
+        // update existing entry
+        updatedAuditTrail = [...auditTrail];
+        updatedAuditTrail[existingIndex] = {
+          ...updatedAuditTrail[existingIndex],
+          SignedUrl: _docRes?.SignedUrl || updatedAuditTrail[existingIndex]?.SignedUrl || '',
           Activity: 'Viewed',
-          ipAddress: request.headers['x-real-ip'],
+          ipAddress,
           ViewedOn: date,
         };
-
-        // update Audit trail entry
-        const updateDoc = new Parse.Object('contracts_Document');
-        updateDoc.id = docRes.id;
-        updateDoc.set('AuditTrail', [...auditTrail, newEntry]);
-        await updateDoc.save(null, { useMasterKey: true });
+      } else {
+        // add new entry
+        updatedAuditTrail = [...auditTrail, newEntry];
       }
+
+      // save only once
+      const updateDoc = new Parse.Object('contracts_Document');
+      updateDoc.id = docRes.id;
+      updateDoc.set('AuditTrail', updatedAuditTrail);
+      await updateDoc.save(null, { useMasterKey: true });
     }
 
     return { message: 'event called!' };

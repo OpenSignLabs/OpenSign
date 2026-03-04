@@ -240,7 +240,9 @@ function WidgetsValueModal(props) {
         setHint(currWidgetsDetails?.type);
       }
     }
-    else if (isSignOrInitials) {
+    else if (currWidgetsDetails?.type === "date") {
+      setHint(currWidgetsDetails?.options.hint || "");
+    } else if (isSignOrInitials) {
       if (currWidgetsDetails?.signatureType) {
         setIsTab(currWidgetsDetails?.signatureType);
       }
@@ -1044,7 +1046,10 @@ function WidgetsValueModal(props) {
   const handleOnchangeTextBox = (e) => {
     // hide any prior validation error while typing
     setIsShowValidation(false);
-    let value = e.target.value;
+    let value =
+      currWidgetsDetails?.type === "dropdown"
+        ? e.target?.value?.trim()
+        : e.target.value;
     setWidgetValue(value);
     onChangeInput(
       value,
@@ -1484,7 +1489,7 @@ function WidgetsValueModal(props) {
           <select
             className="op-select op-select-bordered op-select-sm focus:outline-none hover:border-base-content text-base-content w-full text-xs"
             id="myDropdown"
-            value={widgetValue}
+            value={widgetValue?.trim()}
             onChange={(e) => handleOnchangeTextBox(e)}
           >
             {/* Default/Title option */}
@@ -1493,8 +1498,8 @@ function WidgetsValueModal(props) {
               {t("choose-one")}
             </option>
             {currWidgetsDetails?.options?.values?.map((data, ind) => (
-              <option key={ind} value={data}>
-                {data}
+              <option key={ind} value={data?.trim()}>
+                {data?.trim()}
               </option>
             ))}
           </select>
@@ -1537,57 +1542,64 @@ function WidgetsValueModal(props) {
         );
       case "date":
         return (
-          <div className="flex flex-col">
-            <div className="border-[1px] opensigncss:border-gray-300 opensigndark:border-base-content text-base-content rounded-[2px] p-1 px-3">
-              <DatePicker
-                renderCustomHeader={({ date, changeYear, changeMonth }) => (
-                  <div className="flex justify-start ml-2 ">
-                    <select
-                      className="bg-transparent outline-none"
-                      value={months[getMonth(date)]}
-                      onChange={({ target: { value } }) =>
-                        changeMonth(months.indexOf(value))
-                      }
-                    >
-                      {months.map((option) => (
-                        <option key={option} value={option}>
-                          {option}
-                        </option>
-                      ))}
-                    </select>
-                    <select
-                      className="bg-transparent outline-none"
-                      value={getYear(date)}
-                      onChange={({ target: { value } }) => changeYear(value)}
-                    >
-                      {years.map((option) => (
-                        <option key={option} value={option}>
-                          {option}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                )}
-                closeOnScroll={true}
-                selected={startDate}
-                onChange={(date) => handleOnDateChange(date)}
-                popperPlacement="top-end"
-                customInput={<ExampleCustomInput />}
-                dateFormat={
-                  selectDate
-                    ? selectDate?.format
-                    : currWidgetsDetails?.options?.validation?.format
-                      ? currWidgetsDetails?.options?.validation?.format
-                      : "MM/dd/yyyy"
-                }
-                portalId="root-portal"
-              />
-            </div>
-            <div className="flex justify-center">
-              <span className="text-gray-300 uppercase">
+          <div className="inline-flex flex-col items-center w-full">
+            {/* Input + format group */}
+            <div className="inline-flex flex-col items-center">
+              {/* Date input */}
+              <div className="border-[1px] opensigncss:border-gray-300 opensigndark:border-base-content text-base-content rounded-[2px] px-3 py-1 inline-flex">
+                <DatePicker
+                  renderCustomHeader={({ date, changeYear, changeMonth }) => (
+                    <div className="flex items-center gap-2 ml-2">
+                      <select
+                        className="bg-transparent outline-none"
+                        value={months[getMonth(date)]}
+                        onChange={({ target: { value } }) =>
+                          changeMonth(months.indexOf(value))
+                        }
+                      >
+                        {months.map((option) => (
+                          <option key={option} value={option}>
+                            {option}
+                          </option>
+                        ))}
+                      </select>
+                      <select
+                        className="bg-transparent outline-none"
+                        value={getYear(date)}
+                        onChange={({ target: { value } }) => changeYear(value)}
+                      >
+                        {years.map((option) => (
+                          <option key={option} value={option}>
+                            {option}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+                  closeOnScroll
+                  selected={startDate}
+                  onChange={handleOnDateChange}
+                  popperPlacement="top-end"
+                  customInput={<ExampleCustomInput />}
+                  dateFormat={
+                    selectDate?.format ||
+                    currWidgetsDetails?.options?.validation?.format ||
+                    "MM/dd/yyyy"
+                  }
+                  portalId="root-portal"
+                />
+              </div>
+              {/* Format */}
+              <span className="mt-1 text-gray-300 uppercase">
                 {currWidgetsDetails?.options?.validation?.format}
               </span>
             </div>
+            {/* hint */}
+            {hint && (
+              <div className="mt-2 flex items-center gap-2 text-sm">
+                <span>{hint}</span>
+              </div>
+            )}
           </div>
         );
       case "email":
@@ -1626,9 +1638,9 @@ function WidgetsValueModal(props) {
                     className={`op-radio op-radio-xs mt-1`}
                     type="radio"
                     value={data}
-                    checked={handleRadioCheck(data)}
+                    checked={handleRadioCheck(data?.trim())}
                     onChange={(e) => {
-                      handleCheckRadio(e.target.value);
+                      handleCheckRadio(e.target.value?.trim());
                     }}
                   />
                   <span>{data}</span>

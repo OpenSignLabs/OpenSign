@@ -1,8 +1,9 @@
 import Tooltip from "../../primitives/Tooltip";
-import ReactQuill from "react-quill-new";
-import "../../styles/quill.css";
-import EditorToolbar, { module1, formats } from "./EditorToolbar";
+// import ReactQuill from "react-quill-new";
+// import "../../styles/quill.css";
+// import EditorToolbar, { module1, formats } from "./EditorToolbar";
 import { useTranslation } from "react-i18next";
+import EmailBodyEditor from "../EmailBodyEditor";
 
 export function EmailBody(props) {
   const { t } = useTranslation();
@@ -17,12 +18,7 @@ export function EmailBody(props) {
           onInvalid={(e) => e.target.setCustomValidity(t("input-required"))}
           onInput={(e) => e.target.setCustomValidity("")}
           value={props.requestSubject}
-          onChange={(e) => {
-            props?.setCustomizeMail((prev) => ({
-              ...prev,
-              subject: e.target.value
-            }));
-          }}
+          onChange={(e) => props?.onChangeSubject?.(e.target.value)}
           placeholder='${senderName} has requested you to sign "${documentName}"'
           className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
         />
@@ -30,7 +26,7 @@ export function EmailBody(props) {
           {t("body")} <Tooltip message={t("email-body")} />
         </label>
         <div className="px-1 py-2 w-full focus:outline-none text-xs">
-          <EditorToolbar containerId="toolbar1" />
+          {/* <EditorToolbar containerId="toolbar1" />
           <ReactQuill
             theme="snow"
             value={props.requestBody}
@@ -38,6 +34,12 @@ export function EmailBody(props) {
             modules={module1}
             formats={formats}
             onChange={props.handleOnchangeRequest}
+          /> */}
+          <EmailBodyEditor
+            value={props.requestBody}
+            onChange={props?.onChangeBody}
+            isReset={props?.isReset}
+            smallscreen
           />
         </div>
       </div>

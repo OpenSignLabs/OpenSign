@@ -108,6 +108,14 @@ export default function reportJson(id) {
                 action: "rename"
               },
               {
+                btnId: "1634",
+                btnLabel: "extend-expiry-date",
+                hoverLabel: "Extend expiry date",
+                btnIcon: "fa-light fa-hourglass-end",
+                redirectUrl: "",
+                action: "extendexpiry"
+              },
+              {
                 btnId: "1688",
                 btnLabel: "Revoke",
                 hoverLabel: "Revoke",

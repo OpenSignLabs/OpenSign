@@ -148,7 +148,7 @@ const FolderModal = (props) => {
   return (
     <div className="text-xs mt-2">
       <ModalUi
-        title={t("select-foler")}
+        title={t("select-folder")}
         isOpen={props.isOpenModal}
         handleClose={handleCancel}
       >

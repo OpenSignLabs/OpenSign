@@ -20,12 +20,12 @@ import {
   defaultMailBody,
   defaultMailSubject
 } from "../../constant/Utils";
-import EditorToolbar, {
-  module1,
-  formats
-} from "../../components/pdf/EditorToolbar";
-import ReactQuill from "react-quill-new";
-import "../../styles/quill.css";
+// import EditorToolbar, {
+//   module1,
+//   formats
+// } from "../../components/pdf/EditorToolbar";
+// import ReactQuill from "react-quill-new";
+// import "../../styles/quill.css";
 import BulkSendUi from "../../components/bulksend/BulkSendUi";
 import Loader from "../../primitives/Loader";
 import { serverUrl_fn } from "../../constant/appinfo";
@@ -40,6 +40,17 @@ import { useDispatch, useSelector } from "react-redux";
 import { RenderReportCell } from "../../primitives/RenderReportCell";
 import CustomizeMail from "../../components/pdf/CustomizeMail";
 import { resetWidgetState } from "../../redux/reducers/widgetSlice";
+import EmailBodyEditor from "../../components/EmailBodyEditor";
+
+const isSignExist = (placeholders = []) => {
+  const isSignature =
+    Array.isArray(placeholders) &&
+    placeholders?.length > 0 &&
+    placeholders.every((p) =>
+      p?.placeHolder?.some((h) => h?.pos?.some((x) => x?.type === "signature"))
+    );
+  return isSignature;
+};
 
 const TemplatesReport = (props) => {
   const copyUrlRef = useRef(null);
@@ -243,15 +254,11 @@ const TemplatesReport = (props) => {
     } else {
       // handle Use template
       const placeholder = item?.Placeholders || [];
-      const isRoleExist = placeholder?.filter((x) => x.Role !== "prefill");
+      const signers = placeholder?.filter((x) => x.Role !== "prefill");
       //condition to check atleast one role is present for use template
-      if (isRoleExist && isRoleExist?.length > 0) {
-        const checkIsSignatureExist = isRoleExist?.every((placeholderObj) =>
-          placeholderObj?.placeHolder?.some((holder) =>
-            holder?.pos?.some((posItem) => posItem?.type === "signature")
-          )
-        );
-        if (checkIsSignatureExist) {
+      if (signers && signers?.length > 0) {
+        const isSignatureExist = isSignExist(signers);
+        if (isSignatureExist) {
           setActLoader({ [`${item.objectId}_${act.btnId}`]: true });
           const template = await fetchTemplate(item.objectId);
           const templateData = template.data && template.data.result;
@@ -438,10 +445,10 @@ const TemplatesReport = (props) => {
         return `${host}/login/${encodeBase64}`;
       }
     };
-    const removePrefill = item?.Placeholders.filter(
+    const placeholders = item?.Placeholders.filter(
       (data) => data?.Role !== "prefill"
     );
-    const urls = removePrefill?.map((x) => ({
+    const urls = placeholders?.map((x) => ({
       email: x.email ? x.email : x.signerPtr.Email,
       url: getUrl(x)
     }));
@@ -952,8 +959,8 @@ const TemplatesReport = (props) => {
             const userBody =
                   body;
             setCustomizeMail({
-              subject: userSubject ?? defaultMailSubject,
-              body: userBody ?? defaultMailBody
+              subject: userSubject || defaultMailSubject,
+              body: userBody || defaultMailBody
             });
             setDefaultMail({ subject: userSubject, body: userBody });
           }
@@ -1012,11 +1019,9 @@ const TemplatesReport = (props) => {
       );
     });
   };
-  const handleRemovePrefill = (placeholders) => {
-    const removePrefill = placeholders?.filter(
-      (data) => data?.Role !== "prefill"
-    );
-    return removePrefill;
+  const filteredPlaceholders = (placeholders = []) => {
+    const filtered = placeholders?.filter((data) => data?.Role !== "prefill");
+    return filtered;
   };
   const handleRecipientSign = (docId, currUserId) => {
     if (currUserId) {
@@ -1164,7 +1169,7 @@ const TemplatesReport = (props) => {
                         rowIndex={index}
                         startIndex={startIndex}
                         handleDownload={handleDownload}
-                        handleRemovePrefill={handleRemovePrefill}
+                        handleRemovePrefill={filteredPlaceholders}
                         reportName={props.ReportName}
                         handleItemClick={handleItemClick}
                       />
@@ -1223,6 +1228,14 @@ const TemplatesReport = (props) => {
                                                   t(
                                                     `btnLabel.${subact.btnLabel}`
                                                   )}
+                                                <span className="ml-0.5">
+                                                  {subact?.help && (
+                                                    <Tooltip
+                                                      id={`${subact.btnLabel}-${item.objectId}`}
+                                                      message={t(subact?.help)}
+                                                    />
+                                                  )}
+                                                </span>
                                               </span>
                                               {subact.secIcon && (
                                                 <i
@@ -1485,7 +1498,7 @@ const TemplatesReport = (props) => {
                                           >
                                             {t("body")}{" "}
                                           </label>
-                                          <EditorToolbar containerId="toolbar1" />
+                                          {/* <EditorToolbar containerId="toolbar1" />
                                           <ReactQuill
                                             id="mailbody"
                                             theme="snow"
@@ -1496,6 +1509,13 @@ const TemplatesReport = (props) => {
                                             onChange={(value) =>
                                               handlebodyChange(value, item)
                                             }
+                                          /> */}
+                                          <EmailBodyEditor
+                                            value={mail.body || ""}
+                                            onChange={(value) =>
+                                              handlebodyChange(value, item)
+                                            }
+                                            smallscreen
                                           />
                                         </div>
                                         <button
@@ -1579,11 +1599,11 @@ const TemplatesReport = (props) => {
                     <img
                       className="w-full h-full object-contain"
                       src={pad}
-                      alt={t("no-data-avaliable")}
+                      alt={t("no-data-available")}
                     />
                   </div>
                   <div className="text-sm font-semibold">
-                    {t("no-data-avaliable")}
+                    {t("no-data-available")}
                   </div>
                 </>
               )}
@@ -1633,18 +1653,17 @@ const TemplatesReport = (props) => {
           setCurrUserId={setCurrUserId}
           handleShareList={handleShareList}
           setDocumentDetails={setDocumentDetails}
+          copyUrlRef={copyUrlRef}
         />
         <ModalUi
           isOpen={isSend}
-          title={
-            !templateDetails?.SendinOrder
-              ? mailStatus === "success"
-                ? t("mails-sent")
-                : mailStatus === "quotareached"
-                  ? t("quota-mail-head")
-                  : t("mail-not-delivered")
-              : t("mail-status-head")
-          }
+          title={t(
+            utils.mailModalHead(
+              templateDetails?.SendinOrder,
+              mailStatus,
+              currUserId
+            )
+          )}
           handleClose={() => {
             setIsSend(false);
             navigate("/report/1MwEuxLEkF");

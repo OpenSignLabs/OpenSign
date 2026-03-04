@@ -10,6 +10,8 @@ export default function reportJson(id, currentUserId) {
     'ExtUserPtr.Name',
     'ExtUserPtr.Email',
     'ExtUserPtr.DownloadFilenameFormat',
+    'ExtUserPtr.Company',
+    'ExtUserPtr.Phone',
     'Signers.Name',
     'Signers.Email',
     'Signers.Phone',

@@ -1,10 +1,9 @@
 import { TourProvider, useTour } from "@reactour/tour";
 import { useEffect, useRef } from "react";
-import {
-  clearAllBodyScrollLocks,
-  disableBodyScroll,
-  enableBodyScroll
-} from "body-scroll-lock";
+
+// Prevent background scroll on iOS while tour is open.
+// Allows scrolling ONLY inside the tour popover.
+const TOUR_POPOVER_SELECTOR = ".reactour__popover";
 
 function TourStateSync({ isOpen, onRequestClose }) {
   const { isOpen: contextIsOpen, setIsOpen } = useTour();
@@ -34,17 +33,21 @@ export default function Tour({
   showCloseButton,
   showNavigationNumber
 }) {
-  function disableBody() {
-    if (typeof window !== "undefined") {
-      disableBodyScroll(document.body);
-    }
+  function prevent(e) {
+    // allow scrolling inside tour popover (adjust selector)
+    if (e.target.closest?.(TOUR_POPOVER_SELECTOR)) return;
+    // Otherwise block page scroll.
+    e.preventDefault();
   }
 
-  function enableBody() {
-    if (typeof window !== "undefined") {
-      enableBodyScroll(document.body);
-      clearAllBodyScrollLocks();
-    }
+  function lockTouchScroll() {
+    // passive:false is required so preventDefault() works on iOS.
+    document.addEventListener("touchmove", prevent, { passive: false });
+  }
+
+  function unlockTouchScroll() {
+    // Restore normal scrolling.
+    document.removeEventListener("touchmove", prevent);
   }
   return (
     <TourProvider
@@ -52,7 +55,7 @@ export default function Tour({
       steps={steps}
       defaultOpen={isOpen}
       // scrollOffset={-100} // available only for v1
-      inViewThreshold={{ y: 150 }}
+      inViewThreshold={{ y: 150, x: 30 }}
       onClickMask={() => {}}
       disableKeyboardNavigation={["esc"]}
       showBadge={showNumber}
@@ -74,8 +77,8 @@ export default function Tour({
         maskArea: (base) => ({ ...base, rx: rounded }),
         close: (base) => ({ ...base, right: 10, top: 10, outline: "none" })
       }}
-      afterOpen={disableBody}
-      beforeClose={enableBody}
+      afterOpen={lockTouchScroll}
+      beforeClose={unlockTouchScroll}
       scrollSmooth
     >
       <TourStateSync isOpen={isOpen} onRequestClose={onRequestClose} />

@@ -98,14 +98,19 @@ export const handleDisplaySignerList = async (
 export const isValidPrefill = (prefillData) => {
   const getPlaceholder = prefillData?.placeHolder;
   if (getPlaceholder) {
+    const uniqueWidgets = getPlaceholder
+      .flatMap((page) => page.pos)
+      .filter(
+        (item, index, self) =>
+          index ===
+          self.findIndex((x) => x?.options?.name === item?.options?.name)
+      );
     // Find objects with empty response of prefill widgets
-    const emptyResponseObjects = getPlaceholder.flatMap((page) =>
-      page.pos.filter(
-        (item) =>
-          !item?.options?.defaultValue &&
-          !item?.options?.response &&
-          item?.options?.status === "required"
-      )
+    const emptyResponseObjects = uniqueWidgets.filter(
+      (item) =>
+        !item?.options?.defaultValue &&
+        !item?.options?.response &&
+        item?.options?.status === "required"
     );
     if (emptyResponseObjects.length > 0) {
       const res = {
@@ -197,15 +202,9 @@ export const savePrefillImg = async (Placeholders) => {
               pos?.options?.response,
               addSuffix
             );
-            imgArr.push({
-              id: pos?.key,
-              base64: base64
-            });
+            imgArr.push({ id: pos?.key, base64: base64 });
           } else if (pos?.type === "image" || pos?.type === drawWidget) {
-            imgArr.push({
-              id: pos?.key,
-              base64: ""
-            });
+            imgArr.push({ id: pos?.key, base64: "" });
           }
         }
       }

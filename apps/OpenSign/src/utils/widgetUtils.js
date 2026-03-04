@@ -2,7 +2,13 @@ import moment from "moment";
 import {
   generateTitleFromFilename,
   selectFormat,
-  changeDateToMomentFormat
+  changeDateToMomentFormat,
+  isBase64,
+  drawWidget,
+  radioButtonWidget,
+  textInputWidget,
+  textWidget,
+  cellsWidget
 } from "../constant/Utils";
 import { base64StringtoFile, uploadFile } from "./fileUtils";
 import { sanitizeFileName } from "./sanitizeFileName";
@@ -18,7 +24,8 @@ export const dateFormat = [
   "MMM DD, YYYY",
   "LL",
   "DD MMM, YYYY",
-  "DD MMMM, YYYY"
+  "DD MMMM, YYYY",
+  "DD-MMM-YYYY"
 ];
 // `handlesavesign` is used to save signature, initials, stamp as a default
 export const saveToMySign = async (widget) => {
@@ -362,6 +369,56 @@ export function toHtmlPattern(maybeRegex) {
   return re.source.replace(/^\^/, "").replace(/\$$/, "");
 }
 
+export const isWidgetResponseCompatible = (widget, newResponse = "") => {
+  const { type, options } = widget;
+  const response = newResponse || options?.response;
+
+  // If no response → skip only when widget truly needs it
+  if (response === undefined || response === null) {
+    return false;
+  }
+
+  switch (type) {
+    // 🖼 Image widgets → valid base64 only
+    case "signature":
+    case "stamp":
+    case "initials":
+    case "image":
+    case drawWidget:
+      return typeof response === "string" && isBase64(response);
+
+    // ☑ Checkbox → array of indexes
+    case "checkbox":
+      return (
+        Array.isArray(response) && response.every((i) => Number.isInteger(i))
+      );
+
+    // 🔘 Radio → must exist in options
+    case radioButtonWidget:
+      return options?.values?.some((val) => val?.trim() === response?.trim());
+
+    // 📅 Date → valid date or "today"
+    case "date":
+      return response === "today" || !isNaN(new Date(response).getTime());
+
+    // ⬇ Dropdown → must match options
+    case "dropdown":
+      return options?.values?.some((val) => val?.trim() === response?.trim());
+
+    // 📝 Text widgets
+    case textWidget:
+    case textInputWidget:
+    case cellsWidget:
+    case "name":
+    case "company":
+    case "job title":
+    case "email":
+      return typeof response === "string" || typeof response === "number";
+
+    default:
+      return true;
+  }
+};
 export const formatCSVDate = (widget, response, formatInISO = false) => {
   const format = widget?.options?.validation?.format ?? "dd-MM-yyyy";
   const input = response === "today" ? new Date() : response;
@@ -376,3 +433,64 @@ export const formatCSVDate = (widget, response, formatInISO = false) => {
     : date.format(format?.toUpperCase());
   return finalResponse;
 };
+
+export const loadPdfOnce = async (url) => {
+  try {
+    const response = await fetch(url);
+    // Check if the response was successful (status 200)
+    if (!response.ok) {
+      return "Error";
+    }
+    // Convert the response to ArrayBuffer
+    const ab = await response.arrayBuffer();
+    const bytes = new Uint8Array(ab);
+    return bytes;
+  } catch (error) {
+    console.error("fetching pdf error:", error);
+    return "Error";
+  }
+};
+
+export const mailModalHead = (sendinOrder, mailStatus, isOwner) => {
+  const HEAD = { success: "mails-sent", quotareached: "quota-mail-head" };
+
+  return sendinOrder
+    ? isOwner
+      ? "mail-status-head"
+      : "mails-sent"
+    : (HEAD[mailStatus] ?? "mail-not-delivered");
+};
+
+// Lexicographic order matches chronological order in YYYY-MM-DD
+export function getDateIfInRangeYMD(value, minDate, maxDate) {
+  if (!value) return "";
+
+  // no min & no max => return value as-is
+  if (!minDate && !maxDate) return value;
+
+  // both => between (inclusive)
+  if (minDate && maxDate)
+    return value >= minDate && value <= maxDate ? value : "";
+
+  // only min => >= min
+  if (minDate) return value >= minDate ? value : "";
+
+  // only max => <= max
+  return value <= maxDate ? value : "";
+}
+
+export function getRegexForType(type) {
+  switch (type) {
+    case "email":
+      return "/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,}$/";
+    case "number":
+      return "^\\d+(?:\\.\\d+)?$"; // "/^\\d+$/";
+    case "text":
+      //allow space in text regex
+      return "/^[a-zA-Z ]+$/";
+    case "ssn":
+      return "/^(?!000|666|9\\d{2})\\d{3}-(?!00)\\d{2}-(?!0000)\\d{4}$/";
+    default:
+      return type;
+  }
+}

@@ -453,7 +453,7 @@ const AddAdmin = () => {
                         className="text-xs cursor-pointer ml-1 mb-0"
                         htmlFor="termsandcondition"
                       >
-                        {t("agreee")}
+                        {t("agree")}
                       </label>
                       <span
                         className="underline cursor-pointer ml-1"

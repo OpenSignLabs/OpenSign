@@ -1,9 +1,4 @@
 import { Quill } from "react-quill-new";
-// Use a third-party plugin so editors can toggle raw HTML view.
-import htmlEditButton from "quill-html-edit-button";
-
-// Register the module which adds a "<>" button for HTML editing.
-Quill.register("modules/htmlEditButton", htmlEditButton);
 
 // Custom Undo button icon component for Quill editor. You can import it directly
 // from 'quill/assets/icons/undo.svg' but I found that a number of loaders do not
@@ -60,9 +55,7 @@ export const module1 = {
     container: "#toolbar1",
     handlers: { undo: undoChange, redo: redoChange }
   },
-  history: { delay: 500, maxStack: 100, userOnly: true },
-  // Enable the "<>" button registered above
-  htmlEditButton: {}
+  history: { delay: 500, maxStack: 100, userOnly: true }
 };
 
 // Modules object for setting up the Quill editor
@@ -71,9 +64,7 @@ export const module2 = {
     container: "#toolbar2",
     handlers: { undo: undoChange, redo: redoChange }
   },
-  history: { delay: 500, maxStack: 100, userOnly: true },
-  // Enable the "<>" button registered above
-  htmlEditButton: {}
+  history: { delay: 500, maxStack: 100, userOnly: true }
 };
 
 // Formats objects for setting up the Quill editor

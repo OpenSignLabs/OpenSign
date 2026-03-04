@@ -19,7 +19,8 @@ const DateFormatSelector = (props) => {
     "MMM DD, YYYY",
     "MMMM DD, YYYY",
     "DD MMM, YYYY",
-    "DD MMMM, YYYY"
+    "DD MMMM, YYYY",
+    "DD-MMM-YYYY"
   ];
 
   // Handle format change

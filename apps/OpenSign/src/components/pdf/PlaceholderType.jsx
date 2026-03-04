@@ -6,25 +6,22 @@ import {
 } from "react";
 import {
   onChangeInput,
-  getMonth,
-  getYear,
   radioButtonWidget,
   textInputWidget,
   cellsWidget,
   textWidget,
-  months,
-  years,
   selectCheckbox,
   isBase64,
-  drawWidget
+  drawWidget,
+  changeDateToMomentFormat
 } from "../../constant/Utils";
-import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import "../../styles/signature.css";
 import { useTranslation } from "react-i18next";
 import CellsWidget from "./CellsWidget";
 import { useSelector } from "react-redux";
 import Loader from "../../primitives/Loader";
+import moment from "moment";
 
 const textWidgetCls =
   "w-full h-full md:min-w-full md:min-h-full z-[999] text-[12px] overflow-hidden resize-none outline-none text-base-content item-center whitespace-pre-wrap";
@@ -51,6 +48,7 @@ function PlaceholderType(props) {
   const [widgetValue, setwidgetValue] = useState();
   const [selectedCheckbox, setSelectedCheckbox] = useState([]);
   const [imgUrl, setImgUrl] = useState("");
+  const [date, setDate] = useState("");
   const fontSize = props.calculateFont(props.pos.options?.fontSize);
   const fontColor = props.pos.options?.fontColor || "black";
   const textWidgetStyle = {
@@ -99,8 +97,9 @@ function PlaceholderType(props) {
   ExampleCustomInput.displayName = "ExampleCustomInput";
 
   const handleRadioCheck = (data) => {
-    const defaultData = widgetValue || props.pos.options?.defaultValue;
-    return defaultData === data;
+    const defaultData =
+      widgetValue?.trim() || props.pos?.options?.defaultValue?.trim() || "";
+    return defaultData === data?.trim();
   };
   //function is used to get prefill image's signedUrl after expired
   useEffect(() => {
@@ -164,6 +163,19 @@ function PlaceholderType(props) {
     }
   }, [widgetValue]);
 
+  useEffect(() => {
+    if (props?.startDate) {
+      const format =
+        props?.selectDate?.format ||
+        props.pos?.options?.validation?.format ||
+        "MM/dd/yyyy";
+      const momentFormat = changeDateToMomentFormat(format);
+      const updatedDate = moment(props?.startDate).format(momentFormat);
+      setDate(updatedDate);
+    } else {
+      setDate("");
+    }
+  }, [props?.startDate, props?.selectDate?.format]);
   switch (type) {
     case "signature":
       return props.pos.SignUrl ? (
@@ -312,7 +324,7 @@ function PlaceholderType(props) {
           style={textWidgetStyle}
           className="select-none-cls flex justify-between items-center"
         >
-          {widgetData || t("choose-one")}
+          {widgetData?.trim() || t("choose-one")}
           <i className="fa-light fa-circle-chevron-down mr-1 "></i>
         </div>
       );
@@ -414,47 +426,15 @@ function PlaceholderType(props) {
       );
     case "date":
       return iswidgetEnable || props?.data?.Role === "prefill" ? (
-        <DatePicker
-          renderCustomHeader={({ date, changeYear, changeMonth }) => (
-            <div className="flex justify-start ml-2 ">
-              <select
-                className="bg-transparent outline-none"
-                value={months[getMonth(date)]}
-                onChange={({ target: { value } }) =>
-                  changeMonth(months.indexOf(value))
-                }
-              >
-                {months.map((option) => (
-                  <option key={option} value={option}>
-                    {option}
-                  </option>
-                ))}
-              </select>
-              <select
-                className="bg-transparent outline-none"
-                value={getYear(date)}
-                onChange={({ target: { value } }) => changeYear(value)}
-              >
-                {years.map((option) => (
-                  <option key={option} value={option}>
-                    {option}
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
-          disabled={true}
-          closeOnScroll={true}
-          className={`${selectWidgetCls} outline-[#007bff]`}
-          selected={props?.startDate}
-          popperPlacement="top-end"
-          customInput={<ExampleCustomInput />}
-          dateFormat={
-            props?.selectDate?.format ||
-            props.pos?.options?.validation?.format ||
-            "MM/dd/yyyy"
-          }
-        />
+        <div className={`${selectWidgetCls} outline-[#007bff]`}>
+          <span
+            style={{ fontSize: fontSize, color: fontColor }}
+            className={`${isReadOnly ? `select-none opacity-25` : ``} ${selectWidgetCls} overflow-hidden`}
+          >
+            {date}
+            <i className="fa-light fa-calendar text-[10px] ml-[5px]"></i>
+          </span>
+        </div>
       ) : (
         <div
           style={textWidgetStyle}
@@ -548,7 +528,7 @@ function PlaceholderType(props) {
                   checked={handleRadioCheck(data)}
                 />
                 {!props.pos.options?.isHideLabel && (
-                  <span className="leading-none">{data}</span>
+                  <span className="leading-none">{data?.trim()}</span>
                 )}
               </label>
             </div>

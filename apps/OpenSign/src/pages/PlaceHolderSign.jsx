@@ -108,14 +108,13 @@ function PlaceHolderSign() {
   const [tourStatus, setTourStatus] = useState([]);
   const [signerUserId, setSignerUserId] = useState();
   const [pdfOriginalWH, setPdfOriginalWH] = useState([]);
-  const [containerWH, setContainerWH] = useState();
+  const [containerWH, setContainerWH] = useState({ width: 0, height: 0 });
   const { docId } = useParams();
   const divRef = useRef(null);
   const [isShowEmail, setIsShowEmail] = useState(false);
   const [selectedEmail, setSelectedEmail] = useState(false);
   const [isResize, setIsResize] = useState(false);
   const [zIndex, setZIndex] = useState(1);
-  const [blockColor, setBlockColor] = useState("");
   const [isTextSetting, setIsTextSetting] = useState(false);
   const [pdfLoad, setPdfLoad] = useState(false);
   const [isPageCopy, setIsPageCopy] = useState(false);
@@ -198,8 +197,8 @@ function PlaceHolderSign() {
                 body;
 
           setCustomizeMail({
-            subject: userSubject ?? defaultMailSubject,
-            body: userBody ?? defaultMailBody
+            subject: userSubject || defaultMailSubject,
+            body: userBody || defaultMailBody
           });
           setDefaultMail({ subject: userSubject, body: userBody });
           return filterSignTypes;
@@ -348,7 +347,6 @@ function PlaceHolderSign() {
         setSignersData(updatedSigners);
         setIsSelectId(0);
         setUniqueId(placeholder[0].Id);
-        setBlockColor(placeholder[0].blockColor);
       }
       //else condition when signers array have some signer's data
       //this case happen using placeholder form and load first time
@@ -391,7 +389,6 @@ function PlaceHolderSign() {
           }
           setSignersData(updatedSigners);
           setUniqueId(updatedSigners[0].Id);
-          setBlockColor(updatedSigners[0].blockColor);
         } else {
           //else condition when signers length present but placeholder empty then
           //update signers array with add role,id and add empty object in placeholder with signers details
@@ -420,7 +417,6 @@ function PlaceHolderSign() {
           setSignerPos(updatedPlaceholder);
           setSignersData(updatedSigners);
           setUniqueId(updatedSigners[0].Id);
-          setBlockColor(updatedSigners[0].blockColor);
         }
       } else {
         //when user create document using template where signers data not present and only placeholders present
@@ -442,7 +438,6 @@ function PlaceHolderSign() {
             setSignersData(updatedSigners);
             setIsSelectId(0);
             setUniqueId(updatedSigners[0].Id);
-            setBlockColor(updatedSigners[0].blockColor);
           }
           const prefillPlaceholder = documentData[0]?.Placeholders.find(
             (data) => data.Role === "prefill"
@@ -465,7 +460,7 @@ function PlaceHolderSign() {
       }
       setIsLoading({ isLoad: false });
     } else {
-      setHandleError(t("no-data-avaliable"));
+      setHandleError(t("no-data-available"));
       setIsLoading({ isLoad: false });
     }
     const res = await contractUsers();
@@ -488,11 +483,10 @@ function PlaceHolderSign() {
       }
       setIsLoading({ isLoad: false });
     } else if (res.length === 0) {
-      setHandleError(t("no-data-avaliable"));
+      setHandleError(t("no-data-available"));
       setIsLoading({ isLoad: false });
     }
   };
-
   //function for setting position after drop signature button over pdf
   const addPositionOfSignature = (item, monitor) => {
     getSignerPos(item, monitor);
@@ -1646,7 +1640,6 @@ function PlaceHolderSign() {
     setSignerPos((prev) => [...prev, signerPosObj]);
     setUniqueId(newId);
     setIsSelectId(signersdata.length - 1);
-    setBlockColor(color[signersdata.length - 1]);
   };
 
   const closePopup = () => {
@@ -1701,11 +1694,9 @@ function PlaceHolderSign() {
     if (index === signersdata.length - 1) {
       setUniqueId(updateSigner[updateSigner.length - 1]?.Id || "");
       setIsSelectId(index - 1 || 0);
-      setBlockColor(color[index - 1 || 0]);
     } else {
       setUniqueId(updateSigner[index]?.Id || "");
       setIsSelectId(index);
-      setBlockColor(color[index]);
     }
     if (prefillObj) {
       updatePlaceholderUser.unshift(prefillObj);
@@ -1805,9 +1796,12 @@ function PlaceHolderSign() {
             : false,
         TimeToCompleteDays:
           parseInt(updateDocument?.[0]?.TimeToCompleteDays) || 15,
+        RemindOnceInEvery:
+          parseInt(updateDocument?.[0]?.RemindOnceInEvery) || 0,
         ...penColors,
         ...Bcc,
-        ...RedirectUrl
+        ...RedirectUrl,
+        AllowModifications: updateDocument?.[0]?.AllowModifications || false
       };
       const updateTemplateObj = new Parse.Object("contracts_Document");
       updateTemplateObj.id = pdfDetails?.[0]?.objectId;
@@ -1819,6 +1813,7 @@ function PlaceHolderSign() {
       console.log("error in save document", err);
     }
   };
+
   return (
     <>
       {isLoading.isLoad ? (
@@ -1899,15 +1894,13 @@ function PlaceHolderSign() {
               {/* this modal is used show send mail  message and after send mail success message */}
               <ModalUi
                 isOpen={isSend}
-                title={
-                  !pdfDetails[0]?.SendinOrder
-                    ? mailStatus === "success"
-                      ? t("mails-sent")
-                      : mailStatus === "quotareached"
-                        ? t("quota-mail-head")
-                        : t("mail-not-delivered")
-                    : t("mail-status-head")
-                }
+                title={t(
+                  utils.mailModalHead(
+                    pdfDetails?.[0]?.SendinOrder,
+                    mailStatus,
+                    isCurrUser
+                  )
+                )}
                 handleClose={() => {
                   setIsSend(false);
                   setSignerPos([]);
@@ -2044,6 +2037,7 @@ function PlaceHolderSign() {
                 Id={uniqueId}
                 widgetType={currWidgetsDetails?.type}
                 setUniqueId={setUniqueId}
+                pdfOriginalWH={pdfOriginalWH}
               />
               <DropdownWidgetOption
                 type={radioButtonWidget}
@@ -2124,10 +2118,10 @@ function PlaceHolderSign() {
               <div
                 ref={divRef}
                 data-tut="pdfArea"
-                className="h-full md:h-[95%]"
+                className="h-fit"
                 onClick={() => setPlaceholderTour(false)}
               >
-                {containerWH && (
+                {containerWH?.width && (
                   <RenderPdf
                     pageNumber={pageNumber}
                     pdfNewWidth={pdfNewWidth}
@@ -2205,8 +2199,6 @@ function PlaceHolderSign() {
                     initial={true}
                     sendInOrder={pdfDetails[0].SendinOrder}
                     setSignersData={setSignersData}
-                    blockColor={blockColor}
-                    setBlockColor={setBlockColor}
                     setIsAddSigner={setIsAddSigner}
                     handleDeleteUser={handleDeleteUser}
                     uniqueId={uniqueId}
@@ -2232,8 +2224,6 @@ function PlaceHolderSign() {
                       setRoleName={setRoleName}
                       sendInOrder={pdfDetails[0].SendinOrder}
                       setSignersData={setSignersData}
-                      blockColor={blockColor}
-                      setBlockColor={setBlockColor}
                       isMailSend={isMailSend}
                       setIsAddSigner={setIsAddSigner}
                       handleDeleteUser={handleDeleteUser}
@@ -2271,6 +2261,7 @@ function PlaceHolderSign() {
             isMailModal={isMailModal}
             handleShareList={handleShareList}
             setCurrUserId={setIsCurrUser}
+            copyUrlRef={copyUrlRef}
           />
         </div>
       )}

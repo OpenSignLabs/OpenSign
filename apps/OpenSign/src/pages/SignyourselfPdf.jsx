@@ -12,7 +12,6 @@ import {
   contractDocument,
   embedDocId,
   embedWidgetsToDoc,
-  calculateInitialWidthHeight,
   defaultWidthHeight,
   contractUsers,
   contactBook,
@@ -112,7 +111,7 @@ function SignYourSelf() {
   const [signerUserId, setSignerUserId] = useState();
   const [tourStatus, setTourStatus] = useState([]);
   const [contractName, setContractName] = useState("");
-  const [containerWH, setContainerWH] = useState({});
+  const [containerWH, setContainerWH] = useState({ width: 0, height: 0 });
   const [isPageCopy, setIsPageCopy] = useState(false);
   const [otpLoader, setOtpLoader] = useState(false);
   const [showAlreadySignDoc, setShowAlreadySignDoc] = useState({
@@ -255,7 +254,7 @@ function SignYourSelf() {
         }
         setIsLoading({ isLoad: false });
       } else {
-        setHandleError(t("no-data-avaliable"));
+        setHandleError(t("no-data-available"));
         setIsLoading({ isLoad: false });
       }
       //function to get default signatur eof current user from `contracts_Signature` class
@@ -305,7 +304,7 @@ function SignYourSelf() {
             setSignTour(true);
           }
         } else {
-          setHandleError(t("no-data-avaliable"));
+          setHandleError(t("no-data-available"));
         }
         setIsLoading({ isLoad: false });
       }
@@ -356,29 +355,29 @@ function SignYourSelf() {
       pageNumber,
       containerWH
     );
+    const widgetWidth =
+      defaultWidthHeight(dragTypeValue).width * containerScale;
+    const widgetHeight =
+      defaultWidthHeight(dragTypeValue).height * containerScale;
     //adding and updating drop position in array when user drop signature button in div
     if (item === "onclick") {
       // `getBoundingClientRect()` is used to get accurate measurement width, height of the Pdf div
-      const divHeight = divRef.current.getBoundingClientRect().height;
       const divWidth = divRef.current.getBoundingClientRect().width;
-      const getWidth = widgetTypeExist
-        ? calculateInitialWidthHeight(widgetValue).getWidth
-        : defaultWidthHeight(dragTypeValue).width;
-      const getHeight = defaultWidthHeight(dragTypeValue).height;
-
+      const divHeight = divRef.current.getBoundingClientRect().height;
       //  Compute the pixel‐space center within the PDF viewport:
-      const centerX_Pixels = divWidth / 2 - getWidth / 2;
+      const centerX_Pixels = divWidth / 2 - widgetWidth / 2;
       const xPosition_Final = centerX_Pixels / (containerScale * scale);
       dropObj = {
+        //onclick put placeholder center on pdf
         xPosition: xPosition_Final,
-        yPosition: getHeight + divHeight / 2,
+        yPosition: widgetHeight + divHeight / 2,
         isStamp:
           (dragTypeValue === "stamp" || dragTypeValue === "image") && true,
         key: key,
         type: dragTypeValue,
         scale: containerScale,
-        Width: getWidth,
-        Height: getHeight,
+        Width: widgetWidth / (containerScale * scale),
+        Height: widgetHeight / (containerScale * scale),
         options: addWidgetSelfsignOptions(
           dragTypeValue,
           getWidgetValue,
@@ -400,14 +399,11 @@ function SignYourSelf() {
       const y = offset.y - containerRect.top;
       let getXPosition = signBtnPosition[0] ? x - signBtnPosition[0].xPos : x;
       let getYPosition = signBtnPosition[0] ? y - signBtnPosition[0].yPos : y;
-      const getWidth = widgetTypeExist
-        ? calculateInitialWidthHeight(widgetValue).getWidth
-        : defaultWidthHeight(dragTypeValue).width;
-      const getHeight = defaultWidthHeight(dragTypeValue).height;
 
       // to avoid negative position values (half portion of widget should not be out of pdf container)
-      const calculateWidth = getXPosition + getWidth - containerRect.width;
-      const calculateHeight = getYPosition + getWidth - containerRect.height;
+      const calculateWidth = getXPosition + widgetWidth - containerRect.width;
+      const calculateHeight =
+        getYPosition + widgetHeight - containerRect.height;
 
       // to avoid negative position values (half portion of widget should not be out of pdf container)
       if (getXPosition < 0) {
@@ -431,8 +427,8 @@ function SignYourSelf() {
           (dragTypeValue === "stamp" || dragTypeValue === "image") && true,
         key: key,
         type: dragTypeValue,
-        Width: getWidth / (containerScale * scale),
-        Height: getHeight / (containerScale * scale),
+        Width: widgetWidth / (containerScale * scale),
+        Height: widgetHeight / (containerScale * scale),
         options: addWidgetSelfsignOptions(
           dragTypeValue,
           getWidgetValue,
@@ -1364,6 +1360,7 @@ function SignYourSelf() {
                   pageNumber={pageNumber}
                   signKey={currWidgetsDetails?.key}
                   widgetType={currWidgetsDetails?.type}
+                  pdfOriginalWH={pdfOriginalWH}
                 />
                 {/*render email component to send email after finish signature on document */}
                 <EmailComponent
@@ -1400,8 +1397,8 @@ function SignYourSelf() {
                   signerPos={xyPosition}
                   pdfBase64={pdfBase64Url}
                 />
-                <div ref={divRef} data-tut="reactourSecond" className="h-full">
-                  {containerWH?.width && containerWH?.height && (
+                <div ref={divRef} data-tut="reactourSecond" className="h-fit">
+                  {containerWH?.width && (
                     <RenderPdf
                       pageNumber={pageNumber}
                       pdfOriginalWH={pdfOriginalWH}
