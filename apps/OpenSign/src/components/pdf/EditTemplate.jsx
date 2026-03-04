@@ -263,6 +263,14 @@ const EditTemplate = ({
         : [...prev, color]; // add
     });
   };
+
+  const reminderCustomWarning = (e) => {
+    if (!formData.RemindOnceInEvery || formData.RemindOnceInEvery === 0) {
+      return e.target.setCustomValidity(t("input-required"));
+    } else {
+      return e.target.setCustomValidity(t("reminder-error"));
+    }
+  };
   return (
     <ModalUi
       isOpen

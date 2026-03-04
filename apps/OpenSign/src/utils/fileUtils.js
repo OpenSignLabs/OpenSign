@@ -176,3 +176,85 @@ export function parseCSV(text) {
 
   return rows;
 }
+
+/**
+ * compressImage
+ *
+ * @param {File} file - File object from <input type="file" />
+ * @param {{ width: number, height: number }} size - Target output size in pixels
+ * @param {"base64"|"file"} convert - Output format: "base64" or "file"
+ * @returns {Promise<string | File>} Resolves to base64 string or File
+ */
+export function compressImage(
+  file,
+  size = { width: 350, height: 140 },
+  convert = "base64"
+) {
+  return new Promise((resolve, reject) => {
+    if (!file || !file.type.startsWith("image/")) {
+      return reject(new Error("Invalid file: must be an image"));
+    }
+
+    // PNG ignores quality (lossless); JPEG uses it
+    const encQuality = 0.8;
+    const { width: targetW, height: targetH } = size;
+
+    // No background provided → transparent PNG (alpha preserved)
+    const mimeType = "image/png";
+    const fileExt = ".png";
+
+    const img = new Image();
+    const objectUrl = URL.createObjectURL(file);
+
+    img.onload = () => {
+      URL.revokeObjectURL(objectUrl);
+
+      const canvas = document.createElement("canvas");
+      canvas.width = targetW;
+      canvas.height = targetH;
+      const ctx = canvas.getContext("2d");
+
+      // Keep all pixels fully transparent — PNG will preserve alpha
+      ctx.clearRect(0, 0, targetW, targetH);
+
+      const srcW = img.naturalWidth;
+      const srcH = img.naturalHeight;
+
+      // "contain" — fit entirely inside canvas, pad the rest
+      const scale = Math.min(targetW / srcW, targetH / srcH);
+      const drawW = srcW * scale;
+      const drawH = srcH * scale;
+
+      // Center inside canvas
+      const drawX = (targetW - drawW) / 2;
+      const drawY = (targetH - drawH) / 2;
+
+      ctx.drawImage(img, 0, 0, srcW, srcH, drawX, drawY, drawW, drawH);
+
+      if (convert === "base64") {
+        resolve(canvas.toDataURL(mimeType, encQuality));
+      } else {
+        canvas.toBlob(
+          (blob) => {
+            if (!blob) return reject(new Error("Image conversion failed"));
+            const compressedFile = new File(
+              [blob],
+              file.name.replace(/\.[^.]+$/, "") + "_compressed" + fileExt,
+              { type: mimeType, lastModified: Date.now() }
+            );
+            resolve(compressedFile);
+          },
+          mimeType,
+          encQuality
+        );
+      }
+    };
+
+    img.onerror = () => {
+      URL.revokeObjectURL(objectUrl);
+      reject(new Error("Failed to load image"));
+    };
+
+    img.src = objectUrl;
+  });
+}

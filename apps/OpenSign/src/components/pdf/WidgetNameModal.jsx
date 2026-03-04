@@ -9,6 +9,7 @@ import {
   textWidget
 } from "../../constant/Utils";
 import {
+  getRegexForType,
   widgetNamesArr
 } from "../../utils";
 import { fontColorArr, fontsizeArr } from "../../constant/Utils";
@@ -183,7 +184,7 @@ const WidgetNameModal = (props) => {
 
   const handledefaultChange = (e) => {
     if (formdata.textvalidate) {
-      const regexObject = RegexParser(handleValidation(formdata.textvalidate));
+      const regexObject = RegexParser(getRegexForType(formdata.textvalidate));
       const isValidate = regexObject?.test(e.target.value);
       setIsValid(isValidate);
     } else {
@@ -196,22 +197,6 @@ const WidgetNameModal = (props) => {
 
     setFormdata({ ...formdata, [e.target.name]: val });
   };
-
-  function handleValidation(type) {
-    switch (type) {
-      case "email":
-        return "/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,}$/";
-      case "number":
-        return "^\\d+(?:\\.\\d+)?$"; // "/^\\d+$/";
-      case "text":
-        //allow space in text regex
-        return "/^[a-zA-Z ]+$/";
-      case "ssn":
-        return "/^(?!000|666|9\\d{2})\\d{3}-(?!00)\\d{2}-(?!0000)\\d{4}$/";
-      default:
-        return type;
-    }
-  }
 
 
   const handleCheckboxChange = (index) => {

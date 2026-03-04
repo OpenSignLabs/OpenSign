@@ -15,27 +15,31 @@ const DatePicker = ({
   minDate,
   maxDate,
   onChange,
-  handleClear
+  handleClear,
+  label,
+  showLabel = true,
+  showClear = true,
+  dateClassName = ""
 }) => {
   const { t } = useTranslation();
 
   const CustomInput = forwardRef(({ value, onClick }, ref) => (
     <div
-      className="border-gray-400 rounded-[50px] border-[1px] px-3 text-xs py-2 focus:outline-none hover:border-base-content "
+      className="w-full border-gray-400 rounded-[50px] border-[1px] px-3 text-xs py-2 focus:outline-none hover:border-base-content flex items-center justify-between"
       onClick={onClick}
       ref={ref}
     >
-      {value}
-      <i
-        className={`${value ? "ml-[15px]" : "w-20"} fa-light fa-calendar `}
-      ></i>
+      <span className={`${dateClassName} truncate`}>{value}</span>
+      <i className={`fa-light fa-calendar`}></i>
     </div>
   ));
   CustomInput.displayName = "CustomInput";
 
   return (
-    <div>
-      <span>{t("default-date")}: </span>
+    <>
+      {showLabel && (
+        <span className="flex-shrink-0">{label || t("default-date")}: </span>
+      )}
       <ReactDatePicker
         renderCustomHeader={({ date, changeYear, changeMonth }) => (
           <div className="flex justify-start md:ml-2">
@@ -65,6 +69,7 @@ const DatePicker = ({
             </select>
           </div>
         )}
+        wrapperClassName="w-full"
         closeOnScroll={true}
         selected={getDefaultDate(selectDate?.date, selectDate?.format)}
         popperPlacement="top-end"
@@ -75,13 +80,15 @@ const DatePicker = ({
         }
         portalId="root-portal"
       />
-      <span
-        onClick={() => handleClear()}
-        className="underline text-blue-500 cursor-pointer ml-2"
-      >
-        {t("clear")}
-      </span>
-    </div>
+      {showClear && handleClear && (
+        <span
+          onClick={() => handleClear()}
+          className="underline text-blue-500 cursor-pointer ml-2"
+        >
+          {t("clear")}
+        </span>
+      )}
+    </>
   );
 };
 

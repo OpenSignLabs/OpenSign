@@ -7,6 +7,7 @@ import ModalUi from "../../primitives/ModalUi";
 import Alert from "../../primitives/Alert";
 import Tooltip from "../../primitives/Tooltip";
 import ShareButton from "../../primitives/ShareButton";
+import DatePicker from "../../components/DatePicker";
 import Parse from "parse";
 import {
   copytoData,
@@ -22,12 +23,12 @@ import {
   defaultMailBody,
   defaultMailSubject
 } from "../../constant/Utils";
-import EditorToolbar, {
-  module1,
-  formats
-} from "../../components/pdf/EditorToolbar";
-import ReactQuill from "react-quill-new";
-import "../../styles/quill.css";
+// import EditorToolbar, {
+//   module1,
+//   formats
+// } from "../../components/pdf/EditorToolbar";
+// import ReactQuill from "react-quill-new";
+// import "../../styles/quill.css";
 import BulkSendUi from "../../components/bulksend/BulkSendUi";
 import Loader from "../../primitives/Loader";
 import { serverUrl_fn } from "../../constant/appinfo";
@@ -40,6 +41,7 @@ import * as utils from "../../utils";
 import { RenderReportCell } from "../../primitives/RenderReportCell";
 import CustomizeMail from "../../components/pdf/CustomizeMail";
 import { useSelector } from "react-redux";
+import EmailBodyEditor from "../../components/EmailBodyEditor";
 
 const DocumentsReport = (props) => {
   const copyUrlRef = useRef(null);
@@ -74,7 +76,7 @@ const DocumentsReport = (props) => {
   const [reason, setReason] = useState("");
   const [isDownloadModal, setIsDownloadModal] = useState(false);
   const [signatureType, setSignatureType] = useState([]);
-  const [expiryDate, setExpiryDate] = useState("");
+  const [expiryDate, setExpiryDate] = useState(null);
   const Extand_Class = localStorage.getItem("Extand_Class");
   const extClass = Extand_Class && JSON.parse(Extand_Class);
   const [renameDoc, setRenameDoc] = useState("");
@@ -212,8 +214,8 @@ const DocumentsReport = (props) => {
           const userBody =
                 body;
           setCustomizeMail({
-            subject: userSubject ?? defaultMailSubject,
-            body: userBody ?? defaultMailBody
+            subject: userSubject || defaultMailSubject,
+            body: userBody || defaultMailBody
           });
           setDefaultMail({ subject: userSubject, body: userBody });
           return filterSignTypes;
@@ -328,6 +330,9 @@ const DocumentsReport = (props) => {
       setError(isPrefill ? t("fix-resend-error") : "");
       setIsModal({ [`recreatedocument_${item.objectId}`]: true });
     } else if (act.action === "extendexpiry") {
+      setExpiryDate(
+        item?.ExpiryDate?.iso ? new Date(item?.ExpiryDate?.iso) : null
+      );
       setIsModal({ [`extendexpiry_${item.objectId}`]: true });
     }
   });
@@ -712,9 +717,13 @@ const DocumentsReport = (props) => {
     e.preventDefault();
     e.stopPropagation();
     if (expiryDate) {
-      const oldExpiryDate = new Date(item?.ExpiryDate?.iso);
+      const oldExpiryDate = item?.ExpiryDate?.iso
+        ? new Date(item?.ExpiryDate?.iso)
+        : null;
       const newExpiryDate = new Date(expiryDate);
-      if (newExpiryDate > oldExpiryDate) {
+      const hasOldExpiry =
+        oldExpiryDate && !Number.isNaN(oldExpiryDate.getTime());
+      if (!hasOldExpiry || newExpiryDate > oldExpiryDate) {
         setActLoader({ [`${item.objectId}`]: true });
         const updateExpiryDate = new Date(expiryDate).toISOString();
         const expiryIsoFormat = { iso: updateExpiryDate, __type: "Date" };
@@ -1389,23 +1398,37 @@ const DocumentsReport = (props) => {
                           handleClose={handleCloseModal}
                         >
                           <form
-                            className="px-4 py-2 flex flex-col"
+                            className="px-4 py-2 flex flex-col w-full"
                             onSubmit={(e) => handleUpdateExpiry(e, item)}
                           >
+                            <div className="text-sm mb-2">
+                              <span className="font-medium mr-1">
+                                {t("current-expiry-date")}:
+                              </span>
+                              {item?.ExpiryDate?.iso
+                                ? formatDateToDdMmmYyyy(
+                                    new Date(item?.ExpiryDate?.iso)
+                                  )
+                                : t("no-data")}
+                            </div>
                             <label className="mr-2">
                               {t("expiry-date")} {"(dd-mm-yyyy)"}
                             </label>
-                            <input
-                              type="date"
-                              className="rounded-full mb-2 bg-base-300 w-full px-4 py-2 text-base-content border-2 hover:border-spacing-2"
-                              defaultValue={
-                                item?.ExpiryDate?.iso?.split("T")?.[0]
-                              }
-                              onChange={(e) => {
-                                setExpiryDate(e.target.value);
-                              }}
-                            />
-                            <div className="flex justify-start mb-1">
+                            <div className="w-full">
+                              <DatePicker
+                                selectDate={{
+                                  date: expiryDate,
+                                  format: "dd-MM-yyyy"
+                                }}
+                                format="dd-MM-yyyy"
+                                onChange={(date) => setExpiryDate(date)}
+                                handleClear={() => setExpiryDate(null)}
+                                showLabel={false}
+                                showClear={false}
+                                dateClassName="text-sm md:text-base"
+                              />
+                            </div>
+                            <div className="flex justify-start mb-1 mt-3">
                               <button
                                 type="submit"
                                 className="op-btn op-btn-primary"
@@ -1619,7 +1642,7 @@ const DocumentsReport = (props) => {
                                           >
                                             {t("body")}{" "}
                                           </label>
-                                          <EditorToolbar containerId="toolbar1" />
+                                          {/* <EditorToolbar containerId="toolbar1" />
                                           <ReactQuill
                                             id="mailbody"
                                             theme="snow"
@@ -1630,6 +1653,13 @@ const DocumentsReport = (props) => {
                                             onChange={(value) =>
                                               handlebodyChange(value, item)
                                             }
+                                          /> */}
+                                          <EmailBodyEditor
+                                            value={mail.body || ""}
+                                            onChange={(value) =>
+                                              handlebodyChange(value, item)
+                                            }
+                                            smallscreen
                                           />
                                         </div>
                                         <button
@@ -1721,11 +1751,11 @@ const DocumentsReport = (props) => {
                     <img
                       className="w-full h-full object-contain"
                       src={pad}
-                      alt={t("no-data-avaliable")}
+                      alt={t("no-data-available")}
                     />
                   </div>
                   <div className="text-sm font-semibold">
-                    {t("no-data-avaliable")}
+                    {t("no-data-available")}
                   </div>
                 </>
               )}
@@ -1776,6 +1806,7 @@ const DocumentsReport = (props) => {
           handleShareList={handleShareList}
           setDocumentDetails={setDocumentDetails}
           handleClose={handleCloseMail}
+          copyUrlRef={copyUrlRef}
         />
         <ModalUi
           isOpen={isSend}

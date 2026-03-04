@@ -11,7 +11,6 @@ import Mailgun from 'mailgun.js';
 import { ApiPayloadConverter } from 'parse-server-api-mail-adapter';
 import S3Adapter from '@parse/s3-files-adapter';
 import FSFilesAdapter from '@parse/fs-files-adapter';
-import AWS from 'aws-sdk';
 import { app as customRoute } from './cloud/customRoute/customApp.js';
 import { exec } from 'child_process';
 import { createTransport } from 'nodemailer';
@@ -19,12 +18,14 @@ import { appName, cloudServerUrl, serverAppId, smtpenable, smtpsecure, useLocal 
 import { SSOAuth } from './auth/authadapter.js';
 import runDbMigrations from './migrationdb/index.js';
 import { validateSignedLocalUrl } from './cloud/parsefunction/getSignedUrl.js';
-import maintenance_mode_message from 'aws-sdk/lib/maintenance_mode_message.js';
 let fsAdapter;
-maintenance_mode_message.suppress = true;
+
 if (useLocal !== 'true') {
   try {
-    const spacesEndpoint = new AWS.Endpoint(process.env.DO_ENDPOINT);
+    // const spacesEndpoint = new AWS.Endpoint(process.env.DO_ENDPOINT);
+    const spacesEndpoint = process.env.DO_ENDPOINT?.includes('http')
+      ? process.env.DO_ENDPOINT
+      : `https://${process.env.DO_ENDPOINT}`; //"e.g https://blr1.digitaloceanspaces.com"
     const s3Options = {
       bucket: process.env.DO_SPACE,
       baseUrl: process.env.DO_BASEURL,
@@ -40,6 +41,7 @@ if (useLocal !== 'true') {
           secretAccessKey: process.env.DO_SECRET_ACCESS_KEY,
         },
         endpoint: spacesEndpoint,
+        signatureVersion: 'v4',
       },
     };
     fsAdapter = new S3Adapter(s3Options);

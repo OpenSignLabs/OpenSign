@@ -127,7 +127,7 @@ function PdfRequestFiles(
   const [isSigned, setIsSigned] = useState(false);
   const [isExpired, setIsExpired] = useState(false);
   const [alreadySign, setAlreadySign] = useState(false);
-  const [containerWH, setContainerWH] = useState({});
+  const [containerWH, setContainerWH] = useState({ width: 0, height: 0 });
   const [widgetsTour, setWidgetsTour] = useState(false);
   const [minRequiredCount, setminRequiredCount] = useState();
   const [sendInOrder, setSendInOrder] = useState(false);
@@ -1937,6 +1937,7 @@ function PdfRequestFiles(
                     Id={uniqueId}
                     widgetType={currWidgetsDetails?.type}
                     setUniqueId={setUniqueId}
+                    pdfOriginalWH={pdfOriginalWH}
                   />
                   <div className=" w-full md:w-[95%] ">
                     {/* this modal is used show this document is already sign */}
@@ -2074,10 +2075,10 @@ function PdfRequestFiles(
                     <div
                       ref={divRef}
                       data-tut="pdfArea"
-                      className="h-full md:h-[95%]"
+                      className="h-fit"
                       onClick={() => setIsReqSignTourDisabled(true)}
                     >
-                      {containerWH && (
+                      {containerWH?.width && (
                         <RenderPdf
                           setIsPageCopy={setIsPageCopy}
                           pageNumber={pageNumber}

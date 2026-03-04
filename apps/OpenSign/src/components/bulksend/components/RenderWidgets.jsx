@@ -1,4 +1,4 @@
-import { forwardRef, useEffect, useMemo, useRef, useState } from "react";
+import { forwardRef, memo, useEffect, useMemo, useRef, useState } from "react";
 import DatePicker from "react-datepicker";
 import SignatureCanvas from "react-signature-canvas";
 import { useTranslation } from "react-i18next";
@@ -6,6 +6,7 @@ import moment from "moment";
 import {
   changeDateToMomentFormat,
   compressedFileSize,
+  generateId,
   getMonth,
   getYear,
   months,
@@ -32,7 +33,12 @@ const inputValidation = (pattern, type) => {
   return inputTypes[type] || "";
 };
 const canavasTheme = `opensigncss:bg-white opensigndark:bg-[#121212] opensigndark:border-[#f6f3f4]/20 opensigncss:border-gray-300 opensigndark:hover:border-white opensigncss:hover:border-black border-[1px]`;
-const DateWidget = ({ widget, isRequired, onChange }) => {
+
+const widgetLabelCss = (isRequired = false) => {
+  return `${isRequired ? "after:content-['_*'] after:text-red-500" : ""} block text-xs font-semibold`;
+};
+
+const DateWidget = ({ widget, isRequired, onChange, showLabel }) => {
   const format = widget?.options?.validation?.format || "MM/dd/yyyy";
 
   const PrefillDateInput = forwardRef(({ value, onClick }, ref) => (
@@ -78,6 +84,11 @@ const DateWidget = ({ widget, isRequired, onChange }) => {
 
   return (
     <div className="flex flex-col">
+      {showLabel && (
+        <div className={`${widgetLabelCss(isRequired)} mb-[0.5rem]`}>
+          {widget?.options?.name}
+        </div>
+      )}
       <div className="min-w-max">
         <DatePicker
           portalId="datepicker-portal-root"
@@ -110,6 +121,7 @@ const DateWidget = ({ widget, isRequired, onChange }) => {
               </select>
             </div>
           )}
+          wrapperClassName="w-full"
           closeOnScroll={true}
           selected={handleDate(widget)}
           onChange={(date) => handleOnDateChange(date, widget)}
@@ -121,21 +133,24 @@ const DateWidget = ({ widget, isRequired, onChange }) => {
     </div>
   );
 };
-const TextWidget = ({ widget, isRequired, onChange }) => {
+const TextWidget = ({
+  widget,
+  isRequired,
+  onChange,
+  showLabel,
+}) => {
   const { t } = useTranslation();
-  const [value, setValue] = useState([]);
   const inputType = widget?.options?.validation?.type || "";
   const serverRegex = widget?.options?.validation?.pattern;
   const isPredfineType = inputType ? inputOpt?.has(inputType) : "";
   const regExpression = inputValidation(serverRegex, inputType);
   const pattern = useMemo(() => toHtmlPattern(regExpression), [regExpression]);
-
-  useEffect(() => {
+  const [value, setValue] = useState(() => {
     const response =
       widget?.options?.response ?? widget?.options?.defaultValue ?? "";
-    const isNumber = inputType === "number" && response;
-    setValue(isNumber ? Number(response) : response);
-  }, []);
+    return inputType === "number" && response ? Number(response) : response;
+  });
+
   const handleInputChange = (e) => {
     const text = e.target.value || "";
     setValue(text);
@@ -143,6 +158,11 @@ const TextWidget = ({ widget, isRequired, onChange }) => {
   };
   return (
     <div className="flex flex-col">
+      {showLabel && (
+        <div className={`${widgetLabelCss(isRequired)} mb-[0.5rem]`}>
+          {widget?.options?.name}
+        </div>
+      )}
       <div className="min-w-max">
         <input
           type={isPredfineType ? inputType : "text"}
@@ -152,7 +172,9 @@ const TextWidget = ({ widget, isRequired, onChange }) => {
             widget?.options?.hint ||
             t("enter-value", { value: widget?.options?.name })
           }
-          className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
+          className={[
+            "op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs",
+          ].join(" ")}
           onChange={(e) => handleInputChange(e)}
           pattern={pattern || undefined} // if no pattern, browser won't do pattern validation
           onInvalid={(e) => {
@@ -173,17 +195,19 @@ const TextWidget = ({ widget, isRequired, onChange }) => {
     </div>
   );
 };
-const CheckboxWidget = ({ widget, isRequired, onChange }) => {
+const CheckboxWidget = ({ widget, isRequired, onChange, showLabel }) => {
   const { t } = useTranslation();
-  const [selectedCheckbox, setSelectedCheckbox] = useState([]);
-
-  useEffect(() => {
-    setSelectedCheckbox(
-      widget?.options?.response ?? widget?.options?.defaultValue ?? []
-    );
-  }, []);
+  const [selectedCheckbox, setSelectedCheckbox] = useState(
+    () => widget?.options?.response || widget?.options?.defaultValue || []
+  );
+  const groupName = `checkbox-group-${widget.key}`;
+  const noneSelected = (selectedCheckbox?.length ?? 0) === 0;
 
   const handleCheckboxValue = (isChecked, ind) => {
+    // ✅ clear hidden input error immediately
+    const hidden = document.querySelector(`input[name="${groupName}"]`);
+    hidden?.setCustomValidity("");
+
     const prevArr = Array.isArray(selectedCheckbox) ? selectedCheckbox : [];
 
     const updateResponse = isChecked
@@ -195,10 +219,15 @@ const CheckboxWidget = ({ widget, isRequired, onChange }) => {
     setSelectedCheckbox(updateResponse);
     onChange(updateResponse);
   };
-  const noneSelected = selectedCheckbox?.length === 0;
+
   return (
     <div className="flex flex-col">
-      <div className="flex flex-col gap-y-1 min-w-max">
+      {showLabel && (
+        <div className={`${widgetLabelCss(isRequired)} mb-[0.5rem]`}>
+          {widget?.options?.name}
+        </div>
+      )}
+      <div className="flex flex-col gap-y-1 min-w-max relative">
         {widget.options?.values?.map((value, ind) => (
           <div
             key={ind}
@@ -209,14 +238,7 @@ const CheckboxWidget = ({ widget, isRequired, onChange }) => {
               className="mt-[2px] op-checkbox op-checkbox-xs"
               type="checkbox"
               checked={selectedCheckbox.includes(ind)}
-              required={isRequired && noneSelected && ind === 0} // ✅ key line
-              onInvalid={(e) =>
-                e.target.setCustomValidity(t("select-at-least-option"))
-              }
-              onChange={(e) => {
-                e.target.setCustomValidity(""); // ✅ clear message as soon as user changes
-                handleCheckboxValue(e.target.checked, ind);
-              }}
+              onChange={(e) => handleCheckboxValue(e.target.checked, ind)}
             />
             <label
               htmlFor={`checkbox-${widget.key + ind}`}
@@ -226,27 +248,47 @@ const CheckboxWidget = ({ widget, isRequired, onChange }) => {
             </label>
           </div>
         ))}
+        {/* ✅ the validator */}
+        {isRequired && (
+          <input
+            tabIndex={-1}
+            aria-hidden="true"
+            className="absolute opacity-0 pointer-events-none w-0.5 h-0.5 left-[0.46rem] top-4"
+            name={groupName}
+            value={noneSelected ? "" : "selected"} // empty => invalid, non-empty => valid
+            required
+            onInvalid={(e) =>
+              e.target.setCustomValidity(t("select-at-least-option"))
+            }
+            onChange={(e) => e.target.setCustomValidity("")}
+          />
+        )}
       </div>
     </div>
   );
 };
-const DropdownWidget = ({ widget, isRequired, onChange }) => {
+const DropdownWidget = ({ widget, isRequired, onChange, showLabel }) => {
   const { t } = useTranslation();
-  const [selected, setSelected] = useState("");
-
-  useEffect(() => {
-    setSelected(
-      widget?.options?.response ?? widget?.options?.defaultValue ?? ""
-    );
-  }, []);
+  const [selected, setSelected] = useState(
+    () =>
+      widget?.options?.response?.trim() ||
+      widget?.options?.defaultValue?.trim() ||
+      ""
+  );
 
   const handleDropdownChange = (value) => {
-    setSelected(value);
-    onChange(value);
+    const select = value?.trim();
+    setSelected(select);
+    onChange(select);
   };
 
   return (
     <div className="flex flex-col">
+      {showLabel && (
+        <div className={`${widgetLabelCss(isRequired)} mb-[0.5rem]`}>
+          {widget?.options?.name}
+        </div>
+      )}
       <div className="min-w-max">
         <select
           className="op-select op-select-bordered op-select-sm focus:outline-none hover:border-base-content text-base-content w-full"
@@ -260,7 +302,7 @@ const DropdownWidget = ({ widget, isRequired, onChange }) => {
             {t("choose-one")}
           </option>
           {widget?.options?.values?.map((option, ind) => (
-            <option key={ind} value={option}>
+            <option key={ind} value={option?.trim()}>
               {option}
             </option>
           ))}
@@ -269,22 +311,28 @@ const DropdownWidget = ({ widget, isRequired, onChange }) => {
     </div>
   );
 };
-const RadioButtonWidget = ({ widget, isRequired, onChange, formIndex }) => {
-  const [selected, setSelected] = useState("");
-
-  useEffect(() => {
-    setSelected(
-      widget?.options?.response || widget?.options?.defaultValue || ""
-    );
-  }, []);
+const RadioButtonWidget = ({ widget, isRequired, onChange, showLabel }) => {
+  const [selected, setSelected] = useState(
+    () =>
+      widget?.options?.response?.trim() ||
+      widget?.options?.defaultValue?.trim() ||
+      ""
+  );
+  const id = generateId(4);
 
   const handleRadioChange = (value) => {
-    setSelected(value);
-    onChange(value);
+    const select = value?.trim();
+    setSelected(select);
+    onChange(select);
   };
 
   return (
     <div className="flex flex-col">
+      {showLabel && (
+        <div className={`${widgetLabelCss(isRequired)} mb-[0.5rem]`}>
+          {widget?.options?.name}
+        </div>
+      )}
       <div className="flex flex-col gap-y-1 min-w-max">
         {widget.options?.values?.map((data, ind) => (
           <div
@@ -294,10 +342,10 @@ const RadioButtonWidget = ({ widget, isRequired, onChange, formIndex }) => {
             <input
               id={`radio-${widget.key + ind}`}
               className="mt-[2px] op-radio op-radio-xs"
-              name={`radio-group-${widget.key}-${formIndex}`} // ✅ same name => browser treats all radios as ONE group
+              name={`radio-group-${widget.key}-${id}`} // ✅ same name => browser treats all radios as ONE group
               type="radio"
               required={isRequired && ind === 0} // ✅ set required ONCE (on first radio) to make the whole group mandatory
-              checked={selected === data}
+              checked={selected === data?.trim()}
               onChange={() => handleRadioChange(data)}
             />
             <label
@@ -312,7 +360,7 @@ const RadioButtonWidget = ({ widget, isRequired, onChange, formIndex }) => {
     </div>
   );
 };
-const ImageWidget = ({ widget, isRequired, onChange }) => {
+const ImageWidget = ({ widget, isRequired, onChange, showLabel }) => {
   const { t } = useTranslation();
   const imageRef = useRef(null);
   const [img, setImg] = useState({ src: "", imgType: "" });
@@ -341,26 +389,23 @@ const ImageWidget = ({ widget, isRequired, onChange }) => {
 
   return (
     <div className="flex flex-col">
+      {showLabel && (
+        <div className={`${widgetLabelCss(isRequired)} mb-[0.5rem]`}>
+          {widget?.options?.name}
+        </div>
+      )}
       <div className="flex flex-col prefillCanvas">
         {defaultImg?.src || img?.src ? (
-          <>
-            <div
-              className={`cursor-pointer rounded-box ${canavasTheme} flex flex-col w-full h-full justify-center items-center`}
-            >
-              <img
-                alt={`image_${widget?.options?.name}`}
-                src={img.src || defaultImg?.src}
-                draggable="false"
-                className="object-contain h-full w-full aspect-[5/2]"
-              />
-            </div>
-            <span
-              onClick={handleClearImage}
-              className="flex justify-start text-blue-500 underline cursor-pointer ml-1"
-            >
-              {t("clear")}
-            </span>
-          </>
+          <div
+            className={`cursor-pointer rounded-box ${canavasTheme} flex flex-col w-full h-full justify-center items-center`}
+          >
+            <img
+              alt={`image_${widget?.options?.name}`}
+              src={img.src || defaultImg?.src}
+              draggable="false"
+              className="object-contain h-full w-full aspect-[5/2]"
+            />
+          </div>
         ) : (
           <div
             className={`cursor-pointer rounded-box ${canavasTheme} overflow-hidden w-full h-full aspect-[5/2] flex flex-col justify-center items-center`}
@@ -379,10 +424,18 @@ const ImageWidget = ({ widget, isRequired, onChange }) => {
           </div>
         )}
       </div>
+      {(defaultImg?.src || img?.src) && (
+        <span
+          onClick={handleClearImage}
+          className="flex justify-start text-blue-500 underline cursor-pointer ml-1"
+        >
+          {t("clear")}
+        </span>
+      )}
     </div>
   );
 };
-const DrawWidget = ({ widget, isRequired, onChange }) => {
+const DrawWidget = ({ widget, isRequired, onChange, showLabel }) => {
   const { t } = useTranslation();
   const canvasRef = useRef(null);
   const sigRequiredRef = useRef(null);
@@ -419,7 +472,12 @@ const DrawWidget = ({ widget, isRequired, onChange }) => {
 
   return (
     <div className="flex flex-col">
-      <div className="relative">
+      {showLabel && (
+        <div className={`${widgetLabelCss(isRequired)} mb-[0.5rem]`}>
+          {widget?.options?.name}
+        </div>
+      )}
+      <div className="relative w-fit">
         {image ? (
           <div className={`prefillCanvas ${canavasTheme} rounded-[10px]`}>
             <img
@@ -469,7 +527,12 @@ const DrawWidget = ({ widget, isRequired, onChange }) => {
   );
 };
 
-const CellsWidget = ({ widget, isRequired, onChange }) => {
+const CellsWidget = ({
+  widget,
+  isRequired,
+  onChange,
+  showLabel,
+}) => {
   const { t } = useTranslation();
   const count = widget?.options?.cellCount || 1;
   const [word, setWord] = useState("");
@@ -493,6 +556,11 @@ const CellsWidget = ({ widget, isRequired, onChange }) => {
 
   return (
     <div className="flex flex-col">
+      {showLabel && (
+        <div className={`${widgetLabelCss(isRequired)} mb-[0.5rem]`}>
+          {widget?.options?.name}
+        </div>
+      )}
       <div className="relative">
         <CellsInput
           hint={
@@ -533,25 +601,21 @@ const CellsWidget = ({ widget, isRequired, onChange }) => {
 
 const RenderWidgets = ({
   widget,
-  formIndex,
-  prefillIndex,
-  handleWidgetDetails
+  handleWidgetDetails,
+  showLabel = false,
 }) => {
   const label = widget?.label?.toLowerCase() ?? "";
   const isPrefill = label.includes(PREFILL_PREFIX);
   const commonProps = {
     widget,
     isRequired: widget.options?.status === "required" && isPrefill,
-    formIndex
-  };
-
-  const onChange = (value) => {
-    handleWidgetDetails(value, formIndex, prefillIndex);
+    showLabel: showLabel,
+    onChange: handleWidgetDetails,
   };
 
   switch (widget.type) {
     case "date":
-      return <DateWidget {...commonProps} onChange={onChange} />;
+      return <DateWidget {...commonProps} />;
     case textWidget:
     case textInputWidget:
     case "name":
@@ -559,24 +623,24 @@ const RenderWidgets = ({
     case "company":
     case "job title":
     case "number":
-      return <TextWidget {...commonProps} onChange={onChange} />;
+      return <TextWidget {...commonProps} />;
     case "checkbox":
-      return <CheckboxWidget {...commonProps} onChange={onChange} />;
+      return <CheckboxWidget {...commonProps} />;
     case radioButtonWidget:
-      return <RadioButtonWidget {...commonProps} onChange={onChange} />;
+      return <RadioButtonWidget {...commonProps} />;
     case "dropdown":
-      return <DropdownWidget {...commonProps} onChange={onChange} />;
+      return <DropdownWidget {...commonProps} />;
     case "image":
     case "stamp":
-      return <ImageWidget {...commonProps} onChange={onChange} />;
+      return <ImageWidget {...commonProps} />;
     case "initials":
     case "draw":
-      return <DrawWidget {...commonProps} onChange={onChange} />;
+      return <DrawWidget {...commonProps} />;
     case "cells":
-      return <CellsWidget {...commonProps} onChange={onChange} />;
+      return <CellsWidget {...commonProps} />;
     default:
       return null;
   }
 };
 
-export default RenderWidgets;
+export default memo(RenderWidgets);

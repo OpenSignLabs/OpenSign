@@ -11,6 +11,7 @@ export default async function GetLogoByDomain(request) {
       const updateRes = JSON.parse(JSON.stringify(res));
       return {
         logo: updateRes?.Logo,
+        favicon: updateRes?.Favicon || updateRes?.Logo,
         appname: appName,
         user: 'exist',
       };

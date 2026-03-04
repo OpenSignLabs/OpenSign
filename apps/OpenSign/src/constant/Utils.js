@@ -401,6 +401,8 @@ export const selectFormat = (data) => {
       return "dd MMMM, yyyy";
     case "DD.MM.YYYY":
       return "dd.MM.yyyy";
+    case "DD-MMM-YYYY":
+      return "dd-MMM-yyyy";
     default:
       return "MM/dd/yyyy";
   }
@@ -430,6 +432,8 @@ export const changeDateToMomentFormat = (format) => {
       return "DD MMMM, YYYY";
     case "dd.MM.yyyy":
       return "DD.MM.YYYY";
+    case "dd-MMM-yyyy":
+      return "DD-MMM-YYYY";
     default:
       return "L";
   }
@@ -1116,7 +1120,8 @@ export const onChangeInput = (
                   validation: {
                     type: "date-format",
                     format: dateFormat // This indicates the required date format explicitly.
-                  }
+                  },
+                  hint: dateDetails?.hint || position.options?.hint || ""
                 }
               };
             } else if (
@@ -1713,7 +1718,7 @@ export function onSaveImage(
       pos: page.pos.map(
         (item) =>
           // below condition to exclude apply all for image widget
-          item.type === widgetsType && item.type !== "image"
+          item.type === widgetsType // && item.type !== "image"
             ? {
                 ...item,
                 SignUrl: image?.src || defaultStampImg,
@@ -2542,30 +2547,60 @@ export const handleCopyNextToWidget = (
   xyPosition,
   index,
   setXyPosition,
+  pdfOriginalWH,
   userId
 ) => {
   let filterSignerPos;
-  //get position of previous widget and create new widget next to that widget on same data except
-  // xPosition and key
-  let newposition = position;
-  const calculateXPosition = parseInt(position.xPosition) + 10;
-  const calculateYPosition = parseInt(position.yPosition) + 10;
-  const widgetName = `${newposition?.options?.name}${randomId(2)}`;
-  newposition = {
-    ...newposition,
-    xPosition: calculateXPosition,
-    yPosition: calculateYPosition,
+
+  //Get page dimensions
+  const page = pdfOriginalWH?.find((x) => x?.pageNumber === index);
+
+  const pageWidth = page?.width;
+  const pageHeight = page?.height;
+
+  // Widget dimensions (fallback safe values)
+  const widgetWidth = position?.width || 150;
+
+  const widgetHeight = position?.height || 60;
+
+  const gap = 10;
+
+  //Default copy (slightly right + down)
+  let newX = parseInt(position.xPosition) + gap;
+  let newY = parseInt(position.yPosition) + gap;
+
+  // Prevent RIGHT overflow
+  if (pageWidth && newX + widgetWidth > pageWidth) {
+    newX = parseInt(position.xPosition) - gap;
+  }
+  if (newX < 0) newX = 0;
+
+  //  Prevent BOTTOM overflow
+  if (pageHeight && newY + widgetHeight > pageHeight) {
+    newY = pageHeight - widgetHeight - gap;
+  }
+
+  if (newY < 0) newY = 0;
+
+  const widgetName = `${position?.type}${randomId(2)}`;
+
+  const newposition = {
+    ...position,
+    xPosition: newX,
+    yPosition: newY,
     key: newId,
-    options: { ...newposition?.options, name: widgetName }
+    options: { ...position?.options, name: widgetName }
   };
-  //if condition to create widget in request-sign flow
+
+  //Your existing update logic
+
   if (userId) {
     filterSignerPos = xyPosition.find((data) => data.Id === userId);
-    const getPlaceHolder = filterSignerPos && filterSignerPos?.placeHolder;
+    const getPlaceHolder = filterSignerPos?.placeHolder;
     const getPageNumer = getPlaceHolder?.filter(
       (data) => data.pageNumber === index
     );
-    const getXYdata = getPageNumer && getPageNumer[0]?.pos;
+    const getXYdata = getPageNumer?.[0]?.pos || [];
     getXYdata.push(newposition);
     if (getPageNumer && getPageNumer.length > 0) {
       const newUpdateSignPos = getPlaceHolder.map((obj) => {
@@ -2585,15 +2620,17 @@ export const handleCopyNextToWidget = (
       setXyPosition(newUpdateSigner);
     }
   } else {
-    let getXYdata = xyPosition[index]?.pos || [];
+    const getPageNumer = xyPosition?.find((data) => data.pageNumber === index);
+    const getXYdata = getPageNumer?.pos;
+
     getXYdata.push(newposition);
+
     const updatePlaceholder = xyPosition.map((obj, ind) => {
       if (ind === index) {
         return { ...obj, pos: getXYdata };
       }
       return obj;
     });
-
     setXyPosition(updatePlaceholder);
   }
 };
@@ -2616,10 +2653,13 @@ export const getAppLogo = async () => {
       domain: domain
     });
     if (tenant) {
+      const resolvedFavicon =
+        tenant?.favicon || tenant?.logo || appInfo.fev_Icon;
       localStorage.setItem("appname", "OpenSign™");
       localStorage.setItem("favicon", appInfo.fev_Icon);
       return {
         logo: tenant?.logo,
+        favicon: resolvedFavicon,
         user: tenant?.user
       };
     }
@@ -3493,7 +3533,6 @@ export const mailTemplate = (param) => {
   const appName = "OpenSign™";
   const logo = `<div style='padding:10px'><img src='https://qikinnovation.ams3.digitaloceanspaces.com/logo.png' height='50' /></div>`;
 
-  const opurl = ` <a  href="mailto:complaint@opensiglabs.com" target=_blank>here</a>.</p></div></div></body></html>`;
   const subject = `${param.senderName} has requested you to sign "${param.title}"`;
   const body =
     "<html><head><meta http-equiv='Content-Type' content='text/html;charset=UTF-8' /></head><body><div style='background-color:#f5f5f5;padding:20px'><div style='background:white;padding-bottom:20px'>" +
@@ -3516,10 +3555,7 @@ export const mailTemplate = (param) => {
     appName +
     ". For any queries regarding this email, please contact the sender " +
     param.senderMail +
-    " directly. If you think this email is inappropriate or spam, you may file a complaints with " +
-    appName +
-    opurl;
-
+    " directly.</p></div></div></body></html> ";
   return { subject, body };
 };
 

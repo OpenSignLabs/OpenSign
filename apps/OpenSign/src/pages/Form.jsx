@@ -672,6 +672,14 @@ const Forms = (props) => {
     });
   };
 
+
+  const reminderCustomWarning = (e) => {
+    if (!formData.remindOnceInEvery || formData.remindOnceInEvery === 0) {
+      return e.target.setCustomValidity(t("input-required"));
+    } else {
+      return e.target.setCustomValidity(t("reminder-error"));
+    }
+  };
   return (
     <div
       className={`${isSubmit ? "" : "shadow-md rounded-box my-[2px] p-3 bg-base-100 text-base-content"}`}
@@ -956,11 +964,10 @@ const Forms = (props) => {
                               name="remindOnceInEvery"
                               className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
                               onChange={handleStrInput}
-                              onInvalid={(e) =>
-                                e.target.setCustomValidity(t("input-required"))
-                              }
+                              onInvalid={(e) => reminderCustomWarning(e)}
                               onInput={(e) => e.target.setCustomValidity("")}
                               min={1}
+                              max={formData?.TimeToCompleteDays}
                               required
                             />
                           </div>
@@ -1107,11 +1114,10 @@ const Forms = (props) => {
                             name="remindOnceInEvery"
                             className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
                             onChange={handleStrInput}
-                            onInvalid={(e) =>
-                              e.target.setCustomValidity(t("input-required"))
-                            }
+                            onInvalid={(e) => reminderCustomWarning(e)}
                             onInput={(e) => e.target.setCustomValidity("")}
                             min={1}
+                            max={formData?.TimeToCompleteDays}
                             required
                           />
                         </div>

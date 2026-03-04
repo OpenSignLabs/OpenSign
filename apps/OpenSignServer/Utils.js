@@ -107,7 +107,7 @@ const saveDataFile = async (size, fileUrl, tenantPtr, UserId) => {
   }
 };
 
-export const updateMailCount = async (extUserId, plan, monthchange) => {
+export const updateMailCount = async extUserId => {
   // Update count in contracts_Users class
   const query = new Parse.Query('contracts_Users');
   query.equalTo('objectId', extUserId);
@@ -116,31 +116,7 @@ export const updateMailCount = async (extUserId, plan, monthchange) => {
     const contractUser = await query.first({ useMasterKey: true });
     if (contractUser) {
       const _extRes = JSON.parse(JSON.stringify(contractUser));
-      let updateDate = new Date();
-      if (_extRes?.LastEmailCountReset?.iso) {
-        updateDate = new Date(_extRes?.LastEmailCountReset?.iso);
-        const newDate = new Date();
-        // Update the month while keeping the same day and year
-        updateDate.setMonth(newDate.getMonth());
-        updateDate.setFullYear(newDate.getFullYear());
-      }
       contractUser.increment('EmailCount', 1);
-      if (plan === 'freeplan') {
-        if (monthchange) {
-          contractUser.set('LastEmailCountReset', updateDate);
-          contractUser.set('MonthlyFreeEmails', 1);
-        } else {
-          if (contractUser?.get('MonthlyFreeEmails')) {
-            contractUser.increment('MonthlyFreeEmails', 1);
-            if (contractUser?.get('LastEmailCountReset')) {
-              contractUser.set('LastEmailCountReset', updateDate);
-            }
-          } else {
-            contractUser.set('MonthlyFreeEmails', 1);
-            contractUser.set('LastEmailCountReset', updateDate);
-          }
-        }
-      }
       await contractUser.save(null, { useMasterKey: true });
     }
   } catch (error) {
@@ -160,17 +136,6 @@ export const smtpsecure = process.env.SMTP_PORT && process.env.SMTP_PORT !== '46
 export const smtpenable =
   process.env.SMTP_ENABLE && process.env.SMTP_ENABLE.toLowerCase() === 'true' ? true : false;
 export const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-export function signPayload(payload, secret) {
-  if (payload && secret) {
-    const signature = crypto
-      .createHmac('sha256', secret)
-      .update(JSON.stringify(payload))
-      .digest('hex');
-    return { 'x-webhook-signature': signature };
-  } else {
-    return {};
-  }
-}
 
 // `generateId` is used to unique Id for fileAdapter
 export function generateId(length) {
@@ -255,8 +220,6 @@ export const mailTemplate = param => {
   const AppName = appName;
   const logo = `<img src='https://qikinnovation.ams3.digitaloceanspaces.com/logo.png' height='50' />`;
 
-  const opurl = ` <a href='mailto:complaint@opensiglabs.com' target=_blank>here</a>`;
-
   const body =
     "<html><head><meta http-equiv='Content-Type' content='text/html;charset=UTF-8' /></head><body><div style='background-color:#f5f5f5;padding:20px'><div style='background:white;padding-bottom:20px'><div style='padding:10px'>" +
     logo +
@@ -278,7 +241,7 @@ export const mailTemplate = param => {
     AppName +
     '. For any queries regarding this email, please contact the sender ' +
     param.senderMail +
-    ` directly. If you think this email is inappropriate or spam, you may file a complaints with ${AppName}${opurl}.</p></div></div></body></html>`;
+    ` directly.</p></div></div></body></html>`;
 
   return { subject, body };
 };
@@ -311,6 +274,8 @@ export const selectFormat = data => {
       return 'dd MMMM, yyyy';
     case 'DD.MM.YYYY':
       return 'dd.MM.yyyy';
+    case 'DD-MMM-YYYY':
+      return 'dd-MMM-yyyy';
     default:
       return 'MM/dd/yyyy';
   }

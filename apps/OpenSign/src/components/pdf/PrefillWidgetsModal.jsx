@@ -213,7 +213,6 @@ function PrefillWidgetModal(props) {
       }
     }
   }, [props?.isPrefillModal, uniqueWidget]);
- 
   const ExampleCustomInput = forwardRef(({ value, onClick }, ref) => (
     <div
       style={{ fontFamily: "Arial, sans-serif" }}
@@ -271,6 +270,24 @@ function PrefillWidgetModal(props) {
       console.log("error in handleSavePrefillImg function ", e);
     }
   };
+  //'buildUpdatedItem' function to update response
+  const buildUpdatedItem = (item, widgetDetails, response, imgUrl) => {
+    const isImage = widgetDetails?.type === "image";
+    const finalResponse = isImage ? imgUrl : response;
+
+    return {
+      ...item,
+      ...(isImage && {
+        SignUrl: imgUrl,
+        ImageType: image.imgType
+      }),
+      options: {
+        ...item.options,
+        response: finalResponse
+      }
+    };
+  };
+
   //function is used to handle prefill widgets details and check if there are any duplicate widget name field exist then update all duplicate value
   const handleWidgetDetails = async (widgetDetails, response) => {
     const widgetName = widgetDetails?.options?.name;
@@ -283,31 +300,39 @@ function PrefillWidgetModal(props) {
     const updatedData = getPlaceholder.map((page) => ({
       ...page,
       pos: page.pos.map((item) => {
-        if (item.options.name === widgetName) {
-          if (widgetDetails?.type === "image") {
-            return {
-              ...item,
-              SignUrl: imgUrl,
-              ImageType: image.imgType,
-              options: { ...item.options, response: imgUrl }
-            };
-          } else {
-            return {
-              ...item,
-              options: { ...item.options, response: response }
-            };
-          }
-        } else {
-          return item;
+        const isSameKey = item.key === widgetDetails.key;
+        const isSameName =
+          item.options?.name === widgetName && item.key !== widgetDetails.key;
+
+        // Always update the active widget
+        if (isSameKey) {
+          return buildUpdatedItem(item, widgetDetails, response, imgUrl);
         }
+
+        // Sync same-name widgets ONLY if response is valid for them
+        if (isSameName) {
+          const isValidForTarget = utils.isWidgetResponseCompatible({
+            ...item,
+            options: {
+              ...item.options,
+              response: widgetDetails?.type === "image" ? imgUrl : response
+            }
+          });
+
+          if (!isValidForTarget) {
+            return item; // skip invalid sync
+          }
+
+          return buildUpdatedItem(item, widgetDetails, response, imgUrl);
+        }
+
+        return item;
       })
     }));
-    const newUpdateSigner = props.xyPosition.map((obj) => {
-      if (obj.Role === "prefill") {
-        return { ...obj, placeHolder: updatedData };
-      }
-      return obj;
-    });
+    const newUpdateSigner = props.xyPosition.map((obj) =>
+      obj.Role === "prefill" ? { ...obj, placeHolder: updatedData } : obj
+    );
+
     props.setXyPosition(newUpdateSigner);
   };
 

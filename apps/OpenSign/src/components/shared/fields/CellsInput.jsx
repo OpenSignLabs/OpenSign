@@ -24,7 +24,7 @@ export default function CellsInput({
   only = "all",
   autoFocus = false,
   disabled = false,
-  className = ""
+  className = "",
 }) {
   const isControlled = value !== undefined && typeof onChange === "function";
   const [internal, setInternal] = useState("");
@@ -176,7 +176,9 @@ export default function CellsInput({
             type="text"
             inputMode={only === "digits" ? "numeric" : "text"}
             autoComplete="one-time-code"
-            className="op-input op-input-bordered op-input-sm w-9 text-center rounded-sm focus:outline-none hover:border-base-content disabled:opacity-60"
+            className={[
+              "op-input op-input-bordered op-input-sm w-9 text-center rounded-sm focus:outline-none hover:border-base-content disabled:opacity-60",
+            ].join(" ")}
             style={inputStyle}
             value={ch}
             // maxLength={safeCount} // allows multi-char suggestions; we still distribute
@@ -205,7 +207,7 @@ function filterString(str, only) {
   if (only === "digits") return s.replace(/[^0-9]/g, "");
   if (only === "letters") return s.replace(/[^a-zA-Z]/g, "");
   if (only === "alphanumeric") return s.replace(/[^a-zA-Z0-9]/g, "");
-  return s.replace(/\s/g, ""); // for "all" we still drop spaces for OTP-like behavior
+  return s; // for "all" support all characters
 }
 
 function normalizeValue(v, count, only) {
