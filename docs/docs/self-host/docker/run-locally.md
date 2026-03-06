@@ -38,6 +38,8 @@ Copy the command above, paste it into the terminal, and press Enter to pull and 
 Make sure to replace the host URL with your subdomain where OpenSign will be accessible. 
 
 You will also need to point the subdomain to the server executing these commands by adding the correct A record to your DNS settings.
+
+> ⚠️ **WARNING:** MAKE SURE THAT PORT **27017** IS NOT EXPOSED TO THE INTERNET, AS THE DEFAULT CONFIGURATION DOES NOT ENABLE MONGODB AUTHENTICATION.
   
 ### Running locally
 If instead want to run locally try out below commands.
