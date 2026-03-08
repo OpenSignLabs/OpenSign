@@ -91,6 +91,8 @@ const AddAdmin = () => {
     event.preventDefault();
     if (!emailRegex.test(email)) {
       alert(t("valid-email-alert"));
+    } else if (!/^\d{10}$/.test(phone)) {
+      alert("Phone number must be exactly 10 digits");
     } else {
       if (lengthValid && caseDigitValid && specialCharValid) {
         clearStorage();
@@ -342,11 +344,19 @@ const AddAdmin = () => {
                       type="tel"
                       className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
                       value={phone}
-                      onChange={(e) => setPhone(e.target.value)}
+                      onChange={(e) => {
+                        const value = e.target.value.replace(/\D/g, "");
+                        if (value.length <= 10) {
+                          setPhone(value);
+                        }
+                      }}
                       onInvalid={(e) =>
                         e.target.setCustomValidity(t("input-required"))
                       }
                       onInput={(e) => e.target.setCustomValidity("")}
+                      pattern="\d{10}"
+                      maxLength="10"
+                      placeholder="10 digit phone number"
                       required
                     />
                     <hr className="my-2 border-none" />
