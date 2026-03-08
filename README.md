@@ -62,6 +62,17 @@ Welcome to OpenSign, the premier open source docusign alternative - document e-s
 - **Audit Trails & completion certificate:** Being a security focused solution, OpenSign™ makes it a top priority to save detailed logs for tracking document activities along with time-stamps, IP addresses, email IDs & phone numbers. A completion certificate is generated as soon as document is completed which contains all the document related logs for added safety.
 - **API Support:** OpenSign™ API allows seamless integration into existing systems and software. You can generate an API key from the app and refer the [official API docs](https://docs.opensignlabs.com/docs/API-docs/v1.1) to start integrating it in your existing applications.
 - **Integrations:** The open source document signing experience becomes even more seamless because of integrations with various Cloud storage systems, CRMs & enterprise platforms. We also have a Zapier integration that allows you to integrate it with virtually any application.
+
+- ## 📸 Application Screenshots
+
+Below are key screens of the OpenSign application:
+
+- **Login Page:** Secure authentication for users
+- **Dashboard:** Manage documents and view signing status
+- **Request Signature:** Send documents to one or more signers
+- **Templates:** Create reusable signing templates
+- **Folders:** Organize documents efficiently
+  
 <img alt="Login page" src="https://github.com/OpenSignLabs/OpenSign/assets/171803164/8016edb6-7d6e-4185-ab72-82d2c4a16032" height='200' > 
 <img alt="Dash_board" src="https://github.com/OpenSignLabs/OpenSign/assets/171803164/6e7b96f7-3154-4c25-bc1e-caf33925cc47" height='200'>
 <img  alt="Widgets" src="https://github.com/OpenSignLabs/OpenSign/assets/171803164/7edb65bd-c265-4b3d-9758-38e79766c5c2" height='200'>
@@ -76,6 +87,23 @@ Welcome to OpenSign, the premier open source docusign alternative - document e-s
 ### Deploy
 
 Note: The default MongoDB instance used in deployment is not persistant and will be cleared on every restart. To retain your data, configure and supply your own MongoDB connection URL.
+
+## 🔐 Environment Variables
+
+OpenSign uses environment variables for configuration.
+
+Important variables you may need to update in `.env.prod`:
+
+| Variable | Description |
+|--------|-------------|
+| HOST_URL | Public URL where OpenSign is hosted |
+| MONGO_URI | MongoDB connection string |
+| SMTP_HOST | Email service provider |
+| SMTP_USER | Email username |
+| SMTP_PASS | Email password |
+
+⚠️ Note: The default MongoDB used in deployment is non-persistent.  
+For production, use your own MongoDB connection.
 
 #### DigitalOcean
 [![Deploy on DigitalOcean](https://www.deploytodo.com/do-btn-blue.svg)](https://cloud.digitalocean.com/apps/new?repo=https://github.com/OpenSignLabs/Deploy-OpenSign-to-Digital-Ocean/tree/main&refcode=30db1c901ab0)
@@ -103,14 +131,25 @@ Please refer to the [Installation Guide](https://docs.opensignlabs.com/docs/self
 
 ### Usage
 
-For comprehensive guidelines on how to use OpenSign™, please consult our [User Manual](USAGE.md).
+Basic usage flow:
+1. Upload or select a PDF document
+2. Add signature or annotation fields
+3. Invite signers via email or share link
+4. Track signing status from dashboard
+
+For detailed instructions, refer to [USAGE.md](USAGE.md).
 
 ---
 
+
 ### Contribution Guidelines
 
+New contributors are welcome 🎉  
+If you're a beginner, look for issues labeled:
+- `good first issue`
+- `documentation`
+- `help wanted`
 We welcome contributions from the open-source community. For more information on how to contribute, please read our [Contribution Guidelines](CONTRIBUTING.md).
-
 ---
 
 ### License
