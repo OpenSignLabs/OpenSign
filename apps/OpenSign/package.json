@@ -129,7 +129,7 @@
     "concurrently": "^9.2.1",
     "css-loader": "^7.1.4",
     "daisyui": "^4.12.24",
-    "eslint": "^9.39.3",
+    "eslint": "^10.0.3",
     "eslint-plugin-prettier": "^5.5.5",
     "eslint-plugin-react": "^7.37.5",
     "jsdom": "^28.1.0",
