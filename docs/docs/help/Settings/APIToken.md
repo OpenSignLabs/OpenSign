@@ -91,7 +91,7 @@ OpenSign provides a **sandbox testing cloud environment**, which is a replica of
 ---
 ### Buy the api credit 
 User can buy the api credit using this feature 
-On the click of the buy premium credits the 
+On the click of the buy premium credits.
 
 ## 🧠 Frequently Asked Questions
 
@@ -110,5 +110,44 @@ Live and Sandbox environments are **separate**. Templates created in the Live en
 **5. Can I use the API in the free self-hosted environment?**  
 No. The **free self-hosted version** does not support API token generation.  
 To use OpenSign APIs in a self-hosted setup, you must upgrade to a **paid self-hosted plan**.
+
+**6. When are Premium Credits deducted? Which actions use Premium Credits?**
+
+Premium Credits are deducted whenever you use features that require premium access.
+
+The following features consume Premium Credits:
+
+- **API Signature** – Sending documents for signing via API  
+- **Bulk Send** – Sending documents in bulk to multiple recipients  
+- **Public Template Signing** – Sign documents using a public template.
+- **Kiosk Mode** – Using Kiosk Mode for in-person signing  
+- **Embedded Signing** – Integrating OpenSign into your website or application for signing  
+
+---
+
+**7. Do regular document sends consume Premium Credits?**
+
+No. Standard document sending does **not** consume Premium Credits.
+
+The following actions do not use Premium Credits:
+
+1. **Sign Yourself** document signing  
+2. **Request Signature** – Sending a single document for signature  
+3. **Use Template** – Sending a document using a template  
+4. Sharing or copying a document link  
+5. Resending a document from the **In Progress** section  
+6. Fix and Resend for completed document reports  
+
+---
+
+**8. How can I track my Premium Credit usage?**
+
+You can monitor your Premium Credit usage from:
+
+**Account Settings → API Token page**
+
+On this page, you can view:
+- Available Premium Credits  
+- Your credit usage details  
 
 If you need additional assistance setting up OpenSign APIs, feel free to contact our support team at support@opensignlabs.com.
