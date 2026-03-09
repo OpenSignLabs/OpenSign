@@ -1,11 +1,11 @@
 ---
 sidebar_position: 4
-title: Quickly Send the Document for Signature Using Template
+title: Bulk Document Send for Signature Using Template
 ---
 ## Overview
 Bulk Send allows you to send a document to multiple recipients at once using a template. You can prefill document data, signer details, and import information using a CSV file to automate large-scale document sending.
 
-# How to use the OpenSign Quick Send feature to send a document for signature using a template
+# How to Use the OpenSign Bulk Document Send Feature to Send Documents for Signature Using a Template
 
 ### Step 1: Begin New Template Creation
 
@@ -92,7 +92,7 @@ When a template contains Prefill Widgets:
 - Entered values are automatically embedded into the document
 - Both **Required** and **Optional** Prefill fields are supported
 
-<img width="828" alt="Bulk send panel" src="https://github.com/user-attachments/assets/91b908c8-3c24-4afc-9bd9-6b29cb778891" />
+<img width="828" alt="Bulk send panel" src="https://github.com/user-attachments/assets/0b8fb941-db29-4517-98d3-23bf58e5fa02" />
 
 ---
 
@@ -100,7 +100,7 @@ When a template contains Prefill Widgets:
 
 You can upload a CSV file to automatically populate Prefill fields and signer details.
 
-<img width="828" alt="bulk import from csv" src="https://github.com/user-attachments/assets/448a7a94-8685-47cc-86a7-dbd47e67c8f6" />
+<img width="828" alt="bulk import from csv" src="https://github.com/user-attachments/assets/5057d5a4-1409-4ec9-8a87-df4b54762b5b" />
 
 ### Steps to Import CSV
 1. Click **Download sample file**
@@ -184,13 +184,14 @@ Use:
 
 ## Bulk Send Limits
 
-OpenSign allows sending up to **50 documents per Bulk Send**.
+OpenSign allows sending up to **1000 documents per Bulk Send**.
 
 The number depends on signer roles:
 
-- **1 Role in template → 50 documents** (This depends on the number of signers included in the Bulk Send request.)
-- **2 Roles in template → 48 documents**
+- **1 Role in template → 1000 documents** (This depends on the number of signers included in the Bulk Send request.)
+- **2 Roles in template → 500 documents**
 - More roles reduce total documents accordingly
+- Each document consumes 1 API credit. If you create 200 documents, then 200 premium credits will be deducted.(Premium credits)
 ---
 ## Sending Documents via Bulk Send
 
@@ -205,7 +206,7 @@ Signature request emails will be sent to the respective signers, and the created
 ### Step 4: Bulk Send from Manage Templates
 For faster processing, the Bulk Send feature allows you to swiftly create and send a document to a signer using the selected template.
 
-<img width="828" alt="Manage Template" src="https://github.com/user-attachments/assets/a8737a76-0c92-4288-894d-65640a7757fe" />
+<img width="828" alt="Manage Template" src="https://github.com/user-attachments/assets/27b18a1d-6750-4631-b090-93644211ce68" />
 
 How to Send the Document:
 -  Click the Bulk Send button next to the template in the list.
