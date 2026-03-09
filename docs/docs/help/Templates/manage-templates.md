@@ -19,6 +19,8 @@ On the Manage templates page you will see a list of templates you have created o
 
 **Bulk send**: This feature streamlines processing by allowing you to create and send multiple documents at once using a selected template. You can add multiple signers and generate all documents with a single click.
 
+Note: The API credit is deducted when the document is sent using the Bulk Send feature. Each document consumes 1 API credit.
+
 **Edit**: The "Edit" feature is crucial for keeping your document templates up-to-date and relevant. Whether you need to make minor tweaks or major changes, OpenSign's editing capabilities are user-friendly and efficient.
 Click on the three dots next to the template you want to edit.
 Select "Edit." Make the necessary changes and save them.
@@ -63,14 +65,19 @@ Click "Embed" to generate the code that can be copied and pasted into your desir
 
 <img width="828" alt="Embed" src="https://github.com/user-attachments/assets/05dcaf5d-07b0-4069-bcd5-83e2daf71e29" />
 
+Note: The Premium api credit is deducted when the document is signed.
+
 **Copy template id**: This action copies the unique ID associated with the template, which is useful for embedding or sharing with public users when your template is set to public.
 
 **Copy public URL**: This generates a public link for the template, allowing external users to access it without logging into OpenSign.
 Click "Copy Public URL" to generate the link, then share it as needed.
 
+Note: The Premium api credit is deducted when the document is signed.
+
 **Kiosk Mode**: Kiosk Mode offers a simplified and secure environment for signers to complete documents on a shared or public device. It's ideal for use cases like front-desk sign-ins, in-office document execution, or on-site registrations where multiple individuals need to sign documents one after another.
 
 When you click the Kiosk Mode option along with a selected template, the document opens in a dedicated signing interface. Signers can then complete their portions sequentially on the same screen and device, ensuring a smooth and efficient signing flow without requiring individual logins.
+
 Note: This feature is available exclusively on Teams and Enterprise plans.
 
 **Duplicate**: When you need to create a copy of an existing template, use the Duplicate option. This feature allows you to quickly generate an exact replica of the selected template, making it easy to reuse and modify without affecting the original.
