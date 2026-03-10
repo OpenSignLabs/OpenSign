@@ -52,8 +52,6 @@ The OpenSign Public profile feature offers the ultimate public document signing 
   - **[2] Add other widgets**: Depending on your needs, you can include additional widgets such as:
 Stamps, Initials, Name, Date, Text, Checkbox, and more.
 
-**Important**: Before proceeding, ensure that all roles have assigned signers, except for the public role, since we are making this template public.
-
 ### Save template 
   - **Next button**: Once you’ve organized your widgets and set their properties, simply click the “Next” button to save your template.
 
