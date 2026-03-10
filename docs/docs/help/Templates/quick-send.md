@@ -92,7 +92,7 @@ When a template contains Prefill Widgets:
 - Entered values are automatically embedded into the document
 - Both **Required** and **Optional** Prefill fields are supported
 
-<img width="828" alt="Bulk send panel" src="https://github.com/user-attachments/assets/0b8fb941-db29-4517-98d3-23bf58e5fa02" />
+<img width="828" alt="Bulk send panel" src="https://github.com/user-attachments/assets/567c4549-52aa-477d-8c94-a5acc6835ce6" />
 
 ---
 
@@ -100,7 +100,7 @@ When a template contains Prefill Widgets:
 
 You can upload a CSV file to automatically populate Prefill fields and signer details.
 
-<img width="828" alt="bulk import from csv" src="https://github.com/user-attachments/assets/5057d5a4-1409-4ec9-8a87-df4b54762b5b" />
+<img width="828" alt="bulk import from csv" src="https://github.com/user-attachments/assets/d4aa2fd0-80a9-4e6b-8261-4331f1c9fc17" />
 
 ### Steps to Import CSV
 1. Click **Download sample file**
@@ -206,7 +206,7 @@ Signature request emails will be sent to the respective signers, and the created
 ### Step 4: Bulk Send from Manage Templates
 For faster processing, the Bulk Send feature allows you to swiftly create and send a document to a signer using the selected template.
 
-<img width="828" alt="Manage Template" src="https://github.com/user-attachments/assets/27b18a1d-6750-4631-b090-93644211ce68" />
+<img width="828" alt="Manage Template" src="https://github.com/user-attachments/assets/cb6f77ef-a542-49c9-a0ab-1cc568dc54df" />
 
 How to Send the Document:
 -  Click the Bulk Send button next to the template in the list.
