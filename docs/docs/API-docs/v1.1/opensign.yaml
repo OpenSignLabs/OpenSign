@@ -5214,8 +5214,13 @@ components:
         remind_once_in_every:
           type: number
           example: 0
+        bcc:
+          type: array
+          items: 
+            type: string
+          example: ["user@example.com","user2@example.com"]
         prefill: 
-          $ref: '#/components/schemas/prefill'    
+          $ref: '#/components/schemas/prefill'
       xml:
         name: template_details
     contact:
@@ -5394,7 +5399,17 @@ components:
           example: false
         remind_once_in_every:
           type: number
-          example: 0  
+          example: 0
+        pen_colors:
+          type: array
+          items:
+            type: string
+          example: ["blue", "red", "black"]
+        bcc:
+          type: array
+          items: 
+            type: string
+          example: ["user@example.com","user2@example.com"]  
       xml:
         name: documentwithstatus
     signerIpsResponse:
@@ -5716,6 +5731,13 @@ components:
           items:
             type: string
           example: ["blue", "red", "black"]
+        bcc:
+          type: array
+          items: 
+            type: string
+          example: ["user@example.com","user2@example.com"]
+          description: |
+            bcc (blind carbon copy): Users added here will receive a notification email once the document is completed.
     draftdocument_body:
       required:
       - file
@@ -5821,6 +5843,13 @@ components:
           items:
             type: string
           example: ["blue", "red", "black"]
+        bcc:
+          type: array
+          items: 
+            type: string
+          example: ["user@example.com","user2@example.com"]
+          description: |
+            bcc (blind carbon copy): Users added here will receive a notification email once the document is completed.
         prefill: 
           $ref: '#/components/schemas/prefill'
     createdocument_body:
@@ -5929,6 +5958,13 @@ components:
           items:
             type: string
           example: ["blue", "red", "black"]
+        bcc:
+          type: array
+          items: 
+            type: string
+          example: ["user@example.com","user2@example.com"]
+          description: |
+            bcc (blind carbon copy): Users added here will receive a notification email once the document is completed.  
         prefill: 
           $ref: '#/components/schemas/prefill'  
     inline_response_200_1:
@@ -6091,7 +6127,14 @@ components:
           type: array
           items:
             type: string
-          example: ["blue", "red", "black"]    
+          example: ["blue", "red", "black"]
+        bcc:
+          type: array
+          items: 
+            type: string
+          example: ["user@example.com","user2@example.com"]
+          description: |
+            bcc (blind carbon copy): Users added here will receive a notification email once the document is completed.  
         prefill: 
           type: object
           properties:
@@ -6197,7 +6240,14 @@ components:
           type: array
           items:
             type: string
-          example: ["blue", "red", "black"]    
+          example: ["blue", "red", "black"]
+        bcc:
+          type: array
+          items: 
+            type: string
+          example: ["user@example.com","user2@example.com"]
+          description: |
+            bcc (blind carbon copy): Users added here will receive a notification email once the document is completed.  
     inline_response_200_3:
       type: object
       properties:
@@ -6324,9 +6374,16 @@ components:
           type: array
           items:
             type: string
-          example: ["blue", "red", "black"]    
+          example: ["blue", "red", "black"]
+        bcc:
+          type: array
+          items: 
+            type: string
+          example: ["user@example.com","user2@example.com"]
+          description: |
+            bcc (blind carbon copy): Users added here will receive a notification email once the document is completed.          
         prefill: 
-          $ref: '#/components/schemas/prefill'          
+          $ref: '#/components/schemas/prefill'
     inline_response_draft_200:
       type: object
       properties:
@@ -6423,7 +6480,14 @@ components:
           type: array
           items:
             type: string
-          example: ["blue", "red", "black"]    
+          example: ["blue", "red", "black"]
+        bcc:
+          type: array
+          items: 
+            type: string
+          example: ["user@example.com","user2@example.com"]
+          description: |
+            bcc (blind carbon copy): Users added here will receive a notification email once the document is completed.
     inline_response_404_7:
       type: object
       properties:
