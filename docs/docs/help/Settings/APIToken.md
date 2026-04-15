@@ -89,9 +89,28 @@ OpenSign provides a **sandbox testing cloud environment**, which is a replica of
 > ⚠️ **Important Note:**  
 > Manually entering your username and password will **not work** for sandbox login. Always use the "Login to Sandbox" button for access.
 ---
-### Buy the api credit 
-User can buy the api credit using this feature 
-On the click of the buy premium credits.
+### Buy API Credits
+
+Follow these steps to purchase premium API credits:
+
+1. **Navigate to the Purchase Page**  
+   Go to **Settings → API Token → Buy Premium Credits**.
+   
+<img width="436" alt="buy premium credits" src="https://github.com/user-attachments/assets/82d7c571-702f-4f7f-83eb-baa86a63b829" />
+
+3. **Select the Number of Credits**  
+   Choose the number of credits you wish to purchase and click **Proceed**.
+   
+   <img width="436" alt="buy premium credits" src="https://github.com/user-attachments/assets/da7f72e6-84be-481b-9f5d-36bffafb11ae" />
+
+5. **Credits Added to Your Account**  
+   The selected credits are instantly added to your account. You can view the updated balance in the **Premium Credits Available** section.
+
+6. **Payment and Invoice**  
+   A **payment link** and **invoice** will be sent to your registered email address.
+
+7. **Complete the Payment**  
+   Open the email and click the **Buy Now** button to access the payment link and complete the transaction.
 
 ## 🧠 Frequently Asked Questions
 
