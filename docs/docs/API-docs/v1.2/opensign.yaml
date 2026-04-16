@@ -5680,6 +5680,10 @@ components:
           type: string
           format: base64
           example: base64 encoded pdf
+        file_password:
+          type: string
+          format: string
+          example: ""  
         title:
           type: string
           format: string
@@ -5770,6 +5774,10 @@ components:
           type: string
           format: base64
           example: base64 encoded pdf
+        file_password:
+          type: string
+          format: string
+          example: ""    
         title:
           type: string
           format: string
@@ -5885,6 +5893,10 @@ components:
           type: string
           format: base64
           example: base64 encoded pdf
+        file_password:
+          type: string
+          format: string
+          example: ""
         title:
           type: string
           format: string
@@ -6148,6 +6160,10 @@ components:
           description: You may provide the base64 encoded PDF file to replace the existing one
           format: base64
           example: ""
+        file_password:
+          type: string
+          format: string
+          example: ""
         auto_reminder:
           type: boolean
           description: Set to true to enable automatic reminders. Set to false to disable them (default behavior). If the field is omitted or provided as an empty/invalid value, the template value is used.
@@ -6351,6 +6367,10 @@ components:
           type: string
           format: base64
           example: base64 encoded pdf
+        file_password:
+          type: string
+          format: string
+          example: ""
         title:
           type: string
           format: string
@@ -6512,6 +6532,10 @@ components:
           description: You may provide the base64 encoded PDF file to replace the existing one
           format: base64
           example: ""
+        file_password:
+          type: string
+          format: string
+          example: ""    
         redirect_url:
           type: string
           description: Specifies the URL where the signer will be redirected upon completing the document signing process.
