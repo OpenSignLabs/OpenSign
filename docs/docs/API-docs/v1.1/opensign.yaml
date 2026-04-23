@@ -1,10 +1,10 @@
 openapi: 3.0.3
 info:
-  title: OpenSign API v1.2
+  title: OpenSign API v1.1
   description: |
-    Welcome to the **OpenSign™ API v1.2** documentation.
+    Welcome to the **OpenSign™ API v1.1** documentation.
 
-    Our powerful and flexible API empowers you to seamlessly integrate digital signing capabilities into your applications. Whether you're a developer automating document workflows, a business enhancing security, or an enterprise streamlining contract management, OpenSign™ delivers robust solutions tailored to your needs.
+    Our powerful and flexible API empowers you to seamlessly integrate digital signing capabilities into your applications. Whether you're a devloper automating document workflows, a business enhancing security, or an enterprise streamlining contract management, OpenSign™ delivers robust solutions tailored to your needs.
 
     Explore our comprehensive guides, code samples, and best practices to unlock the full potential of OpenSign™ and transform your digital document processes.
 
@@ -13,8 +13,10 @@ info:
     - [OpenSign GitHub Repository](https://github.com/opensignlabs/opensign)
     - [Generate x-api-token](https://docs.opensignlabs.com/docs/help/Settings/APIToken) – Learn how to securely generate and manage your API token for authenticating requests.
 
-    **What’s New in v1.2**
-    - **Get Template & Get Template List**: removed unnecessary parameters and separated prefill data from signer parameters.
+    **What’s New in v1.1**
+    - **Public Templates**: Create templates that can be shared via a public link. Any user with the link can generate and sign documents based on the template. Templates themselves cannot be edited through the public link.
+    - **Prefill Widgets**: Add prefill widgets to documents before they are sent. Prefill widgets are supported in the following endpoints: draft documents, document creation, document creation with a template, draft templates, and public templates.
+
 
   x-api-token: 
     description: "refer docs to generate api token [APIToken help](https://docs.opensignlabs.com/docs/help/Settings/APIToken)"
@@ -29,10 +31,13 @@ externalDocs:
   description: Find out more about OpenSign
   url: http://docs.opensignlabs.com
 servers:
-- url: https://sandbox.opensignlabs.com/api/v1.2
-- url: https://app.opensignlabs.com/api/v1.2
-- url: https://eu-app.opensignlabs.com/api/v1.2
-- url: https://staging-app.opensignlabs.com/api/v1.2
+# Added by API Auto Mocking Plugin
+- description: SwaggerHub API Auto Mocking
+  url: https://virtserver.swaggerhub.com/PrafullNavkar/open/1.0.0
+- url: https://sandbox.opensignlabs.com/api/v1.1
+- url: https://app.opensignlabs.com/api/v1.1
+- url: https://eu-app.opensignlabs.com/api/v1.1
+- url: https://staging-app.opensignlabs.com/api/v1.1
 tags:
 - name: OpenSign
   description: OpenSource DocuSign alternative
@@ -2337,52 +2342,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/formdataResponse'
-        "400":
-          description: "Something went wrong, please try again later!"
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/inline_response_400_1'
-        "404":
-          description: Document not found!
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/inline_response_404_3'
-        "405":
-          description: Invalid API Token!
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/invalidtoken'
-      security:
-      - x-api-token: []
-  /signinglinks/{document_id}:
-    get:
-      tags:
-      - Documents
-      summary: Get Signing Links
-      description: |
-        The Get Signing Links API enables you to retrieve signing urls of signers for the document.
-      operationId: getsigninglinks
-      parameters:
-      - name: document_id
-        in: path
-        description: objectId of Document
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
-          format: string
-          example: aB2cc2hpbh
-      responses:
-        "200":
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/getsigninglinks'
         "400":
           description: "Something went wrong, please try again later!"
           content:
@@ -5148,6 +5107,8 @@ components:
         note:
           type: string
           example: template note
+        folder:
+          $ref: '#/components/schemas/template_folder'
         file:
           type: string
           example: https://templateuser.com
@@ -5157,20 +5118,7 @@ components:
         signers:
           type: array
           items:
-            type: object
-            properties:
-              role:
-                type: string
-                example: ceo
-              name:
-                type: string
-                example: joe bee
-              email:
-                type: string
-                example: joebee@example.com
-              phone:
-                type: string
-                example: "456213871"
+            $ref: '#/components/schemas/template_Signers'
         sendInOrder:
           type: boolean
           example: true
@@ -5193,9 +5141,7 @@ components:
           example: false
         remind_once_in_every:
           type: number
-          example: 0
-        prefill: 
-          $ref: '#/components/schemas/prefill'  
+          example: 0          
       xml:
         name: template
     template_details:
@@ -5231,6 +5177,8 @@ components:
         merge_certificate:
           type: boolean
           example: false
+        folder:
+          $ref: '#/components/schemas/template_folder'
         file:
           type: string
           example: https://templateuser.com
@@ -5492,17 +5440,6 @@ components:
       xml:
         name: signerIpsResponse
 
-    getsigninglinks:
-      type: object
-      properties:
-        objectId:
-          type: string
-          format: string
-          example: hji2zxcv2P
-        signurl:
-          type: array
-          items:
-            $ref: '#/components/schemas/inline_response_doc_signurl'   
     formdataResponse:
       type: object
       properties:
@@ -5578,20 +5515,7 @@ components:
         signers:
           type: array
           items:
-            type: object
-            properties:
-              role:
-                type: string
-                example: ceo
-              name:
-                type: string
-                example: joe bee
-              email:
-                type: string
-                example: joebee@example.com
-              phone:
-                type: string
-                example: "456213871"
+            $ref: '#/components/schemas/template_Signers'
         sendInOrder:
           type: boolean
           example: true
@@ -5737,10 +5661,6 @@ components:
           type: string
           format: base64
           example: base64 encoded pdf
-        file_password:
-          type: string
-          format: string
-          example: ""  
         title:
           type: string
           format: string
@@ -5831,10 +5751,6 @@ components:
           type: string
           format: base64
           example: base64 encoded pdf
-        file_password:
-          type: string
-          format: string
-          example: ""    
         title:
           type: string
           format: string
@@ -5950,10 +5866,6 @@ components:
           type: string
           format: base64
           example: base64 encoded pdf
-        file_password:
-          type: string
-          format: string
-          example: ""
         title:
           type: string
           format: string
@@ -6217,10 +6129,6 @@ components:
           description: You may provide the base64 encoded PDF file to replace the existing one
           format: base64
           example: ""
-        file_password:
-          type: string
-          format: string
-          example: ""
         auto_reminder:
           type: boolean
           description: Set to true to enable automatic reminders. Set to false to disable them (default behavior). If the field is omitted or provided as an empty/invalid value, the template value is used.
@@ -6424,10 +6332,6 @@ components:
           type: string
           format: base64
           example: base64 encoded pdf
-        file_password:
-          type: string
-          format: string
-          example: ""
         title:
           type: string
           format: string
@@ -6589,10 +6493,6 @@ components:
           description: You may provide the base64 encoded PDF file to replace the existing one
           format: base64
           example: ""
-        file_password:
-          type: string
-          format: string
-          example: ""    
         redirect_url:
           type: string
           description: Specifies the URL where the signer will be redirected upon completing the document signing process.
