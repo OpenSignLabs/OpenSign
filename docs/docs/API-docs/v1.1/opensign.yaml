@@ -4,7 +4,7 @@ info:
   description: |
     Welcome to the **OpenSign™ API v1.1** documentation.
 
-    Our powerful and flexible API empowers you to seamlessly integrate digital signing capabilities into your applications. Whether you're a developer automating document workflows, a business enhancing security, or an enterprise streamlining contract management, OpenSign™ delivers robust solutions tailored to your needs.
+    Our powerful and flexible API empowers you to seamlessly integrate digital signing capabilities into your applications. Whether you're a devloper automating document workflows, a business enhancing security, or an enterprise streamlining contract management, OpenSign™ delivers robust solutions tailored to your needs.
 
     Explore our comprehensive guides, code samples, and best practices to unlock the full potential of OpenSign™ and transform your digital document processes.
 
@@ -2339,6 +2339,52 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/formdataResponse'
+        "400":
+          description: "Something went wrong, please try again later!"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_400_1'
+        "404":
+          description: Document not found!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_404_3'
+        "405":
+          description: Invalid API Token!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/invalidtoken'
+      security:
+      - x-api-token: []
+  /signinglinks/{document_id}:
+    get:
+      tags:
+      - Documents
+      summary: Get Signing Links
+      description: |
+        The Get Signing Links API enables you to retrieve signing urls of signers for the document.
+      operationId: getsigninglinks
+      parameters:
+      - name: document_id
+        in: path
+        description: objectId of Document
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          format: string
+          example: aB2cc2hpbh
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/getsigninglinks'
         "400":
           description: "Something went wrong, please try again later!"
           content:
@@ -5437,6 +5483,17 @@ components:
       xml:
         name: signerIpsResponse
 
+    getsigninglinks:
+      type: object
+      properties:
+        objectId:
+          type: string
+          format: string
+          example: hji2zxcv2P
+        signurl:
+          type: array
+          items:
+            $ref: '#/components/schemas/inline_response_doc_signurl'
     formdataResponse:
       type: object
       properties:
