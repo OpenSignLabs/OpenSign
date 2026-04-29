@@ -15,6 +15,9 @@ info:
 
     **What’s New in v1.2**
     - **Get Template & Get Template List**: removed unnecessary parameters and separated prefill data from signer parameters.
+    - "file_password" parameter added in create template, update template, create document with template, draft document and self sign routes to provide password for protected pdfs.
+    - "allow_offline_sign" parameter added in create template and update template routes to allow users to enable or disable offline signing for their templates.
+    - "signer_role" parameter added in the signers object of draft document, create document, create document with template, create template, and public template routes. Accepted values: **signer** (default), **viewer**, **approver**. Signers must have at least one signature widget; viewers must have no widgets; approvers may have any widgets without a signature requirement.
 
   x-api-token: 
     description: "refer docs to generate api token [APIToken help](https://docs.opensignlabs.com/docs/help/Settings/APIToken)"
@@ -2337,6 +2340,52 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/formdataResponse'
+        "400":
+          description: "Something went wrong, please try again later!"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_400_1'
+        "404":
+          description: Document not found!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_404_3'
+        "405":
+          description: Invalid API Token!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/invalidtoken'
+      security:
+      - x-api-token: []
+  /signinglinks/{document_id}:
+    get:
+      tags:
+      - Documents
+      summary: Get Signing Links
+      description: |
+        The Get Signing Links API enables you to retrieve signing urls of signers for the document.
+      operationId: getsigninglinks
+      parameters:
+      - name: document_id
+        in: path
+        description: objectId of Document
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          format: string
+          example: aB2cc2hpbh
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/getsigninglinks'
         "400":
           description: "Something went wrong, please try again later!"
           content:
@@ -5128,6 +5177,10 @@ components:
         sendInOrder:
           type: boolean
           example: true
+        allow_offline_sign:
+          type: boolean
+          description: "Whether signers can submit a copy of this template signed using an external tool for owner review. Defaults to false."
+          example: false
         createdAt:
           $ref: '#/components/schemas/date'
         updatedAt:
@@ -5148,8 +5201,8 @@ components:
         remind_once_in_every:
           type: number
           example: 0
-        prefill: 
-          $ref: '#/components/schemas/prefill'  
+        prefill:
+          $ref: '#/components/schemas/prefill'       
       xml:
         name: template
     template_details:
@@ -5198,6 +5251,10 @@ components:
         sendInOrder:
           type: boolean
           example: true
+        allow_offline_sign:
+          type: boolean
+          description: "Whether signers can submit a copy of this template signed using an external tool for owner review. Defaults to false."
+          example: false
         createdAt:
           $ref: '#/components/schemas/date'
         updatedAt:
@@ -5382,6 +5439,10 @@ components:
         sendInOrder:
           type: boolean
           example: true
+        allow_offline_sign:
+          type: boolean
+          description: "Whether signers can submit a copy of this document signed using an external tool for owner review. Defaults to false."
+          example: false
         createdAt:
           $ref: '#/components/schemas/date'
         updatedAt:
@@ -5446,6 +5507,17 @@ components:
       xml:
         name: signerIpsResponse
 
+    getsigninglinks:
+      type: object
+      properties:
+        objectId:
+          type: string
+          format: string
+          example: hji2zxcv2P
+        signurl:
+          type: array
+          items:
+            $ref: '#/components/schemas/inline_response_doc_signurl'
     formdataResponse:
       type: object
       properties:
@@ -5538,6 +5610,10 @@ components:
         sendInOrder:
           type: boolean
           example: true
+        allow_offline_sign:
+          type: boolean
+          description: "Whether signers can submit a copy of this document signed using an external tool for owner review. Defaults to false."
+          example: false
         createdAt:
           $ref: '#/components/schemas/date'
         updatedAt:
@@ -5777,7 +5853,7 @@ components:
         file_password:
           type: string
           format: string
-          example: ""    
+          example: ""  
         title:
           type: string
           format: string
@@ -5818,6 +5894,10 @@ components:
           type: boolean
           description: "If set to 'true', only the first signer will receive the signature request email initially. Emails to subsequent signers will be triggered sequentially, with each sent only after the previous signer has completed their signing. By default, sendInOrder is set to 'true'."
           example: true
+        allow_offline_sign:
+          type: boolean
+          description: "If set to 'true', signers can submit a copy of this document signed using an external tool for owner review. Defaults to 'false'."
+          example: false
         enableOTP:
           type: boolean
           description: "true - this option will enable OTP verification. Users will receive a verification code via email, which they must enter to sign the document. false -  this option will disable OTP verification, allowing users to sign the document directly without additional steps."
@@ -5937,6 +6017,10 @@ components:
           type: boolean
           description: "If set to 'true', only the first signer will receive the signature request email initially. Emails to subsequent signers will be triggered sequentially, with each sent only after the previous signer has completed their signing. By default, sendInOrder is set to 'true'."
           example: true
+        allow_offline_sign:
+          type: boolean
+          description: "If set to 'true', signers can submit a copy of this document signed using an external tool for owner review. Defaults to 'false'."
+          example: false
         enableOTP:
           type: boolean
           description: "true - this option will enable OTP verification. Users will receive a verification code via email, which they must enter to sign the document. false -  this option will disable OTP verification, allowing users to sign the document directly without additional steps."
@@ -6061,7 +6145,20 @@ components:
         job_title:
           type: string
           format: string
-          example: dev   
+          example: dev
+        signer_role:
+          type: string
+          format: string
+          description: |
+            Specifies the role of the recipient in the signing process. Allowed values:
+            - **signer** (default): Must have at least one signature widget.
+            - **viewer**: Receives the document to view only; must have no widgets.
+            - **approver**: Reviews and approves the document; no signature widget required.
+          enum:
+            - signer
+            - viewer
+            - approver
+          example: signer
         widgets:
           type: array
           items:
@@ -6108,6 +6205,15 @@ components:
 
             If the field is omitted or provided as an empty/invalid value, the template value is used.
           example: true
+        allow_offline_sign:
+          type: boolean
+          description: |
+            **true** - Signers can submit a copy of this document signed using an external tool for owner review.
+
+            **false** - Signers must complete signing within OpenSign.
+
+            If the field is omitted or provided as an empty/invalid value, the template value is used.
+          example: false
         timeToCompleteDays:
           type: number
           description: time to complete days is used to calculate expiry date of your document. If this field is present in the request body, it overrides the template value, even when set to 0. If omitted, the template value is used.
@@ -6163,7 +6269,7 @@ components:
         file_password:
           type: string
           format: string
-          example: ""
+          example: ""  
         auto_reminder:
           type: boolean
           description: Set to true to enable automatic reminders. Set to false to disable them (default behavior). If the field is omitted or provided as an empty/invalid value, the template value is used.
@@ -6370,7 +6476,7 @@ components:
         file_password:
           type: string
           format: string
-          example: ""
+          example: ""  
         title:
           type: string
           format: string
@@ -6392,6 +6498,10 @@ components:
           type: boolean
           description: "If set to 'true', only the first signer will receive the signature request email initially. Emails to subsequent signers will be triggered sequentially, with each sent only after the previous signer has completed their signing. By default, sendInOrder is set to 'true'."
           example: true
+        allow_offline_sign:
+          type: boolean
+          description: "If set to 'true', signers can submit a copy of documents created from this template signed using an external tool for owner review. Defaults to 'false'."
+          example: false
         enableOTP:
           type: boolean
           description: "true - this option will enable OTP verification. Users will receive a verification code via email, which they must enter to sign the document. false -  this option will disable OTP verification, allowing users to sign the document directly without additional steps."
@@ -6535,7 +6645,7 @@ components:
         file_password:
           type: string
           format: string
-          example: ""    
+          example: ""  
         redirect_url:
           type: string
           description: Specifies the URL where the signer will be redirected upon completing the document signing process.
@@ -6714,7 +6824,20 @@ components:
         job_title:
           type: string
           format: string
-          example: dev             
+          example: dev
+        signer_role:
+          type: string
+          format: string
+          description: |
+            Specifies the role of the recipient in the signing process. Allowed values:
+            - **signer** (default): Must have at least one signature widget.
+            - **viewer**: Receives the document to view only; must have no widgets.
+            - **approver**: Reviews and approves the document; no signature widget required.
+          enum:
+            - signer
+            - viewer
+            - approver
+          example: signer
         widgets:
           type: array
           items:
@@ -6778,21 +6901,24 @@ components:
         job_title:
           type: string
           format: string
-          example: ""             
+          example: ""
+        signer_role:
+          type: string
+          format: string
+          description: |
+            Specifies the role of the recipient in the signing process. Allowed values:
+            - **signer** (default): Must have at least one signature widget.
+            - **viewer**: Receives the document to view only; must have no widgets.
+            - **approver**: Reviews and approves the document; no signature widget required.
+          enum:
+            - signer
+            - viewer
+            - approver
+          example: signer
         widgets:
           type: array
           items:
             $ref: '#/components/schemas/createtemplate_body_widgets'
-    template_folder:
-      type: object
-      properties:
-        objectId:
-          type: string
-          format: string
-          example: x1Hbnms2Pg
-        name:
-          type: string
-          example: folder name
     document_folder:
       type: object
       properties:
