@@ -5177,6 +5177,9 @@ components:
         sendInOrder:
           type: boolean
           example: true
+        send_in_order_strict:
+          type: boolean
+          example: false
         allow_offline_sign:
           type: boolean
           description: "Whether signers can submit a copy of this template signed using an external tool for owner review. Defaults to false."
@@ -5251,6 +5254,9 @@ components:
         sendInOrder:
           type: boolean
           example: true
+        send_in_order_strict:
+          type: boolean
+          example: false
         allow_offline_sign:
           type: boolean
           description: "Whether signers can submit a copy of this template signed using an external tool for owner review. Defaults to false."
@@ -5439,6 +5445,9 @@ components:
         sendInOrder:
           type: boolean
           example: true
+        send_in_order_strict:
+          type: boolean
+          example: false
         allow_offline_sign:
           type: boolean
           description: "Whether signers can submit a copy of this document signed using an external tool for owner review. Defaults to false."
@@ -5610,6 +5619,9 @@ components:
         sendInOrder:
           type: boolean
           example: true
+        send_in_order_strict:
+          type: boolean
+          example: false
         allow_offline_sign:
           type: boolean
           description: "Whether signers can submit a copy of this document signed using an external tool for owner review. Defaults to false."
@@ -5894,6 +5906,10 @@ components:
           type: boolean
           description: "If set to 'true', only the first signer will receive the signature request email initially. Emails to subsequent signers will be triggered sequentially, with each sent only after the previous signer has completed their signing. By default, sendInOrder is set to 'true'."
           example: true
+        send_in_order_strict:
+          type: boolean
+          description: "When set to 'true', each signer is blocked from accessing the document until all preceding signers have completed their action. Enforces strict sequential signing. Only applies when 'sendInOrder' is also 'true'. Defaults to 'false'."
+          example: false
         allow_offline_sign:
           type: boolean
           description: "If set to 'true', signers can submit a copy of this document signed using an external tool for owner review. Defaults to 'false'."
@@ -6017,6 +6033,10 @@ components:
           type: boolean
           description: "If set to 'true', only the first signer will receive the signature request email initially. Emails to subsequent signers will be triggered sequentially, with each sent only after the previous signer has completed their signing. By default, sendInOrder is set to 'true'."
           example: true
+        send_in_order_strict:
+          type: boolean
+          description: "When set to 'true', each signer is blocked from accessing the document until all preceding signers have completed their action. Enforces strict sequential signing. Only applies when 'sendInOrder' is also 'true'. Defaults to 'false'."
+          example: false
         allow_offline_sign:
           type: boolean
           description: "If set to 'true', signers can submit a copy of this document signed using an external tool for owner review. Defaults to 'false'."
@@ -6205,6 +6225,15 @@ components:
 
             If the field is omitted or provided as an empty/invalid value, the template value is used.
           example: true
+        send_in_order_strict:
+          type: boolean
+          description: |
+            **true** - Each signer is blocked from accessing the document until all preceding signers have completed their action. Enforces strict sequential signing. Only applies when sendInOrder is also true.
+
+            **false** - Signers can access the document regardless of whether previous signers have completed.
+
+            If the field is omitted or provided as an empty/invalid value, the template value is used.
+          example: false
         allow_offline_sign:
           type: boolean
           description: |
@@ -6394,6 +6423,10 @@ components:
           type: boolean
           description: "true - Permits signers to add elements such as signatures, initials, stamps, or text on top of existing widgets in the document. false - Restricts signers from adding any additional elements to the document. This is the default value."
           example: false
+        send_in_order_strict:
+          type: boolean
+          description: "When set to 'true', each signer is blocked from accessing the document until all preceding signers have completed their action. Enforces strict sequential signing. Only applies when 'sendInOrder' is also 'true'. Defaults to 'false'."
+          example: false
         redirect_url:
           type: string
           description: Specifies the URL where the signer will be redirected upon completing the document signing process. 
@@ -6498,6 +6531,10 @@ components:
           type: boolean
           description: "If set to 'true', only the first signer will receive the signature request email initially. Emails to subsequent signers will be triggered sequentially, with each sent only after the previous signer has completed their signing. By default, sendInOrder is set to 'true'."
           example: true
+        send_in_order_strict:
+          type: boolean
+          description: "When set to 'true', each signer is blocked from accessing the document until all preceding signers have completed their action. Enforces strict sequential signing. Only applies when 'sendInOrder' is also 'true'. Defaults to 'false'."
+          example: false
         allow_offline_sign:
           type: boolean
           description: "If set to 'true', signers can submit a copy of documents created from this template signed using an external tool for owner review. Defaults to 'false'."
@@ -6636,6 +6673,10 @@ components:
         allow_modifications:
           type: boolean
           description: "true - Permits signers to add elements such as signatures, initials, stamps, or text on top of existing widgets in the document. false - Restricts signers from adding any additional elements to the document. This is the default value."
+          example: false
+        send_in_order_strict:
+          type: boolean
+          description: "When set to 'true', each signer is blocked from accessing the document until all preceding signers have completed their action. Enforces strict sequential signing. Only applies when 'sendInOrder' is also 'true'. Defaults to 'false'."
           example: false
         file:
           type: string
