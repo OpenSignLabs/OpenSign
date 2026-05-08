@@ -125,21 +125,46 @@ export async function getSignedUrl(request) {
   }
 }
 
+export function normalizeLocalFileUrl(fileUrl) {
+  if (!fileUrl) return fileUrl;
+
+  try {
+    const parsedFileUrl = new URL(fileUrl);
+    if (!parsedFileUrl.pathname.includes('/files/')) {
+      return fileUrl;
+    }
+
+    const configuredServerUrl = process.env.SERVER_URL;
+    if (!configuredServerUrl) {
+      return fileUrl;
+    }
+
+    const parsedServerUrl = new URL(configuredServerUrl);
+    parsedFileUrl.protocol = parsedServerUrl.protocol;
+    parsedFileUrl.host = parsedServerUrl.host;
+
+    return parsedFileUrl.toString();
+  } catch (err) {
+    return fileUrl;
+  }
+}
+
 // Function to generate a signed URL with JWT
 export function getSignedLocalUrl(fileUrl, expirationTimeInSeconds) {
   const secretKey = process.env.MASTER_KEY;
   const exp = expirationTimeInSeconds || 200;
   try {
+    const normalizedFileUrl = normalizeLocalFileUrl(fileUrl);
     // Create the payload with the file URL and expiration time
     const payload = {
-      fileUrl,
+      fileUrl: normalizedFileUrl,
       exp: Math.floor(Date.now() / 1000) + exp, // Expiry time in seconds
     };
 
     // Generate the JWT token
     const token = jwt.sign(payload, secretKey);
     // Return the signed URL containing the token
-    return `${fileUrl}?token=${token}`;
+    return `${normalizedFileUrl}?token=${token}`;
   } catch (err) {
     console.log('Err while siging local url', err);
     throw new Error('Invalid or expired token.');
@@ -148,7 +173,7 @@ export function getSignedLocalUrl(fileUrl, expirationTimeInSeconds) {
 
 export function presignedlocalUrl(signedUrl, expirationTimeInSeconds) {
   if (signedUrl?.includes('files')) {
-    const fileUrl = signedUrl.split('?')?.[0];
+    const fileUrl = normalizeLocalFileUrl(signedUrl.split('?')?.[0]);
     const secretKey = process.env.MASTER_KEY;
     const exp = expirationTimeInSeconds || 200;
     try {
