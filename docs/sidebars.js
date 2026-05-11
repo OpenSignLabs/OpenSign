@@ -28,7 +28,7 @@ const sidebars = {
       label: 'v1.2',
       link: { type: 'generated-index', title: 'OpenSign API v1.2', slug: '/API-docs/v1.2' },
       collapsed: false,
-      items: apiV11Sidebar,
+      items: apiV12Sidebar,
     },
     {
       type: 'category',
