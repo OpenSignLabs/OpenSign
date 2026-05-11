@@ -80,6 +80,12 @@ const config = {
               specPath: "docs/API-docs/v1.1/opensign.yaml", // your v1.1 spec file
               outputDir: "docs/API-docs/v1.1",              // generated mdx + sidebar.js
               sidebarOptions: { groupPathsBy: "tag" },
+          },
+            opensign_v1_2: {
+              // OpenAPI v1.2
+              specPath: "docs/API-docs/v1.2/opensign.yaml", // your v1.1 spec file
+              outputDir: "docs/API-docs/v1.2",              // generated mdx + sidebar.js
+              sidebarOptions: { groupPathsBy: "tag" },
           }
         }
       }
