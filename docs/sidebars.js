@@ -13,6 +13,7 @@
 // import apiSidebar from './docs/API-docs/sidebar.ts';
 import apiV1Sidebar from './docs/API-docs/v1/sidebar.ts';
 import apiV11Sidebar from './docs/API-docs/v1.1/sidebar.ts';
+import apiV12Sidebar from './docs/API-docs/v1.2/sidebar.ts';
 
 /** @type {import('@docusaurus/plugin-content-docs').SidebarsConfig} */
 const sidebars = {
