@@ -1,1 +1,0 @@
-"use strict";(globalThis.webpackChunkOpenSign_Docs=globalThis.webpackChunkOpenSign_Docs||[]).push([[6854],{68552(e){e.exports=JSON.parse('{"categoryGeneratedIndex":{"title":"OpenSign API v1.2","slug":"/API-docs/v1.2","permalink":"/docs/API-docs/v1.2","sidebar":"apiSidebar","navigation":{"next":{"title":"Introduction","permalink":"/docs/API-docs/v1.1/opensign-api-v-1-1"}}}}')}}]);
