@@ -2,23 +2,93 @@ openapi: 3.0.3
 info:
   title: OpenSign API v1.2
   description: |
-    Welcome to the **OpenSign™ API v1.2** documentation.
+    # OpenSign™ API v1.2
 
-    Our powerful and flexible API empowers you to seamlessly integrate digital signing capabilities into your applications. Whether you're a developer automating document workflows, a business enhancing security, or an enterprise streamlining contract management, OpenSign™ delivers robust solutions tailored to your needs.
+    > **The open-source DocuSign alternative — built for developers, trusted by enterprises.**
 
-    Explore our comprehensive guides, code samples, and best practices to unlock the full potential of OpenSign™ and transform your digital document processes.
+    OpenSign™ gives you a complete, production-ready e-signature platform through a single, RESTful API. Send documents for signature, manage templates, track signing status in real time, and automate your entire document lifecycle — all without vendor lock-in.
 
-    **Useful Links:**
+    ---
+
+    ## Getting Started
+
+    Every request must carry your API token in the `x-api-token` header.
+
+    ```
+    x-api-token: <your-api-token>
+    ```
+
+    **→ [How to generate your API token](https://docs.opensignlabs.com/docs/help/Settings/APIToken)**
+
+    Not sure where to begin? Use the **sandbox environment** (`https://sandbox.opensignlabs.com/api/v1.2`) to prototype without affecting live data.
+
+    ---
+
+    ## Core Capabilities
+
+    | Category | What you can do |
+    |---|---|
+    | **Documents** | Create, send, update, revoke, and delete signature-request documents |
+    | **Templates** | Build reusable templates with pre-placed widgets; send to one or many signers |
+    | **Self-Sign** | Generate self-signed documents without a signer invitation flow |
+    | **Public Templates** | Share a public signing link — no signer list required |
+    | **Draft Workflow** | Save documents or templates as drafts and finalise them later |
+    | **Contacts** | Manage your signer contact book programmatically |
+    | **Folders** | Organise documents inside OpenSign Drive folders |
+    | **Webhooks** | Receive real-time event notifications at your own endpoint |
+    | **Users** | Retrieve account and credit information |
+
+    ---
+
+    ## What’s New in v1.2
+
+    ### Cleaner Template Retrieval
+    `GET /template/:id` and `GET /templatelist` have been streamlined — redundant parameters are removed and **prefill data is now returned separately from signer parameters**, making responses easier to consume.
+
+    ### Password-Protected PDF Support
+    Pass `"file_password"` in the request body when working with encrypted PDFs. Supported on:
+    `POST /createtemplate` · `PUT /template/:id` · `POST /createdocument/:template_id` · `POST /draftdocument` · `POST /drafttemplate` · `POST /selfsign`
+
+    ### Offline Signing Control
+    Set `"allow_offline_sign": true | false` on `POST /createtemplate` and `PUT /template/:id` to explicitly enable or disable offline signing for each template.
+
+    ### Signer Roles
+    The `signers` object now accepts a `"signer_role"` field across all creation routes. Three roles are supported:
+
+    | Role | Behaviour |
+    |---|---|
+    | `signer` *(default)* | Must complete at least one signature widget |
+    | `viewer` | Receives the document for review only — no widgets allowed |
+    | `approver` | Can have any widgets except a signature requirement |
+
+    ### Carbon Copy (CC) Recipients
+    A new `"cc"` field is now supported alongside the existing `"bcc"` field on document, template, draft and self-sign creation/update routes. Email addresses listed in `"cc"` receive a carbon-copy notification email once the document is completed. Like `"bcc"`, on update routes (such as `PUT /document/:id`) providing `"cc"` overrides the template value, even when supplied as an empty array (`[]`); omit the field to inherit the template value.
+
+    ---
+
+    ## Available Environments
+
+    | Environment | Base URL |
+    |---|---|
+    | **Sandbox** | `https://sandbox.opensignlabs.com/api/v1.2` |
+    | **Production** | `https://app.opensignlabs.com/api/v1.2` |
+    | **EU Region** | `https://eu-app.opensignlabs.com/api/v1.2` |
+
+    ---
+
+    ## Versioning & Backwards Compatibility
+
+    v1.2 is fully backwards-compatible with v1 and v1.1 — all endpoints from those versions are available on this base URL with no breaking changes. New parameters introduced in v1.2 are optional unless otherwise noted.
+
+    ---
+
+    ## Useful Links
+
     - [OpenSign Website](https://www.opensignlabs.com)
-    - [OpenSign GitHub Repository](https://github.com/opensignlabs/opensign)
-    - [Generate x-api-token](https://docs.opensignlabs.com/docs/help/Settings/APIToken) – Learn how to securely generate and manage your API token for authenticating requests.
-
-    **What’s New in v1.2**
-    - **Get Template & Get Template List**: removed unnecessary parameters and separated prefill data from signer parameters.
-    - "file_password" parameter added in create template, update template, create document with template, draft document and self sign routes to provide password for protected pdfs.
-    - "allow_offline_sign" parameter added in create template and update template routes to allow users to enable or disable offline signing for their templates.
-    - "signer_role" parameter added in the signers object of draft document, create document, create document with template, create template, and public template routes. Accepted values: **signer** (default), **viewer**, **approver**. Signers must have at least one signature widget; viewers must have no widgets; approvers may have any widgets without a signature requirement.
-
+    - [Full Documentation](https://docs.opensignlabs.com)
+    - [GitHub Repository](https://github.com/opensignlabs/opensign)
+    - [Generate API Token](https://docs.opensignlabs.com/docs/help/Settings/APIToken)
+    - [Terms of Service](https://www.opensignlabs.com/terms/)
   x-api-token: 
     description: "refer docs to generate api token [APIToken help](https://docs.opensignlabs.com/docs/help/Settings/APIToken)"
   contact:
@@ -5291,6 +5361,11 @@ components:
           items: 
             type: string
           example: ["user@example.com","user2@example.com"]
+        cc:
+          type: array
+          items:
+            type: string
+          example: ["user@example.com","user2@example.com"]
         prefill: 
           $ref: '#/components/schemas/prefill'
       xml:
@@ -5489,6 +5564,11 @@ components:
           items: 
             type: string
           example: ["user@example.com","user2@example.com"]  
+        cc:
+          type: array
+          items:
+            type: string
+          example: ["user@example.com","user2@example.com"]
       xml:
         name: documentwithstatus
     signerIpsResponse:
@@ -5852,6 +5932,13 @@ components:
           example: ["user@example.com","user2@example.com"]
           description: |
             bcc (blind carbon copy): Users added here will receive a notification email once the document is completed.
+        cc:
+          type: array
+          items:
+            type: string
+          example: ["user@example.com","user2@example.com"]
+          description: |
+            cc (carbon copy): Users added here will receive a notification email once the document is completed.
     draftdocument_body:
       required:
       - file
@@ -5976,6 +6063,13 @@ components:
           example: ["user@example.com","user2@example.com"]
           description: |
             bcc (blind carbon copy): Users added here will receive a notification email once the document is completed.
+        cc:
+          type: array
+          items:
+            type: string
+          example: ["user@example.com","user2@example.com"]
+          description: |
+            cc (carbon copy): Users added here will receive a notification email once the document is completed.
         prefill: 
           $ref: '#/components/schemas/prefill'
     createdocument_body:
@@ -6103,6 +6197,13 @@ components:
           example: ["user@example.com","user2@example.com"]
           description: |
             bcc (blind carbon copy): Users added here will receive a notification email once the document is completed.  
+        cc:
+          type: array
+          items:
+            type: string
+          example: ["user@example.com","user2@example.com"]
+          description: |
+            cc (carbon copy): Users added here will receive a notification email once the document is completed.
         prefill: 
           $ref: '#/components/schemas/prefill'  
     inline_response_200_1:
@@ -6343,6 +6444,15 @@ components:
             bcc (blind carbon copy): Users added here will receive a notification email once the document is completed.
             If this field is present in the request body, it overrides the template value, even when provided as an empty array ([]).
             If omitted or provided empty string ("") the template value is used.
+        cc:
+          type: array
+          items:
+            type: string
+          example: ["user@example.com","user2@example.com"]
+          description: |
+            cc (carbon copy): Users added here will receive a notification email once the document is completed.
+            If this field is present in the request body, it overrides the template value, even when provided as an empty array ([]).
+            If omitted or provided empty string ("") the template value is used.
         prefill: 
           type: object
           properties:
@@ -6460,6 +6570,13 @@ components:
           example: ["user@example.com","user2@example.com"]
           description: |
             bcc (blind carbon copy): Users added here will receive a notification email once the document is completed.  
+        cc:
+          type: array
+          items:
+            type: string
+          example: ["user@example.com","user2@example.com"]
+          description: |
+            cc (carbon copy): Users added here will receive a notification email once the document is completed.
     inline_response_200_3:
       type: object
       properties:
@@ -6606,6 +6723,13 @@ components:
           example: ["user@example.com","user2@example.com"]
           description: |
             bcc (blind carbon copy): Users added here will receive a notification email once the document is completed.          
+        cc:
+          type: array
+          items:
+            type: string
+          example: ["user@example.com","user2@example.com"]
+          description: |
+            cc (carbon copy): Users added here will receive a notification email once the document is completed.
         prefill: 
           $ref: '#/components/schemas/prefill'
     inline_response_draft_200:
@@ -6720,6 +6844,13 @@ components:
           example: ["user@example.com","user2@example.com"]
           description: |
             bcc (blind carbon copy): Users added here will receive a notification email once the document is completed.
+        cc:
+          type: array
+          items:
+            type: string
+          example: ["user@example.com","user2@example.com"]
+          description: |
+            cc (carbon copy): Users added here will receive a notification email once the document is completed.
     inline_response_404_7:
       type: object
       properties:
