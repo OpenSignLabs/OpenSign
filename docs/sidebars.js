@@ -23,6 +23,13 @@ const sidebars = {
   // apiSidebar: apiSidebar,
   // Single API sidebar containing two top-level categories
   apiSidebar: [
+   {
+      type: 'category',
+      label: 'v1.2',
+      link: { type: 'generated-index', title: 'OpenSign API v1.2', slug: '/API-docs/v1.2' },
+      collapsed: false,
+      items: apiV11Sidebar,
+    },
     {
       type: 'category',
       label: 'v1.1',
