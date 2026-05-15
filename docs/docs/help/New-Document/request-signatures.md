@@ -14,8 +14,8 @@ The OpenSign™ Request signatures interface is designed to streamline the proce
 ### Step 1: Begin New Document Creation
 
 - **Navigate to Request Signatures form**: Start by navigating to 'Request Signatures' from the main menu to initiate the creation of a document for signatures.
-
-<img width="800" alt="request signatures" src="https://github.com/user-attachments/assets/65087c2d-a1e4-4735-8420-759ea97b38aa" />
+- 
+<img width="866" height="406" alt="requets signature" src="https://github.com/user-attachments/assets/f3edeafa-66d1-416a-854e-ce666f27e7b7" />
 
 ### Uploading Your Document
 
@@ -33,6 +33,9 @@ The OpenSign™ Request signatures interface is designed to streamline the proce
 - **[6] Folder**: Select a folder where you want the document to be stored, or leave it to default to the 'Root' folder. You can browse your documents in a beautiful explorer view by navigating to "OpenSign™ Drive".
   
 ### Set the sending order
+
+<img width="866" height="406" alt="request signature2" src="https://github.com/user-attachments/assets/f2e07e62-5a46-480d-b9a9-94f406805ce6" />
+
 - **[7] Send in Order**
 
   **If you choose:**
@@ -45,36 +48,41 @@ Select the option that best suits the needs of your document processing.
     <img width="1731" height="876" alt="Enforce strict order" src="https://github.com/user-attachments/assets/79876739-a8a8-4597-bd67-a6845761ec63" />
 
 ### Setting the Time Frame
-- **[8] Time To Complete (Days)** *(Required)*: Specify the number of days the signers have to complete the signatures. After that, the document will no longer be available for signing.
+- **Time To Complete (Days)** *(Required)*: **[8]** Specify the number of days the signers have to complete the signatures. After that, the document will no longer be available for signing.
   
 ### Setting BCC and CC
-- **[9] BCC**: The BCC (Blind Carbon Copy) feature allows users to receive document completion emails at specified email addresses.
+- **BCC**: **[9]** The BCC (Blind Carbon Copy) feature allows users to receive document completion emails at specified email addresses.
 You can add multiple contacts in the BCC field to notify several recipients. 
 You can either:
 Click "Add New" to enter a new email contact, or
 Select from existing contacts using the dropdown list.
-- **[10] CC**: The CC (Carbon Copy) feature allows users to receive document completion emails at specified email addresses.
+- **CC**: **[10]** The CC (Carbon Copy) feature allows users to receive document completion emails at specified email addresses.
 You can add multiple contacts in the CC field to notify several recipients. 
 You can either:
 Click "Add New" to enter a new email contact, or
 Select from existing contacts using the dropdown list.
 
+**Merge Certificate to PDF** [11]: 
+  - **Yes**: This will ensure that the completion certificate is included in the final PDF document. However, please note that once merged, the certificate cannot be separated from the main document.
+  - **No**: If you choose not to merge, the completion certificate will be provided as a separate PDF file along with the signed document.
+This feature only available for the paid users.
+
 ### Auto reminder
-- **[11]** Once you enable the auto reminder, a text field will appear allowing you to set the reminder for a specific number of days.
+- **[12]** Once you enable the auto reminder, a text field will appear allowing you to set the reminder for a specific number of days.
 - **Remind once in every (Days)**: You can specify the reminder interval in days (e.g., every 1 or every 2 days).
 Note: You can set a maximum of 15 reminders. For example, if the document completion time is 16 days and you try to schedule a reminder every day, the system will not allow it, as the reminder limit would be exceeded.
 This feature only available for the paid users.
 
 ### Security Setting
-- **[12] Enable OTP Verification** :
+- **Enable OTP Verification** [13] :
   
    - If set to "Yes," the signer will be required to complete email OTP verification before viewing and signing the document.
    - If "Enable OTP Verification" is set to "No," the signer will not be prompted for OTP verification during the signing process.
 
 Note: This feature is available exclusively on paid plans.
 
-- **[13] Allow offline signing** :
-Choose whether signers can submit a copy of this document signed using an external tool for owner review.
+- **Allow offline signing** :
+**[14]** Choose whether signers can submit a copy of this document signed using an external tool for owner review.
    - **Yes**: Signers will see a “Sign Offline” option, allowing them to upload an externally signed PDF and submit it to the document owner for approval.
    - On Approval: Once the owner approves the submission, the signer’s signing process will be marked as completed. After the document is approved by the owner, a notification email will be sent to the signer confirming that the document has been approved and their signing process is complete. At the same time, a request signature email will be triggered and sent to the next signer in the signing order.
    - On Declined: If the document is incorrectly filled out or improperly formatted, the owner can decline it and add comments. The signer can then use the same signing link that was initially shared to them to either re-upload a corrected offline file or continue the process using OpenSign’s online signing interface.
@@ -84,21 +92,24 @@ Choose whether signers can submit a copy of this document signed using an extern
 This setting defaults to your account preference under Preferences and is available on paid plans.
 
 ### Enable tour:
-- **[14]** If set to "Yes," the signer will see the tour guide while signing the document. If your signer is familiar with OpenSign and you prefer not to display the tour guide, you can select "No," and the tour guide will not be shown to your signers.
+- **[15]** If set to "Yes," the signer will see the tour guide while signing the document. If your signer is familiar with OpenSign and you prefer not to display the tour guide, you can select "No," and the tour guide will not be shown to your signers.
 
 ### Notify on signatures: 
-- **[15]** If set to "Yes," the document owner will receive an email notification each signer completes their signature.
+- **[16]** If set to "Yes," the document owner will receive an email notification each signer completes their signature.
 Note: This feature is available exclusively on paid plans.
 
 ### allow modifications: 
-- **[16]** If set to Yes, the signer will be allowed to make modifications to the document during the signing process. However, they cannot edit or remove any fields that were already placed by the document owner. They can only add basic fields such as signature, stamp, initials, text, and cells.
+- **[17]** If set to Yes, the signer will be allowed to make modifications to the document during the signing process. However, they cannot edit or remove any fields that were already placed by the document owner. They can only add basic fields such as signature, stamp, initials, text, and cells.
 
 If both Allow Modification and Enable OTP are set to Yes, the signer will still not be able to edit or delete existing fields, but will gain access to additional advanced fields to add during signing. These include: signature, stamp, initials, name, job title, company, text, cells, and email.
 
 Note: This feature is available exclusively on paid plans.
 
 ### Redirect url: 
-- **[17]**  After signing the document and upon its completion, the signer will be redirected to the specified URL.
+- **[18]**  After signing the document and upon its completion, the signer will be redirected to the specified URL.
+
+### Pen colors: 
+- **[19]**  Choose the pen color for signing the document. The selected color will be available during the signing process. OpenSign currently supports red, blue, and black pen colors.
 
 ### Step 2: Proceed to Document Creation Panel
 - **Next**: Once all the necessary fields are filled, click this button to proceed to create the document for signing.
@@ -143,10 +154,18 @@ The **Prefill Widgets** feature lets document creators prefill specific fields b
 
 ### Add Widgets for Signers
 
-<img width="800" alt="request signatures" src="https://github.com/user-attachments/assets/25997f4c-6fbf-4851-b8a8-a803c3343f87" />
+<img width="866" height="406" alt="create document" src="https://github.com/user-attachments/assets/fa5471f0-f7cb-4170-982f-cb213e4db13d" />
 
 - **[1] Add signature widget**: Once your document is loaded in the document creation panel, you'll need to add a signature widget for each signer. OpenSign provides an intuitive interface for this task. Select the signer from the right side panel, click on the signature widget, and position it where the signature is required.
 Use the option on the right side to add recipients if you need to include additional signers. You can place multiple signature widgets for each signer, as required.
+
+Optionally, you can assign a role to each signer, such as:
+
+**Signer**: If the role is selected as Signer, the signer must fill in all required fields while signing the document before they can complete the signing process.
+
+**Viewer**: If the role is selected as Viewer, widgets cannot be assigned to that user. The Viewer role only allows the user to view the document.
+
+**Approver**: If the role is selected as Approver, it works similarly to the Signer role. However, the main difference is that the Approver role does not require a signature widget. The approver can approve the document even if no widgets are assigned.
 
   After placing the Signature widget, you will see the options on the widget such as:
   - **Add Signer/Change Signer**: Clicking the first icon on the signature widget allows you to change the signer. You can choose from existing signers in the dropdown or add a new signer.
