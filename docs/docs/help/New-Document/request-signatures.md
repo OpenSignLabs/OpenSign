@@ -15,7 +15,7 @@ The OpenSign™ Request signatures interface is designed to streamline the proce
 
 - **Navigate to Request Signatures form**: Start by navigating to 'Request Signatures' from the main menu to initiate the creation of a document for signatures.
 - 
-<img width="866" height="406" alt="requets signature" src="https://github.com/user-attachments/assets/f3edeafa-66d1-416a-854e-ce666f27e7b7" />
+<img width="866" alt="requets signature" src="https://github.com/user-attachments/assets/f3edeafa-66d1-416a-854e-ce666f27e7b7" />
 
 ### Uploading Your Document
 
@@ -34,7 +34,7 @@ The OpenSign™ Request signatures interface is designed to streamline the proce
   
 ### Set the sending order
 
-<img width="866" height="406" alt="request signature2" src="https://github.com/user-attachments/assets/f2e07e62-5a46-480d-b9a9-94f406805ce6" />
+<img width="866"  alt="request signature2" src="https://github.com/user-attachments/assets/f2e07e62-5a46-480d-b9a9-94f406805ce6" />
 
 - **[7] Send in Order**
 
@@ -45,7 +45,7 @@ Select the option that best suits the needs of your document processing.
   - **Enforce strict order**: When this feature is enabled, signers must sign the document strictly in the predefined order. A signer assigned to the second position cannot sign the document until the first signer has completed their signing process.
     If a subsequent signer attempts to sign the document before the previous signer has signed, an error message will be displayed, and the document signing process cannot be completed.
     
-    <img width="1731" height="876" alt="Enforce strict order" src="https://github.com/user-attachments/assets/79876739-a8a8-4597-bd67-a6845761ec63" />
+    <img width="866" alt="Enforce strict order" src="https://github.com/user-attachments/assets/79876739-a8a8-4597-bd67-a6845761ec63" />
 
 ### Setting the Time Frame
 - **Time To Complete (Days)** *(Required)*: **[8]** Specify the number of days the signers have to complete the signatures. After that, the document will no longer be available for signing.
@@ -120,7 +120,7 @@ Note: This feature is available exclusively on paid plans.
 
 The **Prefill Widgets** feature lets document creators prefill specific fields before sending a document for signature. This ensures that important details (such as date, name, email, images, checkboxes, radio buttons, or custom text) are already completed when recipients receive the document. By default, prefilled data cannot be edited by signers.  
 
-<img width="800" alt="Prfill" src="https://github.com/user-attachments/assets/4794b2a9-acc0-4ef8-8110-076f0d90cc57" />
+<img width="866" alt="Prfill" src="https://github.com/user-attachments/assets/4794b2a9-acc0-4ef8-8110-076f0d90cc57" />
 
 ---
 
@@ -154,7 +154,7 @@ The **Prefill Widgets** feature lets document creators prefill specific fields b
 
 ### Add Widgets for Signers
 
-<img width="866" height="406" alt="create document" src="https://github.com/user-attachments/assets/fa5471f0-f7cb-4170-982f-cb213e4db13d" />
+<img width="866" alt="create document" src="https://github.com/user-attachments/assets/fa5471f0-f7cb-4170-982f-cb213e4db13d" />
 
 - **[1] Add signature widget**: Once your document is loaded in the document creation panel, you'll need to add a signature widget for each signer. OpenSign provides an intuitive interface for this task. Select the signer from the right side panel, click on the signature widget, and position it where the signature is required.
 Use the option on the right side to add recipients if you need to include additional signers. You can place multiple signature widgets for each signer, as required.
