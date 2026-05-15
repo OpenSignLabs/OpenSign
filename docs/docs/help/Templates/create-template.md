@@ -14,7 +14,7 @@ Creating a template in OpenSign is straightforward and can significantly enhance
 
 - **Navigate to New template form**: On the left sidebar, click on "Templates" to expand the menu. and Click on the "Create template" option.
 
-<img width="828" alt="Create Template" src="https://github.com/user-attachments/assets/143a752c-1ee3-4424-afe4-65922b71ddbb" />
+<img width="828" alt="Create Template" src="https://github.com/user-attachments/assets/c38f54c7-5140-4bbc-82a2-cec8aab1d694" />
 
 ### Uploading Your Document
 
@@ -27,13 +27,20 @@ Creating a template in OpenSign is straightforward and can significantly enhance
 - **[4] Description**: Optionally add a description to give context or instructions regarding the template. 
 - **[5] Note**: Optionally add a note to give context or instructions regarding the document.
 
-### Set the sending order
+### Document flow setting
 - **[6] Send in Order**
   - **If you choose:**
   - **Yes**: Selecting this option will send the signing request to the first signer initially. Once the first signer completes their part, the next signer in the sequence will receive the request. This process continues until all signers have signed the document. This method ensures that the document is signed in a specific order.
   - **No**: Selecting this option will send the signing links to all signers simultaneously. Every signer can sign the document at their convenience, regardless of whether other signers have completed their signatures. This method is faster but does not enforce any signing order among the participants.
 Select the option that best suits the needs of your document processing.
+
+- **Enforce strict order**: When this feature is enabled, signers must sign the document strictly in the predefined order. A signer assigned to the second position cannot sign the document until the first signer has completed their signing process.
+    If a subsequent signer attempts to sign the document before the previous signer has signed, an error message will be displayed, and the document signing process cannot be completed.
+  
 ### Auto reminder (feature only available for subscribed users)
+
+<img width="866" height="406" alt="create template2" src="https://github.com/user-attachments/assets/736897c7-e87c-4040-9bf3-0126d1e9aaa2" />
+
 - **[7]** Once you enable the auto reminder, a text field will appear allowing you to set the reminder for a specific number of days.
   - **Remind once in every (Days)**: Here, you can set the number of days for the reminder.
 
@@ -42,39 +49,64 @@ Select the option that best suits the needs of your document processing.
 ### Time to complete (days)
 - **[8]** You can specify the number of days within which the document must be signed. For example, if you set the expiration period to 15 days, the created document will remain available for signing for 15 days from the date of creation. After this period, the document will expire, and the signer will no longer be able to sign it.
 
-###  BCC
-- **[9]** The BCC (Blind Carbon Copy) feature allows users to receive document completion emails at specified email addresses.
+###  Setting BCC and CC
+- **BCC**: **[9]**  The BCC (Blind Carbon Copy) feature allows users to receive document completion emails at specified email addresses.
 You can add multiple contacts in the BCC field to notify several recipients. 
 You can either:
 Click "Add New" to enter a new email contact, or
 Select from existing contacts using the dropdown list.
 
+- **CC**: **[10]** The CC (Carbon Copy) feature allows users to receive document completion emails at specified email addresses.
+You can add multiple contacts in the CC field to notify several recipients. 
+You can either:
+Click "Add New" to enter a new email contact, or
+Select from existing contacts using the dropdown list.
+
+**Merge Certificate to PDF** **[11]**: 
+  - **Yes**: This will ensure that the completion certificate is included in the final PDF document. However, please note that once merged, the certificate cannot be separated from the main document.
+  - **No**: If you choose not to merge, the completion certificate will be provided as a separate PDF file along with the signed document.
+This feature only available for the paid users.
+
 ### Security Setting
-- **[10] Enable OTP Verification** :
+- **[12] Enable OTP Verification** :
   
 If set to "Yes," the signer will be required to complete email OTP verification before viewing and signing the document. If "Enable OTP Verification" is set to "No," the signer will not be prompted for OTP verification during the signing process.
 Note: This feature is available exclusively on paid plans.
 
+- **Allow offline signing** :
+  
+**[13]** Choose whether signers can submit a copy of this document signed using an external tool for owner review.
+   - **Yes**: Signers will see a “Sign Offline” option, allowing them to upload an externally signed PDF and submit it to the document owner for approval.
+   - On Approval: Once the owner approves the submission, the signer’s signing process will be marked as completed. After the document is approved by the owner, a notification email will be sent to the signer confirming that the document has been approved and their signing process is complete. At the same time, a request signature email will be triggered and sent to the next signer in the signing order.
+   - On Declined: If the document is incorrectly filled out or improperly formatted, the owner can decline it and add comments. The signer can then use the same signing link that was initially shared to them to either re-upload a corrected offline file or continue the process using OpenSign’s online signing interface.
+   
+   - **No**: Signers can only sign within the app. The Sign Offline option will be hidden.
+
+This setting defaults to your account preference under Preferences and is available on paid plans.
+
 ### Enable tour:
   
-- **[11]** If set to "Yes," the signer will see the tour guide while signing the document. If your signer is familiar with OpenSign and you prefer not to display the tour guide, you can select "No," and the tour guide will not be shown to your signers.
+- **[14]** If set to "Yes," the signer will see the tour guide while signing the document. If your signer is familiar with OpenSign and you prefer not to display the tour guide, you can select "No," and the tour guide will not be shown to your signers.
 
 ### Notify on signatures:
   
-- **[12]** If set to "Yes," the document owner will receive an email notification each signer completes their signature.
+- **[15]** If set to "Yes," the document owner will receive an email notification each signer completes their signature.
 Note: This feature is available exclusively on paid plans.
 
 ### Allow modifications: 
 
-- **[13]** If set to Yes, the signer will be allowed to make modifications to the document during the signing process. However, they cannot edit or remove any fields that were already placed by the document owner. They can only add basic fields such as signature, stamp, initials, text, and cells.
+- **[16]** If set to Yes, the signer will be allowed to make modifications to the document during the signing process. However, they cannot edit or remove any fields that were already placed by the document owner. They can only add basic fields such as signature, stamp, initials, text, and cells.
 
 If both Allow Modification and Enable OTP are set to Yes, the signer will still not be able to edit or delete existing fields, but will gain access to additional advanced fields to add during signing. These include: signature, stamp, initials, name, job title, company, text, cells, and email.
 
 Note: This feature is available exclusively on paid plans.
 
 ### Redirect url: 
-- **[14]**  After signing the document and upon its completion, the signer will be redirected to the specified URL.
-
+- **[17]**  After signing the document and upon its completion, the signer will be redirected to the specified URL.
+  
+### Pen colors: 
+- **[18]**  Choose the pen color for signing the document. The selected color will be available during the signing process. OpenSign currently supports red, blue, and black pen colors.
+  
 ### Proceed to Template Creation Panel
 - **Next**: Click the "Next" button to proceed to the next stage of template creation, where you can add widgets and finalize the template.
 - **Cancel**: If you need to start over or make changes, click Cancel button to clear the form.
@@ -114,7 +146,7 @@ The **Prefill Widgets** feature lets document creators prefill specific fields b
   
 ### [1] Define roles and assign widgets:
 
-<img width="828" alt="Create Template" src="https://github.com/user-attachments/assets/9305bf0b-02d4-4110-bbbf-6496c9fd6f65" />
+<img width="828" alt="Create Template" src="https://github.com/user-attachments/assets/1248b9c8-db51-4dd3-bd1c-e1630b998ffc" />
 
 **Add Roles**: In the roles section on the right, click "+ Add role" to specify the roles involved in the document, such as Candidate, HR, and Manager.
 **Assign Widgets to Roles**: Click on each role to highlight it, then drag and drop the widget to assign it to that role.
@@ -124,6 +156,22 @@ Select the Role from the right side panel, click on the signature widget, and po
 
   After placing the Signature widget, you will see the options on the widget such as:
   - **Add Signer/Change Signer**: Clicking the first icon on the signature widget allows you to change the signer. You can choose from existing signers in the dropdown or add a new signer.
+    
+Optionally, you can assign a role to each signer, such as:
+
+**Signer**: If the role is selected as Signer, the signer must fill in all required fields while signing the document before they can complete the signing process.
+
+**Viewer**: If the role is selected as Viewer, widgets cannot be assigned to that user. The Viewer role only allows the user to view the document.
+
+**Approver**: If the role is selected as Approver, it works similarly to the Signer role. However, the main difference is that the Approver role does not require a signature widget. The approver can approve the document even if no widgets are assigned.
+
+  After placing the Signature widget, you will see the options on the widget such as:
+  - **Add Signer/Change Signer**: Clicking the first icon on the signature widget allows you to change the signer. You can choose from existing signers in the dropdown or add a new signer.
+  - **Copy Signature**: Clicking on this option reveals the following choices.
+    -  All pages: It will copy the signature widget to all pages.
+    -  All pages but last: It will copy the signature widget to all pages except the last page.
+    -  All pages but first: It will copy the signature widget to all pages except the first page.
+    
   - **Copy Signature**: Clicking on this option reveals the following choices.
     -  All pages: It will copy the signature widget to all pages.
     -  All pages but last: It will copy the signature widget to all pages except the last page.
