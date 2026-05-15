@@ -190,7 +190,7 @@ function getUserIP(request) {
 }
 
 app.use(async function (req, res, next) {
-  const isFilePath = req.path.includes('files') || false;
+  const isFilePath = req.path?.includes('/files/') || false;
   if (isFilePath && req.method.toLowerCase() === 'get') {
     const serverUrl = new URL(process.env.SERVER_URL);
     const origin = serverUrl.pathname === '/api/app' ? serverUrl.origin + '/api' : serverUrl.origin;

@@ -13,7 +13,8 @@ const SelectSigners = (props) => {
     setSignersData,
     uniqueId,
     isRemove,
-    handleAddUser
+    handleAddUser,
+    isSubscribe
   } = props;
   const [userList, setUserList] = useState([]);
   const [selected, setSelected] = useState();
@@ -59,7 +60,7 @@ const SelectSigners = (props) => {
   };
   const handleAdd = () => {
     if (userData && userData.objectId) {
-      handleAddUser(userData);
+      const addedId = handleAddUser(userData);
       if (props.closePopup) {
         props.closePopup();
       }

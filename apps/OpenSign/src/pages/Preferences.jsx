@@ -262,10 +262,7 @@ const Preferences = () => {
                 </div>
               )}
               <h1 className="ml-4 mt-3 text-lg mb-2 font-semibold text-base-content">
-                {appName} {t("Preferences")}{" "}
-                <span>
-                  <Tooltip message={`${appName} ${t("Preferences")}`} />
-                </span>
+                {appName} {t("Preferences")}
               </h1>
               <div className="flex justify-center items-center mt-2">
                 <div
@@ -524,6 +521,7 @@ const Preferences = () => {
                           </div>
                         </div>
                       </div>
+
 
                       <div className="mb-6">
                         <label

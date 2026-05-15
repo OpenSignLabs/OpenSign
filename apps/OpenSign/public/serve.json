@@ -1,0 +1,5 @@
+{
+  "rewrites": [
+    { "source": "/:path((?!\\.well-known/).*)", "destination": "/index.html" }
+  ]
+}

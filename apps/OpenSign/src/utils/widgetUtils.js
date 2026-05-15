@@ -66,10 +66,11 @@ export const saveToMySign = async (widget) => {
 };
 
 // helper: does this signer already have any signature widget?
-export const hasSignatureWidget = (s) =>
-  (s.placeHolder ?? []).some((ph) =>
+export const hasSignatureWidget = (s) => {
+  return (s.placeHolder ?? []).some((ph) =>
     (ph?.pos ?? []).some((p) => p?.type === "signature")
   );
+};
 
 export const widgetNamesArr = (placeholders, signerId) => {
   const widgetNames =
@@ -490,12 +491,20 @@ export const loadPdfOnce = async (url) => {
 };
 
 export const mailModalHead = (sendinOrder, mailStatus, isOwner) => {
-  const HEAD = { success: "mails-sent", quotareached: "quota-mail-head" };
+  const HEAD = {
+    success: "mails-sent",
+    quotareached: "quota-mail-head",
+    emailnotverified: "email-not-verified-head"
+  };
 
   return sendinOrder
     ? isOwner
-      ? "mail-status-head"
-      : "mails-sent"
+      ? mailStatus === "emailnotverified"
+        ? "email-not-verified-head"
+        : "mail-status-head"
+      : mailStatus === "emailnotverified"
+        ? "email-not-verified-head"
+        : "mails-sent"
     : (HEAD[mailStatus] ?? "mail-not-delivered");
 };
 

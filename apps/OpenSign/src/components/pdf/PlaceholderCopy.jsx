@@ -71,8 +71,8 @@ function PlaceholderCopy(props) {
       newPageNumber !== props.pageNumber
     ) {
       // Fallback widget dimensions (in case not defined)
-      const widgetHeight = newPlaceholder?.height || 60;
-      const widgetWidth = newPlaceholder?.width || 150;
+      const widgetHeight = newPlaceholder?.Height || 60;
+      const widgetWidth = newPlaceholder?.Width || 150;
 
       //Calculate scaling ratio between source and target page
       const heightRatio = targetPageHeight / sourcePageHeight;
@@ -281,13 +281,11 @@ function PlaceholderCopy(props) {
         const filteredOld = oldPlaceholders.filter(
           (page) => page.pageNumber < start || page.pageNumber > end
         );
-
         return {
           ...signersData,
           placeHolder: [...filteredOld, ...newPlaceholderPosition]
         };
       });
-
       // No mutation
       props.setXyPosition(updatedSignerPlaceholder);
     }

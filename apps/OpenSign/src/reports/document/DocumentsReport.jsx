@@ -27,7 +27,7 @@ import {
 import BulkSendUi from "../../components/bulksend/BulkSendUi";
 import Loader from "../../primitives/Loader";
 import { serverUrl_fn } from "../../constant/appinfo";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import DownloadPdfZip from "../../primitives/DownloadPdfZip";
 import { useElSize } from "../../hook/useElSize";
 import PrefillWidgetModal from "../../components/pdf/PrefillWidgetsModal";
@@ -65,7 +65,7 @@ const DocumentsReport = (props) => {
   const [userDetails, setUserDetails] = useState({});
   const [isNextStep, setIsNextStep] = useState({});
   const [isBulkSend, setIsBulkSend] = useState({});
-  const [templateDeatils, setTemplateDetails] = useState({});
+  const [templateDetails, setTemplateDetails] = useState({});
   const [placeholders, setPlaceholders] = useState([]);
   const [isLoader, setIsLoader] = useState({});
   const [isModal, setIsModal] = useState({});
@@ -88,6 +88,7 @@ const DocumentsReport = (props) => {
   const [isPrefillModal, setIsPrefillModal] = useState({});
   const [isSubmit, setIsSubmit] = useState(false);
   const [error, setError] = useState("");
+  const [resendErrMail, setResendErrMail] = useState("");
   const [isMailModal, setIsMailModal] = useState(false);
   const [customizeMail, setCustomizeMail] = useState({
     body: { basic: "", advanced: "" },
@@ -267,10 +268,10 @@ const DocumentsReport = (props) => {
     async (templateRes, placeholder, signer) => {
       setIsPrefillModal({});
       const res = await createDocument(
-        [templateRes || templateDeatils],
+        [templateRes || templateDetails],
         placeholder || xyPosition,
         signer || signerList,
-        templateRes?.URL || templateDeatils?.URL,
+        templateRes?.URL || templateDetails?.URL,
       );
       if (res.status === "success") {
         navigate(`/placeHolderSign/${res.id}`, {
@@ -283,8 +284,8 @@ const DocumentsReport = (props) => {
   );
   const handleUseTemplate = async (templateId, item) => {
     try {
-      const templateDeatils = await fetchTemplate(templateId);
-      const templateData = templateDeatils.data && templateDeatils.data.result;
+      const templateRes = await fetchTemplate(templateId);
+      const templateData = templateRes.data && templateRes.data.result;
       if (!templateData.error) {
         setTemplateDetails(templateData);
         setXyPosition(templateData?.Placeholders);
@@ -445,29 +446,19 @@ const DocumentsReport = (props) => {
     const jsonSender = JSON.parse(senderUser);
     setIsRevoke({});
     setActLoader({ [`${item.objectId}`]: true });
-    const data = {
-      IsDeclined: true,
-      DeclineReason: reason,
-      DeclineBy: {
-        __type: "Pointer",
-        className: "_User",
-        objectId: jsonSender?.objectId
-      }
+    const params = {
+      docId: item.objectId,
+      reason: reason,
+      userId: jsonSender?.objectId,
     };
     await axios
-      .put(
-        `${localStorage.getItem("baseUrl")}classes/contracts_Document/${
-          item.objectId
-        }`,
-        data,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
-            "X-Parse-Session-Token": localStorage.getItem("accesstoken")
-          }
+      .post(`${localStorage.getItem("baseUrl")}functions/declinedoc`, params, {
+        headers: {
+          "Content-Type": "application/json",
+          "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
+          "X-Parse-Session-Token": localStorage.getItem("accesstoken")
         }
-      )
+      })
       .then(async (result) => {
         const res = result.data;
         if (res) {
@@ -643,6 +634,7 @@ const DocumentsReport = (props) => {
       company_name: doc?.ExtUserPtr?.Company || "",
       signing_url: signPdf
     };
+
     const subject =
       doc?.RequestSubject ||
       doc?.ExtUserPtr?.TenantId?.RequestSubject ||
@@ -691,11 +683,11 @@ const DocumentsReport = (props) => {
         setIsResendMail({});
       }
       else {
-        showAlert("danger", t("something-went-wrong-mssg"));
+        setResendErrMail(t("something-went-wrong-mssg"));
       }
     } catch (err) {
       console.error("sendmail error", err);
-      showAlert("danger", t("something-went-wrong-mssg"));
+      setResendErrMail(t("something-went-wrong-mssg"));
     } finally {
       setIsNextStep({});
       setUserDetails({});
@@ -961,8 +953,8 @@ const DocumentsReport = (props) => {
       signerList,
       setIsPrefillModal,
       scale,
-      templateDeatils?.URL,
-      [templateDeatils],
+      templateDetails?.URL,
+      [templateDetails],
       prefillImg,
       extClass?.[0]?.UserId?.objectId,
     );
@@ -979,7 +971,7 @@ const DocumentsReport = (props) => {
         timeInMiliSec
       );
     } else if (res?.status === "unattach signer") {
-      showAlert("danger", "please attach all role to signer");
+      showAlert("danger", t("attach-all-role-to-signer"));
     } else if (res?.status === "success") {
       setDocumentId(res.id);
       setActLoader({});
@@ -991,6 +983,9 @@ const DocumentsReport = (props) => {
         console.error("fetchTenantDetails error", e);
         alert(t("user-not-exist"));
       }
+    } else if (res?.status === "error") {
+      const message = res?.message || "something-went-wrong-mssg";
+      showAlert("danger", t(message));
     }
     setIsSubmit(false);
     setActLoader({});
@@ -1015,7 +1010,10 @@ const DocumentsReport = (props) => {
         `${documentId}/${signerMail[i].Email}/${objectId}/${sendMail}`
       );
       let signPdf = `${hostUrl}/login/${encodeBase64}`;
-      shareLinkList.push({ signerEmail: signerMail[i].Email, url: signPdf });
+      shareLinkList.push({
+        signerEmail: signerMail[i].Email,
+        url: signPdf
+      });
     }
     return shareLinkList.map((data, ind) => {
       return (
@@ -1531,12 +1529,30 @@ const DocumentsReport = (props) => {
                               <Loader />
                             </div>
                           ) : (
-                            <BulkSendUi
-                              Placeholders={placeholders}
-                              item={templateDeatils}
-                              handleClose={handleQuickSendClose}
-                              signatureType={signatureType}
-                            />
+                            <>
+                              {!extClass?.[0]?.UserId?.emailVerified ? (
+                                <div className="mx-[20px] mt-[15px] mb-[20px]">
+                                  <Trans
+                                    i18nKey="email-not-verified-send"
+                                    components={{
+                                      1: (
+                                        <Link
+                                          to="/profile"
+                                          className="text-blue-700 underline cursor-pointer"
+                                        />
+                                      )
+                                    }}
+                                  />
+                                </div>
+                              ) : (
+                                <BulkSendUi
+                                  Placeholders={placeholders}
+                                  item={templateDetails}
+                                  handleClose={handleQuickSendClose}
+                                  signatureType={signatureType}
+                                />
+                              )}
+                            </>
                           )}
                         </ModalUi>
                       )}
@@ -1637,9 +1653,9 @@ const DocumentsReport = (props) => {
                               )?.map((user) => (
                                 <React.Fragment key={user.Id}>
                                   {isNextStep[user.Id] && (
-                                    <div className="relative ">
+                                    <div className="relative">
                                       {actLoader[user.Id] && (
-                                        <div className="absolute w-full h-full flex justify-center items-center bg-black bg-opacity-30 z-30">
+                                        <div className="absolute w-full h-full flex justify-center items-center bg-black bg-opacity-30 z-[60]">
                                           <Loader />
                                         </div>
                                       )}
@@ -1655,68 +1671,70 @@ const DocumentsReport = (props) => {
                                             message={t("resend-mail-help")}
                                           />
                                         </div>
-                                        <div>
-                                          <label
-                                            className="text-xs ml-1"
-                                            htmlFor="mailsubject"
-                                          >
-                                            {t("subject")}{" "}
-                                          </label>
-                                          <input
-                                            id="mailsubject"
-                                            className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
-                                            value={mail.subject}
-                                            onChange={(e) =>
-                                              handleSubjectChange(
-                                                e.target.value,
-                                                item
-                                              )
-                                            }
-                                            onInvalid={(e) =>
-                                              e.target.setCustomValidity(
-                                                t("input-required")
-                                              )
-                                            }
-                                            onInput={(e) =>
-                                              e.target.setCustomValidity("")
-                                            }
-                                            required
-                                          />
-                                        </div>
-                                        <div>
-                                          <label
-                                            className="flex justify-between text-sm ml-1"
-                                            htmlFor="mailbody"
-                                          >
-                                            <span>{t("body")} </span>
-                                            <button
-                                              className="op-link op-link-primary"
-                                              onClick={(e) => handleSwitch(e)}
+                                        <div className="w-full flex flex-col gap-2 text-base-content relative">
+                                          <div>
+                                            <label
+                                              className="text-xs ml-1"
+                                              htmlFor="mailsubject"
                                             >
-                                              {emailEditorType === "basic"
-                                                ? t("switch-to-advanced")
-                                                : t("switch-to-basic")}
-                                            </button>
-                                          </label>
-                                          <EmailEditor
-                                            type={emailEditorType}
-                                            values={mail.body || ""}
-                                            onChange={(value, type) =>
-                                              handlebodyChange(
-                                                value,
-                                                item,
-                                                type
-                                              )
-                                            }
-                                            smallscreen
-                                          />
+                                              {t("subject")}{" "}
+                                            </label>
+                                            <input
+                                              id="mailsubject"
+                                              className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
+                                              value={mail.subject}
+                                              onChange={(e) =>
+                                                handleSubjectChange(
+                                                  e.target.value,
+                                                  item
+                                                )
+                                              }
+                                              onInvalid={(e) =>
+                                                e.target.setCustomValidity(
+                                                  t("input-required")
+                                                )
+                                              }
+                                              onInput={(e) =>
+                                                e.target.setCustomValidity("")
+                                              }
+                                              required
+                                            />
+                                          </div>
+                                          <div>
+                                            <label
+                                              className="flex justify-between text-sm ml-1"
+                                              htmlFor="mailbody"
+                                            >
+                                              <span>{t("body")} </span>
+                                              <button
+                                                className="op-link op-link-primary"
+                                                onClick={(e) => handleSwitch(e)}
+                                              >
+                                                {emailEditorType === "basic"
+                                                  ? t("switch-to-advanced")
+                                                  : t("switch-to-basic")}
+                                              </button>
+                                            </label>
+                                            <EmailEditor
+                                              type={emailEditorType}
+                                              values={mail.body || ""}
+                                              onChange={(value, type) =>
+                                                handlebodyChange(
+                                                  value,
+                                                  item,
+                                                  type
+                                                )
+                                              }
+                                              smallscreen
+                                            />
+                                          </div>
                                         </div>
-                                        <button
-                                          type="submit"
-                                          className="op-btn op-btn-primary"
-                                        >
-                                          {t("resend")}
-                                        </button>
+                                          <button
+                                            type="submit"
+                                            className="op-btn op-btn-primary"
+                                          >
+                                            {t("resend")}
+                                          </button>
                                       </form>
                                     </div>
                                   )}
@@ -1841,6 +1859,30 @@ const DocumentsReport = (props) => {
             </button>
           )}
         </div>
+        <ModalUi
+          isOpen={resendErrMail}
+          id="error-modal"
+          title={t("error")}
+          handleClose={() => setResendErrMail("")}
+        >
+          <div className="mx-[20px] mb-[20px] mt-[10px]">
+            {resendErrMail === "emailnotverified" ? (
+              <Trans
+                i18nKey="email-not-verified-send"
+                components={{
+                  1: (
+                    <Link
+                      to="/profile"
+                      className="text-blue-700 underline cursor-pointer"
+                    />
+                  )
+                }}
+              />
+            ) : (
+              <p>{resendErrMail}</p>
+            )}
+          </div>
+        </ModalUi>
         <CustomizeMail
           setIsMailModal={setIsMailModal}
           setCustomizeMail={setCustomizeMail}
@@ -1866,7 +1908,9 @@ const DocumentsReport = (props) => {
               ? t("mails-sent")
               : mailStatus === "quotareached"
                 ? t("quota-mail-head")
-                : t("mail-not-delivered")
+                : mailStatus === "emailnotverified"
+                  ? t("email-not-verified-head")
+                  : t("mail-not-delivered")
           }
           handleClose={() => {
             setIsSend(false);
@@ -1894,6 +1938,20 @@ const DocumentsReport = (props) => {
               <div className="flex flex-col gap-y-3">
                 <div className="my-3">{handleShareList()}</div>
               </div>
+            ) : mailStatus === "emailnotverified" ? (
+              <p>
+                <Trans
+                  i18nKey="email-not-verified-send"
+                  components={{
+                    1: (
+                      <a
+                        href="/profile"
+                        className="text-blue-700 underline cursor-pointer"
+                      />
+                    )
+                  }}
+                />
+              </p>
             ) : (
               <div className="mb-[10px]">
                 {mailStatus === "dailyquotareached" ? (
@@ -1912,7 +1970,9 @@ const DocumentsReport = (props) => {
             {mailStatus !== "quotareached" && (
               <div
                 className={
-                  mailStatus === "success" ? "flex justify-center mt-1" : ""
+                  mailStatus === "success" || mailStatus === "emailnotverified"
+                    ? "flex justify-center mt-1"
+                    : ""
                 }
               >
                 {currUserId && (

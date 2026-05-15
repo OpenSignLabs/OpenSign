@@ -3,6 +3,7 @@ import { cloudServerUrl, mailTemplate, replaceMailVaribles, serverAppId } from '
 import { setDocumentCount } from '../../utils/CountUtils.js';
 
 import crypto from 'crypto';
+import sendSystemMail from './sendSystemMail.js';
 
 function chunkArray(arr, size) {
   const out = [];
@@ -50,9 +51,6 @@ async function sendOwnerSummaryEmail({
   failedList,
 }) {
   try {
-    const url = `${serverUrl}/functions/sendmailv3`;
-    const headers = { 'Content-Type': 'application/json', 'X-Parse-Application-Id': appId };
-
     const subject = `Bulk send finished: ${failed} of ${total} failed to create`;
 
     const failureHtml = failedList?.length
@@ -83,7 +81,7 @@ async function sendOwnerSummaryEmail({
       html,
     };
 
-    await axios.post(url, params, { headers });
+    await sendSystemMail({ params });
   } catch (e) {
     console.log('batchdoc Failed to send owner summary email:', e?.message || e);
   }
@@ -92,7 +90,7 @@ async function sendOwnerSummaryEmail({
 async function deductcount(docsCount, extUserId) {
   try {
     if (extUserId) {
-      setDocumentCount(extUserId);
+      setDocumentCount(extUserId, docsCount);
     }
   } catch (err) {
     console.log('batchdoc deductcount error: ', err);
@@ -230,6 +228,7 @@ async function startBulkSendInBackground(userId, Documents, Ip, parseConfig, typ
         Description: x.Description,
         CreatedBy: x.CreatedBy,
         SendinOrder: x.SendinOrder || true,
+        SendInOrderStrict: x.SendInOrderStrict || false,
         ExtUserPtr: {
           __type: 'Pointer',
           className: x.ExtUserPtr.className,
@@ -272,6 +271,7 @@ async function startBulkSendInBackground(userId, Documents, Ip, parseConfig, typ
         ...(x?.SignatureType ? { SignatureType: x?.SignatureType } : {}),
         ...(x?.NotifyOnSignatures ? { NotifyOnSignatures: x?.NotifyOnSignatures } : {}),
         ...(x?.Bcc?.length > 0 ? { Bcc: x?.Bcc } : {}),
+        ...(x?.Cc?.length > 0 ? { Cc: x?.Cc } : {}),
         ...(x?.RedirectUrl ? { RedirectUrl: x?.RedirectUrl } : {}),
         ...(mailBody ? { RequestBody: mailBody } : {}),
         ...(mailSubject ? { RequestSubject: mailSubject } : {}),
@@ -303,7 +303,6 @@ async function startBulkSendInBackground(userId, Documents, Ip, parseConfig, typ
         createdAt: response.data[0]?.success?.createdAt,
       };
       deductcount(response.data.length, resExt.id);
-      console.log('here');
       sendMail(updateDocuments, publicUrl); //sessionToken
       return { total: 1, created: 1, failed: 0 };
     }

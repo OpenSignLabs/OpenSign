@@ -7,7 +7,8 @@ import {
   embedWidgetsToDoc,
   randomId,
   getBase64FromUrl,
-  drawWidget
+  drawWidget,
+  getSignedUrl
 } from "../constant/Utils";
 import { PDFDocument } from "pdf-lib";
 
@@ -121,6 +122,7 @@ export const isValidPrefill = (prefillData) => {
     }
   }
 };
+
 //function to use create document from templateAdd commentMore actions
 export const handleCheckPrefillCreateDoc = async (
   xyPosition,
@@ -132,13 +134,21 @@ export const handleCheckPrefillCreateDoc = async (
   prefillImg,
   userId
 ) => {
-  const pdfArrayBuffer = await convertPdfArrayBuffer(updatedPdfUrl);
+  let url;
+  let pdfArrayBuffer;
+  try {
+    url = await getSignedUrl(updatedPdfUrl, "", pdfDetails?.[0]?.objectId);
+    pdfArrayBuffer = await convertPdfArrayBuffer(url);
+    if (pdfArrayBuffer === "Error") {
+      return { status: "error", message: "failed-pdf-for-prefill-processing" };
+    }
+  } catch (e) {
+    return { status: "error", message: "failed-pdf-for-prefill-processing" };
+  }
   const prefillData = xyPosition.find((x) => x.Role === "prefill");
   if (prefillData) {
     const res = isValidPrefill(prefillData);
-    if (res) {
-      return res;
-    }
+    if (res) return res;
   }
   const removePrefill = xyPosition.filter((data) => data.Role !== "prefill");
   const isAllAttachSigner =
@@ -147,8 +157,7 @@ export const handleCheckPrefillCreateDoc = async (
     setIsPrefillModal(false);
     const prefillDetails = xyPosition.find((data) => data.Role === "prefill");
     let signedUrl;
-    //condition to check prefill widgets exit or not if exist then embed prefill widgets value in template
-    //and then create document
+    //condition to check prefill widgets exit or not if exist then embed prefill widgets value in template and then create document
     if (prefillDetails) {
       signedUrl = await handleEmbedPrefillToDoc(
         prefillDetails,
@@ -158,7 +167,7 @@ export const handleCheckPrefillCreateDoc = async (
         userId
       );
     } else {
-      signedUrl = pdfDetails[0]?.URL;
+      signedUrl = url;
     }
     const isSendDoc = true;
     const res = await createDocument(
@@ -168,9 +177,7 @@ export const handleCheckPrefillCreateDoc = async (
       signedUrl || updatedPdfUrl,
       isSendDoc
     );
-    if (res.status === "success") {
-      return res;
-    } else if (res.status === "error") {
+    if (res?.status === "success" || res?.status === "error") {
       return res;
     }
   } else {
@@ -229,10 +236,47 @@ export const handleSignersList = (item) => {
         blockColor: x.blockColor
       };
     } else {
-      return { Role: x.Role, Id: x.Id, blockColor: x.blockColor };
+      return {
+        Role: x.Role,
+        Id: x.Id,
+        blockColor: x.blockColor
+      };
     }
   });
   return updatedSigners;
 };
 
 export const normalizeKey = (value) => value?.trim()?.toLowerCase() || "";
+
+export const handleUpdateTemplateLinks = async (
+  xyPosition,
+  templateId,
+  mode
+) => {
+  //save prefill widgets updated response in contracts_templateLinks class instead of contracts_Template
+  //so that prefill values do not overwrite the original template
+  try {
+    const getPrefillData = xyPosition?.find((x) => x?.Role === "prefill");
+    if (getPrefillData) {
+      const prefillPlaceholder = getPrefillData?.placeHolder || [];
+      const query = new Parse.Query("contracts_templateLinks");
+      const templatePtr = {
+        __type: "Pointer",
+        className: "contracts_Template",
+        objectId: templateId
+      };
+      query.equalTo("TemplatePtr", templatePtr);
+      query.equalTo("Type", mode);
+      let templateLink = await query.first();
+      if (!templateLink) {
+        templateLink = new Parse.Object("contracts_templateLinks");
+        templateLink.set("Type", mode);
+        templateLink.set("TemplatePtr", templatePtr);
+      }
+      templateLink.set("Placeholders", prefillPlaceholder);
+      await templateLink.save();
+    }
+  } catch (e) {
+    console.error("handleUpdateTemplate error", e);
+  }
+};

@@ -29,6 +29,8 @@ function Header(props) {
   const [isReorderModal, setIsReorderModal] = useState(false);
   const mergePdfInputRef = useRef(null);
   const enabledBackBtn = props?.disabledBackBtn === true ? false : true;
+  const isViewerSigner = false;
+  const finishLabel = t("finish");
   //function for show decline alert
   const handleDeclinePdfAlert = async () => {
     if (props?.handleDecline) {
@@ -293,7 +295,7 @@ function Header(props) {
                 */}
                 {props?.currentSigner && (
                   <div className="flex items-center" data-tut="reactourFifth">
-                    {props?.decline && (
+                    {props?.decline && !isViewerSigner && (
                       <div
                         onClick={() => handleDeclinePdfAlert()}
                         className="text-[red] border-none font-[650] text-[14px] mr-2"
@@ -318,13 +320,15 @@ function Header(props) {
                           : t("send")}
                       </div>
                     ) : (
-                      <div
-                        data-tut="reactourThird"
-                        onClick={() => props?.embedWidgetsData()}
-                        className="border-none font-[650] text-[14px] op-link op-link-primary no-underline"
-                      >
-                        {t("finish")}
-                      </div>
+                      !isViewerSigner && (
+                        <div
+                          data-tut="reactourThird"
+                          onClick={() => props?.embedWidgetsData()}
+                          className="border-none font-[650] text-[14px] op-link op-link-primary no-underline"
+                        >
+                          {finishLabel}
+                        </div>
+                      )
                     )}
                     <input
                       type="file"
@@ -579,7 +583,7 @@ function Header(props) {
                         <span className="hidden lg:block">{t("download")}</span>
                       </button>
                     )}
-                    {!props?.isSelfSign && (
+                    {!props?.isSelfSign && !isViewerSigner && (
                       <button
                         className="op-btn op-btn-secondary op-btn-sm mr-[3px] shadow"
                         onClick={() => handleDeclinePdfAlert()}
@@ -597,13 +601,15 @@ function Header(props) {
                         <span className="hidden lg:block">{t("download")}</span>
                       </button>
                     )}
-                    <button
-                      type="button"
-                      className="op-btn op-btn-primary op-btn-sm mr-[3px] shadow"
-                      onClick={() => props?.embedWidgetsData()}
-                    >
-                      {t("finish")}
-                    </button>
+                    {!isViewerSigner && (
+                      <button
+                        type="button"
+                        className="op-btn op-btn-primary op-btn-sm mr-[3px] shadow"
+                        onClick={() => props?.embedWidgetsData()}
+                      >
+                        {finishLabel}
+                      </button>
+                    )}
                   </>
                 )}
               </div>
@@ -681,7 +687,7 @@ function Header(props) {
                 className="op-btn op-btn-primary op-btn-sm mr-[3px]"
                 onClick={() => props?.embedWidgetsData()}
               >
-                {t("finish")}
+                {finishLabel}
               </button>
             </div>
           )}

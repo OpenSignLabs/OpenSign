@@ -28,6 +28,7 @@ const WidgetNameModal = (props) => {
     isReadOnly: false,
     cellCount: 5,
   });
+  const [rotation, setRotation] = useState(0);
   const [isValid, setIsValid] = useState(true);
   const statusArr = ["Required", "Optional"];
   const [signatureType, setSignatureType] = useState([]);
@@ -81,6 +82,7 @@ const WidgetNameModal = (props) => {
         cellCount: props.defaultdata?.options?.cellCount || 5,
       });
       setLastSubmittedName(props.defaultdata?.options?.name || "");
+      setRotation(props.defaultdata?.options?.rotation || 0);
     } else {
       setFormdata({
         ...formdata,
@@ -88,6 +90,7 @@ const WidgetNameModal = (props) => {
         cellCount: props.defaultdata?.options?.cellCount || 5,
       });
       setLastSubmittedName(props.defaultdata?.options?.name || "");
+      setRotation(props.defaultdata?.options?.rotation || 0);
     }
 
     if (signTypes.length > 0) {
@@ -123,7 +126,7 @@ const WidgetNameModal = (props) => {
         } else if (isDefaultSignTypeOnly) {
           alert(t("expect-default-one-signature-type"));
         } else {
-          const data = { ...formdata, signatureType };
+          const data = { ...formdata, signatureType, rotation };
           props.handleData(data, props.defaultdata?.type);
         }
       } else {
@@ -154,6 +157,7 @@ const WidgetNameModal = (props) => {
         textvalidate: "",
         cellCount: 5,
       });
+      setRotation(0);
       setSignatureType(signTypes);
     }
   };
@@ -377,6 +381,25 @@ const WidgetNameModal = (props) => {
                   </div>
                 );
               })}
+            </div>
+          </div>
+        )}
+        {isSignOrInitials && (
+          <div className="mb-[0.75rem]">
+            <label className="text-[14px] mb-[0.7rem]">
+              {t("rotation")}
+            </label>
+            <div className="ml-[7px] flex items-center gap-[10px]">
+              <select
+                className="op-select op-select-bordered op-select-sm focus:outline-none hover:border-base-content text-xs w-[120px]"
+                value={rotation}
+                onChange={(e) => setRotation(parseInt(e.target.value))}
+              >
+                <option value={0}>0°</option>
+                <option value={90}>90°</option>
+                <option value={180}>180°</option>
+                <option value={270}>270°</option>
+              </select>
             </div>
           </div>
         )}
