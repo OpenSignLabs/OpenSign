@@ -100,6 +100,18 @@ Decide whether the document should be signed **sequentially** or **simultaneousl
 
 > Users can change this option while creating the document or a template.
 
+---  
+
+## Allow offline signing
+Choose whether signers can submit a copy of this document signed using an external tool for owner review.
+   - **Yes**: Signers will see a “Sign Offline” option, allowing them to upload an externally signed PDF and submit it to the document owner for approval.
+   - On Approval: Once the owner approves the submission, the signer’s signing process will be marked as completed. After the document is approved by the owner, a notification email will be sent to the signer confirming that the document has been approved and their signing process is complete. At the same time, a request signature email will be triggered and sent to the next signer in the signing order.
+   - On Declined: If the document is incorrectly filled out or improperly formatted, the owner can decline it and add comments. The signer can then use the same signing link that was initially shared to them to either re-upload a corrected offline file or continue the process using OpenSign’s online signing interface.
+   
+   - **No**: Signers can only sign within the app. The Sign Offline option will be hidden.
+
+This feature is only available on paid plans.
+
 ---
 ## ✉️ Use profile name as sender
 
