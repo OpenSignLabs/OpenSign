@@ -39,7 +39,7 @@ Select the option that best suits the needs of your document processing.
   
 ### Auto reminder (feature only available for subscribed users)
 
-<img width="866" height="406" alt="create template2" src="https://github.com/user-attachments/assets/736897c7-e87c-4040-9bf3-0126d1e9aaa2" />
+<img width="866" alt="create template2" src="https://github.com/user-attachments/assets/736897c7-e87c-4040-9bf3-0126d1e9aaa2" />
 
 - **[7]** Once you enable the auto reminder, a text field will appear allowing you to set the reminder for a specific number of days.
   - **Remind once in every (Days)**: Here, you can set the number of days for the reminder.
