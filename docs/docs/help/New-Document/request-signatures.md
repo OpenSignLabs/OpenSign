@@ -39,47 +39,66 @@ The OpenSign™ Request signatures interface is designed to streamline the proce
   - **Yes**: Selecting this option will send the signing request to the first signer initially. Once the first signer completes their part, the next signer in the sequence will receive the request. This process continues until all signers have signed the document. This method ensures that the document is signed in a specific order.
   - **No**: Selecting this option will send the signing links to all signers simultaneously. Every signer can sign the document at their convenience, regardless of whether other signers have completed their signatures. This method is faster but does not enforce any signing order among the participants.
 Select the option that best suits the needs of your document processing.
+  - **Enforce strict order**: When this feature is enabled, signers must sign the document strictly in the predefined order. A signer assigned to the second position cannot sign the document until the first signer has completed their signing process.
+    If a subsequent signer attempts to sign the document before the previous signer has signed, an error message will be displayed, and the document signing process cannot be completed.
+    
+    <img width="1731" height="876" alt="Enforce strict order" src="https://github.com/user-attachments/assets/79876739-a8a8-4597-bd67-a6845761ec63" />
 
 ### Setting the Time Frame
 - **[8] Time To Complete (Days)** *(Required)*: Specify the number of days the signers have to complete the signatures. After that, the document will no longer be available for signing.
   
-### Setting BCC
+### Setting BCC and CC
 - **[9] BCC**: The BCC (Blind Carbon Copy) feature allows users to receive document completion emails at specified email addresses.
 You can add multiple contacts in the BCC field to notify several recipients. 
 You can either:
 Click "Add New" to enter a new email contact, or
 Select from existing contacts using the dropdown list.
+- **[10] CC**: The CC (Carbon Copy) feature allows users to receive document completion emails at specified email addresses.
+You can add multiple contacts in the CC field to notify several recipients. 
+You can either:
+Click "Add New" to enter a new email contact, or
+Select from existing contacts using the dropdown list.
 
 ### Auto reminder
-- **[10]** Once you enable the auto reminder, a text field will appear allowing you to set the reminder for a specific number of days.
+- **[11]** Once you enable the auto reminder, a text field will appear allowing you to set the reminder for a specific number of days.
 - **Remind once in every (Days)**: You can specify the reminder interval in days (e.g., every 1 or every 2 days).
 Note: You can set a maximum of 15 reminders. For example, if the document completion time is 16 days and you try to schedule a reminder every day, the system will not allow it, as the reminder limit would be exceeded.
 This feature only available for the paid users.
 
 ### Security Setting
-- **[11] Enable OTP Verification** :
+- **[12] Enable OTP Verification** :
   
    - If set to "Yes," the signer will be required to complete email OTP verification before viewing and signing the document.
    - If "Enable OTP Verification" is set to "No," the signer will not be prompted for OTP verification during the signing process.
 
 Note: This feature is available exclusively on paid plans.
 
+- **[13] Allow offline signing** :
+Choose whether signers can submit a copy of this document signed using an external tool for owner review.
+   - **Yes**: Signers will see a “Sign Offline” option, allowing them to upload an externally signed PDF and submit it to the document owner for approval.
+   - On Approval: Once the owner approves the submission, the signer’s signing process will be marked as completed. After the document is approved by the owner, a notification email will be sent to the signer confirming that the document has been approved and their signing process is complete. At the same time, a request signature email will be triggered and sent to the next signer in the signing order.
+   - On Declined: If the document is incorrectly filled out or improperly formatted, the owner can decline it and add comments. The signer can then use the same signing link that was initially shared to them to either re-upload a corrected offline file or continue the process using OpenSign’s online signing interface.
+   
+   - **No**: Signers can only sign within the app. The Sign Offline option will be hidden.
+
+This setting defaults to your account preference under Preferences and is available on paid plans.
+
 ### Enable tour:
-- **[12]** If set to "Yes," the signer will see the tour guide while signing the document. If your signer is familiar with OpenSign and you prefer not to display the tour guide, you can select "No," and the tour guide will not be shown to your signers.
+- **[14]** If set to "Yes," the signer will see the tour guide while signing the document. If your signer is familiar with OpenSign and you prefer not to display the tour guide, you can select "No," and the tour guide will not be shown to your signers.
 
 ### Notify on signatures: 
-- **[13]** If set to "Yes," the document owner will receive an email notification each signer completes their signature.
+- **[15]** If set to "Yes," the document owner will receive an email notification each signer completes their signature.
 Note: This feature is available exclusively on paid plans.
 
 ### allow modifications: 
-- **[14]** If set to Yes, the signer will be allowed to make modifications to the document during the signing process. However, they cannot edit or remove any fields that were already placed by the document owner. They can only add basic fields such as signature, stamp, initials, text, and cells.
+- **[16]** If set to Yes, the signer will be allowed to make modifications to the document during the signing process. However, they cannot edit or remove any fields that were already placed by the document owner. They can only add basic fields such as signature, stamp, initials, text, and cells.
 
 If both Allow Modification and Enable OTP are set to Yes, the signer will still not be able to edit or delete existing fields, but will gain access to additional advanced fields to add during signing. These include: signature, stamp, initials, name, job title, company, text, cells, and email.
 
 Note: This feature is available exclusively on paid plans.
 
 ### Redirect url: 
-- **[15]**  After signing the document and upon its completion, the signer will be redirected to the specified URL.
+- **[17]**  After signing the document and upon its completion, the signer will be redirected to the specified URL.
 
 ### Step 2: Proceed to Document Creation Panel
 - **Next**: Once all the necessary fields are filled, click this button to proceed to create the document for signing.
