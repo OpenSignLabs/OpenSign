@@ -425,7 +425,27 @@ async function PDF(req) {
       className = 'contracts_Users';
       signUser = _resDoc.ExtUserPtr;
     }
-
+    // Strict-order gating: when both `SendinOrder` and `SendInOrderStrict`
+    // are enabled the document creator wants the signing flow locked to a
+    // strict sequence — a signer/approver may only act once every previous
+    // signer/approver placeholder has a Signed/Approved audit entry. We
+    // skip this check entirely for the document owner (className=Users)
+    // because owners never sign through this path.
+    if (reqUserId && _resDoc?.SendinOrder === true && _resDoc?.SendInOrderStrict === true) {
+      const placeholders = Array.isArray(_resDoc?.Placeholders)
+        ? _resDoc.Placeholders.filter(p => p?.Role !== 'prefill')
+        : [];
+      const myIdx = findPlaceholderIndex(placeholders, reqUserId);
+      if (myIdx > 0) {
+        const pendingId = findPendingPriorSigner(placeholders, myIdx, _resDoc?.AuditTrail);
+        if (pendingId) {
+          throw new Parse.Error(
+            Parse.Error.OPERATION_FORBIDDEN,
+            'Strict signing order is enabled — please wait for the previous signers to complete their action before signing.'
+          );
+        }
+      }
+    }
     const username = signUser.Name;
     const userEmail = signUser.Email;
     if (req.params.pdfFile) {
