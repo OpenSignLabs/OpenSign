@@ -1,9 +1,5 @@
-import axios from 'axios';
-import { appName, cloudServerUrl, serverAppId } from '../../../Utils.js';
-
-const serverUrl = cloudServerUrl;
-const appId = serverAppId;
-const masterKey = process.env.MASTER_KEY;
+import { appName } from '../../../Utils.js';
+import sendSystemMail from '../../parsefunction/sendSystemMail.js';
 
 // Constants (adjust to your preference)
 export const OTP_LENGTH = 6;
@@ -60,12 +56,7 @@ export async function sendDeleteOtpEmail(extUser, otp) {
 </html>
 `,
   };
-  const headers = {
-    'Content-Type': 'application/json',
-    'X-Parse-Application-Id': appId,
-    'X-Parse-Master-Key': masterKey,
-  };
-  return axios.post(serverUrl + '/functions/sendmailv3', params, { headers });
+  return sendSystemMail({ params });
 }
 
 export function msUntil(nowMs, futureMs) {

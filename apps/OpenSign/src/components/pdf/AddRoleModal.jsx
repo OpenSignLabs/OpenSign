@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import ModalUi from "../../primitives/ModalUi";
 import { useTranslation } from "react-i18next";
 

@@ -38,6 +38,7 @@ export default async function createDuplicate(request) {
         newTemplate.set('SignedUrl', _templateRes.SignedUrl);
         newTemplate.set('SentToOthers', _templateRes?.SentToOthers || false);
         newTemplate.set('SendinOrder', _templateRes?.SendinOrder || false);
+        newTemplate.set('SendInOrderStrict', _templateRes?.SendInOrderStrict || false);
         newTemplate.set('AutomaticReminders', _templateRes?.AutomaticReminders || false);
         newTemplate.set('RemindOnceInEvery', _templateRes?.RemindOnceInEvery || 5);
         newTemplate.set('IsEnableOTP', _templateRes?.IsEnableOTP || false);
@@ -76,6 +77,9 @@ export default async function createDuplicate(request) {
         }
         if (_templateRes?.Bcc?.length) {
           newTemplate.set('Bcc', _templateRes?.Bcc);
+        }
+        if (_templateRes?.Cc?.length) {
+          newTemplate.set('Cc', _templateRes?.Cc);
         }
         const OriginIp = _templateRes?.OriginIp || request?.headers?.['x-real-ip'] || '';
 

@@ -42,10 +42,8 @@ function CustomModal(props) {
             {props?.headMsg && props?.headMsg}
           </h3>
           {!isExtendExpiry && (
-            <div className="p-[10px] px-[20px]">
-              <p className="text-[15px] text-base-content">
-                {props.bodyMssg && props.bodyMssg}
-              </p>
+            <div className="p-[10px] px-[20px] text-[15px] text-base-content">
+              {props.bodyMssg && props.bodyMssg}
             </div>
           )}
           {!isExtendExpiry && (

@@ -17,27 +17,6 @@ function SignerListPlace(props) {
           <sup onClick={() => props.setIsTour && props.setIsTour(true)}>
             <i className="ml-1 cursor-pointer fa-light fa-question rounded-full border-[1px] border-base-content text-[11px] py-[1px] px-[3px]"></i>
           </sup>
-          {/* <span className="absolute text-xs z-[30] mt-1 ml-0.5">
-            {props?.title === "Roles" && (
-              <>
-                <a data-tooltip-id="my-tooltip">
-                  <sup>
-                    <i className="fa-light fa-question rounded-full border-[1px] border-base-content text-[11px] py-[1px] px-[3px]"></i>
-                  </sup>
-                </a>
-                <Tooltip id="my-tooltip" className="z-[100]">
-                  <div className="max-w-[450px] 2xl:max-w-[500px] p-[1px]">
-                    <p className="font-bold pb-[1px]">{t("role-help.p1")}</p>
-                    <p>{t("role-help.p2")} </p>
-                    <p className="font-bold">{t("role-help.p3")}</p>
-                    <p>{t("role-help.p4")}</p>
-                    <p className="font-bold">{t("role-help.p5")}</p>
-                    <p>{t("role-help.p6")}</p>
-                  </div>
-                </Tooltip>
-              </>
-            )}
-          </span> */}
         </span>
       </div>
       <div className="overflow-auto hide-scrollbar max-h-[180px]">

@@ -5,6 +5,7 @@ const APPID = serverAppId;
 const masterKEY = process.env.MASTER_KEY;
 
 async function saveUser(userDetails) {
+  const normalizedEmail = normalizeEmail(userDetails.email.toLowerCase().replace(/\s/g, ''));
   const userQuery = new Parse.Query(Parse.User);
   userQuery.equalTo('username', userDetails.email);
   const userRes = await userQuery.first({ useMasterKey: true });
@@ -31,6 +32,8 @@ async function saveUser(userDetails) {
     user.set('username', userDetails.email);
     user.set('password', userDetails.password);
     user.set('email', userDetails?.email?.toLowerCase()?.replace(/\s/g, ''));
+    user.set('normalizedEmail', normalizedEmail);
+
     if (userDetails?.phone) {
       user.set('phone', userDetails.phone);
     }

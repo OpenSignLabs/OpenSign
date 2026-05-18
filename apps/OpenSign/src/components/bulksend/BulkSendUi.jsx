@@ -21,6 +21,7 @@ import {
   formatCSVDate,
   normalizeKey,
   loadPdfOnce,
+  hasSignatureWidget,
 } from "../../utils";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -216,13 +217,10 @@ const BulkSendUi = (props) => {
   const checkSignatureAndRoles = (placeholders = []) => {
     const filtered = placeholders.filter((x) => x?.Role !== "prefill");
 
+    // Viewer/approver roles do not require a signature widget; only
+    // signer-role placeholders must have one.
     const isSignExist =
-      filtered?.length > 0 &&
-      filtered.every((p) =>
-        p?.placeHolder?.some((h) =>
-          h?.pos?.some((x) => x?.type === "signature")
-        )
-      );
+      filtered?.length > 0 && filtered.every((p) => hasSignatureWidget(p));
     setIsSignatureExist(isSignExist);
     setIsVacantRoles(filtered?.some((x) => !x.signerObjId));
   };

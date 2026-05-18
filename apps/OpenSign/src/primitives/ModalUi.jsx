@@ -1,9 +1,11 @@
+import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import "../styles/signature.css";
 import Loader from "./Loader";
 import Tooltip from "./Tooltip";
 
 const ModalUi = ({
+  id,
   children,
   title,
   isOpen,
@@ -18,19 +20,45 @@ const ModalUi = ({
   helpText = ""
 }) => {
   const { t } = useTranslation();
+  const dialogRef = useRef(null);
   const width = reduceWidth;
   const isBottom = position === "bottom" ? "items-end pb-2 !bg-black/10" : "";
   const crossBtnColor = crossColor ?? "text-base-content";
   const hideScrollBar = !showScrollBar ? "hide-scrollbar" : "";
+
+  // Keep bottom-sheet modals above the mobile virtual keyboard by tracking the
+  // visual viewport (which shrinks when the keyboard opens) and adjusting the
+  // dialog's height/top to match, so the modal never slides behind the keyboard.
+  useEffect(() => {
+    if (!isOpen || position !== "bottom" || !window.visualViewport) return;
+    const vp = window.visualViewport;
+
+    const updatePosition = () => {
+      if (!dialogRef.current) return;
+      dialogRef.current.style.height = `${vp.height}px`;
+      dialogRef.current.style.top = `${vp.offsetTop}px`;
+    };
+
+    updatePosition();
+    vp.addEventListener("resize", updatePosition);
+    vp.addEventListener("scroll", updatePosition);
+
+    return () => {
+      vp.removeEventListener("resize", updatePosition);
+      vp.removeEventListener("scroll", updatePosition);
+    };
+  }, [isOpen, position]);
+
   return (
     <>
       {isOpen && (
         <dialog
-          id="selectSignerModal"
+          ref={dialogRef}
+          id={id || "selectSignerModal"}
           className={`${isBottom} op-modal op-modal-open`}
           style={{
             overlay: { zIndex: 1000 },
-            content: { zIndex: 1001, overflow: "visible" } // Ensure modal doesn’t clip content
+            content: { zIndex: 1001, overflow: "visible" } // Ensure modal doesn't clip content
           }}
         >
           {isLoader && (

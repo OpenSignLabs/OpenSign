@@ -159,7 +159,7 @@ const Header = ({ isConsole, setIsLoggingOut }) => {
         </div>
         <div id="profile-menu" className="flex-none gap-2">
           <div>
-            <FullScreenButton />
+              <FullScreenButton />
           </div>
           {width >= 768 && (
             <div
