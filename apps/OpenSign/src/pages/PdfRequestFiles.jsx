@@ -577,8 +577,8 @@ function PdfRequestFiles(
               setContractName("_Contactbook");
               setSignerUserId(contact?.objectId);
               handleTourStatus(isTourEnabled, contact?.TourStatus);
-            } catch (err) {
-              console.log("err while getting tourstatus", err);
+            } catch (error) {
+              console.log("err while getting tourstatus", error);
             }
           }
         }
