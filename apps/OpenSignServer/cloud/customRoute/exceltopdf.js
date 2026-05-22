@@ -16,13 +16,13 @@ async function killStuckProcesses() {
     // Kill soffice processes older than 2 minutes
     if (process.platform === 'linux' || process.platform === 'darwin') {
       await execAsync("pkill -9 -f 'soffice.*--headless' || true");
-      console.log('[DOCX2PDF] Cleaned up stuck processes');
+      console.log('[EXCEL2PDF] Cleaned up stuck processes');
     } else if (process.platform === 'win32') {
       await execAsync('taskkill /F /IM soffice.bin /T || exit 0');
-      console.log('[DOCX2PDF] Cleaned up stuck processes (Windows)');
+      console.log('[EXCEL2PDF] Cleaned up stuck processes (Windows)');
     }
   } catch (err) {
-    console.error('[DOCX2PDF] Error killing processes:', err.message);
+    console.error('[EXCEL2PDF] Error killing processes:', err.message);
   }
 }
 
@@ -39,7 +39,7 @@ async function convertLibre(input, ext, opts) {
 
 // -------------------- Concurrency limiter with queue limits --------------------
 // CRITICAL FIX: Reduced to 1 for CPU-intensive LibreOffice conversions
-const MAX_CONCURRENCY = Number(process.env.DOCX2PDF_CONCURRENCY || 1);
+const MAX_CONCURRENCY = Number(process.env.EXCEL2PDF_CONCURRENCY || 1);
 let active = 0;
 const queue = [];
 
@@ -95,12 +95,13 @@ export const upload = multer({
   storage,
   limits: { fileSize: 50 * 1024 * 1024 }, // 50MB hard limit at multer level
   fileFilter: (req, file, cb) => {
-    const okExt = /\.docx$/i.test(file.originalname || '');
+    const okExt = /\.(xlsx|xls)$/i.test(file.originalname || '');
     const okMime =
-      file.mimetype === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
+      file.mimetype === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' ||
+      file.mimetype === 'application/vnd.ms-excel' ||
       file.mimetype === 'application/octet-stream';
     if (okExt && okMime) return cb(null, true);
-    cb(new Error('Only .docx files are supported'));
+    cb(new Error('Only .xlsx and .xls files are supported'));
   },
 });
 
@@ -111,7 +112,7 @@ function generatePdfName(length) {
   return result;
 }
 
-export default async function docxtopdf(req, res) {
+export default async function exceltopdf(req, res) {
   const serverUrl = cloudServerUrl;
   const parseAppKey = { 'X-Parse-Application-Id': serverAppId };
   const masterKey = process.env.MASTER_KEY;
@@ -126,7 +127,6 @@ export default async function docxtopdf(req, res) {
   try {
     // ---- Auth: current user ----
     const userRes = await axios.get(`${serverUrl}/users/me`, { headers: sessionHeader });
-    const uploadedSizeBytes = req.file.size ?? req.file.buffer.length;
 
     // ---- contracts_Users ----
     const whereUser = JSON.stringify({
@@ -146,7 +146,7 @@ export default async function docxtopdf(req, res) {
       return res.status(403).json({ error: 'Tenant not found for user.' });
     }
 
-    // ---- DOCX -> PDF conversion with concurrency control and timeout ----
+    // ---- EXCEL -> PDF conversion with concurrency control and timeout ----
     const fileName = `${generatePdfName(16)}.pdf`;
     const uploadedSizeBytes = req.file.buffer.length;
 
@@ -157,7 +157,7 @@ export default async function docxtopdf(req, res) {
     const pdfBuffer = await runWithLimit(async () => {
       // Log for monitoring
       console.log(
-        `[DOCX2PDF] Starting conversion, size: ${(uploadedSizeBytes / 1024 / 1024).toFixed(2)}MB, active: ${active}, queued: ${queue.length}`
+        `[EXCEL2PDF] Starting conversion, size: ${(uploadedSizeBytes / 1024 / 1024).toFixed(2)}MB, active: ${active}, queued: ${queue.length}`
       );
 
       const startTime = Date.now();
@@ -165,12 +165,12 @@ export default async function docxtopdf(req, res) {
         const result = await withTimeout(
           convertLibre(req.file.buffer, '.pdf', undefined),
           timeoutMs,
-          'DOCX->PDF'
+          'EXCEL->PDF'
         );
-        console.log(`[DOCX2PDF] Completed in ${Date.now() - startTime}ms`);
+        console.log(`[EXCEL2PDF] Completed in ${Date.now() - startTime}ms`);
         return result;
       } catch (error) {
-        console.error(`[DOCX2PDF] Failed after ${Date.now() - startTime}ms:`, error.message);
+        console.error(`[EXCEL2PDF] Failed after ${Date.now() - startTime}ms:`, error.message);
         // Clean up on error
         await killStuckProcesses();
         throw error;
@@ -206,7 +206,7 @@ export default async function docxtopdf(req, res) {
       err?.response?.data?.error || err?.response?.data || err?.message || 'Something went wrong.';
     // Friendly message to the client
     const message =
-      'We are currently experiencing some issues with processing DOCX files. Please upload the PDF version or contact us on support@opensignlabs.com';
+      'We are currently experiencing some issues with processing Excel files. Please upload the PDF version or contact us on support@opensignlabs.com';
 
     if (msg.includes('timed out')) {
       msg =
@@ -217,7 +217,7 @@ export default async function docxtopdf(req, res) {
     } else {
       msg = message;
     }
-    console.error(`[DOCX2PDF] Error: ${msg}`);
+    console.error(`[EXCEL2PDF] Error: ${msg}`);
     return res.status(400).json({ error: msg });
   }
 }
