@@ -34,6 +34,22 @@ import DatePicker from "react-datepicker";
 import DateWidgetModal from "../../primitives/DateWidgetModal";
 import { dateFormat } from "../../utils";
 
+/**
+ * Custom input UI for DatePicker
+ * - Declaring custom input outside resolve issue of the component recreates the input component identity on each state update, which can break re-open behavior after first use
+ */
+const DatePickerCustomInput = forwardRef(({ value, onClick }, ref) => (
+  <div
+    className="border-gray-400 rounded-[50px] border-[1px] px-3  text-xs py-2 focus:outline-none hover:border-base-content "
+    onClick={onClick}
+    ref={ref}
+  >
+    {value}
+    <i className={`${value ? "ml-[5px]" : "w-20"} fa-light fa-calendar `}></i>
+  </div>
+));
+DatePickerCustomInput.displayName = "DatePickerCustomInput";
+
 function Placeholder(props) {
   const { t } = useTranslation();
   const dispatch = useDispatch();
@@ -55,7 +71,11 @@ function Placeholder(props) {
   const [isToday, setIsToday] = useState(
     props.pos?.options?.response === "today" ? true : false
   );
-  const [selectedFormatIndex, setselectedFormatIndex] = useState(0);
+  const selectedFormatIndex = dateFormatList?.findIndex(
+    (item) =>
+      item.format === selectDate?.format ||
+      item?.format === props.pos?.options?.validation?.format
+  );
 
   const isSelfSign = props.isSignYourself || props.isSelfSign;
   const startDate = props?.pos?.options?.response
@@ -66,7 +86,7 @@ function Placeholder(props) {
     : "";
   useEffect(() => {
     const getPdfPageWidth = props.pdfOriginalWH.find(
-      (data) => data.pageNumber === props.pageNumber
+      (data) => data.pageNumber === props.widgetPageNum
     );
     setContainerScale(props.containerWH.width / getPdfPageWidth.width);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -175,13 +195,6 @@ function Placeholder(props) {
       updateDate.push(dateObj);
     });
     setDateFormatList(updateDate);
-    setselectedFormatIndex(
-      updateDate?.findIndex(
-        (item) =>
-          item.format === selectDate?.format ||
-          item?.format === props.pos?.options?.validation?.format
-      )
-    );
   };
 
   useEffect(() => {
@@ -202,7 +215,11 @@ function Placeholder(props) {
       props?.data?.Role !== "prefill" &&
       props.data?.Id === props.uniqueId
     ) {
-      props.setCurrWidgetsDetails && props.setCurrWidgetsDetails(props.pos);
+      props.setCurrWidgetsDetails &&
+        props.setCurrWidgetsDetails({
+          ...props.pos,
+          pageNumber: props.widgetPageNum
+        });
       if (props?.ispublicTemplate) {
         props.handleUserDetails();
       } else {
@@ -214,19 +231,24 @@ function Placeholder(props) {
             const updateZindex = handleHeighlightWidget(
               getCurrentSignerPos,
               props.pos.key,
-              props.pageNumber
+              props.widgetPageNum
             );
             const updatesignerPos = props.xyPosition.map((x) =>
               x.Id === props.uniqueId ? { ...x, placeHolder: updateZindex } : x
             );
             props.setXyPosition(updatesignerPos);
           }
+          props?.closeWidgetTour?.();
           dispatch(setIsShowModal({ [props.pos.key]: true }));
       }
     }
     //placeholder, template flow
     else if (props.isPlaceholder && !props.isDragging) {
-      props.setCurrWidgetsDetails && props.setCurrWidgetsDetails(props.pos);
+      props.setCurrWidgetsDetails &&
+        props.setCurrWidgetsDetails({
+          ...props.pos,
+          pageNumber: props.widgetPageNum
+        });
       if (props?.data?.Role !== "prefill") {
         //this condition is used open signers attach modal but it should only open when widgets already selected
         if (props?.currWidgetsDetails?.key === props.pos?.key) {
@@ -235,6 +257,8 @@ function Placeholder(props) {
         props.setUniqueId && props.setUniqueId(props.data.Id);
         props?.setRoleName("");
       } else if (props?.data?.Role === "prefill") {
+        props?.handleClosePrefillTour?.();
+        props?.closeWidgetTour?.();
         dispatch(setIsShowModal({ [props.pos.key]: true }));
         props.setUniqueId(props?.data?.Id);
         props?.setRoleName("prefill");
@@ -286,7 +310,10 @@ function Placeholder(props) {
     ) {
       props.setUniqueId(props?.data?.Id);
     }
-    props.setCurrWidgetsDetails(props.pos);
+    props?.setCurrWidgetsDetails?.({
+      ...props.pos,
+      pageNumber: props.widgetPageNum
+    });
   };
   //function to set required state value onclick on widget's copy icon
   const handleCopyPlaceholder = (e) => {
@@ -307,7 +334,10 @@ function Placeholder(props) {
       props.setUniqueId(props?.data?.Id);
     }
     props.setIsPageCopy(true);
-    props.setCurrWidgetsDetails(props.pos);
+    props?.setCurrWidgetsDetails?.({
+      ...props.pos,
+      pageNumber: props.widgetPageNum
+    });
   };
 
   const setCellCount = (key, newCount) => {
@@ -319,7 +349,7 @@ function Placeholder(props) {
         if (filterSignerPos.length > 0) {
           const getPlaceHolder = filterSignerPos[0].placeHolder;
           const updatedPlaceHolder = getPlaceHolder.map((ph) => {
-            if (ph.pageNumber !== props.pageNumber) return ph;
+            if (ph.pageNumber !== props.widgetPageNum) return ph;
             const newPos = ph.pos.map((p) =>
               p.key === key
                 ? { ...p, options: { ...p.options, cellCount: newCount } }
@@ -453,12 +483,18 @@ function Placeholder(props) {
             <i
               onPointerDown={(e) => e.stopPropagation()}
               onClick={(e) => {
-                props.setCurrWidgetsDetails(props.pos);
+                props?.setCurrWidgetsDetails?.({
+                  ...props.pos,
+                  pageNumber: props.widgetPageNum
+                });
                 setIsDateModal(!isDateModal);
                 e.stopPropagation();
                 setClickonWidget(props.pos);
                 if (props.data) {
-                  props.setCurrWidgetsDetails(props.pos);
+                  props?.setCurrWidgetsDetails?.({
+                    ...props.pos,
+                    pageNumber: props.widgetPageNum
+                  });
                   props.setUniqueId(props.data.Id);
                   const checkIndex = props.xyPosition.findIndex(
                     (data) => data.Id === props.data.Id
@@ -467,11 +503,17 @@ function Placeholder(props) {
                 }
               }}
               onTouchEnd={(e) => {
-                props.setCurrWidgetsDetails(props.pos);
+                props?.setCurrWidgetsDetails?.({
+                  ...props.pos,
+                  pageNumber: props.widgetPageNum
+                });
                 e.stopPropagation();
                 setIsDateModal(!isDateModal);
                 if (props.data) {
-                  props.setCurrWidgetsDetails(props.pos);
+                  props?.setCurrWidgetsDetails?.({
+                    ...props.pos,
+                    pageNumber: props.widgetPageNum
+                  });
                   props.setUniqueId(props.data.Id);
                   const checkIndex = props.xyPosition.findIndex(
                     (data) => data.Id === props.data.Id
@@ -502,11 +544,19 @@ function Placeholder(props) {
               showGuidelines(false);
               //condition for template and placeholder flow
               if (props.data) {
-                props.handleDeleteWidget(props.pos.key, props.data.Id);
+                props.handleDeleteWidget(
+                  props.pos.key,
+                  props.data.Id,
+                  props.widgetPageNum
+                );
               }
               //condition for signyour-self flow
               else {
-                props.handleDeleteWidget(props.pos.key);
+                props.handleDeleteWidget(
+                  props.pos.key,
+                  null,
+                  props.widgetPageNum
+                );
               }
             }}
             //for mobile and tablet touch event
@@ -515,11 +565,19 @@ function Placeholder(props) {
               showGuidelines(false);
               //condition for template and placeholder flow
               if (props.data) {
-                props.handleDeleteWidget(props.pos.key, props.data?.Id);
+                props.handleDeleteWidget(
+                  props.pos.key,
+                  props.data?.Id,
+                  props.widgetPageNum
+                );
               }
               //condition for signyour-self flow
               else {
-                props.handleDeleteWidget(props.pos.key);
+                props.handleDeleteWidget(
+                  props.pos.key,
+                  null,
+                  props.widgetPageNum
+                );
               }
             }}
           ></i>
@@ -527,29 +585,18 @@ function Placeholder(props) {
       )
     );
   };
-  const xPos = (pos, signYourself) => {
+  const xPos = (pos) => {
     const containerScale = getContainerScale(
       props.pdfOriginalWH,
       props.pageNumber,
       props.containerWH
     );
     const resizePos = pos.xPosition;
-    if (signYourself) {
-      return resizePos * containerScale * props.scale;
-    } else {
-      //checking both condition mobile and desktop view
-      if (pos.isMobile && pos.scale) {
-        if (props.scale > 1) {
-          return resizePos * pos.scale * containerScale * props.scale;
-        } else {
-          return resizePos * pos.scale * containerScale;
-        }
-      } else {
-        return resizePos * containerScale * props.scale;
-      }
-    }
+
+    return resizePos * containerScale; // ✅ desktop: account for Page scale
   };
-  const yPos = (pos, signYourself) => {
+
+  const yPos = (pos) => {
     const containerScale = getContainerScale(
       props.pdfOriginalWH,
       props.pageNumber,
@@ -557,29 +604,17 @@ function Placeholder(props) {
     );
     const resizePos = pos.yPosition;
 
-    if (signYourself) {
-      return resizePos * containerScale * props.scale;
-    } else {
-      //checking both condition mobile and desktop view
-      if (pos.isMobile && pos.scale) {
-        if (props.scale > 1) {
-          return resizePos * pos.scale * containerScale * props.scale;
-        } else {
-          return resizePos * pos.scale * containerScale;
-        }
-      } else {
-        return resizePos * containerScale * props.scale;
-      }
-    }
+    return resizePos * containerScale; // ✅ desktop fix
   };
+
   // function to calculate font size
   const calculateFont = (size, isMinHeight) => {
     const containerScale = getContainerScale(
       props.pdfOriginalWH,
-      props.pageNumber,
+      props.widgetPageNum,
       props.containerWH
     );
-    const fontSize = (size || 12) * containerScale * props.scale;
+    const fontSize = (size || 12) * containerScale;
     // isMinHeight to set text box minimum height
     if (isMinHeight) {
       return fontSize * 1.5 + "px";
@@ -623,18 +658,6 @@ function Placeholder(props) {
       return false;
     }
   };
-
-  const ExampleCustomInput = forwardRef(({ value, onClick }, ref) => (
-    <div
-      className="border-gray-400 rounded-[50px] border-[1px] px-3  text-xs py-2 focus:outline-none hover:border-base-content "
-      onClick={onClick}
-      ref={ref}
-    >
-      {value}
-      <i className={`${value ? "ml-[5px]" : "w-20"} fa-light fa-calendar `}></i>
-    </div>
-  ));
-  ExampleCustomInput.displayName = "ExampleCustomInput";
 
   const handleChangeFormat = (e) => {
     const selectedIndex = e.target.value;
@@ -693,20 +716,27 @@ function Placeholder(props) {
       {props.pos?.options?.response &&
       props.pos.key !== props?.currWidgetsDetails?.key &&
       props.pos.type === textWidget ? (
-        <textarea
+        <span
           readOnly
-          onClick={() => {
+          onClick={(e) => {
+            // Prevent the click from bubbling up to the Document onClick handler
+            // which would immediately clear currWidgetsDetails and make the
+            // widget appear non-clickable after a response has been saved.
+            e.stopPropagation();
             if (props?.ispublicTemplate) return;
             props.setCurrWidgetsDetails &&
-              props.setCurrWidgetsDetails(props.pos);
+              props?.setCurrWidgetsDetails?.({
+                ...props.pos,
+                pageNumber: props.widgetPageNum
+              });
             props?.setRoleName && props?.setRoleName("prefill");
             props.setUniqueId && props.setUniqueId(props?.data?.Id);
           }}
           style={{
             fontFamily: "Arial, sans-serif",
             position: "absolute",
-            left: xPos(props.pos, props.isSignYourself),
-            top: yPos(props.pos, props.isSignYourself),
+            left: xPos(props.pos),
+            top: yPos(props.pos),
             ...(props.pos?.Width ? { width: props.pos?.Width - 5 } : {}),
             ...(props.pos?.Height ? { height: props.pos?.Height } : {}),
             fontSize: fontSize,
@@ -715,10 +745,10 @@ function Placeholder(props) {
             cursor: getCursor(),
             resize: "none",
             background: "transparent",
-            width: props.posWidth(props.pos, props.isSignYourself),
-            height: props.posHeight(props.pos, props.isSignYourself),
+            width: props.posWidth(props.pos),
+            height: props.pos?.Height,
             whiteSpace: "pre-wrap",
-            overflow: "hidden",
+            overflow: "visible",
             outline: "none",
             border: "none"
           }}
@@ -726,10 +756,11 @@ function Placeholder(props) {
           {
                 props.pos?.options?.response
           }
-        </textarea>
+        </span>
       ) : (
         <Rnd
           id={props.pos.key}
+          scale={props.scale}
           data-tut={props.pos.key === props.unSignedWidgetId ? "IsSigned" : ""}
           key={props.pos.key}
           cancel=".cell-size-handle, .icon"
@@ -739,9 +770,14 @@ function Placeholder(props) {
               ? false
               : !props.isFreeResize &&
                 (props.pos.Width
-                  ? props.pos.Width / props.pos.Height
-                  : defaultWidthHeight(props.pos.type).width /
-                    defaultWidthHeight(props.pos.type).height)
+                  ? [90, 270].includes(props.pos.options?.rotation)
+                    ? props.pos.Height / props.pos.Width
+                    : props.pos.Width / props.pos.Height
+                  : [90, 270].includes(props.pos.options?.rotation)
+                    ? defaultWidthHeight(props.pos.type).height /
+                      defaultWidthHeight(props.pos.type).width
+                    : defaultWidthHeight(props.pos.type).width /
+                      defaultWidthHeight(props.pos.type).height)
           }
           enableResizing={{
             top: false,
@@ -770,9 +806,9 @@ function Placeholder(props) {
             borderRadius: "2px",
             cursor: getCursor(),
             zIndex:
-              props.pos.type === "date"
-                ? props.pos.key === props?.currWidgetsDetails?.key
-                  ? 99 + 1
+              props.pos.key === props?.currWidgetsDetails?.key
+                ? props.pos.type === "date"
+                  ? 100
                   : 99
                 : props?.pos?.zIndex
                   ? props.pos.zIndex
@@ -795,7 +831,8 @@ function Placeholder(props) {
               d.x,
               d.y,
               d.node.offsetWidth,
-              d.node.offsetHeight
+              d.node.offsetHeight,
+              props.widgetPageNum
             );
           }}
           size={{
@@ -803,12 +840,16 @@ function Placeholder(props) {
               props.pos.type === radioButtonWidget ||
               props.pos.type === "checkbox"
                 ? "auto"
-                : props.posWidth(props.pos, props.isSignYourself),
+                : [90, 270].includes(props.pos.options?.rotation)
+                  ? props.posHeight(props.pos)
+                  : props.posWidth(props.pos),
             height:
               props.pos.type === radioButtonWidget ||
               props.pos.type === "checkbox"
                 ? "auto"
-                : props.posHeight(props.pos, props.isSignYourself)
+                : [90, 270].includes(props.pos.options?.rotation)
+                  ? props.posWidth(props.pos)
+                  : props.posHeight(props.pos)
           }}
           minHeight={
             props.pos.type === cellsWidget
@@ -821,10 +862,11 @@ function Placeholder(props) {
             props?.setIsResize?.(true);
             showGuidelines(
               true,
-              xPos(props.pos, props.isSignYourself),
-              yPos(props.pos, props.isSignYourself),
+              xPos(props.pos),
+              yPos(props.pos),
               ref.offsetWidth,
-              ref.offsetHeight
+              ref.offsetHeight,
+              props.widgetPageNum
             );
           }}
           onResize={(e, dir, ref, delta, position) => {
@@ -833,19 +875,19 @@ function Placeholder(props) {
               position.x,
               position.y,
               ref.offsetWidth,
-              ref.offsetHeight
+              ref.offsetHeight,
+              props.widgetPageNum
             );
           }}
           onResizeStop={(e, direction, ref) => {
             setTimeout(() => props?.setIsResize?.(false), 50);
-            props?.handleSignYourselfImageResize?.(
+            props?.handleWidgetResize?.(
               ref,
               props.pos.key,
               props.xyPosition,
               props.setXyPosition,
               props.index,
               containerScale,
-              props.scale,
               props.data && props.data.Id,
               props.isResize
             );
@@ -859,12 +901,13 @@ function Placeholder(props) {
               event,
               dragElement,
               props.data?.Id,
-              props.pos?.key
+              props.pos?.key,
+              props.widgetPageNum
             );
           }}
           position={{
-            x: xPos(props.pos, props.isSignYourself),
-            y: yPos(props.pos, props.isSignYourself)
+            x: xPos(props.pos),
+            y: yPos(props.pos)
           }}
           disableDragging={handleDragging()}
         >
@@ -916,8 +959,8 @@ function Placeholder(props) {
           <div
             className="flex items-stretch justify-center"
             style={{
-              left: xPos(props.pos, props.isSignYourself),
-              top: yPos(props.pos, props.isSignYourself),
+              left: xPos(props.pos),
+              top: yPos(props.pos),
               width: "100%",
               height: "100%",
               zIndex: "10"
@@ -952,6 +995,7 @@ function Placeholder(props) {
               xPos={props.xPos}
               calculateFont={calculateFont}
               setCellCount={setCellCount}
+              isPrefillModal={props?.isPrefillModal}
             />
           </div>
         </Rnd>
@@ -1056,7 +1100,7 @@ function Placeholder(props) {
                         selectDate?.format
                       )}
                       popperPlacement="top-end"
-                      customInput={<ExampleCustomInput />}
+                      customInput={<DatePickerCustomInput />}
                       onChange={(date) => {
                         setIsToday(false);
                         const isDateChange = true;

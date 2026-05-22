@@ -1,7 +1,7 @@
 async function DocumentAftersave(request) {
   try {
     if (!request.original) {
-      console.log('new entry is insert in contracts_Document');
+      console.log('new entry is insert in contracts_Document ', request?.object?.id);
       const obj = request.object;
       const objId = obj?.id;
       const createdAt = obj?.get?.('createdAt');

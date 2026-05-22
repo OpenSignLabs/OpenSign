@@ -46,6 +46,7 @@ const makeEmail = async (
   url,
   pdfName,
   bcc,
+  cc,
   filename,
   certificatePath,
   replyto,
@@ -54,6 +55,7 @@ const makeEmail = async (
   const htmlContent = html;
   const boundary = 'boundary_' + Date.now().toString(16);
   const bccHeader = bcc && bcc.length > 0 ? `BCC: ${bcc.join(',')}\n` : ''; // Construct BCC header if provided
+  const ccHeader = cc && cc.length > 0 ? `CC: ${cc.join(',')}\n` : ''; // Construct CC header if provided
   const replyToHeader = replyto ? `Reply-To: ${replyto}\n` : ''; // Construct Reply-To header if provided
 
   let str;
@@ -137,6 +139,7 @@ const makeEmail = async (
       `To: ${to}\n`,
       `From: ${from}\n`,
       bccHeader,
+      ccHeader,
       replyToHeader,
       `Subject: ${subject}\n\n`,
       '--' + boundary + '\n',
@@ -154,6 +157,7 @@ const makeEmail = async (
       `To: ${to}\n`,
       `From: ${from}\n`,
       bccHeader,
+      ccHeader,
       replyToHeader,
       `Subject: ${subject}\n\n`,
       '--' + boundary + '\n',
@@ -168,8 +172,19 @@ const makeEmail = async (
   return encodedMail;
 };
 export default async function sendMailGmailProvider(_extRes, template) {
-  const { sender, receiver, subject, html, url, pdfName, bcc, filename, certificatePath, replyto } =
-    template;
+  const {
+    sender,
+    receiver,
+    subject,
+    html,
+    url,
+    pdfName,
+    bcc,
+    cc,
+    filename,
+    certificatePath,
+    replyto,
+  } = template;
 
   if (_extRes) {
     let refresh_token = '';
@@ -192,6 +207,7 @@ export default async function sendMailGmailProvider(_extRes, template) {
         url,
         pdfName,
         bcc,
+        cc,
         filename,
         certificatePath,
         replyto,
@@ -222,7 +238,8 @@ export default async function sendMailGmailProvider(_extRes, template) {
       }
       return { code: 200, message: 'Email sent successfully' };
     } catch (error) {
-      console.error('Error sending email:', error);
+      const message = error?.response?.data || error?.message || 'Unknown error';
+      console.error('Error sending email:', message);
       return { code: 500, message: 'Failed to send email ' + error };
     }
   }

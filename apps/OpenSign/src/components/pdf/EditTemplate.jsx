@@ -39,6 +39,8 @@ const EditTemplate = ({
     Note: template?.Note || "",
     Description: template?.Description || "",
     SendinOrder: template?.SendinOrder ? `${template?.SendinOrder}` : "false",
+    SendInOrderStrict:
+      template?.SendInOrderStrict === true ? "true" : "false",
     AutomaticReminders: template?.AutomaticReminders || false,
     RemindOnceInEvery: template?.RemindOnceInEvery || 5,
     IsEnableOTP: template?.IsEnableOTP ? `${template?.IsEnableOTP}` : "false",
@@ -50,6 +52,7 @@ const EditTemplate = ({
         ? template?.NotifyOnSignatures
         : false,
     Bcc: template?.Bcc,
+    Cc: template?.Cc,
     RedirectUrl: template?.RedirectUrl || "",
     AllowModifications: template?.AllowModifications || false,
     TimeToCompleteDays: template?.TimeToCompleteDays || 15,
@@ -190,6 +193,8 @@ const EditTemplate = ({
       SaveFileSize(buffer.length, pdfUrl, tenantId, userId);
     }
     const isChecked = formData.SendinOrder === "true" ? true : false;
+    const isStrictOrder =
+      isChecked && formData.SendInOrderStrict === "true";
     const isTourEnabled = formData?.IsTourEnabled === "false" ? false : true;
     const AutoReminder = formData?.AutomaticReminders || false;
     const IsEnableOTP = formData.IsEnableOTP === "true" ? true : false;
@@ -212,6 +217,7 @@ const EditTemplate = ({
       ...formData,
       ...(pdfUrl ? { URL: pdfUrl } : {}),
       SendinOrder: isChecked,
+      SendInOrderStrict: isStrictOrder,
       IsEnableOTP: IsEnableOTP,
       IsTourEnabled: isTourEnabled,
       AllowModifications: allowModify,
@@ -235,6 +241,18 @@ const EditTemplate = ({
       }));
       setIsUpdate(true);
       setFormData((prev) => ({ ...prev, Bcc: trimEmail }));
+    }
+  };
+
+  const handleCc = (data) => {
+    if (data && data.length > 0) {
+      const trimEmail = data.map((item) => ({
+        objectId: item?.value,
+        Name: item?.label,
+        Email: item?.email
+      }));
+      setIsUpdate(true);
+      setFormData((prev) => ({ ...prev, Cc: trimEmail }));
     }
   };
 
@@ -411,6 +429,28 @@ const EditTemplate = ({
                   <div className="text-[12px]">{t("no")}</div>
                 </div>
               </div>
+              {formData.SendinOrder === "true" && (
+                <div className="flex items-center gap-[8px] ml-[8px] mt-[4px] mb-[5px]">
+                  <input
+                    type="checkbox"
+                    className="op-checkbox op-checkbox-xs"
+                    name="SendInOrderStrict"
+                    checked={formData.SendInOrderStrict === "true"}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        SendInOrderStrict: e.target.checked ? "true" : "false"
+                      })
+                    }
+                  />
+                  <span
+                    className="text-[12px]"
+                    title={t("strict-order-help")}
+                  >
+                    {t("strict-order")}
+                  </span>
+                </div>
+              )}
             </div>
             <div className="text-xs mt-3">
               <label className="block">
@@ -551,8 +591,19 @@ const EditTemplate = ({
                 label={t("Bcc")}
                 initialData={template?.Bcc}
                 onChange={handleBcc}
-                helptextZindex={50}
+                zindex={50}
                 helpText={t("bcc-help")}
+                isCaptureAllData
+                isAddYourSelfCheckbox={isAddYourSelfCheckbox}
+              />
+            </div>
+            <div className="text-xs mt-3">
+              <SignersInput
+                label={t("Cc")}
+                initialData={template?.Cc}
+                onChange={handleCc}
+                zindex={50}
+                helpText={t("cc-help")}
                 isCaptureAllData
                 isAddYourSelfCheckbox={isAddYourSelfCheckbox}
               />

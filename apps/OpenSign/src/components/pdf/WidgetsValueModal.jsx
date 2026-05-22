@@ -193,7 +193,10 @@ function WidgetsValueModal(props) {
   // below useEffect is used to focus text widgets when user open modal
   useEffect(() => {
     if (widgetRef?.current) {
-      const clearFocus = setTimeout(() => widgetRef?.current.focus(), 10);
+      const clearFocus = setTimeout(
+        () => widgetRef?.current.focus({ preventScroll: true }),
+        10
+      );
       return () => clearTimeout(clearFocus);
     }
   }, [widgetRef.current]);
@@ -343,9 +346,9 @@ function WidgetsValueModal(props) {
         prev.map((signer) => {
           if (signer.Id !== uniqueId) return signer;
 
-          // Find the placeholder index for current page
-          const index = signer.placeHolder.findIndex(
-            (x) => x.pageNumber === pageNumber
+          // Find the placeholder index for the page containing the current widget
+          const index = signer.placeHolder.findIndex((x) =>
+            x.pos?.some((p) => p.key === currWidgetsDetails?.key)
           );
           // Get updated placeholder list
           const updatedPlaceholders = onSaveImage(
@@ -386,9 +389,9 @@ function WidgetsValueModal(props) {
         }
       }
     } else {
-      const index = props?.xyPosition?.findIndex((object) => {
-        return object.pageNumber === pageNumber;
-      });
+      const index = props?.xyPosition?.findIndex(
+        (p) => p.pageNumber === (currWidgetsDetails?.pageNumber || pageNumber)
+      );
       const getImage = onSaveImage(
         signatureType,
         props?.xyPosition,
@@ -445,8 +448,8 @@ function WidgetsValueModal(props) {
         prevState.map((signer) => {
           if (signer.Id !== uniqueId) return signer;
 
-          const placeholderIndex = signer.placeHolder.findIndex(
-            (x) => x.pageNumber === pageNumber
+          const placeholderIndex = signer.placeHolder.findIndex((x) =>
+            x.pos?.some((p) => p.key === currWidgetsDetails?.key)
           );
           const updatedPlaceholders = onSaveSign(
             signType,
@@ -483,9 +486,9 @@ function WidgetsValueModal(props) {
         );
       }
     } else {
-      const index = props?.xyPosition?.findIndex((object) => {
-        return object.pageNumber === pageNumber;
-      });
+      const index = props?.xyPosition?.findIndex(
+        (p) => p.pageNumber === (currWidgetsDetails?.pageNumber || pageNumber)
+      );
       const getUpdatePosition = onSaveSign(
         signType,
         props?.xyPosition,
@@ -1577,7 +1580,14 @@ function WidgetsValueModal(props) {
           <div
             className={`border-[1px] border-gray-300 rounded-[2px] pt-1 px-2.5 ${radioWrapperClass}`}
           >
-            {currWidgetsDetails?.options?.values.map((data, ind) => (
+            {currWidgetsDetails?.options?.values.map((data, ind) => {
+              const label =
+                typeof data === "string"
+                  ? data
+                  : data && typeof data === "object" && data.name != null
+                    ? String(data.name)
+                    : "";
+              return (
               <div key={ind} className="text-base-content select-none-cls">
                 <label
                   // htmlFor={`radio-${currWidgetsDetails?.key + ind}`}
@@ -1587,16 +1597,17 @@ function WidgetsValueModal(props) {
                     id={`radio-${currWidgetsDetails?.key + ind}`}
                     className={`op-radio op-radio-xs mt-1`}
                     type="radio"
-                    value={data}
-                    checked={handleRadioCheck(data?.trim())}
+                    value={label}
+                    checked={handleRadioCheck(label?.trim())}
                     onChange={(e) => {
                       handleCheckRadio(e.target.value?.trim());
                     }}
                   />
-                  <span>{data}</span>
+                  <span>{label}</span>
                 </label>
               </div>
-            ))}
+              );
+            })}
           </div>
         );
       case textWidget:
@@ -1766,8 +1777,8 @@ function WidgetsValueModal(props) {
         prev.map((signer) => {
           if (signer.Id !== uniqueId) return signer;
 
-          const idx = signer?.placeHolder?.findIndex(
-            (p) => p.pageNumber === pageNumber
+          const idx = signer?.placeHolder?.findIndex((p) =>
+            p.pos?.some((w) => w.key === widgetKey)
           );
           if (idx === -1) return signer;
 
@@ -1823,9 +1834,7 @@ function WidgetsValueModal(props) {
       );
       //get current index of widget
       const currentIndex = editableWidgets.findIndex(
-        (item) =>
-          item.widget.key === currWidgetsDetails?.key &&
-          item.pageNumber === pageNumber
+        (item) => item.widget.key === currWidgetsDetails?.key
       );
       //get totoal widget length
       const totalItems = editableWidgets?.length;
@@ -1848,7 +1857,10 @@ function WidgetsValueModal(props) {
       }
 
       dispatch(setIsShowModal({ [nextWidgetDetails?.key]: true }));
-      props.setCurrWidgetsDetails(nextWidgetDetails);
+      props.setCurrWidgetsDetails({
+        ...nextWidgetDetails,
+        pageNumber: nextItem?.pageNumber
+      });
     }
 
   };
@@ -1924,7 +1936,7 @@ function WidgetsValueModal(props) {
     const editableWidgets = widgetsPosition?.placeHolder?.flatMap((page) =>
       page.pos
         .filter((widget) => !widget.options?.isReadOnly)
-        .map((widget) => widget)
+        .map((widget) => ({ ...widget, pageNumber: page.pageNumber }))
     );
     const getcurrentwidget = editableWidgets?.find(
       (data) => data?.key === currWidgetsDetails?.key
@@ -1989,7 +2001,9 @@ function WidgetsValueModal(props) {
             <>
               <div className="p-1 mt-3">
                 <span className="text-base text-base-content">
-                  {t("finish-mssg")}
+                  {
+                    t("finish-mssg")
+                  }
                 </span>
               </div>
               <div className="flex gap-3 items-center mt-4">
@@ -1998,7 +2012,9 @@ function WidgetsValueModal(props) {
                   className="op-btn op-btn-primary op-btn-sm px-4"
                   onClick={() => handleFinish()}
                 >
-                  {t("finish")}
+                  {
+                    t("finish")
+                  }
                 </button>
                 <button
                   type="button"

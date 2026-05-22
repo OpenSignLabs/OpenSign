@@ -1,77 +1,93 @@
 import { useDragLayer } from "react-dnd";
-import { defaultWidthHeight } from "../../constant/Utils";
+import { defaultWidthHeight, getContainerScale } from "../../constant/Utils";
 import { useEffect, useRef } from "react";
 
 function DragGuideLinesLayer(props) {
-  const { showGuidelines } = props;
+  const { showCanvasGuidelines, canvasContainerRef } = props;
   const prevDragState = useRef({ isDragging: false, x: 0, y: 0 });
-  const { isDraggingWidget, offset, itemType } = useDragLayer((monitor) => ({
-    isDraggingWidget: monitor.isDragging(),
-    offset: monitor.getClientOffset(),
-    itemType: monitor.getItem()
-  }));
+
+  const { isDraggingWidget, sourceOffset, itemType } = useDragLayer(
+    (monitor) => ({
+      isDraggingWidget: monitor.isDragging(),
+      // Use getSourceClientOffset - this gives the top-left position of the
+      // drag source, which exactly matches WidgetsDragPreview's position.
+      sourceOffset: monitor.getSourceClientOffset(),
+      itemType: monitor.getItem()
+    })
+  );
+
   useEffect(() => {
     //  Hide guidelines when dragging stops
     if (!isDraggingWidget) {
-      showGuidelines(false);
+      showCanvasGuidelines(false);
       return;
     }
-    if (!offset) return;
-    //getting container by id
-    const container = document.getElementById("container");
-    if (!container) return;
-    if (itemType?.text) {
-      // Calculate the position of the dragged element relative to the container
-      // Get the container's bounding rectangle (position and size in the viewport)
-      const containerRect = container.getBoundingClientRect();
+    if (!sourceOffset || !itemType?.text) return;
 
-      // Compute the X and Y coordinates of the dragged item inside the container
-      // by subtracting the container's top-left offset from the current drag offset
-      const x = offset.x - containerRect.left;
-      const y = offset.y - containerRect.top;
+    // Get the canvas container to calculate position relative to the full
+    // document canvas (which spans all pages).
+    const canvasContainer = canvasContainerRef?.current;
+    if (!canvasContainer) return;
 
-      //  Check if there’s any change in the dragging state or the dragged element’s position
-      // Compare the current drag state with the previously stored one
-      const hasStateChanged =
-        prevDragState.current.isDragging !== isDraggingWidget || // Drag started or stopped
-        prevDragState.current.x !== x || // X position changed
-        prevDragState.current.y !== y; // Y position changed
+    const scale = props.scale || 1; // ✅ get scale
+    const containerRect = canvasContainer.getBoundingClientRect();
 
-      if (hasStateChanged) {
-        //  Update the previous drag state with the latest values
-        prevDragState.current = { isDragging: isDraggingWidget, x, y };
-        if (isDraggingWidget) {
-          //  Adjust the current drag coordinates relative to the initial widgets button position
-          const getXPosition = props?.signBtnPosition?.[0]
-            ? x - props.signBtnPosition[0].xPos
-            : x;
-          const getYPosition = props?.signBtnPosition?.[0]
-            ? y - props.signBtnPosition[0].yPos
-            : y;
+    // ✅ Divide by scale so guidelines live in the same coordinate space
+    // as the absolute-positioned CanvasGuidelines divs inside the scaled canvas.
+    // Without this, at 1.5x zoom a viewport pixel maps to 1/1.5 canvas pixels,
+    // so the guideline lines appear further right/down than the drag preview.
+    const x = (sourceOffset.x - containerRect.left) / scale;
+    const y = (sourceOffset.y - containerRect.top) / scale;
 
-          //  Get the default width and height of the dragged checkbox/radio widget type
-          const el = document.getElementById("checkbox&radio-preview");
-          let rect;
-          if (el) {
-            rect = el.getBoundingClientRect();
-          }
-          const widget = {
-            type: itemType?.text,
-            width: defaultWidthHeight(itemType?.text).width,
-            height: defaultWidthHeight(itemType?.text).height
-          };
+    //  Check if there's any change in position
+    const hasStateChanged =
+      prevDragState.current.isDragging !== isDraggingWidget ||
+      prevDragState.current.x !== x ||
+      prevDragState.current.y !== y;
 
-          const getWidth =
-            rect?.width || props?.posWidth(widget, props?.isSignYourself);
-          const getHeight =
-            rect?.height || props?.posHeight(widget, props?.isSignYourself);
-
-          //  Display the alignment guidelines based on the current drag position and widget size
-          showGuidelines(true, getXPosition, getYPosition, getWidth, getHeight);
-        }
+    if (hasStateChanged) {
+      prevDragState.current = { isDragging: isDraggingWidget, x, y };
+      //  Get the default width and height of the dragged checkbox/radio widget type
+      const el = document.getElementById("checkbox&radio-preview");
+      let rect;
+      if (el) {
+        rect = el.getBoundingClientRect();
       }
+      const containerScale = getContainerScale(
+        props.pdfOriginalWH,
+        props.pageNumber,
+        props.containerWH
+      );
+      const height =
+        defaultWidthHeight(itemType?.text)?.height * containerScale;
+      const width = defaultWidthHeight(itemType?.text)?.width * containerScale;
+      const widget = {
+        type: itemType?.text,
+        Width: width / (containerScale * props?.scale),
+        Height: height / (containerScale * props?.scale)
+      };
+
+      // ✅ rect dimensions also need to be divided by scale because
+      // getBoundingClientRect() returns scaled (viewport) pixel sizes,
+      // but posWidth/posHeight return unscaled canvas sizes.
+      const getWidth = rect?.width
+        ? rect.width / scale
+        : props?.posWidth(widget);
+      const getHeight = rect?.height
+        ? rect.height / scale
+        : props?.posHeight(widget);
+
+      //  Display the alignment guidelines based on the current drag position and widget size
+
+      showCanvasGuidelines(true, x, y, getWidth, getHeight);
     }
-  }, [isDraggingWidget, offset, itemType, showGuidelines]);
+  }, [
+    isDraggingWidget,
+    sourceOffset,
+    itemType,
+    showCanvasGuidelines,
+    props.scale
+  ]);
 }
 
 export default DragGuideLinesLayer;
