@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+import path from 'node:path';
 import multer from 'multer';
 import Coherentpdf from 'coherentpdf';
 
@@ -7,7 +8,7 @@ const storage = multer.diskStorage({
     cb(null, 'exports');
   },
   filename(req, file, cb) {
-    cb(null, file.originalname);
+    cb(null, path.basename(file.originalname));
   },
 });
 
