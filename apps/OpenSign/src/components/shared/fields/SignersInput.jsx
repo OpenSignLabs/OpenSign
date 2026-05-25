@@ -154,7 +154,7 @@ const SignersInput = (props) => {
         {props.label ? props.label : t("signers")}
         {props.required && <span className="text-red-500 text-[13px]">*</span>}
         <span
-          className={`z-[${props?.zindex ? props.zindex : 30}] absolute ml-1 text-xs`}
+          className={`z-[${props?.helptextZindex ? props.helptextZindex : 30}] absolute ml-1 text-xs`}
         >
           <Tooltip
             id={`${props.label ? props.label : "signers"}-tooltip`}
@@ -163,9 +163,7 @@ const SignersInput = (props) => {
         </span>
       </label>
       <div className="flex gap-x-[5px]">
-        <div
-          className={`w-full z-[${props?.zindex ? props.zindex : 40}]`}
-        >
+        <div className="w-full z-40">
           <AsyncSelect
             onSortEnd={onSortEnd}
             distance={4}

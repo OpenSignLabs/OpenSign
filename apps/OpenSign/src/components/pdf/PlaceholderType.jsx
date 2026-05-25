@@ -45,11 +45,8 @@ function PlaceholderType(props) {
     (props.pos.options?.isReadOnly ||
       props.data?.signerObjId !== props.signerObjId);
   // prefer the latest response value over any default value
-  //props?.isPrefillModal is used to handle in create template flow when user use use-template button
-  //then prefill details should not be reflect on pdf document it should only show in modal
-  const widgetData = !props?.isPrefillModal
-    ? (props.pos?.options?.response ?? props.pos?.options?.defaultValue ?? "")
-    : "";
+  const widgetData =
+    props.pos?.options?.response ?? props.pos?.options?.defaultValue ?? "";
   const [widgetValue, setwidgetValue] = useState();
   const [selectedCheckbox, setSelectedCheckbox] = useState([]);
   const [imgUrl, setImgUrl] = useState("");
@@ -67,15 +64,13 @@ function PlaceholderType(props) {
     height: "100%"
   };
   useEffect(() => {
-    if (!props?.isPrefillModal) {
-      if (type !== "date") {
-        if (type && type === "checkbox") {
-          setSelectedCheckbox(response || defaultData || []);
-        }
-        else {
-          // keep displayed value in sync with the stored response
-          setwidgetValue(widgetData);
-        }
+    if (type !== "date") {
+      if (type && type === "checkbox") {
+        setSelectedCheckbox(response || defaultData || []);
+      }
+      else {
+        // keep displayed value in sync with the stored response
+        setwidgetValue(widgetData);
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -99,24 +94,10 @@ function PlaceholderType(props) {
   ));
   ExampleCustomInput.displayName = "ExampleCustomInput";
 
-  // Extract string label from a radio/checkbox value entry which may be
-  // either a plain string or an object like { name: string, checked: boolean }
-  const getRadioLabel = (data) => {
-    if (typeof data === "string") return data;
-    if (data && typeof data === "object" && data.name != null)
-      return String(data.name);
-    return "";
-  };
-
   const handleRadioCheck = (data) => {
-    if (!props?.isPrefillModal) {
-      const defaultData = widgetValue
-        ? widgetValue?.trim()
-        : props.pos?.options?.defaultValue
-          ? props.pos?.options?.defaultValue?.trim()
-          : "";
-      return defaultData === data?.trim();
-    }
+    const defaultData =
+      widgetValue?.trim() || props.pos?.options?.defaultValue?.trim() || "";
+    return defaultData === data?.trim();
   };
   //function is used to get prefill image's signedUrl after expired
   useEffect(() => {
@@ -136,9 +117,7 @@ function PlaceholderType(props) {
         setImgUrl(props.pos.SignUrl);
       }
     };
-    if (!props?.isPrefillModal) {
-      loadImage();
-    }
+    loadImage();
   }, [props.pos.SignUrl]);
 
   const formatWidgetName = () => {
@@ -197,25 +176,12 @@ function PlaceholderType(props) {
   }, [props?.startDate, props?.selectDate?.format]);
 
   switch (type) {
-    case "signature": {
-      const sigRotation = props.pos.options?.rotation;
-      const sigIsSwapped = [90, 270].includes(sigRotation);
-      const sigImgStyle = sigRotation
-        ? sigIsSwapped &&
-          props.pos.signatureType === "type" &&
-          props.pos.Width &&
-          props.pos.Height
-          ? {
-              transform: `rotate(${sigRotation}deg) scaleX(${props.pos.Width / props.pos.Height}) scaleY(${props.pos.Height / props.pos.Width})`
-            }
-          : { transform: `rotate(${sigRotation}deg)` }
-        : undefined;
+    case "signature":
       return props.pos.SignUrl ? (
         <img
           alt="signature"
           draggable="false"
           src={props.pos.SignUrl}
-          style={sigImgStyle}
           className={`${props.pos.signatureType !== "type" ? "object-contain" : ""} w-full h-full select-none-cls`}
         />
       ) : (
@@ -225,19 +191,15 @@ function PlaceholderType(props) {
               style={{
                 fontSize: props.pos
                   ? props.calculateFontsize(props.pos)
-                  : "11px",
-                ...(sigRotation
-                  ? { transform: `rotate(${sigRotation}deg)` }
-                  : {})
+                  : "11px"
               }}
-              className={`${sigIsSwapped ? "whitespace-nowrap" : ""} font-medium`}
+              className="font-medium"
             >
               {formatWidgetName()}
             </div>
           )}
         </div>
       );
-    }
     case "stamp":
       return props.pos.SignUrl ? (
         <img
@@ -266,60 +228,32 @@ function PlaceholderType(props) {
       const checkBoxLayout = props.pos.options?.layout || "vertical";
       const isMultipleCheckbox =
         props.pos.options?.values?.length > 0 ? true : false;
-      const checkboxSize = parseFloat(fontSize);
-      // Scaled gaps
-      const checkboxGapX = `${checkboxSize * 0.8}px`; // was gap-x-2 (fixed 8px)
-      const checkboxGapY = `${checkboxSize * 0.4}px`; // was gap-y-[3px] (fixed 3px)
-
       const checkBoxWrapperClass = `flex items-start whitespace-pre-wrap ${
         checkBoxLayout === "horizontal"
-          ? `flex-row flex-wrap lg:py-[1.6px]`
-          : `flex-col`
-      }`;
+          ? `flex-row flex-wrap lg:py-[1.6px] ${isMultipleCheckbox ? "gap-x-2" : ""}`
+          : `flex-col ${isMultipleCheckbox ? "gap-y-[3px]" : ""}`
+      }`; // Using gap-y-1 for consistency, adjust if needed
 
       return (
         <div
           className={checkBoxWrapperClass}
-          style={{
-            zIndex: props.isSignYourself && "99",
-            width: "100%",
-            height: "100%",
-            overflow: "hidden",
-            //Scaled gap with same condition as before
-            gap: isMultipleCheckbox
-              ? checkBoxLayout === "horizontal"
-                ? checkboxGapX // was gap-x-2
-                : checkboxGapY // was gap-y-[3px]
-              : undefined
-          }}
+          style={{ zIndex: props.isSignYourself && "99" }}
         >
           {props.pos.options?.values?.map((data, ind) => (
             <div key={ind} className="select-none-cls pointer-events-none">
               <label
                 htmlFor={`checkbox-${props.pos.key + ind}`}
-                style={{
-                  fontSize: fontSize,
-                  color: fontColor,
-                  gap: `${checkboxSize * 0.2}px` //scaled inner gap (was gap-1)
-                }}
-                className="mb-0 flex items-center" //removed gap-1 (fixed 4px)
+                style={{ fontSize: fontSize, color: fontColor }}
+                className={`mb-0 flex items-center gap-1`}
               >
                 <input
                   id={`checkbox-${props.pos.key + ind}`}
-                  style={{
-                    width: fontSize,
-                    height: fontSize,
-                    flexShrink: 0 //prevent flex compression
-                  }}
+                  style={{ width: fontSize, height: fontSize }}
                   className="op-checkbox rounded-[1px]"
                   disabled={props.isNeedSign && isReadOnly}
                   type="checkbox"
                   readOnly
-                  checked={
-                    !props?.isPrefillModal
-                      ? !!selectCheckbox(ind, selectedCheckbox)
-                      : false
-                  }
+                  checked={!!selectCheckbox(ind, selectedCheckbox)}
                 />
                 {!props.pos.options?.isHideLabel && (
                   <span className="leading-none">{data}</span>
@@ -393,25 +327,12 @@ function PlaceholderType(props) {
           <i className="fa-light fa-circle-chevron-down mr-1 "></i>
         </div>
       );
-    case "initials": {
-      const iniRotation = props.pos.options?.rotation;
-      const iniIsSwapped = [90, 270].includes(iniRotation);
-      const iniImgStyle = iniRotation
-        ? iniIsSwapped &&
-          props.pos.signatureType === "type" &&
-          props.pos.Width &&
-          props.pos.Height
-          ? {
-              transform: `rotate(${iniRotation}deg) scaleX(${props.pos.Width / props.pos.Height}) scaleY(${props.pos.Height / props.pos.Width})`
-            }
-          : { transform: `rotate(${iniRotation}deg)` }
-        : undefined;
+    case "initials":
       return props.pos.SignUrl ? (
         <img
           alt="initials"
           draggable="false"
           src={props.pos.SignUrl}
-          style={iniImgStyle}
           className={`${props.pos.signatureType !== "type" ? "object-contain" : ""} w-full h-full select-none-cls`}
         />
       ) : (
@@ -421,11 +342,7 @@ function PlaceholderType(props) {
               style={{
                 fontSize: props.pos
                   ? props.calculateFontsize(props.pos)
-                  : "11px",
-                ...(iniRotation
-                  ? { transform: `rotate(${iniRotation}deg)` }
-                  : {}),
-                ...(iniIsSwapped ? { whiteSpace: "nowrap" } : {})
+                  : "11px"
               }}
               className="font-medium text-center"
             >
@@ -434,7 +351,6 @@ function PlaceholderType(props) {
           )}
         </div>
       );
-    }
     case "name":
       return iswidgetEnable ? (
         <textarea
@@ -587,51 +503,24 @@ function PlaceholderType(props) {
     case radioButtonWidget:
       const radioLayout = props.pos.options?.layout || "vertical";
       const isOnlyOneBtn = props.pos.options?.values?.length > 0 ? true : false;
-      const radioSize = parseFloat(fontSize);
-      //Scaled gaps based on radioSize
-      const scaledGapX = `${radioSize * 0.8}px`; // horizontal gap between items
-      const scaledGapY = `${radioSize * 0.4}px`; // vertical gap between items
-
       const radioWrapperClass = `flex items-start whitespace-pre-wrap ${
         radioLayout === "horizontal"
-          ? `flex-row flex-wrap lg:py-[1.6px]`
-          : `flex-col`
-      }`;
-
+          ? `flex-row flex-wrap lg:py-[1.6px] ${isOnlyOneBtn ? "gap-x-[10px]" : ""}`
+          : `flex-col ${isOnlyOneBtn ? "gap-y-[5px]" : ""}`
+      }`; // Using gap-y-1 for consistency, adjust if needed
       return (
-        <div
-          className={radioWrapperClass}
-          style={{
-            width: "100%",
-            height: "100%",
-            overflow: "hidden",
-            //Scaled gap with condition same as before
-            gap: isOnlyOneBtn
-              ? radioLayout === "horizontal"
-                ? scaledGapX // was gap-x-[10px]
-                : scaledGapY // was gap-y-[5px]
-              : undefined
-          }}
-        >
+        <div className={radioWrapperClass}>
           {props.pos.options?.values.map((data, ind) => (
             <div key={ind} className="select-none-cls pointer-events-none">
               <label
                 htmlFor={`radio-${props.pos.key + ind}`}
-                style={{
-                  fontSize: fontSize,
-                  color: fontColor,
-                  gap: `${radioSize * 0.2}px` //scaled inner gap (was gap-1)
-                }}
-                className="mb-0 flex items-center" //removed text-xs
+                style={{ fontSize: fontSize, color: fontColor }}
+                className="text-xs mb-0 flex items-center gap-1"
               >
                 <input
                   readOnly
                   id={`radio-${props.pos.key + ind}`}
-                  style={{
-                    width: fontSize,
-                    height: fontSize,
-                    flexShrink: 0
-                  }}
+                  style={{ width: fontSize, height: fontSize, lineHeight: 2 }}
                   className={`op-radio rounded-full border-black appearance-none bg-white inline-block align-middle relative ${
                     handleRadioCheck(data) ? "checked-radio" : ""
                   }`}
@@ -640,9 +529,7 @@ function PlaceholderType(props) {
                   checked={handleRadioCheck(data)}
                 />
                 {!props.pos.options?.isHideLabel && (
-                  <span className="leading-none">
-                    {getRadioLabel(data).trim()}
-                  </span>
+                  <span className="leading-none">{data?.trim()}</span>
                 )}
               </label>
             </div>

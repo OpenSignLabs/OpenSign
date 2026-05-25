@@ -1,5 +1,4 @@
-import { randomId } from '../../Utils.js';
-
+const randomId = () => Math.floor(1000 + Math.random() * 9000);
 export default async function saveAsTemplate(request) {
   const docId = request.params.docId;
   const Ip = request?.headers?.['x-real-ip'] || '';
@@ -24,7 +23,6 @@ export default async function saveAsTemplate(request) {
       templateCls.set('Description', _docRes?.Description);
       templateCls.set('OriginIp', Ip);
       templateCls.set('SendinOrder', _docRes?.SendinOrder || false);
-      templateCls.set('SendInOrderStrict', _docRes?.SendInOrderStrict || false);
       templateCls.set('AutomaticReminders', _docRes?.AutomaticReminders || false);
       templateCls.set('ExtUserPtr', _docRes?.ExtUserPtr);
       templateCls.set('CreatedBy', _docRes?.CreatedBy);
@@ -93,27 +91,18 @@ export default async function saveAsTemplate(request) {
               pos: (page.pos || []).map(widget => {
                 // if there is a defaultValue in options, zero it out
                 if (widget.options && widget.options.defaultValue !== undefined) {
-                  const { SignUrl, ...rest } = widget;
                   return {
-                    ...rest,
-                    type: widget.type === 'text' ? 'text input' : widget.type,
-                    ...(widget.type === 'signature' ? { signatureType: '' } : {}),
+                    ...widget,
+                    signatureType: '',
                     options: {
                       ...widget.options,
                       defaultValue: '',
-                      response: '',
                       ...(widget?.options?.isReadOnly ? { isReadOnly: false } : {}),
                     },
                   }; // reset only the value
                 }
                 // otherwise, return the widget unchanged
-                const { SignUrl, ...rest } = widget;
-                return {
-                  ...rest,
-                  type: widget.type === 'text' ? 'text input' : widget.type,
-                  ...(widget.type === 'signature' ? { signatureType: '' } : {}),
-                  options: { ...widget.options, response: '' },
-                };
+                return widget;
               }),
             })),
           }));
@@ -126,9 +115,6 @@ export default async function saveAsTemplate(request) {
       }
       if (_docRes?.Bcc?.length > 0) {
         templateCls.set('Bcc', _docRes?.Bcc);
-      }
-      if (_docRes?.Cc?.length > 0) {
-        templateCls.set('Cc', _docRes?.Cc);
       }
       if (_docRes?.PenColors?.length > 0) {
         templateCls.set('PenColors', _docRes?.PenColors);

@@ -1,4 +1,4 @@
-export const setDocumentCount = async (extUserId, docsCount) => {
+export const setDocumentCount = async extUserId => {
   if (extUserId) {
     try {
       // Update count in contracts_Users class
@@ -6,14 +6,7 @@ export const setDocumentCount = async (extUserId, docsCount) => {
       extQuery.equalTo('objectId', extUserId);
       const contractUser = await extQuery.first({ useMasterKey: true });
       if (contractUser) {
-        if (docsCount) {
-          const count = contractUser.get('DocumentCount')
-            ? contractUser.get('DocumentCount') + Number(docsCount)
-            : 0 + Number(docsCount);
-          contractUser.set('DocumentCount', count);
-        } else {
-          contractUser.increment('DocumentCount', 1);
-        }
+        contractUser.increment('DocumentCount', 1);
         await contractUser.save(null, { useMasterKey: true });
       }
     } catch (error) {

@@ -40,9 +40,7 @@ import {
   generatePdfName,
   getOriginalWH,
   defaultMailBody,
-  defaultMailSubject,
-  flattenPdf,
-  base64ToArrayBuffer,
+  defaultMailSubject
 } from "../constant/Utils";
 import RenderPdf from "../components/pdf/RenderPdf";
 import { useNavigate } from "react-router";
@@ -52,7 +50,7 @@ import WidgetNameModal from "../components/pdf/WidgetNameModal";
 import { SaveFileSize } from "../constant/saveFileSize";
 import { useDispatch, useSelector } from "react-redux";
 import PdfTools from "../components/pdf/PdfTools";
-import { useTranslation, Trans } from "react-i18next";
+import { useTranslation } from "react-i18next";
 import RotateAlert from "../components/RotateAlert";
 import Loader from "../primitives/Loader";
 import ModalUi from "../primitives/ModalUi";
@@ -68,12 +66,10 @@ import { resetWidgetState, setPrefillImg } from "../redux/reducers/widgetSlice";
 import EditDocument from "../components/pdf/EditTemplate";
 import CustomizeMail from "../components/pdf/CustomizeMail";
 import { useWindowSize } from "../hook/useWindowSize";
-import { useScroll } from "../context/ScrollPdfContext";
 
 function PlaceHolderSign() {
   const { t } = useTranslation();
   const copyUrlRef = useRef(null);
-  const { scrollRef } = useScroll();
   const dispatch = useDispatch();
   const windowSize = useWindowSize();
   const prefillImg = useSelector((state) => state.widget.prefillImg);
@@ -176,7 +172,6 @@ function PlaceHolderSign() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-
   //function to fetch tenant Details
   const fetchTenantDetails = async () => {
     const user = JSON.parse(
@@ -248,7 +243,7 @@ function PlaceHolderSign() {
     //getting document details
     const documentData = await contractDocument(
       documentId,
-      "Bcc,Cc"
+      "Bcc"
     );
 
     if (documentData && documentData.length > 0) {
@@ -353,7 +348,7 @@ function PlaceHolderSign() {
           ...x,
           Id: placeholder[index]?.Id,
           Role: placeholder[index]?.Role,
-          blockColor: placeholder[index]?.blockColor,
+          blockColor: placeholder[index]?.blockColor
         }));
         setPrefillSigner([utils?.prefillObj()]);
         setSignerPos(placeholder);
@@ -389,14 +384,10 @@ function PlaceHolderSign() {
                 ...matchingSigner,
                 Role: x.Role ? x.Role : matchingSigner.Role,
                 Id: x.Id,
-                blockColor: x.blockColor,
+                blockColor: x.blockColor
               };
             } else {
-              return {
-                Role: x.Role,
-                Id: x.Id,
-                blockColor: x.blockColor,
-              };
+              return { Role: x.Role, Id: x.Id, blockColor: x.blockColor };
             }
           });
           if (prefillPlaceholder) {
@@ -450,11 +441,7 @@ function PlaceHolderSign() {
           setSignerPos(documentData[0].Placeholders);
           if (placeholder.length > 0) {
             let updatedSigners = placeholder.map((x) => {
-              return {
-                Role: x.Role,
-                Id: x.Id,
-                blockColor: x.blockColor,
-              };
+              return { Role: x.Role, Id: x.Id, blockColor: x.blockColor };
             });
             setSignersData(updatedSigners);
             setIsSelectId(0);
@@ -537,7 +524,7 @@ function PlaceHolderSign() {
         const widgetHeight =
           defaultWidthHeight(dragTypeValue).height * containerScale;
         //adding and updating drop position in array when user drop signature button in div
-
+        
         // Handle custom position from drawing (OS-1229)
         if (customOptions?.customPosition) {
           ({ dropObj, placeHolder } = utils.createCustomPositionWidget({
@@ -553,20 +540,16 @@ function PlaceHolderSign() {
           }));
           dropData = placeHolder.pos;
         } else if (item === "onclick") {
-          // Use the current page container (id="container") so that the
-          // height reflects one page, not the entire multi-page document.
-          const containerEl =
-            document.getElementById("container") || divRef.current;
-          const divWidth = containerEl.getBoundingClientRect().width;
-          const divHeight = containerEl.getBoundingClientRect().height;
+          // `getBoundingClientRect()` is used to get accurate measurement width, height of the Pdf div
+          const divWidth = divRef.current.getBoundingClientRect().width;
+          const divHeight = divRef.current.getBoundingClientRect().height;
           //  Compute the pixel‐space center within the PDF viewport:
           const centerX_Pixels = divWidth / 2 - widgetWidth / 2;
           const xPosition_Final = centerX_Pixels / (containerScale * scale);
           dropObj = {
             //onclick put placeholder center on pdf
             xPosition: xPosition_Final,
-            yPosition:
-              (divHeight / 2 - widgetHeight / 2) / (containerScale * scale),
+            yPosition: widgetHeight + divHeight / 2,
             isStamp:
               (dragTypeValue === "stamp" || dragTypeValue === "image") && true,
             key: key,
@@ -723,7 +706,7 @@ function PlaceHolderSign() {
         } else if (dragTypeValue === radioButtonWidget) {
           setIsRadio(true);
         }
-        setCurrWidgetsDetails({ ...dropObj, pageNumber: pageNumber });
+        setCurrWidgetsDetails(dropObj);
       }
     }
   };
@@ -735,7 +718,6 @@ function PlaceHolderSign() {
     setPdfLoad(true);
   };
 
-
   //function for save x and y position and show signature  tab on that position
   const handleTabDrag = (key) => {
     setDragKey(key);
@@ -743,11 +725,10 @@ function PlaceHolderSign() {
   };
 
   //function for set and update x and y postion after drag and drop signature tab
-  const handleStop = (event, dragElement, signerId, key, widgetPageNumber) => {
+  const handleStop = (event, dragElement, signerId, key) => {
     setFontColor();
     setFontSize();
     if (!isResize && isDragging) {
-      const effectivePageNumber = widgetPageNumber || pageNumber;
       const dataNewPlace = addZIndex(signerPos, key, setZIndex);
       let updateSignPos = [...signerPos];
       updateSignPos.splice(0, updateSignPos.length, ...dataNewPlace);
@@ -755,7 +736,7 @@ function PlaceHolderSign() {
       const keyValue = key ? key : dragKey;
       const containerScale = getContainerScale(
         pdfOriginalWH,
-        effectivePageNumber,
+        pageNumber,
         containerWH
       );
       if (keyValue >= 0) {
@@ -765,22 +746,22 @@ function PlaceHolderSign() {
         if (filterSignerPos.length > 0) {
           const getPlaceHolder = filterSignerPos[0].placeHolder;
           const getPageNumer = getPlaceHolder.filter(
-            (data) => data.pageNumber === effectivePageNumber
+            (data) => data.pageNumber === pageNumber
           );
           if (getPageNumer.length > 0) {
             const addSignPos = getPageNumer?.[0]?.pos?.map((url) => {
               if (url.key === keyValue) {
                 return {
                   ...url,
-                  xPosition: dragElement.x / containerScale,
-                  yPosition: dragElement.y / containerScale
+                  xPosition: dragElement.x / (containerScale * scale),
+                  yPosition: dragElement.y / (containerScale * scale)
                 };
               }
               return url;
             });
 
             const newUpdateSignPos = getPlaceHolder.map((obj) => {
-              if (obj.pageNumber === effectivePageNumber) {
+              if (obj.pageNumber === pageNumber) {
                 return { ...obj, pos: addSignPos };
               }
               return obj;
@@ -801,14 +782,13 @@ function PlaceHolderSign() {
     setTimeout(() => setIsDragging(false), 200);
   };
   //function for delete signature block
-  const handleDeleteWidget = (key, Id, widgetPageNumber) => {
-    const effectivePageNumber = widgetPageNumber || pageNumber;
+  const handleDeleteWidget = (key, Id) => {
     const updateData = [];
     const filterSignerPos = signerPos.filter((data) => data.Id === Id);
     if (filterSignerPos.length > 0) {
       const getPlaceHolder = filterSignerPos[0].placeHolder;
       const getPageNumer = getPlaceHolder.filter(
-        (data) => data.pageNumber === effectivePageNumber
+        (data) => data.pageNumber === pageNumber
       );
       if (getPageNumer.length > 0) {
         const getXYdata = getPageNumer[0].pos.filter(
@@ -818,7 +798,7 @@ function PlaceHolderSign() {
         if (getXYdata.length > 0) {
           updateData.push(getXYdata);
           const newUpdatePos = getPlaceHolder.map((obj) => {
-            if (obj.pageNumber === effectivePageNumber) {
+            if (obj.pageNumber === pageNumber) {
               return { ...obj, pos: updateData[0] };
             }
             return obj;
@@ -833,7 +813,7 @@ function PlaceHolderSign() {
           setSignerPos(newUpdateSigner);
         } else {
           const getRemainPage = filterSignerPos[0].placeHolder.filter(
-            (data) => data.pageNumber !== effectivePageNumber
+            (data) => data.pageNumber !== pageNumber
           );
           //condition to check placeholder length is greater than 1 do not need to remove whole placeholder
           //array only resove particular widgets
@@ -1007,7 +987,6 @@ function PlaceHolderSign() {
       alert(t("atleast-one-recipient-alert"));
     } else if (isPlaceholderExist && unassignedWidget.length === 0) {
       const IsSignerNotExist = filterPrefill?.filter((x) => !x.signerObjId);
-      // below condition is used to hightlight the widget whose value is not provided by signer
       if (IsSignerNotExist && IsSignerNotExist?.length > 0) {
         setSignerExistModal(true);
         setCurrWidgetsDetails(IsSignerNotExist[0]?.placeHolder?.[0]?.pos[0]);
@@ -1016,6 +995,7 @@ function PlaceHolderSign() {
       }
     }
   };
+
   useEffect(() => {
     const timer = setTimeout(() => {
       if (
@@ -1119,20 +1099,20 @@ function PlaceHolderSign() {
             }
           }
         );
+        setIsLoading({ isLoad: false });
+        setIsUiLoading(false);
+        setIsSendAlert({ mssg: "confirm", alert: true });
         if (docTitle) {
           const updatedPdfDetails = [...pdfDetails];
           updatedPdfDetails[0].Name = docTitle;
           setPdfDetails(updatedPdfDetails);
         }
-        setIsLoading({ isLoad: false });
-        setIsUiLoading(false);
-        setIsSendAlert({ mssg: "confirm", alert: true });
         const ownerId = pdfDetails[0].ExtUserPtr?.UserId?.objectId;
         const firstSigner = signersdata[0];
         const isOwner = firstSigner?.UserId?.objectId === ownerId;
         if (pdfDetails[0]?.SendinOrder && isOwner) {
-          setIsCurrUser(ownerId);
           setIsSend(true);
+          setIsCurrUser(currentUser?.objectId);
         } else {
           const currentSigner = signersdata?.find(
             (x) => x?.UserId?.objectId === ownerId
@@ -1172,10 +1152,7 @@ function PlaceHolderSign() {
         `${pdfDetails?.[0].objectId}/${signerMail[i].Email}/${objectId}/${sendMail}`
       );
       let signPdf = `${hostUrl}/login/${encodeBase64}`;
-      shareLinkList.push({
-        signerEmail: signerMail[i].Email,
-        url: signPdf
-      });
+      shareLinkList.push({ signerEmail: signerMail[i].Email, url: signPdf });
     }
     return shareLinkList.map((data, ind) => {
       return (
@@ -1312,7 +1289,6 @@ function PlaceHolderSign() {
     isHideLabel,
     layout
   ) => {
-    const widgetPageNumber = currWidgetsDetails?.pageNumber || pageNumber;
     const isPrefill = signerPos.some(
       (x) => x?.Role === "prefill" && x.Id === uniqueId
     );
@@ -1320,7 +1296,7 @@ function PlaceHolderSign() {
     if (filterSignerPos.length > 0) {
       const getPlaceHolder = filterSignerPos[0].placeHolder;
       const getPageNumer = getPlaceHolder.filter(
-        (data) => data.pageNumber === widgetPageNumber
+        (data) => data.pageNumber === pageNumber
       );
       if (getPageNumer.length > 0) {
         const textSize = fontSize || currWidgetsDetails?.options?.fontSize;
@@ -1419,7 +1395,7 @@ function PlaceHolderSign() {
         });
 
         const newUpdateSignPos = getPlaceHolder.map((obj) => {
-          if (obj.pageNumber === widgetPageNumber) {
+          if (obj.pageNumber === pageNumber) {
             return { ...obj, pos: addSignPos };
           }
           return obj;
@@ -1443,7 +1419,6 @@ function PlaceHolderSign() {
     setFontColor();
   };
   const handleWidgetdefaultdata = (defaultdata, isSignWidget) => {
-    const widgetPageNumber = currWidgetsDetails?.pageNumber || pageNumber;
     if (isSignWidget) {
       const updatedPdfDetails = [...pdfDetails];
       const signtypes = defaultdata.signatureType || signatureType;
@@ -1457,7 +1432,7 @@ function PlaceHolderSign() {
       const getPlaceHolder = filterSignerPos[0].placeHolder;
 
       const getPageNumer = getPlaceHolder.filter(
-        (data) => data.pageNumber === widgetPageNumber
+        (data) => data.pageNumber === pageNumber
       );
 
       if (getPageNumer.length > 0) {
@@ -1509,7 +1484,6 @@ function PlaceHolderSign() {
                   ...position.options,
                   name: defaultdata.name,
                   hint: defaultdata?.hint || "",
-                  rotation: defaultdata?.rotation || 0,
                   ...(defaultdata?.penColors?.length > 0 && {
                     penColors: defaultdata?.penColors
                   })
@@ -1534,7 +1508,7 @@ function PlaceHolderSign() {
         });
 
         const newUpdateSignPos = getPlaceHolder.map((obj) => {
-          if (obj.pageNumber === widgetPageNumber) {
+          if (obj.pageNumber === pageNumber) {
             return { ...obj, pos: addSignPos };
           }
           return obj;
@@ -1612,13 +1586,12 @@ function PlaceHolderSign() {
     setIsAddUser({ [id]: true });
   };
   //`handleAddUser` function to use add new user
-  const handleAddUser = (data, signerObjId, signerRole) => {
+  const handleAddUser = (data, signerObjId) => {
     const id = signerObjId ? signerObjId : uniqueId;
     setRoleName("");
     setCurrWidgetsDetails({});
-    let assignedId = id;
     if (isAddSigner) {
-      assignedId = handleAddNewRecipients(data, signerRole);
+      handleAddNewRecipients(data);
     } else {
       if (data && data.objectId) {
         const signerPtr = {
@@ -1660,25 +1633,23 @@ function PlaceHolderSign() {
           }
         }
         setSignersData(updateSigner);
-        const index = updateSigner.findIndex(
+        const index = signersdata.findIndex(
           (x) => x.Id === id || x.objectId === id
         );
         setIsSelectId(index);
       }
     }
-    return assignedId;
   };
   //function to add new signer in document signers list
-  const handleAddNewRecipients = (data, signerRole) => {
+  const handleAddNewRecipients = (data) => {
     const newId = randomId();
     const backgroundColor = color[signersdata.length];
-    const newSigner = {
+    signersdata.push({
       ...data,
       className: "contracts_Contactbook",
       Id: newId,
-      blockColor: backgroundColor,
-    };
-    setSignersData((prev) => [...(prev || []), newSigner]);
+      blockColor: backgroundColor
+    });
     const signerPosObj = {
       signerPtr: {
         __type: "Pointer",
@@ -1687,12 +1658,11 @@ function PlaceHolderSign() {
       },
       signerObjId: data.objectId,
       blockColor: backgroundColor,
-      Id: newId,
+      Id: newId
     };
-    setSignerPos((prev) => [...(prev || []), signerPosObj]);
+    setSignerPos((prev) => [...prev, signerPosObj]);
     setUniqueId(newId);
-    setIsSelectId(signersdata.length);
-    return newId;
+    setIsSelectId(signersdata.length - 1);
   };
 
   const closePopup = () => {
@@ -1732,9 +1702,6 @@ function PlaceHolderSign() {
     }
   ];
 
-  const handleClosePrefillTour = () => {
-    setIsSendAlert({});
-  };
   // `handleDeleteUser` function is used to delete record and placeholder when user click on delete which is place next user name in recipients list
   const handleDeleteUser = (Id) => {
     const updateSigner = signersdata
@@ -1770,10 +1737,10 @@ function PlaceHolderSign() {
     }
   };
   const clickOnZoomIn = () => {
-    onClickZoomIn(scale, setScale, scrollRef);
+    onClickZoomIn(zoomPercent, setScale, setZoomPercent);
   };
   const clickOnZoomOut = () => {
-    onClickZoomOut(scale, setScale, scrollRef);
+    onClickZoomOut(zoomPercent, setZoomPercent, setScale);
   };
   //`handleRotationFun` function is used to roatate pdf particular page
   const handleRotationFun = async (rotateDegree) => {
@@ -1829,15 +1796,6 @@ function PlaceHolderSign() {
             }))
           }
         : {};
-      const Cc = updateDocument?.[0]?.Cc?.length
-        ? {
-            Cc: updateDocument?.[0]?.Cc?.map((x) => ({
-              __type: "Pointer",
-              className: "contracts_Contactbook",
-              objectId: x.objectId
-            }))
-          }
-        : {};
       const RedirectUrl = updateDocument?.[0]?.RedirectUrl
         ? { RedirectUrl: updateDocument?.[0]?.RedirectUrl }
         : {};
@@ -1865,7 +1823,6 @@ function PlaceHolderSign() {
           parseInt(updateDocument?.[0]?.RemindOnceInEvery) || 0,
         ...penColors,
         ...Bcc,
-        ...Cc,
         ...RedirectUrl,
         AllowModifications: updateDocument?.[0]?.AllowModifications || false
       };
@@ -1912,7 +1869,7 @@ function PlaceHolderSign() {
             isOpen={signerExistModal}
           />
           <Tour
-            onRequestClose={handleClosePrefillTour}
+            onRequestClose={() => setIsSendAlert({})}
             steps={prefillWidgetTour}
             isOpen={isSendAlert.mssg === "prefill"}
           />
@@ -1997,35 +1954,6 @@ function PlaceHolderSign() {
                         </div>
                       ) : mailStatus === "failed" ? (
                         <p>{t("mail-failed")} </p>
-                      ) : mailStatus === "emailnotverified" ? (
-                        <div>
-                          <p>
-                            <Trans
-                              i18nKey="email-not-verified-send"
-                              components={{
-                                1: (
-                                  <a
-                                    href="/profile"
-                                    className="text-blue-700 underline cursor-pointer"
-                                  />
-                                )
-                              }}
-                            />
-                          </p>
-                          <div className="flex justify-center mt-2">
-                            <button
-                              onClick={() => {
-                                setIsSend(false);
-                                setSignerPos([]);
-                                navigate("/report/1MwEuxLEkF");
-                              }}
-                              type="button"
-                              className="op-btn op-btn-ghost text-base-content"
-                            >
-                              {t("close")}
-                            </button>
-                          </div>
-                        </div>
                       ) : (
                         <div className="mb-[10px]">
                           {!pdfDetails[0]?.SendinOrder &&
@@ -2043,8 +1971,7 @@ function PlaceHolderSign() {
                       )}
 
                       {mailStatus !== "quotareached" &&
-                        mailStatus !== "failed" &&
-                        mailStatus !== "emailnotverified" && (
+                        mailStatus !== "failed" && (
                           <div
                             className={
                               mailStatus === "success"
@@ -2076,7 +2003,6 @@ function PlaceHolderSign() {
                         )}
                     </div>
                     {mailStatus !== "success" &&
-                      mailStatus !== "emailnotverified" &&
                       isCurrUser &&
                       pdfDetails[0]?.SendinOrder && (
                         <div className="op-divider text-base-content mx-[0%] my-1 font-medium">
@@ -2084,7 +2010,6 @@ function PlaceHolderSign() {
                         </div>
                       )}
                     {mailStatus !== "success" &&
-                      mailStatus !== "emailnotverified" &&
                       pdfDetails[0]?.SendinOrder &&
                       isCurrUser && (
                         <div
@@ -2127,7 +2052,7 @@ function PlaceHolderSign() {
                 xyPosition={signerPos}
                 setXyPosition={setSignerPos}
                 allPages={allPages}
-                pageNumber={currWidgetsDetails?.pageNumber || pageNumber}
+                pageNumber={pageNumber}
                 signKey={currWidgetsDetails?.key}
                 Id={uniqueId}
                 widgetType={currWidgetsDetails?.type}
@@ -2218,9 +2143,7 @@ function PlaceHolderSign() {
               >
                 {containerWH?.width && (
                   <RenderPdf
-                    scrollRef={scrollRef}
                     pageNumber={pageNumber}
-                    setPageNumber={setPageNumber}
                     pdfNewWidth={pdfNewWidth}
                     pdfDetails={pdfDetails}
                     signerPos={signerPos}
@@ -2266,7 +2189,6 @@ function PlaceHolderSign() {
                     isShowModal={isShowModal}
                     signBtnPosition={signBtnPosition}
                     addPositionOfSignature={addPositionOfSignature}
-                    handleClosePrefillTour={handleClosePrefillTour}
                   />
                 )}
               </div>
@@ -2376,7 +2298,7 @@ function PlaceHolderSign() {
           setPageNumber={setPageNumber}
           setCurrWidgetsDetails={setCurrWidgetsDetails}
           currWidgetsDetails={currWidgetsDetails}
-          index={currWidgetsDetails?.pageNumber || pageNumber}
+          index={pageNumber}
           isSave={true}
           setUniqueId={setUniqueId}
           signatureTypes={signatureType}
@@ -2408,8 +2330,6 @@ function PlaceHolderSign() {
           closePopup={closePopup}
           signersData={signersdata}
           signerPos={signerPos}
-          setSignerPos={setSignerPos}
-          setSignersData={setSignersData}
           isAddYourSelfCheckbox
         />
       )}

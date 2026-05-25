@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import RenderAllPdfPage from "../components/pdf/RenderAllPdfPage";
-import { useParams, useNavigate, Link } from "react-router";
+import { useParams, useNavigate } from "react-router";
 import axios from "axios";
 import "../styles/signature.css";
 import WidgetComponent from "../components/pdf/WidgetComponent";
@@ -39,11 +39,8 @@ import {
   defaultMailBody,
   defaultMailSubject,
   handleDeleteWidget,
-  nonPresentMaskCss,
-  flattenPdf,
-  base64ToArrayBuffer
+  nonPresentMaskCss
 } from "../constant/Utils";
-import { PDFDocument } from "pdf-lib";
 import RenderPdf from "../components/pdf/RenderPdf";
 import "../styles/AddUser.css";
 import EditTemplate from "../components/pdf/EditTemplate";
@@ -53,7 +50,7 @@ import DropdownWidgetOption from "../components/pdf/DropdownWidgetOption";
 import Parse from "parse";
 import { useDispatch, useSelector } from "react-redux";
 import PdfTools from "../components/pdf/PdfTools";
-import { useTranslation, Trans } from "react-i18next";
+import { useTranslation } from "react-i18next";
 import RotateAlert from "../components/RotateAlert";
 import ModalUi from "../primitives/ModalUi";
 import TourContentWithBtn from "../primitives/TourContentWithBtn";
@@ -70,14 +67,12 @@ import CustomizeMail from "../components/pdf/CustomizeMail";
 import { resetWidgetState, setPrefillImg } from "../redux/reducers/widgetSlice";
 import ShareButton from "../primitives/ShareButton";
 import { useWindowSize } from "../hook/useWindowSize";
-import { useScroll } from "../context/ScrollPdfContext";
 
 const TemplatePlaceholder = () => {
   const { t } = useTranslation();
   const copyUrlRef = useRef(null);
   const { templateId } = useParams();
   const windowSize = useWindowSize();
-  const { scrollRef } = useScroll();
   const dispatch = useDispatch();
   const { prefillImg, isBulkLoader } = useSelector((state) => state.widget);
   const divRef = useRef(null);
@@ -96,7 +91,6 @@ const TemplatePlaceholder = () => {
   const [isSelectListId, setIsSelectId] = useState();
   const [isSendAlert, setIsSendAlert] = useState(false);
   const [isCreateDocModal, setIsCreateDocModal] = useState(false);
-  const [isPublicFlow, setIsPublicFlow] = useState(false);
   //'signersName' variable used to show all signer's name that do not have a signature widget assigned
   const [signersName, setSignersName] = useState("");
   const [showRotateAlert, setShowRotateAlert] = useState({
@@ -180,7 +174,6 @@ const TemplatePlaceholder = () => {
     fetchTemplate();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
 
   useEffect(() => {
     const updateSize = () => {
@@ -336,14 +329,10 @@ const TemplatePlaceholder = () => {
                   ...matchingSigner,
                   Role: x.Role ? x.Role : matchingSigner.Role,
                   Id: x.Id,
-                  blockColor: x.blockColor,
+                  blockColor: x.blockColor
                 };
               } else {
-                return {
-                  Role: x.Role,
-                  Id: x.Id,
-                  blockColor: x.blockColor,
-                };
+                return { Role: x.Role, Id: x.Id, blockColor: x.blockColor };
               }
             });
             const prefillPlaceholder = documentData[0]?.Placeholders.find(
@@ -388,11 +377,7 @@ const TemplatePlaceholder = () => {
             );
             if (signerPlaceholder) {
               let updatedSigners = signerPlaceholder.map((x) => {
-                return {
-                  Role: x.Role,
-                  Id: x.Id,
-                  blockColor: x.blockColor,
-                };
+                return { Role: x.Role, Id: x.Id, blockColor: x.blockColor };
               });
               setUniqueId(updatedSigners[0]?.Id);
               setSignersData(updatedSigners);
@@ -489,20 +474,16 @@ const TemplatePlaceholder = () => {
           }));
           dropData = placeHolder.pos;
         } else if (item === "onclick") {
-          // Use the current page container (id="container") so that the
-          // height reflects one page, not the entire multi-page document.
-          const containerEl =
-            document.getElementById("container") || divRef.current;
-          const divWidth = containerEl.getBoundingClientRect().width;
-          const divHeight = containerEl.getBoundingClientRect().height;
+          // `getBoundingClientRect()` is used to get accurate measurement width, height of the Pdf div
+          const divWidth = divRef.current.getBoundingClientRect().width;
+          const divHeight = divRef.current.getBoundingClientRect().height;
           //  Compute the pixel‐space center within the PDF viewport:
           const centerX_Pixels = divWidth / 2 - widgetWidth / 2;
           const xPosition_Final = centerX_Pixels / (containerScale * scale);
           dropObj = {
             //onclick put placeholder center on pdf
             xPosition: xPosition_Final,
-            yPosition:
-              (divHeight / 2 - widgetHeight / 2) / (containerScale * scale),
+            yPosition: widgetHeight + divHeight / 2,
             isStamp:
               (dragTypeValue === "stamp" || dragTypeValue === "image") && true,
             key: key,
@@ -658,7 +639,7 @@ const TemplatePlaceholder = () => {
           setFontSize(12);
           setFontColor("black");
         }
-        setCurrWidgetsDetails({ ...dropObj, pageNumber: pageNumber });
+        setCurrWidgetsDetails(dropObj);
       } else {
         setIsReceipent(false);
       }
@@ -681,7 +662,6 @@ const TemplatePlaceholder = () => {
     setPdfOriginalWH(pdfWHObj);
     setPdfLoad(true);
   };
-
   //function for save x and y position and show signature  tab on that position
   const handleTabDrag = (key) => {
     setDragKey(key);
@@ -689,11 +669,10 @@ const TemplatePlaceholder = () => {
   };
 
   //function for set and update x and y postion after drag and drop signature tab
-  const handleStop = (event, dragElement, signerId, key, widgetPageNumber) => {
+  const handleStop = (event, dragElement, signerId, key) => {
     setFontColor();
     setFontSize();
     if (!isResize && isDragging) {
-      const effectivePageNumber = widgetPageNumber || pageNumber;
       const dataNewPlace = addZIndex(signerPos, key, setZIndex);
       let updateSignPos = [...signerPos];
       updateSignPos.splice(0, updateSignPos.length, ...dataNewPlace);
@@ -701,7 +680,7 @@ const TemplatePlaceholder = () => {
       const keyValue = key ? key : dragKey;
       const containerScale = getContainerScale(
         pdfOriginalWH,
-        effectivePageNumber,
+        pageNumber,
         containerWH
       );
       if (keyValue >= 0) {
@@ -712,22 +691,22 @@ const TemplatePlaceholder = () => {
         if (filterSignerPos.length > 0) {
           const getPlaceHolder = filterSignerPos[0].placeHolder;
           const getPageNumer = getPlaceHolder.filter(
-            (data) => data.pageNumber === effectivePageNumber
+            (data) => data.pageNumber === pageNumber
           );
           if (getPageNumer.length > 0) {
             const addSignPos = getPageNumer?.[0]?.pos?.map((url) => {
               if (url.key === keyValue) {
                 return {
                   ...url,
-                  xPosition: dragElement.x / containerScale,
-                  yPosition: dragElement.y / containerScale
+                  xPosition: dragElement.x / (containerScale * scale),
+                  yPosition: dragElement.y / (containerScale * scale)
                 };
               }
               return url;
             });
 
             const newUpdateSignPos = getPlaceHolder.map((obj) => {
-              if (obj.pageNumber === effectivePageNumber) {
+              if (obj.pageNumber === pageNumber) {
                 return { ...obj, pos: addSignPos };
               }
               return obj;
@@ -748,13 +727,8 @@ const TemplatePlaceholder = () => {
     setTimeout(() => setIsDragging(false), 200);
   };
   //function is used to delete widgets
-  const handleDeleteWidgetObj = (key, Id, widgetPageNumber) => {
-    const res = handleDeleteWidget(
-      key,
-      Id,
-      widgetPageNumber || pageNumber,
-      signerPos
-    );
+  const handleDeleteWidgetObj = (key, Id) => {
+    const res = handleDeleteWidget(key, Id, pageNumber, signerPos);
     if (res) {
       setSignerPos(res);
     }
@@ -875,14 +849,6 @@ const TemplatePlaceholder = () => {
         }));
         templateCls.set("Bcc", Bcc);
       }
-      if (pdfDetails[0]?.Cc?.length) {
-        const Cc = pdfDetails[0]?.Cc.map((x) => ({
-          __type: "Pointer",
-          className: "contracts_Contactbook",
-          objectId: x.objectId
-        }));
-        templateCls.set("Cc", Cc);
-      }
       const res = await templateCls.save();
       if (res && pdfUrl) {
         pdfDetails[0] = { ...pdfDetails[0], URL: pdfUrl };
@@ -955,15 +921,6 @@ const TemplatePlaceholder = () => {
               }))
             }
           : {};
-        const Cc = pdfDetails[0]?.Cc?.length
-          ? {
-              Cc: pdfDetails[0]?.Cc?.map((x) => ({
-                __type: "Pointer",
-                className: "contracts_Contactbook",
-                objectId: x.objectId
-              }))
-            }
-          : {};
         const RedirectUrl = pdfDetails[0]?.RedirectUrl
           ? { RedirectUrl: pdfDetails[0]?.RedirectUrl }
           : {};
@@ -989,7 +946,6 @@ const TemplatePlaceholder = () => {
           TimeToCompleteDays:
             parseInt(pdfDetails?.[0]?.TimeToCompleteDays) || 15,
           ...Bcc,
-          ...Cc,
           ...RedirectUrl
         };
         const updateTemplate = new Parse.Object("contracts_Template");
@@ -1038,7 +994,7 @@ const TemplatePlaceholder = () => {
         );
       } else if (res?.status === "unattach signer") {
         setIsUiLoading(false);
-        showAlert("danger", t("attach-all-role-to-signer"));
+        showAlert("danger", "please attach all role to signer");
       } else if (res?.status === "success") {
         setDocumentId(res.id);
         const ownerId = pdfDetails[0].ExtUserPtr?.UserId?.objectId;
@@ -1058,10 +1014,6 @@ const TemplatePlaceholder = () => {
         }
 
         setIsMailModal(true);
-      } else if (res?.status === "error") {
-        const message = res?.message || "something-went-wrong-mssg";
-        setIsUiLoading(false);
-        showAlert("danger", t(message));
       }
     } catch (e) {
       console.log("error in create document function", e);
@@ -1211,13 +1163,12 @@ const TemplatePlaceholder = () => {
     setIsModalRole(true);
     setPrevRole(roleName || "");
     setRoleName("");
-    closeAddRoleTour();
   };
 
   // `handleAddRole` function is called when use click on add button in addRole modal
   // save Role in entry in signerList and user
   const handleAddRole = (e) => {
-    e?.preventDefault?.();
+    e.preventDefault();
     const count = signersdata.length > 0 ? signersdata.length + 1 : 1;
     const Id = randomId();
     const index = signersdata.length;
@@ -1366,15 +1317,6 @@ const TemplatePlaceholder = () => {
             }))
           }
         : {};
-      const Cc = updateTemplate?.[0]?.Cc?.length
-        ? {
-            Cc: updateTemplate?.[0]?.Cc?.map((x) => ({
-              __type: "Pointer",
-              className: "contracts_Contactbook",
-              objectId: x.objectId
-            }))
-          }
-        : {};
       const RedirectUrl = updateTemplate?.[0]?.RedirectUrl
         ? { RedirectUrl: updateTemplate?.[0]?.RedirectUrl }
         : {};
@@ -1402,7 +1344,6 @@ const TemplatePlaceholder = () => {
           parseInt(updateTemplate?.[0]?.RemindOnceInEvery) || 0,
         ...penColors,
         ...Bcc,
-        ...Cc,
         ...RedirectUrl,
         AllowModifications: updateTemplate?.[0]?.AllowModifications || false
       };
@@ -1434,7 +1375,6 @@ const TemplatePlaceholder = () => {
     isHideLabel,
     layout
   ) => {
-    const widgetPageNumber = currWidgetsDetails?.pageNumber || pageNumber;
     const isPrefill = signerPos.some(
       (x) => x?.Role === "prefill" && x.Id === uniqueId
     );
@@ -1443,7 +1383,7 @@ const TemplatePlaceholder = () => {
       const getPlaceHolder = filterSignerPos[0].placeHolder;
 
       const getPageNumer = getPlaceHolder.filter(
-        (data) => data.pageNumber === widgetPageNumber
+        (data) => data.pageNumber === pageNumber
       );
 
       if (getPageNumer.length > 0) {
@@ -1543,7 +1483,7 @@ const TemplatePlaceholder = () => {
         });
 
         const newUpdateSignPos = getPlaceHolder.map((obj) => {
-          if (obj.pageNumber === widgetPageNumber) {
+          if (obj.pageNumber === pageNumber) {
             return { ...obj, pos: addSignPos };
           }
           return obj;
@@ -1568,7 +1508,6 @@ const TemplatePlaceholder = () => {
   };
 
   const handleWidgetdefaultdata = (defaultdata, isSignWidget) => {
-    const widgetPageNumber = currWidgetsDetails?.pageNumber || pageNumber;
     if (isSignWidget) {
       const updatedPdfDetails = [...pdfDetails];
       const signtypes = defaultdata.signatureType || signatureType;
@@ -1582,7 +1521,7 @@ const TemplatePlaceholder = () => {
       const getPlaceHolder = filterSignerPos[0].placeHolder;
 
       const getPageNumer = getPlaceHolder.filter(
-        (data) => data.pageNumber === widgetPageNumber
+        (data) => data.pageNumber === pageNumber
       );
 
       if (getPageNumer.length > 0) {
@@ -1634,7 +1573,6 @@ const TemplatePlaceholder = () => {
                   ...position.options,
                   name: defaultdata.name,
                   hint: defaultdata?.hint || "",
-                  rotation: defaultdata?.rotation || 0,
                   ...(defaultdata?.penColors?.length > 0 && {
                     penColors: defaultdata?.penColors
                   })
@@ -1659,7 +1597,7 @@ const TemplatePlaceholder = () => {
         });
 
         const newUpdateSignPos = getPlaceHolder.map((obj) => {
-          if (obj.pageNumber === widgetPageNumber) {
+          if (obj.pageNumber === pageNumber) {
             return { ...obj, pos: addSignPos };
           }
           return obj;
@@ -1687,11 +1625,10 @@ const TemplatePlaceholder = () => {
     setIsCheckbox(false);
   };
   const setCellCount = (key, newCount) => {
-    const widgetPageNumber = currWidgetsDetails?.pageNumber || pageNumber;
     const updated = signerPos.map((signer) => {
       if (signer.Id !== uniqueId) return signer;
       const placeHolder = signer.placeHolder.map((ph) => {
-        if (ph.pageNumber !== widgetPageNumber) return ph;
+        if (ph.pageNumber !== pageNumber) return ph;
         const pos = ph.pos.map((p) =>
           p.key === key
             ? { ...p, options: { ...p.options, cellCount: newCount } }
@@ -1705,10 +1642,10 @@ const TemplatePlaceholder = () => {
   };
 
   const clickOnZoomIn = () => {
-    onClickZoomIn(scale, setScale, scrollRef);
+    onClickZoomIn(zoomPercent, setScale, setZoomPercent);
   };
   const clickOnZoomOut = () => {
-    onClickZoomOut(scale, setScale, scrollRef);
+    onClickZoomOut(zoomPercent, setZoomPercent, setScale);
   };
   //`handleRotationFun` function is used to roatate pdf particular page
   const handleRotationFun = async (rotateDegree) => {
@@ -1761,10 +1698,6 @@ const TemplatePlaceholder = () => {
       styles: { fontSize: "13px" }
     }
   ];
-
-  const handleClosePrefillTour = () => {
-    setUnSignedWidgetId("");
-  };
   const copytoclipboard = (text) => {
     copytoData(text);
     if (copyUrlRef.current) {
@@ -1786,10 +1719,7 @@ const TemplatePlaceholder = () => {
         `${documentId}/${signerMail[i].Email}/${objectId}/${sendMail}`
       );
       let signPdf = `${hostUrl}/login/${encodeBase64}`;
-      shareLinkList.push({
-        signerEmail: signerMail[i].Email,
-        url: signPdf
-      });
+      shareLinkList.push({ signerEmail: signerMail[i].Email, url: signPdf });
     }
     return shareLinkList.map((data, ind) => {
       return (
@@ -1842,9 +1772,6 @@ const TemplatePlaceholder = () => {
       navigate(`/recipientSignPdf/${docId}`);
     }
   };
-  const closeAddRoleTour = () => {
-    setIsAddRole(false);
-  };
   return (
     <>
       {isLoading.isLoad ? (
@@ -1876,7 +1803,7 @@ const TemplatePlaceholder = () => {
           />
           {isAddRole && (
             <Tour
-              onRequestClose={closeAddRoleTour}
+              onRequestClose={() => setIsAddRole(false)}
               steps={tourAddRole}
               isOpen={isAddRole}
             />
@@ -1890,12 +1817,11 @@ const TemplatePlaceholder = () => {
           )}
           {unSignedWidgetId && (
             <Tour
-              onRequestClose={handleClosePrefillTour}
+              onRequestClose={() => setUnSignedWidgetId("")}
               steps={textFieldTour}
               isOpen={true}
             />
           )}
-
 
           {/* this component used to render all pdf pages in left side */}
           <RenderAllPdfPage
@@ -2038,7 +1964,7 @@ const TemplatePlaceholder = () => {
                 xyPosition={signerPos}
                 setXyPosition={setSignerPos}
                 allPages={allPages}
-                pageNumber={currWidgetsDetails?.pageNumber || pageNumber}
+                pageNumber={pageNumber}
                 signKey={currWidgetsDetails?.key}
                 Id={uniqueId}
                 widgetType={currWidgetsDetails?.type}
@@ -2075,7 +2001,6 @@ const TemplatePlaceholder = () => {
                 {containerWH?.width && (
                   <RenderPdf
                     pageNumber={pageNumber}
-                    setPageNumber={setPageNumber}
                     pdfNewWidth={pdfNewWidth}
                     pdfDetails={pdfDetails}
                     signerPos={signerPos}
@@ -2122,8 +2047,6 @@ const TemplatePlaceholder = () => {
                     isShowModal={isShowModal}
                     signBtnPosition={signBtnPosition}
                     addPositionOfSignature={addPositionOfSignature}
-                    isPrefillModal={isPrefillModal}
-                    handleClosePrefillTour={handleClosePrefillTour}
                   />
                 )}
               </div>
@@ -2266,10 +2189,10 @@ const TemplatePlaceholder = () => {
         <PrefillWidgetModal
           isPrefillModal={isPrefillModal}
           prefillData={signerPos.find((x) => x.Role === "prefill")}
-          xyPosition={signerPos}
           forms={forms}
-          setXyPosition={setSignerPos}
           setForms={setForms}
+          xyPosition={signerPos}
+          setXyPosition={setSignerPos}
           handleCreateDocument={handleCreateDocument}
           handleClosePrefillModal={handleClosePrefillModal}
           handleAddUser={handleAddUser}
@@ -2290,7 +2213,7 @@ const TemplatePlaceholder = () => {
           setPageNumber={setPageNumber}
           setCurrWidgetsDetails={setCurrWidgetsDetails}
           currWidgetsDetails={currWidgetsDetails}
-          index={currWidgetsDetails?.pageNumber || pageNumber}
+          index={pageNumber}
           isSave={true}
           setUniqueId={setUniqueId}
           signatureTypes={signatureType}
@@ -2358,34 +2281,6 @@ const TemplatePlaceholder = () => {
                 </div>
               ) : mailStatus === "failed" ? (
                 <p>{t("mail-failed")} </p>
-              ) : mailStatus === "emailnotverified" ? (
-                <div>
-                  <p>
-                    <Trans
-                      i18nKey="email-not-verified-send"
-                      components={{
-                        1: (
-                          <a
-                            href="/profile"
-                            className="text-blue-700 underline cursor-pointer"
-                          />
-                        )
-                      }}
-                    />
-                  </p>
-                  <div className="flex justify-center mt-2">
-                    <button
-                      onClick={() => {
-                        setIsSend(false);
-                        navigate("/report/1MwEuxLEkF");
-                      }}
-                      type="button"
-                      className="op-btn op-btn-ghost text-base-content"
-                    >
-                      {t("close")}
-                    </button>
-                  </div>
-                </div>
               ) : (
                 <div className="mb-[10px]">
                   {!pdfDetails[0]?.SendinOrder &&
@@ -2399,43 +2294,41 @@ const TemplatePlaceholder = () => {
                   )}
                 </div>
               )}
-              {mailStatus !== "quotareached" &&
-                mailStatus !== "emailnotverified" && (
-                  <div
-                    className={
-                      mailStatus === "success"
-                        ? "flex justify-center mt-1"
-                        : "flex items-center justify-center mt-7"
-                    }
-                  >
-                    {currUserId && (
-                      <button
-                        onClick={() =>
-                          handleRecipientSign(
-                            documentDetails?.objectId,
-                            currUserId
-                          )
-                        }
-                        type="button"
-                        className="op-btn op-btn-primary mr-1"
-                      >
-                        {t("sign-now")}
-                      </button>
-                    )}
+              {mailStatus !== "quotareached" && (
+                <div
+                  className={
+                    mailStatus === "success"
+                      ? "flex justify-center mt-1"
+                      : "flex items-center justify-center mt-7"
+                  }
+                >
+                  {currUserId && (
                     <button
-                      onClick={() => {
-                        navigate("/report/1MwEuxLEkF");
-                      }}
+                      onClick={() =>
+                        handleRecipientSign(
+                          documentDetails?.objectId,
+                          currUserId
+                        )
+                      }
                       type="button"
-                      className="op-btn op-btn-ghost text-base-content"
+                      className="op-btn op-btn-primary mr-1"
                     >
-                      {currUserId ? t("no") : t("close")}
+                      {t("sign-now")}
                     </button>
-                  </div>
-                )}
+                  )}
+                  <button
+                    onClick={() => {
+                      navigate("/report/1MwEuxLEkF");
+                    }}
+                    type="button"
+                    className="op-btn op-btn-ghost text-base-content"
+                  >
+                    {currUserId ? t("no") : t("close")}
+                  </button>
+                </div>
+              )}
             </div>
             {mailStatus !== "success" &&
-              mailStatus !== "emailnotverified" &&
               currUserId &&
               pdfDetails[0]?.SendinOrder && (
                 <div className="op-divider text-base-content mx-[0%] my-1 font-medium">
@@ -2443,7 +2336,6 @@ const TemplatePlaceholder = () => {
                 </div>
               )}
             {mailStatus !== "success" &&
-              mailStatus !== "emailnotverified" &&
               currUserId &&
               pdfDetails[0]?.SendinOrder && (
                 <div

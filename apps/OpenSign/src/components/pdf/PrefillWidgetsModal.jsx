@@ -25,7 +25,8 @@ import AddContact from "../../primitives/AddContact";
 import Loader from "../../primitives/Loader";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  setPrefillImg,
+  resetWidgetState,
+  setPrefillImg
 } from "../../redux/reducers/widgetSlice";
 import * as utils from "../../utils";
 import Draw from "./tab/Draw";
@@ -121,7 +122,6 @@ function PrefillWidgetModal(props) {
   const dispatch = useDispatch();
   const canvasRefs = useRef({});
   const [penColor, setPenColor] = useState("blue");
-  const prefillImg = useSelector((state) => state.widget.prefillImg);
   // Track already loaded image keys so they don't increment multiple times
   const loadedSet = useRef(new Set());
   const initializedRef = useRef(false); // prevent rerun on state updates
@@ -161,6 +161,9 @@ function PrefillWidgetModal(props) {
     return flatArray || [];
   }, [props.prefillData]);
 
+  useEffect(() => {
+    dispatch(resetWidgetState([]));
+  }, []);
   // Reset loader state when modal closes
   useEffect(() => {
     if (!props?.isPrefillModal) {
@@ -173,10 +176,10 @@ function PrefillWidgetModal(props) {
   useEffect(() => {
     //function is used to save all image base64 in redux state to display prefill images
     const savePrefillImg = async () => {
-      const prefillImage = await utils?.savePrefillImg(props.xyPosition);
-      if (Array.isArray(prefillImage)) {
+      const prefillImg = await utils?.savePrefillImg(props.xyPosition);
+      if (Array.isArray(prefillImg)) {
         setLoading(true);
-        prefillImage.forEach((img) => dispatch(setPrefillImg(img)));
+        prefillImg.forEach((img) => dispatch(setPrefillImg(img)));
       }
       setLoading(false);
     };
@@ -335,7 +338,7 @@ function PrefillWidgetModal(props) {
 
   //function for set checked and unchecked value of checkbox
   const handleCheckboxValue = (isChecked, ind, position) => {
-     let updateSelectedCheckbox = [];
+    let updateSelectedCheckbox = [];
     updateSelectedCheckbox =
       position.options?.defaultValue || position.options?.response || [];
     if (isChecked) {
@@ -462,7 +465,7 @@ function PrefillWidgetModal(props) {
                   className="select-none-cls flex items-center text-center gap-0.5"
                 >
                   <input
-                    id={`modal-checkbox-${position.key + ind}`}
+                    id={`checkbox-${position.key + ind}`}
                     className="mt-[2px] op-checkbox op-checkbox-xs"
                     type="checkbox"
                     checked={selectCheckbox(ind, position)}
@@ -471,7 +474,7 @@ function PrefillWidgetModal(props) {
                     }
                   />
                   <label
-                    htmlFor={`modal-checkbox-${position.key + ind}`}
+                    htmlFor={`checkbox-${position.key + ind}`}
                     className="text-xs mb-0 text-center ml-[3px] cursor-pointer"
                   >
                     {data}
@@ -594,14 +597,14 @@ function PrefillWidgetModal(props) {
                   className="select-none-cls flex items-center text-center gap-0.5"
                 >
                   <input
-                    id={`modal-radio-${position.key + ind}`}
+                    id={`radio-${position.key + ind}`}
                     className="mt-[2px] op-radio op-radio-xs"
                     type="radio"
                     checked={handleRadioCheck(data, position)}
                     onChange={() => handleWidgetDetails(position, data)}
                   />
                   <label
-                    htmlFor={`modal-radio-${position.key + ind}`}
+                    htmlFor={`radio-${position.key + ind}`}
                     className="text-xs mb-0 ml-[2px] cursor-pointer"
                   >
                     {data}
@@ -620,7 +623,6 @@ function PrefillWidgetModal(props) {
               {position.options?.name}
             </span>
             <Draw
-              key={position.key + "_" + (prefillImg?.length || 0)}
               penColor={penColor}
               canvasRef={getCanvasRef(position.key)}
               currWidgetsDetails={position}

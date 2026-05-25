@@ -17,6 +17,11 @@ async function uploadFile(pdfName, filepath) {
     const filedata = fs.readFileSync(filepath);
     let fileUrl;
 
+    // const file = new Parse.File(pdfName, [...filedata], 'application/pdf');
+    // await file.save({ useMasterKey: true });
+    // const fileRes = getSecureUrl(file.url());
+    // fileUrl = fileRes.url;
+
     const fileRes = await parseUploadFile(pdfName, filedata, 'application/pdf');
     fileUrl = getSecureUrl(fileRes?.url)?.url;
     return { imageUrl: fileUrl };

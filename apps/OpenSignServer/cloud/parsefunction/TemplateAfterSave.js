@@ -1,7 +1,7 @@
 export default async function TemplateAfterSave(request) {
   try {
     if (!request.original) {
-      console.log('new entry is insert in contracts_Template', request?.object?.id);
+      console.log('new entry is insert in contracts_Template');
       const obj = request.object;
       const objId = obj?.id;
       const ip = request?.headers?.['x-real-ip'] || '';

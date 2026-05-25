@@ -1,6 +1,5 @@
 import { useRef, useState } from "react";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
-import { useTranslation } from "react-i18next";
 import {
   color,
   darkenColor,
@@ -11,7 +10,6 @@ import {
 const cursor =
   "cursor-[url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAsTAAALEwEAmpwYAAAASElEQVR4nGNgwAMkJSUbpKSkOvCpIaT5PxSTbogUQjMYMwxeIIXmVFIxA8UGDDyQGg0DnIDi6JKUlCxHMqCeZAOghjSAMD5FAKfeaURdUFxCAAAAAElFTkSuQmCC'),_pointer]";
 const RecipientList = (props) => {
-  const { t } = useTranslation();
   const [animationParent] = useAutoAnimate();
   const [isHover, setIsHover] = useState();
   const [isPrefill, setIsPrefill] = useState(false);

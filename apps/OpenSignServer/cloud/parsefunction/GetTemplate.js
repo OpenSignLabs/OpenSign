@@ -26,8 +26,6 @@ export default async function GetTemplate(request) {
         template.include('CreatedBy');
         template.include('ExtUserPtr.TenantId');
         template.include('Bcc');
-        template.include('Cc');
-
         const extUserQuery = new Parse.Query('contracts_Users');
         extUserQuery.equalTo('Email', userEmail);
         extUserQuery.include('TeamIds');
@@ -64,7 +62,6 @@ export default async function GetTemplate(request) {
             template.include('ExtUserPtr.TenantId');
             template.include('Placeholders.signerPtr');
             template.include('Bcc');
-            template.include('Cc');
           }
         }
         const res = await template.first({ useMasterKey: true });

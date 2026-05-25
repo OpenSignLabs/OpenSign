@@ -8,6 +8,7 @@ import SignersInput from "../components/shared/fields/SignersInput";
 import PageNotFound from "./PageNotFound";
 import { SaveFileSize } from "../constant/saveFileSize";
 import {
+  flattenPdf,
   generatePdfName,
   generateTitleFromFilename,
   getSecureUrl,
@@ -32,10 +33,6 @@ import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 import { sessionStatus } from "../redux/reducers/userReducer";
 import { withSessionValidation } from "../utils";
-import {
-  clearAcroFields,
-  isPdfPasswordProtected
-} from "../utils/acroFieldExtractor";
 
 // `Form` render all type of Form on this basis of their provided in path
 function Form() {
@@ -65,7 +62,6 @@ const Forms = (props) => {
     Note: "",
     TimeToCompleteDays: 15,
     SendinOrder: "false",
-    SendInOrderStrict: "false",
     password: "",
     file: "",
     remindOnceInEvery: 5,
@@ -74,16 +70,14 @@ const Forms = (props) => {
     IsTourEnabled: "false",
     NotifyOnSignatures: "",
     Bcc: [],
-    Cc: [],
     RedirectUrl: "",
-    AllowModifications: false
+    AllowModifications: false,
   });
   const [fileupload, setFileUpload] = useState("");
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [fileload, setfileload] = useState(false);
   const [percentage, setpercentage] = useState(0);
   const [isReset, setIsReset] = useState(false);
-  const [isInitializing, setIsInitializing] = useState(true);
   const [isAlert, setIsAlert] = useState({ type: "success", message: "" });
   const [isSubmit, setIsSubmit] = useState(false);
   const [isPassword, setIsPassword] = useState(false);
@@ -91,7 +85,6 @@ const Forms = (props) => {
   const [isCorrectPass, setIsCorrectPass] = useState(true);
   const [isAdvanceOpt, setIsAdvanceOpt] = useState(false);
   const [bcc, setBcc] = useState([]);
-  const [cc, setCc] = useState([]);
   const pensList = ["blue", "red", "black"];
   const [selectedColors, setSelectedColors] = useState(pensList);
 
@@ -124,16 +117,12 @@ const Forms = (props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const initializeValues = async () => {
-    try {
-        setFormData((obj) => ({
-          ...obj,
-          NotifyOnSignatures: true,
-          SendinOrder: sendinorder,
-          IsTourEnabled: istourenabled,
-        }));
-    } finally {
-      setIsInitializing(false);
-    }
+      setFormData((obj) => ({
+        ...obj,
+        NotifyOnSignatures: true,
+        SendinOrder: sendinorder,
+        IsTourEnabled: istourenabled
+      }));
   };
 
   // `removeFile` is used to reset progress, percentage and remove file if exists
@@ -171,9 +160,8 @@ const Forms = (props) => {
         if (file.type === "application/pdf") {
           try {
             const buffer = await getFileAsArrayBuffer(file);
-            await isPdfPasswordProtected(buffer);
-            const newBuffer = await clearAcroFields(buffer); // best effort cleanup to prevent stale data
-            pdfBuffers.push(newBuffer);
+            const flat = await flattenPdf(buffer);
+            pdfBuffers.push(flat);
           } catch (err) {
             if (err?.message?.includes("is encrypted")) {
               try {
@@ -182,11 +170,13 @@ const Forms = (props) => {
                 setIsDecrypting(false);
                 setfileload(true);
                 const res = await getFileAsArrayBuffer(pdfFile);
-                const newBuffer = await clearAcroFields(res); // best effort cleanup to prevent stale data
-                pdfBuffers.push(newBuffer);
+                const flatPdf = await flattenPdf(res);
+                // Upload the file to Parse Server
+                pdfBuffers.push(flatPdf);
               } catch (err) {
                 removeFile(e);
                 if (err?.response?.status === 401) {
+                  // setIsPassword(true);
                   const password = prompt(
                     `PDF "${file.name}" is password-protected. Enter password:`
                   );
@@ -197,8 +187,9 @@ const Forms = (props) => {
                       setIsDecrypting(false);
                       setfileload(true);
                       const res = await getFileAsArrayBuffer(pdfFile);
-                      const newBuffer = await clearAcroFields(res); // best effort cleanup to prevent stale data
-                      pdfBuffers.push(newBuffer);
+                      const flatPdf = await flattenPdf(res);
+                      // Upload the file to Parse Server
+                      pdfBuffers.push(flatPdf);
                     } catch (err) {
                       console.error(
                         "Incorrect password or decryption failed",
@@ -213,30 +204,26 @@ const Forms = (props) => {
                       alert(
                         t("incorrect-password-for-file", { file: file.name })
                       );
-                      return;
                     }
                   } else {
-                    console.error("Password not provided");
+                    console.error("password not provided");
                     setSelectedFiles(
                       filesNameArr.filter((f) => f !== file.name)
                     );
                     setIsDecrypting(false);
                     setfileload(false);
                     removeFile(e);
-                    return;
                   }
                 } else {
-                  console.error("File upload error: ", err?.response);
+                  console.log("Error uploading file: ", err?.response);
                   setIsDecrypting(false);
                   e.target.value = "";
                   removeFile(e);
-                  return;
                 }
               }
             } else {
-              console.error("File upload error: ", err);
+              console.log("err ", err);
               removeFile(e);
-              return;
             }
           }
         } else if (file.type.includes("image/")) {
@@ -293,7 +280,7 @@ const Forms = (props) => {
           } catch (err) {
             setfileload(false);
             removeFile(e);
-            console.error("Docx to PDF conversion error: ", err);
+            console.log("err in docx to pdf ", err);
             const error =
                   t("docx-error");
             if (err?.code === 209) {
@@ -358,7 +345,7 @@ const Forms = (props) => {
         setSelectedFiles([]);
       }
     } catch (error) {
-      console.error("Document save form error: ", error);
+      console.error("error ", error);
       if (error?.code === 209) {
         dispatch(sessionStatus(false));
       } else {
@@ -433,11 +420,6 @@ const Forms = (props) => {
             return;
           }
           object.set("SendinOrder", isChecked);
-          // Strict-order is only meaningful when SendinOrder is true.
-          object.set(
-            "SendInOrderStrict",
-            isChecked && formData.SendInOrderStrict === "true"
-          );
           object.set("AutomaticReminders", AutomaticReminders);
           object.set("RemindOnceInEvery", remindOnceInEvery);
           object.set("IsTourEnabled", isTourEnabled);
@@ -473,15 +455,6 @@ const Forms = (props) => {
           }));
           object.set("Bcc", Bcc);
         }
-        if (cc && cc.length > 0) {
-          const Cc = cc.map((x) => ({
-            __type: "Pointer",
-            className: "contracts_Contactbook",
-            objectId: x.objectId
-          }));
-          object.set("Cc", Cc);
-        }
-
         const ExtCls = JSON.parse(localStorage.getItem("Extand_Class"));
         object.set("ExtUserPtr", {
           __type: "Pointer",
@@ -502,7 +475,6 @@ const Forms = (props) => {
         if (res) {
           setSigners([]);
           setBcc([]);
-          setCc([]);
           setSelectedColors(pensList);
           setFolder({ ObjectId: "", Name: "" });
           const notifySign =
@@ -534,7 +506,7 @@ const Forms = (props) => {
           navigate(`/${props?.redirectRoute}/${res.id}`);
         }
       } catch (err) {
-        console.error("Document save form error: ", err);
+        console.log("err ", err);
         if (err?.code === 209) {
           dispatch(sessionStatus(false));
         } else if (err.message === "only 15 reminder allowed") {
@@ -581,22 +553,11 @@ const Forms = (props) => {
       setBcc(trimEmail);
     }
   };
-  const handleCc = (data) => {
-    if (data && data.length > 0) {
-      const trimEmail = data.map((item) => ({
-        objectId: item?.value,
-        Name: item?.label,
-        Email: item?.email
-      }));
-      setCc(trimEmail);
-    }
-  };
 
   const handleReset = () => {
     setIsReset(true);
     setSigners([]);
     setBcc([]);
-    setCc([]);
     setSelectedColors(pensList);
     setFolder({ ObjectId: "", Name: "" });
     const notifySign =
@@ -643,13 +604,8 @@ const Forms = (props) => {
       const pdfFile = await decryptPdf(formData?.file, formData?.password);
       setIsDecrypting(false);
         const res = await getFileAsArrayBuffer(pdfFile);
-        const newArraybuffer = await clearAcroFields(res); // best effort cleanup to prevent stale data
-        const pdfToSave = new Uint8Array(newArraybuffer);
-        const parseFile = new Parse.File(
-          name,
-          [...pdfToSave],
-          "application/pdf"
-        );
+        const flatPdf = await flattenPdf(res);
+        const parseFile = new Parse.File(name, [...flatPdf], "application/pdf");
         await parseFile.save({
           progress: (progressValue, loaded, total) => {
             if (progressValue !== null) {
@@ -692,7 +648,7 @@ const Forms = (props) => {
         setIsPassword(true);
         setIsCorrectPass(false);
       } else {
-        console.error("File upload error: ", err?.response);
+        console.log("Error uploading file: ", err?.response);
         setFormData((prev) => ({ ...prev, password: "" }));
         setIsDecrypting(false);
         if (inputFileRef.current) {
@@ -740,10 +696,10 @@ const Forms = (props) => {
   };
   return (
     <div
-      className={`${isSubmit || isInitializing ? "" : "shadow-md rounded-box my-[2px] p-3 bg-base-100 text-base-content"}`}
+      className={`${isSubmit ? "" : "shadow-md rounded-box my-[2px] p-3 bg-base-100 text-base-content"}`}
     >
       {isAlert?.message && <Alert type={isAlert.type}>{isAlert.message}</Alert>}
-      {isSubmit || isInitializing ? (
+      {isSubmit ? (
         <div className="flex flex-col justify-center items-center h-[100vh]">
           <Loader />
         </div>
@@ -901,7 +857,7 @@ const Forms = (props) => {
                 label={t("signers")}
                 onChange={handleSigners}
                 isReset={isReset}
-                zindex={50}
+                helptextZindex={50}
                 isAddYourSelfCheckbox
                 required
               />
@@ -930,8 +886,8 @@ const Forms = (props) => {
                 isReset={isReset}
               />
             ) : (
-              <div className="flex flex-col md:flex-row w-full mt-4 md:mt-10 gap-3">
-                <div className="card bg-base-100 rounded-box flex-grow-0 w-full p-3">
+              <div className="flex flex-col md:flex-row w-full mt-4 md:mt-10 gap-3 ">
+                <div className="card bg-base-100 rounded-box  flex-grow p-3  ">
                   {props.title !== "New Template" ? (
                     <SelectFolder
                       onSuccess={handleFolder}
@@ -1002,27 +958,6 @@ const Forms = (props) => {
                             <div className="text-center">{t("no")}</div>
                           </div>
                         </div>
-                        {formData.SendinOrder === "true" && (
-                          <div className="flex items-center gap-2 ml-2 mt-1 mb-1">
-                            <input
-                              type="checkbox"
-                              className="op-checkbox op-checkbox-xs"
-                              name="SendInOrderStrict"
-                              checked={formData.SendInOrderStrict === "true"}
-                              onChange={(e) =>
-                                setFormData({
-                                  ...formData,
-                                  SendInOrderStrict: e.target.checked
-                                    ? "true"
-                                    : "false"
-                                })
-                              }
-                            />
-                            <span title={t("strict-order-help")}>
-                              {t("strict-order")}
-                            </span>
-                          </div>
-                        )}
                       </div>
                     </>
                   )}
@@ -1124,29 +1059,6 @@ const Forms = (props) => {
                                 <div className="text-center">{t("no")}</div>
                               </div>
                             </div>
-                            {formData.SendinOrder === "true" && (
-                              <div className="flex items-center gap-2 ml-2 mt-1 mb-1">
-                                <input
-                                  type="checkbox"
-                                  className="op-checkbox op-checkbox-xs"
-                                  name="SendInOrderStrict"
-                                  checked={
-                                    formData.SendInOrderStrict === "true"
-                                  }
-                                  onChange={(e) =>
-                                    setFormData({
-                                      ...formData,
-                                      SendInOrderStrict: e.target.checked
-                                        ? "true"
-                                        : "false"
-                                    })
-                                  }
-                                />
-                                <span title={t("strict-order-help")}>
-                                  {t("strict-order")}
-                                </span>
-                              </div>
-                            )}
                           </div>
                         </>
                       )}
@@ -1181,20 +1093,8 @@ const Forms = (props) => {
                           initialData={bcc}
                           onChange={handleBcc}
                           isReset={isReset}
-                          zindex={50}
+                          helptextZindex={50}
                           helpText={t("bcc-help")}
-                          isCaptureAllData
-                          isAddYourSelfCheckbox
-                        />
-                      )}
-                      {props.cc && (
-                        <SignersInput
-                          label={t("Cc")}
-                          initialData={cc}
-                          onChange={handleCc}
-                          isReset={isReset}
-                          zindex={50}
-                          helpText={t("cc-help")}
                           isCaptureAllData
                           isAddYourSelfCheckbox
                         />
@@ -1214,7 +1114,7 @@ const Forms = (props) => {
                   ></div>
                 )}
                 {isAdvanceOpt && (
-                  <div className="card bg-base-100 rounded-box p-3 flex-grow-0 w-full">
+                  <div className="card bg-base-100 rounded-box p-3 flex-grow ">
                     {formData?.autoreminder === true &&
                       props.title !== "New Template" && (
                         <div className="text-xs mt-2">

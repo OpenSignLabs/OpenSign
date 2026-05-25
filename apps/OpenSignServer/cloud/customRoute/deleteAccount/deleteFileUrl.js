@@ -61,7 +61,7 @@ async function deleteLocalFile(fileUrl) {
   try {
     const url = new URL(fileUrl);
     const filePath = decodeURIComponent(url.pathname);
-    if (!filePath.includes('/files/')) return;
+    if (!filePath.includes('files')) return;
 
     const localPath = url?.pathname?.split(`/files/${serverAppId}/`)?.pop();
 

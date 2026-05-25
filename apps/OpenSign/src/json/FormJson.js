@@ -15,8 +15,7 @@ export const formJson = {
     redirectRoute: "placeHolderSign",
     Cls: documentCls,
     signers: true,
-    bcc: true,
-    cc: true
+    bcc: true
   },
   //json form for template
   template: {
@@ -24,7 +23,6 @@ export const formJson = {
     redirectRoute: "template",
     msgVar: "Template",
     Cls: templateCls,
-    bcc: true,
-    cc: true
+    bcc: true
   }
 };

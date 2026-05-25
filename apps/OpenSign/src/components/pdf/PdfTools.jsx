@@ -4,6 +4,7 @@ import {
   base64ToArrayBuffer,
   decryptPdf,
   deletePdfPage,
+  flattenPdf,
   getFileAsArrayBuffer,
   handleRemoveWidgets,
   reorderPdfPages
@@ -12,10 +13,6 @@ import ModalUi from "../../primitives/ModalUi";
 import { PDFDocument } from "pdf-lib";
 import { maxFileSize } from "../../constant/const";
 import PageReorderModal from "./PageReorderModal";
-import {
-  clearAcroFields,
-  isPdfPasswordProtected
-} from "../../utils/acroFieldExtractor";
 
 function PdfTools(props) {
   const { t } = useTranslation();
@@ -48,7 +45,7 @@ function PdfTools(props) {
         }
       }
     } catch (e) {
-      console.error("Delete pdf page error", e);
+      console.log("error in delete pdf page", e);
     }
   };
 
@@ -80,16 +77,15 @@ function PdfTools(props) {
       return;
     }
     try {
-      let uploadedPdfBytes = await getFileAsArrayBuffer(file);
+      let uploadedPdfBytes = await file.arrayBuffer();
       try {
-        await isPdfPasswordProtected(uploadedPdfBytes);
-        uploadedPdfBytes = await clearAcroFields(uploadedPdfBytes); // best effort cleanup to prevent stale data
-      } catch (error) {
-        if (error?.message?.includes("is encrypted")) {
+        uploadedPdfBytes = await flattenPdf(uploadedPdfBytes);
+      } catch (err) {
+        if (err?.message?.includes("is encrypted")) {
           try {
             const pdfFile = await decryptPdf(file, "");
             const pdfArrayBuffer = await getFileAsArrayBuffer(pdfFile);
-            uploadedPdfBytes = await clearAcroFields(pdfArrayBuffer);
+            uploadedPdfBytes = await flattenPdf(pdfArrayBuffer);
           } catch (err) {
             if (err?.response?.status === 401) {
               const password = prompt(
@@ -99,27 +95,22 @@ function PdfTools(props) {
                 try {
                   const pdfFile = await decryptPdf(file, password);
                   const pdfArrayBuffer = await getFileAsArrayBuffer(pdfFile);
-                  uploadedPdfBytes = await clearAcroFields(pdfArrayBuffer);
+                  uploadedPdfBytes = await flattenPdf(pdfArrayBuffer);
                   // Upload the file to Parse Server
                 } catch (err) {
                   console.error("Incorrect password or decryption failed", err);
                   alert(t("incorrect-password-or-decryption-failed"));
-                  return;
                 }
               } else {
                 alert(t("provide-password"));
-                return;
               }
             } else {
-              console.error("Decryption error ", error);
+              console.log("Err ", err);
               alert(t("error-uploading-pdf"));
-              return;
             }
           }
         } else {
-          console.error("File upload error ", error);
           alert(t("error-uploading-pdf"));
-          return;
         }
       }
       const uploadedPdfDoc = await PDFDocument.load(uploadedPdfBytes, {
@@ -165,7 +156,7 @@ function PdfTools(props) {
         props.setPageNumber(1);
       }
     } catch (e) {
-      console.error("Reorder PDF pages error", e);
+      console.log("error in reorder pdf pages", e);
     }
     setIsReorderModal(false);
   };

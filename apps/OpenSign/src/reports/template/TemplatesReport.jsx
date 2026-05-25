@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import pad from "../../assets/images/pad.svg";
-import { Link, useLocation, useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import axios from "axios";
 import ModalUi from "../../primitives/ModalUi";
 import Alert from "../../primitives/Alert";
@@ -23,7 +23,9 @@ import {
 import BulkSendUi from "../../components/bulksend/BulkSendUi";
 import Loader from "../../primitives/Loader";
 import { serverUrl_fn } from "../../constant/appinfo";
-import { Trans, useTranslation } from "react-i18next";
+import {
+  useTranslation
+} from "react-i18next";
 import { useElSize } from "../../hook/useElSize";
 import LottieWithLoader from "../../primitives/DotLottieReact";
 import PrefillWidgetModal from "../../components/pdf/PrefillWidgetsModal";
@@ -38,11 +40,9 @@ const isSignExist = (placeholders = []) => {
   const isSignature =
     Array.isArray(placeholders) &&
     placeholders?.length > 0 &&
-    placeholders.every((p) => {
-      return p?.placeHolder?.some((h) =>
-        h?.pos?.some((x) => x?.type === "signature")
-      );
-    });
+    placeholders.every((p) =>
+      p?.placeHolder?.some((h) => h?.pos?.some((x) => x?.type === "signature"))
+    );
   return isSignature;
 };
 
@@ -314,7 +314,7 @@ const TemplatesReport = (props) => {
       setActLoader({});
     }
   });
-  //function is called when there are no any prefill role widget exist then create direct document and navigate
+  //function is called when there ther no any prefill role widget exist then create direct document and navigate
   const navigatePageToDoc = utils.withSessionValidation(
     async (templateRes, placeholder, signer) => {
       setIsPrefillModal({});
@@ -939,7 +939,7 @@ const TemplatesReport = (props) => {
         timeInMiliSec
       );
     } else if (res?.status === "unattach signer") {
-      showAlert("danger", t("attach-all-role-to-signer"));
+      showAlert("danger", "please attach all role to signer");
     } else if (res?.status === "success") {
       setDocumentId(res.id);
       setActLoader({});
@@ -996,9 +996,6 @@ const TemplatesReport = (props) => {
       } else {
         alert(t("user-not-exist"));
       }
-    } else if (res?.status === "error") {
-      const message = res?.message || "something-went-wrong-mssg";
-      showAlert("danger", t(message));
     }
     setIsSubmit(false);
   });
@@ -1015,10 +1012,7 @@ const TemplatesReport = (props) => {
         `${documentId}/${signerMail[i].Email}/${objectId}/${sendMail}`
       );
       let signPdf = `${hostUrl}/login/${encodeBase64}`;
-      shareLinkList.push({
-        signerEmail: signerMail[i].Email,
-        url: signPdf
-      });
+      shareLinkList.push({ signerEmail: signerMail[i].Email, url: signPdf });
     }
     return shareLinkList.map((data, ind) => {
       return (
@@ -1407,30 +1401,12 @@ const TemplatesReport = (props) => {
                               <Loader />
                             </div>
                           ) : (
-                            <>
-                              {!extClass?.[0]?.UserId?.emailVerified ? (
-                                <div className="mx-[20px] mt-[15px] mb-[20px]">
-                                  <Trans
-                                    i18nKey="email-not-verified-send"
-                                    components={{
-                                      1: (
-                                        <Link
-                                          to="/profile"
-                                          className="text-blue-700 underline cursor-pointer"
-                                        />
-                                      )
-                                    }}
-                                  />
-                                </div>
-                              ) : (
-                                <BulkSendUi
-                                  Placeholders={placeholders}
-                                  item={templateDetails}
-                                  handleClose={handleQuickSendClose}
-                                  signatureType={signatureType}
-                                />
-                              )}
-                            </>
+                            <BulkSendUi
+                              Placeholders={placeholders}
+                              item={templateDetails}
+                              handleClose={handleQuickSendClose}
+                              signatureType={signatureType}
+                            />
                           )}
                         </ModalUi>
                       )}
@@ -1495,9 +1471,9 @@ const TemplatesReport = (props) => {
                               )?.map((user) => (
                                 <React.Fragment key={user.Id}>
                                   {isNextStep[user.Id] && (
-                                    <div className="relative">
+                                    <div className="relative ">
                                       {actLoader[user.Id] && (
-                                        <div className="absolute w-full h-full flex justify-center items-center bg-black bg-opacity-30 z-[60]">
+                                        <div className="absolute w-full h-full flex justify-center items-center bg-black bg-opacity-30 z-30">
                                           <Loader />
                                         </div>
                                       )}
@@ -1513,70 +1489,69 @@ const TemplatesReport = (props) => {
                                             message={t("resend-mail-help")}
                                           />
                                         </div>
-                                        <div className="w-full flex flex-col gap-2 text-base-content relative">
-                                          <div>
-                                            <label
-                                              className="text-xs ml-1"
-                                              htmlFor="mailsubject"
-                                            >
-                                              {t("subject")}{" "}
-                                            </label>
-                                            <input
-                                              id="mailsubject"
-                                              className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
-                                              value={mail.subject}
-                                              onChange={(e) =>
-                                                handleSubjectChange(
-                                                  e.target.value,
-                                                  item
-                                                )
-                                              }
-                                              onInvalid={(e) =>
-                                                e.target.setCustomValidity(
-                                                  t("input-required")
-                                                )
-                                              }
-                                              onInput={(e) =>
-                                                e.target.setCustomValidity("")
-                                              }
-                                              required
-                                            />
-                                          </div>
-                                          <div>
-                                            <label
-                                              className="flex justify-between text-sm ml-1"
-                                              htmlFor="mailbody"
-                                            >
-                                              <span>{t("body")} </span>
-                                              <button
-                                                className="op-link op-link-primary"
-                                                onClick={(e) => handleSwitch(e)}
-                                              >
-                                                {emailEditorType === "basic"
-                                                  ? t("switch-to-advanced")
-                                                  : t("switch-to-basic")}
-                                              </button>
-                                            </label>
-                                            <EmailEditor
-                                              type={emailEditorType}
-                                              values={mail.body || ""}
-                                              onChange={(value, type) =>
-                                                handlebodyChange(
-                                                  value,
-                                                  item,
-                                                  type
-                                                )
-                                              }
-                                              smallscreen
-                                            />
-                                          </div>
-                                        </div>
-                                          <button
-                                            type="submit"
-                                            className="op-btn op-btn-primary"
+                                        <div>
+                                          <label
+                                            className="text-xs ml-1"
+                                            htmlFor="mailsubject"
                                           >
-                                            {t("resend")}
-                                          </button>
+                                            {t("subject")}{" "}
+                                          </label>
+                                          <input
+                                            id="mailsubject"
+                                            className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
+                                            value={mail.subject}
+                                            onChange={(e) =>
+                                              handleSubjectChange(
+                                                e.target.value,
+                                                item
+                                              )
+                                            }
+                                            onInvalid={(e) =>
+                                              e.target.setCustomValidity(
+                                                t("input-required")
+                                              )
+                                            }
+                                            onInput={(e) =>
+                                              e.target.setCustomValidity("")
+                                            }
+                                            required
+                                          />
+                                        </div>
+                                        <div>
+                                          <label
+                                            className="flex justify-between text-sm ml-1"
+                                            htmlFor="mailbody"
+                                          >
+                                            <span>{t("body")} </span>
+                                            <button
+                                              className="op-link op-link-primary"
+                                              onClick={(e) => handleSwitch(e)}
+                                            >
+                                              Switch to{" "}
+                                              {emailEditorType === "basic"
+                                                ? t("switch-to-advanced")
+                                                : t("switch-to-basic")}
+                                            </button>
+                                          </label>
+                                          <EmailEditor
+                                            type={emailEditorType}
+                                            values={mail.body || ""}
+                                            onChange={(value, type) =>
+                                              handlebodyChange(
+                                                value,
+                                                item,
+                                                type
+                                              )
+                                            }
+                                            smallscreen
+                                          />
+                                        </div>
+                                        <button
+                                          type="submit"
+                                          className="op-btn op-btn-primary"
+                                        >
+                                          {t("resend")}
+                                        </button>
                                       </form>
                                     </div>
                                   )}
@@ -1748,20 +1723,6 @@ const TemplatesReport = (props) => {
                   </div>
                 ) : mailStatus === "failed" ? (
                   <p>{t("mail-failed")} </p>
-                ) : mailStatus === "emailnotverified" ? (
-                  <p>
-                    <Trans
-                      i18nKey="email-not-verified-send"
-                      components={{
-                        1: (
-                          <a
-                            href="/profile"
-                            className="text-blue-700 underline cursor-pointer"
-                          />
-                        )
-                      }}
-                    />
-                  </p>
                 ) : (
                   <div className="mb-[10px]">
                     {!templateDetails?.SendinOrder &&
