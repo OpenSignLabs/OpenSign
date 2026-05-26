@@ -148,15 +148,25 @@ function PrefillWidgetModal(props) {
         return true;
       })
     }));
-    //latten the filtered array and exclude read-only widgets
-    const flatArray = filteredArray?.flatMap((page) =>
-      page.pos
-        .filter((widget) => !widget.options?.isReadOnly)
-        .map((widget) => ({
-          widget,
-          pageNumber: page.pageNumber
-        }))
-    );
+    // Flatten the filtered array, exclude read-only widgets,
+    // carry yPosition for sorting, then sort by pageNumber asc → yPosition asc
+    // (mirrors the newSignPos.sort in PdfRequestFiles so widgets appear in
+    // the same top-to-bottom, page-1-first order as they do in the document)
+    const flatArray = filteredArray
+      ?.flatMap((page) =>
+        page.pos
+          .filter((widget) => !widget.options?.isReadOnly)
+          .map((widget) => ({
+            widget,
+            pageNumber: page.pageNumber,
+            yPosition: widget.yPosition ?? 0
+          }))
+      )
+      ?.sort((a, b) =>
+        a.pageNumber !== b.pageNumber
+          ? a.pageNumber - b.pageNumber  // primary: page order (page 1 first)
+          : a.yPosition - b.yPosition    // secondary: top-to-bottom within page
+      );
 
     return flatArray || [];
   }, [props.prefillData]);
