@@ -32,7 +32,12 @@ const PrefillWidgets = ({ prefills = [], setPrefills, onNext }) => {
         >
           <div className="py-3 px-[10px] op-card border-[1px] border-gray-400">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-4 w-full">
-              {prefills.map((widget, index) => (
+              {[...prefills]
+                .sort((a, b) =>
+                  a.pageNumber !== b.pageNumber
+                    ? a.pageNumber - b.pageNumber
+                    : (a.yPosition ?? 0) - (b.yPosition ?? 0)
+                ).map((widget, index) => (
                 <RenderWidgets
                   key={widget.key}
                   showLabel
