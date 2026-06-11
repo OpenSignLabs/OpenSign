@@ -7065,14 +7065,6 @@ components:
           description: "Height of widget. use our [**Debug UI**](https://app.opensignlabs.com/debugpdf) to calculate the value."
           format: number
           example: 46
-        options:
-          type: object
-          description: Widget-specific options such as required, name, hint, values, default, formatting, validation, and attachment settings.
-          additionalProperties: true
-          example:
-            required: true
-            name: attachment widget
-            hint: Provide files
     createdocument_body_signers:
       type: object
       properties:
@@ -7124,7 +7116,7 @@ components:
           type: string
           description: "Allowed values include signature, stamp, initials, email, name, job title, company, date, textbox, checkbox, dropdown, radio button, image, number, cells, attachments."
           format: string
-          example: attachments
+          example: signature
         page:
           type: number
           description: "The page number on which the widget should appear. use our [**Debug UI**](https://app.opensignlabs.com/debugpdf) to calculate the value."
