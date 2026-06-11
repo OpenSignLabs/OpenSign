@@ -42,11 +42,13 @@ info:
 
     ## What’s New in v1.2
 
+   
+    ### Attachment Widget Support
+    The `attachments` widget is now supported on draft document, create document, draft template, create template, and public template APIs.
+
     ### Hide Signer Signing Links
     Set `"hide_signer_signing_links": true | false` on `POST /draftdocument` to hide signer signing links in the draft document response.
 
-    ### Attachment Widget Support
-    The `attachments` widget is now supported on draft document, create document, draft template, create template, and public template APIs.
 
     ### Cleaner Template Retrieval
     `GET /template/:id` and `GET /templatelist` have been streamlined — redundant parameters are removed and **prefill data is now returned separately from signer parameters**, making responses easier to consume.
@@ -7142,14 +7144,6 @@ components:
           description: "Height of widget. use our [**Debug UI**](https://app.opensignlabs.com/debugpdf) to calculate the value."
           format: number
           example: 46
-        options:
-          type: object
-          description: Widget-specific options such as required, name, hint, values, default, formatting, validation, and attachment settings.
-          additionalProperties: true
-          example:
-            required: true
-            name: attachment widget
-            hint: Provide files
     createtemplate_body_signers:
       type: object
       properties:
