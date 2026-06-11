@@ -42,6 +42,12 @@ info:
 
     ## What’s New in v1.2
 
+    ### Hide Signer Signing Links
+    Set `"hide_signer_signing_links": true | false` on `POST /draftdocument` to hide signer signing links in the draft document response.
+
+    ### Attachment Widget Support
+    The `attachments` widget is now supported on draft document, create document, draft template, create template, and public template APIs.
+
     ### Cleaner Template Retrieval
     `GET /template/:id` and `GET /templatelist` have been streamlined — redundant parameters are removed and **prefill data is now returned separately from signer parameters**, making responses easier to consume.
 
@@ -1111,6 +1117,23 @@ paths:
         ```
         - **cell_count:** Specify the number of cells that should be returned to the user.
 
+        16. **attachments**
+        ```
+        {
+          "type": "attachments",
+          "page": 1,
+          "x": 327,
+          "y": 628,
+          "w": 114,
+          "h": 21,
+          "options": {
+            "required": true,
+            "name": "attachment widget",
+            "hint": "Provide files"
+          }
+        }
+        ```
+
         **Prefill Widgets:** Prefill widgets are elements that are inserted into a document **before** it is shared with a user. Only the document creator has permission to add them.
         
         **List of widgets supported in Prefill**
@@ -1639,6 +1662,23 @@ paths:
         }
         ```
         - **cell_count:** Specify the number of cells that should be returned to the user.
+
+        16. **attachments**
+        ```
+        {
+          "type": "attachments",
+          "page": 1,
+          "x": 327,
+          "y": 628,
+          "w": 114,
+          "h": 21,
+          "options": {
+            "required": true,
+            "name": "attachment widget",
+            "hint": "Provide files"
+          }
+        }
+        ```
 
         **Prefill Widgets:** Prefill widgets are elements that are inserted into a document **before** it is shared with a user. Only the document creator has permission to add them.
         
@@ -2874,6 +2914,23 @@ paths:
         ```
         - **cell_count:** Specify the number of cells that should be returned to the user.
 
+        16. **attachments**
+        ```
+        {
+          "type": "attachments",
+          "page": 1,
+          "x": 327,
+          "y": 628,
+          "w": 114,
+          "h": 21,
+          "options": {
+            "required": true,
+            "name": "attachment widget",
+            "hint": "Provide files"
+          }
+        }
+        ```
+
         **Prefill Widgets:** Prefill widgets are elements that are inserted into a document **before** it is shared with a user. Only the document creator has permission to add them.
         
         **List of widgets supported in Prefill**
@@ -3425,6 +3482,23 @@ paths:
         ```
         - **cell_count:** Specify the number of cells that should be returned to the user.
 
+        16. **attachments**
+        ```
+        {
+          "type": "attachments",
+          "page": 1,
+          "x": 327,
+          "y": 628,
+          "w": 114,
+          "h": 21,
+          "options": {
+            "required": true,
+            "name": "attachment widget",
+            "hint": "Provide files"
+          }
+        }
+        ```
+
  
         **Prefill Widgets:** Prefill widgets are elements that are inserted into a document **before** it is shared with a user. Only the document creator has permission to add them.
         
@@ -3974,6 +4048,23 @@ paths:
         }
         ```
         - **cell_count:** Specify the number of cells that should be returned to the user.
+
+        16. **attachments**
+        ```
+        {
+          "type": "attachments",
+          "page": 1,
+          "x": 327,
+          "y": 628,
+          "w": 114,
+          "h": 21,
+          "options": {
+            "required": true,
+            "name": "attachment widget",
+            "hint": "Provide files"
+          }
+        }
+        ```
         
         **Prefill Widgets:** Prefill widgets are elements that are inserted into a document **before** it is shared with a user. Only the document creator has permission to add them.
         
@@ -6001,6 +6092,10 @@ components:
           type: boolean
           description: "If set to 'true', signers can submit a copy of this document signed using an external tool for owner review. Defaults to 'false'."
           example: false
+        hide_signer_signing_links:
+          type: boolean
+          description: "If set to 'true', signer signing links are hidden in the draft document response. Defaults to 'false'."
+          example: false
         enableOTP:
           type: boolean
           description: "true - this option will enable OTP verification. Users will receive a verification code via email, which they must enter to sign the document. false -  this option will disable OTP verification, allowing users to sign the document directly without additional steps."
@@ -6942,9 +7037,9 @@ components:
       properties:
         type:
           type: string
-          description: "Allowed values - signature, stamp."
+          description: "Allowed values include signature, stamp, initials, email, name, job title, company, date, textbox, checkbox, dropdown, radio button, image, number, cells, attachments."
           format: string
-          example: signature
+          example: attachments
         page:
           type: number
           description: "The page number on which the widget should appear. use our [**Debug UI**](https://app.opensignlabs.com/debugpdf) to calculate the value."
@@ -6970,6 +7065,14 @@ components:
           description: "Height of widget. use our [**Debug UI**](https://app.opensignlabs.com/debugpdf) to calculate the value."
           format: number
           example: 46
+        options:
+          type: object
+          description: Widget-specific options such as required, name, hint, values, default, formatting, validation, and attachment settings.
+          additionalProperties: true
+          example:
+            required: true
+            name: attachment widget
+            hint: Provide files
     createdocument_body_signers:
       type: object
       properties:
@@ -7019,9 +7122,9 @@ components:
       properties:
         type:
           type: string
-          description: "Allowed values - signature, stamp."
+          description: "Allowed values include signature, stamp, initials, email, name, job title, company, date, textbox, checkbox, dropdown, radio button, image, number, cells, attachments."
           format: string
-          example: signature
+          example: attachments
         page:
           type: number
           description: "The page number on which the widget should appear. use our [**Debug UI**](https://app.opensignlabs.com/debugpdf) to calculate the value."
@@ -7047,6 +7150,14 @@ components:
           description: "Height of widget. use our [**Debug UI**](https://app.opensignlabs.com/debugpdf) to calculate the value."
           format: number
           example: 46
+        options:
+          type: object
+          description: Widget-specific options such as required, name, hint, values, default, formatting, validation, and attachment settings.
+          additionalProperties: true
+          example:
+            required: true
+            name: attachment widget
+            hint: Provide files
     createtemplate_body_signers:
       type: object
       properties:
