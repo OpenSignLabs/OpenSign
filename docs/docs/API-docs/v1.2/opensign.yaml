@@ -7041,7 +7041,7 @@ components:
           type: string
           description: "Allowed values include signature, stamp, initials, email, name, job title, company, date, textbox, checkbox, dropdown, radio button, image, number, cells, attachments."
           format: string
-          example: attachments
+          example: signature
         page:
           type: number
           description: "The page number on which the widget should appear. use our [**Debug UI**](https://app.opensignlabs.com/debugpdf) to calculate the value."
