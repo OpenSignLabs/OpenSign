@@ -124,7 +124,8 @@ Assume you have four number widgets named:
 # 📎 Understanding the Attachment Widget
 
 The **Attachment Widget** allows signers to upload supporting files directly while completing and signing a document. This is useful when additional documents or evidence are required as part of the signing workflow.
-<img width="1731" height="811" alt="image" src="https://github.com/user-attachments/assets/201ac106-3b3a-49c0-a8e3-07ef916944b4" />
+
+<img width="1731" height="811" alt="image" src="https://github.com/user-attachments/assets/ffbe6e7f-35c9-4f46-9b02-68709dbe46cd" />
 
 Examples of files that can be requested include:
 
