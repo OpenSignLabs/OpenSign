@@ -322,6 +322,33 @@ After placing the email widget, you will see the options on the widget such as:
       **Hide text with asterisks**: **"which masks the entered text (*) to protect sensitive information while filling out the document. The final embedded document will also display the text as asterisks, keeping the actual value hidden.
     - Add Signer/Change Signer: Clicking the first icon on the Email widget allows you to change the signer. You can choose from existing signers in the dropdown or add a new signer.
     - Copy : Clicking on this you can duplicate the email widget.
+      
+  - **📎 Attachment Widget**
+
+The **Attachment Widget** allows signers to upload supporting files directly while completing and signing a document. This is useful when additional documents or evidence are required as part of the signing workflow.
+
+   - Setting icon: By clicking on the option, you can specify whether this widget is mandatory or optional during the document signing. Additionally, you can add a hint or instruction to guide signers on what information or file is expected in the widget.
+   - Add Signer/Change Signer: Clicking the first icon on the Image widget allows you to change the signer. You can choose from existing signers in the dropdown or add a new signer.
+   - Copy : Clicking on this you can duplicate the image widget.
+     
+<img width="1731" height="811" alt="image" src="https://github.com/user-attachments/assets/8b52c59f-e684-4326-bade-d9312ecfaf30" />
+
+## How the Attachment Widget Works
+
+1. Signers can upload up to **5 files** using a single Attachment Widget.
+2. Each file can be a maximum of **10 MB** in size.
+3. A single Attachment Widget can therefore accept up to **50 MB** of attachments in total.
+4. Supported file formats include:
+   - PDF (`.pdf`)
+   - Microsoft Word (`.docx`)
+   - PNG (`.png`)
+   - JPG (`.jpg`)
+   - JPEG (`.jpeg`)
+5. Once the signer uploads the files and completes the signing process, the uploaded files are appended as additional pages to the end of the original PDF document.
+<img width="1731" height="876" alt="document attchement" src="https://github.com/user-attachments/assets/6325793e-a4ed-4aed-ab12-5e29e625f28a" />
+
+> **Note:** All uploaded attachments become part of the completed document package, making it easier to store, review, and share the signed document along with its supporting files.
+
  ### 📄 Edit Template
 At the top of the Create Template panel, you’ll find a settings (gear) icon. Clicking this icon opens the Edit Template Details panel, where you can modify various details of your template.
 
