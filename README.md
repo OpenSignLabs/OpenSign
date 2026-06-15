@@ -77,6 +77,9 @@ Welcome to OpenSign, the premier open source docusign alternative - document e-s
 
 Note: The default MongoDB instance used in deployment is not persistant and will be cleared on every restart. To retain your data, configure and supply your own MongoDB connection URL.
 
+#### Hostinger
+[![Deploy on Hostinger](https://assets.hostinger.com/vps/deploy.svg)](https://www.hostinger.com/vps/docker-hosting?compose_url=https://github.com/OpenSignLabs/OpenSign/)
+
 #### DigitalOcean
 [![Deploy on DigitalOcean](https://www.deploytodo.com/do-btn-blue.svg)](https://cloud.digitalocean.com/apps/new?repo=https://github.com/OpenSignLabs/Deploy-OpenSign-to-Digital-Ocean/tree/main&refcode=30db1c901ab0)
 
