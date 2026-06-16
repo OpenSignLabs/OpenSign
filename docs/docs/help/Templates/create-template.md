@@ -331,7 +331,7 @@ The **Attachment Widget** allows signers to upload supporting files directly whi
    - Add Signer/Change Signer: Clicking the first icon on the Image widget allows you to change the signer. You can choose from existing signers in the dropdown or add a new signer.
    - Copy : Clicking on this you can duplicate the image widget.
      
-<img width="1731" height="811" alt="image" src="https://github.com/user-attachments/assets/8b52c59f-e684-4326-bade-d9312ecfaf30" />
+<img width="918" alt="image" src="https://github.com/user-attachments/assets/8b52c59f-e684-4326-bade-d9312ecfaf30" />
 
 ## How the Attachment Widget Works
 
@@ -345,7 +345,7 @@ The **Attachment Widget** allows signers to upload supporting files directly whi
    - JPG (`.jpg`)
    - JPEG (`.jpeg`)
 5. Once the signer uploads the files and completes the signing process, the uploaded files are appended as additional pages to the end of the original PDF document.
-<img width="1731" height="876" alt="document attchement" src="https://github.com/user-attachments/assets/6325793e-a4ed-4aed-ab12-5e29e625f28a" />
+<img width="918" alt="document attchement" src="https://github.com/user-attachments/assets/6325793e-a4ed-4aed-ab12-5e29e625f28a" />
 
 > **Note:** All uploaded attachments become part of the completed document package, making it easier to store, review, and share the signed document along with its supporting files.
 
