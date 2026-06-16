@@ -125,7 +125,7 @@ Assume you have four number widgets named:
 
 The **Attachment Widget** allows signers to upload supporting files directly while completing and signing a document. This is useful when additional documents or evidence are required as part of the signing workflow.
 
-<img width="1731" height="811" alt="image" src="https://github.com/user-attachments/assets/ffbe6e7f-35c9-4f46-9b02-68709dbe46cd" />
+<img width="918" alt="image" src="https://github.com/user-attachments/assets/ffbe6e7f-35c9-4f46-9b02-68709dbe46cd" />
 
 Examples of files that can be requested include:
 
@@ -157,7 +157,7 @@ The Attachment Widget helps you:
    - JPG (`.jpg`)
    - JPEG (`.jpeg`)
 5. Once the signer uploads the files and completes the signing process, the uploaded files are appended as additional pages to the end of the original PDF document.
-<img width="1731" height="876" alt="document attchement" src="https://github.com/user-attachments/assets/6325793e-a4ed-4aed-ab12-5e29e625f28a" />
+<img width="918" alt="document attchement" src="https://github.com/user-attachments/assets/6325793e-a4ed-4aed-ab12-5e29e625f28a" />
 
 > **Note:** All uploaded attachments become part of the completed document package, making it easier to store, review, and share the signed document along with its supporting files.
 
