@@ -316,10 +316,9 @@ The **Attachment Widget** allows signers to upload supporting files directly whi
 
    - Setting icon: By clicking on the option, you can specify whether this widget is mandatory or optional during the document signing. Additionally, you can add a hint or instruction to guide signers on what information or file is expected in the widget.
    - Add Signer/Change Signer: Clicking the first icon on the Image widget allows you to change the signer. You can choose from existing signers in the dropdown or add a new signer.
-   - Copy : Clicking on this you can duplicate the image widge
+   - Copy : Clicking on this you can duplicate the image widget.
      
 <img width="918" alt="image" src="https://github.com/user-attachments/assets/f52e704d-c69f-464a-b3fa-f76f27d98fed" />
-t.
 
 ## How the Attachment Widget Works
 
