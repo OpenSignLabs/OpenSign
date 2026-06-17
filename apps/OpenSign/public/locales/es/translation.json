@@ -284,6 +284,8 @@
   "yes": "Sí",
   "copied": "Copiado",
   "something-went-wrong-mssg": "Un problème est survenu, Actualiser cette page peut résoudre le problème.",
+  "attachments-docx-upload-failed": "Actualmente tenemos un problema. Inténtalo de nuevo.",
+  "attachments-docx-upload-limit": "Se alcanzó el límite de carga para archivos DOCX grandes. Espera 4 minutos antes de intentarlo de nuevo.",
   "token-generated": "Token generado exitosamente.",
   "webhook": "Webhook",
   "update-webhook": "Actualizar webhook",
@@ -421,7 +423,10 @@
     "image": "imagen",
     "email": "correo",
     "number": "número",
-    "draw": "Dibujar"
+    "draw": "Dibujar",
+    "attachments": "adjuntos",
+    "attachments-add": "Clic para subir archivos adjuntos",
+    "attachments-count": "{{count}} adjunto(s)"
   },
   "fields": "Campos",
   "recipients": "Destinatarios",
@@ -1359,7 +1364,7 @@
   "export-all-formdata-error": "No puede exportar los datos del formulario porque la plantilla contiene nombres de widgets duplicados. Cree una nueva plantilla para poder exportar los datos.",
   "export-formdata-error": "No puede exportar los datos del formulario porque el documento contiene nombres de widgets duplicados. Cree un documento nuevo sin nombres duplicados para poder exportar los datos.",
   "duplicate-widget-name-error": "Este nombre de widget ya está asignado a otro firmante. Por favor elija un nombre diferente.",
-  "duplicate-template-widget-error": "No puede duplicar esta plantilla porque contiene nombres de widgets duplicados.",
+  "duplicate-template-widget-error": "No se puede duplicar la plantilla porque algunos nombres de widgets están duplicados en diferentes roles. Cambie el nombre de los widgets duplicados e inténtelo de nuevo.",
   "credit-alert": "Alerta de crédito",
   "document-form-data": "Datos del formulario del documento",
   "view-formdata-paid-title-error": "La función 'Ver datos del formulario' le permite imprimir y descargar los datos de los widgets completados por los firmantes durante la firma.",
@@ -1558,5 +1563,13 @@
   "attach-all-role-to-signer": "Por favor, asigna todos los roles al firmante.",
   "upgrade-to-edit": "Actualiza para editar",
   "hide-live-chat-for-signers": "Ocultar chat en vivo para firmantes",
-  "hide-live-chat-for-signers-help": "Cuando está activado, los widgets de chat en vivo se ocultarán para los firmantes en las páginas de firma."
+  "hide-live-chat-for-signers-help": "Cuando está activado, los widgets de chat en vivo se ocultarán para los firmantes en las páginas de firma.",
+  "attachments-creator-hint": "Los firmantes pueden subir archivos que se añadirán al final del documento.",
+  "attachments-drop-hint": "Arrastra archivos aquí o haz clic para seleccionar",
+  "attachments-limits": "PDF, DOCX, PNG, JPG. Hasta {{maxFiles}} archivos, {{maxSizeMB}} MB cada uno.",
+  "attachments-invalid-type": "Tipo de archivo no admitido: {{name}}",
+  "attachments-max-files": "Se permiten hasta {{maxFiles}} adjuntos.",
+  "attachments-remove-confirm": "Eliminar solo borra los metadatos. Las páginas ya añadidas permanecerán en el documento. ¿Continuar?",
+  "attachement-note": "Nota: Este widget permite a los firmantes cargar un archivo durante el proceso de firma. El archivo cargado se añadirá como páginas adicionales al final del PDF existente.",
+  "attachments-docx-not-supported": "Actualmente estamos experimentando un problema con las cargas de archivos DOCX. Intente cargar el documento en otro formato compatible o vuelva a intentarlo más tarde."
 }

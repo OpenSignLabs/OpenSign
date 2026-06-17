@@ -34,6 +34,86 @@ export const drawWidget = "draw";
 export const textWidget = "text";
 export const radioButtonWidget = "radio button";
 export const cellsWidget = "cells";
+const duplicateAutoApplyWidgetTypes = [
+  "name",
+  "company",
+  "job title",
+  "email",
+  textInputWidget
+];
+const normalizeDuplicateWidgetType = (type) => {
+  if (typeof type !== "string") {
+    return type;
+  }
+  const normalizedType = type.trim().toLowerCase();
+  // Backward compatibility for legacy payloads.
+  if (normalizedType === "textbox") {
+    return textInputWidget;
+  }
+  return normalizedType;
+};
+const normalizeDuplicateWidgetName = (name) =>
+  typeof name === "string" ? name.trim().toLowerCase() : "";
+const isDuplicateAutoApplyWidget = (widget) =>
+  duplicateAutoApplyWidgetTypes.includes(
+    normalizeDuplicateWidgetType(widget?.type)
+  );
+const getDuplicateAutoApplyName = (widget) => {
+  if (!isDuplicateAutoApplyWidget(widget)) {
+    return "";
+  }
+  return normalizeDuplicateWidgetName(widget?.options?.name);
+};
+const getWidgetResponseValue = (widget) =>
+  widget?.options?.response ?? widget?.options?.defaultValue;
+const getDuplicateResponseMap = (widgets = []) => {
+  const responseByName = new Map();
+  widgets.forEach((widget) => {
+    const widgetName = getDuplicateAutoApplyName(widget);
+    const response = getWidgetResponseValue(widget);
+    if (
+      widgetName &&
+      response !== undefined &&
+      response !== "" &&
+      !responseByName.has(widgetName)
+    ) {
+      responseByName.set(widgetName, response);
+    }
+  });
+  return responseByName;
+};
+const applyDuplicateResponsesToWidgets = (
+  widgets = [],
+  responseByName = getDuplicateResponseMap(widgets)
+) => {
+  if (responseByName.size === 0) {
+    return widgets;
+  }
+
+  return widgets.map((widget) => {
+    const widgetName = getDuplicateAutoApplyName(widget);
+    if (!widgetName || !responseByName.has(widgetName)) {
+      return widget;
+    }
+    return {
+      ...widget,
+      options: {
+        ...widget.options,
+        response: responseByName.get(widgetName),
+        defaultValue: ""
+      }
+    };
+  });
+};
+const applyDuplicateResponsesToPages = (pages = []) => {
+  const responseByName = getDuplicateResponseMap(
+    pages.flatMap((page) => page?.pos || [])
+  );
+  return pages.map((page) => ({
+    ...page,
+    pos: applyDuplicateResponsesToWidgets(page?.pos || [], responseByName)
+  }));
+};
 export function getEnv() {
   return window?.RUNTIME_ENV || {};
 }
@@ -1120,6 +1200,28 @@ export const onChangeInput = (
   dateDetails,
   textWidgetHeight
 ) => {
+  const isDuplicateValueUpdate = !dateFormat && !textWidgetHeight;
+  const shouldAutoApplyDuplicateWidget = (position) => {
+    const currentName = getDuplicateAutoApplyName(currentPosition);
+    const positionName = getDuplicateAutoApplyName(position);
+    return currentName && positionName && currentName === positionName;
+  };
+  const applyDuplicateWidgetValue = (position) => {
+    if (
+      position?.options?.response === value &&
+      position?.options?.defaultValue === ""
+    ) {
+      return position;
+    }
+    return {
+      ...position,
+      options: {
+        ...position.options,
+        response: value,
+        defaultValue: ""
+      }
+    };
+  };
   const isSigners = xyPosition.some(
     (data) => data.signerPtr || data.Role === "prefill"
   );
@@ -1137,8 +1239,7 @@ export const onChangeInput = (
         (data) => data.pageNumber === index
       );
       if (getPageNumer.length > 0) {
-        const getXYdata = getPageNumer[0].pos;
-        const addSignPos = getXYdata.map((position) => {
+        const updatePositionValue = (position) => {
           if (position.key === currentPosition.key) {
             if (dateFormat) {
               return {
@@ -1177,40 +1278,39 @@ export const onChangeInput = (
             ) {
               return { ...position, Height: textWidgetHeight };
             } else {
-              return {
-                ...position,
-                options: {
-                  ...position.options,
-                  response: value,
-                  defaultValue: ""
-                }
-              };
+              return applyDuplicateWidgetValue(position);
             }
           }
+          if (
+            isDuplicateValueUpdate &&
+            shouldAutoApplyDuplicateWidget(position)
+          ) {
+            return applyDuplicateWidgetValue(position);
+          }
           return position;
+        };
+        setXyPosition((prevPosition) => {
+          const sourcePosition = Array.isArray(prevPosition)
+            ? prevPosition
+            : xyPosition;
+          return sourcePosition.map((obj) => {
+            if (obj.Id !== userId) {
+              return obj;
+            }
+            const updatedPlaceHolder = (obj.placeHolder || []).map((page) => ({
+              ...page,
+              pos: page.pos.map(updatePositionValue)
+            }));
+            return {
+              ...obj,
+              placeHolder: applyNumberFormulasToPages(updatedPlaceHolder)
+            };
+          });
         });
-        const newUpdateSignPos = getPlaceHolder.map((obj) => {
-          if (obj.pageNumber === index) {
-            return { ...obj, pos: addSignPos };
-          }
-          return obj;
-        });
-
-        const recalculatedPages = applyNumberFormulasToPages(newUpdateSignPos);
-
-        const newUpdateSigner = xyPosition.map((obj) => {
-          if (obj.Id === userId) {
-            return { ...obj, placeHolder: recalculatedPages };
-          }
-          return obj;
-        });
-
-        setXyPosition(newUpdateSigner);
       }
     }
   } else {
-    let getXYdata = xyPosition[index].pos;
-    const updatePosition = getXYdata.map((positionData) => {
+    const updatePositionValue = (positionData) => {
       if (positionData.key === currentPosition.key) {
         if (dateFormat) {
           return {
@@ -1233,26 +1333,28 @@ export const onChangeInput = (
         ) {
           return { ...positionData, Height: textWidgetHeight };
         } else {
-          return {
-            ...positionData,
-            options: {
-              ...positionData.options,
-              response: value,
-              defaultValue: ""
-            }
-          };
+          return applyDuplicateWidgetValue(positionData);
         }
       }
-      return positionData;
-    });
-
-    const updatePlaceholder = xyPosition.map((obj, ind) => {
-      if (ind === index) {
-        return { ...obj, pos: updatePosition };
+      if (
+        isDuplicateValueUpdate &&
+        shouldAutoApplyDuplicateWidget(positionData)
+      ) {
+        return applyDuplicateWidgetValue(positionData);
       }
-      return obj;
+      return positionData;
+    };
+
+    setXyPosition((prevPosition) => {
+      const sourcePosition = Array.isArray(prevPosition)
+        ? prevPosition
+        : xyPosition;
+      const updatePlaceholder = sourcePosition.map((obj) => ({
+        ...obj,
+        pos: obj.pos.map(updatePositionValue)
+      }));
+      return applyNumberFormulasToPages(updatePlaceholder);
     });
-    setXyPosition(applyNumberFormulasToPages(updatePlaceholder));
   }
 };
 //function to increase height of text area on press enter
@@ -4184,10 +4286,8 @@ export const updateDateWidgetsRes = (
         : [];
       const sortedPlaceHolder = placeHolder
         .sort((a, b) => a.pageNumber - b.pageNumber)
-        .map((ph) => ({
-          ...ph,
-          // Sort positions within each page
-          pos: [...ph.pos]
+        .map((ph) => {
+          const sortedWidgets = [...ph.pos]
             .sort((a, b) => {
               // Sort widgets by Y position (top to bottom) and X position (left to right)
               // Treat widgets within 5px Y difference as belonging to the same row
@@ -4219,9 +4319,14 @@ export const updateDateWidgetsRes = (
                 };
               }
               return widget;
-            })
-        }));
-      return { ...item, placeHolder: sortedPlaceHolder };
+            });
+          let widgetsWithResponses = sortedWidgets;
+          return { ...ph, pos: widgetsWithResponses };
+        });
+      return {
+        ...item,
+        placeHolder: applyDuplicateResponsesToPages(sortedPlaceHolder)
+      };
     }
 
     return item;
