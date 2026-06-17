@@ -43,6 +43,8 @@ async function fetchDocumentsByName(
   query.notEqualTo('IsArchive', true);
   query.descending('updatedAt');
   query.exclude('AuditTrail');
+  query.exclude('OriginalDocument');
+  query.exclude('SignedDocument');
   query.notEqualTo('Type', 'Folder');
   try {
     return await query.find({ useMasterKey: true });

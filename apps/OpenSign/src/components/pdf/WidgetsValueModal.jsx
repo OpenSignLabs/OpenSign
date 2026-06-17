@@ -1036,6 +1036,11 @@ function WidgetsValueModal(props) {
         ? e.target?.value?.trim()
         : e.target.value;
     setWidgetValue(value);
+    props.setCurrWidgetsDetails?.((prev) =>
+      prev && prev.key === currWidgetsDetails?.key
+        ? { ...prev, options: { ...prev.options, response: value } }
+        : prev
+    );
     onChangeInput(
       value,
       currWidgetsDetails,
@@ -1588,24 +1593,24 @@ function WidgetsValueModal(props) {
                     ? String(data.name)
                     : "";
               return (
-              <div key={ind} className="text-base-content select-none-cls">
-                <label
-                  // htmlFor={`radio-${currWidgetsDetails?.key + ind}`}
-                  className="cursor-pointer flex items-center text-sm gap-1"
-                >
-                  <input
-                    id={`radio-${currWidgetsDetails?.key + ind}`}
-                    className={`op-radio op-radio-xs mt-1`}
-                    type="radio"
-                    value={label}
-                    checked={handleRadioCheck(label?.trim())}
-                    onChange={(e) => {
-                      handleCheckRadio(e.target.value?.trim());
-                    }}
-                  />
-                  <span>{label}</span>
-                </label>
-              </div>
+                <div key={ind} className="text-base-content select-none-cls">
+                  <label
+                    // htmlFor={`radio-${currWidgetsDetails?.key + ind}`}
+                    className="cursor-pointer flex items-center text-sm gap-1"
+                  >
+                    <input
+                      id={`radio-${currWidgetsDetails?.key + ind}`}
+                      className={`op-radio op-radio-xs mt-1`}
+                      type="radio"
+                      value={label}
+                      checked={handleRadioCheck(label?.trim())}
+                      onChange={(e) => {
+                        handleCheckRadio(e.target.value?.trim());
+                      }}
+                    />
+                    <span>{label}</span>
+                  </label>
+                </div>
               );
             })}
           </div>

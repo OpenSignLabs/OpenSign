@@ -386,9 +386,7 @@ const WidgetNameModal = (props) => {
         )}
         {isSignOrInitials && (
           <div className="mb-[0.75rem]">
-            <label className="text-[14px] mb-[0.7rem]">
-              {t("rotation")}
-            </label>
+            <label className="text-[14px] mb-[0.7rem]">{t("rotation")}</label>
             <div className="ml-[7px] flex items-center gap-[10px]">
               <select
                 className="op-select op-select-bordered op-select-sm focus:outline-none hover:border-base-content text-xs w-[120px]"
@@ -418,6 +416,7 @@ const WidgetNameModal = (props) => {
             />
           </div>
         )}
+
         {showFontControls && (
           <div className="flex flex-col md:flex-row md:items-center gap-3 mb-3">
             <div className="flex items-center gap-2 ">

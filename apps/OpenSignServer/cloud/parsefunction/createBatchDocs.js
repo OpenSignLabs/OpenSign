@@ -116,13 +116,24 @@ async function sendMail(document, publicUrl) {
       : senderEmail;
 
   if (document.SendinOrder) {
-    signerMail = signerMail.slice();
-    signerMail.splice(1);
+    const getRole = signer => signer?.SignerRole || signer?.signer_role || signer?.role || 'signer';
+    const firstSignerIndex = signerMail.findIndex(signer => getRole(signer) === 'signer');
+    signerMail = signerMail.filter((signer, idx) => {
+      const role = getRole(signer);
+      return role === 'viewer' || idx === firstSignerIndex;
+    });
+    if (signerMail.length === 0 && document?.Placeholders?.length > 0) {
+      signerMail = document.Placeholders.filter(x => x?.Role !== 'prefill').slice(0, 1);
+    }
   }
+
   for (let i = 0; i < signerMail.length; i++) {
     try {
       let url = `${serverUrl}/functions/sendmailv3`;
-      const headers = { 'Content-Type': 'application/json', 'X-Parse-Application-Id': appId };
+      const headers = {
+        'Content-Type': 'application/json',
+        'X-Parse-Application-Id': appId,
+      };
       const objectId = signerMail[i]?.signerObjId;
       const hostUrl = baseUrl.origin;
       let encodeBase64;

@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { PDFDocument } from "pdf-lib";
 import "../styles/signature.css";
 import Parse from "parse";
@@ -409,7 +409,7 @@ function PdfRequestFiles(
           documentData?.[0]?.AuditTrail?.some(
             (data) =>
               data?.UserPtr?.objectId === currUserId &&
-              (data.Activity === "Signed"
+                (data.Activity === "Signed"
               )
           ) || false;
         if (checkAlreadySign) {
@@ -462,7 +462,7 @@ function PdfRequestFiles(
               (data) => data.objectId === placeholder?.signerObjId
             );
             placeholdersOrSigners.push({
-              ...getSignerData
+              ...getSignerData,
             });
           } else {
             placeholdersOrSigners.push(placeholder);
@@ -1137,11 +1137,11 @@ function PdfRequestFiles(
     }
   ];
   //function for get pdf page details
-  const pageDetails = async (pdf) => {
-    const pdfWHObj = await getOriginalWH(pdf);
-    setPdfOriginalWH(pdfWHObj);
-    setPdfLoad(true);
-  };
+ const pageDetails = async (pdf) => {
+  const pdfWHObj = await getOriginalWH(pdf);
+  setPdfOriginalWH(pdfWHObj);
+  setPdfLoad(true);
+};
   //function for change page
   function changePage(offset) {
     setPageNumber((prevPageNumber) => prevPageNumber + offset);
@@ -1817,7 +1817,7 @@ function PdfRequestFiles(
                 !alreadySign &&
                 !isCompleted?.isCertificate &&
                 !isDecline?.isDeclined &&
-                (
+                  (
                   <AgreementSign
                     setIsAgree={setIsAgree}
                     showFirstWidget={showFirstWidget}
@@ -2239,7 +2239,7 @@ function PdfRequestFiles(
                     {pdfDetails[0]?.AllowModifications &&
                       currentSigner &&
                       !alreadySign &&
-                      (
+                        (
                         <div data-tut="reactourFourth">
                           <WidgetComponent
                             pdfUrl={pdfUrl}

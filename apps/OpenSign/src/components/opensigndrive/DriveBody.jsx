@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { memo, useState, useEffect, useRef } from "react";
 import "../../styles/opensigndrive.css";
 import axios from "axios";
 import { ContextMenu } from "radix-ui";
@@ -676,4 +676,4 @@ function DriveBody(props) {
   );
 }
 
-export default DriveBody;
+export default memo(DriveBody);

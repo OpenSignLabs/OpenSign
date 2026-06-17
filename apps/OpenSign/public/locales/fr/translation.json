@@ -421,7 +421,10 @@
     "image": "image",
     "email": "e-mail",
     "number": "nombre",
-    "draw": "Dessiner"
+    "draw": "Dessiner",
+    "attachments": "pièces jointes",
+    "attachments-add": "Cliquer pour ajouter des pièces jointes",
+    "attachments-count": "{{count}} pièce(s) jointe(s)"
   },
   "fields": "Des champs",
   "recipients": "Destinataires",
@@ -1359,7 +1362,7 @@
   "export-all-formdata-error": "Vous ne pouvez pas exporter les données du formulaire car le modèle contient des noms de widgets en double. Veuillez créer un nouveau modèle pour pouvoir exporter les données.",
   "export-formdata-error": "Vous ne pouvez pas exporter les données du formulaire car le document contient des noms de widgets en double. Veuillez créer un nouveau document sans doublons pour pouvoir exporter les données.",
   "duplicate-widget-name-error": "Ce nom de widget est déjà attribué à un autre signataire. Veuillez choisir un autre nom.",
-  "duplicate-template-widget-error": "Vous ne pouvez pas dupliquer ce modèle car il contient des noms de widgets en double.",
+  "duplicate-template-widget-error": "Impossible de dupliquer le modèle, car certains noms de widgets sont dupliqués dans différents rôles. Renommez les widgets en double, puis réessayez.",
   "credit-alert": "Alerte de crédit",
   "document-form-data": "Données du formulaire du document",
   "view-formdata-paid-title-error": "La fonction 'Afficher les données du formulaire' vous permet d'imprimer et de télécharger les données des widgets remplies par les signataires lors de la signature.",
@@ -1556,8 +1559,18 @@
   "benefit-bulksend-api-team-month-help": "Ce forfait inclut 100 crédits premium par mois qui vous permettent d'envoyer des documents via l'API, de partager des liens publics de signature, de lancer des demandes de signature en masse, d'utiliser le mode Kiosque pour les signatures en personne ou de collecter des signatures à partir de documents intégrés directement à votre site web. À chaque fois que vous initiez ou envoyez un document, un crédit est utilisé — et ce document peut inclure jusqu'à 10 signataires.",
   "benefit-bulksend-api-team-year-help": "Ce forfait inclut 500 crédits premium par an qui vous permettent d'envoyer des documents via l'API, de partager des liens publics de signature, de lancer des demandes de signature en masse, d'utiliser le mode Kiosque pour les signatures en personne ou de collecter des signatures à partir de documents intégrés directement à votre site web. À chaque fois que vous initiez ou envoyez un document, un crédit est utilisé — et ce document peut inclure jusqu'à 10 signataires.",
   "failed-pdf-for-prefill-processing": "Impossible de charger le PDF pour le traitement du préremplissage.",
+  "attachments-docx-upload-failed": "Nous rencontrons actuellement un problème. Veuillez réessayer.",
+  "attachments-docx-upload-limit": "La limite de téléchargement pour les fichiers DOCX volumineux a été atteinte. Veuillez attendre 4 minutes avant de réessayer.",
   "attach-all-role-to-signer": "Veuillez attribuer tous les rôles au signataire.",
   "upgrade-to-edit": "Mettre à niveau pour modifier",
   "hide-live-chat-for-signers": "Masquer le chat en direct pour les signataires",
-  "hide-live-chat-for-signers-help": "Lorsqu'activé, les widgets de chat en direct seront masqués pour les signataires sur les pages de signature."
+  "hide-live-chat-for-signers-help": "Lorsqu'activé, les widgets de chat en direct seront masqués pour les signataires sur les pages de signature.",
+  "attachments-creator-hint": "Les signataires peuvent téléverser des fichiers qui seront ajoutés à la fin du document.",
+  "attachments-drop-hint": "Déposez les fichiers ici ou cliquez pour choisir",
+  "attachments-limits": "PDF, DOCX, PNG, JPG. Jusqu'à {{maxFiles}} fichiers, {{maxSizeMB}} Mo chacun.",
+  "attachments-invalid-type": "Type de fichier non pris en charge : {{name}}",
+  "attachments-max-files": "Maximum {{maxFiles}} pièces jointes autorisées.",
+  "attachments-remove-confirm": "La suppression efface uniquement les métadonnées. Les pages déjà ajoutées resteront dans le document. Continuer ?",
+  "attachement-note": "Remarque : Ce widget permet aux signataires de télécharger un fichier pendant le processus de signature. Le fichier téléchargé sera ajouté en tant que pages supplémentaires à la fin du PDF existant.",
+  "attachments-docx-not-supported": "Nous rencontrons actuellement un problème avec le téléchargement des fichiers DOCX. Veuillez essayer de télécharger le document dans un autre format pris en charge ou réessayer plus tard."
 }
