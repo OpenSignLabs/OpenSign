@@ -977,6 +977,8 @@
   "contact-already-exists": "Il contatto esiste già.",
   "docx-error": "Stiamo riscontrando alcuni problemi con l'elaborazione dei file DOCX. Per favore, carica il file PDF",
   "docx-error-contact": "o contattaci a support@opensignlabs.com",
+  "excel-error": "Stiamo riscontrando alcuni problemi con l'elaborazione dei file Excel. Per favore, carica il file PDF",
+  "excel-error-contact": "o contattaci a support@opensignlabs.com",
   "agreement-note": "Nota: Accettare questo non significa che stai firmando immediatamente il documento. Questo ti consente solo di esaminare il documento elettronicamente. Avrai l'opportunità di leggerlo per intero e decidere successivamente se firmarlo.",
   "draft-template-info-p1": "Per rendere il tuo modello pubblico, deve contenere un solo ruolo oppure, se include più ruoli, tutti i ruoli aggiuntivi devono essere già assegnati ai firmatari. Il ruolo pubblico non assegnato deve rimanere vuoto e deve essere posizionato per primo.",
   "visit-below-link": "Visita il link qui sotto per saperne di più -",
