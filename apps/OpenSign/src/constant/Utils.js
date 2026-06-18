@@ -22,6 +22,7 @@ import {
   buildDownloadFilename,
   addPreferenceOpt
 } from "../utils";
+import { resolveMailFromSender } from "./mailUtils";
 
 export const fontsizeArr = [2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28];
 export const fontColorArr = ["red", "black", "blue", "yellow"];
@@ -4636,10 +4637,12 @@ export const sendEmailToSigners = async (
       const senderName =
         pdfDetails?.[0]?.SenderName || pdfDetails?.[0]?.ExtUserPtr?.Name;
 
-      const from =
-        pdfDetails?.[0]?.SenderName || useNameAsSender
-          ? pdfDetails?.[0]?.ExtUserPtr?.Name || ""
-          : senderEmail;
+      const from = resolveMailFromSender({
+        senderName: pdfDetails?.[0]?.SenderName,
+        useNameAsSender,
+        extUserName: pdfDetails?.[0]?.ExtUserPtr?.Name,
+        senderEmail
+      });
 
       const documentName = `${pdfDetails?.[0].Name}`;
       let replaceVar;
