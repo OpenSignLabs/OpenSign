@@ -38,7 +38,7 @@ const EXCLUDED_WIDGET_TYPES = new Set([
   "image",
   "signature",
   "stamp",
-  "initials"
+  "initials",
 ]);
 const ALL_EXCLUDED_TYPES = new Set([
   ...EXCLUDED_PREFILL_TYPES,
@@ -80,7 +80,14 @@ const BulkSendUi = (props) => {
   const initializeWidgetsWithValues = async () => {
     if (props?.Placeholders?.length > 0) {
       const roles = props?.Placeholders?.filter((p) => !p.signerObjId) || [];
-      const emails = [];
+      const reservedEmails = (
+        props?.Placeholders?.filter((p) => !!p?.signerObjId) || []
+      )
+        .map(
+          (role) =>
+            normalizeKey(role?.email) || normalizeKey(role?.signerPtr?.Email)
+        )
+        .filter(Boolean);
 
       const users = await Promise.all(
         roles?.map(async (role) => {
@@ -146,10 +153,6 @@ const BulkSendUi = (props) => {
                 })
             )
           );
-          const signerEmail =
-            normalizeKey(role?.email) || role?.signerPtr?.Email;
-          if (signerEmail) emails.push(signerEmail);
-
           return {
             fieldId: role.Id,
             email: "",
@@ -171,7 +174,7 @@ const BulkSendUi = (props) => {
         setStepKey("recipients");
         setStep(0);
       }
-      setEmails(emails);
+      setEmails(reservedEmails);
 
       // Build headers with required ordering:
       // 1) all role emails first
@@ -290,24 +293,28 @@ const BulkSendUi = (props) => {
 
   function validateEmails(data) {
     for (const [rowIndex, item] of data.entries()) {
-      let email = "";
+      const rowEmails = new Set();
       const rowNumber = rowIndex + 1;
       const filterFields = item?.fields || [];
       for (const field of filterFields) {
         // skip prefill
         if (field?.label === "prefill") continue;
+        const normalizedEmail = normalizeKey(field?.email);
         const params = { email: field.email, row: rowNumber };
-        if (!field.email) {
+        if (!normalizedEmail) {
           alert(t("email-not-found-in-row", { ...params }));
           return false;
-        } else if (!emailRegex.test(field.email)) {
+        } else if (!emailRegex.test(normalizedEmail)) {
           alert(t("invalid-email-found-in-row", { ...params }));
           return false;
-        } else if (email === field.email || emails?.includes(field.email)) {
+        } else if (
+          rowEmails.has(normalizedEmail) ||
+          emails?.includes(normalizedEmail)
+        ) {
           alert(t("duplicate-email-found-in-row", { ...params }));
           return false;
         } else {
-          email = field.email;
+          rowEmails.add(normalizedEmail);
         }
       }
     }

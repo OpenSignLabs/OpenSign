@@ -284,6 +284,8 @@
   "yes": "네",
   "copied": "복사됨",
   "something-went-wrong-mssg": "문제가 발생했습니다. 새로고침 시 문제가 해결될 수 있습니다.",
+  "attachments-docx-upload-failed": "현재 문제가 발생했습니다. 다시 시도해 주세요.",
+  "attachments-docx-upload-limit": "큰 DOCX 파일에 대한 업로드 제한에 도달했습니다. 4분 후에 다시 시도해 주세요.",
   "token-generated": "토큰이 성공적으로 생성되었습니다.",
   "webhook": "웹훅",
   "update-webhook": "웹훅 업데이트",
@@ -421,7 +423,10 @@
     "image": "이미지",
     "email": "이메일",
     "number": "숫자",
-    "draw": "그리기"
+    "draw": "그리기",
+    "attachments": "첨부파일",
+    "attachments-add": "클릭하여 첨부파일 업로드",
+    "attachments-count": "{{count}}개 첨부파일"
   },
   "fields": "필드",
   "recipients": "수신자",
@@ -1359,7 +1364,7 @@
   "export-all-formdata-error": "템플릿에 중복된 위젯 이름이 포함되어 있어 양식 데이터를 내보낼 수 없습니다. 양식 데이터를 내보내려면 새 템플릿을 만드십시오.",
   "export-formdata-error": "문서에 중복된 위젯 이름이 포함되어 있어 양식 데이터를 내보낼 수 없습니다. 양식 데이터를 내보내려면 중복된 위젯 이름이 없는 새 문서를 만드십시오.",
   "duplicate-widget-name-error": "이 위젯 이름은 이미 다른 서명자에게 할당되었습니다. 다른 이름을 선택하십시오.",
-  "duplicate-template-widget-error": "이 템플릿에는 중복된 위젯 이름이 포함되어 있어 복제할 수 없습니다.",
+  "duplicate-template-widget-error": "일부 위젯 이름이 다른 역할에서 중복되어 템플릿을 복제할 수 없습니다. 중복된 위젯의 이름을 변경한 후 다시 시도하세요.",
   "credit-alert": "크레딧 알림",
   "document-form-data": "문서 양식 데이터",
   "view-formdata-paid-title-error": "양식 데이터 보기 기능을 사용하면 서명자가 서명하는 동안 채운 위젯 데이터를 인쇄하고 다운로드할 수 있습니다.",
@@ -1558,5 +1563,13 @@
   "attach-all-role-to-signer": "서명자에게 모든 역할을 연결해 주세요.",
   "upgrade-to-edit": "편집하려면 업그레이드하세요",
   "hide-live-chat-for-signers": "서명자에게 라이브 채팅 숨기기",
-  "hide-live-chat-for-signers-help": "활성화하면 서명 페이지에서 서명자에게 라이브 채팅 위젯이 숨겨집니다."
+  "hide-live-chat-for-signers-help": "활성화하면 서명 페이지에서 서명자에게 라이브 채팅 위젯이 숨겨집니다.",
+  "attachments-creator-hint": "서명자는 문서 끝에 추가될 파일을 업로드할 수 있습니다.",
+  "attachments-drop-hint": "파일을 여기에 놓거나 클릭하여 선택하세요",
+  "attachments-limits": "PDF, DOCX, PNG, JPG. 최대 {{maxFiles}}개 파일, 각 {{maxSizeMB}} MB.",
+  "attachments-invalid-type": "지원되지 않는 파일 형식: {{name}}",
+  "attachments-max-files": "최대 {{maxFiles}}개의 첨부파일이 허용됩니다.",
+  "attachments-remove-confirm": "제거하면 메타데이터만 삭제됩니다. 이미 추가된 페이지는 문서에 남아 있습니다. 계속하시겠습니까?",
+  "attachement-note": "참고: 이 위젯을 사용하면 서명자가 서명 과정 중에 파일을 업로드할 수 있습니다. 업로드된 파일은 기존 PDF의 마지막에 추가 페이지로 첨부됩니다.",
+  "attachments-docx-not-supported": "현재 DOCX 파일 업로드에 문제가 발생하고 있습니다. 다른 지원되는 형식으로 문서를 업로드하시거나 잠시 후 다시 시도해 주세요."
 }

@@ -27,13 +27,13 @@
     "@signpdf/placeholder-pdf-lib": "^3.3.0",
     "@signpdf/signer-p12": "^3.3.0",
     "@signpdf/signpdf": "^3.3.0",
-    "axios": "^1.15.2",
+    "axios": "^1.16.0",
     "coherentpdf": "^2.5.5",
     "cors": "^2.8.6",
     "date-fns-tz": "^3.2.0",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
-    "form-data": "^4.0.5",
+    "form-data": "^4.0.6",
     "generate-api-key": "^1.0.2",
     "googleapis": "^171.4.0",
     "libreoffice-convert": "^1.8.1",
@@ -47,7 +47,7 @@
     "p-limit": "^7.3.0",
     "parse": "^8.1.0",
     "parse-dbtool": "^1.2.0",
-    "parse-server": "^8.6.76",
+    "parse-server": "^8.6.77",
     "parse-server-api-mail-adapter": "^5.0.5",
     "pdf-lib": "^1.17.1",
     "posthog-node": "^5.21.2",
@@ -55,7 +55,7 @@
     "rate-limiter-flexible": "^9.1.1",
     "sharp": "^0.34.5",
     "speakeasy": "^2.0.0",
-    "ws": "^8.20.0"
+    "ws": ">=8.21.0"
   },
   "type": "module",
   "devDependencies": {
@@ -71,7 +71,10 @@
     "ws": "$ws",
     "parse": "$parse",
     "form-data": "$form-data",
-    "@parse/push-adapter": "$@parse/push-adapter"
+    "@parse/push-adapter": "$@parse/push-adapter",
+    "fast-xml-builder": "1.2.0",
+    "protobufjs": ">=7.6.3",
+    "tmp": ">=0.2.7"
   },
   "engines": {
     "node": "18 || 20 || 22"

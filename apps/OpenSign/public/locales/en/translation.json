@@ -421,7 +421,10 @@
     "image": "image",
     "email": "email",
     "number": "number",
-    "draw": "draw"
+    "draw": "draw",
+    "attachments": "attachments",
+    "attachments-add": "Click to add attachments",
+    "attachments-count": "{{count}} attachment(s)"
   },
   "fields": "Fields",
   "recipients": "Recipients",
@@ -606,6 +609,8 @@
   "pdf-download": "PDF download",
   "generate-certificate-alert": " Your completion certificate is being generated. Please wait momentarily. If the download doesn't start shortly, click the button again.",
   "generate-certificate-err": "We are currently experiencing an issue with certificate generation. Please try again later.",
+  "attachments-docx-upload-failed": "We are currently facing a problem. Please try again.",
+  "attachments-docx-size-limit": "Upload limit reached for large files. Please wait until {{time}} before retrying.",
   "folder-already-exist": "Folder already exists!",
   "folder-created-successfully": "Folder created successfully!",
   "fill-folder-name": "Please fill folder name",
@@ -1361,7 +1366,7 @@
   "export-all-formdata-error": "You can/t export form data because the template contains duplicate widget names. Please create a fresh template to be able to export form data.",
   "export-formdata-error": "You can't export form data because the document contains duplicate widget names. Please create a fresh document without duplicate widget names to be able to export form data.",
   "duplicate-widget-name-error": "This widget name is already assigned to another signer. Please choose a different name.",
-  "duplicate-template-widget-error": "You can't duplicate this template because it contains duplicate widget names.",
+  "duplicate-template-widget-error": "Unable to duplicate the template because some widget names are duplicated across different roles. Rename the duplicate widgets and try again.",
   "credit-alert": "Credit Alert",
   "document-form-data": "Document Form Data",
   "view-formdata-paid-title-error": "The View Form Data feature lets you print and download the widget data filled in by signers while signing.",
@@ -1558,5 +1563,13 @@
   "benefit-bulksend-api-team-year-help": "This plan comes with 500 premium credits per year that let you send documents via API, share public signing links, run bulk signature requests, use Kiosk mode for in-person signing, or collect signatures from documents embedded directly on your website. Each time you initiate or send a document, one credit is used — and that single document can include up to 10 signers.",
   "failed-pdf-for-prefill-processing": "Failed to load PDF for prefill processing.",
   "attach-all-role-to-signer": "Please attach all roles to the signer.",
-  "upgrade-to-edit": "Upgrade to edit"
+  "upgrade-to-edit": "Upgrade to edit",
+  "attachments-creator-hint": "Signers can upload files that will be appended to the end of the document.",
+  "attachments-drop-hint": "Drop files here or click to choose",
+  "attachments-limits": "PDF, DOCX, PNG, JPG. Up to {{maxFiles}} files, {{maxSizeMB}} MB each.",
+  "attachments-invalid-type": "Unsupported file type: {{name}}",
+  "attachments-max-files": "A maximum of {{maxFiles}} attachments are allowed.",
+  "attachments-remove-confirm": "Removing only deletes the metadata. Pages already appended will remain in the document. Continue?",
+  "attachement-note":"Note: This widget allows signers to upload a file during the signing process. The uploaded file will be appended as additional pages at the end of the existing PDF",
+  "attachments-docx-not-supported":"We are currently experiencing an issue with DOCX file uploads. Please try uploading the document in a different supported format, or try again later."
 }

@@ -36,7 +36,7 @@ function WidgetComponent(props) {
     { id: 14, text: "dropdown" },
     { id: 15, text: radioButtonWidget },
     { id: 16, text: "image" },
-    { id: 17, text: drawWidget }
+    { id: 17, text: drawWidget },
   ];
 
   // Create all drag refs in one go
@@ -90,9 +90,12 @@ function WidgetComponent(props) {
   );
   const selfSignWidgets = widgetList.filter(
     (data) =>
-      !["dropdown", radioButtonWidget, textInputWidget, drawWidget].includes(
-        data.type
-      )
+      ![
+        "dropdown",
+        radioButtonWidget,
+        textInputWidget,
+        drawWidget,
+      ].includes(data.type)
   );
   //if user select prefill role then allow only date,image,text,checkbox,radio,dropdownAdd commentMore actions
   //dropdown widget should only be show in template flow

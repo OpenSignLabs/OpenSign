@@ -37,16 +37,17 @@ const PrefillWidgets = ({ prefills = [], setPrefills, onNext }) => {
                   a.pageNumber !== b.pageNumber
                     ? a.pageNumber - b.pageNumber
                     : (a.yPosition ?? 0) - (b.yPosition ?? 0)
-                ).map((widget, index) => (
-                <RenderWidgets
-                  key={widget.key}
-                  showLabel
-                  widget={widget}
-                  handleWidgetDetails={(value) =>
-                    handleWidgetDetails(value, index)
-                  }
-                />
-              ))}
+                )
+                .map((widget, index) => (
+                  <RenderWidgets
+                    key={widget.key}
+                    showLabel
+                    widget={widget}
+                    handleWidgetDetails={(value) =>
+                      handleWidgetDetails(value, index)
+                    }
+                  />
+                ))}
             </div>
           </div>
 

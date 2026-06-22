@@ -284,6 +284,8 @@
   "yes": "Ja",
   "copied": "Kopiert",
   "something-went-wrong-mssg": "Etwas ist schiefgelaufen, Das Aktualisieren dieser Seite kann das Problem lösen.",
+  "attachments-docx-upload-failed": "Derzeit liegt ein Problem vor. Bitte versuchen Sie es erneut.",
+  "attachments-docx-upload-limit": "Das Upload-Limit für große DOCX-Dateien ist erreicht. Bitte warten Sie 4 Minuten und versuchen Sie es erneut.",
   "token-generated": "Token erfolgreich generiert.",
   "webhook": "Webhook",
   "update-webhook": "Webhook aktualisieren",
@@ -421,7 +423,10 @@
     "image": "Bild",
     "email": "E-Mail",
     "number": "Zahl",
-    "draw": "Zeichnen"
+    "draw": "Zeichnen",
+    "attachments": "Anhänge",
+    "attachments-add": "Klicken, um Anhänge hochzuladen",
+    "attachments-count": "{{count}} Anhang/Anhänge"
   },
   "fields": "Felder",
   "recipients": "Empfänger",
@@ -1359,7 +1364,7 @@
   "export-all-formdata-error": "Sie können die Formulardaten nicht exportieren, da die Vorlage doppelte Widget-Namen enthält. Bitte erstellen Sie eine neue Vorlage, um Formulardaten exportieren zu können.",
   "export-formdata-error": "Sie können die Formulardaten nicht exportieren, da das Dokument doppelte Widget-Namen enthält. Bitte erstellen Sie ein neues Dokument ohne doppelte Widget-Namen, um Formulardaten exportieren zu können.",
   "duplicate-widget-name-error": "Dieser Widget-Name ist bereits einem anderen Unterzeichner zugewiesen. Bitte wählen Sie einen anderen Namen.",
-  "duplicate-template-widget-error": "Sie können diese Vorlage nicht duplizieren, da sie doppelte Widget-Namen enthält.",
+  "duplicate-template-widget-error": "Die Vorlage kann nicht dupliziert werden, weil einige Widget-Namen in verschiedenen Rollen doppelt vorkommen. Benennen Sie die doppelten Widgets um und versuchen Sie es erneut.",
   "credit-alert": "Kreditwarnung",
   "document-form-data": "Dokumenten-Formulardaten",
   "view-formdata-paid-title-error": "Die Funktion 'Formulardaten anzeigen' ermöglicht es Ihnen, die von Unterzeichnern ausgefüllten Widget-Daten auszudrucken und herunterzuladen.",
@@ -1558,5 +1563,12 @@
   "attach-all-role-to-signer": "Bitte weisen Sie dem Unterzeichner alle Rollen zu.",
   "upgrade-to-edit": "Zum Bearbeiten upgraden",
   "hide-live-chat-for-signers": "Live-Chat für Unterzeichner ausblenden",
-  "hide-live-chat-for-signers-help": "Wenn aktiviert, werden Live-Chat-Widgets für Unterzeichner auf Signierseiten ausgeblendet."
+  "hide-live-chat-for-signers-help": "Wenn aktiviert, werden Live-Chat-Widgets für Unterzeichner auf Signierseiten ausgeblendet.",
+  "attachments-creator-hint": "Unterzeichner können Dateien hochladen, die am Ende des Dokuments angehängt werden.",
+  "attachments-drop-hint": "Dateien hier ablegen oder klicken, um auszuwählen",
+  "attachments-limits": "PDF, DOCX, PNG, JPG. Max. {{maxFiles}} Dateien, je {{maxSizeMB}} MB.",
+  "attachments-invalid-type": "Dateityp wird nicht unterstützt: {{name}}",
+  "attachments-max-files": "Maximal {{maxFiles}} Anhänge erlaubt.",
+  "attachments-remove-confirm": "Das Entfernen löscht nur die Metadaten. Bereits angehängte Seiten bleiben im Dokument. Fortfahren?",
+  "attachments-docx-not-supported": "Derzeit tritt ein Problem beim Hochladen von DOCX-Dateien auf. Bitte versuchen Sie, das Dokument in einem anderen unterstützten Format hochzuladen, oder versuchen Sie es später erneut."
 }
