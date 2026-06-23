@@ -7,6 +7,7 @@ import WidgetComponent from "../components/pdf/WidgetComponent";
 import Tour from "../primitives/Tour";
 import SignerListPlace from "../components/pdf/SignerListPlace";
 import Header from "../components/pdf/PdfHeader";
+import PrevNext from "../components/pdf/PrevNext";
 import WidgetNameModal from "../components/pdf/WidgetNameModal";
 import {
   copytoData,
@@ -2126,6 +2127,13 @@ const TemplatePlaceholder = () => {
                     handleClosePrefillTour={handleClosePrefillTour}
                   />
                 )}
+              </div>
+              <div className="flex justify-center py-2">
+                <PrevNext
+                  pageNumber={pageNumber}
+                  allPages={allPages}
+                  changePage={changePage}
+                />
               </div>
             </div>
           </div>

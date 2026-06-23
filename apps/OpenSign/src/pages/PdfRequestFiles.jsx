@@ -52,6 +52,7 @@ import {
   convertJpegToPng,
 } from "../constant/Utils";
 import Header from "../components/pdf/PdfHeader";
+import PrevNext from "../components/pdf/PrevNext";
 import RenderPdf from "../components/pdf/RenderPdf";
 import DefaultSignature from "../components/pdf/DefaultSignature";
 import SignerListComponent from "../components/pdf/SignerListComponent";
@@ -2159,6 +2160,13 @@ function PdfRequestFiles(
                           closeWidgetTour={closeTour}
                         />
                       )}
+                    </div>
+                    <div className="flex justify-center py-2">
+                      <PrevNext
+                        pageNumber={pageNumber}
+                        allPages={allPages}
+                        changePage={changePage}
+                      />
                     </div>
                   </div>
                 </div>

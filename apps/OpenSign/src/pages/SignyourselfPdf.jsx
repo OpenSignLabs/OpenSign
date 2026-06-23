@@ -44,6 +44,7 @@ import { useParams } from "react-router";
 import Tour from "../primitives/Tour";
 import Signedby from "../components/pdf/Signedby";
 import Header from "../components/pdf/PdfHeader";
+import PrevNext from "../components/pdf/PrevNext";
 import RenderPdf from "../components/pdf/RenderPdf";
 import PlaceholderCopy from "../components/pdf/PlaceholderCopy";
 import DropdownWidgetOption from "../components/pdf/DropdownWidgetOption";
@@ -1514,6 +1515,13 @@ function SignYourSelf() {
                       addPositionOfSignature={addPositionOfSignature}
                     />
                   )}
+                </div>
+                <div className="flex justify-center py-2">
+                  <PrevNext
+                    pageNumber={pageNumber}
+                    allPages={allPages}
+                    changePage={changePage}
+                  />
                 </div>
               </div>
             </div>
