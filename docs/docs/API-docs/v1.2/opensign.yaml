@@ -332,7 +332,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/inline_response_200_5'
+                $ref: '#/components/schemas/inline_response_200_14'
         "400":
           description: Please provide valid field names!
           content:
@@ -7432,6 +7432,15 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/folder_res'
+    inline_response_200_14:
+      type: object
+      properties:
+        objectId:
+          type: string
+          example: Bh2Hspnmch
+        message:
+          type: string
+          example: Contact updated successfully
     selfsigndocument_body_signer:
       type: object
       properties:
