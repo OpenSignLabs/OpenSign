@@ -283,7 +283,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/contact_res'
+                $ref: '#/components/schemas/contact'
         "400":
           description: "Something went wrong, please try again later!"
           content:
@@ -325,7 +325,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/contact'
+              $ref: '#/components/schemas/contact_res'
       responses:
         "200":
           description: Contact updated successfully!
