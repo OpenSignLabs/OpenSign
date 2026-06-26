@@ -227,7 +227,7 @@ paths:
       - x-api-token: []
     put:
       tags:
-      - Contact
+      - Contacts
       summary: Update Contact
       description: The Update Contact API enables you to modify and update the details of a specific Contact.
       operationId: updateContact
