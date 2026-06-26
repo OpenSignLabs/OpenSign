@@ -152,14 +152,10 @@ The **Prefill Widgets** feature lets document creators prefill specific fields b
 - **Draw** – Allows the user to draw directly in this widget; use it when a prefill drawing is required.
 ---
 
-### Add Widgets for Signers
+## Signers/Recipients 
+Below the **Prefill Role** section, you'll find the list of signers that were added while creating the document. From this panel, you can select a recipient to assign widgets or use the **Add Recipient** option to include additional signers. 
 
-<img width="866" alt="create document" src="https://github.com/user-attachments/assets/fa5471f0-f7cb-4170-982f-cb213e4db13d" />
-
-- **[1] Add signature widget**: Once your document is loaded in the document creation panel, you'll need to add a signature widget for each signer. OpenSign provides an intuitive interface for this task. Select the signer from the right side panel, click on the signature widget, and position it where the signature is required.
-Use the option on the right side to add recipients if you need to include additional signers. You can place multiple signature widgets for each signer, as required.
-
-Optionally, you can assign a role to each signer, such as:
+Each recipient can be assigned one of the following roles:
 
 **Signer**: If the role is selected as Signer, the signer must fill in all required fields while signing the document before they can complete the signing process.
 
@@ -167,14 +163,35 @@ Optionally, you can assign a role to each signer, such as:
 
 **Approver**: If the role is selected as Approver, it works similarly to the Signer role. However, the main difference is that the Approver role does not require a signature widget. The approver can approve the document even if no widgets are assigned.
 
-  After placing the Signature widget, you will see the options on the widget such as:
+## Access code
+The **Access Code** feature in OpenSign adds an extra layer of security to your documents by requiring recipients to enter a unique access code before they can view and sign a document. This feature helps ensure that only authorized recipients can access sensitive documents, even if the signing link is accidentally shared or intercepted.
+
+<img width="866" alt="Access code" src="https://github.com/user-attachments/assets/e227e069-ee56-41ee-832d-b2c210cd3d63" />
+
+### How the Access Code Works
+  1. The document owner can enable Access Code protection by clicking the Lock icon next to the signer's details. This opens the Access Code dialog, where the owner can enter a unique 6-digit numeric access code(for example, 809966). After entering the code, click Save to assign it to the signer.
+  2. Send the document for signature.
+  3. The signer receives the email invitation containing the document signing link.
+  4. When the signer clicks the signing link, they are prompted to enter the assigned 6-digit access code before accessing the document.
+  5. If the signer enters the correct access code, the document opens and they can proceed with signing.
+  6. If the signer enters an incorrect access code, access to the document is denied until the correct 6-digit numeric access code is provided.
+---
+## Add Widgets for Signers
+### 1. Add a Signature Widget
+Once your document is loaded in the document creation panel, you'll need to add a signature widget for each signer. Select the signer from the right side panel, click on the signature widget, and position it where the signature is required.
+
+<img width="866" alt="create document" src="https://github.com/user-attachments/assets/fa5471f0-f7cb-4170-982f-cb213e4db13d" />
+
+### Signature Widget Options
+After placing the Signature widget, you will see the options on the widget such as:
   - **Add Signer/Change Signer**: Clicking the first icon on the signature widget allows you to change the signer. You can choose from existing signers in the dropdown or add a new signer.
   - **Copy Signature**: Clicking on this option reveals the following choices.
     -  All pages: It will copy the signature widget to all pages.
     -  All pages but last: It will copy the signature widget to all pages except the last page.
     -  All pages but first: It will copy the signature widget to all pages except the first page.
  
-- **[2] Add other widgets**: Depending on your needs, you can include additional widgets such as:
+### 2. Add Other Widgets
+Depending on your needs, you can include additional widgets such as:
  - **Stamp**: The stamp widget allows signers to add a stamp to the document. Signers can upload their stamp during the signing process. After placing the Stamp widget, you will see the options on the widget such as:
       - Setting icon: By clicking on the option, you can specify whether this widget is mandatory or optional during the document signing.
       - Add Signer/Change Signer: Clicking the second option on the stamp widget allows you to change the signer. You can choose from existing signers in the dropdown or add a new signer.
@@ -256,6 +273,57 @@ The **Date widget** allows signers to enter a date while signing the document. O
   You can enter your regex pattern in the **Validations** field of the widget.  
   *(Optional reference: [JavaScript RegExp guide](https://www.w3schools.com/jsref/jsref_obj_regexp.asp))*
   
+**Conditional Logic**:
+  
+The Text Input widget also supports **Conditional Logic**, allowing you to dynamically show, hide, make required, or make optional the field based on values entered or selected in other widgets.
+Conditional Logic enables the Text Input widget to respond dynamically based on values from other widgets.
+
+Depending on the configured rule, the Text Input field can:
+
+    - Show the field
+    - Hide the field
+    - Make the field Required
+    - Make the field Optional
+
+## Supported Conditions
+
+Depending on the selected trigger widget, the following conditions are available.
+### Text Input
+- Equals
+- Does Not Equal
+
+Example
+If TextInput1 = HR
+Then ``` Show the textinput2 ```
+
+---
+
+### Number
+
+Supported operators:
+
+- Equals
+- Does Not Equal
+
+Example
+
+If ``` number_widget1 = 5 ```
+Then ``` Show TextInput1 ```
+
+- **Any Condition (OR)**
+
+The configured action is performed when at least one condition is satisfied.
+
+Example
+
+``` Number Field = 10 OR Checkbox = Checked
+↓
+Show TextInput1
+```
+---
+# Example 1
+Trigger Widget ``` Number ``` Condition ``` Equals 5 ``` Action ``` Show Text Input ``` Result When the signer enters **5**, the Text Input field becomes visible.
+
    - Add Signer/Change Signer: Clicking the first icon on the Text Input widget allows you to change the signer. You can choose from existing signers in the dropdown or add a new signer.
 
    - Copy : Clicking on this you can duplicate the Text Input widget.
