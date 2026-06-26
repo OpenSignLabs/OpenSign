@@ -14,7 +14,7 @@ The OpenSign™ Request signatures interface is designed to streamline the proce
 ### Step 1: Begin New Document Creation
 
 - **Navigate to Request Signatures form**: Start by navigating to 'Request Signatures' from the main menu to initiate the creation of a document for signatures.
-- 
+  
 <img width="866" alt="requets signature" src="https://github.com/user-attachments/assets/f3edeafa-66d1-416a-854e-ce666f27e7b7" />
 
 ### Uploading Your Document
@@ -153,7 +153,7 @@ The **Prefill Widgets** feature lets document creators prefill specific fields b
 ---
 
 ## Signers/Recipients 
-Below the **Prefill Role** section, you'll find the list of signers that were added while creating the document. From this panel, you can select a recipient to assign widgets or use the **Add Recipient** option to include additional signers. 
+Below the **Prefill** section, you'll find the list of signers that were added while creating the document. From this panel, you can select a recipient to assign widgets or use the **Add Recipient** option to include additional signers. 
 
 Each recipient can be assigned one of the following roles:
 
@@ -169,12 +169,18 @@ The **Access Code** feature in OpenSign adds an extra layer of security to your 
 <img width="866" alt="Access code" src="https://github.com/user-attachments/assets/e227e069-ee56-41ee-832d-b2c210cd3d63" />
 
 ### How the Access Code Works
-  1. The document owner can enable Access Code protection by clicking the Lock icon next to the signer's details. This opens the Access Code dialog, where the owner can enter a unique 6-digit numeric access code(for example, 809966). After entering the code, click Save to assign it to the signer.
-  2. Send the document for signature.
-  3. The signer receives the email invitation containing the document signing link.
-  4. When the signer clicks the signing link, they are prompted to enter the assigned 6-digit access code before accessing the document.
-  5. If the signer enters the correct access code, the document opens and they can proceed with signing.
-  6. If the signer enters an incorrect access code, access to the document is denied until the correct 6-digit numeric access code is provided.
+  1. The document owner can enable **Access Code** protection by clicking the **Lock** icon next to the signer's details. This opens the **Access Code** dialog, where the owner can enter a unique **6-digit numeric access code** (for example, `809966`). After entering the code, click **Save** to assign it to the signer.
+
+2. Send the document for signature.
+
+3. The signer receives an email invitation containing the document signing link. Alternatively, the document owner can share the signing link manually through another secure communication channel, such as SMS, a messaging application, or email.
+
+4. When the signer opens the document signing link, they are prompted to enter the assigned **6-digit access code** before they can access the document. The signer must obtain this access code directly from the document owner, who should share it using a separate and secure communication channel (such as a phone call, SMS, or messaging application).
+
+5. If the signer enters the correct access code, the document opens and they can proceed with reviewing and signing it.
+
+6. If the signer enters an incorrect access code, access to the document is denied. The signer must enter the correct **6-digit numeric access code** provided by the document owner to continue.
+   
 ---
 ## Add Widgets for Signers
 ### 1. Add a Signature Widget
@@ -279,50 +285,69 @@ The Text Input widget also supports **Conditional Logic**, allowing you to dynam
 Conditional Logic enables the Text Input widget to respond dynamically based on values from other widgets.
 
 Depending on the configured rule, the Text Input field can:
-
     - Show the field
     - Hide the field
     - Make the field Required
     - Make the field Optional
 
 ## Supported Conditions
+The **Text Input** widget supports conditional logic based on the values of other widgets. 
+The available conditions depend on the selected trigger widget.
 
-Depending on the selected trigger widget, the following conditions are available.
-### Text Input
-- Equals
-- Does Not Equal
+### Text Input 
 
-Example
-If TextInput1 = HR
-Then ``` Show the textinput2 ```
+Supported operators: 
+- **Equals**
+- **Does Not Equal**
+  
+**Example** If the value entered in **TextInput1** is equal to **HR**, then **TextInput2** is displayed.
+
+```text Condition: TextInput1 = HR Action: Show TextInput2 ``` 
 
 ---
-
 ### Number
-
 Supported operators:
-
 - Equals
 - Does Not Equal
-
+  
 Example
-
 If ``` number_widget1 = 5 ```
 Then ``` Show TextInput1 ```
 
-- **Any Condition (OR)**
+### Any Condition (OR) 
 
-The configured action is performed when at least one condition is satisfied.
+When **Any Condition (OR)** is selected, the configured action is performed if **at least one** of the specified conditions is satisfied.
 
-Example
+**Example** 
 
-``` Number Field = 10 OR Checkbox = Checked
-↓
+text Condition 1: Number Field = 10 OR Condition 2: Checkbox = Checked
+
+Action:
+
 Show TextInput1
-```
+
+ **TextInput1** is displayed if either the Number field equals **10** or the Checkbox is checked.
+
+## Example
+
+| Property | Value |
+|----------|-------|
+| **Trigger Widget** | Number |
+| **Condition** | Equals |
+| **Condition Value** | 5 |
+| **Condition 2 checkbox** | checked |
+| **Action** | Show TextInput1 |
+
+**Result**: The configured TextInput1 field is displayed when either of the following conditions is met:
+
+The signer enters 10 in the Number field, or
+The signer selects any checkbox option.
+
 ---
-# Example 1
-Trigger Widget ``` Number ``` Condition ``` Equals 5 ``` Action ``` Show Text Input ``` Result When the signer enters **5**, the Text Input field becomes visible.
+the conditional logic for textinput field can be applied with the following widgets 
+checkbox (read more)
+dropdown (read more)
+Radio buttons (read more)
 
    - Add Signer/Change Signer: Clicking the first icon on the Text Input widget allows you to change the signer. You can choose from existing signers in the dropdown or add a new signer.
 
