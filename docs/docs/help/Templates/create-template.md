@@ -166,10 +166,11 @@ The **Access Code** feature in OpenSign adds an extra layer of security to your 
 ### How the Access Code Works
   1. The document owner can enable Access Code protection by clicking the Lock icon next to the role. This opens the Access Code dialog, where the owner can enter a unique 6-digit numeric access code(for example, 809966). After entering the code, click Save to assign it to the signer.
   2. Send the document for signature.
-  3. The signer receives the email invitation containing the document signing link.
-  4. When the signer clicks the signing link, they are prompted to enter the assigned 6-digit access code before accessing the document.
-  5. If the signer enters the correct access code, the document opens and they can proceed with signing.
-  6. If the signer enters an incorrect access code, access to the document is denied until the correct 6-digit numeric access code is provided.
+  3. The signer receives an email invitation containing the document signing link. Alternatively, the document owner can share the signing link manually through another secure communication channel, such as SMS, a messaging application, or email.
+  4. When the signer opens the document signing link, they are prompted to enter the assigned **6-digit access code** before they can access the document. The signer must obtain this access code directly from the document owner, who should share it using a separate and secure communication channel (such as a phone call, SMS, or messaging application).
+  5. If the signer enters the correct access code, the document opens and they can proceed with reviewing and signing it.
+  6. If the signer enters an incorrect access code, access to the document is denied. The signer must enter the correct **6-digit numeric access code** provided by the document owner to continue.
+   
 ---
 
 **Assign Widgets to Roles**: Click on each role to highlight it, then drag and drop the widget to assign it to that role.
