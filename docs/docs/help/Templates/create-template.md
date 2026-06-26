@@ -149,14 +149,7 @@ The **Prefill Widgets** feature lets document creators prefill specific fields b
 <img width="828" alt="Create Template" src="https://github.com/user-attachments/assets/1248b9c8-db51-4dd3-bd1c-e1630b998ffc" />
 
 **Add Roles**: In the roles section on the right, click "+ Add role" to specify the roles involved in the document, such as Candidate, HR, and Manager.
-**Assign Widgets to Roles**: Click on each role to highlight it, then drag and drop the widget to assign it to that role.
-  - **[1] Assign signature widget**: The signature widget is used to add a signature to the document. Each role must have at least one signature widget assigned.
-    
-Select the Role from the right side panel, click on the signature widget, and position it where the signature is required. You can place multiple signature widgets for each Role, as required.
 
-  After placing the Signature widget, you will see the options on the widget such as:
-  - **Add Signer/Change Signer**: Clicking the first icon on the signature widget allows you to change the signer. You can choose from existing signers in the dropdown or add a new signer.
-    
 Optionally, you can assign a role to each signer, such as:
 
 **Signer**: If the role is selected as Signer, the signer must fill in all required fields while signing the document before they can complete the signing process.
@@ -165,6 +158,28 @@ Optionally, you can assign a role to each signer, such as:
 
 **Approver**: If the role is selected as Approver, it works similarly to the Signer role. However, the main difference is that the Approver role does not require a signature widget. The approver can approve the document even if no widgets are assigned.
 
+## Access code
+The **Access Code** feature in OpenSign adds an extra layer of security to your documents by requiring recipients to enter a unique access code before they can view and sign a document. This feature helps ensure that only authorized recipients can access sensitive documents, even if the signing link is accidentally shared or intercepted.
+
+<img width="866" alt="Access code template" src="https://github.com/user-attachments/assets/68fce434-dc0e-4432-a34e-6cf76bdc129b" />
+
+### How the Access Code Works
+  1. The document owner can enable Access Code protection by clicking the Lock icon next to the role. This opens the Access Code dialog, where the owner can enter a unique 6-digit numeric access code(for example, 809966). After entering the code, click Save to assign it to the signer.
+  2. Send the document for signature.
+  3. The signer receives the email invitation containing the document signing link.
+  4. When the signer clicks the signing link, they are prompted to enter the assigned 6-digit access code before accessing the document.
+  5. If the signer enters the correct access code, the document opens and they can proceed with signing.
+  6. If the signer enters an incorrect access code, access to the document is denied until the correct 6-digit numeric access code is provided.
+---
+
+**Assign Widgets to Roles**: Click on each role to highlight it, then drag and drop the widget to assign it to that role.
+  - **[1] Assign signature widget**: The signature widget is used to add a signature to the document. Each role must have at least one signature widget assigned.
+    
+Select the Role from the right side panel, click on the signature widget, and position it where the signature is required. You can place multiple signature widgets for each Role, as required.
+
+  After placing the Signature widget, you will see the options on the widget such as:
+  - **Add Signer/Change Signer**: Clicking the first icon on the signature widget allows you to change the signer. You can choose from existing signers in the dropdown or add a new signer.
+    
   After placing the Signature widget, you will see the options on the widget such as:
   - **Add Signer/Change Signer**: Clicking the first icon on the signature widget allows you to change the signer. You can choose from existing signers in the dropdown or add a new signer.
   - **Copy Signature**: Clicking on this option reveals the following choices.
