@@ -246,7 +246,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/contact'
+              $ref: '#/components/schemas/contact_res'
       responses:
         "200":
           description: Contact updated successfully!
@@ -5351,6 +5351,31 @@ components:
           $ref: '#/components/schemas/date'
       xml:
         name: contactdetails
+    contact_res:
+      type: object
+      properties:
+        name:
+          type: string
+          format: string
+          example: joe bee
+        email:
+          type: string
+          format: string
+          example: joebee@example.com
+        phone:
+          type: string
+          format: string
+          example: "4131231231"
+        company:
+          type: string
+          format: string
+          example: opensign
+        job_title:
+          type: string
+          format: string
+          example: dev
+      xml:
+        name: contactdetails 
     folder:
       type: object
       properties:
