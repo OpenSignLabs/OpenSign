@@ -6428,7 +6428,7 @@ components:
           example: signer
         access_code:
           type: string
-          format: number
+          format: string
           description: "Optional numeric access code required for the signer to access and sign the document."
           example: 123456 
         widgets:
