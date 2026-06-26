@@ -325,7 +325,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/contact_res'
+              $ref: '#/components/schemas/updatecontact_body'
       responses:
         "200":
           description: Contact updated successfully!
@@ -5545,7 +5545,7 @@ components:
           $ref: '#/components/schemas/date'
       xml:
         name: contactdetails
-    contact_res:
+    updatecontact_body:
       type: object
       properties:
         name:
