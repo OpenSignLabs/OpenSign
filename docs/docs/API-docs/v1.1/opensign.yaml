@@ -225,6 +225,55 @@ paths:
                 $ref: '#/components/schemas/invalidtoken'
       security:
       - x-api-token: []
+    put:
+      tags:
+      - Contact
+      summary: Update Contact
+      description: The Update Contact API enables you to modify and update the details of a specific Contact.
+      operationId: updateContact
+      parameters:
+      - name: contact_id
+        in: path
+        description: objectId of contact
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          format: string
+      requestBody:
+        description: Provide the fields you wish to update. Any fields omitted from the request will remain unchanged.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/contact'
+      responses:
+        "200":
+          description: Contact updated successfully!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_5'
+        "400":
+          description: Please provide valid field names!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_400'
+        "404":
+          description: Contact not found!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_404_7'
+        "405":
+          description: Invalid API Token!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/invalidtoken'
+      security:
+      - x-api-token: []  
     delete:
       tags:
       - Contacts
