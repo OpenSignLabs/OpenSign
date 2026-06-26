@@ -6429,8 +6429,8 @@ components:
         access_code:
           type: string
           format: string
-          description: "Optional numeric access code required for the signer to access and sign the document."
-          example: 123456 
+          description: when set, this numeric access code is required for the signer to access and sign the document.
+          example: "123456"
         widgets:
           type: array
           items:
@@ -7164,8 +7164,8 @@ components:
         access_code:
           type: string
           format: string
-          description: "Optional numeric access code required for the signer to access and sign the document."
-          example: 123456
+          description: when set, this numeric access code is required for the signer to access and sign the document.
+          example: "123456"
         widgets:
           type: array
           items:
@@ -7246,8 +7246,8 @@ components:
         access_code:
           type: string
           format: string
-          description: "Optional numeric access code required for the signer to access and sign the document."
-          example: 123456  
+          description: when set, this numeric access code is required for the signer to access and sign the document.
+          example: "123456"
         widgets:
           type: array
           items:
