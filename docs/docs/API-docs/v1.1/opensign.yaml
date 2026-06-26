@@ -1,102 +1,23 @@
 openapi: 3.0.3
 info:
-  title: OpenSign API v1.2
+  title: OpenSign API v1.1
   description: |
-    # OpenSign™ API v1.2
+    Welcome to the **OpenSign™ API v1.1** documentation.
 
-    > **The open-source DocuSign alternative — built for developers, trusted by enterprises.**
+    Our powerful and flexible API empowers you to seamlessly integrate digital signing capabilities into your applications. Whether you're a developer automating document workflows, a business enhancing security, or an enterprise streamlining contract management, OpenSign™ delivers robust solutions tailored to your needs.
 
-    OpenSign™ gives you a complete, production-ready e-signature platform through a single, RESTful API. Send documents for signature, manage templates, track signing status in real time, and automate your entire document lifecycle — all without vendor lock-in.
+    Explore our comprehensive guides, code samples, and best practices to unlock the full potential of OpenSign™ and transform your digital document processes.
 
-    ---
-
-    ## Getting Started
-
-    Every request must carry your API token in the `x-api-token` header.
-
-    ```
-    x-api-token: <your-api-token>
-    ```
-
-    **→ [How to generate your API token](https://docs.opensignlabs.com/docs/help/Settings/APIToken)**
-
-    Not sure where to begin? Use the **sandbox environment** (`https://sandbox.opensignlabs.com/api/v1.2`) to prototype without affecting live data.
-
-    ---
-
-    ## Core Capabilities
-
-    | Category | What you can do |
-    |---|---|
-    | **Documents** | Create, send, update, revoke, and delete signature-request documents |
-    | **Templates** | Build reusable templates with pre-placed widgets; send to one or many signers |
-    | **Self-Sign** | Generate self-signed documents without a signer invitation flow |
-    | **Public Templates** | Share a public signing link — no signer list required |
-    | **Draft Workflow** | Save documents or templates as drafts and finalise them later |
-    | **Contacts** | Manage your signer contact book programmatically |
-    | **Folders** | Organise documents inside OpenSign Drive folders |
-    | **Webhooks** | Receive real-time event notifications at your own endpoint |
-    | **Users** | Retrieve account and credit information |
-
-    ---
-
-    ## What’s New in v1.2
-
-   
-    ### Attachment Widget Support
-    The `attachments` widget is now supported on draft document, create document, draft template, create template, and public template APIs.
-
-    ### Hide Signer Signing Links
-    Set `"hide_signer_signing_links": true | false` on `POST /draftdocument` to hide signer signing links in the draft document response.
-
-
-    ### Cleaner Template Retrieval
-    `GET /template/:id` and `GET /templatelist` have been streamlined — redundant parameters are removed and **prefill data is now returned separately from signer parameters**, making responses easier to consume.
-
-    ### Password-Protected PDF Support
-    Pass `"file_password"` in the request body when working with encrypted PDFs. Supported on:
-    `POST /createtemplate` · `PUT /template/:id` · `POST /createdocument/:template_id` · `POST /draftdocument` · `POST /drafttemplate` · `POST /selfsign`
-
-    ### Offline Signing Control
-    Set `"allow_offline_sign": true | false` on `POST /createtemplate` and `PUT /template/:id` to explicitly enable or disable offline signing for each template.
-
-    ### Signer Roles
-    The `signers` object now accepts a `"signer_role"` field across all creation routes. Three roles are supported:
-
-    | Role | Behaviour |
-    |---|---|
-    | `signer` *(default)* | Must complete at least one signature widget |
-    | `viewer` | Receives the document for review only — no widgets allowed |
-    | `approver` | Can have any widgets except a signature requirement |
-
-    ### Carbon Copy (CC) Recipients
-    A new `"cc"` field is now supported alongside the existing `"bcc"` field on document, template, draft and self-sign creation/update routes. Email addresses listed in `"cc"` receive a carbon-copy notification email once the document is completed. Like `"bcc"`, on update routes (such as `PUT /document/:id`) providing `"cc"` overrides the template value, even when supplied as an empty array (`[]`); omit the field to inherit the template value.
-
-    ---
-
-    ## Available Environments
-
-    | Environment | Base URL |
-    |---|---|
-    | **Sandbox** | `https://sandbox.opensignlabs.com/api/v1.2` |
-    | **Production** | `https://app.opensignlabs.com/api/v1.2` |
-    | **EU Region** | `https://eu-app.opensignlabs.com/api/v1.2` |
-
-    ---
-
-    ## Versioning & Backwards Compatibility
-
-    v1.2 is fully backwards-compatible with v1 and v1.1 — all endpoints from those versions are available on this base URL with no breaking changes. New parameters introduced in v1.2 are optional unless otherwise noted.
-
-    ---
-
-    ## Useful Links
-
+    **Useful Links:**
     - [OpenSign Website](https://www.opensignlabs.com)
-    - [Full Documentation](https://docs.opensignlabs.com)
-    - [GitHub Repository](https://github.com/opensignlabs/opensign)
-    - [Generate API Token](https://docs.opensignlabs.com/docs/help/Settings/APIToken)
-    - [Terms of Service](https://www.opensignlabs.com/terms/)
+    - [OpenSign GitHub Repository](https://github.com/opensignlabs/opensign)
+    - [Generate x-api-token](https://docs.opensignlabs.com/docs/help/Settings/APIToken) – Learn how to securely generate and manage your API token for authenticating requests.
+
+    **What’s New in v1.1**
+    - **Public Templates**: Create templates that can be shared via a public link. Any user with the link can generate and sign documents based on the template. Templates themselves cannot be edited through the public link.
+    - **Prefill Widgets**: Add prefill widgets to documents before they are sent. Prefill widgets are supported in the following endpoints: draft documents, document creation, document creation with a template, draft templates, and public templates.
+
+
   x-api-token: 
     description: "refer docs to generate api token [APIToken help](https://docs.opensignlabs.com/docs/help/Settings/APIToken)"
   contact:
@@ -110,10 +31,10 @@ externalDocs:
   description: Find out more about OpenSign
   url: http://docs.opensignlabs.com
 servers:
-- url: https://sandbox.opensignlabs.com/api/v1.2
-- url: https://app.opensignlabs.com/api/v1.2
-- url: https://eu-app.opensignlabs.com/api/v1.2
-- url: https://staging-app.opensignlabs.com/api/v1.2
+- url: https://sandbox.opensignlabs.com/api/v1.1
+- url: https://app.opensignlabs.com/api/v1.1
+- url: https://eu-app.opensignlabs.com/api/v1.1
+- url: https://staging-app.opensignlabs.com/api/v1.1
 tags:
 - name: OpenSign
   description: OpenSource DocuSign alternative
@@ -325,7 +246,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/updatecontact_body'
+              $ref: '#/components/schemas/contact_res'
       responses:
         "200":
           description: Contact updated successfully!
@@ -1168,23 +1089,6 @@ paths:
         ```
         - **cell_count:** Specify the number of cells that should be returned to the user.
 
-        16. **attachments**
-        ```
-        {
-          "type": "attachments",
-          "page": 1,
-          "x": 327,
-          "y": 628,
-          "w": 114,
-          "h": 21,
-          "options": {
-            "required": true,
-            "name": "attachment widget",
-            "hint": "Provide files"
-          }
-        }
-        ```
-
         **Prefill Widgets:** Prefill widgets are elements that are inserted into a document **before** it is shared with a user. Only the document creator has permission to add them.
         
         **List of widgets supported in Prefill**
@@ -1713,23 +1617,6 @@ paths:
         }
         ```
         - **cell_count:** Specify the number of cells that should be returned to the user.
-
-        16. **attachments**
-        ```
-        {
-          "type": "attachments",
-          "page": 1,
-          "x": 327,
-          "y": 628,
-          "w": 114,
-          "h": 21,
-          "options": {
-            "required": true,
-            "name": "attachment widget",
-            "hint": "Provide files"
-          }
-        }
-        ```
 
         **Prefill Widgets:** Prefill widgets are elements that are inserted into a document **before** it is shared with a user. Only the document creator has permission to add them.
         
@@ -2965,23 +2852,6 @@ paths:
         ```
         - **cell_count:** Specify the number of cells that should be returned to the user.
 
-        16. **attachments**
-        ```
-        {
-          "type": "attachments",
-          "page": 1,
-          "x": 327,
-          "y": 628,
-          "w": 114,
-          "h": 21,
-          "options": {
-            "required": true,
-            "name": "attachment widget",
-            "hint": "Provide files"
-          }
-        }
-        ```
-
         **Prefill Widgets:** Prefill widgets are elements that are inserted into a document **before** it is shared with a user. Only the document creator has permission to add them.
         
         **List of widgets supported in Prefill**
@@ -3533,23 +3403,6 @@ paths:
         ```
         - **cell_count:** Specify the number of cells that should be returned to the user.
 
-        16. **attachments**
-        ```
-        {
-          "type": "attachments",
-          "page": 1,
-          "x": 327,
-          "y": 628,
-          "w": 114,
-          "h": 21,
-          "options": {
-            "required": true,
-            "name": "attachment widget",
-            "hint": "Provide files"
-          }
-        }
-        ```
-
  
         **Prefill Widgets:** Prefill widgets are elements that are inserted into a document **before** it is shared with a user. Only the document creator has permission to add them.
         
@@ -4099,23 +3952,6 @@ paths:
         }
         ```
         - **cell_count:** Specify the number of cells that should be returned to the user.
-
-        16. **attachments**
-        ```
-        {
-          "type": "attachments",
-          "page": 1,
-          "x": 327,
-          "y": 628,
-          "w": 114,
-          "h": 21,
-          "options": {
-            "required": true,
-            "name": "attachment widget",
-            "hint": "Provide files"
-          }
-        }
-        ```
         
         **Prefill Widgets:** Prefill widgets are elements that are inserted into a document **before** it is shared with a user. Only the document creator has permission to add them.
         
@@ -5363,6 +5199,8 @@ components:
         note:
           type: string
           example: template note
+        folder:
+          $ref: '#/components/schemas/template_folder'
         file:
           type: string
           example: https://templateuser.com
@@ -5372,30 +5210,10 @@ components:
         signers:
           type: array
           items:
-            type: object
-            properties:
-              role:
-                type: string
-                example: ceo
-              name:
-                type: string
-                example: joe bee
-              email:
-                type: string
-                example: joebee@example.com
-              phone:
-                type: string
-                example: "456213871"
+            $ref: '#/components/schemas/template_Signers'
         sendInOrder:
           type: boolean
           example: true
-        send_in_order_strict:
-          type: boolean
-          example: false
-        allow_offline_sign:
-          type: boolean
-          description: "Whether signers can submit a copy of this template signed using an external tool for owner review. Defaults to false."
-          example: false
         createdAt:
           $ref: '#/components/schemas/date'
         updatedAt:
@@ -5415,9 +5233,7 @@ components:
           example: false
         remind_once_in_every:
           type: number
-          example: 0
-        prefill:
-          $ref: '#/components/schemas/prefill'       
+          example: 0          
       xml:
         name: template
     template_details:
@@ -5453,6 +5269,8 @@ components:
         merge_certificate:
           type: boolean
           example: false
+        folder:
+          $ref: '#/components/schemas/template_folder'
         file:
           type: string
           example: https://templateuser.com
@@ -5466,13 +5284,6 @@ components:
         sendInOrder:
           type: boolean
           example: true
-        send_in_order_strict:
-          type: boolean
-          example: false
-        allow_offline_sign:
-          type: boolean
-          description: "Whether signers can submit a copy of this template signed using an external tool for owner review. Defaults to false."
-          example: false
         createdAt:
           $ref: '#/components/schemas/date'
         updatedAt:
@@ -5501,11 +5312,6 @@ components:
         bcc:
           type: array
           items: 
-            type: string
-          example: ["user@example.com","user2@example.com"]
-        cc:
-          type: array
-          items:
             type: string
           example: ["user@example.com","user2@example.com"]
         prefill: 
@@ -5545,7 +5351,7 @@ components:
           $ref: '#/components/schemas/date'
       xml:
         name: contactdetails
-    updatecontact_body:
+    contact_res:
       type: object
       properties:
         name:
@@ -5687,13 +5493,6 @@ components:
         sendInOrder:
           type: boolean
           example: true
-        send_in_order_strict:
-          type: boolean
-          example: false
-        allow_offline_sign:
-          type: boolean
-          description: "Whether signers can submit a copy of this document signed using an external tool for owner review. Defaults to false."
-          example: false
         createdAt:
           $ref: '#/components/schemas/date'
         updatedAt:
@@ -5731,11 +5530,6 @@ components:
           items: 
             type: string
           example: ["user@example.com","user2@example.com"]  
-        cc:
-          type: array
-          items:
-            type: string
-          example: ["user@example.com","user2@example.com"]
       xml:
         name: documentwithstatus
     signerIpsResponse:
@@ -5849,30 +5643,10 @@ components:
         signers:
           type: array
           items:
-            type: object
-            properties:
-              role:
-                type: string
-                example: ceo
-              name:
-                type: string
-                example: joe bee
-              email:
-                type: string
-                example: joebee@example.com
-              phone:
-                type: string
-                example: "456213871"
+            $ref: '#/components/schemas/template_Signers'
         sendInOrder:
           type: boolean
           example: true
-        send_in_order_strict:
-          type: boolean
-          example: false
-        allow_offline_sign:
-          type: boolean
-          description: "Whether signers can submit a copy of this document signed using an external tool for owner review. Defaults to false."
-          example: false
         createdAt:
           $ref: '#/components/schemas/date'
         updatedAt:
@@ -6015,10 +5789,6 @@ components:
           type: string
           format: base64
           example: base64 encoded pdf
-        file_password:
-          type: string
-          format: string
-          example: ""  
         title:
           type: string
           format: string
@@ -6099,13 +5869,6 @@ components:
           example: ["user@example.com","user2@example.com"]
           description: |
             bcc (blind carbon copy): Users added here will receive a notification email once the document is completed.
-        cc:
-          type: array
-          items:
-            type: string
-          example: ["user@example.com","user2@example.com"]
-          description: |
-            cc (carbon copy): Users added here will receive a notification email once the document is completed.
     draftdocument_body:
       required:
       - file
@@ -6116,10 +5879,6 @@ components:
           type: string
           format: base64
           example: base64 encoded pdf
-        file_password:
-          type: string
-          format: string
-          example: ""  
         title:
           type: string
           format: string
@@ -6160,18 +5919,6 @@ components:
           type: boolean
           description: "If set to 'true', only the first signer will receive the signature request email initially. Emails to subsequent signers will be triggered sequentially, with each sent only after the previous signer has completed their signing. By default, sendInOrder is set to 'true'."
           example: true
-        send_in_order_strict:
-          type: boolean
-          description: "When set to 'true', each signer is blocked from accessing the document until all preceding signers have completed their action. Enforces strict sequential signing. Only applies when 'sendInOrder' is also 'true'. Defaults to 'false'."
-          example: false
-        allow_offline_sign:
-          type: boolean
-          description: "If set to 'true', signers can submit a copy of this document signed using an external tool for owner review. Defaults to 'false'."
-          example: false
-        hide_signer_signing_links:
-          type: boolean
-          description: "If set to 'true', signer signing links are hidden in the draft document response. Defaults to 'false'."
-          example: false
         enableOTP:
           type: boolean
           description: "true - this option will enable OTP verification. Users will receive a verification code via email, which they must enter to sign the document. false -  this option will disable OTP verification, allowing users to sign the document directly without additional steps."
@@ -6234,13 +5981,6 @@ components:
           example: ["user@example.com","user2@example.com"]
           description: |
             bcc (blind carbon copy): Users added here will receive a notification email once the document is completed.
-        cc:
-          type: array
-          items:
-            type: string
-          example: ["user@example.com","user2@example.com"]
-          description: |
-            cc (carbon copy): Users added here will receive a notification email once the document is completed.
         prefill: 
           $ref: '#/components/schemas/prefill'
     createdocument_body:
@@ -6254,10 +5994,6 @@ components:
           type: string
           format: base64
           example: base64 encoded pdf
-        file_password:
-          type: string
-          format: string
-          example: ""
         title:
           type: string
           format: string
@@ -6298,14 +6034,6 @@ components:
           type: boolean
           description: "If set to 'true', only the first signer will receive the signature request email initially. Emails to subsequent signers will be triggered sequentially, with each sent only after the previous signer has completed their signing. By default, sendInOrder is set to 'true'."
           example: true
-        send_in_order_strict:
-          type: boolean
-          description: "When set to 'true', each signer is blocked from accessing the document until all preceding signers have completed their action. Enforces strict sequential signing. Only applies when 'sendInOrder' is also 'true'. Defaults to 'false'."
-          example: false
-        allow_offline_sign:
-          type: boolean
-          description: "If set to 'true', signers can submit a copy of this document signed using an external tool for owner review. Defaults to 'false'."
-          example: false
         enableOTP:
           type: boolean
           description: "true - this option will enable OTP verification. Users will receive a verification code via email, which they must enter to sign the document. false -  this option will disable OTP verification, allowing users to sign the document directly without additional steps."
@@ -6368,13 +6096,6 @@ components:
           example: ["user@example.com","user2@example.com"]
           description: |
             bcc (blind carbon copy): Users added here will receive a notification email once the document is completed.  
-        cc:
-          type: array
-          items:
-            type: string
-          example: ["user@example.com","user2@example.com"]
-          description: |
-            cc (carbon copy): Users added here will receive a notification email once the document is completed.
         prefill: 
           $ref: '#/components/schemas/prefill'  
     inline_response_200_1:
@@ -6437,25 +6158,7 @@ components:
         job_title:
           type: string
           format: string
-          example: dev
-        signer_role:
-          type: string
-          format: string
-          description: |
-            Specifies the role of the recipient in the signing process. Allowed values:
-            - **signer** (default): Must have at least one signature widget.
-            - **viewer**: Receives the document to view only; must have no widgets.
-            - **approver**: Reviews and approves the document; no signature widget required.
-          enum:
-            - signer
-            - viewer
-            - approver
-          example: signer
-        access_code:
-          type: string
-          format: string
-          description: when set, this numeric access code is required for the signer to access and sign the document.
-          example: "123456"
+          example: dev   
         widgets:
           type: array
           items:
@@ -6502,24 +6205,6 @@ components:
 
             If the field is omitted or provided as an empty/invalid value, the template value is used.
           example: true
-        send_in_order_strict:
-          type: boolean
-          description: |
-            **true** - Each signer is blocked from accessing the document until all preceding signers have completed their action. Enforces strict sequential signing. Only applies when sendInOrder is also true.
-
-            **false** - Signers can access the document regardless of whether previous signers have completed.
-
-            If the field is omitted or provided as an empty/invalid value, the template value is used.
-          example: false
-        allow_offline_sign:
-          type: boolean
-          description: |
-            **true** - Signers can submit a copy of this document signed using an external tool for owner review.
-
-            **false** - Signers must complete signing within OpenSign.
-
-            If the field is omitted or provided as an empty/invalid value, the template value is used.
-          example: false
         timeToCompleteDays:
           type: number
           description: time to complete days is used to calculate expiry date of your document. If this field is present in the request body, it overrides the template value, even when set to 0. If omitted, the template value is used.
@@ -6572,10 +6257,6 @@ components:
           description: You may provide the base64 encoded PDF file to replace the existing one
           format: base64
           example: ""
-        file_password:
-          type: string
-          format: string
-          example: ""  
         auto_reminder:
           type: boolean
           description: Set to true to enable automatic reminders. Set to false to disable them (default behavior). If the field is omitted or provided as an empty/invalid value, the template value is used.
@@ -6618,15 +6299,6 @@ components:
           example: ["user@example.com","user2@example.com"]
           description: |
             bcc (blind carbon copy): Users added here will receive a notification email once the document is completed.
-            If this field is present in the request body, it overrides the template value, even when provided as an empty array ([]).
-            If omitted or provided empty string ("") the template value is used.
-        cc:
-          type: array
-          items:
-            type: string
-          example: ["user@example.com","user2@example.com"]
-          description: |
-            cc (carbon copy): Users added here will receive a notification email once the document is completed.
             If this field is present in the request body, it overrides the template value, even when provided as an empty array ([]).
             If omitted or provided empty string ("") the template value is used.
         prefill: 
@@ -6709,10 +6381,6 @@ components:
           type: boolean
           description: "true - Permits signers to add elements such as signatures, initials, stamps, or text on top of existing widgets in the document. false - Restricts signers from adding any additional elements to the document. This is the default value."
           example: false
-        send_in_order_strict:
-          type: boolean
-          description: "When set to 'true', each signer is blocked from accessing the document until all preceding signers have completed their action. Enforces strict sequential signing. Only applies when 'sendInOrder' is also 'true'. Defaults to 'false'."
-          example: false
         redirect_url:
           type: string
           description: Specifies the URL where the signer will be redirected upon completing the document signing process. 
@@ -6746,13 +6414,6 @@ components:
           example: ["user@example.com","user2@example.com"]
           description: |
             bcc (blind carbon copy): Users added here will receive a notification email once the document is completed.  
-        cc:
-          type: array
-          items:
-            type: string
-          example: ["user@example.com","user2@example.com"]
-          description: |
-            cc (carbon copy): Users added here will receive a notification email once the document is completed.
     inline_response_200_3:
       type: object
       properties:
@@ -6799,10 +6460,6 @@ components:
           type: string
           format: base64
           example: base64 encoded pdf
-        file_password:
-          type: string
-          format: string
-          example: ""  
         title:
           type: string
           format: string
@@ -6824,14 +6481,6 @@ components:
           type: boolean
           description: "If set to 'true', only the first signer will receive the signature request email initially. Emails to subsequent signers will be triggered sequentially, with each sent only after the previous signer has completed their signing. By default, sendInOrder is set to 'true'."
           example: true
-        send_in_order_strict:
-          type: boolean
-          description: "When set to 'true', each signer is blocked from accessing the document until all preceding signers have completed their action. Enforces strict sequential signing. Only applies when 'sendInOrder' is also 'true'. Defaults to 'false'."
-          example: false
-        allow_offline_sign:
-          type: boolean
-          description: "If set to 'true', signers can submit a copy of documents created from this template signed using an external tool for owner review. Defaults to 'false'."
-          example: false
         enableOTP:
           type: boolean
           description: "true - this option will enable OTP verification. Users will receive a verification code via email, which they must enter to sign the document. false -  this option will disable OTP verification, allowing users to sign the document directly without additional steps."
@@ -6899,13 +6548,6 @@ components:
           example: ["user@example.com","user2@example.com"]
           description: |
             bcc (blind carbon copy): Users added here will receive a notification email once the document is completed.          
-        cc:
-          type: array
-          items:
-            type: string
-          example: ["user@example.com","user2@example.com"]
-          description: |
-            cc (carbon copy): Users added here will receive a notification email once the document is completed.
         prefill: 
           $ref: '#/components/schemas/prefill'
     inline_response_draft_200:
@@ -6974,19 +6616,11 @@ components:
           type: boolean
           description: "true - Permits signers to add elements such as signatures, initials, stamps, or text on top of existing widgets in the document. false - Restricts signers from adding any additional elements to the document. This is the default value."
           example: false
-        send_in_order_strict:
-          type: boolean
-          description: "When set to 'true', each signer is blocked from accessing the document until all preceding signers have completed their action. Enforces strict sequential signing. Only applies when 'sendInOrder' is also 'true'. Defaults to 'false'."
-          example: false
         file:
           type: string
           description: You may provide the base64 encoded PDF file to replace the existing one
           format: base64
           example: ""
-        file_password:
-          type: string
-          format: string
-          example: ""  
         redirect_url:
           type: string
           description: Specifies the URL where the signer will be redirected upon completing the document signing process.
@@ -7020,13 +6654,6 @@ components:
           example: ["user@example.com","user2@example.com"]
           description: |
             bcc (blind carbon copy): Users added here will receive a notification email once the document is completed.
-        cc:
-          type: array
-          items:
-            type: string
-          example: ["user@example.com","user2@example.com"]
-          description: |
-            cc (carbon copy): Users added here will receive a notification email once the document is completed.
     inline_response_404_7:
       type: object
       properties:
@@ -7118,7 +6745,7 @@ components:
       properties:
         type:
           type: string
-          description: "Allowed values include signature, stamp, initials, email, name, job title, company, date, textbox, checkbox, dropdown, radio button, image, number, cells, attachments."
+          description: "Allowed values - signature, stamp."
           format: string
           example: signature
         page:
@@ -7172,25 +6799,7 @@ components:
         job_title:
           type: string
           format: string
-          example: dev
-        signer_role:
-          type: string
-          format: string
-          description: |
-            Specifies the role of the recipient in the signing process. Allowed values:
-            - **signer** (default): Must have at least one signature widget.
-            - **viewer**: Receives the document to view only; must have no widgets.
-            - **approver**: Reviews and approves the document; no signature widget required.
-          enum:
-            - signer
-            - viewer
-            - approver
-          example: signer
-        access_code:
-          type: string
-          format: string
-          description: when set, this numeric access code is required for the signer to access and sign the document.
-          example: "123456"
+          example: dev             
         widgets:
           type: array
           items:
@@ -7200,7 +6809,7 @@ components:
       properties:
         type:
           type: string
-          description: "Allowed values include signature, stamp, initials, email, name, job title, company, date, textbox, checkbox, dropdown, radio button, image, number, cells, attachments."
+          description: "Allowed values - signature, stamp."
           format: string
           example: signature
         page:
@@ -7254,29 +6863,21 @@ components:
         job_title:
           type: string
           format: string
-          example: ""
-        signer_role:
-          type: string
-          format: string
-          description: |
-            Specifies the role of the recipient in the signing process. Allowed values:
-            - **signer** (default): Must have at least one signature widget.
-            - **viewer**: Receives the document to view only; must have no widgets.
-            - **approver**: Reviews and approves the document; no signature widget required.
-          enum:
-            - signer
-            - viewer
-            - approver
-          example: signer
-        access_code:
-          type: string
-          format: string
-          description: when set, this numeric access code is required for the signer to access and sign the document.
-          example: "123456"
+          example: ""             
         widgets:
           type: array
           items:
             $ref: '#/components/schemas/createtemplate_body_widgets'
+    template_folder:
+      type: object
+      properties:
+        objectId:
+          type: string
+          format: string
+          example: x1Hbnms2Pg
+        name:
+          type: string
+          example: folder name
     document_folder:
       type: object
       properties:
