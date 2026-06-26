@@ -302,9 +302,10 @@ Supported operators:
   
 **Example** If the value entered in **TextInput1** is equal to **HR**, then **TextInput2** is displayed.
 
-```text Condition: TextInput1 = HR Action: Show TextInput2 ``` 
-
----
+```
+text Condition: TextInput1 = HR  
+Action: Show TextInput2
+ ``` 
 ### Number
 Supported operators:
 - Equals
