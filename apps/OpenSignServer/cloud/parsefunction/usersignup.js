@@ -4,10 +4,16 @@ const serverUrl = cloudServerUrl; //process.env.SERVER_URL;
 const APPID = serverAppId;
 const masterKEY = process.env.MASTER_KEY;
 
+function normalizeEmail(email) {
+  return String(email || '')
+    .toLowerCase()
+    .replace(/\s/g, '');
+}
+
 async function saveUser(userDetails) {
-  const normalizedEmail = normalizeEmail(userDetails.email.toLowerCase().replace(/\s/g, ''));
+  const normalizedEmail = normalizeEmail(userDetails.email);
   const userQuery = new Parse.Query(Parse.User);
-  userQuery.equalTo('username', userDetails.email);
+  userQuery.equalTo('username', normalizedEmail);
   const userRes = await userQuery.first({ useMasterKey: true });
 
   if (userRes) {
@@ -29,9 +35,9 @@ async function saveUser(userDetails) {
     return { id: login.objectId, sessionToken: login.sessionToken };
   } else {
     const user = new Parse.User();
-    user.set('username', userDetails.email);
+    user.set('username', normalizedEmail);
     user.set('password', userDetails.password);
-    user.set('email', userDetails?.email?.toLowerCase()?.replace(/\s/g, ''));
+    user.set('email', normalizedEmail);
     user.set('normalizedEmail', normalizedEmail);
 
     if (userDetails?.phone) {
