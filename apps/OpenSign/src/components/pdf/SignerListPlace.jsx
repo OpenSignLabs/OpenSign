@@ -1,14 +1,15 @@
+import { useState } from "react";
 import RecipientList from "./RecipientList";
 // import { Tooltip } from "react-tooltip";
 import { useTranslation } from "react-i18next";
 
 function SignerListPlace(props) {
   const { t } = useTranslation();
-
   const handleAddRecipient = () => {
     props?.setIsAddSigner(true);
     props.setIsTour && props.setIsTour(false);
   };
+
   return (
     <div>
       <div className="mx-2 pr-2 pt-2 pb-1 text-[15px] text-base-content font-semibold border-b-[1px] border-base-300">
@@ -20,7 +21,9 @@ function SignerListPlace(props) {
         </span>
       </div>
       <div className="overflow-auto hide-scrollbar max-h-[180px]">
-        <RecipientList {...props} />
+        <RecipientList
+          {...props}
+        />
       </div>
       <div className="mx-1">
         {props.handleAddSigner ? (

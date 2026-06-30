@@ -1029,7 +1029,7 @@ function SignYourSelf() {
     status,
     defaultValue,
     isHideLabel,
-    layout
+    layout,
   ) => {
     const widgetPageNumber = currWidgetsDetails?.pageNumber || pageNumber;
     const getPageNumer = xyPosition.filter(
@@ -1067,7 +1067,7 @@ function SignYourSelf() {
                 fontSize:
                   fontSize || currWidgetsDetails?.options?.fontSize || 12,
                 fontColor:
-                  fontColor || currWidgetsDetails?.options?.fontColor || "black"
+                  fontColor || currWidgetsDetails?.options?.fontColor || "black",
               }
             };
           }
