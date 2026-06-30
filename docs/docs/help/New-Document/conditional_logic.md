@@ -2,7 +2,71 @@
 sidebar_position: 6
 title: Conditional logic
 ---
-# Text Input Widget - Conditional Logic
+# Conditional Logic
+The **Conditional Logic** feature in OpenSign allows widgets to dynamically change their behavior based on the values entered or selections made in other widgets while a signer is completing a document.
+
+Instead of displaying every field at once, Conditional Logic helps you create intelligent, interactive forms by showing, hiding, or changing the requirements of fields only when specific conditions are met. This simplifies the signing experience by displaying only the fields that are relevant to the signer.
+
+---
+
+## What Can Conditional Logic Do?
+
+Using Conditional Logic, you can configure a widget to perform one of the following actions:
+
+### Show this Field
+
+Displays the target widget only when the configured condition is met.
+
+**Example**
+
+If the signer selects **Employee** from a Dropdown field, an **Employee ID** field can be displayed automatically.
+
+---
+
+### Hide this Field
+
+Hides the target widget when the configured condition is met.
+
+**Example**
+
+If the signer selects **No** for "Do you have a secondary address?", the **Secondary Address** fields can be hidden.
+
+---
+
+### Make Required
+
+Makes the target widget mandatory when the configured condition is met. The signer must complete the field before they can finish signing the document.
+
+**Example**
+
+If the signer selects **Yes** for "Are you currently employed?", the **Employer Name** field becomes required.
+
+---
+
+### Make Optional
+
+Makes the target widget optional when the configured condition is met. The signer can complete the document without filling in that field.
+
+**Example**
+
+If the signer selects **No** for "Do you have previous work experience?", the **Previous Employer** field becomes optional.
+
+---
+
+## Benefits of Conditional Logic
+
+Conditional Logic helps you build dynamic and user-friendly documents by:
+
+- Displaying only relevant fields to the signer.
+- Reducing unnecessary data entry.
+- Creating interactive forms without requiring multiple document templates.
+- Simplifying complex workflows.
+- Improving the signing experience.
+- Ensuring required information is collected only when applicable.
+
+---
+
+## Text Input Widget - Conditional Logic
 
 The **Text Input** widget in OpenSign supports **Conditional Logic**, allowing you to dynamically control its behavior based on values entered or selected in other widgets.
 
@@ -26,8 +90,8 @@ The Text Input widget supports the following trigger widgets:
 | Text Input | Equals, Does Not Equal |
 | Number | Equals, Does Not Equal |
 | Dropdown | Equals, Does Not Equal |
-| Checkbox | Is Checked, Is Not Checked |
-| Radio Button | Equals, Does Not Equal |
+| Checkbox | Is Checked, Is Not Checked, Equals, Does Not Equal |
+| Radio Button | Is Checked, Is Not Checked, Equals, Does Not Equal |
 
 ---
 
@@ -192,7 +256,7 @@ The Text Input field becomes optional when the signer enters **HR**.
 
 ---
 
-# Number Widget as the Trigger
+## Number Widget as the Trigger
 
 The Number widget controls the Text Input widget using numeric values.
 
