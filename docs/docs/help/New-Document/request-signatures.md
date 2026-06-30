@@ -339,20 +339,173 @@ Show TextInput1
 | **Condition 2 checkbox** | checked |
 | **Action** | Show TextInput1 |
 
-**Result**: The configured TextInput1 field is displayed when either of the following conditions is met:
+**Result**
 
-The signer enters 10 in the Number field, or
-The signer selects any checkbox option.
+The configured **TextInput1** widget becomes visible when **either** the Number field equals **10** **or** the Checkbox is checked.
+
+### Related Conditional Logic Guides
+
+The **Text Input** widget also supports Conditional Logic using the following trigger widgets:
+
+- **Dropdown Widget** – [Read more](https://github.com/pravinOpenSign/OpenSign/blob/patch-75/docs/docs/help/New-Document/conditional_logic.md#dropdown-widget-as-the-trigger)
+- **Checkbox Widget** – [Read more](https://github.com/pravinOpenSign/OpenSign/blob/patch-75/docs/docs/help/New-Document/conditional_logic.md#checkbox-widget-as-the-trigger)
+- **Radio Button Widget** – [Read more](https://github.com/pravinOpenSign/OpenSign/blob/patch-75/docs/docs/help/New-Document/conditional_logic.md#radio-button-as-the-trigger)
+
+### Additional Widget Options
+
+- **Add Signer / Change Signer**: Click the first icon on the Text Input widget to assign the widget to a different signer. You can select an existing signer or add a new recipient.
+
+- **Copy**: Click the **Copy** icon to duplicate the Text Input widget.
+  
+---
+
+- **Number widget**
+
+The Number widget is used to collect numeric input from the signer. It accepts only numeric values, helping ensure data accuracy and consistency. The Number widget also supports formulas, allowing you to perform automatic calculations using values from other Number widgets. After placing the Number widget, you will see the following options:
+
+  - **Settings**: The widget settings panel provides additional customization options, including:
+    - Choosing a **font color**
+    - Setting the **font size**
+    - Marking the field as **required** or **optional**
+    - Providing a **default value**
+    - Making the field **read-only**
+    - Adding a **placeholder** to guide the signer on the expected input
+    - Assigning a unique **Name** to the widget. This name is used when referencing the widget in formulas.
+      - Example:
+        - `number-1`
+        - `subtotal`
+        - `tax`
+        - `grand_total`
+    - Defining a **Formula** to automatically calculate values using other Number widgets.
+      - Example:
+        ```text
+        {{quantity}} * {{price}}
+        ```
+      - Supported mathematical operators include:
+        - `+` Addition
+        - `-` Subtraction
+        - `*` Multiplication
+        - `/` Division
+        - `%` Modulus (Remainder)
+        - `()` Parentheses for grouping operations
 
 ---
-the conditional logic for textinput field can be applied with the following widgets 
-checkbox (read more)
-dropdown (read more)
-Radio buttons (read more)
 
-   - Add Signer/Change Signer: Clicking the first icon on the Text Input widget allows you to change the signer. You can choose from existing signers in the dropdown or add a new signer.
+### **Conditional Logic**
 
-   - Copy : Clicking on this you can duplicate the Text Input widget.
+The Number widget also supports **Conditional Logic**, allowing you to dynamically show, hide, make required, or make optional the field based on values entered or selected in other widgets.
+
+Conditional Logic enables the Number widget to respond dynamically based on values from other widgets.
+
+Depending on the configured rule, the Number widget can:
+
+- Show the field
+- Hide the field
+- Make the field **Required**
+- Make the field **Optional**
+
+---
+
+## Supported Conditions
+
+The **Number** widget supports Conditional Logic based on the values of other widgets.
+
+The available conditions depend on the selected trigger widget.
+
+### Text Input
+
+**Supported operators:**
+
+- **Equals**
+- **Does Not Equal**
+
+**Example**
+
+If the value entered in **TextInput1** is equal to **HR**, then **Number1** is displayed.
+
+```text
+Condition: TextInput1 = HR
+Action: Show Number1
+```
+
+---
+
+### Number
+
+**Supported operators:**
+
+- **Equals**
+- **Does Not Equal**
+
+**Example**
+
+If **Number1** equals **10**, then **Number2** is displayed.
+
+```text
+Condition: Number1 = 10
+Action: Show Number2
+```
+
+---
+
+### Any Condition (OR)
+
+When **Any Condition (OR)** is selected, the configured action is performed when **at least one** of the configured conditions is satisfied.
+
+#### Example
+
+**Conditions**
+
+- Number Field = **10**
+- **OR**
+- Checkbox = **Checked**
+
+**Action**
+
+Show **Number1**
+
+**Result**
+
+The configured **Number1** widget is displayed when either of the following conditions is met:
+
+- The signer enters **10** in the Number field.
+- The signer checks the Checkbox.
+
+---
+
+## Configuration Example
+
+| Property | Value |
+|----------|-------|
+| **Condition Type** | Any Condition (OR) |
+| **Trigger Widget 1** | Number |
+| **Condition** | Equals |
+| **Condition Value** | 10 |
+| **Trigger Widget 2** | Checkbox |
+| **Condition** | Is Checked |
+| **Action** | Show Number1 |
+
+**Result**
+
+The configured **Number1** widget becomes visible when **either** the Number field equals **10** **or** the Checkbox is checked.
+
+### Related Conditional Logic Guides
+
+The **Number** widget also supports Conditional Logic using the following trigger widgets:
+
+- **Dropdown Widget** – [Read more](https://github.com/pravinOpenSign/OpenSign/blob/patch-75/docs/docs/help/New-Document/conditional_logic.md#number-widget-triggered-by-a-dropdown)
+
+- **Checkbox Widget** – [Read more](https://github.com/pravinOpenSign/OpenSign/blob/patch-75/docs/docs/help/New-Document/conditional_logic.md#number-widget-triggered-by-a-checkbox)
+
+- **Radio Button Widget** – [Read more](https://github.com/pravinOpenSign/OpenSign/blob/patch-75/docs/docs/help/New-Document/conditional_logic.md#number-widget-triggered-by-a-radio-button)
+
+### Additional Widget Options
+
+- **Add Signer / Change Signer**: Click the first icon on the Number widget to assign the widget to a different signer. You can choose an existing signer or add a new recipient.
+
+- **Copy**: Click the **Copy** icon to duplicate the Number widget.
+
+---
 
 - **Cells**  
   The **Cells widget** is ideal for documents that require input in a structured, table-like format, allowing the signer to fill in details within individual cells. After dragging and dropping the widget onto the document, you can adjust the number of cells by moving the **blue marker**.
@@ -383,19 +536,542 @@ Radio buttons (read more)
 
 <img width="800" alt="request signatures" src="https://github.com/user-attachments/assets/dee17fe8-243b-4113-896a-00424d12ea8a" />
 
+---
+
  - **Checkbox**: The checkbox widget is used to capture input in the form of a checkbox selection. Once you drop the checkbox widget, a popup will open where you can set the checkbox name and options. Additionally, there are a few options available such as setting the minimum and maximum checks, making the checkbox read-only, and hiding the label.
-     - Add Signer/Change Signer: Clicking the first icon on the CheckBox widget allows you to change the signer. You can choose from existing signers in the dropdown or add a new signer.
-     - Copy : Clicking on this you can duplicate the Checkbox widget.
+### **Conditional Logic**
+
+The **Checkbox** widget supports **Conditional Logic**, allowing you to dynamically show, hide, make required, or make optional the field based on values entered or selected in other widgets.
+
+Conditional Logic enables the Checkbox widget to respond dynamically based on values from other widgets.
+
+Depending on the configured rule, the Checkbox field can:
+
+- Show the field
+- Hide the field
+- Make the field **Required**
+- Make the field **Optional**
+
+---
+
+## Supported Conditions
+
+The **Checkbox** widget supports Conditional Logic based on the values of other widgets.
+
+The available conditions depend on the selected trigger widget.
+
+### Text Input
+
+**Supported operators:**
+
+- **Equals**
+- **Does Not Equal**
+
+**Example**
+
+If the value entered in **TextInput1** is **HR**, then **Checkbox1** is displayed.
+
+```text
+Condition: TextInput1 = HR
+Action: Show Checkbox1
+```
+
+---
+
+### Number
+
+**Supported operators:**
+
+- **Equals**
+- **Does Not Equal**
+
+**Example**
+
+If **Number1** equals **10**, then **Checkbox1** is displayed.
+
+```text
+Condition: Number1 = 10
+Action: Show Checkbox1
+```
+
+---
+
+### Dropdown
+
+**Supported operators:**
+
+- **Equals**
+- **Does Not Equal**
+
+**Example**
+
+If the selected value of **Dropdown1** is **Manager**, then **Checkbox1** is displayed.
+
+```text
+Condition: Dropdown1 = Manager
+Action: Show Checkbox1
+```
+
+---
+
+### Checkbox
+
+**Supported operators:**
+
+- **Is Checked**
+- **Is Not Checked**
+
+**Example**
+
+If **Checkbox1** is checked, then **Checkbox2** is displayed.
+
+```text
+Condition: Checkbox1 is Checked
+Action: Show Checkbox2
+```
+
+Another example:
+
+If **Checkbox1** is **not checked**, then **Checkbox2** is displayed.
+
+```text
+Condition: Checkbox1 is Not Checked
+Action: Show Checkbox2
+```
+
+---
+
+### Radio Button
+
+**Supported operators:**
+
+- **Is Checked**
+- **Is Not Checked**
+- **Equals**
+- **Does Not Equal**
+
+**Example**
+
+If **Radio Button1** is checked, then **Checkbox1** is displayed.
+
+```text
+Condition: Radio Button1 is Checked
+Action: Show Checkbox1
+```
+
+---
+
+### Any Condition (OR)
+
+When **Any Condition (OR)** is selected, the configured action is performed when **at least one** of the configured conditions is satisfied.
+
+#### Example
+
+**Conditions**
+
+- Number Field = **10**
+- **OR**
+- Checkbox = **Checked**
+
+**Action**
+
+Show **Checkbox1**
+
+**Result**
+
+The configured **Checkbox1** widget is displayed when **either** of the following conditions is met:
+
+- The signer enters **10** in the Number field.
+- The signer checks the Checkbox.
+
+---
+
+## Configuration Example
+
+| Property | Value |
+|----------|-------|
+| **Condition Type** | Any Condition (OR) |
+| **Trigger Widget 1** | Number |
+| **Condition** | Equals |
+| **Condition Value** | 10 |
+| **Trigger Widget 2** | Checkbox |
+| **Condition** | Is Checked |
+| **Action** | Show Checkbox1 |
+
+**Result**
+
+The configured **Checkbox1** widget becomes visible when **either** the Number field equals **10** **or** the Checkbox is checked.
+
+### Related Conditional Logic Guides
+
+The **Checkbox** widget also supports Conditional Logic using the following trigger widgets:
+
+- **Text Input Widget** – [Read more](https://github.com/pravinOpenSign/OpenSign/blob/patch-75/docs/docs/help/New-Document/conditional_logic.md#text-input-widget-as-the-trigger)
+
+- **Number Widget** – [Read more](https://github.com/pravinOpenSign/OpenSign/blob/patch-75/docs/docs/help/New-Document/conditional_logic.md#number-widget-as-the-trigger)
+
+- **Dropdown Widget** – [Read more](https://github.com/pravinOpenSign/OpenSign/blob/patch-75/docs/docs/help/New-Document/conditional_logic.md#dropdown-widget-as-the-trigger)
+
+- **Radio Button Widget** – [Read more](https://github.com/pravinOpenSign/OpenSign/blob/patch-75/docs/docs/help/New-Document/conditional_logic.md#radio-button-as-the-trigger)
+
+### Additional Widget Options
+
+- **Add Signer / Change Signer**: Click the first icon on the Checkbox widget to assign the widget to a different signer. You can select an existing signer or add a new recipient.
+
+- **Copy**: Click the **Copy** icon to duplicate the Checkbox widget.
+      
+---
+
 - **Dropdown**: Once you drop the dropdown widget, a popup will open where you can set the dropdown name and options. Additionally, there are a few options available such as setting a default value and marking the dropdown as required or optional.
-     - Add Signer/Change Signer: Clicking the first icon on the Dropdown widget allows you to change the signer. You can choose from existing signers in the dropdown or add a new signer.
-     - Copy : Clicking on this you can duplicate the dropdown widget.
+### **Conditional Logic**
+
+The **Dropdown** widget supports **Conditional Logic**, allowing you to dynamically show, hide, make required, or make optional the field based on values entered or selected in other widgets.
+
+Conditional Logic enables the Dropdown widget to respond dynamically based on values from other widgets.
+
+Depending on the configured rule, the Dropdown field can:
+
+- Show the field
+- Hide the field
+- Make the field **Required**
+- Make the field **Optional**
+
+---
+
+## Supported Conditions
+
+The **Dropdown** widget supports Conditional Logic based on the values of other widgets.
+
+The available conditions depend on the selected trigger widget.
+
+### Text Input
+
+**Supported operators:**
+
+- **Equals**
+- **Does Not Equal**
+
+**Example**
+
+If the value entered in **TextInput1** is equal to **HR**, then **Dropdown1** is displayed.
+
+```text
+Condition: TextInput1 = HR
+Action: Show Dropdown1
+```
+
+---
+
+### Number
+
+**Supported operators:**
+
+- **Equals**
+- **Does Not Equal**
+
+**Example**
+
+If **Number1** equals **10**, then **Dropdown1** is displayed.
+
+```text
+Condition: Number1 = 10
+Action: Show Dropdown1
+```
+
+---
+
+### Dropdown
+
+**Supported operators:**
+
+- **Equals**
+- **Does Not Equal**
+
+**Example**
+
+If the selected value of **Dropdown1** is **Manager**, then **Dropdown2** is displayed.
+
+```text
+Condition: Dropdown1 = Manager
+Action: Show Dropdown2
+```
+
+---
+
+### Any Condition (OR)
+
+When **Any Condition (OR)** is selected, the configured action is performed when **at least one** of the configured conditions is satisfied.
+
+#### Example
+
+**Conditions**
+
+- Number Field = **10**
+- **OR**
+- Checkbox = **Checked**
+
+**Action**
+
+Show **Dropdown1**
+
+**Result**
+
+The configured **Dropdown1** widget is displayed when **either** of the following conditions is met:
+
+- The signer enters **10** in the Number field.
+- The signer checks the Checkbox.
+
+---
+
+## Configuration Example
+
+| Property | Value |
+|----------|-------|
+| **Condition Type** | Any Condition (OR) |
+| **Trigger Widget 1** | Number |
+| **Condition** | Equals |
+| **Condition Value** | 10 |
+| **Trigger Widget 2** | Checkbox |
+| **Condition** | Is Checked |
+| **Action** | Show Dropdown1 |
+
+**Result**
+
+The configured **Dropdown1** widget becomes visible when **either** the Number field equals **10** **or** the Checkbox is checked.
+
+### Related Conditional Logic Guides
+
+The **Dropdown** widget also supports Conditional Logic using the following trigger widgets:
+
+- **Text input** – [Read more](https://github.com/pravinOpenSign/OpenSign/blob/patch-75/docs/docs/help/New-Document/conditional_logic.md#dropdown-triggered-by-a-text-input)
+  
+- **Number** – [Read more](https://github.com/pravinOpenSign/OpenSign/blob/patch-75/docs/docs/help/New-Document/conditional_logic.md#dropdown-triggered-by-a-number-widget)
+  
+- **Dropdown Triggered by Another Dropdown** [Read more](https://github.com/pravinOpenSign/OpenSign/blob/patch-75/docs/docs/help/New-Document/conditional_logic.md#dropdown-triggered-by-another-dropdown)
+  
+- **Checkbox Widget** – [Read more](https://github.com/pravinOpenSign/OpenSign/blob/patch-75/docs/docs/help/New-Document/conditional_logic.md#dropdown-triggered-by-a-checkbox)
+
+- **Radio Button Widget** – [Read more](https://github.com/pravinOpenSign/OpenSign/blob/patch-75/docs/docs/help/New-Document/conditional_logic.md#dropdown-triggered-by-a-radio-button)
+
+### Additional Widget Options
+
+- **Add Signer / Change Signer**: Click the first icon on the Dropdown widget to assign the widget to a different signer. You can select an existing signer or add a new recipient.
+
+- **Copy**: Click the **Copy** icon to duplicate the Dropdown widget.
+
+---
+
  - **Radio button**: The radio button widget is used to capture input in the form of a radio button selection. Once you drop the radio button widget, a popup will open where you can set the radio button name and options. Additionally, there are a few options available such as setting a default value, making the radio button read-only, and hiding the label.
-     - Add Signer/Change Signer: Clicking the first icon on the Radio button widget allows you to change the signer. You can choose from existing signers in the dropdown or add a new signer.
-     - Copy : Clicking on this you can duplicate the radio button widget.
+
+### **Conditional Logic**
+
+The **Radio Button** widget supports **Conditional Logic**, allowing you to dynamically show, hide, make required, or make optional the field based on values entered or selected in other widgets.
+
+Conditional Logic enables the Radio Button widget to respond dynamically based on values from other widgets.
+
+Depending on the configured rule, the Radio Button field can:
+
+- Show the field
+- Hide the field
+- Make the field **Required**
+- Make the field **Optional**
+
+---
+
+## Supported Conditions
+
+The **Radio Button** widget supports Conditional Logic based on the values of other widgets.
+
+The available conditions depend on the selected trigger widget.
+
+### Text Input
+
+**Supported operators:**
+
+- **Equals**
+- **Does Not Equal**
+
+**Example**
+
+If the value entered in **TextInput1** is **HR**, then **RadioButton1** is displayed.
+
+```text
+Condition: TextInput1 = HR
+Action: Show RadioButton1
+```
+
+---
+
+### Number
+
+**Supported operators:**
+
+- **Equals**
+- **Does Not Equal**
+
+**Example**
+
+If **Number1** equals **10**, then **RadioButton1** is displayed.
+
+```text
+Condition: Number1 = 10
+Action: Show RadioButton1
+```
+
+---
+
+### Dropdown
+
+**Supported operators:**
+
+- **Equals**
+- **Does Not Equal**
+
+**Example**
+
+If the selected value of **Dropdown1** is **Manager**, then **RadioButton1** is displayed.
+
+```text
+Condition: Dropdown1 = Manager
+Action: Show RadioButton1
+```
+
+---
+
+### Checkbox
+
+**Supported operators:**
+
+- **Is Checked**
+- **Is Not Checked**
+
+**Example**
+
+If **Checkbox1** is checked, then **RadioButton1** is displayed.
+
+```text
+Condition: Checkbox1 is Checked
+Action: Show RadioButton1
+```
+
+Another example:
+
+If **Checkbox1** is **not checked**, then **RadioButton1** is displayed.
+
+```text
+Condition: Checkbox1 is Not Checked
+Action: Show RadioButton1
+```
+
+---
+
+### Radio Button
+
+**Supported operators:**
+
+- **Is Checked**
+- **Is Not Checked**
+- **Equals**
+- **Does Not Equal**
+
+#### Example 1 – Using **Is Checked**
+
+If **RadioButton1** is selected, then **RadioButton2** is displayed.
+
+```text
+Condition: RadioButton1 is Checked
+Action: Show RadioButton2
+```
+
+#### Example 2 – Using **Equals**
+
+If the selected value of **RadioButton1** is **Approved**, then **RadioButton2** is displayed.
+
+```text
+Condition: RadioButton1 = Approved
+Action: Show RadioButton2
+```
+
+#### Example 3 – Using **Does Not Equal**
+
+If the selected value of **RadioButton1** is **not** **Approved**, then **RadioButton2** is displayed.
+
+```text
+Condition: RadioButton1 Does Not Equal Approved
+Action: Show RadioButton2
+```
+
+---
+
+### Any Condition (OR)
+
+When **Any Condition (OR)** is selected, the configured action is performed when **at least one** of the configured conditions is satisfied.
+
+#### Example
+
+**Conditions**
+
+- Number Field = **10**
+- **OR**
+- Checkbox = **Checked**
+
+**Action**
+
+Show **RadioButton1**
+
+**Result**
+
+The configured **RadioButton1** widget is displayed when **either** of the following conditions is met:
+
+- The signer enters **10** in the Number field.
+- The signer checks the Checkbox.
+
+---
+
+## Configuration Example
+
+| Property | Value |
+|----------|-------|
+| **Condition Type** | Any Condition (OR) |
+| **Trigger Widget 1** | Number |
+| **Condition** | Equals |
+| **Condition Value** | 10 |
+| **Trigger Widget 2** | Checkbox |
+| **Condition** | Is Checked |
+| **Action** | Show RadioButton1 |
+
+**Result**
+
+The configured **RadioButton1** widget becomes visible when **either** the Number field equals **10** **or** the Checkbox is checked.
+
+### Related Conditional Logic Guides
+
+The **Radio Button** widget also supports Conditional Logic using the following trigger widgets:
+
+- **Text Input Widget** – [Read more]()
+
+- **Number Widget** – [Read more]()
+
+- **Dropdown Widget** – [Read more]()
+
+- **Checkbox Widget** – [Read more]()
+
+
+### Additional Widget Options
+
+- **Add Signer / Change Signer**: Click the first icon on the Radio Button widget to assign the widget to a different signer. You can select an existing signer or add a new recipient.
+
+- **Copy**: Click the **Copy** icon to duplicate the Radio Button widget.
+  
+---
+
  - **Image**: The image widget allows signers to upload an image during the signing process. After placing the Image widget, you will see the options on the widget such as:
     - Setting icon: By clicking on the option, you can specify whether this widget is mandatory or optional during the document signing.
     - Add Signer/Change Signer: Clicking the first icon on the Image widget allows you to change the signer. You can choose from existing signers in the dropdown or add a new signer.
     - Copy : Clicking on this you can duplicate the image widget.
+      
+---
+
  - **Email**: The email widget is used to enter an email address during the signing process. It only accepts input in a valid email format. If the signer enters invalid text, a validation error will occur, and the document cannot be completed until it's corrected. After placing the email widget, you will see the options on the widget such as:
     - Setting icon: By clicking on the option, you can set the color and font.
       
@@ -403,6 +1079,8 @@ Radio buttons (read more)
       
     - Add Signer/Change Signer: Clicking the first icon on the Email widget allows you to change the signer. You can choose from existing signers in the dropdown or add a new signer.
     - Copy : Clicking on this you can duplicate the email widget.
+
+---
       
   - **📎 Attachment Widget**
 
