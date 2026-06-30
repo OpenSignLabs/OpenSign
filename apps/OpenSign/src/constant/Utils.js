@@ -4424,8 +4424,11 @@ export const handleCheckResponse = (checkUser, setminRequiredCount) => {
       if (checkboxExist) {
         //get all required type checkbox
         requiredCheckbox = checkUser[0].placeHolder[i].pos.filter(
-          (position) =>
-            !position.options?.isReadOnly && position.type === "checkbox"
+          (position) => {
+            return (
+              !position.options?.isReadOnly && position.type === "checkbox"
+            );
+          }
         );
         //if required type checkbox data exit then check user checked all checkbox or some checkbox remain to check
         //also validate to minimum and maximum required checkbox
@@ -4477,10 +4480,13 @@ export const handleCheckResponse = (checkUser, setminRequiredCount) => {
       else {
         //get all required type widgets except checkbox and radio
         const requiredWidgets = checkUser[0].placeHolder[i].pos.filter(
-          (position) =>
-            position.type === "signature" ||
-            (position.options?.status === "required" &&
-              position.type !== "checkbox")
+          (position) => {
+            return (
+              position.type === "signature" ||
+              (position.options?.status === "required" &&
+                position.type !== "checkbox")
+            );
+          }
         );
         if (requiredWidgets && requiredWidgets?.length > 0) {
           let checkSigned;

@@ -21,7 +21,6 @@ const RecipientList = (props) => {
   const isWidgetExist = (Id) => {
     return props.signerPos.some((x) => x.Id === Id && x.placeHolder);
   };
-
   //handle drag start
   const handleDragStart = (e, id) => {
     // `e.dataTransfer.setData('text/plain')`is used to set the data to be transferred during a drag operation.

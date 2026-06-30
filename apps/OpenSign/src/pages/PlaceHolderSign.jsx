@@ -1310,7 +1310,7 @@ function PlaceHolderSign() {
     status,
     defaultValue,
     isHideLabel,
-    layout
+    layout,
   ) => {
     const widgetPageNumber = currWidgetsDetails?.pageNumber || pageNumber;
     const isPrefill = signerPos.some(
@@ -1355,7 +1355,7 @@ function PlaceHolderSign() {
                     isHideLabel: isHideLabel || false,
                     defaultValue: defaultValue,
                     fontSize: textSize || 12,
-                    fontColor: textColor || "black"
+                    fontColor: textColor || "black",
                   }
                 };
               }
@@ -1395,7 +1395,7 @@ function PlaceHolderSign() {
                     isHideLabel: isHideLabel || false,
                     fontSize: textSize || 12,
                     fontColor: textColor || "black",
-                    ...(isPrefill ? { status } : {})
+                    ...(isPrefill ? { status } : {}),
                   }
                 };
               }
@@ -1410,7 +1410,7 @@ function PlaceHolderSign() {
                   defaultValue: defaultValue,
                   fontSize: textSize || 12,
                   fontColor: textColor || "black",
-                  ...(isReadOnly ? { isReadOnly: isReadOnly || false } : {})
+                  ...(isReadOnly ? { isReadOnly: isReadOnly || false } : {}),
                 }
               };
             }
@@ -1851,6 +1851,8 @@ function PlaceHolderSign() {
         Note: updateDocument?.[0]?.Note || "",
         Description: updateDocument?.[0]?.Description || "",
         SendinOrder: updateDocument?.[0]?.SendinOrder || false,
+        SendInOrderStrict:
+          updateDocument?.[0]?.SendInOrderStrict === true ? true : false,
         AutomaticReminders: updateDocument?.[0]?.AutomaticReminders,
         IsEnableOTP: updateDocument?.[0]?.IsEnableOTP === true ? true : false,
         IsTourEnabled:
