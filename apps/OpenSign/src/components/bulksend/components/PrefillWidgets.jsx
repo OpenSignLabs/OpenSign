@@ -4,14 +4,14 @@ import { useTranslation } from "react-i18next";
 const PrefillWidgets = ({ prefills = [], setPrefills, onNext }) => {
   const { t } = useTranslation();
 
-  const handleWidgetDetails = (value, widgetIndex) => {
+  const handleWidgetDetails = (value, widgetLabel) => {
     setPrefills((prev) => {
       const widgets = [...(prev ?? [])];
-      const w = widgets[widgetIndex];
-      if (!w) return prev;
-      widgets[widgetIndex] = {
-        ...w,
-        options: { ...w.options, response: value },
+      const index = widgets.findIndex((w) => w?.label === widgetLabel);
+      if (index === -1) return prev;
+      widgets[index] = {
+        ...widgets[index],
+        options: { ...widgets[index].options, response: value },
         response: value
       };
       return widgets;
@@ -38,13 +38,13 @@ const PrefillWidgets = ({ prefills = [], setPrefills, onNext }) => {
                     ? a.pageNumber - b.pageNumber
                     : (a.yPosition ?? 0) - (b.yPosition ?? 0)
                 )
-                .map((widget, index) => (
+                .map((widget) => (
                   <RenderWidgets
                     key={widget.key}
                     showLabel
                     widget={widget}
                     handleWidgetDetails={(value) =>
-                      handleWidgetDetails(value, index)
+                      handleWidgetDetails(value, widget.label)
                     }
                   />
                 ))}

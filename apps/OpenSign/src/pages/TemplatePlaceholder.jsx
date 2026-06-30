@@ -974,6 +974,7 @@ const TemplatePlaceholder = () => {
           Note: pdfDetails[0]?.Note || "",
           Description: pdfDetails[0]?.Description || "",
           SendinOrder: pdfDetails[0]?.SendinOrder || false,
+          SendInOrderStrict: pdfDetails[0]?.SendInOrderStrict || false,
           AutomaticReminders: pdfDetails[0]?.AutomaticReminders,
           RemindOnceInEvery: parseInt(pdfDetails[0]?.RemindOnceInEvery),
           NextReminderDate: pdfDetails[0]?.NextReminderDate,
@@ -1388,6 +1389,8 @@ const TemplatePlaceholder = () => {
         Note: updateTemplate?.[0]?.Note || "",
         Description: updateTemplate?.[0]?.Description || "",
         SendinOrder: updateTemplate?.[0]?.SendinOrder || false,
+        SendInOrderStrict:
+          updateTemplate?.[0]?.SendInOrderStrict === true ? true : false,
         AutomaticReminders: updateTemplate?.[0]?.AutomaticReminders,
         IsEnableOTP: updateTemplate?.[0]?.IsEnableOTP === true ? true : false,
         IsTourEnabled:
@@ -1432,7 +1435,7 @@ const TemplatePlaceholder = () => {
     status,
     defaultValue,
     isHideLabel,
-    layout
+    layout,
   ) => {
     const widgetPageNumber = currWidgetsDetails?.pageNumber || pageNumber;
     const isPrefill = signerPos.some(
@@ -1479,7 +1482,7 @@ const TemplatePlaceholder = () => {
                     isReadOnly: isReadOnly || false,
                     isHideLabel: isHideLabel || false,
                     fontSize: textSize || 12,
-                    fontColor: textColor || "black"
+                    fontColor: textColor || "black",
                   }
                 };
               }
@@ -1519,7 +1522,7 @@ const TemplatePlaceholder = () => {
                     isHideLabel: isHideLabel || false,
                     fontSize: textSize || 12,
                     fontColor: textColor || "black",
-                    ...(isPrefill ? { status } : {})
+                    ...(isPrefill ? { status } : {}),
                   }
                 };
               }
@@ -1534,7 +1537,7 @@ const TemplatePlaceholder = () => {
                   defaultValue: defaultValue,
                   fontSize: textSize || 12,
                   fontColor: textColor || "black",
-                  ...(isReadOnly ? { isReadOnly: isReadOnly || false } : {})
+                  ...(isReadOnly ? { isReadOnly: isReadOnly || false } : {}),
                 }
               };
             }

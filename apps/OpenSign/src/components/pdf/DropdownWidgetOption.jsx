@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import ModalUi from "../../primitives/ModalUi";
 import { radioButtonWidget } from "../../constant/Utils";
 import { useTranslation } from "react-i18next";
@@ -22,6 +22,7 @@ function DropdownWidgetOption(props) {
   const statusArr = ["required", "optional"];
   const layoutArr = ["vertical", "horizontal"];
   const isPrefillExist = props?.roleName === "prefill";
+
 
   const resetState = () => {
     setDropdownOptionList(["Option-1", "Option-2"]);
@@ -150,7 +151,7 @@ function DropdownWidgetOption(props) {
       status,
       defaultData,
       isHideLabel,
-      WidgetLayout
+      WidgetLayout,
     );
     resetState();
   };
@@ -406,6 +407,7 @@ function DropdownWidgetOption(props) {
                 : "my-[15px]"
             } w-full h-[1px] bg-[#9f9f9f]`}
           ></div>
+
 
           <button
             disabled={dropdownOptionList.length === 0 && true}

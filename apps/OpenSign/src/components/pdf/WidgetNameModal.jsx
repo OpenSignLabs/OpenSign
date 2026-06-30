@@ -52,6 +52,7 @@ const WidgetNameModal = (props) => {
     [type]
   );
 
+
   const handleHintPlaceholder = () => {
     const type = props.defaultdata?.type;
 
@@ -146,7 +147,8 @@ const WidgetNameModal = (props) => {
             return;
           }
         }
-        props.handleData(formdata);
+        let payload = formdata;
+        props.handleData(payload);
       }
       setFormdata({
         isReadOnly: false,
@@ -468,6 +470,7 @@ const WidgetNameModal = (props) => {
             </div>
           </div>
         )}
+
 
         <div className="h-[1px] w-full mb-[16px] bg-[#b7b3b3]"></div>
         <button type="submit" className="op-btn op-btn-primary">

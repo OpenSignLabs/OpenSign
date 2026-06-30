@@ -710,6 +710,7 @@ function Placeholder(props) {
     });
   };
 
+
   return (
     <>
       {/*  Check if a text widget (prefill type) exists. Once the user enters a value and clicks outside or the widget becomes non-selectable, it should appear as plain text (just like embedded text in a document). When the user clicks on the text again, it should become editable. */}
