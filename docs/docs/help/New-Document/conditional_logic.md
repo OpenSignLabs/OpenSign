@@ -264,14 +264,14 @@ The Text Input field becomes optional when the signer enters **HR**.
 
 The Number widget controls the Text Input widget using numeric values.
 
-## Supported Operators
+### Supported Operators
 
 - Equals
 - Does Not Equal
 
 ---
 
-## Show the Text Input Field
+### Show the Text Input Field
 
 ### Configuration
 
@@ -356,18 +356,18 @@ The Text Input field becomes optional when the Number widget contains **5**.
 
 ---
 
-# Dropdown Widget as the Trigger
+## Dropdown Widget as the Trigger
 
 The Dropdown widget controls the Text Input widget based on the selected option.
 
-## Supported Operators
+### Supported Operators
 
 - Equals
 - Does Not Equal
 
 ---
 
-## Show this Field
+### Show this Field
 
 ### Configuration
 
@@ -384,7 +384,7 @@ Selecting **HR** displays the configured Text Input field.
 
 ---
 
-## Show this Field (Does Not Equal)
+### Show this Field (Does Not Equal)
 
 ### Configuration
 
@@ -401,7 +401,7 @@ The Text Input field is displayed whenever the selected value is not **HR**.
 
 ---
 
-## Hide this Field
+### Hide this Field
 
 ### Configuration
 
@@ -418,7 +418,7 @@ Selecting **HR** hides the configured Text Input field.
 
 ---
 
-## Make Required
+### Make Required
 
 ### Configuration
 
@@ -435,7 +435,7 @@ The Text Input field becomes mandatory when **HR** is selected.
 
 ---
 
-## Make Optional
+### Make Optional
 
 ### Configuration
 
@@ -452,7 +452,7 @@ The Text Input field becomes optional when **HR** is selected.
 
 ---
 
-# Checkbox Widget as the Trigger
+## Checkbox Widget as the Trigger
 
 Checkbox widgets support two conditions.
 
@@ -461,7 +461,7 @@ Checkbox widgets support two conditions.
 
 ---
 
-## Show this Field
+### Show this Field
 
 ### Configuration
 
@@ -477,7 +477,7 @@ The Text Input field becomes visible when the checkbox is selected.
 
 ---
 
-## Hide this Field
+### Hide this Field
 
 ### Configuration
 
@@ -493,7 +493,7 @@ Selecting the checkbox hides the configured Text Input field.
 
 ---
 
-## Make Required
+### Make Required
 
 ### Configuration
 
@@ -509,7 +509,7 @@ The Text Input field becomes mandatory whenever the checkbox is checked.
 
 ---
 
-## Make Optional
+### Make Optional
 
 ### Configuration
 
@@ -525,7 +525,7 @@ The Text Input field becomes optional whenever the checkbox is checked.
 
 ---
 
-## Is Not Checked
+### Is Not Checked
 
 The same actions can also be configured using the **Is Not Checked** condition.
 
@@ -543,7 +543,7 @@ The Text Input field is displayed while the checkbox remains unchecked.
 
 ---
 
-# Radio Button as the Trigger
+## Radio Button as the Trigger
 
 Radio Button widgets support the following operators:
 
@@ -552,7 +552,7 @@ Radio Button widgets support the following operators:
 
 ---
 
-## Show this Field
+### Show this Field
 
 ### Configuration
 
@@ -569,7 +569,7 @@ The Text Input field becomes visible when the signer selects **Manager**.
 
 ---
 
-## Hide this Field
+### Hide this Field
 
 ### Configuration
 
@@ -586,7 +586,7 @@ Selecting **Manager** hides the configured Text Input field.
 
 ---
 
-## Make Required
+### Make Required
 
 ### Configuration
 
@@ -603,7 +603,7 @@ The Text Input field becomes mandatory when **Manager** is selected.
 
 ---
 
-## Make Optional
+### Make Optional
 
 ### Configuration
 
@@ -620,11 +620,11 @@ The Text Input field becomes optional when **Manager** is selected.
 
 ---
 
-# Multiple Conditions
+### Multiple Conditions
 
 You can configure multiple conditions for a single Text Input widget.
 
-## All Conditions (AND)
+### All Conditions (AND)
 
 ```text
 Number = 10
@@ -648,7 +648,7 @@ The Text Input field is displayed only when **all configured conditions** are sa
 
 ---
 
-## Any Condition (OR)
+### Any Condition (OR)
 
 ```text
 Number = 10
@@ -672,7 +672,7 @@ The Text Input field is displayed when **any one** of the configured conditions 
 
 ---
 
-# Best Practices
+### Best Practices
 
 - Use descriptive widget names to make Conditional Logic easier to understand.
 - Use **All Conditions** when every condition must be satisfied.
@@ -683,14 +683,14 @@ The Text Input field is displayed when **any one** of the configured conditions 
 
 ---
 
-# Notes
+### Notes
 
 - Conditional Logic is evaluated dynamically while the signer completes the document.
 - Changes to trigger widget values immediately update the behavior of the Text Input widget.
 - A Text Input widget can be both a **trigger widget** and a **target widget**.
 - Multiple Conditional Logic rules can be configured for a single Text Input widget.
 
-# Number Widget - Conditional Logic
+## Number Widget - Conditional Logic
 
 The **Number** widget in OpenSign supports **Conditional Logic**, allowing you to dynamically control its behavior or the behavior of other widgets based on numeric values entered by the signer.
 
@@ -705,7 +705,7 @@ Conditional Logic helps create dynamic documents by displaying only the fields t
 
 ---
 
-# Supported Trigger Widgets
+### Supported Trigger Widgets
 
 The Number widget can be controlled using the following trigger widgets:
 
@@ -719,7 +719,7 @@ The Number widget can be controlled using the following trigger widgets:
 
 ---
 
-# Supported Actions
+### Supported Actions
 
 The following actions can be applied to a Number widget.
 
@@ -732,11 +732,11 @@ The following actions can be applied to a Number widget.
 
 ---
 
-# Condition Types
+### Condition Types
 
 When multiple conditions are configured, OpenSign provides two evaluation modes.
 
-## All Conditions (AND)
+### All Conditions (AND)
 
 All configured conditions must be satisfied before the configured action is executed.
 
@@ -760,7 +760,7 @@ The configured Number widget action is performed only when **all three condition
 
 ---
 
-## Any Condition (OR)
+### Any Condition (OR)
 
 The configured action is performed when **at least one** configured condition is satisfied.
 
@@ -784,7 +784,7 @@ The configured Number widget action is executed when any one condition is satisf
 
 ---
 
-# Number Widget Triggered by a Text Input
+## Number Widget Triggered by a Text Input
 
 The Number widget can be controlled using values entered in a Text Input widget.
 
@@ -812,7 +812,7 @@ When the signer enters **HR** in the Text Input widget, the configured Number wi
 
 ---
 
-## Hide this Field
+### Hide this Field
 
 ### Configuration
 
@@ -829,7 +829,7 @@ The Number widget is hidden whenever the signer enters **HR**.
 
 ---
 
-## Make Required
+### Make Required
 
 ### Configuration
 
@@ -846,7 +846,7 @@ The Number widget becomes mandatory when the signer enters **HR**.
 
 ---
 
-## Make Optional
+### Make Optional
 
 ### Configuration
 
@@ -863,7 +863,7 @@ The Number widget becomes optional when the signer enters **HR**.
 
 ---
 
-# Number Widget Triggered by Another Number Widget
+## Number Widget Triggered by Another Number Widget
 
 A Number widget can control another Number widget.
 
@@ -874,7 +874,7 @@ A Number widget can control another Number widget.
 
 ---
 
-## Show this Field
+### Show this Field
 
 ### Configuration
 
@@ -891,7 +891,7 @@ When the signer enters **10**, the configured Number widget is displayed.
 
 ---
 
-## Show this Field (Does Not Equal)
+### Show this Field (Does Not Equal)
 
 ### Configuration
 
@@ -908,7 +908,7 @@ The configured Number widget is displayed whenever the entered value is not **10
 
 ---
 
-## Hide this Field
+### Hide this Field
 
 ### Configuration
 
@@ -925,7 +925,7 @@ The Number widget is hidden when the signer enters **10**.
 
 ---
 
-## Make Required
+### Make Required
 
 ### Configuration
 
@@ -942,7 +942,7 @@ The Number widget becomes mandatory when the signer enters **10**.
 
 ---
 
-## Make Optional
+### Make Optional
 
 ### Configuration
 
@@ -959,7 +959,7 @@ The Number widget becomes optional when the signer enters **10**.
 
 ---
 
-# Number Widget Triggered by a Dropdown
+## Number Widget Triggered by a Dropdown
 
 ## Supported Operators
 
@@ -985,7 +985,7 @@ Selecting **Manager** displays the Number widget.
 
 ---
 
-## Hide this Field
+### Hide this Field
 
 ### Configuration
 
@@ -1002,7 +1002,7 @@ Selecting **Manager** hides the Number widget.
 
 ---
 
-## Make Required
+### Make Required
 
 ### Configuration
 
@@ -1019,7 +1019,7 @@ The Number widget becomes mandatory.
 
 ---
 
-## Make Optional
+### Make Optional
 
 ### Configuration
 
@@ -1036,7 +1036,7 @@ The Number widget becomes optional.
 
 ---
 
-# Number Widget Triggered by a Checkbox
+## Number Widget Triggered by a Checkbox
 
 Checkbox widgets support two conditions.
 
@@ -1045,7 +1045,7 @@ Checkbox widgets support two conditions.
 
 ---
 
-## Show this Field
+### Show this Field
 
 ### Configuration
 
@@ -1077,7 +1077,7 @@ Checking the checkbox hides the Number widget.
 
 ---
 
-## Make Required
+### Make Required
 
 ### Configuration
 
@@ -1093,7 +1093,7 @@ The Number widget becomes mandatory whenever the checkbox is checked.
 
 ---
 
-## Make Optional
+### Make Optional
 
 ### Configuration
 
@@ -1109,7 +1109,7 @@ The Number widget becomes optional whenever the checkbox is checked.
 
 ---
 
-## Is Not Checked
+### Is Not Checked
 
 The same actions can also be configured using the **Is Not Checked** condition.
 
@@ -1129,14 +1129,14 @@ The Number widget is displayed while the checkbox remains unchecked.
 
 # Number Widget Triggered by a Radio Button
 
-## Supported Operators
+### Supported Operators
 
 - Equals
 - Does Not Equal
 
 ---
 
-## Show this Field
+### Show this Field
 
 ### Configuration
 
@@ -1153,7 +1153,7 @@ When the signer selects **Approved**, the Number widget becomes visible.
 
 ---
 
-## Hide this Field
+### Hide this Field
 
 ### Configuration
 
@@ -1170,7 +1170,7 @@ Selecting **Approved** hides the Number widget.
 
 ---
 
-## Make Required
+### Make Required
 
 ### Configuration
 
@@ -1187,7 +1187,7 @@ The Number widget becomes mandatory.
 
 ---
 
-## Make Optional
+### Make Optional
 
 ### Configuration
 
@@ -1204,11 +1204,11 @@ The Number widget becomes optional.
 
 ---
 
-# Multiple Conditions
+## Multiple Conditions
 
 You can configure multiple conditions for a single Number widget.
 
-## All Conditions (AND)
+### All Conditions (AND)
 
 ```text
 Text Input = HR
@@ -1256,7 +1256,7 @@ The Number widget is displayed when **any one** of the configured conditions is 
 
 ---
 
-# Best Practices
+### Best Practices
 
 - Use meaningful widget names to simplify Conditional Logic configuration.
 - Use **All Conditions** when every configured rule must be true.
@@ -1266,14 +1266,15 @@ The Number widget is displayed when **any one** of the configured conditions is 
 
 ---
 
-# Notes
+### Notes
 
 - Conditional Logic is evaluated dynamically while the signer completes the document.
 - Any changes made to trigger widget values immediately update the behavior of the Number widget.
 - A Number widget can be both a **trigger widget** and a **target widget**.
 - Multiple Conditional Logic rules can be configured for the same Number widget.
 - Number widgets only support numeric input. Conditional Logic comparisons are performed using numeric values.
-  # Dropdown Widget - Conditional Logic
+
+  ## Dropdown Widget - Conditional Logic
 
 The **Dropdown** widget in OpenSign supports **Conditional Logic**, allowing you to dynamically control its behavior or the behavior of other widgets based on the option selected by the signer.
 
@@ -1288,7 +1289,7 @@ This feature helps create interactive documents by displaying only the fields th
 
 ---
 
-# Supported Trigger Widgets
+## Supported Trigger Widgets
 
 The Dropdown widget can be controlled using the following trigger widgets:
 
@@ -1302,7 +1303,7 @@ The Dropdown widget can be controlled using the following trigger widgets:
 
 ---
 
-# Supported Actions
+## Supported Actions
 
 The following actions can be applied to a Dropdown widget.
 
@@ -1315,11 +1316,11 @@ The following actions can be applied to a Dropdown widget.
 
 ---
 
-# Condition Types
+## Condition Types
 
 When multiple conditions are configured, OpenSign allows you to choose how they are evaluated.
 
-## All Conditions (AND)
+### All Conditions (AND)
 
 All configured conditions must be satisfied before the configured action is executed.
 
@@ -1343,7 +1344,7 @@ The configured action is performed only when **all conditions** are satisfied.
 
 ---
 
-## Any Condition (OR)
+### Any Condition (OR)
 
 The configured action is executed when **at least one** configured condition is satisfied.
 
@@ -1367,7 +1368,7 @@ The configured action is executed when any one condition is satisfied.
 
 ---
 
-# Dropdown Triggered by a Text Input
+## Dropdown Triggered by a Text Input
 
 The Dropdown widget can be controlled using values entered into a Text Input widget.
 
@@ -1395,7 +1396,7 @@ When the signer enters **HR**, the configured Dropdown widget becomes visible.
 
 ---
 
-## Hide this Field
+### Hide this Field
 
 ### Configuration
 
@@ -1412,7 +1413,7 @@ The Dropdown widget is hidden whenever the signer enters **HR**.
 
 ---
 
-## Make Required
+### Make Required
 
 ### Configuration
 
@@ -1429,7 +1430,7 @@ The Dropdown widget becomes mandatory.
 
 ---
 
-## Make Optional
+### Make Optional
 
 ### Configuration
 
@@ -1446,7 +1447,7 @@ The Dropdown widget becomes optional.
 
 ---
 
-# Dropdown Triggered by a Number Widget
+## Dropdown Triggered by a Number Widget
 
 ## Supported Operators
 
@@ -1455,7 +1456,7 @@ The Dropdown widget becomes optional.
 
 ---
 
-## Show this Field
+### Show this Field
 
 ### Configuration
 
@@ -1472,7 +1473,7 @@ When the signer enters **5**, the configured Dropdown widget is displayed.
 
 ---
 
-## Show this Field (Does Not Equal)
+### Show this Field (Does Not Equal)
 
 ### Configuration
 
@@ -1489,7 +1490,7 @@ The Dropdown widget is displayed whenever the Number widget value is **not equal
 
 ---
 
-## Hide this Field
+### Hide this Field
 
 ### Configuration
 
@@ -1506,7 +1507,7 @@ When the signer enters **5**, the Dropdown widget is hidden.
 
 ---
 
-## Make Required
+### Make Required
 
 ### Configuration
 
@@ -1523,7 +1524,7 @@ The Dropdown widget becomes mandatory when the Number widget contains **5**.
 
 ---
 
-## Make Optional
+### Make Optional
 
 ### Configuration
 
@@ -1540,18 +1541,18 @@ The Dropdown widget becomes optional.
 
 ---
 
-# Dropdown Triggered by Another Dropdown
+## Dropdown Triggered by Another Dropdown
 
 A Dropdown widget can control another Dropdown widget.
 
-## Supported Operators
+### Supported Operators
 
 - Equals
 - Does Not Equal
 
 ---
 
-## Show this Field
+### Show this Field
 
 ### Configuration
 
@@ -1568,7 +1569,7 @@ When the signer selects **Manager**, the configured Dropdown widget is displayed
 
 ---
 
-## Show this Field (Does Not Equal)
+### Show this Field (Does Not Equal)
 
 ### Configuration
 
@@ -1585,7 +1586,7 @@ The Dropdown widget is displayed whenever any option other than **Manager** is s
 
 ---
 
-## Hide this Field
+### Hide this Field
 
 ### Configuration
 
@@ -1602,7 +1603,7 @@ Selecting **Manager** hides the configured Dropdown widget.
 
 ---
 
-## Make Required
+### Make Required
 
 ### Configuration
 
@@ -1619,7 +1620,7 @@ The Dropdown widget becomes mandatory whenever **Manager** is selected.
 
 ---
 
-## Make Optional
+### Make Optional
 
 ### Configuration
 
@@ -1636,7 +1637,7 @@ The Dropdown widget becomes optional whenever **Manager** is selected.
 
 ---
 
-# Dropdown Triggered by a Checkbox
+## Dropdown Triggered by a Checkbox
 
 Checkbox widgets support two conditions.
 
@@ -1645,7 +1646,7 @@ Checkbox widgets support two conditions.
 
 ---
 
-## Show this Field
+### Show this Field
 
 ### Configuration
 
@@ -1661,7 +1662,7 @@ The Dropdown widget becomes visible when the checkbox is checked.
 
 ---
 
-## Hide this Field
+### Hide this Field
 
 ### Configuration
 
@@ -1677,7 +1678,7 @@ Checking the checkbox hides the Dropdown widget.
 
 ---
 
-## Make Required
+### Make Required
 
 ### Configuration
 
@@ -1693,7 +1694,7 @@ The Dropdown widget becomes mandatory whenever the checkbox is checked.
 
 ---
 
-## Make Optional
+### Make Optional
 
 ### Configuration
 
@@ -1709,7 +1710,7 @@ The Dropdown widget becomes optional whenever the checkbox is checked.
 
 ---
 
-## Is Not Checked
+### Is Not Checked
 
 The same actions can also be configured using the **Is Not Checked** condition.
 
@@ -1727,16 +1728,16 @@ The Dropdown widget is displayed while the checkbox remains unchecked.
 
 ---
 
-# Dropdown Triggered by a Radio Button
+## Dropdown Triggered by a Radio Button
 
-## Supported Operators
+### Supported Operators
 
 - Equals
 - Does Not Equal
 
 ---
 
-## Show this Field
+### Show this Field
 
 ### Configuration
 
@@ -1753,7 +1754,7 @@ When the signer selects **Approved**, the Dropdown widget becomes visible.
 
 ---
 
-## Hide this Field
+### Hide this Field
 
 ### Configuration
 
@@ -1770,7 +1771,7 @@ Selecting **Approved** hides the Dropdown widget.
 
 ---
 
-## Make Required
+### Make Required
 
 ### Configuration
 
@@ -1787,7 +1788,7 @@ The Dropdown widget becomes mandatory.
 
 ---
 
-## Make Optional
+### Make Optional
 
 ### Configuration
 
@@ -1804,7 +1805,7 @@ The Dropdown widget becomes optional.
 
 ---
 
-# Multiple Conditions
+## Multiple Conditions
 
 A Dropdown widget can have multiple Conditional Logic rules.
 
@@ -1832,7 +1833,7 @@ The Dropdown widget is displayed only when **all configured conditions** are sat
 
 ---
 
-## Any Condition (OR)
+### Any Condition (OR)
 
 ```text
 Number = 10
@@ -1856,7 +1857,7 @@ The Dropdown widget is displayed whenever **any one** of the configured conditio
 
 ---
 
-# Best Practices
+### Best Practices
 
 - Use descriptive widget names to simplify Conditional Logic configuration.
 - Use **All Conditions** when every configured rule must be true.
@@ -1867,7 +1868,7 @@ The Dropdown widget is displayed whenever **any one** of the configured conditio
 
 ---
 
-# Notes
+### Notes
 
 - Conditional Logic is evaluated dynamically while the signer completes the document.
 - Changes to the trigger widget values immediately update the behavior of the Dropdown widget.
@@ -1875,7 +1876,7 @@ The Dropdown widget is displayed whenever **any one** of the configured conditio
 - Multiple Conditional Logic rules can be configured for a single Dropdown widget.
 - Conditional Logic compares the selected dropdown option with the configured value using **Equals** or **Does Not Equal** operators.
 
-# Checkbox Widget - Conditional Logic
+## Checkbox Widget - Conditional Logic
 
 The **Checkbox** widget in OpenSign supports **Conditional Logic**, allowing you to dynamically control its behavior or the behavior of other widgets based on values entered or selected in other fields.
 
@@ -1890,7 +1891,7 @@ This feature enables you to create interactive and dynamic signing experiences b
 
 ---
 
-# Supported Trigger Widgets
+### Supported Trigger Widgets
 
 The Checkbox widget can be controlled using the following trigger widgets:
 
@@ -1904,7 +1905,7 @@ The Checkbox widget can be controlled using the following trigger widgets:
 
 ---
 
-# Supported Actions
+### Supported Actions
 
 The following actions can be applied to a Checkbox widget.
 
@@ -1917,7 +1918,7 @@ The following actions can be applied to a Checkbox widget.
 
 ---
 
-# Condition Types
+### Condition Types
 
 When configuring multiple conditions, OpenSign provides two evaluation modes.
 
@@ -1969,7 +1970,7 @@ The configured Checkbox widget action is executed when any one condition is sati
 
 ---
 
-# Checkbox Triggered by a Text Input
+## Checkbox Triggered by a Text Input
 
 ## Supported Operators
 
@@ -1978,7 +1979,7 @@ The configured Checkbox widget action is executed when any one condition is sati
 
 ---
 
-## Show this Field
+### Show this Field
 
 ### Configuration
 
@@ -2012,7 +2013,7 @@ The Checkbox widget is hidden whenever the signer enters **HR**.
 
 ---
 
-## Make Required
+### Make Required
 
 ### Configuration
 
@@ -2029,7 +2030,7 @@ The Checkbox widget becomes mandatory when the signer enters **HR**.
 
 ---
 
-## Make Optional
+### Make Optional
 
 ### Configuration
 
@@ -2046,16 +2047,16 @@ The Checkbox widget becomes optional when the signer enters **HR**.
 
 ---
 
-# Checkbox Triggered by a Number Widget
+## Checkbox Triggered by a Number Widget
 
-## Supported Operators
+### Supported Operators
 
 - Equals
 - Does Not Equal
 
 ---
 
-## Show this Field
+### Show this Field
 
 ### Configuration
 
@@ -2072,7 +2073,7 @@ When the signer enters **10**, the Checkbox widget is displayed.
 
 ---
 
-## Show this Field (Does Not Equal)
+### Show this Field (Does Not Equal)
 
 ### Configuration
 
@@ -2089,7 +2090,7 @@ The Checkbox widget is displayed whenever the Number widget value is not **10**.
 
 ---
 
-## Hide this Field
+### Hide this Field
 
 ### Configuration
 
@@ -2106,7 +2107,7 @@ The Checkbox widget is hidden when the signer enters **10**.
 
 ---
 
-## Make Required
+### Make Required
 
 ### Configuration
 
@@ -2123,7 +2124,7 @@ The Checkbox widget becomes mandatory when the Number widget contains **10**.
 
 ---
 
-## Make Optional
+### Make Optional
 
 ### Configuration
 
@@ -2140,16 +2141,16 @@ The Checkbox widget becomes optional when the Number widget contains **10**.
 
 ---
 
-# Checkbox Triggered by a Dropdown
+## Checkbox Triggered by a Dropdown
 
-## Supported Operators
+### Supported Operators
 
 - Equals
 - Does Not Equal
 
 ---
 
-## Show this Field
+### Show this Field
 
 ### Configuration
 
@@ -2166,7 +2167,7 @@ When the signer selects **Manager**, the Checkbox widget becomes visible.
 
 ---
 
-## Hide this Field
+### Hide this Field
 
 ### Configuration
 
@@ -2183,7 +2184,7 @@ Selecting **Manager** hides the Checkbox widget.
 
 ---
 
-## Make Required
+### Make Required
 
 ### Configuration
 
@@ -2200,7 +2201,7 @@ The Checkbox widget becomes mandatory.
 
 ---
 
-## Make Optional
+### Make Optional
 
 ### Configuration
 
@@ -2217,7 +2218,7 @@ The Checkbox widget becomes optional.
 
 ---
 
-# Checkbox Triggered by Another Checkbox
+## Checkbox Triggered by Another Checkbox
 
 Checkbox widgets support two conditions:
 
@@ -2226,7 +2227,7 @@ Checkbox widgets support two conditions:
 
 ---
 
-## Show this Field
+### Show this Field
 
 ### Configuration
 
@@ -2242,7 +2243,7 @@ When the trigger checkbox is checked, the configured Checkbox widget becomes vis
 
 ---
 
-## Hide this Field
+### Hide this Field
 
 ### Configuration
 
@@ -2258,7 +2259,7 @@ Checking the trigger checkbox hides the configured Checkbox widget.
 
 ---
 
-## Make Required
+### Make Required
 
 ### Configuration
 
@@ -2274,7 +2275,7 @@ The configured Checkbox widget becomes mandatory whenever the trigger checkbox i
 
 ---
 
-## Make Optional
+### Make Optional
 
 ### Configuration
 
@@ -2290,7 +2291,7 @@ The configured Checkbox widget becomes optional whenever the trigger checkbox is
 
 ---
 
-## Is Not Checked
+### Is Not Checked
 
 The same actions can be configured using the **Is Not Checked** condition.
 
@@ -2308,16 +2309,16 @@ The configured Checkbox widget is displayed while the trigger checkbox remains u
 
 ---
 
-# Checkbox Triggered by a Radio Button
+## Checkbox Triggered by a Radio Button
 
-## Supported Operators
+### Supported Operators
 
 - Equals
 - Does Not Equal
 
 ---
 
-## Show this Field
+### Show this Field
 
 ### Configuration
 
@@ -2334,7 +2335,7 @@ When the signer selects **Approved**, the configured Checkbox widget becomes vis
 
 ---
 
-## Hide this Field
+### Hide this Field
 
 ### Configuration
 
@@ -2351,7 +2352,7 @@ Selecting **Approved** hides the configured Checkbox widget.
 
 ---
 
-## Make Required
+### Make Required
 
 ### Configuration
 
@@ -2368,7 +2369,7 @@ The configured Checkbox widget becomes mandatory.
 
 ---
 
-## Make Optional
+### Make Optional
 
 ### Configuration
 
@@ -2385,11 +2386,11 @@ The configured Checkbox widget becomes optional.
 
 ---
 
-# Multiple Conditions
+## Multiple Conditions
 
 A Checkbox widget can contain multiple Conditional Logic rules.
 
-## All Conditions (AND)
+### All Conditions (AND)
 
 ```text
 Number = 10
@@ -2413,7 +2414,7 @@ The Checkbox widget is displayed only when **all configured conditions** are sat
 
 ---
 
-## Any Condition (OR)
+### Any Condition (OR)
 
 ```text
 Number = 10
@@ -2437,7 +2438,7 @@ The Checkbox widget is displayed whenever **any one** configured condition is sa
 
 ---
 
-# Best Practices
+### Best Practices
 
 - Use descriptive widget names to simplify Conditional Logic configuration.
 - Use **All Conditions** when every condition must be satisfied.
@@ -2448,14 +2449,16 @@ The Checkbox widget is displayed whenever **any one** configured condition is sa
 
 ---
 
-# Notes
+### Notes
 
 - Conditional Logic is evaluated dynamically while the signer completes the document.
 - Changes made to trigger widget values immediately update the behavior of the Checkbox widget.
 - A Checkbox widget can act as both a **trigger widget** and a **target widget**.
 - Multiple Conditional Logic rules can be configured for the same Checkbox widget.
 - Checkbox widgets support **Is Checked** and **Is Not Checked** conditions when used as trigger widgets.
-```
+  
+---
+
 # Radio Button Widget - Conditional Logic
 
 The **Radio Button** widget in OpenSign supports **Conditional Logic**, allowing you to dynamically control its behavior or the behavior of other widgets based on the option selected by the signer.
@@ -2471,7 +2474,7 @@ Conditional Logic helps create dynamic and interactive document workflows by dis
 
 ---
 
-# Supported Trigger Widgets
+## Supported Trigger Widgets
 
 The Radio Button widget can be controlled using the following trigger widgets:
 
@@ -2485,7 +2488,7 @@ The Radio Button widget can be controlled using the following trigger widgets:
 
 ---
 
-# Supported Actions
+### Supported Actions
 
 The following actions can be applied to a Radio Button widget.
 
@@ -2498,11 +2501,11 @@ The following actions can be applied to a Radio Button widget.
 
 ---
 
-# Condition Types
+### Condition Types
 
 When multiple conditions are configured, OpenSign allows you to choose how those conditions are evaluated.
 
-## All Conditions (AND)
+### All Conditions (AND)
 
 All configured conditions must be satisfied before the configured action is executed.
 
@@ -2526,7 +2529,7 @@ The configured Radio Button widget action is executed only when **all configured
 
 ---
 
-## Any Condition (OR)
+### Any Condition (OR)
 
 The configured action is executed when **at least one** configured condition is satisfied.
 
@@ -2550,16 +2553,16 @@ The configured Radio Button widget action is executed whenever any one of the co
 
 ---
 
-# Radio Button Triggered by a Text Input
+## Radio Button Triggered by a Text Input
 
-## Supported Operators
+### Supported Operators
 
 - Equals
 - Does Not Equal
 
 ---
 
-## Show this Field
+### Show this Field
 
 ### Configuration
 
@@ -2576,7 +2579,7 @@ When the signer enters **HR**, the configured Radio Button widget becomes visibl
 
 ---
 
-## Hide this Field
+### Hide this Field
 
 ### Configuration
 
@@ -2593,7 +2596,7 @@ The Radio Button widget is hidden whenever the signer enters **HR**.
 
 ---
 
-## Make Required
+### Make Required
 
 ### Configuration
 
@@ -2610,7 +2613,7 @@ The Radio Button widget becomes mandatory when the signer enters **HR**.
 
 ---
 
-## Make Optional
+### Make Optional
 
 ### Configuration
 
@@ -2627,16 +2630,16 @@ The Radio Button widget becomes optional when the signer enters **HR**.
 
 ---
 
-# Radio Button Triggered by a Number Widget
+## Radio Button Triggered by a Number Widget
 
-## Supported Operators
+### Supported Operators
 
 - Equals
 - Does Not Equal
 
 ---
 
-## Show this Field
+### Show this Field
 
 ### Configuration
 
@@ -2653,7 +2656,7 @@ When the signer enters **10**, the configured Radio Button widget is displayed.
 
 ---
 
-## Show this Field (Does Not Equal)
+### Show this Field (Does Not Equal)
 
 ### Configuration
 
@@ -2670,7 +2673,7 @@ The Radio Button widget is displayed whenever the Number widget value is **not e
 
 ---
 
-## Hide this Field
+### Hide this Field
 
 ### Configuration
 
@@ -2687,7 +2690,7 @@ The Radio Button widget is hidden when the signer enters **10**.
 
 ---
 
-## Make Required
+### Make Required
 
 ### Configuration
 
@@ -2704,7 +2707,7 @@ The Radio Button widget becomes mandatory when the Number widget contains **10**
 
 ---
 
-## Make Optional
+### Make Optional
 
 ### Configuration
 
@@ -2721,16 +2724,16 @@ The Radio Button widget becomes optional when the Number widget contains **10**.
 
 ---
 
-# Radio Button Triggered by a Dropdown
+## Radio Button Triggered by a Dropdown
 
-## Supported Operators
+### Supported Operators
 
 - Equals
 - Does Not Equal
 
 ---
 
-## Show this Field
+### Show this Field
 
 ### Configuration
 
@@ -2747,7 +2750,7 @@ When the signer selects **Manager**, the configured Radio Button widget becomes 
 
 ---
 
-## Hide this Field
+### Hide this Field
 
 ### Configuration
 
@@ -2764,7 +2767,7 @@ Selecting **Manager** hides the configured Radio Button widget.
 
 ---
 
-## Make Required
+### Make Required
 
 ### Configuration
 
@@ -2781,7 +2784,7 @@ The Radio Button widget becomes mandatory whenever **Manager** is selected.
 
 ---
 
-## Make Optional
+### Make Optional
 
 ### Configuration
 
@@ -2798,7 +2801,7 @@ The Radio Button widget becomes optional whenever **Manager** is selected.
 
 ---
 
-# Radio Button Triggered by a Checkbox
+## Radio Button Triggered by a Checkbox
 
 Checkbox widgets support two conditions:
 
@@ -2807,7 +2810,7 @@ Checkbox widgets support two conditions:
 
 ---
 
-## Show this Field
+### Show this Field
 
 ### Configuration
 
@@ -2823,7 +2826,7 @@ When the checkbox is checked, the configured Radio Button widget becomes visible
 
 ---
 
-## Hide this Field
+### Hide this Field
 
 ### Configuration
 
@@ -2839,7 +2842,7 @@ Checking the checkbox hides the configured Radio Button widget.
 
 ---
 
-## Make Required
+### Make Required
 
 ### Configuration
 
@@ -2855,7 +2858,7 @@ The Radio Button widget becomes mandatory whenever the checkbox is checked.
 
 ---
 
-## Make Optional
+### Make Optional
 
 ### Configuration
 
@@ -2871,7 +2874,7 @@ The Radio Button widget becomes optional whenever the checkbox is checked.
 
 ---
 
-## Is Not Checked
+### Is Not Checked
 
 The same actions can also be configured using the **Is Not Checked** condition.
 
@@ -2889,18 +2892,18 @@ The configured Radio Button widget is displayed while the checkbox remains unche
 
 ---
 
-# Radio Button Triggered by Another Radio Button
+## Radio Button Triggered by Another Radio Button
 
 A Radio Button widget can control another Radio Button widget.
 
-## Supported Operators
+### Supported Operators
 
 - Equals
 - Does Not Equal
 
 ---
 
-## Show this Field
+### Show this Field
 
 ### Configuration
 
@@ -2917,7 +2920,7 @@ When the signer selects **Approved**, the configured Radio Button widget is disp
 
 ---
 
-## Show this Field (Does Not Equal)
+### Show this Field (Does Not Equal)
 
 ### Configuration
 
@@ -2934,7 +2937,7 @@ The Radio Button widget is displayed whenever a value other than **Approved** is
 
 ---
 
-## Hide this Field
+### Hide this Field
 
 ### Configuration
 
@@ -2951,7 +2954,7 @@ Selecting **Approved** hides the configured Radio Button widget.
 
 ---
 
-## Make Required
+### Make Required
 
 ### Configuration
 
@@ -2968,7 +2971,7 @@ The Radio Button widget becomes mandatory whenever **Approved** is selected.
 
 ---
 
-## Make Optional
+### Make Optional
 
 ### Configuration
 
@@ -2985,11 +2988,11 @@ The Radio Button widget becomes optional whenever **Approved** is selected.
 
 ---
 
-# Multiple Conditions
+## Multiple Conditions
 
 You can configure multiple Conditional Logic rules for a Radio Button widget.
 
-## All Conditions (AND)
+### All Conditions (AND)
 
 ```text
 Number = 10
@@ -3013,7 +3016,7 @@ The Radio Button widget is displayed only when **all configured conditions** are
 
 ---
 
-## Any Condition (OR)
+### Any Condition (OR)
 
 ```text
 Number = 10
@@ -3037,7 +3040,7 @@ The Radio Button widget is displayed whenever **any one** configured condition i
 
 ---
 
-# Best Practices
+### Best Practices
 
 - Use descriptive widget names to make Conditional Logic easier to configure.
 - Use **All Conditions** when every configured condition must be true.
@@ -3048,7 +3051,7 @@ The Radio Button widget is displayed whenever **any one** configured condition i
 
 ---
 
-# Notes
+### Notes
 
 - Conditional Logic is evaluated dynamically while the signer completes the document.
 - Changes to trigger widget values immediately update the behavior of the Radio Button widget.
