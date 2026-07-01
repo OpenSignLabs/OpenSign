@@ -349,9 +349,9 @@ The configured **TextInput1** widget becomes visible when **either** the Number 
 
 The **Text Input** widget also supports Conditional Logic using the following trigger widgets:
 - **Number Widget** - [Read more](https://docs.opensignlabs.com/docs/help/New-Document/conditional_logic/#number-widget-as-the-trigger)
-- **Dropdown Widget** – [Read more](https://github.com/pravinOpenSign/OpenSign/blob/patch-75/docs/docs/help/New-Document/conditional_logic.md#dropdown-widget-as-the-trigger)
-- **Checkbox Widget** – [Read more](https://github.com/pravinOpenSign/OpenSign/blob/patch-75/docs/docs/help/New-Document/conditional_logic.md#checkbox-widget-as-the-trigger)
-- **Radio Button Widget** – [Read more](https://github.com/pravinOpenSign/OpenSign/blob/patch-75/docs/docs/help/New-Document/conditional_logic.md#radio-button-as-the-trigger)
+- **Dropdown Widget** – [Read more](https://docs.opensignlabs.com/docs/help/New-Document/conditional_logic/#dropdown-widget-as-the-trigger)
+- **Checkbox Widget** – [Read more](https://docs.opensignlabs.com/docs/help/New-Document/conditional_logic/#checkbox-widget-as-the-trigger)
+- **Radio Button Widget** – [Read more](https://docs.opensignlabs.com/docs/help/New-Document/conditional_logic/#radio-button-as-the-trigger)
 
 ### Additional Widget Options
 
@@ -495,13 +495,15 @@ The configured **Number1** widget becomes visible when **either** the Number fie
 
 The **Number** widget also supports Conditional Logic using the following trigger widgets:
 
-- **Dropdown Widget** – [Read more](https://github.com/pravinOpenSign/OpenSign/blob/patch-75/docs/docs/help/New-Document/conditional_logic.md#number-widget-triggered-by-a-dropdown)
-
-- **Checkbox Widget** – [Read more](https://github.com/pravinOpenSign/OpenSign/blob/patch-75/docs/docs/help/New-Document/conditional_logic.md#number-widget-triggered-by-a-checkbox)
-
-- **Radio Button Widget** – [Read more](https://github.com/pravinOpenSign/OpenSign/blob/patch-75/docs/docs/help/New-Document/conditional_logic.md#number-widget-triggered-by-a-radio-button)
+- **Text Input** – [Read more](https://docs.opensignlabs.com/docs/help/New-Document/conditional_logic/#number-widget-triggered-by-a-text-input)
   
-- **Number Widget Triggered by Another Number Widget** - [Read more](https://github.com/pravinOpenSign/OpenSign/blob/patch-75/docs/docs/help/New-Document/conditional_logic.md#number-widget-triggered-by-another-number-widget)
+- **Dropdown Widget** – [Read more](https://docs.opensignlabs.com/docs/help/New-Document/conditional_logic/#number-widget-triggered-by-a-dropdown)
+
+- **Checkbox Widget** – [Read more](https://docs.opensignlabs.com/docs/help/New-Document/conditional_logic/#number-widget-triggered-by-a-checkbox)
+
+- **Radio Button Widget** – [Read more](https://docs.opensignlabs.com/docs/help/New-Document/conditional_logic/#supported-operators-6)
+  
+- **Number Widget Triggered by Another Number Widget** - [Read more](https://docs.opensignlabs.com/docs/help/New-Document/conditional_logic/#number-widget-triggered-by-another-number-widget)
   
 ### Additional Widget Options
 
@@ -711,15 +713,15 @@ The configured **Checkbox1** widget becomes visible when **either** the Number f
 
 The **Checkbox** widget also supports Conditional Logic using the following trigger widgets:
 
-- **Text Input Widget** – [Read more](https://github.com/pravinOpenSign/OpenSign/blob/patch-75/docs/docs/help/New-Document/conditional_logic.md#checkbox-triggered-by-a-text-input)
+- **Text Input Widget** – [Read more](https://docs.opensignlabs.com/docs/help/New-Document/conditional_logic/#dropdown-triggered-by-a-text-input)
 
-- **Number Widget** – [Read more](https://github.com/pravinOpenSign/OpenSign/blob/patch-75/docs/docs/help/New-Document/conditional_logic.md#checkbox-triggered-by-a-number-widget)
+- **Number Widget** – [Read more](https://docs.opensignlabs.com/docs/help/New-Document/conditional_logic/#checkbox-triggered-by-a-number-widget)
 
-- **Dropdown Widget** – [Read more](https://github.com/pravinOpenSign/OpenSign/blob/patch-75/docs/docs/help/New-Document/conditional_logic.md#checkbox-triggered-by-a-dropdown)
+- **Dropdown Widget** – [Read more](https://docs.opensignlabs.com/docs/help/New-Document/conditional_logic/#checkbox-triggered-by-a-dropdown)
 
-- **Radio Button Widget** – [Read more](https://github.com/pravinOpenSign/OpenSign/blob/patch-75/docs/docs/help/New-Document/conditional_logic.md#checkbox-triggered-by-a-radio-button)
+- **Radio Button Widget** – [Read more](https://docs.opensignlabs.com/docs/help/New-Document/conditional_logic/#checkbox-triggered-by-a-radio-button)
   
-- **Checkbox Triggered by Another Checkbox** – [Read more](https://github.com/pravinOpenSign/OpenSign/blob/patch-75/docs/docs/help/New-Document/conditional_logic.md#checkbox-triggered-by-another-checkbox)
+- **Checkbox Triggered by Another Checkbox** – [Read more](https://docs.opensignlabs.com/docs/help/New-Document/conditional_logic/#checkbox-triggered-by-another-checkbox)
   
 ### Additional Widget Options
 
@@ -851,15 +853,15 @@ The configured **Dropdown1** widget becomes visible when **either** the Number f
 
 The **Dropdown** widget also supports Conditional Logic using the following trigger widgets:
 
-- **Text input** – [Read more](https://github.com/pravinOpenSign/OpenSign/blob/patch-75/docs/docs/help/New-Document/conditional_logic.md#dropdown-triggered-by-a-text-input)
+- **Text input** – [Read more](https://docs.opensignlabs.com/docs/help/New-Document/conditional_logic/#dropdown-triggered-by-a-text-input)
   
-- **Number** – [Read more](https://github.com/pravinOpenSign/OpenSign/blob/patch-75/docs/docs/help/New-Document/conditional_logic.md#dropdown-triggered-by-a-number-widget)
+- **Number** – [Read more](https://docs.opensignlabs.com/docs/help/New-Document/conditional_logic/#dropdown-triggered-by-a-number-widget)
   
-- **Checkbox Widget** – [Read more](https://github.com/pravinOpenSign/OpenSign/blob/patch-75/docs/docs/help/New-Document/conditional_logic.md#dropdown-triggered-by-a-checkbox)
+- **Checkbox Widget** – [Read more](https://docs.opensignlabs.com/docs/help/New-Document/conditional_logic/#dropdown-triggered-by-a-checkbox)
 
-- **Radio Button Widget** – [Read more](https://github.com/pravinOpenSign/OpenSign/blob/patch-75/docs/docs/help/New-Document/conditional_logic.md#dropdown-triggered-by-a-radio-button)
+- **Radio Button Widget** – [Read more](https://docs.opensignlabs.com/docs/help/New-Document/conditional_logic/#dropdown-triggered-by-a-radio-button)
 
-- **Dropdown Triggered by Another Dropdown** [Read more](https://github.com/pravinOpenSign/OpenSign/blob/patch-75/docs/docs/help/New-Document/conditional_logic.md#dropdown-triggered-by-another-dropdown)
+- **Dropdown Triggered by Another Dropdown** [Read more](https://docs.opensignlabs.com/docs/help/New-Document/conditional_logic/#dropdown-triggered-by-another-dropdown)
 
 ### Additional Widget Options
 
@@ -1056,15 +1058,15 @@ The configured **RadioButton1** widget becomes visible when **either** the Numbe
 
 The **Radio Button** widget also supports Conditional Logic using the following trigger widgets:
 
-- **Text Input Widget** – [Read more](https://github.com/pravinOpenSign/OpenSign/blob/patch-75/docs/docs/help/New-Document/conditional_logic.md#radio-button-triggered-by-a-text-input)
+- **Text Input Widget** – [Read more](https://docs.opensignlabs.com/docs/help/New-Document/conditional_logic/#radio-button-triggered-by-a-text-input)
 
-- **Number Widget** – [Read more](https://github.com/pravinOpenSign/OpenSign/blob/patch-75/docs/docs/help/New-Document/conditional_logic.md#radio-button-triggered-by-a-number-widget)
+- **Number Widget** – [Read more](https://docs.opensignlabs.com/docs/help/New-Document/conditional_logic/#radio-button-triggered-by-a-number-widget)
 
-- **Dropdown Widget** – [Read more](https://github.com/pravinOpenSign/OpenSign/blob/patch-75/docs/docs/help/New-Document/conditional_logic.md#radio-button-triggered-by-a-dropdown)
+- **Dropdown Widget** – [Read more](https://docs.opensignlabs.com/docs/help/New-Document/conditional_logic/#radio-button-triggered-by-a-dropdown)
 
-- **Checkbox Widget** – [Read more](https://github.com/pravinOpenSign/OpenSign/blob/patch-75/docs/docs/help/New-Document/conditional_logic.md#radio-button-triggered-by-a-checkbox)
+- **Checkbox Widget** – [Read more](https://docs.opensignlabs.com/docs/help/New-Document/conditional_logic/#radio-button-triggered-by-a-checkbox)
   
-- **Radio Button Triggered by Another Radio Button** – [Read more](https://github.com/pravinOpenSign/OpenSign/blob/patch-75/docs/docs/help/New-Document/conditional_logic.md#radio-button-triggered-by-another-radio-button)
+- **Radio Button Triggered by Another Radio Button** – [Read more](https://docs.opensignlabs.com/docs/help/New-Document/conditional_logic/#radio-button-triggered-by-another-radio-button)
 
 ### Additional Widget Options
 

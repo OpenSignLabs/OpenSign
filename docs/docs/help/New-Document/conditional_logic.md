@@ -164,18 +164,18 @@ If any one of the configured conditions is true, the selected action is performe
 
 ---
 
-# Text Input as the Trigger Widget
+## Text Input as the Trigger Widget
 
 The Text Input widget can control another Text Input widget.
 
-## Supported Operators
+### Supported Operators
 
 - Equals
 - Does Not Equal
 
 ---
 
-## Show this Field
+### Show this Field
 
 ### Configuration
 
@@ -192,7 +192,7 @@ When the signer enters **HR**, the configured Text Input field is displayed.
 
 ---
 
-## Show this Field (Does Not Equal)
+### Show this Field (Does Not Equal)
 
 ### Configuration
 
@@ -209,7 +209,7 @@ The Text Input field is displayed whenever the entered value is anything other t
 
 ---
 
-## Hide this Field
+### Hide this Field
 
 ### Configuration
 
@@ -226,7 +226,7 @@ When the signer enters **HR**, the configured Text Input field is hidden.
 
 ---
 
-## Make Required
+### Make Required
 
 ### Configuration
 
@@ -288,7 +288,7 @@ When the signer enters **5** in the Number widget, the configured Text Input fie
 
 ---
 
-## Show this Field (Does Not Equal)
+### Show this Field (Does Not Equal)
 
 ### Configuration
 
@@ -305,7 +305,7 @@ The Text Input field is displayed whenever the entered number is **not equal to 
 
 ---
 
-## Hide this Field
+### Hide this Field
 
 ### Configuration
 
@@ -322,7 +322,7 @@ When the signer enters **5**, the configured Text Input field is hidden.
 
 ---
 
-## Make Required
+### Make Required
 
 ### Configuration
 
@@ -339,7 +339,7 @@ The Text Input field becomes mandatory only when the Number widget contains **5*
 
 ---
 
-## Make Optional
+### Make Optional
 
 ### Configuration
 
@@ -788,14 +788,14 @@ The configured Number widget action is executed when any one condition is satisf
 
 The Number widget can be controlled using values entered in a Text Input widget.
 
-## Supported Operators
+### Supported Operators
 
 - Equals
 - Does Not Equal
 
 ---
 
-## Show this Field
+### Show this Field
 
 ### Configuration
 
@@ -867,7 +867,7 @@ The Number widget becomes optional when the signer enters **HR**.
 
 A Number widget can control another Number widget.
 
-## Supported Operators
+### Supported Operators
 
 - Equals
 - Does Not Equal
