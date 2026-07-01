@@ -348,7 +348,7 @@ The configured **TextInput1** widget becomes visible when **either** the Number 
 ### Related Conditional Logic Guides
 
 The **Text Input** widget also supports Conditional Logic using the following trigger widgets:
-- **Dropdown Widget** - [Read more](https://github.com/pravinOpenSign/OpenSign/blob/patch-75/docs/docs/help/New-Document/conditional_logic.md#number-widget-as-the-trigger)
+- **Number Widget** - [Read more](https://docs.opensignlabs.com/docs/help/New-Document/conditional_logic/#number-widget-as-the-trigger)
 - **Dropdown Widget** – [Read more](https://github.com/pravinOpenSign/OpenSign/blob/patch-75/docs/docs/help/New-Document/conditional_logic.md#dropdown-widget-as-the-trigger)
 - **Checkbox Widget** – [Read more](https://github.com/pravinOpenSign/OpenSign/blob/patch-75/docs/docs/help/New-Document/conditional_logic.md#checkbox-widget-as-the-trigger)
 - **Radio Button Widget** – [Read more](https://github.com/pravinOpenSign/OpenSign/blob/patch-75/docs/docs/help/New-Document/conditional_logic.md#radio-button-as-the-trigger)
