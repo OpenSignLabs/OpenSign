@@ -3058,7 +3058,8 @@ The Radio Button widget is displayed whenever **any one** configured condition i
 - A Radio Button widget can act as both a **trigger widget** and a **target widget**.
 - Multiple Conditional Logic rules can be configured for the same Radio Button widget.
 - Radio Button widgets support **Equals** and **Does Not Equal** operators when comparing the selected option.
-```
+  
+---
   
 If you require more help, feel free to reach out to our customer support on support@opensignlabs.com.
 
