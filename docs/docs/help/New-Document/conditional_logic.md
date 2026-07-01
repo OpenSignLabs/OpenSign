@@ -3,13 +3,15 @@ sidebar_position: 6
 title: Conditional logic
 ---
 # Conditional Logic
-The **Conditional Logic** feature in OpenSign allows widgets to dynamically change their behavior based on the values entered or selections made in other widgets while a signer is completing a document.
+The **Conditional Logic** feature in OpenSign allows widgets to dynamically change their behavior based on the values entered or selections made in other widgets while a signer is signing a document.
 
 Instead of displaying every field at once, Conditional Logic helps you create intelligent, interactive forms by showing, hiding, or changing the requirements of fields only when specific conditions are met. This simplifies the signing experience by displaying only the fields that are relevant to the signer.
 
 ---
 
 ## What Can Conditional Logic Do?
+
+<img width="723"  alt="conditional_logic_Actions" src="https://github.com/user-attachments/assets/219adc48-65e9-48f5-ab1b-a2e870491660" />
 
 Using Conditional Logic, you can configure a widget to perform one of the following actions:
 
@@ -69,6 +71,8 @@ Conditional Logic helps you build dynamic and user-friendly documents by:
 ## Text Input Widget - Conditional Logic
 
 The **Text Input** widget in OpenSign supports **Conditional Logic**, allowing you to dynamically control its behavior based on values entered or selected in other widgets.
+
+<img width="1469" alt="textinput condtional logic" src="https://github.com/user-attachments/assets/919846c6-5cf7-4ce6-83b7-cf19e618d8f3" />
 
 Using Conditional Logic, you can configure the Text Input widget to:
 
