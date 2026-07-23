@@ -216,12 +216,18 @@ function PdfRequestFiles(
     return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [divRef.current, isSidebar, windowSize?.width]);
-  const redirectUrl = pdfDetails?.[0]?.RedirectUrl || "";
+  const rawRedirectUrl = pdfDetails?.[0]?.RedirectUrl || "";
+  const redirectUrl = rawRedirectUrl
+    ? rawRedirectUrl.startsWith("http://") || rawRedirectUrl.startsWith("https://")
+      ? rawRedirectUrl
+      : `https://${rawRedirectUrl}`
+    : "";
+
   useEffect(() => {
     if (isredirectCanceled) return; // Stop the redirect timer if canceled
     if (redirectUrl) {
       if (redirectTimeLeft === 0) {
-        openInNewTab(redirectUrl, "_self"); // Replace with your target URL
+        window.location.href = redirectUrl;
       }
       const timer = setTimeout(() => {
         setRedirectTimeLeft((prev) => prev - 1); // Decrement the timer
@@ -789,6 +795,9 @@ function PdfRequestFiles(
                   setIsSigned(true);
                   setSignedSigners([]);
                   setUnSignedSigners([]);
+                  if (redirectUrl) {
+                    setIsredirectCanceled(false);
+                  }
                   const isSuccessRoute = pdfDetails?.[0]?.RedirectUrl
                     ? false
                     : window.location?.pathname?.includes("load");
@@ -799,22 +808,22 @@ function PdfRequestFiles(
                     contactId
                   );
                   const index =
-                    updatedDoc.updatedPdfDetails?.[0]?.Signers.findIndex(
+                    updatedDoc?.updatedPdfDetails?.[0]?.Signers?.findIndex(
                       (x) => x.objectId === contactId
-                    );
+                    ) ?? -1;
                   const removePrefill =
-                    updatedDoc.updatedPdfDetails?.[0]?.Placeholders?.filter(
+                    updatedDoc?.updatedPdfDetails?.[0]?.Placeholders?.filter(
                       (x) => x.Role !== "prefill"
-                    );
+                    ) || [];
                   // Skip viewer placeholders when computing the next signer
                   // to notify (viewers do not gate sequential signing).
-                  let newIndex = index + 1;
+                  let newIndex = index >= 0 ? index + 1 : 0;
                   const usermail = {
-                    Email: removePrefill[newIndex]?.email || ""
+                    Email: removePrefill?.[newIndex]?.email || ""
                   };
                   const user = usermail?.Email
                     ? usermail
-                    : updatedDoc.updatedPdfDetails?.[0]?.Signers[newIndex];
+                    : updatedDoc?.updatedPdfDetails?.[0]?.Signers?.[newIndex];
                   if (
                     sendmail !== "false" &&
                     sendInOrder
@@ -1177,6 +1186,10 @@ function PdfRequestFiles(
           const currentDecline = { currnt: "YouDeclined", isDeclined: true };
           setIsDecline(currentDecline);
           setIsUiLoading(false);
+          // Trigger redirect timer if a RedirectUrl is configured
+          if (redirectUrl) {
+            setIsredirectCanceled(false);
+          }
         }
       })
       .catch((err) => {
@@ -1871,12 +1884,34 @@ function PdfRequestFiles(
                 {/* this modal is used to show decline alert */}
                 <PdfDeclineModal
                   show={isDecline.isDeclined}
-                  headMsg={t("document-declined")}
+                  headMsg={
+                    isDecline.currnt === "Sure"
+                      ? pdfDetails?.[0]?.Name
+                        ? `${t("decline")} "${pdfDetails[0].Name}"`
+                        : t("decline-document")
+                      : t("document-declined")
+                  }
                   bodyMssg={
                     isDecline.currnt === "Sure"
                       ? t("decline-alert-1")
                       : isDecline.currnt === "YouDeclined"
-                        ? t("decline-alert-2")
+                        ? (
+                            <div>
+                              <p className="mb-3">{t("decline-alert-2")}</p>
+                              {!isredirectCanceled && redirectUrl ? (
+                                <div className="flex flex-row gap-1 items-center justify-center p-3 bg-base-200 rounded-lg text-sm">
+                                  <p>{t("redirecting-you-in", { redirectTimeLeft })}</p>
+                                  <button
+                                    type="button"
+                                    onClick={handleRedirectCancel}
+                                    className="underline cursor-pointer op-text-primary focus:outline-none ml-2"
+                                  >
+                                    {t("cancel")}
+                                  </button>
+                                </div>
+                              ) : null}
+                            </div>
+                          )
                         : isDecline.currnt === "another" && handleDeclineMssg()
                   }
                   footerMessage={isDecline.currnt === "Sure"}
