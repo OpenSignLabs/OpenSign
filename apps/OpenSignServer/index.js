@@ -104,11 +104,9 @@ const mailsender = smtpenable ? process.env.SMTP_USER_EMAIL : process.env.MAILGU
 export const config = {
   databaseURI:
     process.env.DATABASE_URI || process.env.MONGODB_URI || 'mongodb://localhost:27017/dev',
-  cloud: function () {
-    import('./cloud/main.js');
-  },
+  cloud: () => import('./cloud/main.js'),
   appId: serverAppId,
-  logLevel: ['error'],
+  logLevel: 'error',
   maxLimit: 500,
   maxUploadSize: '100mb',
   masterKey: process.env.MASTER_KEY, //Add your master key here. Keep it secret!
@@ -119,10 +117,10 @@ export const config = {
   // Your apps name. This will appear in the subject and body of the emails that are sent.
   appName: appName,
   allowClientClassCreation: false,
-  allowExpiredAuthDataToken: false,
+
   enableInsecureAuthAdapters: false,
   databaseOptions: { allowPublicExplain: false },
-  encodeParseObjectInCloudFunction: true,
+
   ...(isMailAdapter === true
     ? {
         emailAdapter: {
