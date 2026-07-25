@@ -63,7 +63,7 @@
     "react-quill-new": "^3.8.3",
     "react-redux": "^9.2.0",
     "react-rnd": "^10.5.3",
-    "react-router": "^7.14.2",
+    "react-router": "^8.3.0",
     "react-scrollbars-custom": "^4.1.1",
     "react-select": "^5.10.2",
     "react-signature-canvas": "^1.1.0-alpha.2",
@@ -150,7 +150,8 @@
     "tmp": "$tmp",
     "react": "$react",
     "react-dom": "$react-dom",
-    "form-data": ">=4.0.6"
+    "form-data": ">=4.0.6",
+    "ws": ">=8.21.1"
   },
   "engines": {
     "node": "18 || 20 || 22"
