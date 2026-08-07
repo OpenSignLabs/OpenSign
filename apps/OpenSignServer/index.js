@@ -67,7 +67,7 @@ if (smtpenable) {
       host: process.env.SMTP_HOST,
       port: process.env.SMTP_PORT || 465,
       secure: smtpsecure,
-      ignoreTLS: !process.env.SMTP_TLS || true,
+      ignoreTLS: !process.env.SMTP_TLS || false,
     };
 
     // ✅ Add auth only if BOTH username & password exist
