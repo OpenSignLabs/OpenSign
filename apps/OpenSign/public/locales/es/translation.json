@@ -1600,7 +1600,7 @@
   "remove": "Eliminar",
   "attachement-note": "Nota: Este widget permite a los firmantes cargar un archivo durante el proceso de firma. El archivo cargado se añadirá como páginas adicionales al final del PDF existente.",
   "attachments-docx-not-supported": "Actualmente estamos experimentando un problema con las cargas de archivos DOCX. Intente cargar el documento en otro formato compatible o vuelva a intentarlo más tarde.",
-   "access-code": "Código de acceso",
+  "access-code": "Código de acceso",
   "access-code-set": "Código de acceso establecido",
   "access-code-add": "Añadir código de acceso",
   "access-code-help": "Secreto opcional que solo conoce este firmante. Deberá introducirlo antes de ver o firmar el documento. Compártalo con el destinatario por otro canal (teléfono, en persona).",
@@ -1618,5 +1618,13 @@
   "access-code-upgrade-msg": "Los códigos de acceso solo están disponibles en planes de pago. Actualice su plan para agregar códigos de acceso a los destinatarios.",
   "show-access-code": "Mostrar código de acceso",
   "hide-access-code": "Ocultar código de acceso",
-  "already-copied-to-clipboard": "Ya copiado al portapapeles"
+  "already-copied-to-clipboard": "Ya copiado al portapapeles",
+  "audit-activity": {
+    "sent": "Enviado",
+    "resend": "Reenviar",
+    "signed": "Firmado",
+    "viewed": "Visto",
+    "awaited": "Pendiente",
+    "created": "Creado"
+  }
 }

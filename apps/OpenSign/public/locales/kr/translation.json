@@ -1618,5 +1618,13 @@
   "access-code-upgrade-msg": "접속 코드는 유료 요금제에서만 사용할 수 있습니다. 수신자에게 접속 코드를 추가하려면 요금제를 업그레이드하세요.",
   "show-access-code": "액세스 코드 표시",
   "hide-access-code": "액세스 코드 숨기기",
-  "already-copied-to-clipboard": "이미 클립보드에 복사됨"
+  "already-copied-to-clipboard": "이미 클립보드에 복사됨",
+  "audit-activity": {
+    "sent": "전송됨",
+    "resend": "다시 보내기",
+    "signed": "서명됨",
+    "viewed": "조회됨",
+    "awaited": "대기 중",
+    "created": "생성됨"
+  }
 }

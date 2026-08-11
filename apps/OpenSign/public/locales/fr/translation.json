@@ -1619,5 +1619,13 @@
   "access-code-upgrade-msg": "Les codes d'accès sont disponibles uniquement dans les forfaits payants. Améliorez votre forfait pour ajouter des codes d'accès aux destinataires.",
   "show-access-code": "Afficher le code d’accès",
   "hide-access-code": "Masquer le code d’accès",
-  "already-copied-to-clipboard": "Déjà copié dans le presse-papiers"
+  "already-copied-to-clipboard": "Déjà copié dans le presse-papiers",
+  "audit-activity": {
+    "sent": "Envoyé",
+    "resend": "Renvoyer",
+    "signed": "Signé",
+    "viewed": "Consulté",
+    "awaited": "En attente",
+    "created": "Créé"
+  }
 }
