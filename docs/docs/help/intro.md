@@ -3,16 +3,17 @@ sidebar_position: 1
 ---
 import ReactPlayer from 'react-player';
 
-# Intro
+# Welcome to OpenSign! 🌟
+Embark on an exciting journey with OpenSign, the leading open-source document signing solution. This is your comprehensive guide to exploring everything OpenSign has to offer. Whether you're just starting out or a seasoned user looking to discover more features, we've got you covered with top-notch guides and resources. Get ready to maximize your OpenSign experience! 🎉📚🔍
 
-🌟Get ready for an electrifying journey at [OpenSign™](https://app.opensignlabs.com), the most incredibly documented open source document signing solution! 🚀 This is your go-to spot for diving deep into everything OpenSign™ has to offer. Whether you’re just starting out or you’re a seasoned pro eager to uncover even more cool features, we’ve got you covered with the most awesome, top-notch guides and resources around. Get ready to make the most out of OpenSign™ 🎉📚🔍 Your adventure in excellence starts here! 🌈✨🌟
 <div>
     <ReactPlayer playing controls url='https://www.youtube.com/watch?v=GY_OP697EiU' />
 </div>
-## Getting Started
+        
+# Getting Started with OpenSign
 
-Try OpenSign on cloud at **[OpenSignLabs](https://app.opensignlabs.com)**.
+Begin your journey with OpenSign by trying it out on the cloud at OpenSignLabs @ **[OpenSignLabs](https://app.opensignlabs.com)**.
 
 Or
 
-Get started by deploying a new instance of **OpenSign** by following the **[installation guide](https://docs.opensignlabs.com/docs/self-host/intro).**
+Alternatively, you can set up your own instance of OpenSign by following our detailed installation guide. This will allow you to customize and control your document signing environment to fit your specific needs. **[installation guide](https://docs.opensignlabs.com/docs/self-host/intro).**
