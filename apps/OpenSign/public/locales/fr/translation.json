@@ -11,7 +11,7 @@
   "phone-optional": "Optionnel",
   "email": "Courriel",
   "company": "Organisation",
-  "job-title": "Votre Fonction",
+  "job-title": "Fonction",
   "profile": "Profil",
   "is-email-verified": "Le courriel est-il vérifié",
   "log-out": "Déconnexion",
@@ -81,7 +81,7 @@
   "register": "S'enregistrer ",
   "sidebar": {
     "Dashboard": "Tableau de bord",
-    "Sign yourself": "signez vous-même",
+    "Sign yourself": "Signez vous-même",
     "Request signatures": "Demander des signatures",
     "Templates": "Modèles",
     "Analytics": "Analytique",
@@ -165,7 +165,7 @@
     "Logs": "Journaux",
     "Expiry-date": "Fecha de caducidad",
     "Company": "Organisation",
-    "JobTitle": "Votre Fonction",
+    "JobTitle": "Fonction",
     "Time to complete (Days)": "Temps pour terminer (jours)",
     "Auto reminder": "Rappel automatique",
     "Remind once in every (Days)": "Rappeler une fois tous les (jours)",
@@ -219,7 +219,7 @@
     "Contactbook": "Il s'agit d'une liste de contacts/signataires que vous avez ajoutés. Ceux-ci apparaîtront sous forme de suggestions lorsque vous tenterez d'ajouter des signataires à un nouveau document.",
     "Templates": "Il s'agit d'une liste de modèles à votre disposition pour créer des documents. Vous pouvez cliquer sur le bouton 'Utiliser' pour créer un nouveau document à l'aide d'un modèle, modifier le document et ajouter des signataires à l'étape suivante."
   },
-  "Sign Yourself": "signez vous-même",
+  "Sign Yourself": "Signez vous-même",
   "Request Signatures": "Demander des signatures",
   "New Template": "Nouveau modèle",
   "file-type": "pdf, png, jpg, jpeg",
@@ -246,7 +246,7 @@
   "OpenSign-drive": "Lecteur {{appName}}",
   "drive-document-status": {
     "Completed": "Complété",
-    "Declined": "Refuser",
+    "Declined": "Refusé",
     "Draft": "Brouillon",
     "Expired": "Expiré",
     "In Progress": "En cours"
@@ -409,7 +409,7 @@
     "stamp": "tampon",
     "initials": "initiales",
     "name": "nom et Prénom",
-    "job title": "votre fonction",
+    "job title": "fonction",
     "company": "organisation",
     "date": "date",
     "text": "texte",
