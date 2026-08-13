@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
+import { createPortal } from "react-dom";
 import "../styles/signature.css";
 import Loader from "./Loader";
 import Tooltip from "./Tooltip";
@@ -49,7 +50,7 @@ const ModalUi = ({
     };
   }, [isOpen, position]);
 
-  return (
+  return createPortal(
     <>
       {isOpen && (
         <dialog
@@ -95,7 +96,8 @@ const ModalUi = ({
           </div>
         </dialog>
       )}
-    </>
+    </>,
+    document.body
   );
 };
 
