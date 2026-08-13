@@ -831,6 +831,7 @@ function PrefillWidgetModal(props) {
                               cacheOptions
                               defaultOptions
                               value={field}
+                              placeholder = {t("select-placeholder")}
                               loadingMessage={() => t("loading")}
                               noOptionsMessage={() => t("contact-not-found")}
                               loadOptions={loadOptions}

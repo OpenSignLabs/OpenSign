@@ -1633,5 +1633,10 @@
     "viewed": "조회됨",
     "awaited": "대기 중",
     "created": "생성됨"
-  }
+  },
+  "notes": {
+    "sign-yourself": "나에게 보내는 메모",
+    "request-signatures": "이 문서를 검토하고 서명해 주세요"
+  },
+  "select-placeholder": "선택..."
 }

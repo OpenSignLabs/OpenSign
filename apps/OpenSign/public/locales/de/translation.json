@@ -1632,5 +1632,10 @@
     "viewed": "Angesehen",
     "awaited": "Ausstehend",
     "created": "Erstellt"
-  }
+  },
+  "notes": {
+    "sign-yourself": "Notiz an mich selbst",
+    "request-signatures": "Bitte überprüfen und unterschreiben Sie dieses Dokument"
+  },
+  "select-placeholder": "Auswählen..."
 }

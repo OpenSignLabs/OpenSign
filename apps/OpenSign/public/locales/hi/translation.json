@@ -1633,5 +1633,10 @@
     "viewed": "देखा गया",
     "awaited": "प्रतीक्षित",
     "created": "बनाया गया"
-  }
+  },
+  "notes": {
+    "sign-yourself": "अपने लिए नोट",
+    "request-signatures": "कृपया इस दस्तावेज़ की समीक्षा करें और हस्ताक्षर करें"
+  },
+  "select-placeholder": "चुनें..."
 }

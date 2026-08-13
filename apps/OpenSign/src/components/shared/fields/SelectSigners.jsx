@@ -137,6 +137,7 @@ const SelectSigners = (props) => {
                 cacheOptions
                 defaultOptions
                 value={selected}
+                placeholder = {t("select-placeholder")}
                 loadingMessage={() => t("loading")}
                 noOptionsMessage={() => t("contact-not-found")}
                 loadOptions={loadOptions}

@@ -1633,5 +1633,10 @@
     "viewed": "Visualizzato",
     "awaited": "In attesa",
     "created": "Creato"
-  }
+  },
+  "notes": {
+    "sign-yourself": "Nota personale",
+    "request-signatures": "Si prega di esaminare e firmare questo documento"
+  },
+  "select-placeholder": "Seleziona..."
 }

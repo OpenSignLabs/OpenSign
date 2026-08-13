@@ -1633,5 +1633,10 @@
     "viewed": "Viewed",
     "awaited": "Awaited",
     "created": "Created"
-  }
+  },
+  "notes":{
+    "sign-yourself": "Note to myself",
+    "request-signatures": "Please review and sign this document"
+  },
+  "select-placeholder": "Select..."
 }
