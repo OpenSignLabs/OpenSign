@@ -314,7 +314,7 @@ const AddAdmin = () => {
                     />
                     <hr className="my-2 border-none" />
                     <label>
-                      {"email"}{" "}
+                      {t("email")}{" "}
                       <span className="text-[red] text-[13px]">*</span>
                     </label>
                     <input
