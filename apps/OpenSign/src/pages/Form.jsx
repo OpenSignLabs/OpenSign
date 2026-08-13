@@ -1391,7 +1391,7 @@ const Forms = (props) => {
                                 onChange={() => handleColorsChange(color)}
                               />
                               <div className="hover:underline underline-offset-2 cursor-default capitalize">
-                                {color}
+                                {t(`color-type.${color}`)}
                               </div>
                             </div>
                           ))}
