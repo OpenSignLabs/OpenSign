@@ -852,6 +852,12 @@
     "l3": "Carica una versione digitale esistente della tua firma.",
     "l4": "Usa uno stile di firma preimpostato salvato sotto 'La mia firma' nelle tue impostazioni."
   },
+  "allowed-signature-types-types":{
+    "draw": "Disegna",
+    "type": "Digita",
+    "upload": "Carica",
+    "default": "Predefinito"
+  },
   "notify-on-signatures": "Notifica sulle firme",
   "notify-on-signatures-help": {
     "p1": "Il creatore del documento riceverà una notifica via email ogni volta che un firmatario firma il documento.",

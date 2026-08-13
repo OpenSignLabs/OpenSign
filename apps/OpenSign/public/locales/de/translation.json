@@ -852,6 +852,12 @@
     "l3": "Laden Sie eine vorhandene digitale Version Ihrer Signatur hoch.",
     "l4": "Verwenden Sie einen voreingestellten Signaturstil, der unter 'Meine Signatur' in Ihren Einstellungen gespeichert ist."
   },
+  "allowed-signature-types-types":{
+    "draw": "Zeichnen",
+    "type": "Tippen",
+    "upload": "Hochladen",
+    "default": "Standard"
+  },
   "notify-on-signatures": "Benachrichtigen bei Signaturen",
   "notify-on-signatures-help": {
     "p1": "Der Ersteller des Dokuments erhält eine E-Mail-Benachrichtigung, sobald ein Unterzeichner das Dokument unterschreibt.",

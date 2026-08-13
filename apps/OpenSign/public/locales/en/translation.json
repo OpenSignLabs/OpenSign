@@ -852,6 +852,12 @@
     "l3": "Upload an existing digital version of your signature.",
     "l4": "Use a pre-set signature style saved under 'My Signature' in your settings."
   },
+  "allowed-signature-types-types":{
+    "draw": "Draw",
+    "type": "Type",
+    "upload": "Upload",
+    "default": "Default"
+  },
   "notify-on-signatures": "Notify on signatures",
   "notify-on-signatures-help": {
     "p1": "The document creator will receive an email notification whenever a signer signs the document.",

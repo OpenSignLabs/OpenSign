@@ -852,6 +852,12 @@
     "l3": "기존 디지털 버전의 서명을 업로드합니다.",
     "l4": "설정의 '내 서명' 아래에 저장된 미리 설정된 서명 스타일을 사용합니다."
   },
+  "allowed-signature-types-types":{
+    "draw": "그리기",
+    "type": "입력",
+    "upload": "업로드",
+    "default": "기본값"
+  },
   "notify-on-signatures": "서명 시 알림",
   "notify-on-signatures-help": {
     "p1": "문서 작성자는 서명자가 문서에 서명할 때마다 이메일 알림을 받게 됩니다.",
