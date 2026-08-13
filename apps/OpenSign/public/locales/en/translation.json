@@ -172,7 +172,16 @@
     "Reset password": "Reset password",
     "View formdata": "View formdata",
     "Download all formdata": "Download all formdata",
-    "API credits": "API credits"
+    "API credits": "API credits",
+    "share-options": {
+      "clipboard" : "Copy to clipboard",
+      "twitter" : "Share on Twitter",
+      "facebook" : "Share on Facebook",
+      "whatsapp" : "Share on Whatsapp",
+      "gmail" : "Share via Gmail",
+      "teams" : "Share on Teams",
+      "outlook" : "Share via Outlook"
+    }
   },
   "report-heading": {
     "Sr.No": "Sr.No",

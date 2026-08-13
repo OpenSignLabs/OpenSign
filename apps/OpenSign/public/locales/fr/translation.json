@@ -208,7 +208,16 @@
     "Reset password": "Réinitialiser le mot de passe",
     "View formdata": "Voir les données du formulaire",
     "Download all formdata": "Télécharger toutes les données du formulaire",
-    "API credits": "Crédits API"
+    "API credits": "Crédits API",
+    "share-options": {
+      "clipboard": "Copier dans le presse-papiers",
+      "twitter": "Partager sur Twitter",
+      "facebook": "Partager sur Facebook",
+      "whatsapp": "Partager sur WhatsApp",
+      "gmail": "Partager avec Gmail",
+      "teams": "Partager sur Teams",
+      "outlook" : "Partager avec Outlook"
+    }
   },
   "report-help": {
     "Draft Documents": "Il s'agit de documents que vous avez commencés mais que vous n'avez pas finalisés pour envoi.",

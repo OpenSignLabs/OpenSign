@@ -172,7 +172,16 @@
     "Reset password": "Passwort zurücksetzen",
     "View formdata": "Formulardaten ansehen",
     "Download all formdata": "Alle Formulardaten herunterladen",
-    "API credits": "API-Credits"
+    "API credits": "API-Credits",
+    "share-options": {
+      "clipboard": "In die Zwischenablage kopieren",
+      "twitter": "Auf Twitter teilen",
+      "facebook": "Auf Facebook teilen",
+      "whatsapp": "Auf WhatsApp teilen",
+      "gmail": "Über Gmail teilen",
+      "teams": "Über Teams teilen",
+      "outlook" : "Über Outlook teilen"
+    }
   },
   "report-heading": {
     "Sr.No": "Nr.",

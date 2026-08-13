@@ -172,7 +172,16 @@
     "Reset password": "비밀번호 재설정",
     "View formdata": "양식 데이터 보기",
     "Download all formdata": "모든 양식 데이터 다운로드",
-    "API credits": "API 크레딧"
+    "API credits": "API 크레딧",
+    "share-options": {
+      "clipboard": "클립보드에 복사",
+      "twitter": "Twitter에서 공유",
+      "facebook": "Facebook에서 공유",
+      "whatsapp": "WhatsApp에서 공유",
+      "gmail": "Gmail에서 공유",
+      "teams": "Teams에서 공유",
+      "outlook" : "Outlook에서 공유"
+    }
   },
   "report-heading": {
     "Sr.No": "일련 번호",

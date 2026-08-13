@@ -172,7 +172,16 @@
     "Reset password": "पासवर्ड रीसेट करें",
     "View formdata": "फॉर्म डेटा देखें",
     "Download all formdata": "सभी फॉर्म डेटा डाउनलोड करें",
-    "API credits": "API क्रेडिट्स"
+    "API credits": "API क्रेडिट्स",
+    "share-options": {
+      "clipboard": "क्लिपबोर्ड पर कॉपी करें",
+      "twitter": "Twitter पर साझा करें",
+      "facebook": "Facebook पर साझा करें",
+      "whatsapp": "WhatsApp पर साझा करें",
+      "gmail": "Gmail पर साझा करें",
+      "teams": "Teams पर साझा करें",
+      "outlook" : "Outlook पर साझा करें"
+    }
   },
   "report-heading": {
     "Sr.No": "क्रमांक",

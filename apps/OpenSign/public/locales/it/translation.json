@@ -172,7 +172,16 @@
     "Reset password": "Reimposta password",
     "View formdata": "Visualizza i dati del modulo",
     "Download all formdata": "Scarica tutti i dati del modulo",
-    "API credits": "Crediti API"
+    "API credits": "Crediti API",
+    "share-options": {
+      "clipboard": "Copia negli appunti",
+      "twitter": "Condividi su Twitter",
+      "facebook": "Condividi su Facebook",
+      "whatsapp": "Condividi su WhatsApp",
+      "gmail": "Condividi su Gmail",
+      "teams": "Condividi su Teams",
+      "outlook" : "Condividi su Outlook"
+    }
   },
   "report-heading": {
     "Sr.No": "Nr.",

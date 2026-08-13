@@ -172,7 +172,16 @@
     "Reset password": "Restablecer contraseña",
     "View formdata": "Ver datos del formulario",
     "Download all formdata": "Descargar todos los datos del formulario",
-    "API credits": "Créditos de API"
+    "API credits": "Créditos de API",
+    "share-options": {
+      "clipboard": "Copiar al portapapeles",
+      "twitter": "Compartir en Twitter",
+      "facebook": "Compartir en Facebook",
+      "whatsapp": "Compartir en WhatsApp",
+      "gmail": "Compartir con Gmail",
+      "teams": "Compartir en Teams",
+      "outlook" : "Compartir con Outlook"
+    }
   },
   "report-heading": {
     "Sr.No": "Nº",
