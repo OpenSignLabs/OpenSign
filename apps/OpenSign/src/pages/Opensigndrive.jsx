@@ -616,7 +616,7 @@ function Opensigndrive() {
               className="flex flex-col text-base-content"
             >
               <label className="py-[8px] text-[15px] font-[400] mb-0">
-                {t("name")}
+                {t("folder-name")}
                 <span className="text-[red]">*</span>
               </label>
               <input

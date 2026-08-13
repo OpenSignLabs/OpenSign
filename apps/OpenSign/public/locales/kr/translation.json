@@ -37,6 +37,7 @@
   "action": "실행",
   "add": "추가",
   "add-new-folder": "새 폴더 추가",
+  "folder-name": "폴더 이름",
   "disable-documentId": "문서 ID 비활성화",
   "edit": "편집",
   "change-password": "비밀번호 변경",
@@ -852,7 +853,7 @@
     "l3": "기존 디지털 버전의 서명을 업로드합니다.",
     "l4": "설정의 '내 서명' 아래에 저장된 미리 설정된 서명 스타일을 사용합니다."
   },
-  "allowed-signature-types-types":{
+  "allowed-signature-types-types": {
     "draw": "그리기",
     "type": "입력",
     "upload": "업로드",

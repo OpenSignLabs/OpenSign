@@ -37,6 +37,7 @@
   "action": "Action",
   "add": "Ajouter",
   "add-new-folder": "Ajouter un nouveau dossier",
+  "folder-name": "Nom du dossier",
   "disable-documentId": "Désactiver l'ID du document",
   "edit": "Modifier",
   "change-password": "Changer votre mot de passe",
@@ -850,7 +851,7 @@
     "l3": "Téléchargez une version numérique existante de votre signature.",
     "l4": "Utilisez un style de signature prédéfini enregistré sous 'Ma signature' ​​dans vos paramètres."
   },
-  "allowed-signature-types-types":{
+  "allowed-signature-types-types": {
     "draw": "Dessiner",
     "type": "Taper",
     "upload": "Télécharger",

@@ -37,6 +37,7 @@
   "action": "Aktion",
   "add": "Hinzufügen",
   "add-new-folder": "Neuen Ordner hinzufügen",
+  "folder-name": "Ordnername",
   "disable-documentId": "DocumentId deaktivieren",
   "edit": "Bearbeiten",
   "change-password": "Passwort ändern",
@@ -852,7 +853,7 @@
     "l3": "Laden Sie eine vorhandene digitale Version Ihrer Signatur hoch.",
     "l4": "Verwenden Sie einen voreingestellten Signaturstil, der unter 'Meine Signatur' in Ihren Einstellungen gespeichert ist."
   },
-  "allowed-signature-types-types":{
+  "allowed-signature-types-types": {
     "draw": "Zeichnen",
     "type": "Tippen",
     "upload": "Hochladen",

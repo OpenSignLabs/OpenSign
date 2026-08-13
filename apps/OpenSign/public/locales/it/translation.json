@@ -37,6 +37,7 @@
   "action": "Azione",
   "add": "Aggiungi",
   "add-new-folder": "Aggiungi una nuova cartella",
+  "folder-name": "Nome della cartella",
   "disable-documentId": "Disabilita DocumentId",
   "edit": "Modifica",
   "change-password": "Cambia Password",
@@ -852,7 +853,7 @@
     "l3": "Carica una versione digitale esistente della tua firma.",
     "l4": "Usa uno stile di firma preimpostato salvato sotto 'La mia firma' nelle tue impostazioni."
   },
-  "allowed-signature-types-types":{
+  "allowed-signature-types-types": {
     "draw": "Disegna",
     "type": "Digita",
     "upload": "Carica",
