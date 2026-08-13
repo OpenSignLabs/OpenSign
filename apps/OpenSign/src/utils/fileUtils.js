@@ -108,7 +108,7 @@ export function buildDownloadFilename(formatId, ctx) {
       stem = base;
       break;
     case "DOCNAME_SIGNED":
-      stem = isSigned ? `${base} - Signed` : base; // if not signed, fallback to base
+      stem = isSigned ? `${base} - ${i18n.t("signed")}` : base; // if not signed, fallback to base
       break;
     case "DOCNAME_EMAIL":
       stem = `${base} - ${safeEmail}`;

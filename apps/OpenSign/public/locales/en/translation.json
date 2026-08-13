@@ -1268,6 +1268,12 @@
   "email-settings-redirect-message": "This setting has been moved from the console to Main Menu Settings → Preferences. This page will be removed in upcoming versions.",
   "go-to-preferences-menu": "Go to Preferences menu",
   "document-download-filename-format": "Document download filename format",
+  "document-download-filename-format-options":{
+    "docname": "Document Name.pdf",
+    "docname-signed": "Document Name - Signed.pdf",
+    "docname-email": "Document Name - name@domain.com.pdf",
+    "docname-email-date": "Document Name - name@domain.com - Date.pdf"
+  },
   "preview": "Preview: ",
   "download-filename-format-help": "Choose how downloaded PDFs are named. Your selection is saved to your profile and used across the app.",
   "delete-action-prohibited": "This action is not permitted. Kindly contact your administrator to request account deletion.",

@@ -1268,6 +1268,12 @@
   "email-settings-redirect-message": "Diese Einstellung wurde von der Konsole zu den Haupteinstellungen → Präferenzen verschoben. Diese Seite wird in zukünftigen Versionen entfernt.",
   "go-to-preferences-menu": "Zum Menü 'Einstellungen' gehen",
   "document-download-filename-format": "Dateiname-Format für Dokument-Download",
+  "document-download-filename-format-options":{
+    "docname": "Dokumentname.pdf",
+    "docname-signed": "Dokumentname - Unterzeichnet.pdf",
+    "docname-email": "Dokumentname - name@domain.com.pdf",
+    "docname-email-date": "Dokumentname - name@domain.com - Datum.pdf"
+  },
   "preview": "Vorschau: ",
   "download-filename-format-help": "Wählen Sie, wie heruntergeladene PDFs benannt werden. Ihre Auswahl wird in Ihrem Profil gespeichert und in der gesamten App verwendet.",
   "delete-action-prohibited": "Diese Aktion ist nicht erlaubt. Bitte wenden Sie sich an Ihren Administrator, um die Löschung des Kontos zu beantragen.",

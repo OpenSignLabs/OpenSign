@@ -1268,6 +1268,12 @@
   "email-settings-redirect-message": "Questa impostazione è stata spostata dalla console a Impostazioni del menu principale → Preferenze. Questa pagina verrà rimossa nelle prossime versioni.",
   "go-to-preferences-menu": "Vai al menu Preferenze",
   "document-download-filename-format": "Formato del nome file per il download del documento",
+  "document-download-filename-format-options":{
+    "docname": "Nome del documento.pdf",
+    "docname-signed": "Nome del documento - Firmato.pdf",
+    "docname-email": "Nome del documento - name@domain.com.pdf",
+    "docname-email-date": "Nome del documento - name@domain.com - Data.pdf"
+  },
   "preview": "Anteprima: ",
   "download-filename-format-help": "Scegli come vengono nominati i PDF scaricati. La tua selezione viene salvata nel tuo profilo e utilizzata in tutta l'app.",
   "delete-action-prohibited": "Questa azione non è consentita. Si prega di contattare l'amministratore per richiedere l'eliminazione dell'account.",

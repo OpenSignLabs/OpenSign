@@ -1268,6 +1268,12 @@
   "email-settings-redirect-message": "이 설정은 콘솔에서 주 메뉴 설정 → 환경설정으로 이동되었습니다. 이 페이지는 향후 버전에서 제거될 예정입니다.",
   "go-to-preferences-menu": "환경설정 메뉴로 이동",
   "document-download-filename-format": "문서 다운로드 파일 이름 형식",
+  "document-download-filename-format-options":{
+    "docname": "문서 이름.pdf",
+    "docname-signed": "문서 이름 - 서명 완료.pdf",
+    "docname-email": "문서 이름 - name@domain.com.pdf",
+    "docname-email-date": "문서 이름 - name@domain.com - 날짜.pdf"
+  },
   "preview": "미리보기: ",
   "download-filename-format-help": "다운로드한 PDF의 이름을 지정하는 방법을 선택합니다. 선택 사항은 프로필에 저장되어 앱 전체에서 사용됩니다.",
   "delete-action-prohibited": "이 작업은 허용되지 않습니다. 계정 삭제를 요청하려면 관리자에게 문의하십시오.",

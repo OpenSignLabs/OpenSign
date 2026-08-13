@@ -1268,6 +1268,12 @@
   "email-settings-redirect-message": "यह सेटिंग कंसोल से मुख्य मेनू सेटिंग्स → प्रेफ़रेंस में स्थानांतरित कर दी गई है। यह पेज आने वाले संस्करणों में हटा दिया जाएगा।",
   "go-to-preferences-menu": "प्रेफ़रेंस मेनू पर जाएं",
   "document-download-filename-format": "दस्तावेज़ डाउनलोड फ़ाइलनाम प्रारूप",
+  "document-download-filename-format-options":{
+    "docname": "दस्तावेज़ नाम.pdf",
+    "docname-signed": "दस्तावेज़ नाम - हस्ताक्षरित.pdf",
+    "docname-email": "दस्तावेज़ नाम - name@domain.com.pdf",
+    "docname-email-date": "दस्तावेज़ नाम - name@domain.com - दिनांक.pdf"
+  },
   "preview": "पूर्वावलोकन: ",
   "download-filename-format-help": "डाउनलोड की गई PDF फ़ाइलों का नाम कैसे रखा जाए, चुनें। आपका चयन आपके प्रोफ़ाइल में सहेजा जाएगा और पूरे ऐप में उपयोग किया जाएगा।",
   "delete-action-prohibited": "यह कार्रवाई अनुमत नहीं है। कृपया अपना खाता हटाने के लिए अपने व्यवस्थापक से संपर्क करें।",
