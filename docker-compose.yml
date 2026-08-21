@@ -56,7 +56,6 @@ networks:
 
 volumes:
   data-volume:
-  web-root:
   caddy_data:
   caddy_config:
   opensign-files:
