@@ -12,7 +12,6 @@ import {
 import Parse from "parse";
 import { appInfo } from "./appinfo";
 import { saveAs } from "file-saver";
-import printModule from "print-js";
 import fontkit from "@pdf-lib/fontkit";
 import { SCALE_STEPS, themeColor } from "./const";
 import { format, toZonedTime } from "date-fns-tz";
@@ -3037,7 +3036,7 @@ export const handleDownloadPdf = async (
       await fetchUrl(url, docName);
       setIsDownloading && setIsDownloading("");
     } catch (err) {
-      console.log("err in getsignedurl", err);
+      console.error("err in getsignedurl", err);
       setIsDownloading("");
       alert(i18n.t("something-went-wrong-mssg"));
     }
@@ -3090,13 +3089,43 @@ export const handleToPrint = async (event, setIsDownloading, pdfDetails) => {
       const blobUrl = URL.createObjectURL(blob);
       window.open(blobUrl, "_blank");
       setIsDownloading("");
-    } else {
-      printModule({ printable: pdf, type: "pdf", base64: true });
+    }
+    else {
+      const response = await fetch(url);
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch PDF: ${response.status}`);
+      }
+
+      const blob = await response.blob();
+
+      const blobUrl = URL.createObjectURL(blob);
+
+      const iframe = document.createElement("iframe");
+
+      iframe.style.position = "fixed";
+      iframe.style.right = "0";
+      iframe.style.bottom = "0";
+      iframe.style.width = "0";
+      iframe.style.height = "0";
+      iframe.style.border = "0";
+
+      iframe.src = blobUrl;
+
+      document.body.appendChild(iframe);
+
+      iframe.onload = () => {
+        setTimeout(() => {
+          iframe.contentWindow.focus();
+          iframe.contentWindow.print();
+        }, 1000);
+      };
+
       setIsDownloading("");
     }
   } catch (err) {
     setIsDownloading("");
-    console.log("err in getsignedurl", err);
+    console.error("err in getsignedurl", err);
     alert(i18n.t("something-went-wrong-mssg"));
   }
 };
