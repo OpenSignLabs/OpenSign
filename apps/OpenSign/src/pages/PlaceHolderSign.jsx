@@ -9,6 +9,7 @@ import Tour from "../primitives/Tour";
 import { useLocation, useParams } from "react-router";
 import SignerListPlace from "../components/pdf/SignerListPlace";
 import Header from "../components/pdf/PdfHeader";
+import PrevNext from "../components/pdf/PrevNext";
 import ShareButton from "../primitives/ShareButton";
 import {
   pdfNewWidthFun,
@@ -2271,6 +2272,13 @@ function PlaceHolderSign() {
                     handleClosePrefillTour={handleClosePrefillTour}
                   />
                 )}
+              </div>
+              <div className="flex justify-center py-2">
+                <PrevNext
+                  pageNumber={pageNumber}
+                  allPages={allPages}
+                  changePage={changePage}
+                />
               </div>
             </div>
           </div>
