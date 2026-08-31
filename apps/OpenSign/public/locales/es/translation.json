@@ -37,6 +37,7 @@
   "action": "Acción",
   "add": "Agregar",
   "add-new-folder": "Agregar nueva carpeta",
+  "folder-name": "Nombre de la carpeta",
   "disable-documentId": "Desactivar ID de documento",
   "edit": "Editar",
   "change-password": "Cambiar contraseña",
@@ -171,7 +172,16 @@
     "Reset password": "Restablecer contraseña",
     "View formdata": "Ver datos del formulario",
     "Download all formdata": "Descargar todos los datos del formulario",
-    "API credits": "Créditos de API"
+    "API credits": "Créditos de API",
+    "share-options": {
+      "clipboard": "Copiar al portapapeles",
+      "twitter": "Compartir en Twitter",
+      "facebook": "Compartir en Facebook",
+      "whatsapp": "Compartir en WhatsApp",
+      "gmail": "Compartir con Gmail",
+      "teams": "Compartir en Teams",
+      "outlook" : "Compartir con Outlook"
+    }
   },
   "report-heading": {
     "Sr.No": "Nº",
@@ -847,11 +857,17 @@
   "expect-default-one-signature-type": "Habilite un tipo de firma adicional aparte del predeterminado.",
   "add-signer-note": "Nota - Este contacto se guardará en sus Contactos",
   "allowed-signature-types-help": {
-    "p1": "Esta preferencia de firma controla qué opciones de firma están disponibles para sus firmantes. Solo los tipos de firma que seleccione aparecerán en el widget de firma cuando se firme un documento. Por ejemplo, si elige sólo la opción 'Draw' en las preferencias, su firmante verá sólo la opción 'Draw' en el widget de firma, mientras que las otras tres opciones no estarán disponibles.",
+    "p1": "Esta preferencia de firma controla qué opciones de firma están disponibles para sus firmantes. Solo los tipos de firma que seleccione aparecerán en el widget de firma cuando se firme un documento. Por ejemplo, si elige sólo la opción 'Dibujar' en las preferencias, su firmante verá sólo la opción 'Dibujar' en el widget de firma, mientras que las otras tres opciones no estarán disponibles.",
     "l1": "Cree una firma manuscrita directamente en la pantalla usando su dedo o un lápiz.",
     "l2": "Ingrese su nombre y elija entre varios estilos de fuente para crear una firma.",
     "l3": "Cargue una versión digital existente de su firma.",
     "l4": "Utilice un estilo de firma preestablecido guardado en 'Mi firma' en su configuración."
+  },
+  "allowed-signature-types-types": {
+    "draw": "Dibujar",
+    "type": "Escribir",
+    "upload": "Subir",
+    "default": "Predeterminado"
   },
   "notify-on-signatures": "Notificar sobre firmas",
   "notify-on-signatures-help": {
@@ -1269,6 +1285,12 @@
   "email-settings-redirect-message": "Esta configuración se ha movido de la consola a Configuración del menú principal → Preferencias. Esta página se eliminará en próximas versiones.",
   "go-to-preferences-menu": "Ir al menú de preferencias",
   "document-download-filename-format": "Formato de nombre de archivo para la descarga del documento",
+  "document-download-filename-format-options":{
+    "docname": "Nombre del documento.pdf",
+    "docname-signed": "Nombre del documento - Firmado.pdf",
+    "docname-email": "Nombre del documento - name@domain.com.pdf",
+    "docname-email-date": "Nombre del documento - name@domain.com - Fecha.pdf"
+  },
   "preview": "Vista previa: ",
   "download-filename-format-help": "Elija cómo se nombran los archivos PDF descargados. Su selección se guarda en su perfil y se usa en toda la aplicación.",
   "delete-action-prohibited": "Esta acción no está permitida. Por favor, póngase en contacto con su administrador para solicitar la eliminación de la cuenta.",
@@ -1595,7 +1617,7 @@
   "remove": "Eliminar",
   "attachement-note": "Nota: Este widget permite a los firmantes cargar un archivo durante el proceso de firma. El archivo cargado se añadirá como páginas adicionales al final del PDF existente.",
   "attachments-docx-not-supported": "Actualmente estamos experimentando un problema con las cargas de archivos DOCX. Intente cargar el documento en otro formato compatible o vuelva a intentarlo más tarde.",
-   "access-code": "Código de acceso",
+  "access-code": "Código de acceso",
   "access-code-set": "Código de acceso establecido",
   "access-code-add": "Añadir código de acceso",
   "access-code-help": "Secreto opcional que solo conoce este firmante. Deberá introducirlo antes de ver o firmar el documento. Compártalo con el destinatario por otro canal (teléfono, en persona).",
@@ -1613,5 +1635,18 @@
   "access-code-upgrade-msg": "Los códigos de acceso solo están disponibles en planes de pago. Actualice su plan para agregar códigos de acceso a los destinatarios.",
   "show-access-code": "Mostrar código de acceso",
   "hide-access-code": "Ocultar código de acceso",
-  "already-copied-to-clipboard": "Ya copiado al portapapeles"
+  "already-copied-to-clipboard": "Ya copiado al portapapeles",
+  "audit-activity": {
+    "sent": "Enviado",
+    "resend": "Reenviar",
+    "signed": "Firmado",
+    "viewed": "Visto",
+    "awaited": "Pendiente",
+    "created": "Creado"
+  },
+  "notes": {
+    "sign-yourself": "Nota para mí mismo",
+    "request-signatures": "Por favor, revise y firme este documento"
+  },
+  "select-placeholder": "Seleccionar..."
 }

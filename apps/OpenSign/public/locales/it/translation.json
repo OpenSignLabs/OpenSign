@@ -37,6 +37,7 @@
   "action": "Azione",
   "add": "Aggiungi",
   "add-new-folder": "Aggiungi una nuova cartella",
+  "folder-name": "Nome della cartella",
   "disable-documentId": "Disabilita DocumentId",
   "edit": "Modifica",
   "change-password": "Cambia Password",
@@ -171,7 +172,16 @@
     "Reset password": "Reimposta password",
     "View formdata": "Visualizza i dati del modulo",
     "Download all formdata": "Scarica tutti i dati del modulo",
-    "API credits": "Crediti API"
+    "API credits": "Crediti API",
+    "share-options": {
+      "clipboard": "Copia negli appunti",
+      "twitter": "Condividi su Twitter",
+      "facebook": "Condividi su Facebook",
+      "whatsapp": "Condividi su WhatsApp",
+      "gmail": "Condividi su Gmail",
+      "teams": "Condividi su Teams",
+      "outlook" : "Condividi su Outlook"
+    }
   },
   "report-heading": {
     "Sr.No": "Nr.",
@@ -853,6 +863,12 @@
     "l3": "Carica una versione digitale esistente della tua firma.",
     "l4": "Usa uno stile di firma preimpostato salvato sotto 'La mia firma' nelle tue impostazioni."
   },
+  "allowed-signature-types-types": {
+    "draw": "Disegna",
+    "type": "Digita",
+    "upload": "Carica",
+    "default": "Predefinito"
+  },
   "notify-on-signatures": "Notifica sulle firme",
   "notify-on-signatures-help": {
     "p1": "Il creatore del documento riceverà una notifica via email ogni volta che un firmatario firma il documento.",
@@ -1269,6 +1285,12 @@
   "email-settings-redirect-message": "Questa impostazione è stata spostata dalla console a Impostazioni del menu principale → Preferenze. Questa pagina verrà rimossa nelle prossime versioni.",
   "go-to-preferences-menu": "Vai al menu Preferenze",
   "document-download-filename-format": "Formato del nome file per il download del documento",
+  "document-download-filename-format-options":{
+    "docname": "Nome del documento.pdf",
+    "docname-signed": "Nome del documento - Firmato.pdf",
+    "docname-email": "Nome del documento - name@domain.com.pdf",
+    "docname-email-date": "Nome del documento - name@domain.com - Data.pdf"
+  },
   "preview": "Anteprima: ",
   "download-filename-format-help": "Scegli come vengono nominati i PDF scaricati. La tua selezione viene salvata nel tuo profilo e utilizzata in tutta l'app.",
   "delete-action-prohibited": "Questa azione non è consentita. Si prega di contattare l'amministratore per richiedere l'eliminazione dell'account.",
@@ -1595,7 +1617,7 @@
   "remove": "Rimuovi",
   "attachement-note": "Nota: Questo widget consente ai firmatari di caricare un file durante il processo di firma. Il file caricato verrà aggiunto come pagine aggiuntive alla fine del PDF esistente.",
   "attachments-docx-not-supported": "Al momento stiamo riscontrando un problema con il caricamento dei file DOCX. Prova a caricare il documento in un altro formato supportato oppure riprova più tardi.",
-   "access-code": "Codice di accesso",
+  "access-code": "Codice di accesso",
   "access-code-set": "Codice di accesso impostato",
   "access-code-add": "Aggiungi codice di accesso",
   "access-code-help": "Codice segreto facoltativo noto solo a questo firmatario. Dovrà inserirlo prima di visualizzare o firmare il documento. Comunicalo al destinatario tramite un canale alternativo (telefono, di persona).",
@@ -1613,5 +1635,18 @@
   "access-code-upgrade-msg": "I codici di accesso sono disponibili solo nei piani a pagamento. Aggiorna il tuo piano per aggiungere codici di accesso per i destinatari.",
   "show-access-code": "Mostra codice di accesso",
   "hide-access-code": "Nascondi codice di accesso",
-  "already-copied-to-clipboard": "Già copiato negli appunti"
+  "already-copied-to-clipboard": "Già copiato negli appunti",
+  "audit-activity": {
+    "sent": "Inviato",
+    "resend": "Invia di nuovo",
+    "signed": "Firmato",
+    "viewed": "Visualizzato",
+    "awaited": "In attesa",
+    "created": "Creato"
+  },
+  "notes": {
+    "sign-yourself": "Nota personale",
+    "request-signatures": "Si prega di esaminare e firmare questo documento"
+  },
+  "select-placeholder": "Seleziona..."
 }

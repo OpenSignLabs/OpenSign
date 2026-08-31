@@ -37,6 +37,7 @@
   "action": "Aktion",
   "add": "Hinzufügen",
   "add-new-folder": "Neuen Ordner hinzufügen",
+  "folder-name": "Ordnername",
   "disable-documentId": "DocumentId deaktivieren",
   "edit": "Bearbeiten",
   "change-password": "Passwort ändern",
@@ -171,7 +172,16 @@
     "Reset password": "Passwort zurücksetzen",
     "View formdata": "Formulardaten ansehen",
     "Download all formdata": "Alle Formulardaten herunterladen",
-    "API credits": "API-Credits"
+    "API credits": "API-Credits",
+    "share-options": {
+      "clipboard": "In die Zwischenablage kopieren",
+      "twitter": "Auf Twitter teilen",
+      "facebook": "Auf Facebook teilen",
+      "whatsapp": "Auf WhatsApp teilen",
+      "gmail": "Über Gmail teilen",
+      "teams": "Über Teams teilen",
+      "outlook" : "Über Outlook teilen"
+    }
   },
   "report-heading": {
     "Sr.No": "Nr.",
@@ -853,6 +863,12 @@
     "l3": "Laden Sie eine vorhandene digitale Version Ihrer Signatur hoch.",
     "l4": "Verwenden Sie einen voreingestellten Signaturstil, der unter 'Meine Signatur' in Ihren Einstellungen gespeichert ist."
   },
+  "allowed-signature-types-types": {
+    "draw": "Zeichnen",
+    "type": "Tippen",
+    "upload": "Hochladen",
+    "default": "Standard"
+  },
   "notify-on-signatures": "Benachrichtigen bei Signaturen",
   "notify-on-signatures-help": {
     "p1": "Der Ersteller des Dokuments erhält eine E-Mail-Benachrichtigung, sobald ein Unterzeichner das Dokument unterschreibt.",
@@ -1269,6 +1285,12 @@
   "email-settings-redirect-message": "Diese Einstellung wurde von der Konsole zu den Haupteinstellungen → Präferenzen verschoben. Diese Seite wird in zukünftigen Versionen entfernt.",
   "go-to-preferences-menu": "Zum Menü 'Einstellungen' gehen",
   "document-download-filename-format": "Dateiname-Format für Dokument-Download",
+  "document-download-filename-format-options":{
+    "docname": "Dokumentname.pdf",
+    "docname-signed": "Dokumentname - Unterzeichnet.pdf",
+    "docname-email": "Dokumentname - name@domain.com.pdf",
+    "docname-email-date": "Dokumentname - name@domain.com - Datum.pdf"
+  },
   "preview": "Vorschau: ",
   "download-filename-format-help": "Wählen Sie, wie heruntergeladene PDFs benannt werden. Ihre Auswahl wird in Ihrem Profil gespeichert und in der gesamten App verwendet.",
   "delete-action-prohibited": "Diese Aktion ist nicht erlaubt. Bitte wenden Sie sich an Ihren Administrator, um die Löschung des Kontos zu beantragen.",
@@ -1594,7 +1616,7 @@
   "widget-hidden-due-to-logic": "Dieses Widget ist aufgrund bedingter Logik ausgeblendet.",
   "remove": "Entfernen",
   "attachments-docx-not-supported": "Derzeit tritt ein Problem beim Hochladen von DOCX-Dateien auf. Bitte versuchen Sie, das Dokument in einem anderen unterstützten Format hochzuladen, oder versuchen Sie es später erneut.",
-   "access-code": "Zugangscode",
+  "access-code": "Zugangscode",
   "access-code-set": "Zugangscode festgelegt",
   "access-code-add": "Zugangscode hinzufügen",
   "access-code-help": "Optionales Geheimnis, das nur dieser Unterzeichner kennt. Vor dem Anzeigen oder Unterschreiben des Dokuments wird die Eingabe verlangt. Geben Sie den Code dem Empfänger auf einem anderen Kanal weiter (Telefon, persönlich).",
@@ -1612,5 +1634,18 @@
   "access-code-upgrade-msg": "Zugangscodes sind nur in kostenpflichtigen Tarifen verfügbar. Aktualisieren Sie Ihren Tarif, um Zugangscodes für Empfänger hinzuzufügen.",
   "show-access-code": "Zugangscode anzeigen",
   "hide-access-code": "Zugangscode ausblenden",
-  "already-copied-to-clipboard": "Bereits in die Zwischenablage kopiert"
+  "already-copied-to-clipboard": "Bereits in die Zwischenablage kopiert",
+  "audit-activity": {
+    "sent": "Gesendet",
+    "resend": "Erneut senden",
+    "signed": "Signiert",
+    "viewed": "Angesehen",
+    "awaited": "Ausstehend",
+    "created": "Erstellt"
+  },
+  "notes": {
+    "sign-yourself": "Notiz an mich selbst",
+    "request-signatures": "Bitte überprüfen und unterschreiben Sie dieses Dokument"
+  },
+  "select-placeholder": "Auswählen..."
 }

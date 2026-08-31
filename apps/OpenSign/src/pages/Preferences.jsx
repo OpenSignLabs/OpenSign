@@ -327,28 +327,28 @@ const Preferences = () => {
                                 <ol className="list-disc">
                                   <li>
                                     <span className="font-bold">
-                                      {t("draw")}:{" "}
+                                      {t("allowed-signature-types-types.draw")}:{" "}
                                     </span>
                                     <span>
                                       {t("allowed-signature-types-help.l1")}
                                     </span>
                                   </li>
                                   <li>
-                                    <span className="font-bold">Type: </span>
+                                    <span className="font-bold">{t("allowed-signature-types-types.type")}:{" "}</span>
                                     <span>
                                       {t("allowed-signature-types-help.l2")}
                                     </span>
                                   </li>
                                   <li>
                                     <span className="font-bold">
-                                      {t("upload")}:{" "}
+                                      {t("allowed-signature-types-types.upload")}:{" "}
                                     </span>
                                     <span>
                                       {t("allowed-signature-types-help.l3")}
                                     </span>
                                   </li>
                                   <li>
-                                    <span className="font-bold">Default: </span>
+                                    <span className="font-bold">{t("allowed-signature-types-types.default")}:{" "}</span>
                                     <span>
                                       {t("allowed-signature-types-help.l4")}
                                     </span>
@@ -377,7 +377,7 @@ const Preferences = () => {
                                 className="text-sm font-medium text-base-content hover:underline underline-offset-2 cursor-pointer capitalize mb-0"
                                 title={`Enabling this allows signers to ${type.name} signature`}
                               >
-                                {type?.name === "typed" ? "type" : type?.name}
+                                {t(`allowed-signature-types-types.${type?.name === "typed" ? "type" : type?.name}`)}
                               </label>
                             </div>
                           ))}

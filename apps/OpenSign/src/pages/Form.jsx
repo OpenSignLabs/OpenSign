@@ -514,8 +514,8 @@ const Forms = (props) => {
             Description: "",
             Note:
               props.title === "Sign Yourself"
-                ? "Note to myself"
-                : "Please review and sign this document",
+                ? t("notes.sign-yourself")
+                : t("notes.request-signatures"),
             TimeToCompleteDays: 15,
             SendinOrder: sendinorder,
             password: "",
@@ -608,8 +608,8 @@ const Forms = (props) => {
       Description: "",
       Note:
         props.title === "Sign Yourself"
-          ? "Note to myself"
-          : "Please review and sign this document",
+          ? t("notes.sign-yourself")
+          : t("notes.request-signatures"),
       TimeToCompleteDays: 15,
       SendinOrder: sendinorder,
       password: "",

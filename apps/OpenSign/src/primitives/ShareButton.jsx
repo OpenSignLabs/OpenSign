@@ -1,4 +1,5 @@
 import { useCallback, useState } from "react";
+import { useTranslation } from "react-i18next";
 import ModalUi from "./ModalUi";
 
 function useShare({ title, text, url }) {
@@ -34,6 +35,7 @@ function useShare({ title, text, url }) {
  * @param {React.ReactNode} [props.children] - Custom trigger element
  */
 export default function ShareButton({ title, text, url, className, children }) {
+  const { t } = useTranslation();
   const { share, isSupported, error } = useShare({ title, text, url });
   const [isPopupOpen, setPopupOpen] = useState(false);
 
@@ -69,7 +71,7 @@ export default function ShareButton({ title, text, url, className, children }) {
           isOpen
           title={
             <>
-              <i className="fa-solid fa-share-from-square"></i> Share
+              <i className="fa-solid fa-share-from-square"></i> {t("btnLabel.Share")}
             </>
           }
           handleClose={() => setPopupOpen(false)}
@@ -81,7 +83,7 @@ export default function ShareButton({ title, text, url, className, children }) {
               onClick={() => navigator.clipboard.writeText(url)}
               className="m-2 op-btn op-btn-primary op-btn-outline op-btn-xs md:op-btn-sm w-[190px]"
             >
-              <i className="fa-solid fa-clipboard fa-lg"></i> Copy to clipboard
+              <i className="fa-solid fa-clipboard fa-lg"></i> {t("btnLabel.share-options.clipboard")}
             </button>
             {/* Twitter */}
             <button
@@ -94,8 +96,7 @@ export default function ShareButton({ title, text, url, className, children }) {
               }
               className="m-2 op-btn op-btn-primary op-btn-outline op-btn-xs md:op-btn-sm w-[190px]"
             >
-              <i className="fa-brands fa-square-x-twitter fa-lg"></i> Share on
-              Twitter
+              <i className="fa-brands fa-square-x-twitter fa-lg"></i> {t("btnLabel.share-options.twitter")}
             </button>
 
             {/* Facebook */}
@@ -109,8 +110,7 @@ export default function ShareButton({ title, text, url, className, children }) {
               }
               className="m-2 op-btn op-btn-primary op-btn-outline op-btn-xs md:op-btn-sm w-[190px]"
             >
-              <i className="fa-brands fa-square-facebook fa-lg"></i> Share on
-              Facebook
+              <i className="fa-brands fa-square-facebook fa-lg"></i> {t("btnLabel.share-options.facebook")}
             </button>
 
             {/* WhatsApp */}
@@ -124,8 +124,7 @@ export default function ShareButton({ title, text, url, className, children }) {
               }
               className="m-2 op-btn op-btn-primary op-btn-outline op-btn-xs md:op-btn-sm w-[190px]"
             >
-              <i className="fa-brands fa-square-whatsapp fa-lg"></i> Share on
-              WhatsApp
+              <i className="fa-brands fa-square-whatsapp fa-lg"></i> {t("btnLabel.share-options.whatsapp")}
             </button>
 
             {/* Gmail (Web) */}
@@ -139,7 +138,7 @@ export default function ShareButton({ title, text, url, className, children }) {
               }
               className="m-2 op-btn op-btn-primary op-btn-outline op-btn-xs md:op-btn-sm w-[190px]"
             >
-              <i className="fa-solid fa-envelope fa-lg"></i> Share via Gmail
+              <i className="fa-solid fa-envelope fa-lg"></i> {t("btnLabel.share-options.gmail")}
             </button>
 
             {/* Microsoft Teams */}
@@ -153,7 +152,7 @@ export default function ShareButton({ title, text, url, className, children }) {
               }
               className="m-2 op-btn op-btn-primary op-btn-outline op-btn-xs md:op-btn-sm w-[190px]"
             >
-              <i className="fa-brands fa-microsoft fa-lg"></i> Share on Teams
+              <i className="fa-brands fa-microsoft fa-lg"></i> {t("btnLabel.share-options.teams")}
             </button>
 
             {/* Outlook Web */}
@@ -167,8 +166,7 @@ export default function ShareButton({ title, text, url, className, children }) {
               }
               className="m-2 op-btn op-btn-primary op-btn-outline op-btn-xs md:op-btn-sm w-[190px]"
             >
-              <i className="fa-solid fa-envelope-open-text fa-lg"></i> Share via
-              Outlook
+              <i className="fa-solid fa-envelope-open-text fa-lg"></i> {t("btnLabel.share-options.outlook")}
             </button>
           </div>
         </ModalUi>

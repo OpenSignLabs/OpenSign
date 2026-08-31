@@ -4,22 +4,22 @@ import { buildDownloadFilename } from "../../utils";
 import { useTranslation } from "react-i18next";
 import { Tooltip as ReactTooltip } from "react-tooltip";
 
-/**
- * Enum-like list of supported filename format IDs and their labels
- * Keep IDs stable; you can freely change labels for UX.
- */
-const FILENAME_FORMATS = [
-  { id: "DOCNAME", label: "document Name.pdf" },
-  { id: "DOCNAME_SIGNED", label: "document Name - Signed.pdf" },
-  { id: "DOCNAME_EMAIL", label: "document Name - name@domain.com.pdf" },
-  {
-    id: "DOCNAME_EMAIL_DATE",
-    label: "document Name - name@domain.com - date.pdf"
-  }
-];
-
 const FilenameFormatSelector = ({ fileNameFormat, setFileNameFormat }) => {
   const { t } = useTranslation();
+  /**
+   * Enum-like list of supported filename format IDs and their labels
+   * Keep IDs stable; you can freely change labels for UX.
+   */
+  const FILENAME_FORMATS = [
+    { id: "DOCNAME", label: t("document-download-filename-format-options.docname") },
+    { id: "DOCNAME_SIGNED", label: t("document-download-filename-format-options.docname-signed") },
+    { id: "DOCNAME_EMAIL", label: t("document-download-filename-format-options.docname-email") },
+    {
+      id: "DOCNAME_EMAIL_DATE",
+      label: t("document-download-filename-format-options.docname-email-date")
+    }
+  ];
+
   const sampleDocName = "Agreement";
   const [value, setValue] = useState(fileNameFormat);
   const [error, setError] = useState("");

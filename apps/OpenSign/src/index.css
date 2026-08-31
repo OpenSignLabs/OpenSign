@@ -104,6 +104,10 @@ body {
   @apply border-gray-300 hover:border-base-content;
 }
 
+.activity{
+  width: 100px;
+}
+
 /* Note: Dark mode styling is now handled via Tailwind utilities in tailwind.config.js */
 /* You can use classes like: icon-improved, icon-muted, icon-disabled, op-btn-vscode-disabled */
 

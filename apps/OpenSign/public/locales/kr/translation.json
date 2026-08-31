@@ -37,6 +37,7 @@
   "action": "실행",
   "add": "추가",
   "add-new-folder": "새 폴더 추가",
+  "folder-name": "폴더 이름",
   "disable-documentId": "문서 ID 비활성화",
   "edit": "편집",
   "change-password": "비밀번호 변경",
@@ -171,7 +172,16 @@
     "Reset password": "비밀번호 재설정",
     "View formdata": "양식 데이터 보기",
     "Download all formdata": "모든 양식 데이터 다운로드",
-    "API credits": "API 크레딧"
+    "API credits": "API 크레딧",
+    "share-options": {
+      "clipboard": "클립보드에 복사",
+      "twitter": "Twitter에서 공유",
+      "facebook": "Facebook에서 공유",
+      "whatsapp": "WhatsApp에서 공유",
+      "gmail": "Gmail에서 공유",
+      "teams": "Teams에서 공유",
+      "outlook" : "Outlook에서 공유"
+    }
   },
   "report-heading": {
     "Sr.No": "일련 번호",
@@ -853,6 +863,12 @@
     "l3": "기존 디지털 버전의 서명을 업로드합니다.",
     "l4": "설정의 '내 서명' 아래에 저장된 미리 설정된 서명 스타일을 사용합니다."
   },
+  "allowed-signature-types-types": {
+    "draw": "그리기",
+    "type": "입력",
+    "upload": "업로드",
+    "default": "기본값"
+  },
   "notify-on-signatures": "서명 시 알림",
   "notify-on-signatures-help": {
     "p1": "문서 작성자는 서명자가 문서에 서명할 때마다 이메일 알림을 받게 됩니다.",
@@ -1269,6 +1285,12 @@
   "email-settings-redirect-message": "이 설정은 콘솔에서 주 메뉴 설정 → 환경설정으로 이동되었습니다. 이 페이지는 향후 버전에서 제거될 예정입니다.",
   "go-to-preferences-menu": "환경설정 메뉴로 이동",
   "document-download-filename-format": "문서 다운로드 파일 이름 형식",
+  "document-download-filename-format-options":{
+    "docname": "문서 이름.pdf",
+    "docname-signed": "문서 이름 - 서명 완료.pdf",
+    "docname-email": "문서 이름 - name@domain.com.pdf",
+    "docname-email-date": "문서 이름 - name@domain.com - 날짜.pdf"
+  },
   "preview": "미리보기: ",
   "download-filename-format-help": "다운로드한 PDF의 이름을 지정하는 방법을 선택합니다. 선택 사항은 프로필에 저장되어 앱 전체에서 사용됩니다.",
   "delete-action-prohibited": "이 작업은 허용되지 않습니다. 계정 삭제를 요청하려면 관리자에게 문의하십시오.",
@@ -1613,5 +1635,18 @@
   "access-code-upgrade-msg": "접속 코드는 유료 요금제에서만 사용할 수 있습니다. 수신자에게 접속 코드를 추가하려면 요금제를 업그레이드하세요.",
   "show-access-code": "액세스 코드 표시",
   "hide-access-code": "액세스 코드 숨기기",
-  "already-copied-to-clipboard": "이미 클립보드에 복사됨"
+  "already-copied-to-clipboard": "이미 클립보드에 복사됨",
+  "audit-activity": {
+    "sent": "전송됨",
+    "resend": "다시 보내기",
+    "signed": "서명됨",
+    "viewed": "조회됨",
+    "awaited": "대기 중",
+    "created": "생성됨"
+  },
+  "notes": {
+    "sign-yourself": "나에게 보내는 메모",
+    "request-signatures": "이 문서를 검토하고 서명해 주세요"
+  },
+  "select-placeholder": "선택..."
 }

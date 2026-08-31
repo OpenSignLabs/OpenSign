@@ -46,6 +46,7 @@ const SignerCell = ({ reportName, item, handleRemovePrefill }) => {
         id: i,
         Email: getSignerEmail(x, item?.Signers) || x?.email || "-",
         Activity: audit?.Activity?.toUpperCase() || "SENT",
+        ActivityLabel: t(`audit-activity.${audit?.Activity?.toLowerCase() || "sent"}`),
         SignedOn: format(audit?.SignedOn),
         ViewedOn: format(audit?.ViewedOn)
       };
@@ -68,13 +69,13 @@ const SignerCell = ({ reportName, item, handleRemovePrefill }) => {
                 onClick={() => setIsModal({ [`${item.objectId}_${i}`]: true })}
                 className={`${
                   x.Activity === "SIGNED"
-                    ? "op-border-primary op-text-primary"
+                    ? "op-border-primary op-text-primary activity"
                     : x.Activity === "VIEWED"
-                      ? "border-green-400 text-green-400"
-                      : "border-base-content text-base-content"
+                      ? "border-green-400 text-green-400 activity"
+                      : "border-base-content text-base-content activity"
                 } focus:outline-none border-2 w-[60px] h-[30px] text-[11px] rounded-full`}
               >
-                {x?.Activity?.toUpperCase() || "-"}
+                {x?.ActivityLabel?.toUpperCase() || "-"}
               </button>
             )}
             <div className="text-[12px]">{x?.Email || "-"}</div>

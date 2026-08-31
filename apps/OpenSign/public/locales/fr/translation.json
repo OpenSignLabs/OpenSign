@@ -37,6 +37,7 @@
   "action": "Action",
   "add": "Ajouter",
   "add-new-folder": "Ajouter un nouveau dossier",
+  "folder-name": "Nom du dossier",
   "disable-documentId": "Désactiver l'ID du document",
   "edit": "Modifier",
   "change-password": "Changer votre mot de passe",
@@ -207,7 +208,16 @@
     "Reset password": "Réinitialiser le mot de passe",
     "View formdata": "Voir les données du formulaire",
     "Download all formdata": "Télécharger toutes les données du formulaire",
-    "API credits": "Crédits API"
+    "API credits": "Crédits API",
+    "share-options": {
+      "clipboard": "Copier dans le presse-papiers",
+      "twitter": "Partager sur Twitter",
+      "facebook": "Partager sur Facebook",
+      "whatsapp": "Partager sur WhatsApp",
+      "gmail": "Partager avec Gmail",
+      "teams": "Partager sur Teams",
+      "outlook" : "Partager avec Outlook"
+    }
   },
   "report-help": {
     "Draft Documents": "Il s'agit de documents que vous avez commencés mais que vous n'avez pas finalisés pour envoi.",
@@ -845,11 +855,17 @@
   "expect-default-one-signature-type": "Veuillez activer un type de signature supplémentaire en plus de celui par défaut.",
   "add-signer-note": "Remarque - Ce contact sera enregistré dans vos contacts",
   "allowed-signature-types-help": {
-    "p1": "Cette préférence de signature contrôle les options de signature disponibles pour vos signataires. Seuls les types de signature que vous sélectionnez apparaîtront dans le widget de signature lorsqu'un document est signé. Par exemple, si vous choisissez uniquement l'option 'Draw' dans les préférences, votre signataire ne verra que l'option 'Draw' dans le widget de signature, tandis que les trois autres options ne seront pas disponibles.",
+    "p1": "Cette préférence de signature contrôle les options de signature disponibles pour vos signataires. Seuls les types de signature que vous sélectionnez apparaîtront dans le widget de signature lorsqu'un document est signé. Par exemple, si vous choisissez uniquement l'option 'Dessiner' dans les préférences, votre signataire ne verra que l'option 'Dessiner' dans le widget de signature, tandis que les trois autres options ne seront pas disponibles.",
     "l1": "Créez une signature manuscrite directement sur l'écran à l'aide de votre doigt ou d'un stylet.",
     "l2": "Entrez votre nom et choisissez parmi différents styles de police pour créer une signature.",
     "l3": "Téléchargez une version numérique existante de votre signature.",
     "l4": "Utilisez un style de signature prédéfini enregistré sous 'Ma signature' ​​dans vos paramètres."
+  },
+  "allowed-signature-types-types": {
+    "draw": "Dessiner",
+    "type": "Taper",
+    "upload": "Télécharger",
+    "default": "Défaut"
   },
   "notify-on-signatures": "Notifier les signatures",
   "notify-on-signatures-help": {
@@ -1267,6 +1283,12 @@
   "email-settings-redirect-message": "Ce paramètre a été déplacé de la console vers Paramètres du menu principal → Préférences. Cette page sera supprimée dans les prochaines versions.",
   "go-to-preferences-menu": "Aller au menu Préférences",
   "document-download-filename-format": "Format du nom de fichier pour le téléchargement du document",
+  "document-download-filename-format-options":{
+    "docname": "Nom du document.pdf",
+    "docname-signed": "Nom du document - Signé.pdf",
+    "docname-email": "Nom du document - name@domain.com.pdf",
+    "docname-email-date": "Nom du document - name@domain.com - Date.pdf"
+  },
   "preview": "Aperçu : ",
   "download-filename-format-help": "Choisissez comment les fichiers PDF téléchargés sont nommés. Votre sélection est enregistrée dans votre profil et utilisée dans toute l'application.",
   "delete-action-prohibited": "Cette action n'est pas autorisée. Veuillez contacter votre administrateur pour demander la suppression du compte.",
@@ -1614,5 +1636,18 @@
   "access-code-upgrade-msg": "Les codes d'accès sont disponibles uniquement dans les forfaits payants. Améliorez votre forfait pour ajouter des codes d'accès aux destinataires.",
   "show-access-code": "Afficher le code d’accès",
   "hide-access-code": "Masquer le code d’accès",
-  "already-copied-to-clipboard": "Déjà copié dans le presse-papiers"
+  "already-copied-to-clipboard": "Déjà copié dans le presse-papiers",
+  "audit-activity": {
+    "sent": "Envoyé",
+    "resend": "Renvoyer",
+    "signed": "Signé",
+    "viewed": "Consulté",
+    "awaited": "En attente",
+    "created": "Créé"
+  },
+  "notes": {
+    "sign-yourself": "Note à moi-même",
+    "request-signatures": "Veuillez examiner et signer ce document"
+  },
+  "select-placeholder": "Sélectionner..."
 }

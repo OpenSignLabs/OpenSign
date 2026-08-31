@@ -177,6 +177,7 @@ const SignersInput = (props) => {
             onChange={onChange}
             closeMenuOnSelect={false}
             required={props.required}
+            placeholder = {t("select-placeholder")}
             loadingMessage={() => t("loading")}
             noOptionsMessage={() => t("contact-not-found")}
             loadOptions={loadOptions}

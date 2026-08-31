@@ -37,6 +37,7 @@
   "action": "Action",
   "add": "Add",
   "add-new-folder": "Add a new folder",
+  "folder-name": "Folder name",
   "disable-documentId": "Disable documentId",
   "edit": "Edit",
   "change-password": "Change password",
@@ -171,7 +172,16 @@
     "Reset password": "Reset password",
     "View formdata": "View formdata",
     "Download all formdata": "Download all formdata",
-    "API credits": "API credits"
+    "API credits": "API credits",
+    "share-options": {
+      "clipboard" : "Copy to clipboard",
+      "twitter" : "Share on Twitter",
+      "facebook" : "Share on Facebook",
+      "whatsapp" : "Share on Whatsapp",
+      "gmail" : "Share via Gmail",
+      "teams" : "Share on Teams",
+      "outlook" : "Share via Outlook"
+    }
   },
   "report-heading": {
     "Sr.No": "Sr.No",
@@ -853,6 +863,12 @@
     "l3": "Upload an existing digital version of your signature.",
     "l4": "Use a pre-set signature style saved under 'My Signature' in your settings."
   },
+  "allowed-signature-types-types":{
+    "draw": "Draw",
+    "type": "Type",
+    "upload": "Upload",
+    "default": "Default"
+  },
   "notify-on-signatures": "Notify on signatures",
   "notify-on-signatures-help": {
     "p1": "The document creator will receive an email notification whenever a signer signs the document.",
@@ -1269,6 +1285,12 @@
   "email-settings-redirect-message": "This setting has been moved from the console to Main Menu Settings → Preferences. This page will be removed in upcoming versions.",
   "go-to-preferences-menu": "Go to Preferences menu",
   "document-download-filename-format": "Document download filename format",
+  "document-download-filename-format-options":{
+    "docname": "Document Name.pdf",
+    "docname-signed": "Document Name - Signed.pdf",
+    "docname-email": "Document Name - name@domain.com.pdf",
+    "docname-email-date": "Document Name - name@domain.com - Date.pdf"
+  },
   "preview": "Preview: ",
   "download-filename-format-help": "Choose how downloaded PDFs are named. Your selection is saved to your profile and used across the app.",
   "delete-action-prohibited": "This action is not permitted. Kindly contact your administrator to request account deletion.",
@@ -1593,9 +1615,9 @@
   "logic-op-unchecked": "is not checked",
   "widget-hidden-due-to-logic": "This widget is hidden due to conditional logic.",
   "remove": "Remove",
-  "attachement-note":"Note: This widget allows signers to upload a file during the signing process. The uploaded file will be appended as additional pages at the end of the existing PDF",
-  "attachments-docx-not-supported":"We are currently experiencing an issue with DOCX file uploads. Please try uploading the document in a different supported format, or try again later.",
-   "access-code": "Access code",
+  "attachement-note": "Note: This widget allows signers to upload a file during the signing process. The uploaded file will be appended as additional pages at the end of the existing PDF",
+  "attachments-docx-not-supported": "We are currently experiencing an issue with DOCX file uploads. Please try uploading the document in a different supported format, or try again later.",
+  "access-code": "Access code",
   "access-code-set": "Access code set",
   "access-code-add": "Add access code",
   "access-code-help": "Optional secret only this signer knows. They will be required to enter it before viewing or signing the document. Share it with the recipient out-of-band (phone, in person).",
@@ -1613,5 +1635,18 @@
   "access-code-upgrade-msg": "Access codes are available on paid plans only. Upgrade your plan to add access codes for recipients.",
   "show-access-code": "Show access code",
   "hide-access-code": "Hide access code",
-  "already-copied-to-clipboard": "Already copied to clipboard"
+  "already-copied-to-clipboard": "Already copied to clipboard",
+  "audit-activity": {
+    "sent": "Sent",
+    "resend": "Resend",
+    "signed": "Signed",
+    "viewed": "Viewed",
+    "awaited": "Awaited",
+    "created": "Created"
+  },
+  "notes":{
+    "sign-yourself": "Note to myself",
+    "request-signatures": "Please review and sign this document"
+  },
+  "select-placeholder": "Select..."
 }
