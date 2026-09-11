@@ -1,5 +1,5 @@
 
-# INSTALLATON INSTRUCTIONS HAS A NEW HOME
+# INSTALLATION INSTRUCTIONS HAVE A NEW HOME
 
 We've updated our installation instructions and moved them to our dedicated documentation portal to provide you with a better experience and updated guidance. Whether you're looking to self-host OpenSign™ or contribute to its development, you can find detailed instructions tailored to your needs at [docs.opensignlabs.com](https://docs.opensignlabs.com).
 
