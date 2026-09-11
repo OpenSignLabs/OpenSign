@@ -166,6 +166,7 @@ We would like to thank all our contributors and users for their support and feed
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/Zathiel"><img src="https://avatars.githubusercontent.com/u/26553418?v=4?s=100" width="100px;" alt="Zathiel"/><br /><sub><b>Zathiel</b></sub></a><br /><a href="#code-Zathiel" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/1024mb"><img src="https://avatars.githubusercontent.com/u/9301204?v=4?s=100" width="100px;" alt="1024mb"/><br /><sub><b>1024mb</b></sub></a><br /><a href="#translation-1024mb" title="Translation">🌍</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/ehowe"><img src="https://avatars.githubusercontent.com/u/756984?v=4?s=100" width="100px;" alt="Eugene Howe"/><br /><sub><b>Eugene Howe</b></sub></a><br /><a href="#code-ehowe" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/GideonAyomide"><img src="https://avatars.githubusercontent.com/u/GideonAyomide?v=4?s=100" width="100px;" alt="Gideon Ayomide"/><br /><sub><b>Gideon Ayomide</b></sub></a><br /><a href="#doc-GideonAyomide" title="Documentation">📖</a></td>
     </tr>
   </tbody>
 </table>
