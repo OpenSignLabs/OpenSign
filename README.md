@@ -80,6 +80,9 @@ Note: The default MongoDB instance used in deployment is not persistant and will
 #### DigitalOcean
 [![Deploy on DigitalOcean](https://www.deploytodo.com/do-btn-blue.svg)](https://cloud.digitalocean.com/apps/new?repo=https://github.com/OpenSignLabs/Deploy-OpenSign-to-Digital-Ocean/tree/main&refcode=30db1c901ab0)
 
+#### ZopDay
+[![Deploy on ZopDay](https://zop.dev/deploytozopday-inkhard.svg)](https://zop.dev/zopday/app/deploy?image=opensign/opensign:main&port=3000)
+
 #### Docker
 The simplest way to install OpenSign on your own server is using official docker images by running the following command -
 
