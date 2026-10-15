@@ -741,6 +741,7 @@ function Placeholder(props) {
             ...(props.pos?.Width ? { width: props.pos?.Width - 5 } : {}),
             ...(props.pos?.Height ? { height: props.pos?.Height } : {}),
             fontSize: fontSize,
+            lineHeight: 1.25,
             color: fontColor,
             zIndex: 99,
             cursor: getCursor(),

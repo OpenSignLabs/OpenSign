@@ -2326,7 +2326,11 @@ export const embedWidgetsToDoc = async (
             }
           } else {
             const fixedWidth = widgetWidth; // Set your fixed
-            textContent = textContent?.toString();
+            textContent = textContent
+              ?.toString()
+              ?.replace(/\r\n/g, "\n")
+              ?.replace(/\r/g, "\n")
+              ?.replace(/\n+$/, "");
             const isNewOnEnterLineExist = textContent?.includes("\n");
 
             // Function to break text into lines based on the fixed width
@@ -2374,15 +2378,16 @@ export const embedWidgetsToDoc = async (
               const finalLines = [];
               const paragraphs = textContent.split("\n"); // preserve user order
               for (const para of paragraphs) {
-                const lineWidth = font.widthOfTextAtSize(para, fontSize);
+                const cleanPara = para.replace(/\r/g, "");
+                const lineWidth = font.widthOfTextAtSize(cleanPara, fontSize);
                 //checking string length to container width
                 //if string length is less then container width it means user press enter button
                 if (lineWidth <= width) {
                   // user forced newline
-                  finalLines.push(para);
+                  finalLines.push(cleanPara);
                 } else {
                   // auto wrap paragraph
-                  finalLines.push(...NewbreakTextIntoLines(para, width));
+                  finalLines.push(...NewbreakTextIntoLines(cleanPara, width));
                 }
               }
 
@@ -2396,6 +2401,7 @@ export const embedWidgetsToDoc = async (
             // Set initial y-coordinate for the first line
             let x = xPos(position);
             let y = yPos(position) - 4;
+            const computedLineHeight = fontSize * 1.25;
             // Embed each line on the page
             for (const line of lines) {
               const textPosition = compensateRotation(
@@ -2410,7 +2416,7 @@ export const embedWidgetsToDoc = async (
                 page
               );
               page.drawText(line, textPosition);
-              y += 18; // Adjust the line height as needed
+              y += computedLineHeight;
             }
           }
         } else if (position.type === "dropdown") {
