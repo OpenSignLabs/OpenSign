@@ -2,6 +2,7 @@
 sidebar_position: 8
 title: Qualified Electronic Signature (QES)
 ---
+import ReactPlayer from 'react-player';
 
 OpenSign supports Qualified Electronic Signature (QES) workflows for eligible documents and supported countries through integrated qualified-signature providers. A QES is a specific type of electronic signature defined under applicable regulations, such as the EU eIDAS framework. Its availability and legal effect depend on the applicable law, the provider, and the signing process used.
 
@@ -11,7 +12,12 @@ OpenSign supports Qualified Electronic Signature (QES) workflows for eligible do
 - Prepare the PDF or document you want to send for signature.
 - Confirm that the intended signer can use a supported QES provider for the selected country.
 - Review any provider-specific identity verification requirements before sending the document.
-- This feature is available only in paid plans.
+
+> **Note:** This feature is available only on paid plans. Each QES (Qualified Electronic Signature) signing consumes **10 API credits per signer**.
+
+**Example:** If your document has three signers and you want all three to sign using QES, a total of **30 API credits** will be consumed once all three signers have completed signing.
+
+You can check your available API credits on the **Settings → API Token** page.
 
 ## Configure a document for QES
 
@@ -22,10 +28,8 @@ OpenSign supports Qualified Electronic Signature (QES) workflows for eligible do
 5. Open **Advanced Settings** and enable **Qualified Signature**.
 6. Select a country supported by the QES options displayed in OpenSign.
 7. Add the **Qualified Signature** widget to the appropriate location in the document.
-8. Review the document, signer details, and signature placement.
+8. You can also add regular **Signature** widgets to the document. When the document is signed using QES, it will be embedded with a digital signature. The qualified signature stamp will appear at the position specified by the Qualified Signature widget. You do not need to add multiple Qualified Signature widgets for each signer.
 9. Send the document for signing.
-
-> The exact labels or order of these controls may vary by OpenSign version or account configuration.
 
 ## Sign a document with QES
 
@@ -35,6 +39,9 @@ OpenSign supports Qualified Electronic Signature (QES) workflows for eligible do
 4. Follow the provider's instructions to authenticate and approve the signature. This may involve a provider app, identity check, PIN, or other verification step.
 5. Return to the OpenSign signing flow if prompted and complete the signing process.
 6. Wait for OpenSign to confirm that signing is complete.
+7. Download or open the completed document to verify the signature placement.
+
+> **Note:** When QES and regular digital signatures are used together, the document can contain the corresponding digital signatures. The qualified signature stamp appears at the position specified by the Qualified Signature widget. Depending on the QES provider, an additional provider signature stamp may also appear in the bottom-right corner of the completed document.
 
 ### Example: Estonia with Smart-ID
 
@@ -45,9 +52,12 @@ If Estonia and Smart-ID are available in the signing flow:
 3. Follow the on-screen Smart-ID instructions to approve the signing request.
 4. Complete any required authentication in Smart-ID.
 5. Return to OpenSign and confirm that the document has completed signing.
-
 This example is illustrative. The available options and exact verification steps depend on the provider, the signer's eligibility, and the current integration.
 
+<div>
+    <ReactPlayer playing controls url='https://www.youtube.com/watch?v=2tXBqYTnB9U' />
+</div>
+      
 ## Verify the signed document
 
 After signing:
@@ -62,9 +72,6 @@ A visible stamp alone does not prove that a signature is valid. For important do
 ## Troubleshooting
 
 ### I cannot see the Qualified Signature option
-
-- Check whether QES is enabled and available for your account or deployment.
-- Confirm that you are using a supported document workflow.
 - Check whether a supported country and provider are available.
 - Contact your OpenSign administrator or support team if the option should be available but is missing.
 
@@ -96,6 +103,10 @@ No. The signing process must satisfy the applicable requirements, and the select
 ### Can every signer use every QES provider?
 
 No. Provider availability and eligibility requirements vary by country, provider, and signing method.
+
+### Can QES feature is available selfhosted version?
+
+Yes. this is available in pad selfhosted version for that you need to contact to opensign Support.
 
 ### Where can I get help?
 
