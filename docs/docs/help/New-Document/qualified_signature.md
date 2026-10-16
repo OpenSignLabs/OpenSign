@@ -34,12 +34,11 @@ You can check your available API credits on the **Settings → API Token** page.
 ## Sign a document with QES
 
 1. Open the signing request from OpenSign.
-2. Review the document and any signing instructions.
-3. When prompted, select a QES provider available for the selected country.
-4. Follow the provider's instructions to authenticate and approve the signature. This may involve a provider app, identity check, PIN, or other verification step.
-5. Return to the OpenSign signing flow if prompted and complete the signing process.
-6. Wait for OpenSign to confirm that signing is complete.
-7. Download or open the completed document to verify the signature placement.
+2. When prompted, select a QES provider available for the selected country.
+3. Follow the provider's instructions to authenticate and approve the signature. This may involve a provider app, identity check, PIN, or other verification step.
+4. Return to the OpenSign signing flow if prompted and complete the signing process.
+5. Wait for OpenSign to confirm that signing is complete.
+6. Download or open the completed document to verify the signature placement.
 
 > **Note:** When QES and regular digital signatures are used together, the document can contain the corresponding digital signatures. The qualified signature stamp appears at the position specified by the Qualified Signature widget. Depending on the QES provider, an additional provider signature stamp may also appear in the bottom-right corner of the completed document.
 
