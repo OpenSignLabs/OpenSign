@@ -7,9 +7,11 @@ import dotenv from 'dotenv';
 import GenerateCertificate from './pdf/GenerateCertificate.js';
 import { getSecureUrl } from '../../Utils.js';
 import { parseUploadFile } from '../../utils/fileUtils.js';
+import { resolveDeploymentBrand } from '../../utils/brandContext.js';
 dotenv.config({ quiet: true });
-const eSignName = 'OpenSign';
-const eSigncontact = 'hello@opensignlabs.com';
+const deploymentBrand = resolveDeploymentBrand();
+const eSignName = deploymentBrand.digitalSignature.name;
+const eSigncontact = deploymentBrand.digitalSignature.contact;
 
 // `uploadFile` is used to create url in from pdfFile
 async function uploadFile(pdfName, filepath) {

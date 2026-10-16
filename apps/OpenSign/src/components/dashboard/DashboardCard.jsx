@@ -311,9 +311,24 @@ const DashboardCard = (props) => {
     }
   }
 
+  const handleKeyDown = (event) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      openReport();
+    }
+  };
+
   return (
     <div
       onClick={() => openReport()}
+      onKeyDown={handleKeyDown}
+      role={props.Data && props.Data.Redirect_type ? "button" : undefined}
+      tabIndex={props.Data && props.Data.Redirect_type ? 0 : -1}
+      aria-label={
+        props.Data && props.Data.Redirect_type
+          ? t(`dashboard-card.${props.Label}`)
+          : undefined
+      }
       className={`${
         props.Data && props.Data.Redirect_type
           ? "cursor-pointer"

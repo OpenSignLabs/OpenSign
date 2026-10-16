@@ -1,11 +1,15 @@
-import { appName, smtpenable } from '../../Utils.js';
+import { smtpenable } from '../../Utils.js';
+import {
+  buildCanonicalBrandUrl,
+  escapeHtml,
+  resolveBrandContext,
+} from '../../utils/brandContext.js';
 
 export const errHtml = err => {
   return `<html><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8" /><title>Reset Password</title></head>
   <body><h1 style="color:#1a5fa0; margin-bottom:16px;">${err}</h1></body></html>`;
 };
 const sendDeleteUserMail = async req => {
-  const app = req.params.app || appName;
   if (!req.user) {
     throw new Parse.Error(Parse.Error.INVALID_SESSION_TOKEN, 'User is not authenticated.');
   }
@@ -27,10 +31,16 @@ const sendDeleteUserMail = async req => {
     userAndCreatorCondition.equalTo('CreatedBy', createdByPointer);
 
     const mainQuery = Parse.Query.or(userCondition, userAndCreatorCondition);
+    mainQuery.include('TenantId');
 
     const result = await mainQuery.first({ useMasterKey: true });
+    if (!result) {
+      throw new Parse.Error(Parse.Error.OBJECT_NOT_FOUND, 'User not found.');
+    }
+    const brand = resolveBrandContext({ tenant: result.get('TenantId') });
+    const app = brand.productName;
     const username = result.get('Email')?.toLowerCase()?.replace(/\s/g, '');
-    const name = result?.get('Name') ? `<b>${result?.get('Name')}</b>` : '';
+    const name = result?.get('Name') ? `<b>${escapeHtml(result.get('Name'))}</b>` : '';
     const isAdmin = result?.get('UserRole') === 'contracts_Admin';
     if (!isAdmin) {
       throw new Parse.Error(
@@ -39,20 +49,38 @@ const sendDeleteUserMail = async req => {
       );
     }
 
-    const serverUrl = process.env?.SERVER_URL?.replace(/\/app\/?$/, '/');
-    const deleteUrl = `${serverUrl}delete-account/${userId}`;
+    const legacyServerUrl = process.env?.SERVER_URL?.replace(/\/app\/?$/, '/');
+    const needsApiPrefix = process?.env?.SERVER_URL?.includes?.('api');
+    const apiPrefix = needsApiPrefix ? '/api' : '';
+    const deleteUrl =
+      buildCanonicalBrandUrl(brand, `${apiPrefix}/delete-account/${encodeURIComponent(userId)}`) ||
+      (brand.isOpenSign && legacyServerUrl
+        ? `${legacyServerUrl}delete-account/${encodeURIComponent(userId)}`
+        : '');
+    if (!deleteUrl) {
+      throw new Parse.Error(
+        Parse.Error.SCRIPT_FAILED,
+        'Canonical application URL is not configured.'
+      );
+    }
+    const safeApp = escapeHtml(app);
+    const safeUsername = escapeHtml(username);
+    const safeDeleteUrl = escapeHtml(deleteUrl);
+    const supportLine = brand.contacts.supportEmail
+      ? ` Please contact <a href="mailto:${escapeHtml(brand.contacts.supportEmail)}">${escapeHtml(brand.contacts.supportEmail)}</a>.`
+      : '';
     const mailsender = smtpenable ? process.env.SMTP_USER_EMAIL : process.env.MAILGUN_SENDER;
     // Render a simple HTML form. In production, consider using a templating engine.
 
     await Parse.Cloud.sendEmail({
-      sender: app + ' <' + mailsender + '>',
+      sender: brand.senderName + ' <' + mailsender + '>',
       recipient: username,
       subject: `Account Deletion Request for ${username} – ${app}`,
       text: `Account Deletion Request for ${username} – ${app}`,
       html: `<html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <title>Account Deletion Request - ${app}</title>
+    <title>Account Deletion Request - ${safeApp}</title>
 </head>
 <body style="margin:0; padding:0; font-family:Arial, sans-serif; background-color:#f4f4f4; color:#333;">
     <div
@@ -62,14 +90,14 @@ const sendDeleteUserMail = async req => {
             Hello ${name},
         </p>
         <p style="font-size:16px; line-height:1.5;">
-            We have received a request to permanently delete your <b>${app}</b> account associated with <b>${username}</b>.
+            We have received a request to permanently delete your <b>${safeApp}</b> account associated with <b>${safeUsername}</b>.
         </p>
         <p style="font-size:16px; line-height:1.5;">
             If you did not make this request, please ignore this email. Otherwise, click the button below to proceed
             with the deletion.
         </p>
         <p style="text-align:center; margin:30px 0;">
-            <a href="${deleteUrl}"
+            <a href="${safeDeleteUrl}"
                 style="background-color:#d9534f; color:#ffffff; padding:12px 24px; border-radius:5px; text-decoration:none; font-size:16px;">
                 Confirm Account Deletion
             </a>
@@ -78,17 +106,17 @@ const sendDeleteUserMail = async req => {
             If the button above doesn't work, please copy and open the following link with your browser.
         </p> 
         <p style="font-size:16px; text-align:center; margin:0px 0px 30px 0px;">
-          <a href="${deleteUrl}">${deleteUrl}</a>
+          <a href="${safeDeleteUrl}">${safeDeleteUrl}</a>
         </p>
         <p style="font-size:14px; color:#777;">
             Note: This action is irreversible and all your data will be permanently removed from our systems.
         </p>
         <hr style="margin:30px 0; border:none; border-top:1px solid #eee;">
         <p style="font-size:12px; color:#999;">
-            If you have any questions or need assistance, please contact our support team.
+            If you have any questions or need assistance, please contact our support team.${supportLine}
         </p>
         <p style="font-size:12px; color:#999;">
-            &copy; ${new Date().getFullYear()} ${app}. All rights reserved.
+            &copy; ${new Date().getFullYear()} ${safeApp}. All rights reserved.
         </p>
     </div>
 </body>

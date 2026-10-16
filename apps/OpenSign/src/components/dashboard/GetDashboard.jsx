@@ -34,7 +34,7 @@ const GetDashboard = (props) => {
         return (
           <div
             className={`${
-              col?.widget?.bgColor ? col.widget.bgColor : "bg-[#2ed8b6]"
+              col?.widget?.bgColor ? col.widget.bgColor : "op-bg-primary"
             } op-card w-full h-[140px] px-3 pt-4 mb-3 shadow-md`}
             data-tut={col.widget.data.tourSection}
           >
@@ -78,7 +78,7 @@ const GetDashboard = (props) => {
         return (
           <div
             className={`${
-              col?.widget?.bgColor ? col.widget.bgColor : "bg-[#2ed8b6]"
+              col?.widget?.bgColor ? col.widget.bgColor : "op-bg-primary"
             } op-card w-full h-[140px] px-3 pt-4 mb-3 shadow-md"`}
           >
             <Suspense fallback={<div>please wait</div>}>
@@ -109,6 +109,7 @@ const GetDashboard = (props) => {
   };
   return (
     <div>
+      <h1 className="sr-only">{t("sidebar.Dashboard")}</h1>
       <div className="mb-3">
         <div
           data-tut={"tourbutton"}

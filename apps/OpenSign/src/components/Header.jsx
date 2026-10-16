@@ -12,15 +12,18 @@ import {
 } from "../constant/Utils";
 import { useTranslation } from "react-i18next";
 import { appInfo } from "../constant/appinfo";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { toggleSidebar } from "../redux/reducers/sidebarReducer";
 import { sessionStatus } from "../redux/reducers/userReducer";
+import InlineMarkdown from "./InlineMarkdown";
+import { resolveAnnouncementTranslation } from "../constant/announcement";
 
 const Header = ({ isConsole, setIsLoggingOut }) => {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const { width } = useWindowSize();
   const dispatch = useDispatch();
+  const isSidebarVisible = useSelector((state) => state.sidebar.isOpen);
   const username = localStorage.getItem("username") || "";
   const image = localStorage.getItem("profileImg") || dp;
   const [isOpen, setIsOpen] = useState(false);
@@ -130,119 +133,139 @@ const Header = ({ isConsole, setIsLoggingOut }) => {
 
   return (
     <>
-      <div className="op-navbar bg-base-100 shadow touch-none">
-        <div className="flex-none">
-          <button
-            className="op-btn op-btn-square op-btn-ghost focus:outline-none hover:bg-transparent op-btn-sm no-animation"
-            onClick={showSidebar}
-          >
-            <i className="fa-light fa-bars text-xl text-base-content"></i>
-          </button>
-        </div>
-        <div className="flex-1 ml-2">
-          <div
-            onClick={() => navigate("/dashboard/35KBoSgoAK")}
-            className="h-[25px] md:h-[40px] w-auto overflow-hidden cursor-pointer"
-          >
-            {applogo && (
-              <img
-                className="object-contain h-full w-auto"
-                src={
-                      isDarkTheme
-                      ? "/static/js/assets/images/logo-dark.png"
-                      : applogo
-                }
-                alt="logo"
-              />
-            )}
+      <div className="op-navbar os-navbar touch-none">
+        <div className="os-navbar-leading">
+          <div className="flex-none">
+            <button
+              type="button"
+              aria-label={t("open-navigation")}
+              aria-expanded={isSidebarVisible}
+              className="os-menu-button op-btn op-btn-square op-btn-ghost hover:bg-transparent op-btn-sm no-animation"
+              onClick={showSidebar}
+            >
+              <i className="fa-light fa-bars text-xl text-base-content"></i>
+            </button>
+          </div>
+          <div className="os-shell-brand flex-1 min-w-0 ml-2">
+            <button
+              type="button"
+              onClick={() => navigate("/dashboard/35KBoSgoAK")}
+              className="os-shell-logo w-auto overflow-hidden cursor-pointer border-0 bg-transparent p-0"
+            >
+              {applogo && (
+                <img
+                  className="object-contain h-full w-auto"
+                  src={
+                        applogo
+                  }
+                  alt="logo"
+                />
+              )}
+            </button>
           </div>
         </div>
-        <div id="profile-menu" className="flex-none gap-2">
+        <div id="profile-menu" className="os-shell-actions flex-none gap-2">
           <div>
               <FullScreenButton />
           </div>
           {width >= 768 && (
-            <div
+            <button
+              type="button"
+              aria-label={t("profile")}
               onClick={toggleDropdown}
-              className="cursor-pointer w-[35px] h-[35px] rounded-full ring-[1px] ring-offset-2 ring-gray-400 overflow-hidden"
+              className="cursor-pointer w-[44px] h-[44px] rounded-full ring-[1px] ring-offset-2 ring-gray-400 overflow-hidden border-0 bg-transparent p-0"
             >
               <img
-                className="w-[35px] h-[35px] object-contain"
+                className="w-[44px] h-[44px] object-contain"
                 src={image}
                 alt="img"
               />
-            </div>
+            </button>
           )}
           {width >= 768 && (
-            <div
+            <button
+              type="button"
+              aria-label={t("open-profile-menu")}
               onClick={toggleDropdown}
-              role="button"
-              tabIndex="0"
-              className="cursor-pointer text-base-content text-sm"
+              className="os-profile-trigger cursor-pointer border-0 bg-transparent p-2 text-left text-sm"
             >
               {username && username}
-            </div>
+            </button>
           )}
-          <div
-            className="op-dropdown op-dropdown-open op-dropdown-end"
-            id="profile-menu"
-          >
-            <div
-              tabIndex={0}
-              role="button"
+          <div className="op-dropdown op-dropdown-open op-dropdown-end">
+            <button
+              type="button"
+              aria-label={t("open-profile-menu")}
+              aria-expanded={isOpen}
+              aria-haspopup="menu"
+              aria-controls="profile-menu-list"
               onClick={toggleDropdown}
-              className="op-btn op-btn-ghost op-btn-xs w-[10px] h-[20px] hover:bg-transparent"
+              className="op-btn op-btn-ghost op-btn-xs min-h-[44px] min-w-[44px] hover:bg-transparent"
             >
               <i className="fa-light fa-angle-down text-base-content"></i>
-            </div>
+            </button>
             <ul
-              tabIndex={0}
+              id="profile-menu-list"
+              role="menu"
               className={`mt-4 z-[1] p-2 shadow op-dropdown-open op-menu op-menu-sm op-dropdown-content text-base-content bg-base-100 rounded-box w-56 ${
                 isOpen ? "" : "hidden"
               }`}
             >
               {!isConsole && (
                 <>
-                    <li
-                      onClick={() =>
-                        openInNewTab("https://docs.opensignlabs.com")
-                      }
-                    >
-                      <span>
+                    <li>
+                      <button
+                        type="button"
+                        className="w-full text-left"
+                        onClick={() =>
+                          openInNewTab(
+                            getDeploymentLink(
+                              "docs",
+                              "https://docs.opensignlabs.com"
+                            )
+                          )
+                        }
+                      >
                         <i className="fa-light fa-book"></i> {t("docs")}
-                      </span>
+                      </button>
                     </li>
-                  <li
-                    onClick={() => {
-                      setIsOpen(false);
-                      navigate("/profile");
-                    }}
-                  >
-                    <span>
-                      <i className="fa-light fa-user"></i> {t("profile")}
-                    </span>
-                  </li>
-                    <li
+                  <li>
+                    <button
+                      type="button"
+                      className="w-full text-left"
                       onClick={() => {
                         setIsOpen(false);
-                        navigate("/changepassword");
+                        navigate("/profile");
                       }}
                     >
-                      <span>
+                      <i className="fa-light fa-user"></i> {t("profile")}
+                    </button>
+                  </li>
+                    <li>
+                      <button
+                        type="button"
+                        className="w-full text-left"
+                        onClick={() => {
+                          setIsOpen(false);
+                          navigate("/changepassword");
+                        }}
+                      >
                         <i className="fa-light fa-lock"></i>{" "}
                         {t("change-password")}
-                      </span>
+                      </button>
                     </li>
-                  <li
-                    onClick={() => {
-                      setIsOpen(false);
-                      navigate("/verify-document");
-                    }}
-                  >
-                    <span>
+                  <li>
+                    <button
+                      type="button"
+                      className="w-full text-left"
+                      onClick={() => {
+                        setIsOpen(false);
+                        navigate("/verify-document");
+                      }}
+                    >
                       <i className="fa-light fa-check-square"></i>{" "}
                       {t("verify-document")}
-                    </span>
+                    </button>
                   </li>
                   <li>
                     <span>
@@ -256,11 +279,15 @@ const Header = ({ isConsole, setIsLoggingOut }) => {
                   </li>
                 </>
               )}
-              <li onClick={handleLogout}>
-                <span>
+              <li>
+                <button
+                  type="button"
+                  className="w-full text-left"
+                  onClick={handleLogout}
+                >
                   <i className="fa-light fa-arrow-right-from-bracket"></i>{" "}
                   {t("log-out")}
-                </span>
+                </button>
               </li>
             </ul>
           </div>
