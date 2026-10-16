@@ -1,5 +1,6 @@
 import { appName } from '../../../Utils.js';
 import sendSystemMail from '../../parsefunction/sendSystemMail.js';
+import { escapeHtml, resolveBrandContext } from '../../../utils/brandContext.js';
 
 // Constants (adjust to your preference)
 export const OTP_LENGTH = 6;
@@ -15,9 +16,11 @@ export function generateOtp(len = OTP_LENGTH) {
 
 export async function sendDeleteOtpEmail(extUser, otp) {
   const _extUser = extUser && JSON.parse(JSON.stringify(extUser));
+  const brand = resolveBrandContext({});
+  const resolvedAppName = brand.productName || appName;
   const params = {
     extUserId: extUser.id,
-    from: appName,
+    from: brand.senderName,
     recipient: extUser?.get('Email'),
     subject: 'OTP for Deletion account request',
     html: `
@@ -29,7 +32,7 @@ export async function sendDeleteOtpEmail(extUser, otp) {
           <table role="presentation" width="480" cellpadding="0" cellspacing="0" style="background:#ffffff;border:1px solid #e9ecf1;border-radius:8px;padding:20px;">
             <tr>
               <td align="left" style="font-size:16px;color:#0f172a;">
-                <div style="font-weight:bold;margin-bottom:8px;">${appName}</div>
+                <div style="font-weight:bold;margin-bottom:8px;">${escapeHtml(resolvedAppName)}</div>
                 <div style="font-size:18px;margin:0 0 12px 0;">Your verification code</div>
                 <div style="display:inline-block;border:1px solid #e9ecf1;border-radius:6px;background:#f8fafc;padding:10px 14px;margin-bottom:10px;">
                   <span style="font-family:Consolas,'Courier New',monospace;font-size:24px;letter-spacing:6px;color:#0f172a;">${otp}</span>
@@ -47,7 +50,7 @@ export async function sendDeleteOtpEmail(extUser, otp) {
           </table>
 
           <div style="font-size:11px;color:#94a3b8;margin-top:12px;">
-            &copy; ${new Date().getFullYear()} ${appName}. All rights reserved.
+            &copy; ${new Date().getFullYear()} ${escapeHtml(resolvedAppName)}. All rights reserved.
           </div>
         </td>
       </tr>

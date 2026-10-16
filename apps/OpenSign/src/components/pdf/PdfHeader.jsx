@@ -20,10 +20,12 @@ import PageReorderModal from "./PageReorderModal";
 import { useTranslation } from "react-i18next";
 import { PDFDocument } from "pdf-lib";
 import { maxFileSize } from "../../constant/const";
+import { useWindowSize } from "../../hook/useWindowSize";
 
 function Header(props) {
   const { t } = useTranslation();
-  const isMobile = window.innerWidth < 767;
+  const { width } = useWindowSize();
+  const isMobile = width > 0 && width < 767;
   const [isDownloading, setIsDownloading] = useState("");
   const [isDeletePage, setIsDeletePage] = useState(false);
   const [isReorderModal, setIsReorderModal] = useState(false);
@@ -188,22 +190,21 @@ function Header(props) {
     }
   };
   return (
-    <div className="flex py-[5px]">
+    <div className="os-pdf-toolbar flex py-[5px]">
       {isMobile && props?.isShowHeader ? (
-        <div
-          id="navbar"
-          className="stickyHead touch-none"
-          style={{
-            width: window.innerWidth + "px"
-          }}
-        >
-          <div className="flex justify-between items-center py-[5px] pl-[10px] ">
-            <div onClick={() => window.history.go(-2)}>
+        <div id="navbar" className="stickyHead touch-none w-full">
+          <div className="os-pdf-toolbar-mobile-row flex justify-between items-center py-[5px] pl-[10px] ">
+            <button
+              type="button"
+              aria-label={t("back")}
+              className="min-h-[44px] min-w-[44px]"
+              onClick={() => window.history.go(-2)}
+            >
               <i
                 className="fa-light fa-arrow-left text-base-content"
                 aria-hidden="true"
               ></i>
-            </div>
+            </button>
             <PrevNext
               pageNumber={props?.pageNumber}
               allPages={props?.allPages}
@@ -212,12 +213,16 @@ function Header(props) {
             {props?.isCompleted || props?.alreadySign ? (
               <DropdownMenu.Root>
                 <DropdownMenu.Trigger asChild>
-                  <div className="op-link op-link-primary no-underline text-[16px] font-semibold px-3">
+                  <button
+                    type="button"
+                    aria-label={t("more")}
+                    className="op-link op-link-primary no-underline text-[16px] font-semibold px-3 min-h-[44px] min-w-[44px]"
+                  >
                     <i
                       className="fa-light fa-ellipsis-v"
                       aria-hidden="true"
                     ></i>
-                  </div>
+                  </button>
                 </DropdownMenu.Trigger>
                 <DropdownMenu.Portal>
                   <DropdownMenu.Content
@@ -296,15 +301,18 @@ function Header(props) {
                 {props?.currentSigner && (
                   <div className="flex items-center" data-tut="reactourFifth">
                     {props?.decline && !isViewerSigner && (
-                      <div
+                      <button
+                        type="button"
                         onClick={() => handleDeclinePdfAlert()}
-                        className="text-[red] border-none font-[650] text-[14px] mr-2"
+                        className="text-[red] border-none font-[650] text-[14px] mr-2 min-h-[44px]"
                       >
                         {t("decline")}
-                      </div>
+                      </button>
                     )}
                     {props?.isPlaceholder ? (
-                      <div
+                      <button
+                        type="button"
+                        disabled={props?.isMailSend}
                         onClick={() => {
                           if (!props?.isMailSend) {
                             props?.handleSaveDoc();
@@ -312,22 +320,23 @@ function Header(props) {
                         }}
                         className={`${
                           props?.isMailSend ? "" : "op-link-primary"
-                        } op-link no-underline font-[650] text-[14px]`}
+                        } op-link no-underline font-[650] text-[14px] min-h-[44px] min-w-[44px]`}
                         data-tut="headerArea"
                       >
                         {props?.completeBtnTitle
                           ? props?.completeBtnTitle
                           : t("send")}
-                      </div>
+                      </button>
                     ) : (
                       !isViewerSigner && (
-                        <div
+                        <button
+                          type="button"
                           data-tut="reactourThird"
                           onClick={() => props?.embedWidgetsData()}
-                          className="border-none font-[650] text-[14px] op-link op-link-primary no-underline"
+                          className="border-none font-[650] text-[14px] op-link op-link-primary no-underline min-h-[44px]"
                         >
                           {finishLabel}
-                        </div>
+                        </button>
                       )
                     )}
                     <input
@@ -339,12 +348,16 @@ function Header(props) {
                     />
                     <DropdownMenu.Root>
                       <DropdownMenu.Trigger asChild>
-                        <div className="font-[650] text-[18px] px-3  text-base-content no-underline">
+                        <button
+                          type="button"
+                          aria-label={t("more")}
+                          className="font-[650] text-[18px] px-3 text-base-content no-underline min-h-[44px] min-w-[44px]"
+                        >
                           <i
                             className="fa-light fa-ellipsis-v"
                             aria-hidden="true"
                           ></i>
-                        </div>
+                        </button>
                       </DropdownMenu.Trigger>
                       <DropdownMenu.Portal>
                         <DropdownMenu.Content
@@ -479,20 +492,28 @@ function Header(props) {
           </div>
         </div>
       ) : (
-        <div className="flex flex-wrap justify-between items-center w-full gap-y-1 ml-1">
-          <PrevNext
-            pageNumber={props?.pageNumber}
-            allPages={props?.allPages}
-            changePage={props?.changePage}
-          />
+        <div
+          className={`os-pdf-header ${
+            props?.isPlaceholder ? "os-pdf-header-placeholder" : ""
+          } flex flex-wrap justify-between items-center w-full gap-y-1 ml-1`}
+        >
+          <div className="os-pdf-header-pages">
+            <PrevNext
+              pageNumber={props?.pageNumber}
+              allPages={props?.allPages}
+              changePage={props?.changePage}
+            />
+          </div>
           {props?.isPlaceholder ? (
             <>
-              <div className="flex mx-[100px] lg:mx-0 order-last lg:order-none"></div>
-              <div className="flex">
+              <div className="os-pdf-header-spacer" aria-hidden="true"></div>
+              <div className="os-pdf-header-actions">
                 {props?.setIsEditTemplate && (
                   <button
+                    type="button"
+                    aria-label={t("edit")}
                     onClick={() => props?.setIsEditTemplate(true)}
-                    className="outline-none border-none text-center mr-[3px]"
+                    className="os-pdf-header-settings outline-none border-none"
                   >
                     <i className="fa-light fa-gear fa-lg text-base-content"></i>
                   </button>
@@ -501,15 +522,16 @@ function Header(props) {
                   <button
                     onClick={() => window.history.go(-2)}
                     type="button"
-                    className="op-btn op-btn-ghost text-base-content op-btn-sm mr-[3px]"
+                    className="os-pdf-header-action op-btn op-btn-ghost text-base-content op-btn-sm"
                   >
                     {t("back")}
                   </button>
                 )}
                 <button
+                  type="button"
                   disabled={props?.isMailSend && true}
                   data-tut="headerArea"
-                  className="op-btn op-btn-primary op-btn-sm mr-[3px]"
+                  className="os-pdf-header-action op-btn op-btn-primary op-btn-sm"
                   onClick={() => props?.handleSaveDoc()}
                 >
                   {props?.completeBtnTitle

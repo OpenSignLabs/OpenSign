@@ -67,9 +67,10 @@ export const saveToMySign = async (widget) => {
 
 // helper: does this signer already have any signature widget?
 export const hasSignatureWidget = (s) => {
-  return (s.placeHolder ?? []).some((ph) =>
+  const hasRegularSignature = (s.placeHolder ?? []).some((ph) =>
     (ph?.pos ?? []).some((p) => p?.type === "signature")
   );
+  return hasRegularSignature;
 };
 
 export const widgetNamesArr = (placeholders, signerId) => {

@@ -3,6 +3,7 @@
   "version": "2.37.0",
   "private": true,
   "dependencies": {
+    "@eid-easy/eideasy-widget": "^3.17.3",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
     "@formkit/auto-animate": "^0.9.0",
@@ -86,8 +87,6 @@
     "version": "curl -s https://api.github.com/repos/opensignlabs/opensign/releases/latest | grep '\"tag_name\":' | awk -F '\"' '{print $4}' > ./public/version.txt",
     "version-win": "powershell -Command \"Invoke-RestMethod -Uri 'https://api.github.com/repos/opensignlabs/opensign/releases/latest' | Select-Object -ExpandProperty tag_name | Out-File -FilePath ./public/version.txt\"",
     "build-win": "npm run version-win && vite build",
-    "test": "vitest run",
-    "test:watch": "vitest",
     "release": "standard-version",
     "commit": "cz"
   },

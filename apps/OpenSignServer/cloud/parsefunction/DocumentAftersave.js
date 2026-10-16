@@ -4,12 +4,13 @@ async function DocumentAftersave(request) {
       console.log('new entry is insert in contracts_Document ', request?.object?.id);
       const obj = request.object;
       const objId = obj?.id;
-      const createdAt = obj?.get?.('createdAt');
+      const createdAt = obj?.createdAt || obj?.get?.('createdAt');
       const folder = obj?.get?.('Type');
       const ip = request?.headers?.['x-real-ip'] || '';
       const originIp = obj?.get?.('OriginIp') || '';
+      let persistedDocument = obj;
       if (createdAt) {
-        await updateDocumentMeta({ objId, createdAt, folder, ip, originIp });
+        persistedDocument = await updateDocumentMeta({ objId, createdAt, folder, ip, originIp });
       }
 
       const signers = obj?.get?.('Signers');
@@ -71,6 +72,7 @@ async function DocumentAftersave(request) {
     }
 
     await doc.save(null, { useMasterKey: true });
+    return doc;
   }
 
   async function updateAclDoc(objId) {

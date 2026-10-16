@@ -20,7 +20,8 @@ import {
   years,
   getDefaultDate,
   getDefaultFormat,
-  handleBackground
+  handleBackground,
+  isEmptyValue
 } from "../../constant/Utils";
 import PlaceholderType from "./PlaceholderType";
 import moment from "moment";
@@ -32,7 +33,7 @@ import { themeColor } from "../../constant/const";
 import { useGuidelinesContext } from "../../context/GuidelinesContext";
 import DatePicker from "react-datepicker";
 import DateWidgetModal from "../../primitives/DateWidgetModal";
-import { dateFormat } from "../../utils";
+import { dateFormat, widgetNamesArr } from "../../utils";
 
 /**
  * Custom input UI for DatePicker
@@ -102,6 +103,14 @@ function Placeholder(props) {
     }
   }, [widgetData]);
 
+  // Reset date form state whenever the modal closes
+  useEffect(() => {
+    if (!isDateModal) {
+      resetDateFormState();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isDateModal]);
+
   //function is used to convert date according to selected format
   const handleGetFormatDate = (data, isDateChange, isNewDate) => {
     const format =
@@ -133,6 +142,16 @@ function Placeholder(props) {
     if (formdata?.isReadOnly && !selectDate.date && !isToday) {
       alert(t("read-only-date-error"));
       return;
+    }
+    // Check for duplicate widget name across different signers
+    const originalName = props.pos?.options?.name;
+    const currentSignerId = props.data?.Id || props.uniqueId;
+    if (originalName && originalName !== formdata.name && currentSignerId) {
+      const widgetNames = widgetNamesArr(props.xyPosition, currentSignerId);
+      if (widgetNames?.includes(formdata.name)) {
+        alert(t("duplicate-widget-name-error"));
+        return;
+      }
     }
     handleSaveDate(data);
     setIsDateModal(false);
@@ -211,7 +230,8 @@ function Placeholder(props) {
     if (
       props.isOpenSignPad &&
       !props.isDragging &&
-      !props.pos.options?.isReadOnly &&
+      (!props.pos.options?.isReadOnly
+      ) &&
       props?.data?.Role !== "prefill" &&
       props.data?.Id === props.uniqueId
     ) {
@@ -428,7 +448,9 @@ function Placeholder(props) {
                 !props.isSignYourself &&
                 !props.isSelfSign &&
                 props?.pos?.type &&
-                !["date"].includes(props.pos.type) && (
+                ![
+                  "date",
+                ].includes(props.pos.type) && (
                   <i
                     onPointerDown={(e) => {
                       e.stopPropagation();
@@ -449,11 +471,11 @@ function Placeholder(props) {
                   ></i>
                 )
               )}
-              {/* condition for usericon to display for all widgets except prefill widgets, signyour-self and self-sign flow */}
+              {/* condition for usericon to display for all widgets except prefill widgets, QES widgets, signyour-self and self-sign flow */}
               {!props.isSignYourself &&
                 !props.isSelfSign &&
-                props?.data?.Role !== "prefill" && (
-                  <i
+                props?.data?.Role !== "prefill" &&
+                 ( <i
                     data-tut="assignSigner"
                     className="fa-light fa-user icon text-[#188ae2] right-[32px] -top-[18px]"
                     onClick={(e) => {
@@ -530,12 +552,12 @@ function Placeholder(props) {
               className="fa-light fa-gear icon text-[#188ae2] text-[14px] z-[99] -top-[18px] pointer-events-auto"
             ></i>
           )}
-          {/* copy icon for all widgets */}
-          <i
-            className="fa-light fa-copy icon text-[#188ae2] right-[12px] -top-[18px] "
-            onClick={(e) => handleCopyPlaceholder(e)}
-            onTouchEnd={(e) => handleCopyPlaceholder(e)}
-          ></i>
+          {/* copy icon for all widgets (except QES) */}
+            <i
+              className="fa-light fa-copy icon text-[#188ae2] right-[12px] -top-[18px] "
+              onClick={(e) => handleCopyPlaceholder(e)}
+              onTouchEnd={(e) => handleCopyPlaceholder(e)}
+            ></i>
           {/* delete icon for all widgets */}
           <i
             className="fa-light fa-trash-can icon text-[#188ae2] -right-[8px] -top-[18px] "
@@ -639,6 +661,11 @@ function Placeholder(props) {
 
   const fontSize = calculateFont(props.pos.options?.fontSize);
   const fontColor = props.pos.options?.fontColor || "black";
+  const widgetBackground = handleBackground(
+    props?.data,
+    props?.isNeedSign,
+    props?.uniqueId
+  );
 
   const handleDragging = () => {
     //condition for request signing flow
@@ -690,7 +717,23 @@ function Placeholder(props) {
     setIsToday(false);
     setSelectDate((prev) => ({ ...prev, date: "" }));
   };
+  const resetDateFormState = () => {
+    const isTodayDate = props.pos?.options?.response === "today";
+    setFormdata({
+      status: props?.pos?.options?.status || "required",
+      isReadOnly: props?.pos?.options?.isReadOnly || false,
+      name: props?.pos?.options?.name,
+      hint: props?.pos?.options?.hint
+    });
+    setIsToday(isTodayDate);
+    setSelectDate({
+      date: isTodayDate ? "" : props.pos?.options?.response || "",
+      format: props.pos?.options?.validation?.format || "MM/dd/yyyy"
+    });
+  };
+
   const handleCloseDateModal = () => {
+    resetDateFormState();
     setIsDateModal(false);
   };
   const handleDateStatus = (data) => {
@@ -819,11 +862,9 @@ function Placeholder(props) {
             background:
               props?.data?.Role === "prefill"
                 ? "transparent"
-                : handleBackground(
-                    props?.data,
-                    props?.isNeedSign,
-                    props?.uniqueId
-                  )
+                : props.isPlaceholder
+                  ? widgetBackground.replace(/b0$/, "")
+                  : widgetBackground
           }}
           onDrag={(_, d) => {
             props?.handleTabDrag?.(props.pos.key);

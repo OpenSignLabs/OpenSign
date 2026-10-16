@@ -3,7 +3,6 @@ import ModalUi from "../../primitives/ModalUi";
 import RecipientList from "./RecipientList";
 import WidgetList from "./WidgetList";
 import {
-  isMobile,
   radioButtonWidget,
   textInputWidget,
   cellsWidget,
@@ -13,9 +12,12 @@ import {
 } from "../../constant/Utils";
 import { useTranslation } from "react-i18next";
 import { useWidgetDrag } from "../../hook/useWidgetDrag";
+import { useWindowSize } from "../../hook/useWindowSize";
 
 function WidgetComponent(props) {
   const { t } = useTranslation();
+  const { width } = useWindowSize();
+  const isMobile = width > 0 && width < 767;
   const signRef = useRef(null);
   const userInformation = localStorage.getItem("UserInformation");
   const [isSignersModal, setIsSignersModal] = useState(false);
@@ -113,21 +115,25 @@ function WidgetComponent(props) {
   );
   //function to show widget on the base of conditionAdd commentMore actions
   const handleWidgetType = () => {
+    let result;
     if (props.isSignYourself) {
-      return selfSignWidgets;
+      result = selfSignWidgets;
     } else if (props?.roleName === "prefill") {
-      return prefillAllowWidgets;
+      result = prefillAllowWidgets;
     } else if (props.isAlllowModify) {
       if (userInformation) {
-        return modifiedWidgets;
+        result = modifiedWidgets;
       } else {
-        return unlogedInUserWidgets;
+        result = unlogedInUserWidgets;
       }
     } else if (props?.roleName !== "prefill") {
-      return widgetList.filter(
+      result = widgetList.filter(
         (data) => ![textWidget, drawWidget].includes(data.type)
       );
     }
+    return (
+      result
+    )
   };
   const handleSelectRecipient = () => {
     if (props?.roleName === "prefill") {
@@ -154,26 +160,28 @@ function WidgetComponent(props) {
     <>
       {isMobile ? (
         !props.isMailSend && (
-          <div id="navbar" className="fixed z-[99] bottom-0 right-0 w-full">
+          <div
+            id="navbar"
+            className="os-mobile-widget-navbar fixed bottom-0 right-0 z-[1000] w-full"
+          >
             {props.isSigners && (
               <div className="w-full mb-[5px] flex justify-center items-center gap-1">
-                <div className="w-full ml-[5px]" onClick={() => handleModal()}>
-                  <select
-                    data-tut="recipientArea"
-                    className="w-full op-select op-select-bordered  pointer-events-none"
-                    value={handleSelectRecipient()}
-                    style={{
-                      backgroundColor:
-                        props.roleName === "prefill"
-                          ? "#edf6fc"
-                          : handleBlockColor() || "#edf6fc"
-                    }}
-                  >
-                    <option value={handleSelectRecipient()}>
-                      {handleSelectRecipient()}
-                    </option>
-                  </select>
-                </div>
+                <button
+                  type="button"
+                  data-tut="recipientArea"
+                  aria-haspopup="dialog"
+                  className="w-full ml-[5px] op-select op-select-bordered text-left flex items-center justify-between bg-none"
+                  onClick={() => handleModal()}
+                  style={{
+                    backgroundColor:
+                      props.roleName === "prefill"
+                        ? "#edf6fc"
+                        : handleBlockColor() || "#edf6fc"
+                  }}
+                >
+                  <span className="truncate">{handleSelectRecipient()}</span>
+                  <i className="fa-light fa-chevron-down ml-2 shrink-0 text-xs"></i>
+                </button>
 
                 <div className="w-[18%]">
                   {props.handleAddSigner ? (
@@ -201,7 +209,7 @@ function WidgetComponent(props) {
 
             <div
               data-tut="addWidgets"
-              className="bg-base-100 border-[2px] border-t-primary"
+              className="os-widget-dock bg-base-100 border-[2px]"
             >
               <div className="flex whitespace-nowrap overflow-x-scroll pt-[10px] pb-[5px] pr-[5px]">
                 <WidgetList
@@ -210,6 +218,7 @@ function WidgetComponent(props) {
                   handleMouseLeave={props.handleMouseLeave}
                   signRef={signRef}
                   marginLeft={5}
+                  isMobile={isMobile}
                   addPositionOfSignature={props.addPositionOfSignature}
                 />
               </div>
@@ -244,6 +253,7 @@ function WidgetComponent(props) {
               handleDivClick={props.handleDivClick}
               handleMouseLeave={props.handleMouseLeave}
               signRef={signRef}
+              isMobile={isMobile}
               addPositionOfSignature={props.addPositionOfSignature}
             />
           </div>
@@ -254,6 +264,7 @@ function WidgetComponent(props) {
           title={props.title ? props.title : t("recipients")}
           isOpen={isSignersModal}
           handleClose={handleModal}
+          modalBoxClassName="w-[calc(100vw-24px)] max-w-[calc(100vw-24px)] max-h-[80vh] md:w-auto md:max-w-none"
         >
           {props.signersdata.length > 0 || props.prefillSigner.length > 0 ? (
             <div className="max-h-[600px] overflow-auto pb-1">

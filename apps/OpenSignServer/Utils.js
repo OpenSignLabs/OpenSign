@@ -2,6 +2,7 @@ import dotenv from 'dotenv';
 import { format, toZonedTime } from 'date-fns-tz';
 import getPresignedUrl, { getSignedLocalUrl } from './cloud/parsefunction/getSignedUrl.js';
 import crypto from 'node:crypto';
+import fs from 'node:fs';
 import {
   PDFDocument,
   PDFName,
@@ -12,6 +13,14 @@ import {
   PDFDict,
 } from 'pdf-lib';
 import { parseUploadFile } from './utils/fileUtils.js';
+import {
+  escapeHtml,
+  renderAutomatedEmailFooter,
+  renderEmailHeading,
+  renderEmailLogo,
+  resolveBrandContext,
+  resolveDeploymentBrand,
+} from './utils/brandContext.js';
 
 dotenv.config({ quiet: true });
 
@@ -666,33 +675,45 @@ export const getSecureUrl = url => {
 };
 
 export const mailTemplate = param => {
-  const themeColor = '#47a3ad';
+  const deployment = resolveDeploymentBrand();
+  const requestedAppName = deployment.productName;
+  const brand = resolveBrandContext({
+    deployment,
+    tenant:
+      requestedAppName && requestedAppName !== deployment.productName
+        ? { WhiteLabelAppName: requestedAppName }
+        : undefined,
+  });
   const subject = `${param.senderName} has requested you to sign "${param.title}"`;
-  const AppName = appName;
-  const logo = `<img src='https://qikinnovation.ams3.digitaloceanspaces.com/logo.png' height='50' />`;
+  const logo = renderEmailLogo(brand);
+  const senderName = escapeHtml(param.senderName);
+  const title = escapeHtml(param.title);
+  const senderMail = escapeHtml(param.senderMail);
+  const organization = escapeHtml(param.organization);
+  const localExpireDate = escapeHtml(param.localExpireDate);
+  const note = escapeHtml(param.note);
+  const signingUrl = escapeHtml(param.signingUrl);
 
   const body =
     "<html><head><meta http-equiv='Content-Type' content='text/html;charset=UTF-8' /></head><body><div style='background-color:#f5f5f5;padding:20px'><div style='background:white;padding-bottom:20px'><div style='padding:10px'>" +
     logo +
-    `</div><div style='padding:2px;font-family:system-ui;background-color:${themeColor}'><p style='font-size:20px;font-weight:400;color:white;padding-left:20px'>Digital Signature Request</p></div><div><p style='padding:20px;font-size:14px;margin-bottom:10px'>` +
-    param.senderName +
+    `</div>${renderEmailHeading(brand, 'Digital Signature Request')}<div><p style='padding:20px;font-size:14px;margin-bottom:10px'>` +
+    senderName +
     ' has requested you to review and sign <strong>' +
-    param.title +
+    title +
     "</strong>.</p><div style='padding: 5px 0px 5px 25px;display:flex;flex-direction:row;justify-content:space-around'><table><tr><td style='font-weight:bold;font-family:sans-serif;font-size:15px'>Sender</td><td></td><td style='color:#626363;font-weight:bold'>" +
-    param.senderMail +
+    senderMail +
     "</td></tr><tr><td style='font-weight:bold;font-family:sans-serif;font-size:15px'>Organization</td><td></td><td style='color:#626363;font-weight:bold'> " +
-    param.organization +
+    organization +
     "</td></tr><tr><td style='font-weight:bold;font-family:sans-serif;font-size:15px'>Expires on</td><td></td><td style='color:#626363;font-weight:bold'>" +
-    param.localExpireDate +
+    localExpireDate +
     "</td></tr><tr><td style='font-weight:bold;font-family:sans-serif;font-size:15px'>Note</td><td></td><td style='color:#626363;font-weight:bold'>" +
-    param.note +
+    note +
     "</td></tr><tr><td></td><td></td></tr></table></div> <div style='margin-left:70px'><a target=_blank href=" +
-    param.signingUrl +
-    "><button style='padding:12px;background-color:#d46b0f;color:white;border:0px;font-weight:bold;margin-top:30px'>Sign here</button></a></div><div style='display:flex;justify-content:center;margin-top:10px'></div></div></div><div><p> This is an automated email from " +
-    AppName +
-    '. For any queries regarding this email, please contact the sender ' +
-    param.senderMail +
-    ` directly.</p></div></div></body></html>`;
+    signingUrl +
+    "><button style='padding:12px;background-color:#d46b0f;color:white;border:0px;font-weight:bold;margin-top:30px'>Sign here</button></a></div><div style='display:flex;justify-content:center;margin-top:10px'></div></div></div>" +
+    renderAutomatedEmailFooter(brand, param.senderMail) +
+    `</div></body></html>`;
 
   return { subject, body };
 };

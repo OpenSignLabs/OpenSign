@@ -35,11 +35,6 @@ export default defineConfig(({ mode }) => {
     server: {
       port: env.PORT || 3000, // Same port as CRA
       open: true
-    },
-    test: {
-      environment: "jsdom",
-      globals: true,
-      setupFiles: "./setuptest.js" // if you have one
     }
   };
 });

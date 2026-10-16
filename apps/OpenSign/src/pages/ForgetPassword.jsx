@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 import login_img from "../assets/images/login_img.svg";
 import Parse from "parse";
@@ -20,6 +20,7 @@ function ForgotPassword() {
   const [toast, setToast] = useState({ type: "", message: "" });
   const [isLoading, setIsLoading] = useState(false);
   const [image, setImage] = useState();
+  const isSubmittingRef = useRef(false);
 
   const handleChange = (event) => {
     let { name, value } = event.target;
@@ -38,9 +39,11 @@ function ForgotPassword() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    if (isSubmittingRef.current) return;
     if (!emailRegex.test(state.email)) {
       alert(t("valid-email-alert"));
     } else {
+      isSubmittingRef.current = true;
       setIsLoading(true);
       localStorage.setItem("appLogo", appInfo.applogo);
       localStorage.setItem("userSettings", JSON.stringify(appInfo.settings));
@@ -56,6 +59,7 @@ function ForgotPassword() {
             message: err.message || t("reset-password-alert-2")
           });
         } finally {
+          isSubmittingRef.current = false;
           setIsLoading(false);
           setTimeout(() => setToast({ type: "", message: "" }), 1000);
         }
@@ -124,7 +128,11 @@ function ForgotPassword() {
                   </div>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-center text-xs font-bold">
-                  <button type="submit" className="op-btn op-btn-primary">
+                  <button
+                    type="submit"
+                    className="op-btn op-btn-primary"
+                    disabled={isLoading}
+                  >
                     {t("submit")}
                   </button>
                   <button

@@ -178,6 +178,14 @@
   text-align: center;
   font-weight: 480;
 }
+
+.drive-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  column-gap: 16px;
+  justify-items: center;
+}
+
 .select-none-cls{
   -webkit-user-select: none;
   /* Disable text selection in WebKit browsers */

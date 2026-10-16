@@ -1,3 +1,16 @@
+import { getRuntimeConfig } from "./runtimeConfig";
+import {
+  hasExplicitRuntimeConfig,
+  resolveRuntimeUrls
+} from "./deploymentRuntime";
+
+const __publicRuntimeConfig = getRuntimeConfig();
+const __publicHasRuntimeConfig = hasExplicitRuntimeConfig();
+export const runtimeUrls = resolveRuntimeUrls(__publicRuntimeConfig, {
+  explicit: __publicHasRuntimeConfig,
+  origin: window.location.origin
+});
+
 export const contactCls = "contracts_Contactbook";
 export const templateCls = "contracts_Template";
 export const documentCls = "contracts_Document";
