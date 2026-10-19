@@ -69,6 +69,15 @@ In the "Draw Signature" popup, you have three options available:
      - **Checkbox**: After dropping the checkbox widget, a popup will open allowing you to set the checkbox name and options. Once you click save, the checkbox will be created on the document. Additionally, a copy option will be available to duplicate the widget.
      - **Image** : After dragging and dropping the image widget, the "Upload Image" popup will appear, allowing you to upload an image from your file explorer. Once the image is uploaded, it will be displayed on the document. Additionally, there is an option to duplicate the image.
      - **Email**: Once you drop the email widget, you can edit the email. Customization options such as setting the color or font are also provided. Additionally, there is a copy option available to duplicate the widget.
+     - **QES**: OpenSign supports Qualified Electronic Signature (QES) workflows for eligible documents and supported countries through integrated qualified-signature providers. A QES is a specific type of electronic signature defined under applicable regulations, such as the EU eIDAS framework. Its availability and legal effect depend on the applicable law, the provider, and the signing process used.
+
+> **Note:** Available countries, providers, and verification steps may change. The options shown in your OpenSign account and the selected provider's instructions are the source of truth for a particular signing session.
+
+> **Note:** This feature is available only on paid plans. Each QES (Qualified Electronic Signature) signing consumes **10 API credits per document signing**.
+
+You can check your available API credits on the **Settings → API Token** page.
+
+You can also add regular **Signature** widgets to the document. When the document is signed using QES, it will be embedded with a digital signature. The qualified signature stamp will appear at the position specified by the Qualified Signature widget. You do not need to add multiple Qualified Signature widgets for each signer.
 
 ### 📄 Document Page Controls
 - **Navigating Between Pages in OpenSign™**
