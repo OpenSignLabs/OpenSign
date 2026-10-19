@@ -1,4 +1,4 @@
-services:
+original yaml- services:
   server:
     image: opensign/opensignserver:main
     container_name: OpenSignServer-container

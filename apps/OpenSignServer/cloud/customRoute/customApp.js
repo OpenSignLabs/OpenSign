@@ -7,7 +7,6 @@ import decryptpdf, { upload as decryptUpload } from './decryptpdf.js';
 import { deleteUserByAdmin, deleteUserPost } from './deleteAccount/deleteUser.js';
 import { deleteUserGet } from './deleteAccount/deleteUserGet.js';
 import { deleteUserOtp } from './deleteAccount/deleteUserOtp.js';
-
 export const app = express();
 
 dotenv.config({ quiet: true });

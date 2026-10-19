@@ -174,7 +174,10 @@ function RenderAllPdfPage(props) {
     }
   };
   return (
-    <div ref={pageContainer} className="hidden w-[20%] bg-base-100 md:block">
+    <div
+      ref={pageContainer}
+      className="os-page-rail hidden w-[20%] bg-base-100 md:block"
+    >
       <div className="mx-2 pr-2 pt-2 pb-1 text-[15px] text-base-content font-semibold border-b-[1px] border-base-300">
         {t("pages")}
       </div>

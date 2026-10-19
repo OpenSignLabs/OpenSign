@@ -1,11 +1,17 @@
 import axios from 'axios';
 import dotenv from 'dotenv';
 dotenv.config({ quiet: true });
-const ssoApiUrl = process.env.SSO_API_URL || 'https://sso.opensignlabs.com/api'; //'https://osl-jacksonv2.vercel.app/api';
+const getSsoApiUrl = () => {
+  return process.env.SSO_API_URL || 'https://sso.opensignlabs.com/api';
+};
 export const SSOAuth = {
   // Returns a promise that fulfills if this user mail is valid.
   validateAuthData: async authData => {
     try {
+      const ssoApiUrl = getSsoApiUrl();
+      if (!ssoApiUrl) {
+        throw new Error('SSO is disabled for this deployment.');
+      }
       const response = await axios.get(ssoApiUrl + '/oauth/userinfo', {
         headers: {
           Authorization: `Bearer ${authData.access_token}`,

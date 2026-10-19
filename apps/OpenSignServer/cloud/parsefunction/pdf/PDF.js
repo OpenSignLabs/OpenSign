@@ -7,9 +7,14 @@ import {
   replaceMailVaribles,
   saveFileUsage,
   getSecureUrl,
-  appName,
   serverAppId,
 } from '../../../Utils.js';
+import {
+  escapeHtml,
+  renderDocumentEmail,
+  resolveBrandContext,
+  resolveDeploymentBrand,
+} from '../../../utils/brandContext.js';
 import GenerateCertificate from './GenerateCertificate.js';
 import { pdflibAddPlaceholder } from '@signpdf/placeholder-pdf-lib';
 import { Placeholder } from './Placeholder.js';
@@ -37,8 +42,9 @@ import {
 const serverUrl = cloudServerUrl; // process.env.SERVER_URL;
 const APPID = serverAppId;
 const masterKEY = process.env.MASTER_KEY;
-const eSignName = 'OpenSign';
-const eSigncontact = 'hello@opensignlabs.com';
+const deploymentBrand = resolveDeploymentBrand();
+const eSignName = deploymentBrand.digitalSignature.name;
+const eSigncontact = deploymentBrand.digitalSignature.contact;
 const docUrl = `${serverUrl}/classes/contracts_Document`;
 const headers = {
   'Content-Type': 'application/json',
@@ -148,10 +154,7 @@ async function updateDoc(
 // `sendNotifyMail` is used to send notification mail of signer signed the document
 async function sendNotifyMail(doc, signUser, mailProvider, publicUrl) {
   try {
-    const TenantAppName = appName;
-    const logo =
-      "<img src='https://qikinnovation.ams3.digitaloceanspaces.com/logo.png' height='50' style='padding:20px'/>";
-
+    const brand = resolveBrandContext({});
     const auditTrailCount =
       doc?.AuditTrail?.filter(x => COMPLETION_ACTIVITIES.includes(x.Activity))?.length || 0;
     const completionRelevant =
@@ -167,16 +170,18 @@ async function sendNotifyMail(doc, signUser, mailProvider, publicUrl) {
       const signerEmail = signUser.Email;
       const viewDocUrl = `${publicUrl}/recipientSignPdf/${doc.objectId}`;
       const subject = `Document "${pdfName}" has been signed by ${signerName}`;
-      const body =
-        "<html><head><meta http-equiv='Content-Type' content='text/html; charset=UTF-8'/></head><body><div style='background-color:#f5f5f5;padding:20px'><div style='background-color:white'>" +
-        `<div>${logo}</div><div style='padding:2px;font-family:system-ui;background-color:#47a3ad'><p style='font-size:20px;font-weight:400;color:white;padding-left:20px'>Document signed by ${signerName}</p>` +
-        `</div><div style='padding:20px;font-family:system-ui;font-size:14px'><p>Dear ${creatorName},</p><p>${pdfName} has been signed by ${signerName} "${signerEmail}" successfully</p>` +
-        `<p><a href=${viewDocUrl} target=_blank>View Document</a></p></div></div><div><p>This is an automated email from ${TenantAppName}. For any queries regarding this email, ` +
-        `please contact the sender ${creatorEmail} directly.</p></div></div></body></html>`;
+      const body = renderDocumentEmail({
+        context: brand,
+        heading: `Document signed by ${signerName}`,
+        contentHtml:
+          `<div style='padding:20px;font-family:system-ui;font-size:14px'><p>Dear ${escapeHtml(creatorName)},</p><p>${escapeHtml(pdfName)} has been signed by ${escapeHtml(signerName)} "${escapeHtml(signerEmail)}" successfully</p>` +
+          `<p><a href='${escapeHtml(viewDocUrl)}' target=_blank>View Document</a></p></div>`,
+        senderEmail: creatorEmail,
+      });
 
       const params = {
         extUserId: sender.objectId,
-        from: TenantAppName,
+        from: brand.senderName,
         recipient: creatorEmail,
         subject: subject,
         pdfName: pdfName,
@@ -196,10 +201,7 @@ async function sendCompletedMail(obj) {
   const doc = obj.doc;
   const sender = obj.doc.ExtUserPtr;
   const pdfName = doc.Name;
-  const TenantAppName = appName;
-  const logo =
-    "<img src='https://qikinnovation.ams3.digitaloceanspaces.com/logo.png' height='50' style='padding:20px'/>";
-
+  const brand = resolveBrandContext({});
   let signersMail;
   if (doc?.Signers?.length > 0) {
     const isOwnerExistsinSigners = doc?.Signers?.find(x => x.Email === sender.Email);
@@ -211,11 +213,12 @@ async function sendCompletedMail(obj) {
   }
   const recipient = signersMail;
   let subject = `Document "${pdfName}" has been signed by all parties`;
-  let body =
-    "<html><head><meta http-equiv='Content-Type' content='text/html; charset=UTF-8' /></head><body><div style='background-color:#f5f5f5;padding:20px'><div style='background-color:white'>" +
-    `<div>${logo}</div><div style='padding:2px;font-family:system-ui;background-color:#47a3ad'><p style='font-size:20px;font-weight:400;color:white;padding-left:20px'>Document signed successfully</p></div><div>` +
-    `<p style='padding:20px;font-family:system-ui;font-size:14px'>All parties have successfully signed the document <b>"${pdfName}"</b>. Kindly download the document from the attachment.</p>` +
-    `</div></div><div><p>This is an automated email from ${TenantAppName}. For any queries regarding this email, please contact the sender ${sender.Email} directly.</p></div></div></body></html>`;
+  let body = renderDocumentEmail({
+    context: brand,
+    heading: 'Document signed successfully',
+    contentHtml: `<p style='padding:20px;font-family:system-ui;font-size:14px'>All parties have successfully signed the document <b>"${escapeHtml(pdfName)}"</b>. Kindly download the document from the attachment.</p>`,
+    senderEmail: sender.Email,
+  });
 
   if (obj?.isCustomMail) {
     const tenant = sender?.TenantId;
@@ -280,7 +283,7 @@ async function sendCompletedMail(obj) {
   const params = {
     extUserId: sender.objectId,
     url: url,
-    from: doc?.SenderName || TenantAppName,
+    from: doc?.SenderName || brand.senderName,
     replyto: doc?.SenderMail || doc?.ExtUserPtr?.Email || '',
     recipient: recipient,
     subject: subject,
@@ -392,7 +395,7 @@ async function PDF(req) {
     const mailProvider = req.params.mailProvider || '';
     const sign = req.params.signature || '';
     const auditActivity = 'Signed';
-    const publicUrl = req.headers.public_url;
+    let publicUrl = req.headers.public_url;
     // below bode is used to get info of docId
     const docQuery = new Parse.Query('contracts_Document');
     docQuery.include('ExtUserPtr,Signers,ExtUserPtr.TenantId,Bcc,Cc,CreatedBy');
@@ -494,7 +497,7 @@ async function PDF(req) {
       let signedFilePath = `./exports/signed_${name}`;
       let pdfSize = PdfBuffer.length;
       let documentHash;
-      if (isCompleted) {
+      if (!req.params.isQES && isCompleted) {
         const signersName = _resDoc.Signers?.map(x => x.Name + ' <' + x.Email + '>');
         const reason =
           signersName && signersName.length > 0
@@ -513,7 +516,7 @@ async function PDF(req) {
         pdfSize = signedDocs.length;
         documentHash = generateDocumentHash(signedDocs);
         console.log(`✅ PDF digitally signed created: ${signedFilePath} \n`);
-      } else {
+      } else if (!req.params.isQES) {
         //`saveUrl` is used to save signed pdf in exports folder
         fs.writeFileSync(signedFilePath, PdfBuffer);
         pdfSize = PdfBuffer.length;

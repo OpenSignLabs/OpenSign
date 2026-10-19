@@ -1,6 +1,11 @@
 import { useEffect, useMemo } from "react";
 
-export function useManifestUrl(appName, logo) {
+export function useManifestUrl(
+  appName,
+  logo,
+  themeColor = "#000000",
+  backgroundColor = "#ffffff"
+) {
   const url = useMemo(() => {
     const start_url = window.location.origin || ".";
     const manifest = {
@@ -8,8 +13,8 @@ export function useManifestUrl(appName, logo) {
       name: appName,
       start_url: start_url,
       display: "standalone",
-      theme_color: "#000000",
-      background_color: "#ffffff",
+      theme_color: themeColor,
+      background_color: backgroundColor,
       ...(logo && {
         icons: [
           { src: logo, type: "image/png", sizes: "64x64 32x32 24x24 16x16" },
@@ -22,7 +27,7 @@ export function useManifestUrl(appName, logo) {
       type: "application/json"
     });
     return URL.createObjectURL(blob);
-  }, [appName, logo]);
+  }, [appName, logo, themeColor, backgroundColor]);
 
   useEffect(() => {
     // cleanup when unmounting or when url changes

@@ -30,7 +30,7 @@ const ThemeToggle = () => {
       <input
         id="dark-mode-toggle"
         type="checkbox"
-        className="op-toggle checked:[--tglbg:#3368ff] transition-all checked:bg-white"
+        className="op-toggle transition-all checked:bg-white"
         checked={isDark}
         onChange={handleChange}
       />

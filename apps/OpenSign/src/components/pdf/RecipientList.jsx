@@ -5,13 +5,15 @@ import {
   color,
   darkenColor,
   getFirstLetter,
-  isMobile,
   nameColor
 } from "../../constant/Utils";
+import { useWindowSize } from "../../hook/useWindowSize";
 const cursor =
   "cursor-[url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAsTAAALEwEAmpwYAAAASElEQVR4nGNgwAMkJSUbpKSkOvCpIaT5PxSTbogUQjMYMwxeIIXmVFIxA8UGDDyQGg0DnIDi6JKUlCxHMqCeZAOghjSAMD5FAKfeaURdUFxCAAAAAElFTkSuQmCC'),_pointer]";
 const RecipientList = (props) => {
   const { t } = useTranslation();
+  const { width } = useWindowSize();
+  const isMobile = width > 0 && width < 767;
   const [animationParent] = useAutoAnimate();
   const [isHover, setIsHover] = useState();
   const [isPrefill, setIsPrefill] = useState(false);
@@ -92,6 +94,12 @@ const RecipientList = (props) => {
     setIsPrefill(prefill ?? false);
     props.setIsTour && props?.setIsTour(false);
   };
+  const handleRecipientKeyDown = (e, index, obj, prefill) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      handleSelectRecipient(e, index, obj, prefill);
+    }
+  };
   const isSelected = (ind) => {
     const isUserSelected =
       (!isMobile && isHover === ind) ||
@@ -104,17 +112,23 @@ const RecipientList = (props) => {
         props?.prefillSigner?.map((obj, ind) => (
           <div
             key={ind}
+            role="button"
+            tabIndex={props.isMailSend ? -1 : 0}
+            aria-pressed={props.uniqueId === obj.Id}
             data-tut="prefillTour"
             className={`${
               props.uniqueId === obj.Id
                 ? "op-bg-primary text-white"
                 : "transparent text-base-content"
-            } cursor-pointer px-2 py-1 m-1 mb-2 border-[1px] gap-1 rounded-xl flex justify-center items-center op-border-primary text-[12px] font-bold whitespace-nowrap text-ellipsis`}
+            } cursor-pointer w-full px-2 py-1 m-1 mb-2 border-[1px] gap-1 rounded-xl flex justify-center items-center op-border-primary text-[12px] font-bold whitespace-nowrap text-ellipsis`}
             onClick={(e) => handleSelectRecipient(e, ind, obj, true)}
+            onKeyDown={(e) => handleRecipientKeyDown(e, ind, obj, true)}
           >
-            <i
-              className={`${props.uniqueId === obj.Id ? "bg-white op-text-primary" : "op-bg-primary text-white"} w-[20px] h-[20px] flex justify-center items-center text-[10px] fa-light fa-signature rounded-full`}
-            ></i>
+            <div
+              className={`${props.uniqueId === obj.Id ? "bg-white op-text-primary" : "op-bg-primary text-white"} w-[20px] h-[20px] rounded-full bg-gray-200 flex items-center justify-center`}
+            >
+              <i className="fa-light fa-signature text-[10px]"></i>
+            </div>
             <span>{obj.Name}</span>
           </div>
         ))}
@@ -124,6 +138,9 @@ const RecipientList = (props) => {
             <div
               ref={animationParent}
               key={ind}
+              role="button"
+              tabIndex={props.isMailSend ? -1 : 0}
+              aria-pressed={props.uniqueId === obj.Id}
               draggable={props.sendInOrder && !isMobile ? true : false}
               onDragStart={(e) =>
                 props.sendInOrder && !isMobile && handleDragStart(e, ind)
@@ -145,7 +162,7 @@ const RecipientList = (props) => {
                     ? "pointer-events-none bg-opacity-80"
                     : `text-[12px] font-bold ${cursor}`
                   : props.isMailSend && "pointer-events-none bg-opacity-80"
-              } flex flex-row rounded-xl px-2 py-[10px] mt-1 mx-1 items-center last:mb-0.5`}
+              } grid grid-cols-[minmax(0,1fr)_auto_auto_auto_auto] md:flex md:flex-row md:flex-nowrap rounded-xl px-2 py-[10px] mt-1 mx-1 items-center gap-x-1 gap-y-1 min-w-0 last:mb-0.5`}
               style={{
                 background:
                   (!isMobile && isHover === ind) || props.uniqueId === obj.Id
@@ -155,8 +172,9 @@ const RecipientList = (props) => {
                     : "transparent"
               }}
               onClick={(e) => handleSelectRecipient(e, ind, obj)}
+              onKeyDown={(e) => handleRecipientKeyDown(e, ind, obj)}
             >
-              <div className="flex flex-row items-center w-full overflow-hidden pr-2">
+                <div className="flex flex-row items-center w-full min-w-0 overflow-hidden pr-1 md:pr-2 md:flex-1">
                 <div
                   className="flex flex-shrink-0 w-[30px] h-[30px] rounded-full items-center justify-center mr-2"
                   style={{
@@ -176,15 +194,15 @@ const RecipientList = (props) => {
                 <div
                   className={`${obj.Name ? "flex-col" : "flex-row"} ${
                     isSelected(ind) ? "text-[#424242]" : "text-base-content"
-                  } flex overflow-hidden flex-grow-0`}
+                  } flex flex-1 min-w-0 overflow-hidden`}
                 >
                   {obj.Name ? (
-                    <span className="text-[12px] font-bold truncate whitespace-nowrap">
+                    <span className="text-[12px] font-bold leading-tight truncate whitespace-nowrap">
                       {obj.Name}
                     </span>
                   ) : (
                     <span
-                      className="text-[12px] font-bold truncate whitespace-nowrap cursor-pointer"
+                      className="text-[12px] font-bold leading-tight truncate whitespace-nowrap cursor-pointer"
                       onClick={() => {
                         setIsEdit({ [obj.Id]: true });
                         props.setRoleName(obj.Role);
@@ -208,33 +226,43 @@ const RecipientList = (props) => {
                           }}
                         />
                       ) : (
-                        <span className="text-[13px] 2xl:text-[17px]">
+                        <span className="text-[13px] 2xl:text-[17px] truncate">
                           {obj.Role}
                         </span>
                       )}
                     </span>
                   )}
                   {obj.Name && (
-                    <span className="text-[10px] font-medium truncate whitespace-nowrap">
+                    <span className="text-[10px] font-medium leading-tight truncate whitespace-nowrap">
                       {obj?.Role || obj?.Email}
                     </span>
                   )}
                 </div>
               </div>
               {isMobile && props.sendInOrder && (
-                <div className="flex flex-row items-center gap-[5px] mr-2">
-                  <div
+                <div className="flex flex-row items-center gap-0 mr-0 md:gap-[5px] md:mr-2 flex-shrink-0">
+                  <button
+                    type="button"
+                    aria-label={`${t("previous")} ${t("recipients")}`}
+                    disabled={ind === 0}
                     onClick={(e) => {
                       if (ind !== 0) {
                         e.stopPropagation();
                         handleChangeSequence(e, ind, "up", null, obj);
                       }
                     }}
-                    className={ind === 0 ? "text-[gray]" : "text-black"}
+                    className={
+                      ind === 0
+                        ? "text-[gray] min-h-[32px] min-w-[28px] md:min-h-[44px] md:min-w-[44px]"
+                        : "text-black min-h-[32px] min-w-[28px] md:min-h-[44px] md:min-w-[44px]"
+                    }
                   >
                     ▲
-                  </div>
-                  <div
+                  </button>
+                  <button
+                    type="button"
+                    aria-label={`${t("next")} ${t("recipients")}`}
+                    disabled={ind === props.signersdata.length - 1}
                     onClick={(e) => {
                       if (ind !== props.signersdata.length - 1) {
                         e.stopPropagation();
@@ -243,12 +271,12 @@ const RecipientList = (props) => {
                     }}
                     className={
                       ind === props.signersdata.length - 1
-                        ? "text-[gray]"
-                        : "text-black"
+                        ? "text-[gray] min-h-[32px] min-w-[28px] md:min-h-[44px] md:min-w-[44px]"
+                        : "text-black min-h-[32px] min-w-[28px] md:min-h-[44px] md:min-w-[44px]"
                     }
                   >
                     ▼
-                  </div>
+                  </button>
                 </div>
               )}
               {props.handleDeleteUser && obj?.Role !== "prefill" && (
@@ -257,7 +285,7 @@ const RecipientList = (props) => {
                     e.stopPropagation();
                     props.handleDeleteUser(obj.Id);
                   }}
-                  className={`${isSelected(ind) ? "text-[#424242]" : "text-base-content"} cursor-pointer`}
+                  className={`${isSelected(ind) ? "text-[#424242]" : "text-base-content"} cursor-pointer flex-shrink-0`}
                 >
                   <i className="fa-light fa-trash-can 2xl:text-[22px]"></i>
                 </div>
