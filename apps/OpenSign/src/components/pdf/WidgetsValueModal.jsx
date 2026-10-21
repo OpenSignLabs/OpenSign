@@ -58,18 +58,13 @@ import {
 import Draw from "./tab/Draw";
 import DefaultSignature from "./tab/DefaultSignature";
 import UploadImage from "./tab/UploadImage";
+import { UI_FONT, SIGNATURE_FONTS, DEFAULT_SIGNATURE_FONT } from "../../constant/fonts";
 import TypeSignature from "./tab/TypeSignature";
 import PenColorComponent from "./tab/PenColorComponent";
 import TextInput from "./widgets/TextInput";
 import CellsInput from "./widgets/CellsInput";
 
-const fontOptions = [
-  { value: "Fasthand" },
-  { value: "Dancing Script" },
-  { value: "Cedarville Cursive" },
-  { value: "Delicious Handrawn" }
-  // Add more font options as needed
-];
+const fontOptions = SIGNATURE_FONTS.map((font) => ({ value: font }));
 const textInputcls =
   "op-input op-input-bordered op-input-sm focus:outline-none text-base-content hover:border-base-content w-full text-xs";
 const isTabCls = "bg-[#002864] text-white rounded-[15px] px-[10px] py-[4px]";
@@ -858,7 +853,7 @@ function WidgetsValueModal(props) {
     const maxWidth = currWidgetsDetails?.Width;
     const maxHeight = currWidgetsDetails?.Height;
     const widgetDims = { Width: maxWidth, Height: maxHeight };
-    const fontFamily = fontStyle || typedSignFont || fontSelect || "Fasthand";
+    const fontFamily = fontStyle || typedSignFont || fontSelect || DEFAULT_SIGNATURE_FONT;
     const fillColor = color || penColor;
     const dataUrl = convertTextToImg(fontFamily, text, fillColor, widgetDims);
     // setSignature(dataUrl);
@@ -1015,7 +1010,7 @@ function WidgetsValueModal(props) {
   const ExampleCustomInput = forwardRef(({ value, onClick }, ref) => (
     <div
       style={{
-        fontFamily: "Arial, sans-serif"
+        fontFamily: UI_FONT
       }}
       // className={`${selectWidgetCls} overflow-hidden`}
       onClick={onClick}
