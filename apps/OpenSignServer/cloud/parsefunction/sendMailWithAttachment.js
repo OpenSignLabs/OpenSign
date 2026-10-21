@@ -35,12 +35,12 @@ async function sendMailProvider(params) {
       };
 
       // ✅ Add auth only if BOTH username & password exist
-      const smtpUser = process.env.SMTP_USERNAME;
-      const smtpPass = process.env.SMTP_PASS;
+      const smtpUser = process.env.SMTP_USERNAME || process.env.SMTP_USER;
+      const smtpPass = process.env.SMTP_PASS || process.env.SMTP_PASSWORD;
 
       if (smtpUser && smtpPass) {
         transporterConfig.auth = {
-          user: process.env.SMTP_USERNAME ? process.env.SMTP_USERNAME : process.env.SMTP_USER_EMAIL,
+          user: process.env.SMTP_USERNAME || process.env.SMTP_USER || process.env.SMTP_USER_EMAIL,
           pass: smtpPass,
         };
       }
