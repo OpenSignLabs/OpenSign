@@ -3758,8 +3758,65 @@ export const handleHeighlightWidget = (
  * @param {string | Uint8Array | ArrayBuffer} pdfFile - pdf file.
  * @returns {Promise<Uint8Array>} flatPdf - PDF file in Uint8Array
  */
+// Keeps the binary contract of flattenPdf: callers upload the result as a PDF,
+// so a base64 string has to be decoded instead of being returned as text.
+const toPdfBytes = (input) => {
+  if (typeof input === 'string') {
+    const binary = atob(input.replace(/^data:application\/pdf;base64,/, ''));
+    const bytes = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+    return bytes;
+  }
+  if (input instanceof ArrayBuffer) return new Uint8Array(input);
+  return input;
+};
+
+// Walks the complete field tree: a signature can sit under nested /Kids.
+const hasSignatureField = (context, node, visited = new Set()) => {
+  if (!node) return false;
+  if (visited.has(node)) return false;
+  visited.add(node);
+  const ft = node.get?.(PDFName.of('FT'));
+  if (ft && ft.toString() === '/Sig') return true;
+  const kidsRef = node.get?.(PDFName.of('Kids'));
+  const kids = kidsRef ? context.lookup(kidsRef) : null;
+  if (kids && typeof kids.asArray === 'function') {
+    for (const kidRef of kids.asArray()) {
+      const kid = context.lookup(kidRef);
+      if (hasSignatureField(context, kid, visited)) return true;
+    }
+  }
+  return false;
+};
+
 export const flattenPdf = async (pdfFile) => {
-  const pdfDoc = await PDFDocument.load(pdfFile, { ignoreEncryption: true });
+  const inputBytes = toPdfBytes(pdfFile);
+  const pdfDoc = await PDFDocument.load(inputBytes, { ignoreEncryption: true });
+
+  // Preserve existing digital signatures: if the document contains a
+  // signature field (SigFlags or /FT /Sig), skip flattening entirely.
+  try {
+    const acroFormEntry = pdfDoc.catalog.get(PDFName.of('AcroForm'));
+    const acroForm = pdfDoc.context.lookupMaybe
+      ? pdfDoc.context.lookupMaybe(acroFormEntry, PDFDict)
+      : pdfDoc.context.lookup(acroFormEntry);
+    if (acroForm) {
+      const sigFlags = acroForm.get(PDFName.of('SigFlags'));
+      if (sigFlags && Number(sigFlags) > 0) {
+        return inputBytes;
+      }
+      const fieldsRef = acroForm.get(PDFName.of('Fields'));
+      const fields = fieldsRef ? pdfDoc.context.lookup(fieldsRef) : null;
+      if (fields && typeof fields.asArray === 'function') {
+        for (const fRef of fields.asArray()) {
+          const field = pdfDoc.context.lookup(fRef);
+          if (hasSignatureField(pdfDoc.context, field)) return inputBytes;
+        }
+      }
+    }
+  } catch {
+    // continue with normal flatten
+  }
 
   let form;
   try {
@@ -3767,6 +3824,14 @@ export const flattenPdf = async (pdfFile) => {
   } catch {
     // No form, nothing to flatten
     return await pdfDoc.save({ useObjectStreams: false });
+  }
+
+  // If any signature field exists, skip flatten to preserve it.
+  try {
+    const sigField = form.getFields().some((f) => f?.constructor?.name === 'PDFSignature');
+    if (sigField) return pdfFile;
+  } catch {
+    // continue
   }
 
   const pages = pdfDoc.getPages();
