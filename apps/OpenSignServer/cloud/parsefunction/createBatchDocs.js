@@ -206,7 +206,6 @@ async function startBulkSendInBackground(userId, Documents, Ip, parseConfig, typ
   if (!resExt) throw new Parse.Error(Parse.Error.OBJECT_NOT_FOUND, 'User not found.');
 
   const _resExt = JSON.parse(JSON.stringify(resExt));
-
   // Build Parse /batch requests from your existing mapping (same as your current code)
   const requests = Documents.map(x => {
     const Signers = x.Signers;

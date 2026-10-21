@@ -2,6 +2,11 @@ import { PDFDocument, rgb } from 'pdf-lib';
 import fs from 'node:fs';
 import fontkit from '@pdf-lib/fontkit';
 import { formatDateTime } from '../../../Utils.js';
+import {
+  colorToPdfRgb,
+  fetchBrandImage,
+  resolveBrandContext,
+} from '../../../utils/brandContext.js';
 
 const formatDateStr = (dateStr, DateFormat, timezone, Is12Hr) => {
   if (!dateStr) return '';
@@ -14,22 +19,36 @@ export default async function GenerateCertificate(docDetails) {
   const timezone = docDetails?.ExtUserPtr?.Timezone || '';
   const Is12Hr = docDetails?.ExtUserPtr?.Is12HourTime || false;
   const DateFormat = docDetails?.ExtUserPtr?.DateFormat || 'MM/DD/YYYY';
+  const brand = resolveBrandContext({});
   const pdfDoc = await PDFDocument.create();
   // `fontBytes` is used to embed custom font in pdf
-  const fontBytes = fs.readFileSync('./font/times.ttf'); //
+  const fontBytes = fs.readFileSync(new URL('../../../font/times.ttf', import.meta.url));
   pdfDoc.registerFontkit(fontkit);
   const timesRomanFont = await pdfDoc.embedFont(fontBytes, { subset: true });
-  const pngUrl = fs.readFileSync('./images/logo.png').buffer;
-  const naSignUrl = fs.readFileSync('./images/na_sign.png').buffer;
+  const naSignUrl = fs.readFileSync(new URL('../../../images/na_sign.png', import.meta.url));
   const nasign = await pdfDoc.embedPng(naSignUrl);
-  const pngImage = await pdfDoc.embedPng(pngUrl);
+  let brandLogo;
+  if (brand.assets.certificateLogoUrl) {
+    const remoteLogo = await fetchBrandImage(brand.assets.certificateLogoUrl);
+    if (remoteLogo) {
+      brandLogo =
+        remoteLogo.type === 'png'
+          ? await pdfDoc.embedPng(remoteLogo.bytes)
+          : await pdfDoc.embedJpg(remoteLogo.bytes);
+    }
+  } else if (brand.assets.useBundledCertificateLogo) {
+    brandLogo = await pdfDoc.embedPng(
+      fs.readFileSync(new URL('../../../images/logo.png', import.meta.url))
+    );
+  }
   const page = pdfDoc.addPage();
   const { width, height } = page.getSize();
   const startX = 15;
   const startY = 15;
   const borderColor = rgb(0.12, 0.12, 0.12);
-  const titleColor = rgb(0, 0.2, 0.4); //rgb(0, 0.53, 0.71);
-  const titleUnderline = rgb(0, 0.2, 0.4); // rgb(0.12, 0.12, 0.12);
+  const certificateColor = colorToPdfRgb(brand.colors.certificatePrimary);
+  const titleColor = rgb(...certificateColor);
+  const titleUnderline = rgb(...certificateColor);
   const title = 25;
   const subtitle = 16;
   const text = 13;
@@ -56,6 +75,7 @@ export default async function GenerateCertificate(docDetails) {
   const IsEnableOTP = docDetails?.IsEnableOTP || false;
   const placeholders = Array.isArray(docDetails?.Placeholders) ? docDetails.Placeholders : [];
   const filteredaudit = docDetails?.AuditTrail?.filter(x => {
+    if (!['Signed', 'Approved'].includes(x?.Activity)) return false;
     if (!x?.UserPtr?.objectId) return false;
     return true;
   });
@@ -104,12 +124,14 @@ export default async function GenerateCertificate(docDetails) {
     borderColor: borderColor,
     borderWidth: 1,
   });
-  page.drawImage(pngImage, {
-    x: 30,
-    y: 790,
-    width: 100,
-    height: 25,
-  });
+  if (brandLogo) {
+    page.drawImage(brandLogo, {
+      x: 30,
+      y: 790,
+      width: 100,
+      height: 25,
+    });
+  }
 
   page.drawText(generatedOn, {
     x: Math.max(startX, maxX), // Adjusts dynamically 320

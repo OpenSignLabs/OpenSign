@@ -1,10 +1,12 @@
+import { forwardRef } from "react";
 import { useTranslation } from "react-i18next";
 
-export default function CellsInput(props) {
+const CellsInput = forwardRef(function CellsInput(props, ref) {
   const { t } = useTranslation();
   return (
     <div className="w-full">
       <input
+        ref={ref}
         type="text"
         placeholder={props?.hint || t("widgets-name.text")}
         value={props?.cellsValue ?? ""}  
@@ -15,4 +17,6 @@ export default function CellsInput(props) {
       />
     </div>
   );
-}
+});
+
+export default CellsInput;

@@ -3,8 +3,6 @@ import Parse from "parse";
 import { useDispatch } from "react-redux";
 import axios from "axios";
 import { NavLink, useNavigate, useLocation } from "react-router";
-import login_img from "../assets/images/login_img.svg";
-import { useWindowSize } from "../hook/useWindowSize";
 import ModalUi from "../primitives/ModalUi";
 import {
   emailRegex,
@@ -29,7 +27,6 @@ function Login() {
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useDispatch();
-  const { width } = useWindowSize();
   const [state, setState] = useState({
     email: "",
     password: "",
@@ -278,6 +275,7 @@ function Login() {
     setState({ ...state, passwordVisible: !state.passwordVisible });
   };
 
+
   const handleSubmitbtn = async (e) => {
     e.preventDefault();
     if (userDetails.Destination && userDetails.Company) {
@@ -416,126 +414,184 @@ function Login() {
       {state.loading && (
         <div
           aria-live="assertive"
-          className="fixed w-full h-full flex justify-center items-center bg-black bg-opacity-30 z-50"
+          className="os-login-loading fixed w-full h-full flex justify-center items-center z-50"
         >
           <Loader />
         </div>
       )}
       {appInfo && appInfo.appId ? (
-        <>
-          <div
-            aria-labelledby="loginHeading"
-            role="region"
-            className="pb-1 md:pb-4 pt-10 md:px-10 lg:px-16 h-full"
-          >
-            <div className="md:p-4 lg:p-10 p-4 bg-base-100 text-base-content op-card">
-              <div className="w-[250px] h-[66px] inline-block overflow-hidden">
-                {image && (
-                  <img
-                    src={image}
-                    className="object-contain h-full"
-                    alt="applogo"
-                  />
-                )}
+        <div className="os-login-root">
+          <div className="os-login-shell">
+            <aside className="os-login-rail" aria-hidden="true">
+              <div className="os-rail-copy">
+                <h2>
+                  <span>{t("sign-documents")}</span>
+                  <span>{t("securely-simply")}</span>
+                </h2>
+                <p>{t("login-hero-description")}</p>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-2">
-                <div>
-                  <form onSubmit={handleLoginBtn} aria-label="Login Form">
-                    <h1 className="text-[30px] mt-6">{t("welcome")}</h1>
-                    <fieldset>
-                      <legend className="text-[12px] text-[#878787]">
-                        {t("Login-to-your-account")}
-                      </legend>
-                      <div className="w-full px-6 py-3 my-1 op-card bg-base-100 shadow-md outline outline-1 outline-slate-300/50">
-                        <label className="block text-xs" htmlFor="email">
-                          {t("email")}
-                        </label>
-                        <input
-                          id="email"
-                          type="email"
-                          className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
-                          name="email"
-                          autoComplete="username"
-                          value={state.email}
-                          onChange={handleChange}
-                          required
-                          onInvalid={(e) =>
-                            e.target.setCustomValidity(t("input-required"))
-                          }
-                          onInput={(e) => e.target.setCustomValidity("")}
-                        />
-                        <hr className="my-1 border-none" />
-                            <label className="block text-xs" htmlFor="password">
-                              {t("password")}
-                            </label>
-                            <div className="relative">
-                              <input
-                                id="password"
-                                type={
-                                  state.passwordVisible ? "text" : "password"
-                                }
-                                className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
-                                name="password"
-                                value={state.password}
-                                autoComplete="current-password"
-                                onChange={handleChange}
-                                onInvalid={(e) =>
-                                  e.target.setCustomValidity(
-                                    t("input-required")
-                                  )
-                                }
-                                onInput={(e) => e.target.setCustomValidity("")}
-                                required
-                              />
-                              <span
-                                className="absolute cursor-pointer top-[50%] right-[10px] -translate-y-[50%] text-base-content"
-                                onClick={togglePasswordVisibility}
-                              >
-                                {state.passwordVisible ? (
-                                  <i className="fa-light fa-eye-slash text-xs pb-1" /> // Close eye icon
-                                ) : (
-                                  <i className="fa-light fa-eye text-xs pb-1 " /> // Open eye icon
-                                )}
-                              </span>
-                            </div>
-                          <div className="relative mt-1">
-                            <NavLink
-                              to="/forgetpassword"
-                              className="text-[13px] op-link op-link-primary underline-offset-1 focus:outline-none ml-1"
-                            >
-                              {t("forgot-password")}?
-                            </NavLink>
-                          </div>
-                      </div>
-                    </fieldset>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-center text-xs font-bold mt-2">
-                      <button
-                        type="submit"
-                        className="op-btn op-btn-primary"
-                        disabled={state.loading}
-                      >
-                        {state.loading ? t("loading") : t("login")}
-                      </button>
-                    </div>
-                  </form>
+              <div className="os-signing-art" aria-hidden="true">
+                <div className="os-signing-orbit" />
+                <div className="os-signing-back-page" />
+                <div className="os-signing-document">
+                  <span className="os-document-line os-document-line-short" />
+                  <span className="os-document-line os-document-line-medium" />
+                  <span className="os-document-line" />
+                  <span className="os-document-line" />
+                  <span className="os-document-line os-document-line-medium" />
+                  <svg
+                    className="os-document-signature"
+                    viewBox="0 0 160 46"
+                    fill="none"
+                  >
+                    <path
+                      d="M8 34c15-3 18-21 25-22 8-1-5 26 2 27 7 1 17-29 22-27 4 2-9 26-2 27 6 1 15-19 21-20 5-1-3 15 3 17 7 2 16-13 24-13 6 0 7 7 15 7 8 0 15-7 24-7"
+                      stroke="currentColor"
+                      strokeWidth="3"
+                      strokeLinecap="round"
+                    />
+                  </svg>
                 </div>
-                {width >= 768 && (
-                  <div className="place-self-center">
-                    <div className="mx-auto md:w-[300px] lg:w-[400px] xl:w-[500px]">
-                      <img
-                        src={login_img}
-                        alt="The image illustrates a person from behind, seated at a desk with a four-monitor computer setup, in an environment with a light blue and white color scheme, featuring a potted plant to the right."
-                        width="100%"
-                      />
-                    </div>
-                  </div>
-                )}
+                <div className="os-signing-pen" />
+                <div className="os-signing-shield">
+                  <svg viewBox="0 0 64 72" fill="none">
+                    <path
+                      d="M32 4 57 13v20c0 16-10 27-25 35C17 60 7 49 7 33V13L32 4Z"
+                      fill="#2F6FDE"
+                      stroke="#A9D0FF"
+                      strokeWidth="4"
+                    />
+                    <rect
+                      x="23"
+                      y="31"
+                      width="18"
+                      height="15"
+                      rx="3"
+                      fill="white"
+                    />
+                    <path
+                      d="M27 31v-5a5 5 0 0 1 10 0v5"
+                      stroke="white"
+                      strokeWidth="4"
+                      strokeLinecap="round"
+                    />
+                    <circle cx="32" cy="38" r="2" fill="#2F6FDE" />
+                  </svg>
+                </div>
+                <div className="os-signing-check">
+                  <i className="fa-solid fa-check" />
+                </div>
               </div>
+            </aside>
+            <div
+              aria-labelledby="loginHeading"
+              role="region"
+              className="os-login-panel"
+            >
+              <div className="os-login-panel-inner">
+                <div className="os-login-brandbar">
+                  {image && (
+                    <img src={image} className="object-contain" alt="applogo" />
+                  )}
+                </div>
+                <div className="os-login-content-grid">
+                  <div className="os-login-form-column">
+                    <form onSubmit={handleLoginBtn} aria-label="Login Form">
+                      <h1 id="loginHeading">{t("welcome")}</h1>
+                      <fieldset>
+                        <legend>{t("Login-to-your-account")}</legend>
+                        <div
+                          id="login-region-panel"
+                          className="os-login-fields"
+                        >
+                          <label className="block text-xs" htmlFor="email">
+                            {t("email")}
+                          </label>
+                          <input
+                            id="email"
+                            type="email"
+                            className="op-input op-input-bordered op-input-sm hover:border-base-content w-full text-xs"
+                            name="email"
+                            autoComplete="username"
+                            value={state.email}
+                            onChange={handleChange}
+                            required
+                            onInvalid={(e) =>
+                              e.target.setCustomValidity(t("input-required"))
+                            }
+                            onInput={(e) => e.target.setCustomValidity("")}
+                          />
+                          <hr className="my-1 border-none" />
+                              <label
+                                className="block text-xs"
+                                htmlFor="password"
+                              >
+                                {t("password")}
+                              </label>
+                              <div className="relative">
+                                <input
+                                  id="password"
+                                  type={
+                                    state.passwordVisible ? "text" : "password"
+                                  }
+                                  className="op-input op-input-bordered op-input-sm hover:border-base-content w-full text-xs"
+                                  name="password"
+                                  value={state.password}
+                                  autoComplete="current-password"
+                                  onChange={handleChange}
+                                  onInvalid={(e) =>
+                                    e.target.setCustomValidity(
+                                      t("input-required")
+                                    )
+                                  }
+                                  onInput={(e) =>
+                                    e.target.setCustomValidity("")
+                                  }
+                                  required
+                                />
+                                <button
+                                  type="button"
+                                  aria-label={t("toggle-password-visibility")}
+                                  className="absolute top-[50%] right-[10px] flex min-h-[44px] min-w-[44px] -translate-y-[50%] items-center justify-center border-0 bg-transparent p-0 text-base-content"
+                                  onClick={togglePasswordVisibility}
+                                >
+                                  {state.passwordVisible ? (
+                                    <i className="fa-light fa-eye-slash text-xs pb-1" /> // Close eye icon
+                                  ) : (
+                                    <i className="fa-light fa-eye text-xs pb-1 " /> // Open eye icon
+                                  )}
+                                </button>
+                              </div>
+                            <div className="relative mt-1">
+                              <NavLink
+                                to="/forgetpassword"
+                                className="text-[13px] op-link op-link-primary underline-offset-1 ml-1"
+                              >
+                                {t("forgot-password")}?
+                              </NavLink>
+                            </div>
+                          <div className="os-login-actions text-center text-xs font-bold">
+                            <button
+                              type="submit"
+                              className="op-btn op-btn-primary"
+                              disabled={state.loading}
+                            >
+                              {state.loading ? t("loading") : t("login")}
+                            </button>
+                          </div>
+                        </div>
+                      </fieldset>
+                    </form>
+                  </div>
+                </div>
+              </div>
+              <div className="os-login-language">
+                <SelectLanguage />
+              </div>
+              {state.alertMsg && (
+                <Alert type={state.alertType}>{state.alertMsg}</Alert>
+              )}
             </div>
-            <SelectLanguage />
-            {state.alertMsg && (
-              <Alert type={state.alertType}>{state.alertMsg}</Alert>
-            )}
           </div>
           <ModalUi
             isOpen={isModal}
@@ -554,7 +610,7 @@ function Login() {
                 </label>
                 <input
                   type="text"
-                  className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
+                  className="op-input op-input-bordered op-input-sm hover:border-base-content w-full text-xs"
                   id="Company"
                   value={userDetails.Company}
                   onChange={(e) =>
@@ -581,7 +637,7 @@ function Login() {
                 </label>
                 <input
                   type="text"
-                  className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
+                  className="op-input op-input-bordered op-input-sm hover:border-base-content w-full text-xs"
                   id="JobTitle"
                   value={userDetails.Destination}
                   onChange={(e) =>
@@ -615,7 +671,7 @@ function Login() {
               </div>
             </form>
           </ModalUi>
-        </>
+        </div>
       ) : (
         <div
           aria-live="assertive"

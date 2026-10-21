@@ -12,6 +12,9 @@ const path = require("node:path");
 const root = path.join(__dirname, "build");
 const port = Number(process.env.PORT) || 3000;
 const host = process.env.HOST || "0.0.0.0";
+const contentSecurityPolicy =
+  process.env.APP_CONTENT_SECURITY_POLICY?.trim() || "";
+
 
 const mime = {
   ".html": "text/html; charset=utf-8",
@@ -39,7 +42,9 @@ const mime = {
 };
 
 function contentType(filePath) {
-  return mime[path.extname(filePath).toLowerCase()] || "application/octet-stream";
+  return (
+    mime[path.extname(filePath).toLowerCase()] || "application/octet-stream"
+  );
 }
 
 
@@ -59,16 +64,13 @@ function cacheControl(filePath) {
   const ext = path.extname(filePath).toLowerCase();
   const relativePath = path.relative(root, filePath);
   const isBuildAsset =
-    relativePath === "assets" ||
-    relativePath.startsWith(`assets${path.sep}`);
+    relativePath === "assets" || relativePath.startsWith(`assets${path.sep}`);
 
   if (ext === ".html" || ext === "") {
     return "no-cache";
   }
 
-  return isBuildAsset
-    ? "public, max-age=31536000, immutable"
-    : "no-cache";
+  return isBuildAsset ? "public, max-age=31536000, immutable" : "no-cache";
 }
 
 function streamFile(req, res, filePath, stats) {
@@ -76,7 +78,10 @@ function streamFile(req, res, filePath, stats) {
     "Content-Type": contentType(filePath),
     "Content-Length": stats.size,
     "Last-Modified": stats.mtime.toUTCString(),
-    "Cache-Control": cacheControl(filePath)
+    "Cache-Control": cacheControl(filePath),
+    ...(contentSecurityPolicy
+      ? { "Content-Security-Policy": contentSecurityPolicy }
+      : {})
   };
   if (req.method === "HEAD") {
     res.writeHead(200, headers);

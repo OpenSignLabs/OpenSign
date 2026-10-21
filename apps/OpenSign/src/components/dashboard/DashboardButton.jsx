@@ -21,9 +21,11 @@ const DashboardButton = (props) => {
     }
   }
   return (
-    <div
+    <button
+      type="button"
+      aria-label={t(`sidebar.${props.Label}`)}
       onClick={() => openReport()}
-      className={`${
+      className={`text-left border-0 ${
         props.Data && props.Data.Redirect_type
           ? "cursor-pointer"
           : "cursor-default"
@@ -53,7 +55,7 @@ const DashboardButton = (props) => {
           )}
         </div>
       </div>
-    </div>
+    </button>
   );
 };
 

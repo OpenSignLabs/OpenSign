@@ -96,7 +96,7 @@ export default function WidgetsDragPreview(props) {
                 props?.uniqueId
               )
             }}
-            className="border-red-600 rounded-[2px] border-[1px]"
+            className="os-widget-drag-preview rounded-[2px]"
           >
             {/* 🔁 Render options list */}
             {options.map((x, id) => (
@@ -133,7 +133,7 @@ export default function WidgetsDragPreview(props) {
                 props?.uniqueId
               )
             }}
-            className="border-red-600 rounded-[2px] border-[1px] flex items-center justify-center"
+            className="os-widget-drag-preview rounded-[2px] flex items-center justify-center"
           >
             {/* 🏷️ Widget type label */}
             <span className="text-center text-[10px] font-medium">

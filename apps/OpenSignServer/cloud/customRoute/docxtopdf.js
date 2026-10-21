@@ -4,6 +4,7 @@ import libre from 'libreoffice-convert';
 import { exec } from 'child_process';
 import { promisify } from 'util';
 import { cloudServerUrl, getSecureUrl, serverAppId } from '../../Utils.js';
+import { resolveDeploymentBrand } from '../../utils/brandContext.js';
 
 const execAsync = promisify(exec);
 
@@ -204,15 +205,14 @@ export default async function docxtopdf(req, res) {
     let msg =
       err?.response?.data?.error || err?.response?.data || err?.message || 'Something went wrong.';
     // Friendly message to the client
-    const message =
-      'We are currently experiencing some issues with processing DOCX files. Please upload the PDF version or contact us on support@opensignlabs.com';
+    const supportEmail = resolveDeploymentBrand().contacts.supportEmail;
+    const supportSuffix = supportEmail ? ` or contact us at ${supportEmail}` : '';
+    const message = `We are currently experiencing some issues with processing DOCX files. Please upload the PDF version${supportSuffix}`;
 
     if (msg.includes('timed out')) {
-      msg =
-        'Document conversion is taking too long. Please try a smaller file or contact support@opensignlabs.com';
+      msg = `Document conversion is taking too long. Please try a smaller file${supportSuffix}`;
     } else if (msg.includes('too large') || msg.includes('size')) {
-      msg =
-        'File is too large to process. Please reduce the file size or contact support@opensignlabs.com';
+      msg = `File is too large to process. Please reduce the file size${supportSuffix}`;
     } else {
       msg = message;
     }
