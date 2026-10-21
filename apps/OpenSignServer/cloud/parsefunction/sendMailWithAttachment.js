@@ -135,9 +135,10 @@ async function sendMailProvider(params) {
           }
           const from = params.from || '';
           const mailsender = smtpenable ? process.env.SMTP_USER_EMAIL : process.env.MAILGUN_SENDER;
+          const displayName = from && !String(from).includes('@') ? from : brand.productName;
           const replyto = params?.replyto || '';
           const messageParams = {
-            from: from + ' <' + mailsender + '>',
+            from: displayName + ' <' + mailsender + '>',
             to: params.recipient,
             subject: params.subject,
             text: params.text || 'mail',
@@ -188,9 +189,10 @@ async function sendMailProvider(params) {
     } else {
       const from = params.from || '';
       const mailsender = smtpenable ? process.env.SMTP_USER_EMAIL : process.env.MAILGUN_SENDER;
+      const displayName = from && !String(from).includes('@') ? from : brand.productName;
       const replyto = params?.replyto || '';
       const messageParams = {
-        from: from + ' <' + mailsender + '>',
+        from: displayName + ' <' + mailsender + '>',
         to: params.recipient,
         subject: params.subject,
         text: params.text || 'mail',
