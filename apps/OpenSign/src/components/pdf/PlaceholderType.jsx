@@ -46,7 +46,9 @@ function PlaceholderType(props) {
       props.data?.signerObjId !== props.signerObjId);
 const canEditInline =
     (props.isPlaceholder && !props.isNeedSign) ||
-    (props.isNeedSign && iswidgetEnable && !isReadOnly);
+    ((props.isNeedSign || props.isSelfSign || props.isSignYourself) &&
+      iswidgetEnable &&
+      !isReadOnly);
   // prefer the latest response value over any default value
   //props?.isPrefillModal is used to handle in create template flow when user use use-template button
   //then prefill details should not be reflect on pdf document it should only show in modal
@@ -54,6 +56,43 @@ const canEditInline =
     ? (props.pos?.options?.response ?? props.pos?.options?.defaultValue ?? "")
     : "";
   const [widgetValue, setwidgetValue] = useState();
+  const [inlineError, setInlineError] = useState(false);
+
+  // Linked fields: propagate value to siblings sharing the same name (#31)
+  const propagateLinked = (val) => {
+    if (!canEditInline || !props.setXyPosition) return;
+    const name = props.pos?.options?.name;
+    if (!name) return;
+    props.setXyPosition((prev) => {
+      const isSignerList = prev.some((d) => d.signerPtr || d.Role === "prefill");
+      const updatePos = (pos) => {
+        if (pos.key === props.pos.key) return pos;
+        if (pos?.options?.name === name) {
+          return { ...pos, options: { ...pos.options, response: val } };
+        }
+        return pos;
+      };
+      if (isSignerList) {
+        const signerId = props.data?.Id || props.uniqueId;
+        const filterSignerPos = prev.filter((d) => d.Id === signerId);
+        if (filterSignerPos.length > 0) {
+          const getPlaceHolder = filterSignerPos[0].placeHolder;
+          const updatedPlaceHolder = getPlaceHolder.map((ph) => ({
+            ...ph,
+            pos: ph.pos.map(updatePos)
+          }));
+          return prev.map((obj) =>
+            obj.Id === signerId ? { ...obj, placeHolder: updatedPlaceHolder } : obj
+          );
+        }
+      } else {
+        return prev.map((obj, ind) =>
+          ind === props.index ? { ...obj, pos: obj.pos.map(updatePos) } : obj
+        );
+      }
+      return prev;
+    });
+  };
   const [selectedCheckbox, setSelectedCheckbox] = useState([]);
   const [imgUrl, setImgUrl] = useState("");
   const [date, setDate] = useState("");
@@ -83,6 +122,52 @@ const canEditInline =
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.pos, widgetData, type]);
+
+  // Linked fields: propagate value to siblings on change (#31)
+  useEffect(() => {
+    if (!canEditInline || widgetValue === undefined) return;
+    // Compare against the value this widget already carries: a value received
+    // from the store must not be broadcast again, or two same-named fields
+    // would keep overwriting each other.
+    const current = props.pos?.options?.response;
+    if (String(current ?? "") === String(widgetValue ?? "")) return;
+    propagateLinked(widgetValue);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [widgetValue]);
+
+  // Inline validation for text fields (PandaDoc parity #34)
+  useEffect(() => {
+    if (!canEditInline) {
+      setInlineError(false);
+      return;
+    }
+    const pattern = props.pos?.options?.validation?.pattern;
+    const vType = props.pos?.options?.validation?.type;
+    if (!widgetValue) {
+      setInlineError(false);
+      return;
+    }
+    let regex = null;
+    if (vType === "email") regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    else if (vType === "number") regex = /^[0-9\s]*$/;
+    else if (vType === "ssn") regex = /^\d{3}-?\d{2}-?\d{4}$/;
+    else if (pattern) {
+      try {
+        // Keep the flags: /^[A-Z]+$/i must stay case-insensitive.
+        const literal = String(pattern).match(/^\/(.*)\/([a-z]*)$/);
+        regex = literal
+          ? new RegExp(literal[1], literal[2])
+          : new RegExp(pattern);
+      } catch (e) {
+        regex = null;
+      }
+    }
+    if (regex) {
+      setInlineError(!regex.test(String(widgetValue)));
+    } else {
+      setInlineError(false);
+    }
+  }, [widgetValue, canEditInline, props.pos?.options?.validation]);
 
 
   const ExampleCustomInput = forwardRef(({ value, onClick }, ref) => (
@@ -153,9 +238,10 @@ const canEditInline =
     return defaultData || props?.pos?.options?.hint || title;
   };
   //useEffect is used to increase auto height of text/textInput widget when user using multiline option and enter value in next line
-  // Disabled in inline-editing mode so fields stay static and don't overlap others.
+  // In inline-editing mode, only auto-expand when the value actually contains a newline,
+  // so single-line typing keeps the field static and avoids overlapping other fields.
   useEffect(() => {
-    if (canEditInline) return;
+    if (canEditInline && !(widgetValue && String(widgetValue).includes("\n"))) return;
     if (!textRef.current) return;
     if (
       (type === "text" || type === textInputWidget) &&
@@ -374,7 +460,7 @@ const canEditInline =
         </div>
       );
     case textInputWidget:
-      return props.isSignYourself || iswidgetEnable ? (
+      return props.isSignYourself || iswidgetEnable || canEditInline ? (
         <textarea
           placeholder={formatWidgetName()}
           ref={textRef}
@@ -382,12 +468,13 @@ const canEditInline =
           value={
                 widgetValue
           }
-          className={`w-full resize-none overflow-hidden text-base-content item-center outline-none ${isReadOnly ? "select-none" : ""}`}
+          className={`w-full resize-none overflow-hidden text-base-content item-center outline-none ${isReadOnly ? "select-none" : ""} ${inlineError ? "border-2 border-red-500" : ""}`}
           style={{
             fontSize: fontSize,
             color: fontColor,
             background: isReadOnly ? props.data?.blockColor : "white",
-            pointerEvents: canEditInline ? "auto" : "none"
+            pointerEvents: canEditInline ? "auto" : "none",
+            WebkitTextSecurity: props.pos?.options?.isMasked ? "disc" : "none"
           }}
           name="text"
           readOnly={!(canEditInline)}
@@ -458,9 +545,20 @@ const canEditInline =
         : widgetData == null
           ? ""
           : String(widgetData);
+      // Saved values can be arrays; options can be objects with a name.
+      const normalizeOption = (option) => {
+        if (option == null) return "";
+        if (typeof option === "object") {
+          return String(option.name ?? option.value ?? "");
+        }
+        return String(option);
+      };
+      const selectedValue = Array.isArray(widgetValue)
+        ? widgetValue.map(normalizeOption).join(", ")
+        : normalizeOption(widgetValue).trim();
       return canEditInline ? (
         <select
-          value={widgetValue?.trim() || ""}
+          value={selectedValue || ""}
           onChange={(e) => {
             const val = e.target.value;
             setwidgetValue(val);
@@ -489,8 +587,8 @@ const canEditInline =
             {t("choose-one")}
           </option>
           {(props.pos?.options?.values || []).map((data, ind) => (
-            <option key={ind} value={data?.trim()}>
-              {data?.trim()}
+            <option key={ind} value={normalizeOption(data)}>
+              {normalizeOption(data)}
             </option>
           ))}
         </select>
@@ -547,19 +645,20 @@ const canEditInline =
       );
     }
 case "name":
-        return iswidgetEnable ? (
+        return iswidgetEnable || canEditInline ? (
           <textarea
             placeholder={formatWidgetName()}
             rows={1}
             value={
                   widgetValue
             }
-            className={`${textWidgetCls} ${isReadOnly ? "select-none" : ""}`}
+            className={`${textWidgetCls} ${isReadOnly ? "select-none" : ""} ${inlineError ? "border-2 border-red-500" : ""}`}
             style={{
               fontSize: fontSize,
               color: fontColor,
               background: isReadOnly ? props.data?.blockColor : "white",
-              pointerEvents: canEditInline ? "auto" : "none"
+              pointerEvents: canEditInline ? "auto" : "none",
+            WebkitTextSecurity: props.pos?.options?.isMasked ? "disc" : "none"
             }}
             cols="50"
             readOnly={!(canEditInline)}
@@ -596,19 +695,20 @@ case "name":
         </div>
       );
 case "company":
-        return iswidgetEnable ? (
+        return iswidgetEnable || canEditInline ? (
           <textarea
             placeholder={formatWidgetName()}
             rows={1}
             value={
                   widgetValue
             }
-            className={`${textWidgetCls} ${isReadOnly ? "select-none" : ""}`}
+            className={`${textWidgetCls} ${isReadOnly ? "select-none" : ""} ${inlineError ? "border-2 border-red-500" : ""}`}
             style={{
               fontSize: fontSize,
               color: fontColor,
               background: isReadOnly ? props.data?.blockColor : "white",
-              pointerEvents: canEditInline ? "auto" : "none"
+              pointerEvents: canEditInline ? "auto" : "none",
+            WebkitTextSecurity: props.pos?.options?.isMasked ? "disc" : "none"
             }}
             cols="50"
             readOnly={!(canEditInline)}
@@ -645,19 +745,20 @@ case "company":
         </div>
       );
 case "job title":
-        return iswidgetEnable ? (
+        return iswidgetEnable || canEditInline ? (
           <textarea
             placeholder={formatWidgetName()}
             rows={1}
             value={
                   widgetValue
             }
-            className={`${textWidgetCls} ${isReadOnly ? "select-none" : ""}`}
+            className={`${textWidgetCls} ${isReadOnly ? "select-none" : ""} ${inlineError ? "border-2 border-red-500" : ""}`}
             style={{
               fontSize: fontSize,
               color: fontColor,
               background: isReadOnly ? props.data?.blockColor : "white",
-              pointerEvents: canEditInline ? "auto" : "none"
+              pointerEvents: canEditInline ? "auto" : "none",
+            WebkitTextSecurity: props.pos?.options?.isMasked ? "disc" : "none"
             }}
             cols="50"
             readOnly={!(canEditInline)}
@@ -747,19 +848,20 @@ case "job title":
         </div>
       );
 case "email":
-        return iswidgetEnable ? (
+        return iswidgetEnable || canEditInline ? (
           <textarea
             placeholder={formatWidgetName()}
             rows={1}
             value={
                   widgetValue
             }
-            className={`${textWidgetCls} ${isReadOnly ? "select-none" : ""}`}
+            className={`${textWidgetCls} ${isReadOnly ? "select-none" : ""} ${inlineError ? "border-2 border-red-500" : ""}`}
             style={{
               fontSize: fontSize,
               color: fontColor,
               background: isReadOnly ? props.data?.blockColor : "white",
-              pointerEvents: canEditInline ? "auto" : "none"
+              pointerEvents: canEditInline ? "auto" : "none",
+            WebkitTextSecurity: props.pos?.options?.isMasked ? "disc" : "none"
             }}
             cols="1"
             readOnly={!(canEditInline)}
@@ -877,7 +979,8 @@ case textWidget:
               fontSize: fontSize,
               color: fontColor,
               background: "white",
-              pointerEvents: canEditInline ? "auto" : "none"
+              pointerEvents: canEditInline ? "auto" : "none",
+            WebkitTextSecurity: props.pos?.options?.isMasked ? "disc" : "none"
             }}
             className="w-full resize-none overflow-hidden text-base-content item-center outline-none"
             onClick={(e) => {
