@@ -92,7 +92,17 @@ export async function getSignedUrl(request) {
             }
           }
 
-          const presignedUrl = await getPresignedUrl(url);
+          // Bind the requested URL to the fetched document/template to prevent
+// arbitrary-object presigning.
+const allowedUrls = [
+  _resDoc?.URL,
+  _resDoc?.SignedUrl,
+  _resDoc?.CertificateUrl,
+].filter(Boolean);
+if (allowedUrls.length && !allowedUrls.includes(url)) {
+  throw new Parse.Error(Parse.Error.OPERATION_FORBIDDEN, 'URL not associated with this document.');
+}
+const presignedUrl = await getPresignedUrl(url);
           return presignedUrl;
         } else {
           return url;
