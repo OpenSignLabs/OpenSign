@@ -4675,9 +4675,8 @@ export const sendEmailToSigners = async (
         pdfDetails?.[0]?.SenderName || pdfDetails?.[0]?.ExtUserPtr?.Name;
 
       const from =
-        pdfDetails?.[0]?.SenderName || useNameAsSender
-          ? pdfDetails?.[0]?.ExtUserPtr?.Name || ""
-          : senderEmail;
+            pdfDetails?.[0]?.SenderName ||
+            (useNameAsSender ? pdfDetails?.[0]?.ExtUserPtr?.Name || "" : senderEmail);
 
       const documentName = `${pdfDetails?.[0].Name}`;
       let replaceVar;

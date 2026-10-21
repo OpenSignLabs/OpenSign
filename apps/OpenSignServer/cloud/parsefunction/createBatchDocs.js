@@ -111,9 +111,10 @@ async function sendMail(document, publicUrl) {
   const senderName = document?.SenderName || document.ExtUserPtr.Name;
   const senderEmail = document?.SenderMail || document.ExtUserPtr.Email;
   const from =
-    document?.SenderName || document?.ExtUserPtr?.UseNameAsSender === true
+    document?.SenderName ||
+    (document?.ExtUserPtr?.UseNameAsSender === true
       ? document.ExtUserPtr.Name
-      : senderEmail;
+      : senderEmail);
 
   if (document.SendinOrder) {
     const getRole = signer => signer?.SignerRole || signer?.signer_role || signer?.role || 'signer';
