@@ -177,16 +177,25 @@ function PdfRequestFiles(
     sendmail = getQuery?.[1]?.split("=")[1]; //false
   }
 
-  const routeId = route && route?.split("/"); // ['', 'load', 'recipientSignPdf', ':docId', ':contactBookId']
-  if (routeId && routeId.length > 4) {
-    // this condition will be occur only in guest flow in which load routeId will be include
-    isGuestSignFlow = true;
-    getDocId = routeId[3];
-    contactBookId = routeId[4];
+  // The app can be deployed under a sub-path, so the base has to be removed
+  // before the route is parsed and the segments are located by name.
+  const deploymentBase = (import.meta.env.BASE_URL || "/").replace(/\/$/, "");
+  const routePath =
+    deploymentBase && route.startsWith(deploymentBase)
+      ? route.slice(deploymentBase.length)
+      : route;
+  const routeId = routePath.split("/").filter(Boolean);
+  const signRouteIndex = routeId.indexOf("recipientSignPdf");
+  if (signRouteIndex !== -1) {
+    // guest flow: /load/recipientSignPdf/:docId/:contactBookId
+    isGuestSignFlow =
+      signRouteIndex > 0 && routeId.slice(0, signRouteIndex).includes("load");
+    getDocId = routeId[signRouteIndex + 1] || "";
+    contactBookId = routeId[signRouteIndex + 2] || "";
   } else {
-    // this condition will be occur only in if user is logged in and load routeId will be exclude
-    getDocId = routeId[2];
-    contactBookId = routeId?.[3] || "";
+    // fallback that keeps the previous indexing for unknown shapes
+    getDocId = routeId[1] || "";
+    contactBookId = routeId[2] || "";
   }
   let getDocumentId =
     getDocId ||

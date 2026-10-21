@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { lazyWithRetry, hideUpgradeProgress } from "./utils";
 import { Routes, Route, BrowserRouter } from "react-router";
+import { getEnv } from "./constant/Utils";
 import { pdfjs } from "react-pdf";
 import Form from "./pages/Form";
 import Report from "./pages/Report";
@@ -62,7 +63,21 @@ function App() {
       {isloading ? (
         <AppLoader />
       ) : (
-        <BrowserRouter>
+        <BrowserRouter basename={(() => {
+          try {
+            // import.meta.env.BASE_URL always reflects the Vite base, so a
+            // build-time PUBLIC_URL reaches the router too.
+            const raw =
+              getEnv()?.PUBLIC_URL ||
+              process.env.PUBLIC_URL ||
+              import.meta.env.BASE_URL;
+            if (raw) {
+              const u = new URL(raw, window.location.origin);
+              return u.pathname.replace(/\/$/, "") || "/";
+            }
+          } catch (e) { /* ignore */ }
+          return "/";
+        })()}>
           <Title />
           <Routes>
             <Route element={<ValidateRoute />}>
