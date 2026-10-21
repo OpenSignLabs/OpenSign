@@ -22,6 +22,7 @@ import CellsWidget from "./CellsWidget";
 import { useSelector } from "react-redux";
 import Loader from "../../primitives/Loader";
 import moment from "moment";
+import { UI_FONT } from "../../constant/fonts";
 
 const textWidgetCls =
   "w-full h-full md:min-w-full md:min-h-full z-[999] text-[12px] overflow-hidden resize-none outline-none text-base-content item-center whitespace-pre-wrap";
@@ -59,7 +60,7 @@ function PlaceholderType(props) {
   const textWidgetStyle = {
     fontSize: fontSize,
     color: fontColor,
-    fontFamily: "Arial, sans-serif",
+    fontFamily: UI_FONT,
     overflow: "hidden",
     textAlign: "start",
     width: "100%",
@@ -87,7 +88,7 @@ function PlaceholderType(props) {
       style={{
         fontSize: fontSize,
         color: fontColor,
-        fontFamily: "Arial, sans-serif"
+        fontFamily: UI_FONT
       }}
       className={`${isReadOnly ? `select-none opacity-25` : ``} ${selectWidgetCls} overflow-hidden`}
       onClick={onClick}
@@ -668,7 +669,7 @@ function PlaceholderType(props) {
                 widgetValue
           }
           style={{
-            fontFamily: "Arial, sans-serif",
+            fontFamily: UI_FONT,
             fontSize: fontSize,
             color: fontColor,
             background: "white"

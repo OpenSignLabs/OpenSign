@@ -34,6 +34,7 @@ import { useGuidelinesContext } from "../../context/GuidelinesContext";
 import DatePicker from "react-datepicker";
 import DateWidgetModal from "../../primitives/DateWidgetModal";
 import { dateFormat, widgetNamesArr } from "../../utils";
+import { UI_FONT } from "../../constant/fonts";
 
 /**
  * Custom input UI for DatePicker
@@ -777,7 +778,7 @@ function Placeholder(props) {
             props.setUniqueId && props.setUniqueId(props?.data?.Id);
           }}
           style={{
-            fontFamily: "Arial, sans-serif",
+            fontFamily: UI_FONT,
             position: "absolute",
             left: xPos(props.pos),
             top: yPos(props.pos),
