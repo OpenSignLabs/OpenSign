@@ -86,7 +86,74 @@ export default async function getReport(request) {
       };
 
       const orderBy = '-updatedAt';
-      const include = 'AuditTrail.UserPtr,Placeholders.signerPtr,ExtUserPtr.TenantId';
+      const isCompletedReport = reportId === 'kQUoW4hUXz';
+      const include = isCompletedReport
+        ? 'AuditTrail.UserPtr,Placeholders.signerPtr'
+        : 'AuditTrail.UserPtr,Placeholders.signerPtr,ExtUserPtr.TenantId';
+
+      // For the completed report, split the $or (CreatedBy vs Signers $inQuery)
+      // into two index-friendly queries and merge/dedupe to avoid collection scans.
+      if (isCompletedReport && paramsObj && paramsObj.$or) {
+        const { $or, ...baseWhere } = paramsObj;
+        const userPtr = { __type: 'Pointer', className: '_User', objectId: userId };
+        const whereA = { ...baseWhere, CreatedBy: userPtr };
+        const whereB = {
+          ...baseWhere,
+          Signers: {
+            $inQuery: {
+              where: { UserId: userPtr },
+              className: 'contracts_Contactbook',
+            },
+          },
+        };
+
+        const urlA = buildClassesUrl({
+          serverUrl,
+          clsName,
+          paramsObj: whereA,
+          keys: json.keys || [],
+          orderBy,
+          skip: 0,
+          limit: Number(limit) + Number(skip) || 100,
+          include,
+        });
+        const urlB = buildClassesUrl({
+          serverUrl,
+          clsName,
+          paramsObj: whereB,
+          keys: json.keys || [],
+          orderBy,
+          skip: 0,
+          limit: Number(limit) + Number(skip) || 100,
+          include,
+        });
+
+        const [resA, resB] = await Promise.all([
+          axios.get(urlA, { headers: headers }),
+          axios.get(urlB, { headers: headers }),
+        ]);
+
+        const merged = [];
+        const seen = new Set();
+        for (const r of [resA, resB]) {
+          const results = r?.data?.results || [];
+          for (const doc of results) {
+            if (doc?.objectId && !seen.has(doc.objectId)) {
+              seen.add(doc.objectId);
+              merged.push(doc);
+            }
+          }
+        }
+        // sort by updatedAt desc
+        merged.sort((a, b) => {
+          const da = new Date(a?.updatedAt || 0).getTime();
+          const db = new Date(b?.updatedAt || 0).getTime();
+          return db - da;
+        });
+        const s = Number(skip) || 0;
+        const l = Number(limit) || 20;
+        return merged.slice(s, s + l);
+      }
 
       const url = buildClassesUrl({
         serverUrl,
