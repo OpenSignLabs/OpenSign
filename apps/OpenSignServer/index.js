@@ -273,5 +273,58 @@ if (!process.env.TESTING) {
       }
       console.log(`Command output: ${stdout}`);
     });
+
+    // Automatic reminders scheduler (issue #2268): runs hourly.
+    const runReminders = async () => {
+      try {
+        const now = new Date();
+        const q = new Parse.Query('contracts_Document');
+        q.equalTo('AutomaticReminders', true);
+        q.notEqualTo('IsCompleted', true);
+        q.notEqualTo('IsDeclined', true);
+        q.notEqualTo('IsArchive', true);
+        q.lessThanOrEqualTo('NextReminderDate', now);
+        q.limit(100);
+        const docs = await q.find({ useMasterKey: true });
+        for (const doc of docs) {
+          try {
+            const expiry = doc.get('ExpiryDate');
+            if (expiry && new Date(expiry) < now) {
+              doc.set('AutomaticReminders', false);
+              await doc.save(null, { useMasterKey: true });
+              continue;
+            }
+            const creator = doc.get('ExtUserPtr');
+            const creatorEmail = creator?.get?.('Email') || doc.get('SenderMail');
+            const pdfName = doc.get('Name') || 'Document';
+            if (creatorEmail) {
+              await Parse.Cloud.sendEmail({
+                sender: `${appName} <${process.env.SMTP_USER_EMAIL || process.env.MAILGUN_SENDER || ''}>`,
+                recipient: creatorEmail,
+                subject: `Reminder: "${pdfName}" is still pending signature`,
+                text: `Reminder: "${pdfName}" is still pending signature.`,
+                html: `<p>Reminder: "${pdfName}" is still pending signature.</p>`,
+              });
+            }
+            const every = doc.get('RemindOnceInEvery') || 5;
+            const next = new Date(doc.get('NextReminderDate') || now);
+            next.setDate(next.getDate() + every);
+            if (expiry && next > new Date(expiry)) {
+              doc.set('AutomaticReminders', false);
+            } else {
+              doc.set('NextReminderDate', next);
+            }
+            await doc.save(null, { useMasterKey: true });
+          } catch (e) {
+            console.log('reminder error for doc', doc?.id, e?.message);
+          }
+        }
+      } catch (e) {
+        console.log('reminder scheduler error', e?.message);
+      }
+    };
+    // run once after startup (delayed) then hourly
+    setTimeout(runReminders, 60000);
+    setInterval(runReminders, 60 * 60 * 1000);
   });
 }
