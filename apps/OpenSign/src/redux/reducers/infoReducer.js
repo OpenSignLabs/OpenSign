@@ -1,5 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { appInfo } from "../../constant/appinfo";
+import { initializeAppInfoBrand } from "../../constant/brandPresentation";
 
 const infoSlice = createSlice({
   name: "info",
@@ -8,11 +9,10 @@ const infoSlice = createSlice({
     fetchAppInfo: () => {
       localStorage.setItem("baseUrl", `${appInfo.baseUrl}/`);
       localStorage.setItem("parseAppId", appInfo.appId);
-      localStorage.setItem("appLogo", appInfo.applogo);
+      initializeAppInfoBrand(appInfo);
       localStorage.removeItem("userSettings");
       localStorage.setItem("userSettings", JSON.stringify(appInfo.settings));
       localStorage.setItem("fev_Icon", appInfo.fev_Icon);
-      localStorage.setItem("favicon", appInfo.fev_Icon);
       return appInfo;
     }
   }

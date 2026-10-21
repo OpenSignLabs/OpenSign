@@ -9,12 +9,10 @@
   "license": "MIT",
   "main": "index.js",
   "scripts": {
-    "coverage": "TESTING=true nyc jasmine",
-    "lint": "eslint --cache ./cloud && eslint --cache index.js && eslint --cache ./spec",
-    "lint-fix": "eslint --cache --fix ./cloud && eslint --cache --fix index.js && eslint --cache --fix ./spec",
-    "prettier": "prettier --write '{cloud,spec}/{**/*,*}.js' 'index.js'",
+    "lint": "eslint --cache ./cloud && eslint --cache index.js",
+    "lint-fix": "eslint --cache --fix ./cloud && eslint --cache --fix index.js",
+    "prettier": "prettier --write 'cloud/{**/*,*}.js' 'index.js'",
     "start": "node index.js",
-    "test": "mongodb-runner start && TESTING=true jasmine",
     "watch": "nodemon index.js"
   },
   "dependencies": {
@@ -36,6 +34,7 @@
     "form-data": "^4.0.6",
     "generate-api-key": "^1.0.2",
     "googleapis": "^171.4.0",
+    "jose": "^6.2.3",
     "libreoffice-convert": "^1.8.1",
     "mailgun.js": "^13.0.0",
     "moment": "^2.30.1",

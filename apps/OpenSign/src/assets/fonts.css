@@ -1,0 +1,47 @@
+@font-face {
+  font-family: "Bricolage Grotesque";
+  font-style: normal;
+  font-weight: 500 700;
+  font-display: swap;
+  src: url("./fonts/bricolage-grotesque-latin.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "DM Sans";
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url("./fonts/dm-sans-latin.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Cedarville Cursive";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("./fonts/cedarville-cursive-latin.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Dancing Script";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("./fonts/dancing-script-latin.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Delicious Handrawn";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("./fonts/delicious-handrawn-latin.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Fasthand";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("./fonts/fasthand-latin.woff2") format("woff2");
+}

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import ModalUi from "../../primitives/ModalUi";
 import {
   drawWidget,
+  generateId,
   handleCopyNextToWidget,
   randomId
 } from "../../constant/Utils";
@@ -221,11 +222,15 @@ function PlaceholderCopy(props) {
 
       if (!currentPlaceholder) return;
 
+      // Count existing same-type widgets for this signer
+      const countSameWidget = signerData.placeHolder.reduce((count, page) => {
+        return count + page.pos.filter((item) => item.type === currentPlaceholder?.type).length;
+      }, 0);
+
       //Copy for selected range only
       for (let i = start; i <= end; i++) {
         const newId = randomId();
-        const nameId = randomId(2);
-        const widgetName = `${currentPlaceholder?.type}${nameId}`;
+        const widgetName = `${currentPlaceholder?.type}-${generateId(6)}-${countSameWidget + 1}`;
         const newPlaceholder = {
           ...currentPlaceholder,
           key: newId,

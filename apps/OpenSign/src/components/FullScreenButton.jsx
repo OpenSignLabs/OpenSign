@@ -1,7 +1,9 @@
 // FullScreenButton.js
 import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 
 const FullScreenButton = () => {
+  const { t } = useTranslation();
   const [isFullScreen, setIsFullScreen] = useState(false);
 
   useEffect(() => {
@@ -64,10 +66,12 @@ const FullScreenButton = () => {
   };
 
   return (
-    <div className="flex items-center">
+    <div className="os-fullscreen-control flex items-center">
       <button
+        type="button"
+        aria-label={isFullScreen ? t("exit-fullscreen") : t("enter-fullscreen")}
         onClick={toggleFullScreen}
-        className="text-base-content p-2 text-sm focus:outline-none"
+        className="min-h-[44px] min-w-[44px] border-0 bg-transparent p-0 text-sm text-base-content"
       >
         {isFullScreen ? (
           <i className="fa-light fa-compress"></i>

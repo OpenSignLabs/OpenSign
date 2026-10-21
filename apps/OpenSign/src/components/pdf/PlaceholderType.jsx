@@ -383,16 +383,22 @@ function PlaceholderType(props) {
         />
       );
     }
-    case "dropdown":
+    case "dropdown": {
+      const dropdownValue = Array.isArray(widgetData)
+        ? widgetData.join(", ")
+        : widgetData == null
+          ? ""
+          : String(widgetData);
       return (
         <div
           style={textWidgetStyle}
           className="select-none-cls flex justify-between items-center"
         >
-          {widgetData?.trim() || t("choose-one")}
+          {dropdownValue.trim() || t("choose-one")}
           <i className="fa-light fa-circle-chevron-down mr-1 "></i>
         </div>
       );
+    }
     case "initials": {
       const iniRotation = props.pos.options?.rotation;
       const iniIsSwapped = [90, 270].includes(iniRotation);

@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { PDFDocument } from "pdf-lib";
 import "../styles/signature.css";
 import Parse from "parse";
@@ -63,6 +63,7 @@ import HandleError from "../primitives/HandleError";
 import LoaderWithMsg from "../primitives/LoaderWithMsg";
 import DownloadPdfZip from "../primitives/DownloadPdfZip";
 import Loader from "../primitives/Loader";
+import { isCreditQuotaError } from "../utils/creditErrors";
 import PdfDeclineModal from "../primitives/PdfDeclineModal";
 import { serverUrl_fn } from "../constant/appinfo";
 import AgreementSign from "../components/pdf/AgreementSign";
@@ -136,7 +137,6 @@ function PdfRequestFiles(
   const [currWidgetsDetails, setCurrWidgetsDetails] = useState({});
   const [extUserId, setExtUserId] = useState("");
   const [contractName, setContractName] = useState("");
-  const [zoomPercent, setZoomPercent] = useState(0);
   const [scale, setScale] = useState(1);
   const [uniqueId, setUniqueId] = useState("");
   const [documentId, setDocumentId] = useState("");
@@ -188,12 +188,15 @@ function PdfRequestFiles(
     getDocId = routeId[2];
     contactBookId = routeId?.[3] || "";
   }
-  let getDocumentId = getDocId || documentId;
+  let getDocumentId =
+    getDocId ||
+    documentId;
   useEffect(() => {
     dispatch(resetWidgetState([]));
     if (getDocumentId) {
       setDocumentId(getDocumentId);
-      getDocumentDetails(getDocumentId);
+      getDocumentDetails(getDocumentId
+      );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
@@ -354,6 +357,8 @@ function PdfRequestFiles(
           setPdfUrl(documentData[0].URL);
         }
         if (isCompleted) {
+          setIsUiLoading(false);
+          setIsLoading({ isLoad: false });
           setIsSigned(true);
           setAlreadySign(true);
           setIsCelebration(true);
@@ -403,13 +408,14 @@ function PdfRequestFiles(
         }
         // Approved entries also count toward audit trail completion summary.
         const audittrailData = documentData?.[0]?.AuditTrail?.filter(
-          (data) => data.Activity === "Signed"
+          (data) =>
+            data.Activity === "Signed"
         );
         const checkAlreadySign =
           documentData?.[0]?.AuditTrail?.some(
             (data) =>
               data?.UserPtr?.objectId === currUserId &&
-                (data.Activity === "Signed"
+              (data.Activity === "Signed"  
               )
           ) || false;
         if (checkAlreadySign) {
@@ -582,8 +588,8 @@ function PdfRequestFiles(
             }
           }
         }
-        setIsUiLoading(false);
-        setIsLoading({ isLoad: false });
+          setIsUiLoading(false);
+          setIsLoading({ isLoad: false });
         return {
           updatedPdfDetails,
         };
@@ -781,171 +787,17 @@ function PdfRequestFiles(
                   contactId,
                   objectId,
                   widgets,
-                  "Signed"
+                      "Signed"
                 );
                 if (resSign && resSign.status === "success") {
                   dispatch(setTypedSignFont("Fasthand"));
-                  setPdfUrl(resSign.data);
-                  setIsSigned(true);
-                  setSignedSigners([]);
-                  setUnSignedSigners([]);
-                  const isSuccessRoute = pdfDetails?.[0]?.RedirectUrl
-                    ? false
-                    : window.location?.pathname?.includes("load");
-                  const updatedDoc = await getDocumentDetails(
-                    docId,
-                    true,
-                    isSuccessRoute,
-                    contactId
-                  );
-                  const index =
-                    updatedDoc.updatedPdfDetails?.[0]?.Signers.findIndex(
-                      (x) => x.objectId === contactId
-                    );
-                  const removePrefill =
-                    updatedDoc.updatedPdfDetails?.[0]?.Placeholders?.filter(
-                      (x) => x.Role !== "prefill"
-                    );
-                  // Skip viewer placeholders when computing the next signer
-                  // to notify (viewers do not gate sequential signing).
-                  let newIndex = index + 1;
-                  const usermail = {
-                    Email: removePrefill[newIndex]?.email || ""
-                  };
-                  const user = usermail?.Email
-                    ? usermail
-                    : updatedDoc.updatedPdfDetails?.[0]?.Signers[newIndex];
-                  if (
-                    sendmail !== "false" &&
-                    sendInOrder
-                  ) {
-                    const mailBody =
-                          tenantMailTemplate?.body;
-                    const mailSubject =
-                          tenantMailTemplate?.subject;
-                    const requestBody =
-                      updatedDoc.updatedPdfDetails?.[0]?.RequestBody ||
-                      mailBody;
-                    const requestSubject =
-                      updatedDoc.updatedPdfDetails?.[0]?.RequestSubject ||
-                      mailSubject;
-                    if (user) {
-                      const expireDate = expiry;
-                      const newDate = new Date(expireDate);
-                      const localExpireDate = newDate.toLocaleDateString(
-                        "en-US",
-                        { day: "numeric", month: "long", year: "numeric" }
-                      );
-                      let senderEmail =
-                        pdfDetails?.[0]?.SenderMail ||
-                        pdfDetails?.[0]?.ExtUserPtr?.Email;
-                      let senderPhone = pdfDetails?.[0]?.ExtUserPtr?.Phone;
-                      const senderName =
-                        pdfDetails?.[0]?.SenderName ||
-                        pdfDetails?.[0].ExtUserPtr.Name;
-                      const documentName = pdfDetails?.[0].Name;
-                      try {
-                        let url = `${localStorage.getItem("baseUrl")}functions/sendmailv3`;
-                        const headers = {
-                          "Content-Type": "application/json",
-                          "X-Parse-Application-Id":
-                            localStorage.getItem("parseAppId"),
-                          sessionToken: localStorage.getItem("accesstoken")
-                        };
-                        const objectId = user?.objectId;
-                        const hostUrl = window.location.origin;
-                        //encode this url value `${pdfDetails?.[0].objectId}/${user.Email}/${objectId}` to base64 using `btoa` function
-                        let encodeBase64;
-                        if (objectId) {
-                          encodeBase64 = btoa(
-                            `${docId}/${user.Email}/${objectId}`
-                          );
-                        } else {
-                          encodeBase64 = btoa(`${docId}/${user.Email}`);
-                        }
-                        let signPdf =
-                              `${hostUrl}/login/${encodeBase64}`;
-                        const orgName = pdfDetails[0]?.ExtUserPtr.Company
-                          ? pdfDetails[0].ExtUserPtr.Company
-                          : "";
-                        let replaceVar;
-                        if (
-                          requestBody &&
-                          requestSubject
-                        ) {
-                          const replacedRequestBody = requestBody.replace(
-                            /"/g,
-                            "'"
-                          );
-                          const htmlReqBody =
-                            "<html><head><meta http-equiv='Content-Type' content='text/html; charset=UTF-8' /></head><body>" +
-                            replacedRequestBody +
-                            "</body></html>";
-
-                          const variables = {
-                            document_title: documentName,
-                            note: pdfDetails?.[0]?.Note,
-                            sender_name: senderName,
-                            sender_mail: senderEmail,
-                            sender_phone: senderPhone,
-                            receiver_name: user?.Name || "",
-                            receiver_email: user.Email,
-                            receiver_phone: user?.Phone || "",
-                            expiry_date: localExpireDate,
-                            company_name: orgName,
-                            signing_url: signPdf
-                          };
-                          replaceVar = replaceMailVaribles(
-                            requestSubject,
-                            htmlReqBody,
-                            variables
-                          );
-                        }
-                        const mailparam = {
-                          note: pdfDetails?.[0]?.Note || "",
-                          senderName: senderName,
-                          senderMail: senderEmail,
-                          title: documentName,
-                          organization: orgName,
-                          localExpireDate: localExpireDate,
-                          signingUrl: signPdf
-                        };
-                        let params = {
-                          replyto: senderEmail || "",
-                          extUserId: extUserId,
-                          recipient: user.Email,
-                          subject: replaceVar?.subject
-                            ? replaceVar?.subject
-                            : mailTemplate(mailparam).subject,
-                          from:
-                            pdfDetails?.[0]?.SenderName ||
-                            senderEmail,
-                          html: replaceVar?.body
-                            ? replaceVar?.body
-                            : mailTemplate(mailparam).body
-                        };
-                        await axios.post(url, params, { headers: headers });
-                      } catch (error) {
-                        console.log("error", error);
-                      }
-                    }
-                  }
-                  if (!isSuccessRoute) {
-                    setIsredirectCanceled(false);
-                  } else {
-                    const url =
-                      updatedDoc.updatedPdfDetails?.[0]?.SignedUrl ||
-                      updatedDoc.updatedPdfDetails?.[0]?.URL;
-                    const fileAdapter =
-                          "";
-                    const isCompleted = updatedDoc.updatedPdfDetails?.[0]
-                      ?.IsCompleted
-                      ? `&completed=true`
-                      : "";
-                    const params =
-                          `docid=${updatedDoc.updatedPdfDetails[0].objectId}&docurl=${encodeURIComponent(url)}${isCompleted}${fileAdapter}`;
-                    window.location.href = `/success?${params}`;
-                  }
+                  resSign.data &&
+                    (await processAfterSignComplete({
+                      docId,
+                      contactId,
+                      signedFileUrl: resSign.data,
+                      expiryDate: expiry
+                    }));
                 } else {
                   setIsUiLoading(false);
                   setIsAlert({
@@ -995,6 +847,189 @@ function PdfRequestFiles(
       }
     }
   }
+  // ----------------------------------------------------------
+  // Shared post-signing success handler.
+  // Mirrors the block that runs after `resSign.status === "success"`
+  // in the native signing flow (embedWidgetsData).
+  // Used by: native signing, QES modal completion, and QES
+  // redirect-back. All state variables are accessed from the
+  // component closure (pdfDetails, sendmail, sendInOrder, etc.).
+  //
+  // Parameters:
+  //   docId       – contracts_Document objectId
+  //   contactId   – the signer who just signed
+  //   signedFileUrl – the newly signed PDF URL (set as SignedUrl)
+  //   expiryDate  – (optional) expiry date for email template
+  // ----------------------------------------------------------
+  const processAfterSignComplete = async ({
+    docId,
+    contactId,
+    signedFileUrl,
+    expiryDate,
+    mailContext = {}
+  }) => {
+    setPdfUrl(signedFileUrl);
+    setIsSigned(true);
+    setSignedSigners([]);
+    setUnSignedSigners([]);
+    const isSuccessRoute = pdfDetails?.[0]?.RedirectUrl
+      ? false
+      : window.location?.pathname?.includes("load");
+    const updatedDoc = await getDocumentDetails(
+      docId,
+      true,
+      isSuccessRoute,
+      contactId
+    );
+    if (!updatedDoc?.updatedPdfDetails) return;
+    const signedDocument = updatedDoc.updatedPdfDetails[0];
+    const effectiveExtUserId =
+      mailContext.extUserId ||
+      signedDocument?.ExtUserPtr?.objectId ||
+      extUserId;
+    // --- Email next signer (same logic as native flow) ---
+    const index = updatedDoc.updatedPdfDetails?.[0]?.Signers.findIndex(
+      (x) => x.objectId === contactId
+    );
+    const removePrefill =
+      updatedDoc.updatedPdfDetails?.[0]?.Placeholders?.filter(
+        (x) => x.Role !== "prefill"
+      );
+    let newIndex = index + 1;
+    const usermail = {
+      Email: removePrefill[newIndex]?.email || ""
+    };
+    const user = usermail?.Email
+      ? usermail
+      : updatedDoc.updatedPdfDetails?.[0]?.Signers[newIndex];
+    if (
+      sendmail !== "false" &&
+      updatedDoc.updatedPdfDetails?.[0]?.SendinOrder === true
+    ) {
+      const mailBody =
+            tenantMailTemplate?.body;
+      const mailSubject =
+            tenantMailTemplate?.subject;
+      const requestBody =
+        updatedDoc.updatedPdfDetails?.[0]?.RequestBody || mailBody;
+      const requestSubject =
+        updatedDoc.updatedPdfDetails?.[0]?.RequestSubject || mailSubject;
+      if (user) {
+        const addExtraDays = signedDocument?.TimeToCompleteDays || 15;
+        let expDate = expiryDate || signedDocument?.ExpiryDate?.iso;
+        if (!expiryDate) {
+          const d = new Date();
+          d.setDate(d.getDate() + addExtraDays);
+          expDate = d;
+        }
+        const newDate = new Date(expDate);
+        const localExpireDate = newDate.toLocaleDateString("en-US", {
+          day: "numeric",
+          month: "long",
+          year: "numeric"
+        });
+        let senderEmail =
+          signedDocument?.SenderMail || signedDocument?.ExtUserPtr?.Email;
+        let senderPhone = signedDocument?.ExtUserPtr?.Phone;
+        const senderName =
+          signedDocument?.SenderName ||
+          signedDocument?.ExtUserPtr?.Name;
+        const documentName = signedDocument?.Name;
+        try {
+          const url = `${localStorage.getItem("baseUrl")}functions/sendmailv3`;
+          const headers = {
+            "Content-Type": "application/json",
+            "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
+            sessionToken: localStorage.getItem("accesstoken")
+          };
+          const objectId = user?.objectId;
+          const hostUrl = window.location.origin;
+          let encodeBase64;
+          if (objectId) {
+            encodeBase64 = btoa(`${docId}/${user.Email}/${objectId}`);
+          } else {
+            encodeBase64 = btoa(`${docId}/${user.Email}`);
+          }
+          let signPdf =
+                `${hostUrl}/login/${encodeBase64}`;
+          const orgName = signedDocument?.ExtUserPtr?.Company
+            ? signedDocument?.ExtUserPtr?.Company
+            : "";
+          let replaceVar;
+          if (
+            requestBody &&
+            requestSubject
+          ) {
+            const replacedRequestBody = requestBody.replace(/"/g, "'");
+            const htmlReqBody =
+              "<html><head><meta http-equiv='Content-Type' content='text/html; charset=UTF-8' /></head><body>" +
+              replacedRequestBody +
+              "</body></html>";
+            const variables = {
+              document_title: documentName,
+              note: signedDocument?.Note,
+              sender_name: senderName,
+              sender_mail: senderEmail,
+              sender_phone: senderPhone,
+              receiver_name: user?.Name || "",
+              receiver_email: user.Email,
+              receiver_phone: user?.Phone || "",
+              expiry_date: localExpireDate,
+              company_name: orgName,
+              signing_url: signPdf
+            };
+            replaceVar = replaceMailVaribles(
+              requestSubject,
+              htmlReqBody,
+              variables
+            );
+          }
+          const mailparam = {
+            note: signedDocument?.Note || "",
+            senderName: senderName,
+            senderMail: senderEmail,
+            title: documentName,
+            organization: orgName,
+            localExpireDate: localExpireDate,
+            signingUrl: signPdf
+          };
+          const mailParams = {
+            replyto: senderEmail || "",
+            extUserId: effectiveExtUserId,
+            recipient: user.Email,
+            subject: replaceVar?.subject
+              ? replaceVar?.subject
+              : mailTemplate(mailparam).subject,
+            from:
+              signedDocument?.SenderName ||
+              senderEmail,
+            html: replaceVar?.body
+              ? replaceVar?.body
+              : mailTemplate(mailparam).body
+          };
+          await axios.post(url, mailParams, { headers: headers });
+        } catch (error) {
+          console.log("error", error);
+        }
+      }
+    }
+    // --- Redirect or success-page logic ---
+    if (!isSuccessRoute) {
+      setIsredirectCanceled(false);
+    } else {
+      const url =
+        updatedDoc.updatedPdfDetails?.[0]?.SignedUrl ||
+        updatedDoc.updatedPdfDetails?.[0]?.URL;
+      const fileAdapter =
+            "";
+      const isCompleted = updatedDoc.updatedPdfDetails?.[0]?.IsCompleted
+        ? `&completed=true`
+        : "";
+      const params =
+            `docid=${updatedDoc.updatedPdfDetails[0].objectId}&docurl=${encodeURIComponent(url)}${isCompleted}${fileAdapter}`;
+      window.location.href = `/success?${params}`;
+    }
+  };
   const handleSignPdf = async () => {
     setIsUiLoading(true);
       await embedWidgetsData();
@@ -1137,11 +1172,11 @@ function PdfRequestFiles(
     }
   ];
   //function for get pdf page details
- const pageDetails = async (pdf) => {
-  const pdfWHObj = await getOriginalWH(pdf);
-  setPdfOriginalWH(pdfWHObj);
-  setPdfLoad(true);
-};
+  const pageDetails = async (pdf) => {
+    const pdfWHObj = await getOriginalWH(pdf);
+    setPdfOriginalWH(pdfWHObj);
+    setPdfLoad(true);
+  };
   //function for change page
   function changePage(offset) {
     setPageNumber((prevPageNumber) => prevPageNumber + offset);
@@ -1350,7 +1385,7 @@ function PdfRequestFiles(
           isChecked={handleDontShow}
         />
       ),
-      position: "top",
+      position: "bottom",
       styles: { fontSize: "13px" }
     };
     //checking if signed by user component exist then add signed by tour step
@@ -1768,7 +1803,6 @@ function PdfRequestFiles(
       setShowSignPagenumber(sortedPagenumber);
     }
   };
-
   const RedirectNotice = () => {
     return !isredirectCanceled && redirectUrl ? (
       <div
@@ -1802,6 +1836,12 @@ function PdfRequestFiles(
   const handleDownload = async () => {
       setIsCompleted((prev) => ({ ...prev, isModal: false }));
       setIsDownloadModal(true);
+  };
+
+  const handleCloseCompletedModal = () => {
+    setIsUiLoading(false);
+    setIsLoading({ isLoad: false });
+    setIsCompleted((prev) => ({ ...prev, isModal: false }));
   };
   return (
     <>
@@ -1841,7 +1881,7 @@ function PdfRequestFiles(
                       ? "none"
                       : "auto"
                 }}
-                 className={`${
+                className={`os-editor-artboard ${
                       isGuestSignFlow
                       ? "border-[0.5px] border-gray-300"
                       : "op-card"
@@ -1951,7 +1991,7 @@ function PdfRequestFiles(
                   signedUrl={pdfDetails?.[0]?.SignedUrl || ""}
                 />
                 {/* pdf render view */}
-                <div className="w-full md:w-[57%] flex mr-4">
+                <div className="os-pdf-stage w-full md:w-[57%] flex mr-4">
                   <PdfTools
                     clickOnZoomIn={clickOnZoomIn}
                     clickOnZoomOut={clickOnZoomOut}
@@ -1978,10 +2018,9 @@ function PdfRequestFiles(
                     {/* this modal is used show this document is already sign */}
                     <ModalUi
                       isOpen={isCompleted.isModal}
+                      portalToBody
                       title={t("document-signed")}
-                      handleClose={() =>
-                        setIsCompleted((prev) => ({ ...prev, isModal: false }))
-                      }
+                      handleClose={handleCloseCompletedModal}
                       reduceWidth={
                         !isCompleted?.message &&
                         "md:min-w-[440px] md:max-w-[400px]"
@@ -2107,6 +2146,7 @@ function PdfRequestFiles(
                       pdfBase64={pdfBase64Url}
                       isGuestSignFlow={isGuestSignFlow}
                     />
+
                     <div
                       ref={divRef}
                       data-tut="pdfArea"
@@ -2163,7 +2203,7 @@ function PdfRequestFiles(
                   </div>
                 </div>
 
-                <div className="w-full md:w-[23%] bg-base-100 overflow-y-auto hide-scrollbar ">
+                <div className="os-recipient-rail w-full md:w-[23%] bg-base-100 overflow-y-auto hide-scrollbar ">
                   <div className={`max-h-screen`}>
                     <div className="w-full hidden md:inline-block">
                       {signedSigners.length > 0 && (
