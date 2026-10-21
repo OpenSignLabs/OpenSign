@@ -13,6 +13,7 @@ const path = require("node:path");
 const runtimeKeys = [
   "APP_LOGIN_ILLUSTRATION_URL",
   "REACT_APP_SERVERURL",
+  "REACT_APP_APPID",
   "REACT_APP_LOGO_URL",
   "REACT_APP_SHOW_REGION_SELECTOR",
   "REACT_APP_SHOW_APP_SWITCHER",
