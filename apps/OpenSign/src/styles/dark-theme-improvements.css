@@ -4,26 +4,26 @@
 [data-theme="opensigndark"] {
   /* Primary button disabled state */
   .op-btn-primary:disabled {
-    background-color: #3C3C3C !important;
-    color: #CCCCCC !important;
-    border-color: #565656 !important;
+    background-color: var(--os-stage-soft) !important;
+    color: var(--os-ink) !important;
+    border-color: var(--os-blue) !important;
     opacity: 1 !important;
     cursor: not-allowed !important;
   }
 
   .op-btn-primary:disabled:hover {
-    background-color: #3C3C3C !important;
-    color: #CCCCCC !important;
-    border-color: #565656 !important;
+    background-color: var(--os-stage-soft) !important;
+    color: var(--os-ink) !important;
+    border-color: var(--os-blue) !important;
     transform: none !important;
     box-shadow: none !important;
   }
 
   /* Secondary button disabled state */
   .op-btn-secondary:disabled {
-    background-color: #2A2A2A !important;
-    color: #999999 !important;
-    border-color: #444444 !important;
+    background-color: var(--os-paper-deep) !important;
+    color: var(--os-ink-muted) !important;
+    border-color: var(--os-blue) !important;
     opacity: 1 !important;
     cursor: not-allowed !important;
   }
@@ -31,8 +31,8 @@
   /* Ghost button disabled state */
   .op-btn-ghost:disabled {
     background-color: transparent !important;
-    color: #666666 !important;
-    border-color: #444444 !important;
+    color: var(--os-ink-muted) !important;
+    border-color: var(--os-paper-deep) !important;
     opacity: 1 !important;
     cursor: not-allowed !important;
   }
@@ -41,61 +41,61 @@
   .icon-disabled,
   .fa-light.text-gray-400,
   .fa-light.text-gray-500 {
-    color: #858585 !important;
+    color: var(--os-ink-muted) !important;
   }
 
   .icon-visible,
   .nav-icon,
   .folder-icon {
-    color: #CCCCCC !important;
+    color: var(--os-ink) !important;
   }
 
   /* Muted/inactive icons with better visibility */
   .muted-icon,
   .inactive-icon {
-    color: #999999 !important;
+    color: var(--os-ink-muted) !important;
   }
 
   /* Hover states for better interactivity */
-  .hover\\:bg-gray-200:hover {
-    background-color: #2A2A2A !important;
+  [class~="hover:bg-gray-200"]:hover {
+    background-color: var(--os-stage-soft) !important;
   }
 
-  .hover\\:text-gray-600:hover {
-    color: #E5E7EB !important;
+  [class~="hover:text-gray-600"]:hover {
+    color: var(--os-ink) !important;
   }
 
   /* Form elements in disabled state */
   .op-input:disabled,
   .op-select:disabled,
   .op-textarea:disabled {
-    background-color: #2A2A2A !important;
-    color: #999999 !important;
-    border-color: #444444 !important;
+    background-color: var(--os-stage-soft) !important;
+    color: var(--os-ink-muted) !important;
+    border-color: var(--os-blue) !important;
     cursor: not-allowed !important;
   }
 
   /* Dropdown menu items */
   .dropdown-item {
-    color: #E5E7EB !important;
+    color: var(--os-ink) !important;
   }
 
   .dropdown-item:hover {
-    background-color: #2A2A2A !important;
-    color: #FFFFFF !important;
+    background-color: var(--os-stage-soft) !important;
+    color: var(--os-ink) !important;
   }
 
   /* Better text contrast for various elements */
   .text-gray-600 {
-    color: #CCCCCC !important;
+    color: var(--os-ink) !important;
   }
 
   .text-gray-500 {
-    color: #999999 !important;
+    color: var(--os-ink-muted) !important;
   }
 
   .text-gray-400 {
-    color: #858585 !important;
+    color: var(--os-ink-muted) !important;
   }
 
   /* Status indicators with better visibility */
@@ -105,15 +105,15 @@
 
   /* Tooltip improvements */
   .op-tooltip {
-    background-color: #1F2937 !important;
-    color: #E5E7EB !important;
-    border-color: #4B5563 !important;
+    background-color: var(--os-stage) !important;
+    color: var(--os-ink) !important;
+    border-color: var(--os-blue) !important;
   }
 
   /* Card and panel borders */
   .op-card,
   .border-gray-300 {
-    border-color: #2C2C2C !important;
+    border-color: var(--os-paper-deep) !important;
   }
 
   /* Loading states */
@@ -125,7 +125,7 @@
   .op-btn:focus-visible,
   .op-input:focus-visible,
   .op-select:focus-visible {
-    outline: 2px solid #007ACC !important;
+    outline: 2px solid var(--os-red-soft) !important;
     outline-offset: 2px !important;
   }
 }
@@ -134,10 +134,10 @@
 [data-theme="opensigncss"] {
   /* Keep original colors for light mode */
   .icon-disabled {
-    color: #9CA3AF;
+    color: #9ca3af;
   }
-  
+
   .icon-visible {
-    color: #6B7280;
+    color: #6b7280;
   }
 }

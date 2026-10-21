@@ -1,5 +1,46 @@
 import { setDocumentCount } from '../../utils/CountUtils.js';
 
+export async function getOwnedDocumentFolder(folder, user, extUser) {
+  if (!folder) return null;
+  const folderId = folder?.objectId || folder?.id;
+  const isParsePointer = folder?.__type === 'Pointer' || typeof folder?.get === 'function';
+  if (!isParsePointer || folder?.className !== 'contracts_Document' || !folderId) {
+    throw new Parse.Error(Parse.Error.OBJECT_NOT_FOUND, 'Folder not found.');
+  }
+
+  const folderQuery = new Parse.Query('contracts_Document');
+  folderQuery.equalTo('objectId', folderId);
+  folderQuery.equalTo('Type', 'Folder');
+  folderQuery.equalTo('CreatedBy', user);
+  folderQuery.notEqualTo('IsArchive', true);
+  const ownedFolder = await folderQuery.first({ useMasterKey: true });
+  if (!ownedFolder) {
+    throw new Parse.Error(Parse.Error.OBJECT_NOT_FOUND, 'Folder not found.');
+  }
+
+  // ExtUserPtr was added to folder records after production folders already
+  // existed. CreatedBy is the canonical ownership check; only reject a
+  // populated legacy pointer when it points at a different account.
+  const folderExtUser =
+    typeof ownedFolder.get === 'function' ? ownedFolder.get('ExtUserPtr') : ownedFolder.ExtUserPtr;
+  const folderExtUserId = folderExtUser?.id || folderExtUser?.objectId;
+  const extUserId = extUser?.id || extUser?.objectId;
+  if (folderExtUserId && folderExtUserId !== extUserId) {
+    throw new Parse.Error(Parse.Error.OBJECT_NOT_FOUND, 'Folder not found.');
+  }
+  return ownedFolder;
+}
+
+export function getDocumentSenderIdentity(extUser) {
+  if (extUser?.get('UseNameAsSender') !== true) {
+    return { senderName: '', senderMail: '' };
+  }
+  return {
+    senderName: extUser.get('Name') || '',
+    senderMail: extUser.get('Email') || '',
+  };
+}
+
 export default async function createDocumentFromApp(request) {
   const doc = request.params?.document;
 
@@ -21,15 +62,39 @@ export default async function createDocumentFromApp(request) {
   const AutomaticReminders =
     doc?.AutomaticReminders !== undefined ? doc?.AutomaticReminders : false;
   const NotifyOnSignatures = doc.NotifyOnSignatures !== undefined ? doc.NotifyOnSignatures : false;
+  let currentExtUser = null;
 
   try {
+    const extUserQuery = new Parse.Query('contracts_Users');
+    extUserQuery.equalTo('UserId', {
+      __type: 'Pointer',
+      className: '_User',
+      objectId: request.user.id,
+    });
+    currentExtUser = await extUserQuery.first({ useMasterKey: true });
+    if (!currentExtUser) {
+      throw new Parse.Error(Parse.Error.OBJECT_NOT_FOUND, 'User not found.');
+    }
+    const ownedFolder = await getOwnedDocumentFolder(doc.Folder, request.user, currentExtUser);
+    const { senderName, senderMail } = getDocumentSenderIdentity(currentExtUser);
+
     const docCls = new Parse.Object('contracts_Document');
 
     docCls.set('Name', doc?.Name || 'untitled document');
     docCls.set('URL', doc?.URL);
-    docCls.set('ExtUserPtr', doc.ExtUserPtr);
-    docCls.set('CreatedBy', doc.CreatedBy);
     docCls.set('OriginIp', request?.headers?.['x-real-ip'] || '');
+    docCls.set('ExtUserPtr', currentExtUser);
+    docCls.set('CreatedBy', request.user);
+    if (ownedFolder) {
+      docCls.set('Folder', ownedFolder);
+    }
+    if (senderName) {
+      docCls.set('SenderName', senderName);
+    }
+    if (senderMail) {
+      docCls.set('SenderMail', senderMail);
+    }
+
     if (doc.Description) {
       docCls.set('Description', doc.Description);
     }
@@ -89,7 +154,7 @@ export default async function createDocumentFromApp(request) {
     const docRes = await docCls.save(null, { useMasterKey: true });
 
     // update documentCount in Users and tenant account
-    setDocumentCount(doc?.ExtUserPtr?.id);
+    setDocumentCount(currentExtUser.id);
 
     return docRes;
   } catch (error) {

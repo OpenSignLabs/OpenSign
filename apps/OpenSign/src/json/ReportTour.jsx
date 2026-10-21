@@ -1,4 +1,19 @@
 import { Trans } from "react-i18next";
+import { getRuntimeConfig } from "../constant/runtimeConfig";
+import {
+  hasExplicitRuntimeConfig,
+  resolveRuntimeLink,
+  resolveRuntimeUrls
+} from "../constant/deploymentRuntime";
+
+const runtimeConfig = getRuntimeConfig();
+const runtimeUrls = resolveRuntimeUrls(runtimeConfig, {
+  explicit: hasExplicitRuntimeConfig()
+});
+const templateHelpUrl = resolveRuntimeLink(
+  runtimeUrls.docs,
+  "https://docs.opensignlabs.com/docs/help/Templates/manage-templates"
+);
 
 export const templateReportTour = [
   {
@@ -27,7 +42,7 @@ export const templateReportTour = [
         Share, etc.
         <a
           className="cursor-pointer op-text-primary"
-          href="https://docs.opensignlabs.com/docs/help/Templates/manage-templates"
+          href={templateHelpUrl}
           target="_blank"
           rel="noopener noreferrer"
         >

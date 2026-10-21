@@ -200,73 +200,108 @@ function PdfTools(props) {
     <>
       <span
         data-tut="pdftools"
-        className="hidden h-max md:flex flex-col gap-1 text-center md:w-[5%] mt-[42px]"
+        className="os-pdf-tools hidden h-max md:flex flex-col gap-0 text-center md:w-[5%] mt-[42px]"
       >
         {!props.isDisableEditTools && (
           <>
-            <span
+            <input
+              type="file"
+              className="hidden"
+              accept="application/pdf"
+              ref={mergePdfInputRef}
+              onChange={handleFileUpload}
+            />
+            <button
+              type="button"
+              aria-label={t("add-pages")}
               className="bg-gray-50 px-[4px] 2xl:py-[10px] cursor-pointer"
               onClick={() => mergePdfInputRef.current.click()}
               title={t("add-pages")}
             >
-              <input
-                type="file"
-                className="hidden"
-                accept="application/pdf"
-                ref={mergePdfInputRef}
-                onChange={handleFileUpload}
-              />
-              <i className="fa-light fa-plus text-gray-500 2xl:text-[25px]"></i>
-            </span>
-            <span
+              <i
+                className="fa-light fa-plus text-gray-500 2xl:text-[25px]"
+                aria-hidden="true"
+              ></i>
+            </button>
+            <button
+              type="button"
+              aria-label={t("delete-page")}
               className="bg-gray-50 px-[4px] 2xl:py-[10px] cursor-pointer"
               onClick={handleDeletePage}
               title={t("delete-page")}
             >
-              <i className="fa-light fa-trash text-gray-500 2xl:text-[25px]"></i>
-            </span>
-            <span
+              <i
+                className="fa-light fa-trash text-gray-500 2xl:text-[25px]"
+                aria-hidden="true"
+              ></i>
+            </button>
+            <button
+              type="button"
+              aria-label={t("reorder-pages")}
               className="bg-gray-50 px-[4px] 2xl:py-[10px] cursor-pointer"
               onClick={handleReorderPages}
               title={t("reorder-pages")}
             >
-              <i className="fa-light fa-list-ol text-gray-500 2xl:text-[25px]"></i>
-            </span>
+              <i
+                className="fa-light fa-list-ol text-gray-500 2xl:text-[25px]"
+                aria-hidden="true"
+              ></i>
+            </button>
           </>
         )}
-        <span
+        <button
+          type="button"
+          aria-label={t("zoom-in")}
           className="bg-gray-50 px-[4px] 2xl:py-[10px] cursor-pointer"
           onClick={handleZoomIn}
           title={t("zoom-in")}
         >
-          <i className="fa-light fa-magnifying-glass-plus text-gray-500 2xl:text-[25px]"></i>
-        </span>
+          <i
+            className="fa-light fa-magnifying-glass-plus text-gray-500 2xl:text-[25px]"
+            aria-hidden="true"
+          ></i>
+        </button>
 
         {!props.isDisableEditTools && (
           <>
-            <span
+            <button
+              type="button"
+              aria-label={t("rotate-right")}
               className="bg-gray-50 px-[4px] 2xl:py-[10px] cursor-pointer"
               onClick={handleRotate}
               title={t("rotate-right")}
             >
-              <i className="fa-light fa-rotate-right text-gray-500 2xl:text-[25px]"></i>
-            </span>
-            <span
+              <i
+                className="fa-light fa-rotate-right text-gray-500 2xl:text-[25px]"
+                aria-hidden="true"
+              ></i>
+            </button>
+            <button
+              type="button"
+              aria-label={t("rotate-left")}
               className="bg-gray-50 px-[4px] 2xl:py-[10px] cursor-pointer"
               title={t("rotate-left")}
               onClick={handleAntiRotate}
             >
-              <i className="fa-light fa-rotate-left text-gray-500 2xl:text-[25px]"></i>
-            </span>
+              <i
+                className="fa-light fa-rotate-left text-gray-500 2xl:text-[25px]"
+                aria-hidden="true"
+              ></i>
+            </button>
           </>
         )}
-        <span
+        <button
+          type="button"
+          aria-label={t("zoom-out")}
           className="bg-gray-50 px-[4px] 2xl:py-[10px] cursor-pointer"
           onClick={handleZoomOut}
           title={t("zoom-out")}
         >
-          <i className="fa-light fa-magnifying-glass-minus text-gray-500 2xl:text-[30px]"></i>
-        </span>
+          <i
+            className="fa-light fa-magnifying-glass-minus text-gray-500 2xl:text-[30px]"
+            aria-hidden="true"
+          ></i>
+        </button>
       </span>
 
       <ModalUi

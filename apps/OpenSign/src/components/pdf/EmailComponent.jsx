@@ -96,7 +96,7 @@ function EmailComponent({
     <div>
       {/* isEmail */}
       {isEmail && (
-        <ModalUi isOpen showHeader={false}>
+        <ModalUi isOpen showHeader={false} portalToBody>
           {isLoading && (
             <div className="absolute w-full h-full flex flex-col justify-center items-center z-[20] bg-[#e6f2f2]/70">
               <Loader />

@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useMemo } from "react";
+import { useState, useRef, useEffect, useMemo, useCallback } from "react";
 import { PDFDocument } from "pdf-lib";
 import "../styles/signature.css";
 import Parse from "parse";
@@ -7,6 +7,7 @@ import axios from "axios";
 import RenderAllPdfPage from "../components/pdf/RenderAllPdfPage";
 import EmailComponent from "../components/pdf/EmailComponent";
 import WidgetComponent from "../components/pdf/WidgetComponent";
+import PdfDeclineModal from "../primitives/PdfDeclineModal";
 import {
   getTenantDetails,
   contractDocument,
@@ -36,9 +37,7 @@ import {
   addWidgetSelfsignOptions,
   getOriginalWH,
   signatureTypes,
-  isEmptyValue,
-  flattenPdf,
-  base64ToArrayBuffer
+  isEmptyValue
 } from "../constant/Utils";
 import { useParams } from "react-router";
 import Tour from "../primitives/Tour";
@@ -133,6 +132,7 @@ function SignYourSelf() {
   const [pdfLoad, setPdfLoad] = useState(false);
   const [isAlert, setIsAlert] = useState({ isShow: false, alertMessage: "" });
   const [isDontShow, setIsDontShow] = useState(true);
+  const [isDeclined, setIsDeclined] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
   const [isCelebration, setIsCelebration] = useState(false);
   const [pdfArrayBuffer, setPdfArrayBuffer] = useState("");
@@ -179,6 +179,7 @@ function SignYourSelf() {
     );
   const jsonSender = JSON.parse(senderUser);
 
+
   useEffect(() => {
     dispatch(resetWidgetState([]));
     if (documentId) {
@@ -217,6 +218,12 @@ function SignYourSelf() {
       if (documentData && documentData.length > 0) {
         setOwner(documentData?.[0]?.ExtUserPtr);
         setPdfDetails(documentData);
+        // Declined/revoked check — show decline modal and let PDF load behind it
+        if (documentData[0]?.IsDeclined) {
+          setIsDeclined(true);
+          // Don't return — let the function continue to load the PDF so content
+          // renders behind the decline modal (same pattern as SelfSign/PdfRequestFiles)
+        }
         const placeholders =
           documentData[0]?.Placeholders?.length > 0
             ? documentData[0]?.Placeholders
@@ -355,14 +362,6 @@ function SignYourSelf() {
       (data) => data.pageNumber === pageNumber
     );
     const dragTypeValue = item?.text ? item.text : monitor.type;
-    const widgetValue = getWidgetValue(dragTypeValue);
-    const widgetTypeExist = [
-      "name",
-      "company",
-      "job title",
-      "email",
-      cellsWidget
-    ].includes(dragTypeValue);
     const containerScale = getContainerScale(
       pdfOriginalWH,
       pageNumber,
@@ -490,7 +489,6 @@ function SignYourSelf() {
       setFontSize(12);
       setFontColor("black");
     }
-    dispatch(setIsShowModal({ [key]: true }));
     setCurrWidgetsDetails({ ...dropObj, pageNumber: pageNumber });
   };
 
@@ -642,7 +640,8 @@ function SignYourSelf() {
         widgetKey,
         tourPageNumber;
       try {
-        const isSignatureExist = xyPosition?.some((p) =>
+        let isQesDocument = false;
+        let isSignatureExist = xyPosition?.some((p) =>
           p?.pos?.some((x) => x?.type === "signature")
         );
         if (!isSignatureExist) {
@@ -656,7 +655,7 @@ function SignYourSelf() {
 
         for (let i = 0; i < xyPosition?.length; i++) {
           tourPageNumber = xyPosition[i]?.pageNumber;
-          const requiredWidgets = xyPosition[i].pos.filter(
+          let requiredWidgets = xyPosition[i].pos.filter(
             (position) => position.type !== "checkbox"
           );
           if (requiredWidgets && requiredWidgets?.length > 0) {
@@ -1067,7 +1066,9 @@ function SignYourSelf() {
                 fontSize:
                   fontSize || currWidgetsDetails?.options?.fontSize || 12,
                 fontColor:
-                  fontColor || currWidgetsDetails?.options?.fontColor || "black",
+                  fontColor ||
+                  currWidgetsDetails?.options?.fontColor ||
+                  "black",
               }
             };
           }
@@ -1213,6 +1214,26 @@ function SignYourSelf() {
     setIsCheckbox(false);
   };
 
+  const handleDeclineMssg = () => {
+    const user = pdfDetails[0]?.DeclineBy?.email;
+    const reason = pdfDetails[0]?.DeclineReason;
+    return (
+      <div>
+        {t("decline-alert-3")}
+        {user && (
+          <div className="mt-2">
+            <span className="font-medium">{t("decline-by")}</span> : {user}
+          </div>
+        )}
+        {reason && (
+          <div className="mt-2">
+            <span className="font-medium">{t("reason")}</span> : {reason}
+          </div>
+        )}
+      </div>
+    );
+  };
+
   const handleCellsSettingSave = (data) => {
     // ensure font and color are updated before applying widget changes
     if (data?.fontSize !== undefined) setFontSize(data.fontSize);
@@ -1306,7 +1327,7 @@ function SignYourSelf() {
               />
             </div>
           )}
-          <div className="relative op-card overflow-hidden flex flex-col md:flex-row justify-between bg-base-300">
+          <div className="os-editor-artboard relative op-card overflow-hidden flex flex-col md:flex-row justify-between bg-base-300">
             {isUiLoading && (
               <div className="absolute h-full w-full z-[999] flex flex-col justify-center items-center bg-[#e6f2f2]/80">
                 <Loader />
@@ -1325,6 +1346,11 @@ function SignYourSelf() {
                 handleResend={handleResend}
               />
             )}
+            <PdfDeclineModal
+              show={isDeclined}
+              headMsg={t("document-declined")}
+              bodyMssg={handleDeclineMssg()}
+            />
             {/* this component used for UI interaction and show their functionality */}
             {pdfLoad && !isCompleted && (
               <Tour
@@ -1357,7 +1383,7 @@ function SignYourSelf() {
               isMergePdfBtn={!pdfDetails?.[0]?.IsCompleted}
               pdfDetails={pdfDetails}
             />
-            <div className="w-full md:w-[57%] flex mr-4">
+            <div className="os-pdf-stage w-full md:w-[57%] flex mr-4">
               <PdfTools
                 clickOnZoomIn={clickOnZoomIn}
                 clickOnZoomOut={clickOnZoomOut}
@@ -1465,7 +1491,11 @@ function SignYourSelf() {
                   signerPos={xyPosition}
                   pdfBase64={pdfBase64Url}
                 />
-                <div ref={divRef} data-tut="reactourSecond" className="h-fit">
+                <div
+                  ref={divRef}
+                  data-tut="reactourSecond"
+                  className="h-fit"
+                >
                   {containerWH?.width && (
                     <RenderPdf
                       pageNumber={pageNumber}
@@ -1517,7 +1547,7 @@ function SignYourSelf() {
                 </div>
               </div>
             </div>
-            <div className="w-full md:w-[23%] bg-base-100 overflow-y-auto hide-scrollbar">
+            <div className="os-recipient-rail w-full md:w-[23%] bg-base-100 overflow-y-auto hide-scrollbar">
               <div className="max-h-screen">
                 {!isCompleted ? (
                   <WidgetComponent

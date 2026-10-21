@@ -1,5 +1,5 @@
-import { appName } from '../../Utils.js';
 import sendMailWithAttachment from './sendMailWithAttachment.js';
+import { escapeHtml, renderDocumentEmail, resolveBrandContext } from '../../utils/brandContext.js';
 
 export default async function forwardDoc(request) {
   try {
@@ -27,7 +27,8 @@ export default async function forwardDoc(request) {
       const _docRes = docRes?.toJSON();
       const docName = _docRes.Name;
       const extUserId = _docRes?.ExtUserPtr?.objectId;
-      const TenantAppName = appName;
+      const brand = resolveBrandContext({});
+      const TenantAppName = brand.productName;
       const from = _docRes?.SenderName || _docRes?.ExtUserPtr?.Email;
       const replyTo = _docRes?.SenderMail || _docRes?.ExtUserPtr?.Email;
       const senderName = _docRes?.SenderName || _docRes?.ExtUserPtr?.Name;
@@ -35,10 +36,6 @@ export default async function forwardDoc(request) {
       try {
         let mailRes;
         for (let i = 0; i < recipients.length; i++) {
-          const logo = `<img src='https://qikinnovation.ams3.digitaloceanspaces.com/logo.png' height='50' style='padding:20px'/>`;
-
-          const themeColor = '#47a3ad';
-
           let params = {
             extUserId: extUserId,
             pdfName: docName,
@@ -47,11 +44,12 @@ export default async function forwardDoc(request) {
             subject: `${senderName} has signed the doc - ${docName}`,
             replyto: replyTo || '',
             from: from,
-            html:
-              `<html><head><meta http-equiv='Content-Type' content='text/html; charset=UTF-8'/></head><body><div style='background-color:#f5f5f5;padding:20px'><div style='background-color:white'><div>` +
-              `${logo}</div><div style='padding:2px;font-family:system-ui;background-color:${themeColor}'><p style='font-size:20px;font-weight:400;color:white;padding-left:20px'>Document Copy</p></div><div>` +
-              `<p style='padding:20px;font-family:system-ui;font-size:14px'>A copy of the document <strong>${docName}</strong> is attached to this email. Kindly download the document from the attachment.</p>` +
-              `</div></div><div><p>This is an automated email from ${TenantAppName}. For any queries regarding this email, please contact the sender ${replyTo} directly.</p></div></div></body></html>`,
+            html: renderDocumentEmail({
+              context: brand,
+              heading: 'Document Copy',
+              contentHtml: `<p style='padding:20px;font-family:system-ui;font-size:14px'>A copy of the document <strong>${escapeHtml(docName)}</strong> is attached to this email. Kindly download the document from the attachment.</p>`,
+              senderEmail: replyTo,
+            }),
           };
           mailRes = await sendMailWithAttachment(params);
           // console.log('mailRes', mailRes);

@@ -13,9 +13,10 @@ const Submenu = ({ item, closeSidebar, toggleSubmenu, submenuOpen }) => {
   return (
     <li role="none" className="my-0.5">
       <button
+        type="button"
         onClick={() => toggleSubmenu(item.title)}
-        className="flex gap-x-5 items-center justify-start text-left p-3 text-base-content hover:text-base-content focus:bg-base-300 hover:bg-base-300 hover:no-underline focus:outline-none"
-        aria-expanded={submenuOpen}
+        className="os-submenu-button flex gap-x-5 items-center justify-start text-left p-3 text-base-content hover:text-base-content focus:bg-base-300 hover:bg-base-300 hover:no-underline"
+        aria-expanded={Boolean(submenuOpen[title])}
         aria-haspopup="true"
         aria-controls={`submenu-${title}`}
       >
@@ -47,11 +48,11 @@ const Submenu = ({ item, closeSidebar, toggleSubmenu, submenuOpen }) => {
                     : `/${childItem.objectId}`
                 }
                 className={({ isActive }) =>
-                  `${isActive && selectedMenu ? "bg-base-300 text-base-content" : ""} pl-4 flex items-center gap-x-5 py-2 text-sm cursor-pointer text-base-content hover:text-base-content focus:bg-base-300 hover:bg-base-300 hover:no-underline focus:outline-none`
+                  `${isActive && selectedMenu ? "bg-base-300 text-base-content" : ""} os-menu-link pl-4 flex items-center gap-x-5 py-2 text-sm cursor-pointer text-base-content hover:text-base-content focus:bg-base-300 hover:bg-base-300 hover:no-underline`
                 }
                 onClick={() => closeSidebar(childItem.title)}
                 role="menuitem"
-                tabIndex={submenuOpen ? 0 : -1}
+                tabIndex={submenuOpen[title] ? 0 : -1}
               >
                 <span className="w-[18px] h-[18px] flex justify-center">
                   <i

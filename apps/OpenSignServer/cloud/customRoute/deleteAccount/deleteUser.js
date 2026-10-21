@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { cloudServerUrl, generateId, serverAppId } from '../../../Utils.js';
+import { resolveBrandContext } from '../../../utils/brandContext.js';
 import { deleteContactsInBatch, deleteDataFiles, deleteInBatches } from './deleteFileUrl.js';
 import { MAX_ATTEMPTS } from './deleteUtils.js';
 const serverUrl = cloudServerUrl;

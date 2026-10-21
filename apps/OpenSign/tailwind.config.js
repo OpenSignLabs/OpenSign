@@ -80,69 +80,69 @@ module.exports = {
     themes: [
       {
         opensigndark: {
-          primary: "#007ACC", // VS Code blue - CTA & highlight color
-          "primary-content": "#FFFFFF",
+          primary: "#2F6FDE",
+          "primary-content": "#F7F9FC",
 
-          secondary: "#1F2937", // Sidebar background (darker slate)
-          "secondary-content": "#E5E7EB",
+          secondary: "#16275C",
+          "secondary-content": "#F7F9FC",
 
-          accent: "#4A9EFF", // Lighter VS Code blue for hover, minor CTA
-          "accent-content": "#FFFFFF",
+          accent: "#E0A030",
+          "accent-content": "#16275C",
 
-          neutral: "#3C3C3C", // VS Code inactive/disabled element background
-          "neutral-content": "#CCCCCC", // VS Code inactive text color
+          neutral: "#142942",
+          "neutral-content": "#f1f5fa",
 
-          "base-100": "#121212", // App background
-          "base-200": "#181818", // Slight elevation (cards)
-          "base-300": "#1E1E1E", // Further elevated items (panels)
-          "base-content": "#F3F4F6", // Main text color (soft white)
+          "base-100": "#16263b",
+          "base-200": "#0b2347",
+          "base-300": "#294764",
+          "base-content": "#f1f5fa",
 
-          info: "#2563EB", // For info panels like "Out for signature"
-          success: "#22C55E", // Optional: for completed docs or alerts
-          warning: "#FBBF24",
-          error: "#EF4444",
+          info: "#2b6099",
+          success: "#4a8fca",
+          warning: "#e2657b",
+          error: "#f07b8e",
 
-          "--rounded-btn": "1.9rem",
+          "--rounded-btn": "0.7rem",
           "--tab-border": "2px",
           "--tab-radius": "0.7rem",
 
           // Custom CSS variables for icon and button states
-          "--icon-color": "#CCCCCC",
-          "--icon-color-muted": "#999999",
-          "--icon-color-disabled": "#858585",
-          "--btn-disabled-bg": "#3C3C3C",
-          "--btn-disabled-color": "#CCCCCC",
-          "--btn-disabled-border": "#565656",
+          "--icon-color": "#f1f5fa",
+          "--icon-color-muted": "#b3c1d2",
+          "--icon-color-disabled": "#788da7",
+          "--btn-disabled-bg": "#294764",
+          "--btn-disabled-color": "#b3c1d2",
+          "--btn-disabled-border": "#456483",
 
           // Optional polish
           "--navbar-padding": "0.8rem",
-          "--border-color": "#2C2C2C", // Card/table separation
-          "--tooltip-color": "#1F2937"
+          "--border-color": "#456483",
+          "--tooltip-color": "#06162f"
         }
       },
       {
         opensigncss: {
-          primary: "#002864",
-          "primary-content": "#cacccf",
-          secondary: "#29354a",
-          "secondary-content": "#c8d1e0",
-          accent: "#E10032",
-          "accent-content": "#ffd8d5",
-          neutral: "#c1ccdb",
-          "neutral-content": "#111312",
-          "base-100": "#ffffff",
-          "base-200": "#dedede",
-          "base-300": "#bebebe",
-          "base-content": "#161616",
-          info: "#00b6ff",
-          "info-content": "#f5f5f4",
-          success: "#00a96e",
-          "success-content": "#f5f5f4",
-          warning: "#ffbe00",
-          "warning-content": "#ccd9e8",
-          error: "#ffa1a7",
-          "error-content": "#16090a",
-          "--rounded-btn": "1.9rem",
+          primary: "#2F6FDE",
+          "primary-content": "#f7f9fc",
+          secondary: "#16275C",
+          "secondary-content": "#f7f9fc",
+          accent: "#E0A030",
+          "accent-content": "#16275C",
+          neutral: "#142942",
+          "neutral-content": "#f7f9fc",
+          "base-100": "#f7f9fc",
+          "base-200": "#edf2f8",
+          "base-300": "#d8e2ee",
+          "base-content": "#142942",
+          info: "#2b6099",
+          "info-content": "#f7f9fc",
+          success: "#4a8fca",
+          "success-content": "#f7f9fc",
+          warning: "#e2657b",
+          "warning-content": "#142942",
+          error: "#d62f4f",
+          "error-content": "#f7f9fc",
+          "--rounded-btn": "0.7rem",
           "--tab-border": "2px",
           "--tab-radius": "0.7rem"
         }

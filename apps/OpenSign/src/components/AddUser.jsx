@@ -125,7 +125,14 @@ const AddUser = (props) => {
           } catch (err) {
             console.log("err", err);
             setIsFormLoader(false);
-            props.showAlert("danger", t("something-went-wrong-mssg"));
+            props.showAlert(
+              "danger",
+              t(
+                err.code === Parse.Error.EMAIL_TAKEN
+                  ? "user-already-exist"
+                  : "something-went-wrong-mssg"
+              )
+            );
           }
         } else {
           props.showAlert("danger", t("something-went-wrong-mssg"));

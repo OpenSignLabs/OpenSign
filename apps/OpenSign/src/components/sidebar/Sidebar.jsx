@@ -6,13 +6,16 @@ import dp from "../../assets/images/dp.png";
 import sidebarList, { subSetting } from "../../json/menuJson";
 import { useNavigate } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 import { useWindowSize } from "../../hook/useWindowSize";
 import {
   setSelectedMenu,
   toggleSidebar
 } from "../../redux/reducers/sidebarReducer";
+import { getSidebarNavigationLabel } from "../../constant/brandPresentation";
 
 const Sidebar = () => {
+  const { t } = useTranslation();
   const { width } = useWindowSize();
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -21,6 +24,7 @@ const Sidebar = () => {
   const [submenuOpen, setSubmenuOpen] = useState(false);
   const username = localStorage.getItem("username");
   const image = localStorage.getItem("profileImg") || dp;
+  const sidebarNavigationLabel = getSidebarNavigationLabel();
   const tenantname = localStorage.getItem("Extand_Class")
     ? JSON.parse(localStorage.getItem("Extand_Class"))?.[0]?.Company
     : "";
@@ -63,7 +67,7 @@ const Sidebar = () => {
 
   const toggleSubmenu = (title) => {
     dispatch(setSelectedMenu(false));
-    setSubmenuOpen({ [title]: !submenuOpen[title] });
+    setSubmenuOpen((previous) => ({ [title]: !previous[title] }));
   };
 
   const handleMenuItem = () => {
@@ -77,46 +81,41 @@ const Sidebar = () => {
   };
   return (
     <aside
-      className={`absolute max-lg:min-h-screen lg:relative bg-base-100 overflow-y-auto transition-all z-[500] shadow-lg hide-scrollbar
+      className={`os-sidebar os-shell-sidebar absolute inset-y-0 lg:relative overflow-y-auto transition-all z-[500] shadow-lg hide-scrollbar
      ${isOpen ? "w-full md:w-64" : "w-0"}`}
     >
-      <div className="flex px-2 py-3 gap-2 items-center shadow-md">
-        <div
+      <div className="os-sidebar-identity flex px-2 py-3 gap-2 items-center shadow-md">
+        <button
+          type="button"
           onClick={() => handleProfile()}
-          className="w-[75px] h-[75px] rounded-full ring-[2px] ring-offset-2 ring-gray-400 overflow-hidden cursor-pointer"
+          aria-label={t("profile")}
+          className="os-sidebar-avatar"
         >
-          <img
-            className="w-full h-full object-contain"
-            src={image}
-            alt="Profile"
-          />
-        </div>
-        <div>
-          <p
+          <img className="os-sidebar-avatar-image" src={image} alt="Profile" />
+        </button>
+        <div className="os-sidebar-identity-info">
+          <button
+            type="button"
             onClick={handleProfile}
-            className="text-[14px] font-bold text-base-content cursor-pointer"
+            className="os-sidebar-identity-button os-sidebar-identity-name"
           >
             {username}
-          </p>
-          <p
+          </button>
+          <button
+            type="button"
             onClick={handleProfile}
-            className={`cursor-pointer text-[12px] text-base-content ${
-              tenantname ? "mt-2" : ""
-            }`}
+            className="os-sidebar-identity-button os-sidebar-identity-tenant"
           >
             {tenantname}
-          </p>
+          </button>
         </div>
       </div>
       <nav
-        className="op-menu op-menu-sm"
-        aria-label="OpenSign Sidebar Navigation"
+        className="os-sidebar-nav op-menu op-menu-sm"
+        aria-label={sidebarNavigationLabel}
+        role="menubar"
       >
-        <ul
-          className="text-sm"
-          role="menubar"
-          aria-label="OpenSign Sidebar Navigation"
-        >
+        <ul className="text-sm">
           {menuList.map((item) =>
             !item.children ? (
               <Menu

@@ -39,8 +39,7 @@ const EditTemplate = ({
     Note: template?.Note || "",
     Description: template?.Description || "",
     SendinOrder: template?.SendinOrder ? `${template?.SendinOrder}` : "false",
-    SendInOrderStrict:
-      template?.SendInOrderStrict === true ? "true" : "false",
+    SendInOrderStrict: template?.SendInOrderStrict === true ? "true" : "false",
     AutomaticReminders: template?.AutomaticReminders || false,
     RemindOnceInEvery: template?.RemindOnceInEvery || 5,
     IsEnableOTP: template?.IsEnableOTP ? `${template?.IsEnableOTP}` : "false",
@@ -193,8 +192,7 @@ const EditTemplate = ({
       SaveFileSize(buffer.length, pdfUrl, tenantId, userId);
     }
     const isChecked = formData.SendinOrder === "true" ? true : false;
-    const isStrictOrder =
-      isChecked && formData.SendInOrderStrict === "true";
+    const isStrictOrder = isChecked && formData.SendInOrderStrict === "true";
     const isTourEnabled = formData?.IsTourEnabled === "false" ? false : true;
     const AutoReminder = formData?.AutomaticReminders || false;
     const IsEnableOTP = formData.IsEnableOTP === "true" ? true : false;
@@ -443,10 +441,7 @@ const EditTemplate = ({
                       })
                     }
                   />
-                  <span
-                    className="text-[12px]"
-                    title={t("strict-order-help")}
-                  >
+                  <span className="text-[12px]" title={t("strict-order-help")}>
                     {t("strict-order")}
                   </span>
                 </div>

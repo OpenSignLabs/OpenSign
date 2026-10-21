@@ -1,12 +1,9 @@
-import { appName } from '../../Utils.js';
 import sendSystemMail from './sendSystemMail.js';
+import { escapeHtml, renderDocumentEmail, resolveBrandContext } from '../../utils/brandContext.js';
 
 async function sendDeclineMail(doc, publicUrl, userId, reason) {
   try {
-    const TenantAppName = appName;
-    const logo =
-      "<img src='https://qikinnovation.ams3.digitaloceanspaces.com/logo.png' height='50' style='padding:20px'/>";
-
+    const brand = resolveBrandContext({});
     const removePrefill =
       doc?.Placeholders?.length > 0 && doc?.Placeholders?.filter(x => x?.Role !== 'prefill');
     const signUser =
@@ -21,18 +18,20 @@ async function sendDeclineMail(doc, publicUrl, userId, reason) {
     const signerEmail = signUser?.signerPtr?.Email || signUser?.email || '';
     const viewDocUrl = `${publicUrl}/recipientSignPdf/${doc.objectId}`;
     const subject = `Document "${pdfName}" has been declined by ${signerName}`;
-    const body =
-      "<html><head><meta http-equiv='Content-Type' content='text/html; charset=UTF-8'/></head><body><div style='background-color:#f5f5f5;padding:20px'><div style='background-color:white'>" +
-      `<div>${logo}</div><div style='padding:2px;font-family:system-ui;background-color:#47a3ad'><p style='font-size:20px;font-weight:400;color:white;padding-left:20px'>Document declined by ${signerName}</p>` +
-      `</div><div style='padding:20px;font-family:system-ui;font-size:14px'><p>Dear ${creatorName},</p>` +
-      `<p>${pdfName} has been declined by ${signerName} "${signerEmail}" on ${new Date().toLocaleDateString()}.</p>` +
-      `<p>Decline Reason: ${reason || 'Not specified'}</p>` +
-      `<p><a href=${viewDocUrl} target=_blank>View Document</a></p></div></div><div><p>This is an automated email from ${TenantAppName}. For any queries regarding this email, ` +
-      `please contact the sender ${creatorEmail} directly.</p></div></div></body></html>`;
+    const body = renderDocumentEmail({
+      context: brand,
+      heading: `Document declined by ${signerName}`,
+      contentHtml:
+        `<div style='padding:20px;font-family:system-ui;font-size:14px'><p>Dear ${escapeHtml(creatorName)},</p>` +
+        `<p>${escapeHtml(pdfName)} has been declined by ${escapeHtml(signerName)} "${escapeHtml(signerEmail)}" on ${new Date().toLocaleDateString()}.</p>` +
+        `<p>Decline Reason: ${escapeHtml(reason || 'Not specified')}</p>` +
+        `<p><a href='${escapeHtml(viewDocUrl)}' target=_blank>View Document</a></p></div>`,
+      senderEmail: creatorEmail,
+    });
 
     const params = {
       extUserId: sender.objectId,
-      from: TenantAppName,
+      from: brand.senderName,
       recipient: creatorEmail,
       subject: subject,
       pdfName: pdfName,
@@ -48,7 +47,7 @@ export default async function declinedocument(request) {
   const reason = request.params?.reason || '';
   const userId = request.params.userId;
   const declineBy = { __type: 'Pointer', className: '_User', objectId: userId };
-  const publicUrl = request.headers.public_url;
+  let publicUrl = request.headers.public_url;
   if (!docId) {
     throw new Parse.Error(Parse.Error.SCRIPT_FAILED, 'missing parameter docId.');
   }

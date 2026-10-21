@@ -86,7 +86,9 @@ export const handleDisplaySignerList = async (
       users = [
         ...users,
         {
-          value: element?.signerObjId || element?.Id,
+          // Keep the placeholder ID as the form value. The parent uses this
+          // ID to update the role; signerObjId is only the current contact.
+          value: element?.Id,
           label: label || "",
           role: element.Role
         }
