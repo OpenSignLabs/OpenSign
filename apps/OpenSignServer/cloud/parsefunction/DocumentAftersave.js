@@ -43,6 +43,11 @@ async function DocumentAftersave(request) {
     documentQuery.include('ExtUserPtr.TenantId');
 
     const doc = await documentQuery.get(objId, { useMasterKey: true });
+    // OriginIp is independent of the folder type: every document must record
+    // who created it, because the completion certificate reads it.
+    if (!originIp && ip) {
+      doc.set('OriginIp', ip);
+    }
     if (folder === undefined || folder === 'AIDoc') {
       // ExpiryDate
       const timeToCompleteDays =
@@ -54,11 +59,6 @@ async function DocumentAftersave(request) {
         const expiryDate = new Date(createdAt);
         expiryDate.setDate(expiryDate.getDate() + timeToCompleteDays);
         doc.set('ExpiryDate', expiryDate);
-      }
-
-      // OriginIp
-      if (!originIp) {
-        doc.set('OriginIp', ip);
       }
 
       // Automatic reminders

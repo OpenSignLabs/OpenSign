@@ -57,6 +57,9 @@ export default async function generateCertificatebydocId(req) {
       'ExtUserPtr,Signers,AuditTrail.UserPtr,Placeholders,ExtUserPtr.TenantId,ExtUserPtr.UserId'
     );
     const docRes = await getDocument.get(docId, { useMasterKey: true });
+    // OriginIp is recorded at creation time by DocumentAftersave from the
+    // creator's request. Do not write it here: this endpoint is reachable by
+    // the recipient, so the value would be theirs.
 
     if (docRes && docRes?.get('IsCompleted') && !docRes?.get('CertificateUrl')) {
       const _docRes = JSON.parse(JSON.stringify(docRes));
