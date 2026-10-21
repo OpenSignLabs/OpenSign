@@ -259,7 +259,19 @@ function Placeholder(props) {
             props.setXyPosition(updatesignerPos);
           }
           props?.closeWidgetTour?.();
-          dispatch(setIsShowModal({ [props.pos.key]: true }));
+          // Inline editing: text widgets are edited in-field; only open the
+          // modal for non-text widgets (signature, image, stamp, etc.).
+          const textTypes = [
+            "text",
+            textInputWidget,
+            "name",
+            "company",
+            "job title",
+            "email"
+          ];
+          if (!textTypes.includes(props.pos.type)) {
+            dispatch(setIsShowModal({ [props.pos.key]: true }));
+          }
       }
     }
     //placeholder, template flow
@@ -279,7 +291,11 @@ function Placeholder(props) {
       } else if (props?.data?.Role === "prefill") {
         props?.handleClosePrefillTour?.();
         props?.closeWidgetTour?.();
-        dispatch(setIsShowModal({ [props.pos.key]: true }));
+        // Inline editing: only open the settings modal via the gear icon,
+        // not on plain click, so value editing happens in the field itself.
+        if (props?.isNeedSign) {
+          dispatch(setIsShowModal({ [props.pos.key]: true }));
+        }
         props.setUniqueId(props?.data?.Id);
         props?.setRoleName("prefill");
       }
