@@ -70,28 +70,73 @@ export async function getSignedUrl(request) {
 
     if (docId || templateId) {
       try {
+        const query = new Parse.Query(docId ? 'contracts_Document' : 'contracts_Template');
+        query.equalTo('objectId', docId ? docId : templateId);
+        query.include('ExtUserPtr.TenantId');
+        if (templateId) {
+          // Widget assets (image/draw) live inside the template placeholders.
+          query.include('Placeholders');
+        }
+        query.notEqualTo('IsArchive', true);
+        const res = await query.first({ useMasterKey: true });
+        if (!res) {
+          throw new Parse.Error(Parse.Error.OBJECT_NOT_FOUND, 'Document not found.');
+        }
+
+        const _resDoc = res?.toJSON();
+        // Ensure user is authenticated if OTP is required
+        if (_resDoc?.IsEnableOTP) {
+          const isAuth = await isAuthenticated(request?.user);
+          if (!isAuth) {
+            throw new Parse.Error(
+              Parse.Error.INVALID_SESSION_TOKEN,
+              'User is not authenticated.'
+            );
+          }
+        }
+
+        // Bind the requested URL to the fetched document/template to prevent
+        // arbitrary-object presigning (including /files/ token minting).
+        // Compare by basename to tolerate query strings / trailing slashes.
+        const basename = (u) => String(u || '').split('?')[0].split('/').pop();
+        const allowedUrls = [
+          _resDoc?.URL,
+          _resDoc?.SignedUrl,
+          _resDoc?.CertificateUrl,
+        ].filter(Boolean);
+        // Templates also keep image/draw widget assets inside their placeholders,
+        // and the bulk-send flow asks for a signed URL of those assets.
+        if (templateId && Array.isArray(_resDoc?.Placeholders)) {
+          _resDoc.Placeholders.forEach((holder) => {
+            const pages = Array.isArray(holder?.placeHolder) ? holder.placeHolder : [];
+            pages.forEach((page) => {
+              const widgets = Array.isArray(page?.pos) ? page.pos : [];
+              widgets.forEach((widget) => {
+                [widget?.options?.response, widget?.options?.defaultValue].forEach(
+                  (value) => {
+                    if (typeof value === 'string' && value && !value.startsWith('data:')) {
+                      allowedUrls.push(value);
+                    }
+                  }
+                );
+              });
+            });
+          });
+        }
+        // A record with no allowed URL must deny, otherwise any /files/ path
+        // could be signed through a folder record.
+        const urlBase = basename(url);
+        const isAllowed = allowedUrls.some((u) => basename(u) === urlBase);
+        if (!isAllowed) {
+          throw new Parse.Error(
+            Parse.Error.OPERATION_FORBIDDEN,
+            'URL not associated with this document.'
+          );
+        }
+
         if (url?.includes('/files/')) {
           return presignedlocalUrl(url);
         } else if (useLocal !== 'true') {
-          const query = new Parse.Query(docId ? 'contracts_Document' : 'contracts_Template');
-          query.equalTo('objectId', docId ? docId : templateId);
-          query.include('ExtUserPtr.TenantId');
-          query.notEqualTo('IsArchive', true);
-          const res = await query.first({ useMasterKey: true });
-          if (!res) return url;
-
-          const _resDoc = res?.toJSON();
-          // Ensure user is authenticated if OTP is required
-          if (_resDoc?.IsEnableOTP) {
-            const isAuth = await isAuthenticated(request?.user);
-            if (!isAuth) {
-              throw new Parse.Error(
-                Parse.Error.INVALID_SESSION_TOKEN,
-                'User is not authenticated.'
-              );
-            }
-          }
-
           const presignedUrl = await getPresignedUrl(url);
           return presignedUrl;
         } else {
@@ -107,7 +152,8 @@ export async function getSignedUrl(request) {
         throw new Parse.Error(Parse.Error.INVALID_SESSION_TOKEN, 'User is not authenticated.');
       } else {
         if (url?.includes('/files/')) {
-          return presignedlocalUrl(url);
+          const presignedUrl = await getPresignedUrl(url);
+          return presignedUrl;
         } else if (useLocal !== 'true') {
           const presignedUrl = await getPresignedUrl(url);
           return presignedUrl;
@@ -128,7 +174,7 @@ export async function getSignedUrl(request) {
 // Function to generate a signed URL with JWT
 export function getSignedLocalUrl(fileUrl, expirationTimeInSeconds) {
   const secretKey = process.env.MASTER_KEY;
-  const exp = expirationTimeInSeconds || 200;
+  const exp = expirationTimeInSeconds || 3600;
   try {
     // Create the payload with the file URL and expiration time
     const payload = {
@@ -150,7 +196,7 @@ export function presignedlocalUrl(signedUrl, expirationTimeInSeconds) {
   if (signedUrl?.includes('/files/')) {
     const fileUrl = signedUrl.split('?')?.[0];
     const secretKey = process.env.MASTER_KEY;
-    const exp = expirationTimeInSeconds || 200;
+    const exp = expirationTimeInSeconds || 3600;
     try {
       // Create the payload with the file URL and expiration time
       const payload = {
@@ -180,7 +226,7 @@ export async function validateSignedLocalUrl(signedUrl) {
     const secretKey = process.env.MASTER_KEY;
     // Now verify the token (validate signature and expiration automatically)
     const decoded = jwt.verify(token, secretKey);
-    // Check if the file URL in the JWT matches the requested file URL
+    // Check if the file URL in the token matches the requested file URL
     const fileUrl = signedUrl.split('?')[0];
     if (decoded.fileUrl !== fileUrl) {
       throw new Error('Invalid file URL in token.');
