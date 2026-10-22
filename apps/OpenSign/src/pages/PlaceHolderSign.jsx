@@ -946,6 +946,35 @@ function PlaceHolderSign() {
   };
 
   const handleSaveDoc = async () => {
+    // Gate sending on sender email verification (mirrors SignyourselfPdf/PdfRequestFiles)
+    try {
+      const currentUser = JSON.parse(
+        localStorage.getItem(
+          `Parse/${localStorage.getItem("parseAppId")}/currentUser`
+        ) || "{}"
+      );
+      let isEmailVerified = currentUser?.emailVerified;
+      const isEnableOTP = pdfDetails?.[0]?.IsEnableOTP || false;
+      if (isEnableOTP && !isEmailVerified) {
+        try {
+          const userQuery = new Parse.Query(Parse.User);
+          const user = await userQuery.get(currentUser?.objectId, {
+            sessionToken: localStorage.getItem("accesstoken")
+          });
+          if (user) isEmailVerified = user?.get("emailVerified");
+        } catch (e) {
+          console.log("err in get email verification ", e);
+        }
+      }
+      if (!isEnableOTP || isEmailVerified) {
+        // proceed
+      } else {
+        alert(t("email-not-verified-send") || t("something-went-wrong-mssg"));
+        return;
+      }
+    } catch (e) {
+      console.log("err checking email verification", e);
+    }
     let isPrefillEmpty = false,
       unfilledTextWidgetId;
     const prefillExist = signerPos?.find((data) => data.Role === "prefill");
