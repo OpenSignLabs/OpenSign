@@ -990,9 +990,19 @@ function PlaceHolderSign() {
 
     let canSaveWithoutSignatureWidget = isPlaceholderExist;
 
-    //checking if there are any signer list which do not have signture widget then show signers name on tour messages
-    if (unassignedWidget.length > 0) {
-      const getSigner = unassignedWidget.map((x, index) => {
+    if (prefillExist && isPrefillEmpty) {
+      setIsSendAlert({ mssg: "prefill", alert: true });
+      setUnSignedWidgetId(unfilledTextWidgetId);
+      return;
+    }
+    if (signersdata?.length === 0) {
+      alert(t("atleast-one-recipient-alert"));
+      return;
+    }
+
+    // signers who do not have a signature widget are named in the confirmation
+    const signerName = unassignedWidget
+      .map((x, index) => {
         const signer = signersdata.find(
           (y) =>
             y.Id === x.Id || (x.signerObjId && y.objectId === x.signerObjId)
@@ -1006,20 +1016,28 @@ function PlaceHolderSign() {
           x.Role ||
           x.Id
         );
-      });
-      const signerName = getSigner.join(", ");
-      setSignersName(signerName);
-      setIsSendAlert({ mssg: "sure", alert: true });
-      setUniqueId(unassignedWidget[0]?.Id);
-      setRoleName("");
+      })
+      .join(", ");
+
+    // Every send is confirmed, and cancelling prevents the document from being
+    // marked as sent.
+    const proceed = window.confirm(
+      t("sure-send-without-widget", {
+        names: signerName,
+        defaultValue: signerName
+          ? `Some recipients (${signerName}) have no signature widget. Send anyway?`
+          : "Send this document for signatures?"
+      })
+    );
+    if (!proceed) {
+      if (unassignedWidget[0]) {
+        setUniqueId(unassignedWidget[0]?.Id);
+        setRoleName("");
+      }
+      return;
     }
 
-    if (prefillExist && isPrefillEmpty) {
-      setIsSendAlert({ mssg: "prefill", alert: true });
-      setUnSignedWidgetId(unfilledTextWidgetId);
-    } else if (signersdata?.length === 0) {
-      alert(t("atleast-one-recipient-alert"));
-    } else if (canSaveWithoutSignatureWidget && unassignedWidget.length === 0) {
+    if (canSaveWithoutSignatureWidget) {
       const IsSignerNotExist = filterPrefill?.filter((x) => !x.signerObjId);
       // below condition is used to hightlight the widget whose value is not provided by signer
       if (IsSignerNotExist && IsSignerNotExist?.length > 0) {
