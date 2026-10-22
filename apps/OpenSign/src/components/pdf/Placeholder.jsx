@@ -35,6 +35,18 @@ import DatePicker from "react-datepicker";
 import DateWidgetModal from "../../primitives/DateWidgetModal";
 import { dateFormat, widgetNamesArr } from "../../utils";
 
+// Widget types whose value is edited directly on the document surface.
+const INLINE_EDIT_TYPES = [
+  "text",
+  textInputWidget,
+  "name",
+  "company",
+  "job title",
+  "email",
+  "dropdown",
+  "checkbox"
+];
+
 /**
  * Custom input UI for DatePicker
  * - Declaring custom input outside resolve issue of the component recreates the input component identity on each state update, which can break re-open behavior after first use
@@ -259,7 +271,10 @@ function Placeholder(props) {
             props.setXyPosition(updatesignerPos);
           }
           props?.closeWidgetTour?.();
-          dispatch(setIsShowModal({ [props.pos.key]: true }));
+          // Inline editing: these widget types are edited in the field itself.
+          if (!INLINE_EDIT_TYPES.includes(props.pos.type)) {
+            dispatch(setIsShowModal({ [props.pos.key]: true }));
+          }
       }
     }
     //placeholder, template flow
@@ -279,7 +294,11 @@ function Placeholder(props) {
       } else if (props?.data?.Role === "prefill") {
         props?.handleClosePrefillTour?.();
         props?.closeWidgetTour?.();
-        dispatch(setIsShowModal({ [props.pos.key]: true }));
+        // Inline editing: only open the value modal for the widget types that
+        // cannot be edited in place (image, draw, stamp, date, signature).
+        if (!INLINE_EDIT_TYPES.includes(props.pos.type)) {
+          dispatch(setIsShowModal({ [props.pos.key]: true }));
+        }
         props.setUniqueId(props?.data?.Id);
         props?.setRoleName("prefill");
       }
@@ -552,6 +571,55 @@ function Placeholder(props) {
               className="fa-light fa-gear icon text-[#188ae2] text-[14px] z-[99] -top-[18px] pointer-events-auto"
             ></i>
           )}
+          {/* mask toggle for text widgets (PandaDoc parity #33) */}
+          {["text", textInputWidget, "name", "company", "job title", "email"].includes(props.pos.type) && (
+            <i
+              className={`fa-light ${props.pos?.options?.isMasked ? "fa-eye-slash" : "fa-eye"} icon text-[#188ae2] -right-[22px] -top-[18px] `}
+              onClick={(e) => {
+                e.stopPropagation();
+                const newMasked = !props.pos?.options?.isMasked;
+                props.setXyPosition((prev) => {
+                  const isSignerList = prev.some((d) => d.signerPtr || d.Role === "prefill");
+                  if (isSignerList) {
+                    const signerId = props.data?.Id || props.uniqueId;
+                    const filterSignerPos = prev.filter((d) => d.Id === signerId);
+                    if (filterSignerPos.length > 0) {
+                      const getPlaceHolder = filterSignerPos[0].placeHolder;
+                      const updatedPlaceHolder = getPlaceHolder.map((ph) => {
+                        if (ph.pageNumber !== props.widgetPageNum) return ph;
+                        const newPos = ph.pos.map((p) =>
+                          p.key === props.pos.key
+                            ? { ...p, options: { ...p.options, isMasked: newMasked } }
+                            : p
+                        );
+                        return { ...ph, pos: newPos };
+                      });
+                      return prev.map((obj) =>
+                        obj.Id === signerId ? { ...obj, placeHolder: updatedPlaceHolder } : obj
+                      );
+                    }
+                  } else {
+                    const updatePos = prev[props.index].pos.map((p) =>
+                      p.key === props.pos.key
+                        ? { ...p, options: { ...p.options, isMasked: newMasked } }
+                        : p
+                    );
+                    return prev.map((obj, ind) =>
+                      ind === props.index ? { ...obj, pos: updatePos } : obj
+                    );
+                  }
+                  return prev;
+                });
+                props.setCurrWidgetsDetails &&
+                  props.setCurrWidgetsDetails({
+                    ...props.pos,
+                    options: { ...props.pos.options, isMasked: newMasked },
+                    pageNumber: props.widgetPageNum
+                  });
+              }}
+              onTouchEnd={(e) => e.stopPropagation()}
+            ></i>
+          )}
           {/* copy icon for all widgets (except QES) */}
             <i
               className="fa-light fa-copy icon text-[#188ae2] right-[12px] -top-[18px] "
@@ -794,7 +862,8 @@ function Placeholder(props) {
             whiteSpace: "pre-wrap",
             overflow: "visible",
             outline: "none",
-            border: "none"
+            border: "none",
+            WebkitTextSecurity: props.pos?.options?.isMasked ? "disc" : "none"
           }}
         >
           {
