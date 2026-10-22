@@ -65,8 +65,13 @@ function Login() {
   };
 
   const showToast = (type, msg) => {
-    setState({ ...state, loading: false, alertType: type, alertMsg: msg });
-    setTimeout(() => setState({ ...state, alertMsg: "" }), 2000);
+    setState((prev) => ({
+      ...prev,
+      loading: false,
+      alertType: type,
+      alertMsg: msg
+    }));
+    setTimeout(() => setState((prev) => ({ ...prev, alertMsg: "" })), 2000);
   };
 
   const checkUserExt = async () => {
@@ -142,7 +147,7 @@ function Login() {
   };
 
   const setThirdpartyLoader = (value) => {
-    setState({ ...state, thirdpartyLoader: value });
+    setState((prev) => ({ ...prev, thirdpartyLoader: value }));
   };
 
   const thirdpartyLoginfn = async (sessionToken) => {
@@ -206,10 +211,10 @@ function Login() {
           logOutUser();
         }
       } catch (error) {
-        console.error("err in fetching extUser", err);
-        showToast("danger", `${err.message}`);
-        const payload = { sessionToken: _user.sessionToken };
-        handleSubmitbtn(payload);
+        console.error("err in fetching extUser", error);
+        showToast("danger", `${error?.message || t("something-went-wrong-mssg")}`);
+        const payload = { sessionToken: _user?.sessionToken };
+        if (payload.sessionToken) handleSubmitbtn(payload);
       } finally {
         setThirdpartyLoader(false);
       }
@@ -277,7 +282,8 @@ function Login() {
 
 
   const handleSubmitbtn = async (e) => {
-    e.preventDefault();
+    // Also called from the recovery path, which has no DOM event.
+    e?.preventDefault?.();
     if (userDetails.Destination && userDetails.Company) {
       setThirdpartyLoader(true);
       const payload = { sessionToken: localStorage.getItem("accesstoken") };
@@ -303,18 +309,15 @@ function Login() {
             email: userInformation.email,
             phone: userInformation?.phone || "",
             company: userDetails.Company,
-            jobTitle: userDetails.JobTitle
+            jobTitle: userDetails.Destination
           };
           localStorage.setItem("userDetails", JSON.stringify(LocalUserDetails));
           thirdpartyLoginfn(userSignUp.sessionToken);
         } else {
-          alert(userSignUp.message);
+          alert(userSignUp?.message || t("something-went-wrong-mssg"));
         }
-      } else if (
-        payload &&
-        payload.message.replace(/ /g, "_") === "Internal_server_err"
-      ) {
-        alert(t("server-error"));
+      } else {
+        alert(t("something-went-wrong-mssg"));
       }
     } else {
       showToast("warning", t("fill-required-details!"));
