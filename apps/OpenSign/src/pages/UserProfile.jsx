@@ -35,6 +35,10 @@ function UserProfile() {
   const [parseAppId] = useState(localStorage.getItem("parseAppId"));
   const [editmode, setEditMode] = useState(false);
   const [name, SetName] = useState(localStorage.getItem("username"));
+  const [email, setEmail] = useState(UserProfile && UserProfile.email);
+  const [originalEmail, setOriginalEmail] = useState(
+    UserProfile && UserProfile.email
+  );
   const [Phone, SetPhone] = useState(UserProfile && UserProfile.phone);
   const [Image, setImage] = useState(localStorage.getItem("profileImg"));
   const [isLoader, setIsLoader] = useState(false);
@@ -82,6 +86,12 @@ function UserProfile() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const emailToSave = (email || "").toLowerCase().trim();
+    // The Save control is type="button", so the input type does not validate.
+    if (!emailToSave || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailToSave)) {
+      alert(t("Please Enter valid email"));
+      return;
+    }
     let phn = Phone,
       res = "";
     if (!res) {
@@ -108,8 +118,14 @@ function UserProfile() {
                   Name: res.name,
                   Phone: res?.phone || ""
                 });
-                alert(t("profile-update-alert"));
-                setEditMode(false);
+                if (emailToSave !== (originalEmail || "").toLowerCase().trim()) {
+                  // The new address has to be verified before it is applied.
+                  await handleSendOTP(emailToSave);
+                  setIsVerifyModal(true);
+                } else {
+                  alert(t("profile-update-alert"));
+                  setEditMode(false);
+                }
                 setIsLoader(false);
                 //navigate("/dashboard/35KBoSgoAK");
               }
@@ -219,7 +235,9 @@ function UserProfile() {
   //`handleVerifyBtn` function is used to send otp on user mail
   const handleVerifyBtn = async () => {
     setIsVerifyModal(true);
-    await handleSendOTP(Parse.User.current().getEmail());
+    const targetEmail =
+      (email || "").toLowerCase().trim() || Parse.User.current().getEmail();
+    await handleSendOTP(targetEmail);
   };
   const handleCloseVerifyModal = async () => {
     setIsVerifyModal(false);
@@ -229,12 +247,48 @@ function UserProfile() {
     e.preventDefault();
     setOtpLoader(true);
     try {
+      const targetEmail =
+        (email || "").toLowerCase().trim() || Parse.User.current().getEmail();
       const resEmail = await Parse.Cloud.run("verifyemail", {
         otp: otp,
-        email: Parse.User.current().getEmail()
+        email: targetEmail
       });
-      if (resEmail?.message === "Email is verified.") {
+      if (
+        resEmail?.message === "Email is verified." ||
+        resEmail?.message === "Email changed and verified."
+      ) {
+        setEmail(targetEmail);
+        setOriginalEmail(targetEmail);
+        localStorage.setItem("userEmail", targetEmail);
+        try {
+          const userInfo = JSON.parse(
+            localStorage.getItem("UserInformation") || "{}"
+          );
+          userInfo.email = targetEmail;
+          localStorage.setItem("UserInformation", JSON.stringify(userInfo));
+        } catch (e) {
+          // ignore
+        }
+        // Keep the in-memory Parse user and the cached profile in sync, so the
+        // sender address used by new requests is the new one.
+        if (Parse.User.current()) {
+          Parse.User.current().set("email", targetEmail);
+          Parse.User.current().set("username", targetEmail);
+        }
+        try {
+          const extUser = JSON.parse(
+            localStorage.getItem("Extand_Class") || "[]"
+          );
+          if (Array.isArray(extUser) && extUser.length && extUser[0]) {
+            extUser[0].Email = targetEmail;
+            extUser[0].NormalizedEmail = targetEmail;
+            localStorage.setItem("Extand_Class", JSON.stringify(extUser));
+          }
+        } catch (e) {
+          // ignore
+        }
         setIsEmailVerified(true);
+        setEditMode(false);
         alert(t("Email-verified-alert-1"));
       } else if (resEmail?.message === "Email is already verified.") {
         setIsEmailVerified(true);
@@ -252,7 +306,9 @@ function UserProfile() {
   const handleResend = async (e) => {
     e.preventDefault();
     setOtpLoader(true);
-    await handleSendOTP(Parse.User.current().getEmail());
+    const targetEmail =
+      (email || "").toLowerCase().trim() || Parse.User.current().getEmail();
+    await handleSendOTP(targetEmail);
     setOtpLoader(false);
     alert(t("otp-sent-alert"));
   };
@@ -260,6 +316,7 @@ function UserProfile() {
   const handleCancel = () => {
     setEditMode(false);
     SetName(localStorage.getItem("username"));
+    setEmail(originalEmail);
     SetPhone(UserProfile && UserProfile.phone);
     setImage(localStorage.getItem("profileImg"));
     setCompany(extendUser && extendUser?.[0]?.Company);
@@ -418,6 +475,20 @@ function UserProfile() {
                         />
                       </div>
                     )}
+                    <div className="os-profile-field">
+                      <label htmlFor="profile-email">{t("email")}</label>
+                      {editmode ? (
+                        <input
+                          id="profile-email"
+                          type="email"
+                          value={email}
+                          className="op-input op-input-bordered os-profile-field-input"
+                          onChange={(e) => setEmail(e.target.value)}
+                        />
+                      ) : (
+                        <p className="os-profile-field-value">{email}</p>
+                      )}
+                    </div>
                     <div className="os-profile-field">
                       <label htmlFor="profile-phone">{t("phone")}</label>
                       {editmode ? (
