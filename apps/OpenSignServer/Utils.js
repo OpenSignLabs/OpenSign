@@ -55,6 +55,9 @@ export const color = [
 ];
 
 export const prefillBlockColor = 'transparent';
+export const normalizeMailSubject = subject =>
+  String(subject || '').replace(/opensign™/gi, 'opensign');
+
 export function replaceMailVaribles(subject, body, variables) {
   let replacedSubject = subject;
   let replacedBody = body;
@@ -68,7 +71,7 @@ export function replaceMailVaribles(subject, body, variables) {
       replacedBody = replacedBody.replace(regex, variables[variable]);
     }
   }
-  const result = { subject: replacedSubject, body: replacedBody };
+  const result = { subject: normalizeMailSubject(replacedSubject), body: replacedBody };
   return result;
 }
 
@@ -684,7 +687,9 @@ export const mailTemplate = param => {
         ? { WhiteLabelAppName: requestedAppName }
         : undefined,
   });
-  const subject = `${param.senderName} has requested you to sign "${param.title}"`;
+  const subject = normalizeMailSubject(
+    `${param.senderName} has requested you to sign "${param.title}"`
+  );
   const logo = renderEmailLogo(brand);
   const senderName = escapeHtml(param.senderName);
   const title = escapeHtml(param.title);

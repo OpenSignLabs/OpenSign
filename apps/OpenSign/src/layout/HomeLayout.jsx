@@ -8,17 +8,22 @@ import Footer from "../components/Footer";
 import Sidebar from "../components/sidebar/Sidebar";
 import PageScrollContainer from "../components/PageScrollContainer";
 import Tour from "../primitives/Tour";
-import axios from "axios";
+import { saveTourStatus } from "../utils/tourStatus";
 import { useDispatch, useSelector } from "react-redux";
 import Parse from "parse";
 import {
   useLocation,
+  Link,
   Outlet
 } from "react-router";
 import Loader from "../primitives/Loader";
 import { useTranslation } from "react-i18next";
 import { sessionStatus } from "../redux/reducers/userReducer";
 import SessionExpiredModal from "../primitives/SessionExpiredModal";
+import {
+  exitLocalQaIdentity,
+  isLocalQaIdentityEnabled
+} from "../qa/localQaIdentity";
 
 const HomeLayout = () => {
   const appName =
@@ -44,6 +49,7 @@ const HomeLayout = () => {
   const [tourConfigs, setTourConfigs] = useState([]);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const tenantId = localStorage.getItem("TenantId");
+  const localQaIdentity = isLocalQaIdentityEnabled();
 
   useEffect(() => {
     const language = localStorage.getItem("i18nextLng");
@@ -53,6 +59,11 @@ const HomeLayout = () => {
   }, []);
 
   useEffect(() => {
+    if (localQaIdentity) {
+      dispatch(sessionStatus(true));
+      setIsLoader(false);
+      return;
+    }
     if (localStorage.getItem("accesstoken")) {
       if (!tenantId) {
         dispatch(sessionStatus(false));
@@ -94,6 +105,10 @@ const HomeLayout = () => {
   }, [tourArr]);
 
   const handleDynamicSteps = () => {
+    if (localQaIdentity) {
+      setIsTour(false);
+      return;
+    }
     const github = runtimeUrls.github;
     if (tourArr && tourArr.length > 0) {
       const resArr = tourArr.map((obj, index) => {
@@ -151,26 +166,18 @@ const HomeLayout = () => {
     const json = JSON.parse(localStorage.getItem("Extand_Class"));
     const extUserId = json && json.length > 0 && json[0].objectId;
 
-    let updatedTourStatus = [];
-    if (tourStatusArr.length > 0) {
-      updatedTourStatus = [...tourStatusArr];
-      const loginTourIndex = tourStatusArr.findIndex(
-        (obj) => obj["loginTour"] === false || obj["loginTour"] === true
-      );
-      if (loginTourIndex !== -1) {
-        updatedTourStatus[loginTourIndex] = { loginTour: true };
-      } else {
-        updatedTourStatus.push({ loginTour: true });
-      }
-    } else {
-      updatedTourStatus = [{ loginTour: true }];
+    try {
+      await saveTourStatus({
+        tourStatus: tourStatusArr,
+        key: "loginTour",
+        serverUrl,
+        appId,
+        sessionToken: localStorage.getItem("accesstoken"),
+        userId: extUserId
+      });
+    } catch (err) {
+      console.error("update login tour status error", err);
     }
-
-    await axios.put(
-      serverUrl + "classes/contracts_Users/" + extUserId,
-      { TourStatus: updatedTourStatus },
-      { headers: { "X-Parse-Application-Id": appId } }
-    );
   };
 
   async function checkTourStatus() {
@@ -187,10 +194,39 @@ const HomeLayout = () => {
     }
   }
 
-  return isValidSession && localStorage.getItem("accesstoken") ? (
+  const leaveLocalQaIdentity = () => {
+    exitLocalQaIdentity();
+    window.location.replace("/");
+  };
+
+  return localQaIdentity ||
+    (isValidSession && localStorage.getItem("accesstoken")) ? (
     <div
       className={`os-app-shell os-scroll-shell${isEditorRoute ? " os-has-editor" : ""} flex flex-col h-screen overflow-hidden`}
     >
+      {localQaIdentity && (
+        <div
+          className="flex shrink-0 flex-wrap items-center justify-between gap-2 bg-amber-100 px-3 py-2 text-xs font-medium text-amber-950"
+          role="status"
+        >
+          <span>
+            Local QA visual identity is active. Backend writes and hosted
+            sign-in are disabled.
+          </span>
+          <div className="flex items-center gap-3">
+            <Link to="/local-qa/translations" className="underline">
+              Translation preview
+            </Link>
+            <button
+              type="button"
+              className="underline"
+              onClick={leaveLocalQaIdentity}
+            >
+              Exit local QA
+            </button>
+          </div>
+        </div>
+      )}
       {/* HEADER */}
       <header className="os-shell-header">
         {!isLoader && <Header setIsLoggingOut={setIsLoggingOut} />}

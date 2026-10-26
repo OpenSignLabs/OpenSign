@@ -2,6 +2,7 @@ import axios from 'axios';
 import { google } from 'googleapis';
 import fs from 'node:fs';
 import https from 'https';
+import { normalizeMailSubject } from '../../Utils.js';
 const clientId = process.env.GOOGLE_CLIENT_ID;
 const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
 // Function to create a Gmail client
@@ -153,7 +154,7 @@ const makeEmail = async (
       bccHeader,
       ccHeader,
       replyToHeader,
-      `Subject: ${subject}\n\n`,
+      `Subject: ${normalizeMailSubject(subject)}\n\n`,
       '--' + boundary + '\n',
       'Content-Type: text/html; charset="UTF-8"\n',
       'MIME-Version: 1.0\n\n',
@@ -171,7 +172,7 @@ const makeEmail = async (
       bccHeader,
       ccHeader,
       replyToHeader,
-      `Subject: ${subject}\n\n`,
+      `Subject: ${normalizeMailSubject(subject)}\n\n`,
       '--' + boundary + '\n',
       'Content-Type: text/html; charset="UTF-8"\n',
       'MIME-Version: 1.0\n\n',

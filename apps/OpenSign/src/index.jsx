@@ -13,7 +13,25 @@ import "./i18n";
 import { ScrollProvider } from "./context/ScrollPdfContext";
 import { applyRuntimeFont } from "./constant/brandPresentation";
 import { getRuntimeConfig } from "./constant/runtimeConfig";
+import {
+  getLocalQaUser,
+  initializeLocalQaIdentity,
+  LOCAL_QA_APP_ID
+} from "./qa/localQaIdentity";
 
+if (
+  import.meta.env.DEV &&
+  import.meta.env.MODE === "local-qa" &&
+  window.__OPENSIGN_LOCAL_QA_STORAGE_READY__ !== true
+) {
+  document.getElementById("root").textContent =
+    "Local QA mode could not establish isolated browser storage. Restart it on localhost with the qa:local script.";
+  throw new Error(
+    "Local QA mode requires isolated session-backed browser storage."
+  );
+}
+
+const localQaIdentityActive = initializeLocalQaIdentity();
 const startupRuntimeConfig = getRuntimeConfig();
 applyRuntimeFont(startupRuntimeConfig);
 document.documentElement.setAttribute(
@@ -23,7 +41,10 @@ document.documentElement.setAttribute(
 
 
 const appId =
-  import.meta.env.VITE_APPID || process.env.REACT_APP_APPID || "opensign";
+  (localQaIdentityActive ? LOCAL_QA_APP_ID : null) ||
+  import.meta.env.VITE_APPID ||
+  process.env.REACT_APP_APPID ||
+  "opensign";
 const serverUrl = serverUrl_fn();
 Parse.initialize(appId);
 Parse.serverURL = serverUrl;
@@ -41,13 +62,25 @@ if (savedTheme === "dark") {
 
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
-root.render(
-  <Provider store={store}>
-    <ScrollProvider>
-      <App />
-    </ScrollProvider>
-  </Provider>
-);
+const renderApp = () =>
+  root.render(
+    <Provider store={store}>
+      <ScrollProvider>
+        <App />
+      </ScrollProvider>
+    </Provider>
+  );
+
+if (localQaIdentityActive) {
+  Parse.User.hydrate(getLocalQaUser())
+    .then(renderApp)
+    .catch((error) => {
+      console.error("Unable to initialize the local QA identity:", error);
+      renderApp();
+    });
+} else {
+  renderApp();
+}
 
 hideUpgradeProgress();
 localStorage.removeItem("showUpgradeProgress");

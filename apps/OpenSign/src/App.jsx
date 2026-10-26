@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { lazyWithRetry, hideUpgradeProgress } from "./utils";
-import { Routes, Route, BrowserRouter } from "react-router";
+import { Routes, Route, BrowserRouter, Navigate } from "react-router";
 import { pdfjs } from "react-pdf";
 import Form from "./pages/Form";
 import Report from "./pages/Report";
@@ -21,6 +21,11 @@ import { serverUrl_fn } from "./constant/appinfo";
 import DocSuccessPage from "./pages/DocSuccessPage";
 import DragProvider from "./components/DragProivder";
 import Title from "./components/Title";
+import LocalQaTranslations from "./qa/LocalQaTranslations";
+import {
+  isLocalQaIdentityEnabled,
+  LOCAL_QA_DASHBOARD_ID
+} from "./qa/localQaIdentity";
 const DebugPdf = lazyWithRetry(() => import("./pages/DebugPdf"));
 const ForgetPassword = lazyWithRetry(() => import("./pages/ForgetPassword"));
 const GuestLogin = lazyWithRetry(() => import("./pages/GuestLogin"));
@@ -66,7 +71,20 @@ function App() {
           <Title />
           <Routes>
             <Route element={<ValidateRoute />}>
-              <Route exact path="/" element={<Lazy Page={Login} />} />
+              <Route
+                exact
+                path="/"
+                element={
+                  isLocalQaIdentityEnabled() ? (
+                    <Navigate
+                      to={`/dashboard/${LOCAL_QA_DASHBOARD_ID}`}
+                      replace
+                    />
+                  ) : (
+                    <Lazy Page={Login} />
+                  )
+                }
+              />
                   <Route path="/addadmin" element={<Lazy Page={AddAdmin} />} />
                   <Route
                     path="/upgrade-2.1"
@@ -90,6 +108,12 @@ function App() {
                 element={<Lazy Page={ForgetPassword} />}
               />
             <Route element={<HomeLayout />}>
+              {isLocalQaIdentityEnabled() && (
+                <Route
+                  path="/local-qa/translations"
+                  element={<LocalQaTranslations />}
+                />
+              )}
                   <Route path="/users" element={<UserList />} />
                   <Route
                     path="/changepassword"

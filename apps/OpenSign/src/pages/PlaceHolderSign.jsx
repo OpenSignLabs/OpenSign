@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import axios from "axios";
+import { saveTourStatus } from "../utils/tourStatus";
 import Parse from "parse";
 import "../styles/signature.css";
 import { PDFDocument } from "pdf-lib";
@@ -1581,34 +1582,15 @@ function PlaceHolderSign() {
     setPlaceholderTour(false);
     setIsDontShow(true);
     if (!checkTourStatus && isDontShow) {
-      let updatedTourStatus = [];
-      if (tourStatus.length > 0) {
-        updatedTourStatus = [...tourStatus];
-        const placeholderIndex = tourStatus.findIndex(
-          (obj) => obj["placeholder"] === false || obj["placeholder"] === true
-        );
-        if (placeholderIndex !== -1) {
-          updatedTourStatus[placeholderIndex] = { placeholder: true };
-        } else {
-          updatedTourStatus.push({ placeholder: true });
-        }
-      } else {
-        updatedTourStatus = [{ placeholder: true }];
-      }
       try {
-        await axios.put(
-          `${localStorage.getItem(
-            "baseUrl"
-          )}classes/contracts_Users/${signerUserId}`,
-          { TourStatus: updatedTourStatus },
-          {
-            headers: {
-              "Content-Type": "application/json",
-              "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
-              sessionToken: localStorage.getItem("accesstoken")
-            }
-          }
-        );
+        await saveTourStatus({
+          tourStatus,
+          key: "placeholder",
+          serverUrl: localStorage.getItem("baseUrl"),
+          appId: localStorage.getItem("parseAppId"),
+          sessionToken: localStorage.getItem("accesstoken"),
+          userId: signerUserId
+        });
         setCheckTourStatus(true);
       } catch (err) {
         console.log("axois err ", err);

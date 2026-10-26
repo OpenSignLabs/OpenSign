@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import https from 'https';
 import formData from 'form-data';
 import Mailgun from 'mailgun.js';
-import { smtpenable, smtpsecure, updateMailCount } from '../../Utils.js';
+import { smtpenable, smtpsecure, normalizeMailSubject, updateMailCount } from '../../Utils.js';
 import { renderComplaintFooter, resolveBrandContext } from '../../utils/brandContext.js';
 import { createTransport } from 'nodemailer';
 import axios from 'axios';
@@ -139,7 +139,7 @@ async function sendMailProvider(params) {
           const messageParams = {
             from: from + ' <' + mailsender + '>',
             to: params.recipient,
-            subject: params.subject,
+            subject: normalizeMailSubject(params.subject),
             text: params.text || 'mail',
             html: params?.html ? params.html + reportMsg : '',
             attachments: smtpenable ? attachment : undefined,
@@ -192,7 +192,7 @@ async function sendMailProvider(params) {
       const messageParams = {
         from: from + ' <' + mailsender + '>',
         to: params.recipient,
-        subject: params.subject,
+        subject: normalizeMailSubject(params.subject),
         text: params.text || 'mail',
         html: params?.html ? params.html + reportMsg : '',
         bcc: params.bcc ? params.bcc : undefined,
