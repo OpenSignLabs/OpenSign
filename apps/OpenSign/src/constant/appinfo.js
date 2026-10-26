@@ -6,6 +6,9 @@ import { hasExplicitRuntimeConfig } from "./deploymentRuntime";
 const runtimeConfig = getRuntimeConfig();
 
 export function serverUrl_fn() {
+  if (window?.__OPENSIGN_LOCAL_QA_IDENTITY__ === true) {
+    return `${window.location.origin}/api/app`;
+  }
   const env = getEnv();
   const runtimeConfig = getRuntimeConfig();
   if (

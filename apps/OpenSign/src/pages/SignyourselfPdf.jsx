@@ -3,7 +3,7 @@ import { PDFDocument } from "pdf-lib";
 import "../styles/signature.css";
 import Parse from "parse";
 import Confetti from "react-confetti";
-import axios from "axios";
+import { saveTourStatus } from "../utils/tourStatus";
 import RenderAllPdfPage from "../components/pdf/RenderAllPdfPage";
 import EmailComponent from "../components/pdf/EmailComponent";
 import WidgetComponent from "../components/pdf/WidgetComponent";
@@ -984,32 +984,16 @@ function SignYourSelf() {
     setSignTour(false);
     setIsDontShow(true);
     if (!checkTourStatus && isDontShow) {
-      let updatedTourStatus = [];
-      if (tourStatus.length > 0) {
-        updatedTourStatus = [...tourStatus];
-        const signyourselfIndex = tourStatus.findIndex(
-          (obj) => obj["signyourself"] === false || obj["signyourself"] === true
-        );
-        if (signyourselfIndex !== -1) {
-          updatedTourStatus[signyourselfIndex] = { signyourself: true };
-        } else {
-          updatedTourStatus.push({ signyourself: true });
-        }
-      } else {
-        updatedTourStatus = [{ signyourself: true }];
-      }
       try {
-        await axios.put(
-          `${localStorage.getItem("baseUrl")}classes/contracts${contractName}/${signerUserId}`,
-          { TourStatus: updatedTourStatus },
-          {
-            headers: {
-              "Content-Type": "application/json",
-              "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
-              sessionToken: localStorage.getItem("accesstoken")
-            }
-          }
-        );
+        await saveTourStatus({
+          tourStatus,
+          key: "signyourself",
+          serverUrl: localStorage.getItem("baseUrl"),
+          appId: localStorage.getItem("parseAppId"),
+          sessionToken: localStorage.getItem("accesstoken"),
+          userId: signerUserId,
+          className: `contracts${contractName}`
+        });
       } catch (err) {
         console.log("axois err ", err);
         alert(t("something-went-wrong-mssg"));

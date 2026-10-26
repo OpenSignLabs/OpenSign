@@ -15,6 +15,10 @@ import Tour from "../primitives/Tour";
 import axios from "axios";
 import Loader from "../primitives/Loader";
 import { useTranslation } from "react-i18next";
+import {
+  closeTour as closeTourAndPersist,
+  isTourDismissed
+} from "../utils/tourStatus";
 
 const DriveBody = lazyWithRetry(
   () => import("../components/opensigndrive/DriveBody")
@@ -479,39 +483,23 @@ function Opensigndrive() {
   };
 
   const closeTour = async () => {
-    setIsTour(false);
-    setShowTourFirstTime(false);
-    if (isDontShow) {
-      const serverUrl = localStorage.getItem("baseUrl");
-      const appId = localStorage.getItem("parseAppId");
-      const json = JSON.parse(localStorage.getItem("Extand_Class"));
-      const extUserId = json && json.length > 0 && json[0].objectId;
-      let updatedTourStatus = [];
-      if (tourStatusArr.length > 0) {
-        updatedTourStatus = [...tourStatusArr];
-        const driveTourIndex = tourStatusArr.findIndex(
-          (obj) => obj["driveTour"] === false || obj["driveTour"] === true
-        );
-        if (driveTourIndex !== -1) {
-          updatedTourStatus[driveTourIndex] = { driveTour: true };
-        } else {
-          updatedTourStatus.push({ driveTour: true });
-        }
-      } else {
-        updatedTourStatus = [{ driveTour: true }];
-      }
-      await axios.put(
-        serverUrl + "classes/contracts_Users/" + extUserId,
-        {
-          TourStatus: updatedTourStatus
-        },
-        {
-          headers: {
-            "X-Parse-Application-Id": appId
-          }
-        }
-      );
-    }
+    const json = isDontShow
+      ? JSON.parse(localStorage.getItem("Extand_Class"))
+      : null;
+    const extUserId = json && json.length > 0 && json[0].objectId;
+    await closeTourAndPersist({
+      onClose: () => {
+        setIsTour(false);
+        setShowTourFirstTime(false);
+      },
+      shouldPersist: isDontShow,
+      tourStatus: tourStatusArr,
+      key: "driveTour",
+      serverUrl: localStorage.getItem("baseUrl"),
+      appId: localStorage.getItem("parseAppId"),
+      sessionToken: localStorage.getItem("accesstoken"),
+      userId: extUserId
+    });
   };
   //function to use check tour status of open sign drive
   async function checkTourStatus() {
@@ -521,8 +509,7 @@ function Opensigndrive() {
       localStorage.setItem("Extand_Class", JSON.stringify([extUser]));
       const tourStatus = extUser?.TourStatus || [];
       setTourStatusArr(tourStatus);
-      const driveTour = tourStatus.find((obj) => obj.driveTour)?.driveTour;
-      setIsTour(!driveTour);
+      setIsTour(!isTourDismissed(tourStatus, "driveTour"));
     } else {
       setIsTour(true);
     }

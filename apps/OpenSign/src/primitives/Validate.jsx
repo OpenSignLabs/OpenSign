@@ -2,11 +2,16 @@ import { useState, useEffect } from "react";
 import Parse from "parse";
 import { Outlet } from "react-router";
 import SessionExpiredModal from "./SessionExpiredModal";
+import { isLocalQaIdentityEnabled } from "../qa/localQaIdentity";
 
 const Validate = () => {
   const [isUserValid, setIsUserValid] = useState(true);
   useEffect(() => {
     (async () => {
+      if (isLocalQaIdentityEnabled()) {
+        setIsUserValid(true);
+        return;
+      }
       if (localStorage.getItem("accesstoken")) {
         try {
           const userDetails = JSON.parse(

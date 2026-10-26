@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import RenderAllPdfPage from "../components/pdf/RenderAllPdfPage";
 import { useParams, useNavigate, Link } from "react-router";
 import axios from "axios";
+import { saveTourStatus } from "../utils/tourStatus";
 import "../styles/signature.css";
 import WidgetComponent from "../components/pdf/WidgetComponent";
 import Tour from "../primitives/Tour";
@@ -1195,32 +1196,15 @@ const TemplatePlaceholder = () => {
     setTemplateTour(false);
     setIsDontShow(true);
     if (!checkTourStatus && isDontShow) {
-      let updatedTourStatus = [];
-      if (tourStatus.length > 0) {
-        updatedTourStatus = [...tourStatus];
-        const templateIndex = tourStatus.findIndex(
-          (obj) => obj["template"] === false || obj["template"] === true
-        );
-        if (templateIndex !== -1) {
-          updatedTourStatus[templateIndex] = { template: true };
-        } else {
-          updatedTourStatus.push({ template: true });
-        }
-      } else {
-        updatedTourStatus = [{ template: true }];
-      }
       try {
-        await axios.put(
-          `${localStorage.getItem("baseUrl")}classes/contracts_Users/${signerUserId}`,
-          { TourStatus: updatedTourStatus },
-          {
-            headers: {
-              "Content-Type": "application/json",
-              "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
-              sessionToken: localStorage.getItem("accesstoken")
-            }
-          }
-        );
+        await saveTourStatus({
+          tourStatus,
+          key: "template",
+          serverUrl: localStorage.getItem("baseUrl"),
+          appId: localStorage.getItem("parseAppId"),
+          sessionToken: localStorage.getItem("accesstoken"),
+          userId: signerUserId
+        });
         setCheckTourStatus(true);
       } catch (err) {
         console.log("axois err ", err);
