@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import pad from "../../assets/images/pad.svg";
 import { Link, useLocation, useNavigate } from "react-router";
 import axios from "axios";
+import { saveTourStatus } from "../../utils/tourStatus";
 import ModalUi from "../../primitives/ModalUi";
 import Alert from "../../primitives/Alert";
 import Tooltip from "../../primitives/Tooltip";
@@ -500,27 +501,18 @@ const TemplatesReport = (props) => {
       const appId = localStorage.getItem("parseAppId");
       const json = JSON.parse(localStorage.getItem("Extand_Class"));
       const extUserId = json && json.length > 0 && json[0].objectId;
-      let updatedTourStatus = [];
-      if (tourStatusArr.length > 0) {
-        updatedTourStatus = [...tourStatusArr];
-        const templateReportIndex = tourStatusArr.findIndex(
-          (obj) =>
-            obj["templateReport"] === false || obj["templateReport"] === true
-        );
-        if (templateReportIndex !== -1) {
-          updatedTourStatus[templateReportIndex] = { templateReport: true };
-        } else {
-          updatedTourStatus.push({ templateReport: true });
-        }
-      } else {
-        updatedTourStatus = [{ templateReport: true }];
+      try {
+        await saveTourStatus({
+          tourStatus: tourStatusArr,
+          key: "templateReport",
+          serverUrl,
+          appId,
+          sessionToken: localStorage.getItem("accesstoken"),
+          userId: extUserId
+        });
+      } catch (err) {
+        console.error("update template report tour status error", err);
       }
-
-      await axios.put(
-        serverUrl + "classes/contracts_Users/" + extUserId,
-        { TourStatus: updatedTourStatus },
-        { headers: { "X-Parse-Application-Id": appId } }
-      );
     }
   };
 

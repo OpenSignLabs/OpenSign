@@ -3,10 +3,12 @@ import Parse from "parse";
 import { Outlet } from "react-router";
 import { saveLanguageInLocal } from "../constant/Utils";
 import { useTranslation } from "react-i18next";
+import { isLocalQaIdentityEnabled } from "../qa/localQaIdentity";
 const ValidateRoute = () => {
   const { i18n } = useTranslation();
   useEffect(() => {
     (async () => {
+      if (isLocalQaIdentityEnabled()) return;
       if (localStorage.getItem("accesstoken")) {
         try {
           // Use the session token to validate the user
