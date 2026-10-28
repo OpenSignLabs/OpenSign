@@ -1,3 +1,4 @@
+import { rememberDocumentAccess, documentAccessParams } from '../utils/documentAccess';
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router";
 import axios from "axios";
@@ -25,6 +26,7 @@ function GuestLogin() {
     userMail?.toLowerCase()?.replace(/\s/g, "")
   );
   const [OTP, setOTP] = useState("");
+  const [accessError, setAccessError] = useState(false);
   const [EnterOTP, setEnterOtp] = useState(false);
   const [loading, setLoading] = useState(false);
   const [isLoading, setIsLoading] = useState({
@@ -47,7 +49,8 @@ function GuestLogin() {
   const navigateToDoc = async (docId, contactId) => {
     try {
       const docDetails = await Parse.Cloud.run("getDocument", {
-        docId: docId
+        docId: docId,
+        ...documentAccessParams(docId)
       });
       if (!docDetails.error) {
         if (sendmail === "false") {
@@ -63,7 +66,9 @@ function GuestLogin() {
         return false;
       }
     } catch (err) {
-      console.log("err while getting doc", err);
+      setIsLoading({ isLoad: false });
+      if (err.code === 209) setEnterOtp(true);
+      else setAccessError(true);
       return false;
     }
   };
@@ -98,6 +103,8 @@ function GuestLogin() {
       const decodebase64 = atob(base64url);
       //split url in array from '/'
       const checkSplit = decodebase64.split("/");
+      rememberDocumentAccess(checkSplit[0], checkSplit[4]);
+      window.history.replaceState(null, "", "/login/document");
       setDocumentId(checkSplit[0]);
       setContact((prev) => ({
         ...prev,
@@ -258,6 +265,7 @@ function GuestLogin() {
     }
   };
 
+  if (accessError) return <main role="alert" className="p-8">{t("document-unavailable", { defaultValue: "This signing link is unavailable or has expired." })}</main>;
   return (
     <div>
 

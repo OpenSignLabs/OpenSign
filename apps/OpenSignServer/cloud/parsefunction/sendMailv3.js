@@ -1,3 +1,4 @@
+import { secureInvitationLinks } from '../../utils/documentAccess.js';
 import formData from 'form-data';
 import Mailgun from 'mailgun.js';
 import { smtpenable, smtpsecure, normalizeMailSubject, updateMailCount } from '../../Utils.js';
@@ -90,6 +91,7 @@ async function sendMailProvider(req) {
 }
 
 async function sendmailv3(req) {
+  await secureInvitationLinks(req);
   const nonCustomMail = await sendMailProvider(req);
   return nonCustomMail;
 }

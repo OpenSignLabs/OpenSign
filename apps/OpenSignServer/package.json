@@ -13,7 +13,8 @@
     "lint-fix": "eslint --cache --fix ./cloud && eslint --cache --fix index.js",
     "prettier": "prettier --write 'cloud/{**/*,*}.js' 'index.js'",
     "start": "node index.js",
-    "watch": "nodemon index.js"
+    "watch": "nodemon index.js",
+    "test:document-access": "node --test tests/document-access.test.js tests/document-access-proxy.test.js"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1038.0",

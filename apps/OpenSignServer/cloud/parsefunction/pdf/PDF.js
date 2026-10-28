@@ -1,3 +1,5 @@
+import { documentAccess, canonicalFileUrl } from '../../../utils/documentAccess.js';
+import { getSignedLocalUrl, getProtectedDocumentFileUrl } from '../getSignedUrl.js';
 import fs from 'node:fs';
 import { createHash } from 'node:crypto';
 import axios from 'axios';
@@ -110,7 +112,7 @@ async function updateDoc(
     if (data.AuditTrail && data.AuditTrail.length > 0) {
       const AuditTrail = JSON.parse(JSON.stringify(data.AuditTrail));
       const existingIndex = AuditTrail.findIndex(
-        entry => entry.UserPtr.objectId === userId && entry.Activity !== 'Created'
+        (entry) => entry.UserPtr.objectId === userId && entry.Activity !== 'Created'
       );
       existingIndex !== -1
         ? (AuditTrail[existingIndex] = { ...AuditTrail[existingIndex], ...obj })
@@ -123,7 +125,7 @@ async function updateDoc(
 
     // Count both Signed and Approved entries; only signer/approver
     // placeholders count toward completion (viewers and prefill excluded).
-    const auditTrail = updateAuditTrail.filter(x => COMPLETION_ACTIVITIES.includes(x.Activity));
+    const auditTrail = updateAuditTrail.filter((x) => COMPLETION_ACTIVITIES.includes(x.Activity));
     let isCompleted = false;
     if (data.Signers && data.Signers.length > 0) {
       const completionRelevant =
@@ -156,7 +158,7 @@ async function sendNotifyMail(doc, signUser, mailProvider, publicUrl) {
   try {
     const brand = resolveBrandContext({});
     const auditTrailCount =
-      doc?.AuditTrail?.filter(x => COMPLETION_ACTIVITIES.includes(x.Activity))?.length || 0;
+      doc?.AuditTrail?.filter((x) => COMPLETION_ACTIVITIES.includes(x.Activity))?.length || 0;
     const completionRelevant =
       doc?.Placeholders?.length > 0 ? doc.Placeholders.filter(isCompletionRelevant) : [];
     const signersCount = completionRelevant?.length;
@@ -204,10 +206,10 @@ async function sendCompletedMail(obj) {
   const brand = resolveBrandContext({});
   let signersMail;
   if (doc?.Signers?.length > 0) {
-    const isOwnerExistsinSigners = doc?.Signers?.find(x => x.Email === sender.Email);
+    const isOwnerExistsinSigners = doc?.Signers?.find((x) => x.Email === sender.Email);
     signersMail = isOwnerExistsinSigners
-      ? doc?.Signers?.map(x => x?.Email)?.join(',')
-      : [...doc?.Signers?.map(x => x?.Email), sender.Email]?.join(',');
+      ? doc?.Signers?.map((x) => x?.Email)?.join(',')
+      : [...doc?.Signers?.map((x) => x?.Email), sender.Email]?.join(',');
   } else {
     signersMail = sender.Email;
   }
@@ -270,8 +272,8 @@ async function sendCompletedMail(obj) {
     subject = replaceVar.subject;
     body = replaceVar.body;
   }
-  const Bcc = doc?.Bcc?.length > 0 ? doc.Bcc.map(x => x.Email) : [];
-  const Cc = doc?.Cc?.length > 0 ? doc.Cc.map(x => x.Email) : [];
+  const Bcc = doc?.Bcc?.length > 0 ? doc.Bcc.map((x) => x.Email) : [];
+  const Cc = doc?.Cc?.length > 0 ? doc.Cc.map((x) => x.Email) : [];
   const updatedBcc = doc?.SenderMail ? [...Bcc, doc?.SenderMail] : Bcc;
   const formatId = doc?.ExtUserPtr?.DownloadFilenameFormat;
   const filename = pdfName?.length > 100 ? pdfName?.slice(0, 100) : pdfName;
@@ -396,30 +398,15 @@ async function PDF(req) {
     const sign = req.params.signature || '';
     const auditActivity = 'Signed';
     let publicUrl = req.headers.public_url;
-    // below bode is used to get info of docId
-    const docQuery = new Parse.Query('contracts_Document');
-    docQuery.include('ExtUserPtr,Signers,ExtUserPtr.TenantId,Bcc,Cc,CreatedBy');
-    docQuery.equalTo('objectId', docId);
-    docQuery.notEqualTo('IsDeclined', true);
-    docQuery.notEqualTo('IsArchive', true);
-    const resDoc = await docQuery.first({ useMasterKey: true });
-    if (!resDoc) {
-      throw new Parse.Error(Parse.Error.OBJECT_NOT_FOUND, 'Document not found.');
-    }
-    const IsEnableOTP = resDoc?.get('IsEnableOTP') || false;
-    // if `IsEnableOTP` is false then we don't have to check authentication
-    if (IsEnableOTP) {
-      if (!req?.user) {
-        throw new Parse.Error(Parse.Error.INVALID_SESSION_TOKEN, 'User is not authenticated.');
-      }
-    }
+    const access = await documentAccess(req, { signing: true });
+    const resDoc = access.document;
     const _resDoc = resDoc?.toJSON();
     let signUser;
     let className;
     // `reqUserId` is send throught pdfrequest signing flow
     if (reqUserId) {
       // to get contracts_Contactbook details for currentuser from reqUserId
-      const _contractUser = _resDoc.Signers.find(x => x.objectId === reqUserId);
+      const _contractUser = _resDoc.Signers.find((x) => x.objectId === reqUserId);
       if (_contractUser) {
         signUser = _contractUser;
         className = 'contracts_Contactbook';
@@ -436,7 +423,7 @@ async function PDF(req) {
     // because owners never sign through this path.
     if (reqUserId && _resDoc?.SendinOrder === true && _resDoc?.SendInOrderStrict === true) {
       const placeholders = Array.isArray(_resDoc?.Placeholders)
-        ? _resDoc.Placeholders.filter(p => p?.Role !== 'prefill')
+        ? _resDoc.Placeholders.filter((p) => p?.Role !== 'prefill')
         : [];
       const myIdx = findPlaceholderIndex(placeholders, reqUserId);
       if (myIdx > 0) {
@@ -476,7 +463,7 @@ async function PDF(req) {
       // Both Signed and Approved entries count toward completion. Only
       // signer/approver placeholders are counted; viewers and prefill are
       // excluded.
-      const auditTrail = updateAuditTrail.filter(x => COMPLETION_ACTIVITIES.includes(x.Activity));
+      const auditTrail = updateAuditTrail.filter((x) => COMPLETION_ACTIVITIES.includes(x.Activity));
       let isCompleted = false;
       if (_resDoc.Signers && _resDoc.Signers.length > 0) {
         const completionRelevant =
@@ -498,7 +485,7 @@ async function PDF(req) {
       let pdfSize = PdfBuffer.length;
       let documentHash;
       if (!req.params.isQES && isCompleted) {
-        const signersName = _resDoc.Signers?.map(x => x.Name + ' <' + x.Email + '>');
+        const signersName = _resDoc.Signers?.map((x) => x.Name + ' <' + x.Email + '>');
         const reason =
           signersName && signersName.length > 0
             ? signersName?.join(', ')
@@ -528,6 +515,8 @@ async function PDF(req) {
 
       if (data && data.imageUrl) {
         // `axios` is used to update signed pdf url in contracts_Document classes for given DocId
+        // Recheck expiry, revocation and recipient status after PDF processing.
+        await documentAccess(req, { signing: true });
         const updatedDoc = await updateDoc(
           req.params.docId, //docId
           data.imageUrl, // SignedUrl
@@ -555,7 +544,17 @@ async function PDF(req) {
         unlinkFile(signedFilePath);
         // console.log(`New Signed PDF created called: ${filePath}`);
         if (updatedDoc.message === 'success') {
-          return { status: 'success', data: data.imageUrl };
+          const scope = access.grant
+            ? { docId, grantId: access.grant.id, recipientId: access.recipientId }
+            : { docId };
+          const ttl = access.grant
+            ? Math.min(160, Math.floor((access.expiresAt - Date.now()) / 1000))
+            : 160;
+          const fileUrl = canonicalFileUrl(data.imageUrl);
+          return { status: 'success', data: fileUrl.includes('/files/')
+              ? getSignedLocalUrl(fileUrl, ttl, scope)
+              : getProtectedDocumentFileUrl(fileUrl, ttl, scope),
+          };
         } else {
           const error = new Error('Please provide required parameters!');
           error.code = 400; // Set the error code (e.g., 400 for bad request)
@@ -569,12 +568,6 @@ async function PDF(req) {
     }
   } catch (err) {
     console.log('Err in signpdf', err);
-    const body = { DebugginLog: err?.message };
-    try {
-      await axios.put(`${docUrl}/${docId}`, body, { headers });
-    } catch (err) {
-      console.log('err in saving debugginglog', err);
-    }
     unlinkFile(pfxname);
     throw err;
   }

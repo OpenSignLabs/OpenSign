@@ -1,7 +1,9 @@
+import { guardDocumentMutation } from '../../utils/documentAccess.js';
 import { MAX_DESCRIPTION_LENGTH, MAX_NAME_LENGTH, MAX_NOTE_LENGTH } from '../../Utils.js';
 import { setDocumentCount } from '../../utils/CountUtils.js';
 
 async function DocumentBeforesave(request) {
+  await guardDocumentMutation(request);
   if (!request.original) {
     const validations = [
       { field: 'Name', max: MAX_NAME_LENGTH },

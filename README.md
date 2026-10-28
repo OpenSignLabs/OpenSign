@@ -177,3 +177,9 @@ We would like to thank all our contributors and users for their support and feed
 
 This project is tested with BrowserStack.
 
+
+## Guest document access
+
+Guest signing invitations use server-issued, recipient-scoped secrets. Client and server must be deployed together; existing unsigned invitations must be reissued. Custom integrations should call the createdocumentaccess cloud function with docId and recipientId, use its returned signUrl, and retain grantId for revokedocumentaccess. Grants last at most seven days and never beyond the document deadline. Expired or revoked guest links cannot read, download, or sign; authenticated archival access remains subject to the document ACL. No additional exposed ports or environment variables are required.
+
+See [SECURITY_PATCH.md](SECURITY_PATCH.md) for API details, compatibility boundaries and validation. Run the targeted server tests with npm run test:document-access from apps/OpenSignServer.

@@ -1,3 +1,4 @@
+import SecureSignerLink from '../components/pdf/SecureSignerLink';
 import { useEffect, useState, useRef } from "react";
 import RenderAllPdfPage from "../components/pdf/RenderAllPdfPage";
 import { useParams, useNavigate, Link } from "react-router";
@@ -1782,54 +1783,7 @@ const TemplatePlaceholder = () => {
     setTimeout(() => setCopied(false), 1500); // Reset copied state after 1.5 seconds
   };
   //function show signer list and share link to share signUrl
-  const handleShareList = () => {
-    const shareLinkList = [];
-    let signerMail = signersdata;
-    for (let i = 0; i < signerMail.length; i++) {
-      const objectId = signerMail[i].objectId;
-      const hostUrl = window.location.origin;
-      const sendMail = false;
-      //encode this url value `${documentId}/${signerMail[i].Email}/${objectId}` to base64 using `btoa` function
-      const encodeBase64 = btoa(
-        `${documentId}/${signerMail[i].Email}/${objectId}/${sendMail}`
-      );
-      let signPdf = `${hostUrl}/login/${encodeBase64}`;
-      shareLinkList.push({
-        signerEmail: signerMail[i].Email,
-        url: signPdf,
-      });
-    }
-    return shareLinkList.map((data, ind) => {
-      return (
-        <div
-          className="flex flex-row justify-between items-center mb-1"
-          key={ind}
-        >
-          {copied && <Alert type="success">{t("copied")}</Alert>}
-          <span className="w-[220px] md:w-[300px] whitespace-nowrap overflow-hidden text-ellipsis  ">
-            {data.signerEmail}
-          </span>
-          <div className="flex flex-row items-center gap-3 ">
-            <button
-              onClick={() => copytoclipboard(data.url)}
-              type="button"
-              className="flex flex-row items-center op-link op-link-primary"
-            >
-              <i className="fa-light fa-copy" />
-              <span className=" hidden md:block ml-1 ">{t("copy-link")}</span>
-            </button>
-            <ShareButton
-              title={t("sign-url")}
-              text={t("sign-url")}
-              url={data.url}
-            >
-              <i className="fa-light fa-share-from-square op-link op-link-secondary no-underline"></i>
-            </ShareButton>
-          </div>
-        </div>
-      );
-    });
-  };
+  const handleShareList = () => (signersdata || []).map((signer) => <SecureSignerLink key={signer.objectId} docId={pdfDetails?.[0]?.objectId} recipientId={signer.objectId} email={signer.Email} />);
   const handleClosePrefillModal = () => {
     setIsPrefillModal(false);
     setIsCreateDocModal(true);

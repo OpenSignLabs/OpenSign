@@ -1,3 +1,5 @@
+import { documentAccess } from '../../utils/documentAccess.js';
+import getDocument from './getDocument.js';
 import { SignPdf } from '@signpdf/signpdf';
 import { P12Signer } from '@signpdf/signer-p12';
 import { pdflibAddPlaceholder } from '@signpdf/placeholder-pdf-lib';
@@ -52,17 +54,13 @@ export default async function generateCertificatebydocId(req) {
   const P12Buffer = Buffer.from(pfxFile, 'base64');
   const certificatePath = `./exports/certificate_${docId}.pdf`;
   try {
-    const getDocument = new Parse.Query('contracts_Document');
-    getDocument.include(
-      'ExtUserPtr,Signers,AuditTrail.UserPtr,Placeholders,ExtUserPtr.TenantId,ExtUserPtr.UserId'
-    );
-    const docRes = await getDocument.get(docId, { useMasterKey: true });
+    const { document: docRes } = await documentAccess(req);
 
     if (docRes && docRes?.get('IsCompleted') && !docRes?.get('CertificateUrl')) {
       const _docRes = JSON.parse(JSON.stringify(docRes));
-      const filteredaudit = _docRes?.AuditTrail?.filter(x => x?.UserPtr?.objectId);
+      const filteredaudit = _docRes?.AuditTrail?.filter((x) => x?.UserPtr?.objectId);
       // Create a reversed copy of the array and find the last object with 'signedOn'
-      const lastObj = [...filteredaudit].reverse().find(obj => obj.hasOwnProperty('SignedOn'));
+      const lastObj = [...filteredaudit].reverse().find((obj) => obj.hasOwnProperty('SignedOn'));
       const completedAt = lastObj.SignedOn;
       const doc = { ..._docRes, completedAt: completedAt };
       const certificate = await GenerateCertificate(doc);
@@ -92,7 +90,7 @@ export default async function generateCertificatebydocId(req) {
       updateDoc.set('CertificateUrl', file.imageUrl);
       const updateDocRes = await updateDoc.save(null, { useMasterKey: true });
       unlinkCertificate(certificatePath);
-      return { CertificateUrl: file.imageUrl };
+      return { CertificateUrl: (await getDocument(req)).CertificateUrl };
     } else {
       return { CertificateUrl: '' };
     }
