@@ -1,4 +1,8 @@
 {
+  "undo": "Deshacer",
+  "redo": "Rehacer",
+  "undo-widget": "Deshacer la adición o eliminación de un campo",
+  "redo-widget": "Rehacer la adición o eliminación de un campo",
   "header-news": "Nueva función: Firmas electrónicas cualificadas ya disponibles",
   "header-news-btn": "Pruébalo ahora",
   "sandbox-news": "Este es un entorno sandbox. Por favor, no lo utilice con fines de producción.",

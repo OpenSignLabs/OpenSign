@@ -13,7 +13,7 @@ function PrevNext({ pageNumber, allPages, changePage }) {
   }
 
   return (
-    <div className="flex items-center">
+    <div className="flex shrink-0 items-center">
       <button
         className="op-btn op-btn-neutral op-btn-xs md:op-btn-sm font-semibold text-xs"
         disabled={pageNumber <= 1}
@@ -23,7 +23,7 @@ function PrevNext({ pageNumber, allPages, changePage }) {
           <i className="fa-light fa-chevron-up" aria-hidden="true"></i>
         </span>
       </button>
-      <span className="text-xs text-base-content font-medium mx-2 2xl:text-[20px]">
+      <span className="whitespace-nowrap text-xs text-base-content font-medium mx-2 2xl:text-[20px]">
         {pageNumber || (allPages ? 1 : "--")} {t("of")} {allPages || "--"}
       </span>
       <button
