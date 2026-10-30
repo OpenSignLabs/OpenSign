@@ -149,6 +149,7 @@ export default async function docxtopdf(req, res) {
 
     // ---- DOCX -> PDF conversion with concurrency control and timeout ----
     const fileName = `${generatePdfName(16)}.pdf`;
+    const uploadedSizeBytes = req.file.buffer.length;
 
     // Adjust timeout based on file size
     const timeoutMs = uploadedSizeBytes > 10 * 1024 * 1024 ? 120_000 : 90_000;
@@ -217,6 +218,6 @@ export default async function docxtopdf(req, res) {
       msg = message;
     }
     console.error(`[DOCX2PDF] Error: ${msg}`);
-    return res.status(400).json({ error: message });
+    return res.status(400).json({ error: msg });
   }
 }
