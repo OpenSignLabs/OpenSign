@@ -762,6 +762,8 @@ function Placeholder(props) {
       props.pos.type === textWidget ? (
         <span
           readOnly
+          data-widget-key={props.pos.key}
+          data-widget-signer-id={props.data?.Id}
           onClick={(e) => {
             // Prevent the click from bubbling up to the Document onClick handler
             // which would immediately clear currWidgetsDetails and make the
@@ -793,7 +795,7 @@ function Placeholder(props) {
             height: props.pos?.Height,
             whiteSpace: "pre-wrap",
             overflow: "visible",
-            outline: "none",
+            outline: props.isAreaSelected ? "2px solid #6b7280" : "none",
             border: "none"
           }}
         >
@@ -804,6 +806,8 @@ function Placeholder(props) {
       ) : (
         <Rnd
           id={props.pos.key}
+          data-widget-key={props.pos.key}
+          data-widget-signer-id={props.data?.Id}
           scale={props.scale}
           data-tut={props.pos.key === props.unSignedWidgetId ? "IsSigned" : ""}
           key={props.pos.key}
@@ -847,6 +851,7 @@ function Placeholder(props) {
           className="signYourselfBlock"
           style={{
             border: "1.5px solid #007bff",
+            outline: props.isAreaSelected ? "2px solid #6b7280" : undefined,
             borderRadius: "2px",
             cursor: getCursor(),
             zIndex:

@@ -1,4 +1,8 @@
 {
+  "undo": "Undo",
+  "redo": "Redo",
+  "undo-widget": "Undo widget addition or removal",
+  "redo-widget": "Redo widget addition or removal",
   "header-news": "New Feature: Qualified Electronics Signatures now available",
   "header-news-btn": "Try it now",
   "sandbox-news": "This is a sandbox environment. Please do not use it for production purposes.",

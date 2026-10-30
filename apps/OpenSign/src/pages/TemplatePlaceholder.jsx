@@ -8,6 +8,7 @@ import WidgetComponent from "../components/pdf/WidgetComponent";
 import Tour from "../primitives/Tour";
 import SignerListPlace from "../components/pdf/SignerListPlace";
 import Header from "../components/pdf/PdfHeader";
+import useWidgetHistory from "../hook/useWidgetHistory";
 import WidgetNameModal from "../components/pdf/WidgetNameModal";
 import {
   copytoData,
@@ -93,7 +94,8 @@ const TemplatePlaceholder = () => {
   const [xySignature, setXYSignature] = useState({});
   const [dragKey, setDragKey] = useState();
   const [signersdata, setSignersData] = useState([]);
-  const [signerPos, setSignerPos] = useState([]);
+  const [signerPos, setSignerPos, recordWidgetUpdate, widgetHistory] =
+    useWidgetHistory();
   const [isSelectListId, setIsSelectId] = useState();
   const [isSendAlert, setIsSendAlert] = useState(false);
   const [isCreateDocModal, setIsCreateDocModal] = useState(false);
@@ -600,7 +602,7 @@ const TemplatePlaceholder = () => {
           const updatesignerPos = signerPos.map((x) =>
             x.Id === uniqueId ? { ...x, placeHolder: updatePlace } : x
           );
-          setSignerPos(updatesignerPos);
+          recordWidgetUpdate(updatesignerPos);
         } else {
           //condition for prefill role to attach prefill widget on multiple page first time there are no any prefill widget exist
           if (roleName === "prefill") {
@@ -613,7 +615,7 @@ const TemplatePlaceholder = () => {
                     ? { ...x, placeHolder: [placeHolder] }
                     : x
               );
-              setSignerPos(updatesignerPos);
+              recordWidgetUpdate(updatesignerPos);
             } //else condition if there are no prefill role exist in array then add prefill widget in placeholder
             else {
               const prefillTextWidget = {
@@ -624,9 +626,9 @@ const TemplatePlaceholder = () => {
                 Role: "prefill",
                 Id: uniqueId
               };
-              const xyPosition = signerPos || [];
+              const xyPosition = [...(signerPos || [])];
               xyPosition.unshift(prefillTextWidget);
-              setSignerPos(xyPosition);
+              recordWidgetUpdate(xyPosition);
             }
           } else {
             //else condition to add placeholder widgets on multiple page first time
@@ -637,7 +639,7 @@ const TemplatePlaceholder = () => {
                   ? { ...x, placeHolder: [placeHolder] }
                   : x
             );
-            setSignerPos(updatesignerPos);
+            recordWidgetUpdate(updatesignerPos);
           }
         }
 
@@ -742,7 +744,7 @@ const TemplatePlaceholder = () => {
               }
               return obj;
             });
-            setSignerPos(newUpdateSigner);
+            recordWidgetUpdate(newUpdateSigner);
           }
         }
       }
@@ -758,7 +760,7 @@ const TemplatePlaceholder = () => {
       signerPos
     );
     if (res) {
-      setSignerPos(res);
+      recordWidgetUpdate(res);
     }
   };
 
@@ -2047,7 +2049,7 @@ const TemplatePlaceholder = () => {
                 isPageCopy={isPageCopy}
                 setIsPageCopy={setIsPageCopy}
                 xyPosition={signerPos}
-                setXyPosition={setSignerPos}
+                setXyPosition={recordWidgetUpdate}
                 allPages={allPages}
                 pageNumber={currWidgetsDetails?.pageNumber || pageNumber}
                 signKey={currWidgetsDetails?.key}
@@ -2058,6 +2060,7 @@ const TemplatePlaceholder = () => {
               />
               {/* pdf header which contain funish back button */}
               <Header
+                widgetHistory={widgetHistory}
                 completeBtnTitle={t("next")}
                 isPlaceholder={true}
                 pageNumber={pageNumber}
@@ -2099,7 +2102,7 @@ const TemplatePlaceholder = () => {
                     handleStop={handleStop}
                     setPdfLoad={setPdfLoad}
                     pdfLoad={pdfLoad}
-                    setSignerPos={setSignerPos}
+                    setSignerPos={recordWidgetUpdate}
                     containerWH={containerWH}
                     setIsResize={setIsResize}
                     setZIndex={setZIndex}

@@ -1,4 +1,8 @@
 {
+  "undo": "Annulla",
+  "redo": "Ripeti",
+  "undo-widget": "Annulla l’aggiunta o la rimozione di un campo",
+  "redo-widget": "Ripeti l’aggiunta o la rimozione di un campo",
   "header-news": "Nuova funzionalità: Firme elettroniche qualificate ora disponibili",
   "header-news-btn": "Provalo ora",
   "sandbox-news": "Questo è un ambiente sandbox. Si prega di non utilizzarlo per scopi di produzione.",

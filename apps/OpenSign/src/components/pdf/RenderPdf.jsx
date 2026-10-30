@@ -32,6 +32,7 @@ import DragGuidelinesLayer from "./DragGridLinesLayer";
 import { useDrop } from "react-dnd";
 import WidgetsDragPreview from "./WidgetsDragPreview";
 import { useScroll } from "../../context/ScrollPdfContext";
+import useWidgetAreaSelection from "../../hook/useWidgetAreaSelection";
 
 function RenderPdf(props) {
   const { t } = useTranslation();
@@ -131,6 +132,26 @@ function RenderPdf(props) {
   const scrollTriggerId = useSelector((state) => state.widget.scrollTriggerId);
   const isOpen = useSelector((state) => state.sidebar.isOpen);
   const pdfContainerRef = useRef(null);
+  const usesFlatWidgetPositions = props.isSignYourself && !props.isSelfSign;
+  const widgetAreaSelection = useWidgetAreaSelection({
+    enabled: Boolean(
+      !isMobile &&
+      !props.pdfRequest &&
+      !props.pdfDetails?.[0]?.IsCompleted &&
+      !props.isDragging &&
+      props.handleDeleteWidget &&
+      (props.placeholder || props.isSelfSign || props.isSignYourself) &&
+      (usesFlatWidgetPositions ? props.setXyPosition : props.setSignerPos)
+    ),
+    containerRef: pdfContainerRef,
+    positions: usesFlatWidgetPositions ? props.xyPosition : props.signerPos,
+    setPositions: usesFlatWidgetPositions
+      ? props.setXyPosition
+      : props.setSignerPos,
+    nested: !usesFlatWidgetPositions,
+    scale: props.scale || 1,
+    clearActiveWidget: props.setCurrWidgetsDetails
+  });
   const mobileHeight = useMobilePdfHeight(
     scrollRef,
     scaledHeight,
@@ -139,8 +160,17 @@ function RenderPdf(props) {
 
   useEffect(() => {
     const canCopyWidgets =
-      props.placeholder || props.isSelfSign || props.isSignYourself;
-    if (!canCopyWidgets || !props.setSignerPos) return undefined;
+      props.placeholder ||
+      props.isSelfSign ||
+      (props.isSignYourself && !props.pdfDetails?.[0]?.IsCompleted);
+    const widgetPositions = props.isSignYourself
+      ? props.xyPosition
+      : props.signerPos;
+    const setWidgetPositions = props.isSignYourself
+      ? props.setXyPosition
+      : props.setSignerPos;
+    if ((!canCopyWidgets && !props.handleDeleteWidget) || !setWidgetPositions)
+      return undefined;
 
     const isTextInput = (target) => {
       const element = target instanceof Element ? target : null;
@@ -150,7 +180,7 @@ function RenderPdf(props) {
     };
 
     const findWidget = (key) => {
-      for (const signer of props.signerPos || []) {
+      for (const signer of widgetPositions || []) {
         if (signer?.placeHolder) {
           for (const page of signer.placeHolder) {
             const widget = (page.pos || []).find((item) => item?.key === key);
@@ -167,7 +197,24 @@ function RenderPdf(props) {
     };
 
     const handleWidgetClipboard = (event) => {
-      if (!event.ctrlKey || isTextInput(event.target)) return;
+      if (event.defaultPrevented || isTextInput(event.target)) return;
+
+      if (event.key === "Delete" && props.handleDeleteWidget) {
+        const selectedKey = props.currWidgetsDetails?.key;
+        const location = selectedKey && findWidget(selectedKey);
+        if (!location) return;
+
+        event.preventDefault();
+        props.handleDeleteWidget(
+          selectedKey,
+          location.signer?.Id || null,
+          location.page?.pageNumber || props.currWidgetsDetails?.pageNumber
+        );
+        props.setCurrWidgetsDetails?.({});
+        return;
+      }
+
+      if (!canCopyWidgets || !event.ctrlKey) return;
 
       if (event.key.toLowerCase() === "c") {
         const selectedKey = props.currWidgetsDetails?.key;
@@ -201,11 +248,11 @@ function RenderPdf(props) {
         props.currWidgetsDetails?.signerId ||
         clipboard.signerId;
       const selectedSigner = props.uniqueId
-        ? (props.signerPos || []).find((item) => item?.Id === props.uniqueId)
+        ? (widgetPositions || []).find((item) => item?.Id === props.uniqueId)
         : null;
       const signer =
         selectedSigner ||
-        (props.signerPos || []).find(
+        (widgetPositions || []).find(
           (item) =>
             item?.Id === selectedSignerId ||
             item?.signerObjId === clipboard.signerObjId
@@ -255,8 +302,8 @@ function RenderPdf(props) {
                 : page
             )
           : [...pages, { pageNumber: targetPageNumber, pos: [pastedWidget] }];
-        props.setSignerPos(
-          props.signerPos.map((item) =>
+        setWidgetPositions(
+          widgetPositions.map((item) =>
             item.Id === signer.Id
               ? { ...item, placeHolder: updatedPages }
               : item
@@ -272,7 +319,7 @@ function RenderPdf(props) {
 
       const pasteTarget = pasteTargetRef.current;
       const targetPageNumber = pasteTarget?.pageNumber || props.pageNumber || 1;
-      const targetPage = (props.signerPos || []).find(
+      const targetPage = (widgetPositions || []).find(
         (page) => page.pageNumber === targetPageNumber
       );
       const pastedWidget = {
@@ -290,16 +337,16 @@ function RenderPdf(props) {
         }
       };
       const updatedPages = targetPage
-        ? props.signerPos.map((page) =>
+        ? widgetPositions.map((page) =>
             page.pageNumber === targetPageNumber
               ? { ...page, pos: [...(page.pos || []), pastedWidget] }
               : page
           )
         : [
-            ...(props.signerPos || []),
+            ...(widgetPositions || []),
             { pageNumber: targetPageNumber, pos: [pastedWidget] }
           ];
-      props.setSignerPos(updatedPages);
+      setWidgetPositions(updatedPages);
       props.setCurrWidgetsDetails?.({
         ...pastedWidget,
         pageNumber: targetPageNumber
@@ -311,13 +358,18 @@ function RenderPdf(props) {
     return () => window.removeEventListener("keydown", handleWidgetClipboard);
   }, [
     props.currWidgetsDetails,
+    props.handleDeleteWidget,
     props.isSelfSign,
     props.isSignYourself,
     props.pageNumber,
+    props.pdfDetails,
     props.placeholder,
+    props.setCurrWidgetsDetails,
     props.setSignerPos,
+    props.setXyPosition,
     props.signerPos,
-    props.uniqueId
+    props.uniqueId,
+    props.xyPosition
   ]);
 
   // Refs for drawing Text Input widget — avoids re-rendering the full tree on
@@ -651,14 +703,15 @@ function RenderPdf(props) {
     }
   };
 
-  // Handle drawing Text Input widget on PDF
+  const canDrawTextWidget =
+    (props.placeholder || props.isSignYourself || props.isSelfSign) &&
+    !props.pdfDetails?.[0]?.IsCompleted &&
+    !(props.isCompleted === true || props.isCompleted?.isCertificate) &&
+    !props.currWidgetsDetails?.key &&
+    !props.isDragging;
+
   const handlePointerDown = (e) => {
-    // Only allow drawing in placeholder mode when no widget is selected
-    if (
-      !props.placeholder ||
-      props.currWidgetsDetails?.key ||
-      props.isDragging
-    ) {
+    if (!canDrawTextWidget) {
       return;
     }
 
@@ -779,15 +832,18 @@ function RenderPdf(props) {
       const widgetWidth = pageWidth / (containerScale * props.scale);
       const widgetHeight = pageHeight / (containerScale * props.scale);
 
-      // Create a Text Input widget at the drawn position
+      // Create a text widget at the drawn position.
       if (props.addPositionOfSignature) {
         // If drawing on a different page, update pageNumber first
         if (drawPageNum !== props.pageNumber && props.setPageNumber) {
           props.setPageNumber(drawPageNum);
         }
-        // Simulate dropping a text input widget
         const type =
-          props?.roleName === "prefill" ? textWidget : textInputWidget;
+          props.isSignYourself ||
+          props.isSelfSign ||
+          props?.roleName === "prefill"
+            ? textWidget
+            : textInputWidget;
         const textInputItem = { text: type, type: "BOX" };
 
         const monitor = {
@@ -797,6 +853,7 @@ function RenderPdf(props) {
         };
 
         props.addPositionOfSignature(textInputItem, monitor, {
+          pageNumber: drawPageNum,
           customPosition: {
             xPosition,
             yPosition,
@@ -857,6 +914,11 @@ function RenderPdf(props) {
                       <React.Fragment key={ind}>
                         <Placeholder
                           pos={pos}
+                          isAreaSelected={widgetAreaSelection.isSelected(
+                            pos.key,
+                            data.Id,
+                            pageNum
+                          )}
                           handleWidgetResize={handleWidgetResize}
                           index={pageNum}
                           xyPosition={props.signerPos}
@@ -930,6 +992,11 @@ function RenderPdf(props) {
                     <React.Fragment key={pos.key}>
                       <Placeholder
                         pos={pos}
+                        isAreaSelected={widgetAreaSelection.isSelected(
+                          pos.key,
+                          data.Id,
+                          pageNum
+                        )}
                         setIsPageCopy={props.setIsPageCopy}
                         handleDeleteWidget={props.handleDeleteWidget}
                         handleTabDrag={props.handleTabDrag}
@@ -998,6 +1065,11 @@ function RenderPdf(props) {
                   <Placeholder
                     key={id}
                     pos={pos}
+                    isAreaSelected={widgetAreaSelection.isSelected(
+                      pos.key,
+                      undefined,
+                      pageNum
+                    )}
                     setIsPageCopy={props.setIsPageCopy}
                     handleDeleteWidget={props.handleDeleteWidget}
                     handleTabDrag={props.handleTabDrag}
@@ -1097,12 +1169,7 @@ function RenderPdf(props) {
             }
             data-pdf-transform-target
             style={{
-              cursor:
-                props.placeholder &&
-                !props.currWidgetsDetails?.key &&
-                !props.isDragging
-                  ? "crosshair"
-                  : "default",
+              cursor: canDrawTextWidget ? "crosshair" : "default",
               // ✅ top left so content expands into spacer — scroll handles horizontal
               width: props.containerWH?.width,
               transform: `scale(${props?.scale || 1})`, // ✅ both platforms
@@ -1118,6 +1185,7 @@ function RenderPdf(props) {
             onPointerDown={handlePointerDown}
             onPointerMove={handlePointerMove}
             onPointerUp={handlePointerUp}
+            {...widgetAreaSelection.handlers}
             onPointerLeave={() => {
               if (isDrawing) {
                 handlePointerUp();
@@ -1245,6 +1313,40 @@ function RenderPdf(props) {
               scale={props?.scale}
               canvasContainerRef={scrollRef}
             />
+            <div
+              ref={widgetAreaSelection.overlayRef}
+              data-widget-selection-area
+              style={{
+                display: "none",
+                position: "absolute",
+                border: "1px solid #9ca3af",
+                backgroundColor: "rgba(156, 163, 175, 0.2)",
+                pointerEvents: "none",
+                zIndex: 9999
+              }}
+            />
+            {widgetAreaSelection.selection && (
+              <button
+                type="button"
+                data-widget-selection-delete
+                aria-label={`${t("delete")} (${widgetAreaSelection.selection.widgets.length})`}
+                className="op-btn op-btn-xs op-btn-error"
+                style={{
+                  position: "absolute",
+                  left: widgetAreaSelection.selection.left,
+                  top: Math.max(0, widgetAreaSelection.selection.top - 28),
+                  zIndex: 10000
+                }}
+                onPointerDown={(event) => event.stopPropagation()}
+                onClick={widgetAreaSelection.deleteSelection}
+              >
+                <i
+                  className="fa-light fa-trash-can text-xm"
+                  aria-hidden="true"
+                />
+                ({widgetAreaSelection.selection.widgets.length})
+              </button>
+            )}
             {/* Drawing rectangle overlay for Text Input widget */}
             {isDrawing && (
               <div

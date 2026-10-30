@@ -1,4 +1,8 @@
 {
+  "undo": "Rückgängig",
+  "redo": "Wiederholen",
+  "undo-widget": "Hinzufügen oder Entfernen eines Feldes rückgängig machen",
+  "redo-widget": "Hinzufügen oder Entfernen eines Feldes wiederholen",
   "header-news": "Neue Funktion: Qualifizierte elektronische Signaturen jetzt verfügbar",
   "header-news-btn": "Jetzt ausprobieren",
   "sandbox-news": "Dies ist eine Sandbox-Umgebung. Bitte nicht für produktive Zwecke verwenden.",

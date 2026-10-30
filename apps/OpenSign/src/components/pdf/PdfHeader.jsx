@@ -1,4 +1,5 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import WidgetHistoryControls from "./WidgetHistoryControls";
 import PrevNext from "./PrevNext";
 import {
   base64ToArrayBuffer,
@@ -30,6 +31,17 @@ function Header(props) {
   const [isDeletePage, setIsDeletePage] = useState(false);
   const [isReorderModal, setIsReorderModal] = useState(false);
   const mergePdfInputRef = useRef(null);
+  const clearWidgetHistory = props.widgetHistory?.clear;
+  useEffect(() => {
+    clearWidgetHistory?.();
+  }, [props.pdfArrayBuffer, clearWidgetHistory]);
+  const widgetHistoryControls = props.widgetHistory &&
+    !props.isCompleted &&
+    !props.alreadySign &&
+    !props.isSigned &&
+    !props.isMailSend && (
+      <WidgetHistoryControls history={props.widgetHistory} />
+    );
   const enabledBackBtn = props?.disabledBackBtn === true ? false : true;
   const isViewerSigner = false;
   const finishLabel = t("finish");
@@ -394,6 +406,16 @@ function Header(props) {
                           </DropdownMenu.Item>
                           {!props?.isDisablePdfEditTools && (
                             <>
+                              {props.widgetHistory &&
+                                !props.isCompleted &&
+                                !props.alreadySign &&
+                                !props.isSigned &&
+                                !props.isMailSend && (
+                                  <WidgetHistoryControls
+                                    history={props.widgetHistory}
+                                    asMenuItems
+                                  />
+                                )}
                               <DropdownMenu.Item
                                 className="DropdownMenuItem"
                                 onClick={() => mergePdfInputRef.current.click()}
@@ -497,12 +519,13 @@ function Header(props) {
             props?.isPlaceholder ? "os-pdf-header-placeholder" : ""
           } flex flex-wrap justify-between items-center w-full gap-y-1 ml-1`}
         >
-          <div className="os-pdf-header-pages">
+          <div className="os-pdf-header-pages flex items-center gap-1">
             <PrevNext
               pageNumber={props?.pageNumber}
               allPages={props?.allPages}
               changePage={props?.changePage}
             />
+            <div className="hidden">{widgetHistoryControls}</div>
           </div>
           {props?.isPlaceholder ? (
             <>

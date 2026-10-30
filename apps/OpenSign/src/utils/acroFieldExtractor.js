@@ -499,6 +499,10 @@ export const getAndClearAcroFields = () => {
   return null;
 };
 
+/**
+ * Removes empty source controls and embeds prefilled field appearances as
+ * static page content so they cannot remain editable in downloaded PDFs.
+ */
 export const clearAcroFields = async (pdfFile) => {
   const pdfDoc = await PDFDocument.load(pdfFile, { ignoreEncryption: true });
   const form = pdfDoc.getForm();
@@ -506,17 +510,12 @@ export const clearAcroFields = async (pdfFile) => {
   const populatedFields = fields.filter(isFieldFilled);
 
   if (populatedFields.length > 0) {
-    try {
-      // Keep pre-filled fields, but remove empty source controls so the
-      // auto-detected widgets are the only controls for those positions.
-      fields.forEach((field) => {
-        if (!isFieldFilled(field)) form.removeField(field);
-      });
-      return await pdfDoc.save({ useObjectStreams: false });
-    } catch {
-      // Preserve the original PDF if a malformed field cannot be removed.
-      return pdfFile;
-    }
+    // Remove empty controls before flattening so they do not cover the
+    // auto-detected OpenSign widgets with blank backgrounds or borders.
+    fields.forEach((field) => {
+      if (!isFieldFilled(field)) form.removeField(field);
+    });
+    form.flatten();
   }
 
   try {
@@ -548,7 +547,8 @@ export const clearAcroFields = async (pdfFile) => {
         try {
           const annot = pdfDoc.context.lookup(annotRef);
           const subtype = annot?.get(PDFName.of("Subtype"));
-          return subtype?.toString() !== "/Widget";
+          // pdf-lib may leave references to deleted child widgets.
+          return Boolean(annot) && subtype?.toString() !== "/Widget";
         } catch {
           return true;
         }
