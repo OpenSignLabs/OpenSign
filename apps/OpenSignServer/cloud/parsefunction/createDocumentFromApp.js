@@ -1,3 +1,4 @@
+import { fileAccess } from '../../utils/documentAccess.js';
 import { setDocumentCount } from '../../utils/CountUtils.js';
 
 export async function getOwnedDocumentFolder(folder, user, extUser) {
@@ -51,6 +52,10 @@ export default async function createDocumentFromApp(request) {
   if (!request.user) {
     throw new Parse.Error(Parse.Error.INVALID_SESSION_TOKEN, 'User is not authenticated.');
   }
+
+  // These URLs originate in a caller-supplied payload, even though the save uses the master key.
+  if (doc.URL) await fileAccess({ ...request, params: { url: doc.URL } });
+  if (doc.SignedUrl) await fileAccess({ ...request, params: { url: doc.SignedUrl } });
 
   const SentToOthers = doc.SentToOthers !== undefined ? doc.SentToOthers : false;
   const SendinOrder = doc.SendinOrder !== undefined ? doc.SendinOrder : false;

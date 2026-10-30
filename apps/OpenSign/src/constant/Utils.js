@@ -1,3 +1,4 @@
+import { documentAccessParams } from '../utils/documentAccess';
 import axios from "axios";
 import { getErrorMessage, isCreditQuotaError } from "../utils/creditErrors";
 import moment from "moment";
@@ -204,7 +205,7 @@ export const getSecureUrl = async (url) => {
   const fileUrl = new URL(url)?.pathname?.includes("/files/");
   if (fileUrl) {
     try {
-      const fileRes = await Parse.Cloud.run("fileupload", { url: url });
+      const fileRes = await Parse.Cloud.run("fileupload", { url: url, ...documentAccessParams() });
       if (fileRes.url) {
         return { url: fileRes.url };
       } else {
@@ -976,7 +977,7 @@ export const signPdfFun = async (
       signature: suffixbase64, //qes: will be empty string for QES
       activity: activity || "Signed"
     };
-    const resSignPdf = await Parse.Cloud.run("signPdf", params);
+    const resSignPdf = await Parse.Cloud.run("signPdf", { ...params, ...documentAccessParams(params.docId) });
     if (resSignPdf) {
       const signedPdf = JSON.parse(JSON.stringify(resSignPdf));
       return signedPdf;
@@ -2659,8 +2660,8 @@ export const contactBook = async (objectId) => {
 
 //function for getting document details from contract_Documents class
 export const contractDocument = async (documentId, include) => {
-  const data = { docId: documentId, include: include };
-  const token = { sessionToken: localStorage.getItem("accesstoken") };
+  const data = { docId: documentId, ...documentAccessParams(documentId) };
+  const token = { "X-Parse-Session-Token": localStorage.getItem("accesstoken") };
   const documentDeatils = await axios
     .post(`${localStorage.getItem("baseUrl")}functions/getDocument`, data, {
       headers: {
@@ -2997,7 +2998,8 @@ export const getSignedUrl = async (pdfUrl, docId, templateId) => {
     {
       url: pdfUrl,
       docId: docId || "",
-      templateId: templateId || ""
+      templateId: templateId || "",
+      ...documentAccessParams(docId)
     },
     {
       headers: {
@@ -3088,7 +3090,8 @@ export const handleToPrint = async (event, setIsDownloading, pdfDetails) => {
       `${localStorage.getItem("baseUrl")}/functions/getsignedurl`,
       {
         url: pdfUrl,
-        docId: docId
+        docId: docId,
+        ...documentAccessParams(docId)
       },
       {
         headers: {
@@ -3167,9 +3170,9 @@ export const handleDownloadCertificate = async (
   } else {
     setIsDownloading("certificate");
     try {
-      const data = { docId: docId };
+      const data = { docId: docId, ...documentAccessParams(docId) };
       const docDetails = await axios.post(`${baseUrl}/getDocument`, data, {
-        headers: { ...headers, sessionToken }
+        headers: { ...headers, "X-Parse-Session-Token": sessionToken }
       });
       const cert = docDetails?.data?.result?.CertificateUrl;
       if (cert) {
