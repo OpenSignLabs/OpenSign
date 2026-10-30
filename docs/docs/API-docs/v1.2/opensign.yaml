@@ -816,6 +816,18 @@ paths:
         }
         ```
         - **cell_count:** Specify the number of cells that should be returned to the user.
+
+        14. **qes**
+        ```
+        {
+          "type": "qes",
+          "page": 1,
+          "x": 327,
+          "y": 628,
+          "w": 114,
+          "h": 21
+        }
+        ```
       operationId: selfsign
       requestBody:
         content:
@@ -1233,6 +1245,18 @@ paths:
             "name": "attachment widget",
             "hint": "Provide files"
           }
+        }
+        ```
+
+        17. **qes**
+        ```
+        {
+          "type": "qes",
+          "page": 1,
+          "x": 327,
+          "y": 628,
+          "w": 114,
+          "h": 21
         }
         ```
 
@@ -1779,6 +1803,18 @@ paths:
             "name": "attachment widget",
             "hint": "Provide files"
           }
+        }
+        ```
+
+        17. **qes**
+        ```
+        {
+          "type": "qes",
+          "page": 1,
+          "x": 327,
+          "y": 628,
+          "w": 114,
+          "h": 21
         }
         ```
 
@@ -3033,6 +3069,18 @@ paths:
         }
         ```
 
+        17. **qes**
+        ```
+        {
+          "type": "qes",
+          "page": 1,
+          "x": 327,
+          "y": 628,
+          "w": 114,
+          "h": 21
+        }
+        ```
+
         **Prefill Widgets:** Prefill widgets are elements that are inserted into a document **before** it is shared with a user. Only the document creator has permission to add them.
         
         **List of widgets supported in Prefill**
@@ -3601,6 +3649,18 @@ paths:
         }
         ```
 
+        17. **qes**
+        ```
+        {
+          "type": "qes",
+          "page": 1,
+          "x": 327,
+          "y": 628,
+          "w": 114,
+          "h": 21
+        }
+        ```
+
  
         **Prefill Widgets:** Prefill widgets are elements that are inserted into a document **before** it is shared with a user. Only the document creator has permission to add them.
         
@@ -4165,6 +4225,18 @@ paths:
             "name": "attachment widget",
             "hint": "Provide files"
           }
+        }
+        ```
+
+        17. **qes**
+        ```
+        {
+          "type": "qes",
+          "page": 1,
+          "x": 327,
+          "y": 628,
+          "w": 114,
+          "h": 21
         }
         ```
         
@@ -7190,7 +7262,7 @@ components:
       properties:
         type:
           type: string
-          description: "Allowed values include signature, stamp, initials, email, name, job title, company, date, textbox, checkbox, dropdown, radio button, image, number, cells, attachments."
+          description: "Allowed values include signature, stamp, initials, email, name, job title, company, date, textbox, checkbox, dropdown, radio button, image, number, cells, attachments, qes."
           format: string
           example: signature
         page:
@@ -7272,7 +7344,7 @@ components:
       properties:
         type:
           type: string
-          description: "Allowed values include signature, stamp, initials, email, name, job title, company, date, textbox, checkbox, dropdown, radio button, image, number, cells, attachments."
+          description: "Allowed values include signature, stamp, initials, email, name, job title, company, date, textbox, checkbox, dropdown, radio button, image, number, cells, attachments, qes."
           format: string
           example: signature
         page:
