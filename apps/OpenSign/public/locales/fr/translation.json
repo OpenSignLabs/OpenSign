@@ -1,4 +1,8 @@
 {
+  "undo": "Annuler",
+  "redo": "Rétablir",
+  "undo-widget": "Annuler l’ajout ou la suppression d’un champ",
+  "redo-widget": "Rétablir l’ajout ou la suppression d’un champ",
   "header-news": "Nouvelle fonctionnalité : Les signatures électroniques qualifiées sont désormais disponibles",
   "header-news-btn": "Essayer maintenant",
   "sandbox-news": "Ceci est un environnement sandbox. Veuillez ne pas l'utiliser à des fins de production.",

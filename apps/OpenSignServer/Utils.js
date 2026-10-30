@@ -262,7 +262,6 @@ function _getWidgetRectServer(widget, pdfDoc) {
     const y2 = _numberFromPdfObjectServer(rectArr.get(3));
 
     if ([x1, y1, x2, y2].some(v => !isFinite(v))) return null;
-
     return {
       x: Math.min(x1, x2),
       y: Math.min(y1, y2),

@@ -21,7 +21,7 @@ import { format, toZonedTime } from "date-fns-tz";
 import i18n from "../i18n";
 import { persistBrandPresentation } from "./brandPresentation";
 import { getRuntimePdfFontUrl } from "./runtimeConfig";
-import { resolveMailBrandPresentation } from "./mailBrand";
+import { renderMailBrandLogo, resolveMailBrandPresentation } from "./mailBrand";
 import {
   applyNumberFormulasToPages,
   buildDownloadFilename,
@@ -2801,8 +2801,7 @@ export const handleCopyNextToWidget = (
     const getPageNumer = getPlaceHolder?.filter(
       (data) => data.pageNumber === index
     );
-    const getXYdata = getPageNumer?.[0]?.pos || [];
-    getXYdata.push(newposition);
+    const getXYdata = [...(getPageNumer?.[0]?.pos || []), newposition];
     if (getPageNumer && getPageNumer.length > 0) {
       const newUpdateSignPos = getPlaceHolder.map((obj) => {
         if (obj.pageNumber === index) {
@@ -2822,9 +2821,7 @@ export const handleCopyNextToWidget = (
     }
   } else {
     const getPageNumer = xyPosition?.find((data) => data.pageNumber === index);
-    const getXYdata = getPageNumer?.pos;
-
-    getXYdata.push(newposition);
+    const getXYdata = [...getPageNumer.pos, newposition];
     const updatePlaceholder = xyPosition.map((obj, ind) => {
       if (obj?.pageNumber === index) {
         return { ...obj, pos: getXYdata };
@@ -4252,9 +4249,7 @@ function _removeWidgetAnnotations(pdfDoc) {
 
 export const mailTemplate = (param) => {
   const { appName, logoUrl, accentColor } = resolveMailBrandPresentation("");
-  const logo = logoUrl
-    ? `<div style='padding:10px'><img src='${logoUrl}' height='50' /></div>`
-    : "";
+  const logo = renderMailBrandLogo({ appName, logoUrl });
 
   const subject = `${param.senderName} has requested you to sign "${param.title}"`;
   const body =
