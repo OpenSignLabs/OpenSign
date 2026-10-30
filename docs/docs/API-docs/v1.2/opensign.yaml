@@ -817,7 +817,7 @@ paths:
         ```
         - **cell_count:** Specify the number of cells that should be returned to the user.
 
-        14. **qes**
+        14. **qes (Qualified Electronic Signature)**
         ```
         {
           "type": "qes",
@@ -1248,7 +1248,7 @@ paths:
         }
         ```
 
-        17. **qes**
+        17. **qes (Qualified Electronic Signature)**
         ```
         {
           "type": "qes",
@@ -1806,7 +1806,7 @@ paths:
         }
         ```
 
-        17. **qes**
+        17. **qes (Qualified Electronic Signature)**
         ```
         {
           "type": "qes",
@@ -3069,7 +3069,7 @@ paths:
         }
         ```
 
-        17. **qes**
+        17. **qes (Qualified Electronic Signature)**
         ```
         {
           "type": "qes",
@@ -3649,7 +3649,7 @@ paths:
         }
         ```
 
-        17. **qes**
+        17. **qes (Qualified Electronic Signature)**
         ```
         {
           "type": "qes",
@@ -4228,7 +4228,7 @@ paths:
         }
         ```
 
-        17. **qes**
+        17. **qes (Qualified Electronic Signature)**
         ```
         {
           "type": "qes",
@@ -4723,6 +4723,18 @@ paths:
             "fontsize": 12,
             "hide_text_with_asterisks": false
           }
+        }
+        ```
+
+        16. **qes (Qualified Electronic Signature)**
+        ```
+        {
+          "type": "qes",
+          "x": 327,
+          "y": 628,
+          "w": 114,
+          "h": 21,
+          "page": 1
         }
         ```
 
