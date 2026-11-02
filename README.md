@@ -62,14 +62,161 @@ Welcome to OpenSign, the premier open source docusign alternative - document e-s
 - **Audit Trails & completion certificate:** Being a security focused solution, OpenSign™ makes it a top priority to save detailed logs for tracking document activities along with time-stamps, IP addresses, email IDs & phone numbers. A completion certificate is generated as soon as document is completed which contains all the document related logs for added safety.
 - **API Support:** OpenSign™ API allows seamless integration into existing systems and software. You can generate an API key from the app and refer the [official API docs](https://docs.opensignlabs.com/docs/API-docs/v1.1) to start integrating it in your existing applications.
 - **Integrations:** The open source document signing experience becomes even more seamless because of integrations with various Cloud storage systems, CRMs & enterprise platforms. We also have a Zapier integration that allows you to integrate it with virtually any application.
-<img alt="Login page" src="https://github.com/OpenSignLabs/OpenSign/assets/171803164/8016edb6-7d6e-4185-ab72-82d2c4a16032" height='200' > 
-<img alt="Dash_board" src="https://github.com/OpenSignLabs/OpenSign/assets/171803164/6e7b96f7-3154-4c25-bc1e-caf33925cc47" height='200'>
-<img  alt="Widgets" src="https://github.com/OpenSignLabs/OpenSign/assets/171803164/7edb65bd-c265-4b3d-9758-38e79766c5c2" height='200'>
-<img  alt="Request Signature" src="https://github.com/OpenSignLabs/OpenSign/assets/171803164/1697ae46-dcac-41c9-a081-aded25693846" height='200'>
-<img  alt="Create template" src="https://github.com/OpenSignLabs/OpenSign/assets/171803164/c2060fda-50f1-4116-a532-51b94b48463a" height='200'>
-<img  alt="Manage_Template" src="https://github.com/OpenSignLabs/OpenSign/assets/171803164/90310c74-8271-49bd-8c5f-89daa5a623c4" height='200'>
-<img  alt="Folders" src="https://github.com/OpenSignLabs/OpenSign/assets/171803164/a52207e7-3b0e-497c-b5f6-747bc4e67918" height='200'>
-<img alt="OpenSign_Confetti" src="https://github.com/OpenSignLabs/OpenSign/assets/171803164/8f4c6a6e-4a73-439c-9f34-f426044d0a7f" height='200'>
+
+<table>
+  <tbody>
+    <tr>
+      <td align="center" valign="top" width="50%">
+        <a href="https://github.com/user-attachments/assets/e94b592c-285c-41d3-9859-617861586911"><img src="https://github.com/user-attachments/assets/e94b592c-285c-41d3-9859-617861586911" alt="Login" width="100%"></a><br>
+        <strong>Login</strong>
+      </td>
+      <td align="center" valign="top" width="50%">
+        <a href="https://github.com/user-attachments/assets/b38d54cd-abd1-40d6-87ff-b9ef32e0cb18"><img src="https://github.com/user-attachments/assets/b38d54cd-abd1-40d6-87ff-b9ef32e0cb18" alt="Dashboard" width="100%"></a><br>
+        <strong>Dashboard</strong>
+      </td>
+    </tr>
+    <tr>
+      <td align="center" valign="top" width="50%">
+        <a href="https://github.com/user-attachments/assets/5356d824-8137-4715-a5e7-704e210c4f46"><img src="https://github.com/user-attachments/assets/5356d824-8137-4715-a5e7-704e210c4f46" alt="Sign Yourself" width="100%"></a><br>
+        <strong>Sign Yourself</strong>
+      </td>
+      <td align="center" valign="top" width="50%">
+        <a href="https://github.com/user-attachments/assets/53feec47-1b63-46d9-8b22-951c267fd8a0"><img src="https://github.com/user-attachments/assets/53feec47-1b63-46d9-8b22-951c267fd8a0" alt="Sign Yourself Completed" width="100%"></a><br>
+        <strong>Sign Yourself Completed</strong>
+      </td>
+    </tr>
+    <tr>
+      <td align="center" valign="top" width="50%">
+        <a href="https://github.com/user-attachments/assets/f1b7559c-3e6c-49e9-9566-31194b9f4475"><img src="https://github.com/user-attachments/assets/f1b7559c-3e6c-49e9-9566-31194b9f4475" alt="Request Signature Create Document" width="100%"></a><br>
+        <strong>Request Signature – Create Document</strong>
+      </td>
+      <td align="center" valign="top" width="50%">
+        <a href="https://github.com/user-attachments/assets/bb72756b-8f5e-4a2e-b25f-667c85bf0104"><img src="https://github.com/user-attachments/assets/bb72756b-8f5e-4a2e-b25f-667c85bf0104" alt="Request Signature Sent Mail" width="100%"></a><br>
+        <strong>Request Signature – Send Email</strong>
+      </td>
+    </tr>
+    <tr>
+      <td align="center" valign="top" width="50%">
+        <a href="https://github.com/user-attachments/assets/1e06cb3f-935e-4d2f-812f-7e3d1a2b55ed"><img src="https://github.com/user-attachments/assets/1e06cb3f-935e-4d2f-812f-7e3d1a2b55ed" alt="Request Signing Flow" width="100%"></a><br>
+        <strong>Request Signing Flow</strong>
+      </td>
+      <td align="center" valign="top" width="50%">
+        <a href="https://github.com/user-attachments/assets/f62b727d-e400-40f7-bb6b-1cf7a866dce6"><img src="https://github.com/user-attachments/assets/f62b727d-e400-40f7-bb6b-1cf7a866dce6" alt="Document Completion Panel" width="100%"></a><br>
+        <strong>Document signing completed</strong>
+      </td>
+    </tr>
+    <tr>
+      <td align="center" valign="top" width="50%">
+        <a href="https://github.com/user-attachments/assets/a9548270-9816-492c-abd7-57db9eb53e30"><img src="https://github.com/user-attachments/assets/a9548270-9816-492c-abd7-57db9eb53e30" alt="New Template" width="100%"></a><br>
+        <strong>New Template</strong>
+      </td>
+      <td align="center" valign="top" width="50%">
+        <a href="https://github.com/user-attachments/assets/1d93bfbb-f75f-479d-af69-8420bf57cd7b"><img src="https://github.com/user-attachments/assets/1d93bfbb-f75f-479d-af69-8420bf57cd7b" alt="Create Template" width="100%"></a><br>
+        <strong>Create Template</strong>
+      </td>
+    </tr>
+    <tr>
+      <td align="center" valign="top" width="50%">
+        <a href="https://github.com/user-attachments/assets/ed6e4303-e489-48d4-96b9-e1f84407ce8c"><img src="https://github.com/user-attachments/assets/ed6e4303-e489-48d4-96b9-e1f84407ce8c" alt="Use Template" width="100%"></a><br>
+        <strong>Use Template</strong>
+      </td>
+      <td align="center" valign="top" width="50%">
+        <a href="https://github.com/user-attachments/assets/9ae3bb31-4222-448f-8c25-c7b2bf3b98ab"><img src="https://github.com/user-attachments/assets/9ae3bb31-4222-448f-8c25-c7b2bf3b98ab" alt="Use Template Attached Signers" width="100%"></a><br>
+        <strong>Use Template – Attached Signers</strong>
+      </td>
+    </tr>
+    <tr>
+       <td align="center" valign="top" width="50%">
+        <a href="https://github.com/user-attachments/assets/5f774644-0d69-42ef-84af-45d37782a14d"><img src="https://github.com/user-attachments/assets/5f774644-0d69-42ef-84af-45d37782a14d" alt="Bulk Send" width="100%"></a><br>
+        <strong>Bulk Send</strong>
+      </td>
+      <td align="center" valign="top" width="50%">
+        <a href="https://github.com/user-attachments/assets/72f4e1df-e653-47cd-b16e-5bfea360d130"><img src="https://github.com/user-attachments/assets/72f4e1df-e653-47cd-b16e-5bfea360d130" alt="Bulk Sent" width="100%"></a><br>
+        <strong>Documents sent in bulk</strong>
+      </td>
+    </tr>
+    <tr>
+      <td align="center" valign="top" width="50%">
+        <a href="https://github.com/user-attachments/assets/0a125e78-00bb-4275-9c4c-5e9547c96c96"><img src="https://github.com/user-attachments/assets/0a125e78-00bb-4275-9c4c-5e9547c96c96" alt="Make Template Public" width="100%"></a><br>
+        <strong>Make Template Public</strong>
+      </td>
+      <td align="center" valign="top" width="50%">
+        <a href="https://github.com/user-attachments/assets/9b513c02-af15-4c1d-9106-052f6472d5fa"><img src="https://github.com/user-attachments/assets/9b513c02-af15-4c1d-9106-052f6472d5fa" alt="Embed Template" width="100%"></a><br>
+        <strong>Embed Template</strong>
+      </td>
+    </tr>
+    <tr>
+      <td align="center" valign="top" width="50%">
+        <a href="https://github.com/user-attachments/assets/63802176-50ec-437b-82f5-0fb6ae87e1ad"><img src="https://github.com/user-attachments/assets/63802176-50ec-437b-82f5-0fb6ae87e1ad" alt="Manage Template" width="100%"></a><br>
+        <strong>Manage Template</strong>
+      </td>
+      <td align="center" valign="top" width="50%">
+        <a href="https://github.com/user-attachments/assets/7d214a0f-0ac1-488a-b34a-ddc1a2ac4d70"><img src="https://github.com/user-attachments/assets/7d214a0f-0ac1-488a-b34a-ddc1a2ac4d70" alt="Manage Template Actions" width="100%"></a><br>
+        <strong>Manage Template – Actions</strong>
+      </td>
+    </tr>
+    <tr>
+      <td align="center" valign="top" width="50%">
+        <a href="https://github.com/user-attachments/assets/71b69f2c-5abc-41d5-8d65-e9984eea27d9"><img src="https://github.com/user-attachments/assets/71b69f2c-5abc-41d5-8d65-e9984eea27d9" alt="Public Profile Setup" width="100%"></a><br>
+        <strong>Public Profile Setup</strong>
+      </td>
+      <td align="center" valign="top" width="50%">
+        <a href="https://github.com/user-attachments/assets/e7044961-ad1a-40ae-a3f5-b93befa64fdb"><img src="https://github.com/user-attachments/assets/e7044961-ad1a-40ae-a3f5-b93befa64fdb" alt="Public Template Signing" width="100%"></a><br>
+        <strong>Public Template Signing</strong>
+      </td>
+    </tr>
+    <tr>
+      <td align="center" valign="top" width="50%">
+        <a href="https://github.com/user-attachments/assets/e85c2e60-0786-40a0-883e-822665551e66"><img src="https://github.com/user-attachments/assets/e85c2e60-0786-40a0-883e-822665551e66" alt="OpenSign Drive" width="100%"></a><br>
+        <strong>OpenSign Drive</strong>
+      </td>
+      <td align="center" valign="top" width="50%">
+        <a href="https://github.com/user-attachments/assets/8caeeabc-2713-4a98-8a58-285241860f1b"><img src="https://github.com/user-attachments/assets/8caeeabc-2713-4a98-8a58-285241860f1b" alt="Connect to Gmail" width="100%"></a><br>
+        <strong>Connect to Gmail</strong>
+      </td>
+    </tr>
+    <tr>
+      <td align="center" valign="top" width="50%">
+        <a href="https://github.com/user-attachments/assets/9bd6f514-0ac9-4f2f-8ffe-22551f50c25e"><img src="https://github.com/user-attachments/assets/9bd6f514-0ac9-4f2f-8ffe-22551f50c25e" alt="Teams User" width="100%"></a><br>
+        <strong>Teams User</strong>
+      </td>
+      <td align="center" valign="top" width="50%">
+        <a href="https://github.com/user-attachments/assets/01428161-4007-4435-9889-c8001992dfef"><img src="https://github.com/user-attachments/assets/01428161-4007-4435-9889-c8001992dfef" alt="Webhook" width="100%"></a><br>
+        <strong>Webhook</strong>
+      </td>
+    </tr>
+    <tr>
+      <td align="center" valign="top" width="50%">
+        <a href="https://github.com/user-attachments/assets/f3efd525-ccd1-4f3b-a12c-df48672fef3a"><img src="https://github.com/user-attachments/assets/f3efd525-ccd1-4f3b-a12c-df48672fef3a" alt="Settings Preferences" width="100%"></a><br>
+        <strong>Settings – Preferences</strong>
+      </td>
+      <td align="center" valign="top" width="50%">
+        <a href="https://github.com/user-attachments/assets/6a2d8b0a-328e-4a1a-ade1-f28c3398b3b9"><img src="https://github.com/user-attachments/assets/6a2d8b0a-328e-4a1a-ade1-f28c3398b3b9" alt="Security Authentication" width="100%"></a><br>
+        <strong>Security Authentication</strong>
+      </td>
+    </tr>
+    <tr>
+      <td align="center" valign="top" width="50%">
+        <a href="https://github.com/user-attachments/assets/f2d29a53-127d-4af7-895a-454b1725c77c"><img src="https://github.com/user-attachments/assets/f2d29a53-127d-4af7-895a-454b1725c77c" alt="Custom SMTP" width="100%"></a><br>
+        <strong>Custom SMTP</strong>
+      </td>
+      <td align="center" valign="top" width="50%">
+        <a href="https://github.com/user-attachments/assets/7b4053a6-ed39-4350-a1ab-3e44f0ec84c7"><img src="https://github.com/user-attachments/assets/7b4053a6-ed39-4350-a1ab-3e44f0ec84c7" alt="Customize Email Template" width="100%"></a><br>
+        <strong>Customize Email Template</strong>
+      </td>
+    </tr>
+    <tr>
+      <td align="center" valign="top" width="50%">
+        <a href="https://github.com/user-attachments/assets/03477947-6fb5-4bae-a573-eeefacb43ced"><img src="https://github.com/user-attachments/assets/03477947-6fb5-4bae-a573-eeefacb43ced" alt="Custom File Storage" width="100%"></a><br>
+        <strong>Custom File Storage</strong>
+      </td>
+      <td align="center" valign="top" width="50%">
+        <a href="https://github.com/user-attachments/assets/616754c2-d532-4bf2-8795-4a6934eef39a"><img src="https://github.com/user-attachments/assets/616754c2-d532-4bf2-8795-4a6934eef39a" alt="Organization Admin" width="100%"></a><br>
+        <strong>Organization Admin</strong>
+      </td>
+    </tr>
+  </tbody>
+</table>
 
 ---
 
