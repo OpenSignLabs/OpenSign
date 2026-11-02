@@ -18,7 +18,9 @@ import { appName, cloudServerUrl, serverAppId, smtpenable, smtpsecure, useLocal 
 import { resolveDeploymentBrand } from './utils/brandContext.js';
 import { SSOAuth } from './auth/authadapter.js';
 import runDbMigrations from './migrationdb/index.js';
-import { validateSignedLocalUrl } from './cloud/parsefunction/getSignedUrl.js';
+import { validateSignedLocalUrl,
+  protectedDocumentFile,
+} from './cloud/parsefunction/getSignedUrl.js';
 let fsAdapter;
 
 if (useLocal !== 'true') {
@@ -199,7 +201,7 @@ function getUserIP(request) {
 
 app.use(async function (req, res, next) {
   const isFilePath = req.path?.includes('/files/') || false;
-  if (isFilePath && req.method.toLowerCase() === 'get') {
+  if (isFilePath && ['get', 'head'].includes(req.method.toLowerCase())) {
     const serverUrl = new URL(process.env.SERVER_URL);
     const origin = serverUrl.pathname === '/api/app' ? serverUrl.origin + '/api' : serverUrl.origin;
     const fileUrl = origin + req.originalUrl;
@@ -212,6 +214,8 @@ app.use(async function (req, res, next) {
     } else {
       return res.status(400).json({ message: 'unauthorized' });
     }
+    res.set('Cache-Control', 'private, no-store');
+    res.set('Referrer-Policy', 'no-referrer');
     next();
   } else {
     next();
@@ -227,6 +231,7 @@ if (!process.env.TESTING) {
   try {
     const server = new ParseServer(config);
     await server.start();
+    app.get(mountPath + '/protected-document-file', protectedDocumentFile);
     app.use(mountPath, server.app);
   } catch (err) {
     console.log(err);
