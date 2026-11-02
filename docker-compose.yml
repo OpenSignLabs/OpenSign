@@ -16,7 +16,7 @@ services:
     networks:
       - app-network
   mongo:
-    image: mongo:8.2.12
+    image: mongo:latest
     container_name: mongo-container
     volumes:
       - data-volume:/data/db
