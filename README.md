@@ -122,7 +122,7 @@ Welcome to OpenSign, the premier open source docusign alternative - document e-s
       </td>
       <td align="center" valign="top" width="50%">
         <a href="https://github.com/user-attachments/assets/9ae3bb31-4222-448f-8c25-c7b2bf3b98ab"><img src="https://github.com/user-attachments/assets/9ae3bb31-4222-448f-8c25-c7b2bf3b98ab" alt="Use Template Attached Signers" width="100%"></a><br>
-        <strong>Use Template – Attached Signers</strong>
+        <strong>Use Template – Assign Signer</strong>
       </td>
     </tr>
     <tr>
@@ -161,7 +161,7 @@ Welcome to OpenSign, the premier open source docusign alternative - document e-s
         <strong>Public Profile Setup</strong>
       </td>
       <td align="center" valign="top" width="50%">
-        <a href="https://github.com/user-attachments/assets/e7044961-ad1a-40ae-a3f5-b93befa64fdb"><img src="https://github.com/user-attachments/assets/e7044961-ad1a-40ae-a3f5-b93befa64fdb" alt="Public Template Signing" width="100%"></a><br>
+        <a href="https://github.com/user-attachments/assets/c5f3c8d4-8d53-4d2c-b62a-f6c9de0989dc"><img src="https://github.com/user-attachments/assets/c5f3c8d4-8d53-4d2c-b62a-f6c9de0989dc" alt="Public Template Signing" width="100%"></a><br>
         <strong>Public Template Signing</strong>
       </td>
     </tr>
@@ -172,13 +172,13 @@ Welcome to OpenSign, the premier open source docusign alternative - document e-s
       </td>
       <td align="center" valign="top" width="50%">
         <a href="https://github.com/user-attachments/assets/8caeeabc-2713-4a98-8a58-285241860f1b"><img src="https://github.com/user-attachments/assets/8caeeabc-2713-4a98-8a58-285241860f1b" alt="Connect to Gmail" width="100%"></a><br>
-        <strong>Connect to Gmail</strong>
+        <strong>Connect to Google Drive</strong>
       </td>
     </tr>
     <tr>
       <td align="center" valign="top" width="50%">
         <a href="https://github.com/user-attachments/assets/9bd6f514-0ac9-4f2f-8ffe-22551f50c25e"><img src="https://github.com/user-attachments/assets/9bd6f514-0ac9-4f2f-8ffe-22551f50c25e" alt="Teams User" width="100%"></a><br>
-        <strong>Teams User</strong>
+        <strong>Team Users</strong>
       </td>
       <td align="center" valign="top" width="50%">
         <a href="https://github.com/user-attachments/assets/01428161-4007-4435-9889-c8001992dfef"><img src="https://github.com/user-attachments/assets/01428161-4007-4435-9889-c8001992dfef" alt="Webhook" width="100%"></a><br>
@@ -202,7 +202,7 @@ Welcome to OpenSign, the premier open source docusign alternative - document e-s
       </td>
       <td align="center" valign="top" width="50%">
         <a href="https://github.com/user-attachments/assets/7b4053a6-ed39-4350-a1ab-3e44f0ec84c7"><img src="https://github.com/user-attachments/assets/7b4053a6-ed39-4350-a1ab-3e44f0ec84c7" alt="Customize Email Template" width="100%"></a><br>
-        <strong>Customize Email Template</strong>
+        <strong>Customize Email Templates</strong>
       </td>
     </tr>
     <tr>
@@ -212,7 +212,7 @@ Welcome to OpenSign, the premier open source docusign alternative - document e-s
       </td>
       <td align="center" valign="top" width="50%">
         <a href="https://github.com/user-attachments/assets/616754c2-d532-4bf2-8795-4a6934eef39a"><img src="https://github.com/user-attachments/assets/616754c2-d532-4bf2-8795-4a6934eef39a" alt="Organization Admin" width="100%"></a><br>
-        <strong>Organization Admin</strong>
+        <strong>Organizations and Admins</strong>
       </td>
     </tr>
   </tbody>
