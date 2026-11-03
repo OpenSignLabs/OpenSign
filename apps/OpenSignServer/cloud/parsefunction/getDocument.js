@@ -19,7 +19,22 @@ export default async function getDocument(request) {
         query.include('DeclineBy');
         query.notEqualTo('IsArchive', true);
         if (include) {
-          query?.include(include);
+          const ALLOWED_INCLUDES = [
+            'Bcc',
+            'Cc',
+            'Signers',
+            'Placeholders',
+            'ExtUserPtr',
+            'ExtUserPtr.TenantId',
+            'CreatedBy',
+            'AuditTrail.UserPtr',
+            'DeclineBy',
+          ];
+          const requested = String(include).split(',').map(s => s.trim()).filter(Boolean);
+          const safe = requested.filter(i => ALLOWED_INCLUDES.includes(i));
+          if (safe.length) {
+            query?.include(safe.join(','));
+          }
         }
         const res = await query.first({ useMasterKey: true });
         if (res) {
