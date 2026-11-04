@@ -67,6 +67,8 @@ export default async function GenerateCertificate(docDetails) {
   const textWidth = timesRomanFont.widthOfTextAtSize(generatedOn, 12);
   const margin = 30;
   const maxX = width - margin - textWidth; // Ensures text stays inside the border with 30px margin
+  // Only the IP recorded at creation identifies the originator; audit entries
+  // belong to recipients (Viewed / Signed).
   const OriginIp = docDetails?.OriginIp || '';
   const company = docDetails?.ExtUserPtr?.Company || '';
   const documentHash = docDetails?.DocumentHash || '';
