@@ -26,12 +26,19 @@ function createS3Client({ region, accessKeyId, secretAccessKey, endpoint = null 
   return new S3Client(config);
 }
 
-const s3 = createS3Client({
-  region: process.env.DO_REGION,
-  endpoint: process.env.DO_ENDPOINT,
-  accessKeyId: process.env.DO_ACCESS_KEY_ID,
-  secretAccessKey: process.env.DO_SECRET_ACCESS_KEY,
-});
+let s3;
+
+function getS3Client() {
+  if (!s3) {
+    s3 = createS3Client({
+      region: process.env.DO_REGION,
+      endpoint: process.env.DO_ENDPOINT,
+      accessKeyId: process.env.DO_ACCESS_KEY_ID,
+      secretAccessKey: process.env.DO_SECRET_ACCESS_KEY,
+    });
+  }
+  return s3;
+}
 
 // === Helpers ===
 function getS3ParamsFromUrl(fileUrl) {
@@ -50,7 +57,7 @@ async function deleteS3File(fileUrl) {
   if (!params) return;
 
   try {
-    await s3.send(new DeleteObjectCommand(params));
+    await getS3Client().send(new DeleteObjectCommand(params));
     // console.log(`✅ Deleted from S3: ${params.Key}`);
   } catch (err) {
     console.error(`❌ S3 delete failed: ${params.Key}:`, err.message);
