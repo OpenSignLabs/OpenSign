@@ -361,12 +361,24 @@ async function sendMailsaveCertifcate(doc, pfx, isCustomMail, mailProvider, file
  */
 async function processPdf(_resDoc, PdfBuffer, reason) {
   // No CC merge; operate directly on the original PDF
-  const pdfDoc = await PDFDocument.load(PdfBuffer);
-  const form = pdfDoc.getForm();
-  // Updates the field appearances to ensure visual changes are reflected.
-  form.updateFieldAppearances();
-  // Flattens the form, converting all form fields into non-editable, static content
-  form.flatten();
+  const pdfDoc = await PDFDocument.load(PdfBuffer, { ignoreEncryption: true });
+  try {
+    const form = pdfDoc.getForm();
+    // Updates the field appearances to ensure visual changes are reflected.
+    if (form && typeof form.updateFieldAppearances === 'function') {
+      form.updateFieldAppearances();
+    }
+    // Flattens the form, converting all form fields into non-editable, static content
+    if (form && typeof form.flatten === 'function') {
+      form.flatten();
+    }
+  } catch (e) {
+    // A PDF without a usable form must not abort the signing.
+    console.log('processPdf form flatten skipped:', e?.message);
+  }
+  // The placeholder registers /ByteRange and /Contents before it attaches the
+  // signature field. Saving after a failure would leave an orphaned placeholder
+  // that the signer can fill without a registered signature, so abort instead.
   Placeholder({
     pdfDoc: pdfDoc,
     reason: `Digitally signed by ${eSignName} for ${reason}`,
@@ -375,7 +387,11 @@ async function processPdf(_resDoc, PdfBuffer, reason) {
     contactInfo: eSigncontact,
     signatureLength: 16000,
   });
-  const pdfWithPlaceholderBytes = await pdfDoc.save();
+  // Appearances were already updated above; saving with the default would run
+  // the same update again outside the guard and could abort the signing.
+  const pdfWithPlaceholderBytes = await pdfDoc.save({
+    updateFieldAppearances: false,
+  });
   return Buffer.from(pdfWithPlaceholderBytes);
 }
 /**
@@ -451,7 +467,7 @@ async function PDF(req) {
     }
     const username = signUser.Name;
     const userEmail = signUser.Email;
-    if (req.params.pdfFile) {
+    if (req.params.pdfFile && typeof req.params.pdfFile === 'string') {
       //  `PdfBuffer` used to create buffer from pdf file
       let PdfBuffer = Buffer.from(req.params.pdfFile, 'base64');
       //  `P12Buffer` used to create buffer from p12 certificate
@@ -462,6 +478,12 @@ async function PDF(req) {
         passphrase = _resDoc?.ExtUserPtr?.TenantId?.PfxFile?.password;
       }
       const pfx = { name: pfxname, passphrase: passphrase };
+      if (!pfxFile) {
+        throw new Parse.Error(
+          Parse.Error.SCRIPT_FAILED,
+          'PFX certificate is not configured (PFX_BASE64 missing).'
+        );
+      }
       const P12Buffer = Buffer.from(pfxFile, 'base64');
       fs.writeFileSync(pfxname, P12Buffer);
       const UserPtr = { __type: 'Pointer', className: className, objectId: signUser.objectId };
