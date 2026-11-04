@@ -35,6 +35,18 @@ import DatePicker from "react-datepicker";
 import DateWidgetModal from "../../primitives/DateWidgetModal";
 import { dateFormat, widgetNamesArr } from "../../utils";
 
+// Widget types whose value is edited directly on the document surface.
+const INLINE_EDIT_TYPES = [
+  "text",
+  textInputWidget,
+  "name",
+  "company",
+  "job title",
+  "email",
+  "dropdown",
+  "checkbox"
+];
+
 /**
  * Custom input UI for DatePicker
  * - Declaring custom input outside resolve issue of the component recreates the input component identity on each state update, which can break re-open behavior after first use
@@ -259,7 +271,10 @@ function Placeholder(props) {
             props.setXyPosition(updatesignerPos);
           }
           props?.closeWidgetTour?.();
-          dispatch(setIsShowModal({ [props.pos.key]: true }));
+          // Inline editing: these widget types are edited in the field itself.
+          if (!INLINE_EDIT_TYPES.includes(props.pos.type)) {
+            dispatch(setIsShowModal({ [props.pos.key]: true }));
+          }
       }
     }
     //placeholder, template flow
@@ -279,7 +294,11 @@ function Placeholder(props) {
       } else if (props?.data?.Role === "prefill") {
         props?.handleClosePrefillTour?.();
         props?.closeWidgetTour?.();
-        dispatch(setIsShowModal({ [props.pos.key]: true }));
+        // Inline editing: only open the value modal for the widget types that
+        // cannot be edited in place (image, draw, stamp, date, signature).
+        if (!INLINE_EDIT_TYPES.includes(props.pos.type)) {
+          dispatch(setIsShowModal({ [props.pos.key]: true }));
+        }
         props.setUniqueId(props?.data?.Id);
         props?.setRoleName("prefill");
       }
