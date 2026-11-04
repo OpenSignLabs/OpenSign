@@ -670,6 +670,7 @@ function PlaceholderType(props) {
           style={{
             fontFamily: "Arial, sans-serif",
             fontSize: fontSize,
+            lineHeight: 1.25,
             color: fontColor,
             background: "white"
           }}
