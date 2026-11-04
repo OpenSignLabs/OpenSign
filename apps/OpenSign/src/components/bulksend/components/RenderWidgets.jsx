@@ -18,6 +18,7 @@ import {
 import PenColorComponent from "../../pdf/tab/PenColorComponent";
 import { getDatePickerDate, toHtmlPattern } from "../../../utils";
 import { emailRegex } from "../../../constant/const";
+import { UI_FONT } from "../../../constant/fonts";
 
 const inputOpt = new Set(["text", "email", "number"]);
 const PREFILL_PREFIX = "prefill::";
@@ -42,7 +43,7 @@ const DateWidget = ({ widget, isRequired, onChange, showLabel }) => {
 
   const PrefillDateInput = forwardRef(({ value, onClick }, ref) => (
     <div
-      style={{ fontFamily: "Arial, sans-serif" }}
+      style={{ fontFamily: UI_FONT }}
       className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full"
       onClick={onClick}
       ref={ref}

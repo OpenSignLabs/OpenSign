@@ -30,6 +30,7 @@ import {
 import * as utils from "../../utils";
 import Draw from "./tab/Draw";
 import PenColorComponent from "./tab/PenColorComponent";
+import { UI_FONT } from "../../constant/fonts";
 
 const widgetTitle = "font-medium";
 const widgetLabelCss = (isRequired = false) => {
@@ -222,7 +223,7 @@ function PrefillWidgetModal(props) {
   }, [props?.isPrefillModal, uniqueWidget]);
   const ExampleCustomInput = forwardRef(({ value, onClick }, ref) => (
     <div
-      style={{ fontFamily: "Arial, sans-serif" }}
+      style={{ fontFamily: UI_FONT }}
       className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full"
       onClick={onClick}
       ref={ref}
