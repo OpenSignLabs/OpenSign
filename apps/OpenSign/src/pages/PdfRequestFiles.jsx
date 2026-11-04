@@ -1212,6 +1212,10 @@ function PdfRequestFiles(
           const currentDecline = { currnt: "YouDeclined", isDeclined: true };
           setIsDecline(currentDecline);
           setIsUiLoading(false);
+          if (redirectUrl) {
+            setRedirectTimeLeft(5);
+            setIsredirectCanceled(false);
+          }
         }
       })
       .catch((err) => {
