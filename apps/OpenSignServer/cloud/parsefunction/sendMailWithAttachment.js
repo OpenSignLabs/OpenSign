@@ -63,11 +63,15 @@ async function sendMailProvider(params) {
               new URL(params.url)?.protocol === 'https:' &&
               new URL(params.url)?.hostname !== 'localhost';
             if (isSecure) {
-              https
-                .get(params.url, async function (response) {
-                  response.pipe(Pdf);
-                  response.on('end', () => resolve('success'));
-                })
+https
+                 .get(params.url, async function (response) {
+                   response.pipe(Pdf);
+                   Pdf.on('finish', () => resolve('success'));
+                   response.on('error', e => {
+                     console.error(`error: ${e.message}`);
+                     resolve('error');
+                   });
+                 })
                 .on('error', e => {
                   console.error(`error: ${e.message}`);
                   resolve('error');
