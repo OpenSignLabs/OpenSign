@@ -1,0 +1,223 @@
+import axios from 'axios';
+import multer from 'multer';
+import libre from 'libreoffice-convert';
+import { exec } from 'child_process';
+import { promisify } from 'util';
+import { cloudServerUrl, getSecureUrl, serverAppId } from '../../Utils.js';
+
+const execAsync = promisify(exec);
+
+// -------------------- Process Management --------------------
+/**
+ * Kill stuck LibreOffice processes
+ */
+async function killStuckProcesses() {
+  try {
+    // Kill soffice processes older than 2 minutes
+    if (process.platform === 'linux' || process.platform === 'darwin') {
+      await execAsync("pkill -9 -f 'soffice.*--headless' || true");
+      console.log('[EXCEL2PDF] Cleaned up stuck processes');
+    } else if (process.platform === 'win32') {
+      await execAsync('taskkill /F /IM soffice.bin /T || exit 0');
+      console.log('[EXCEL2PDF] Cleaned up stuck processes (Windows)');
+    }
+  } catch (err) {
+    console.error('[EXCEL2PDF] Error killing processes:', err.message);
+  }
+}
+
+/** @returns {Promise<Buffer>} */
+async function convertLibre(input, ext, opts) {
+  return await new Promise((resolve, reject) => {
+    try {
+      libre.convert(input, ext, opts, (err, out) => (err ? reject(err) : resolve(out)));
+    } catch (e) {
+      reject(e);
+    }
+  });
+}
+
+// -------------------- Concurrency limiter with queue limits --------------------
+// CRITICAL FIX: Reduced to 1 for CPU-intensive LibreOffice conversions
+const MAX_CONCURRENCY = Number(process.env.EXCEL2PDF_CONCURRENCY || 1);
+let active = 0;
+const queue = [];
+
+function runWithLimit(task) {
+  return new Promise((resolve, reject) => {
+    const run = async () => {
+      active++;
+      try {
+        const result = await task();
+        resolve(result);
+      } catch (error) {
+        reject(error);
+      } finally {
+        active--;
+        if (queue.length) {
+          const next = queue.shift();
+          next();
+        }
+      }
+    };
+    if (active < MAX_CONCURRENCY) run();
+    else queue.push(run);
+  });
+}
+
+// -------------------- Timeout helper with cleanup --------------------
+/**
+ * @template T
+ * @param {Promise<T>} promise
+ * @param {number} ms
+ * @param {string} [label='operation']
+ * @returns {Promise<T>}
+ */
+export async function withTimeout(promise, ms, label = 'operation') {
+  let timer;
+  try {
+    const timeout = new Promise((_, reject) => {
+      timer = setTimeout(async () => {
+        // Kill stuck processes on timeout
+        await killStuckProcesses();
+        reject(new Error(`${label} timed out after ${ms}ms`));
+      }, ms);
+    });
+    return await Promise.race([promise, timeout]);
+  } finally {
+    if (timer) clearTimeout(timer);
+  }
+}
+
+// -------------------- Multer: use memory storage --------------------
+const storage = multer.memoryStorage();
+export const upload = multer({
+  storage,
+  limits: { fileSize: 50 * 1024 * 1024 }, // 50MB hard limit at multer level
+  fileFilter: (req, file, cb) => {
+    const okExt = /\.(xlsx|xls)$/i.test(file.originalname || '');
+    const okMime =
+      file.mimetype === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' ||
+      file.mimetype === 'application/vnd.ms-excel' ||
+      file.mimetype === 'application/octet-stream';
+    if (okExt && okMime) return cb(null, true);
+    cb(new Error('Only .xlsx and .xls files are supported'));
+  },
+});
+
+function generatePdfName(length) {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let result = '';
+  for (let i = 0; i < length; i++) result += chars.charAt(Math.floor(Math.random() * chars.length));
+  return result;
+}
+
+export default async function exceltopdf(req, res) {
+  const serverUrl = cloudServerUrl;
+  const parseAppKey = { 'X-Parse-Application-Id': serverAppId };
+  const masterKey = process.env.MASTER_KEY;
+
+  const masterHeader = { ...parseAppKey, 'X-Parse-Master-Key': masterKey };
+  const sessionHeader = { ...parseAppKey, 'X-Parse-Session-Token': req.headers['sessiontoken'] };
+
+  if (!req.file || !req.file.buffer) {
+    return res.status(400).json({ error: 'No file uploaded.' });
+  }
+
+  try {
+    // ---- Auth: current user ----
+    const userRes = await axios.get(`${serverUrl}/users/me`, { headers: sessionHeader });
+
+    // ---- contracts_Users ----
+    const whereUser = JSON.stringify({
+      UserId: { __type: 'Pointer', className: '_User', objectId: userRes.data.objectId },
+    });
+    const resUser = await axios.get(
+      `${serverUrl}/classes/contracts_Users?where=${whereUser}&limit=1&include=TenantId`,
+      { headers: masterHeader }
+    );
+
+    if (!resUser?.data?.results?.length) {
+      return res.status(403).json({ error: 'User not linked to tenant.' });
+    }
+
+    const tenantId = resUser.data.results[0]?.TenantId?.objectId;
+    if (!tenantId) {
+      return res.status(403).json({ error: 'Tenant not found for user.' });
+    }
+
+    // ---- EXCEL -> PDF conversion with concurrency control and timeout ----
+    const fileName = `${generatePdfName(16)}.pdf`;
+    const uploadedSizeBytes = req.file.buffer.length;
+
+    // Adjust timeout based on file size
+    const timeoutMs = uploadedSizeBytes > 10 * 1024 * 1024 ? 120_000 : 90_000;
+
+    // FIX: Increased timeout for large files, added nice priority
+    const pdfBuffer = await runWithLimit(async () => {
+      // Log for monitoring
+      console.log(
+        `[EXCEL2PDF] Starting conversion, size: ${(uploadedSizeBytes / 1024 / 1024).toFixed(2)}MB, active: ${active}, queued: ${queue.length}`
+      );
+
+      const startTime = Date.now();
+      try {
+        const result = await withTimeout(
+          convertLibre(req.file.buffer, '.pdf', undefined),
+          timeoutMs,
+          'EXCEL->PDF'
+        );
+        console.log(`[EXCEL2PDF] Completed in ${Date.now() - startTime}ms`);
+        return result;
+      } catch (error) {
+        console.error(`[EXCEL2PDF] Failed after ${Date.now() - startTime}ms:`, error.message);
+        // Clean up on error
+        await killStuckProcesses();
+        throw error;
+      }
+    });
+
+    // ---- Upload PDF ----
+    const activeFileAdapter = resUser.data.results[0]?.TenantId?.ActiveFileAdapter;
+    let fileUrl;
+    if (activeFileAdapter) {
+      const params = {
+        fileBase64: Buffer.from(pdfBuffer).toString('base64'),
+        fileName,
+        id: activeFileAdapter,
+      };
+      const url = serverUrl + '/functions/savetofileadapter';
+      const headers = { 'Content-Type': 'application/json', ...sessionHeader };
+      const savetos3 = await axios.post(url, params, { headers });
+      fileUrl = savetos3?.data?.result?.url;
+      if (!fileUrl) throw new Error('No URL returned from file adapter');
+    } else {
+      const parsefile = await axios.post(`${serverUrl}/files/${fileName}`, pdfBuffer, {
+        headers: { ...masterHeader, 'Content-Type': 'application/pdf' },
+      });
+      const fileRes = getSecureUrl(parsefile.data.url);
+      fileUrl = fileRes.url;
+    }
+
+    return res.status(200).json({ message: 'success.', url: fileUrl });
+  } catch (err) {
+    // More specific error messages
+    let msg =
+      err?.response?.data?.error || err?.response?.data || err?.message || 'Something went wrong.';
+    // Friendly message to the client
+    const message =
+      'We are currently experiencing some issues with processing Excel files. Please upload the PDF version or contact us on support@opensignlabs.com';
+
+    if (msg.includes('timed out')) {
+      msg =
+        'Document conversion is taking too long. Please try a smaller file or contact support@opensignlabs.com';
+    } else if (msg.includes('too large') || msg.includes('size')) {
+      msg =
+        'File is too large to process. Please reduce the file size or contact support@opensignlabs.com';
+    } else {
+      msg = message;
+    }
+    console.error(`[EXCEL2PDF] Error: ${msg}`);
+    return res.status(400).json({ error: msg });
+  }
+}
