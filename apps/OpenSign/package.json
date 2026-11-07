@@ -84,6 +84,7 @@
     "dev": "vite",
     "qa:local": "vite --mode local-qa --host 127.0.0.1 --port 3000",
     "preview": "vite preview",
+    "test": "vitest run",
     "start": "node server.cjs",
     "version": "curl -s https://api.github.com/repos/opensignlabs/opensign/releases/latest | grep '\"tag_name\":' | awk -F '\"' '{print $4}' > ./public/version.txt",
     "version-win": "powershell -Command \"Invoke-RestMethod -Uri 'https://api.github.com/repos/opensignlabs/opensign/releases/latest' | Select-Object -ExpandProperty tag_name | Out-File -FilePath ./public/version.txt\"",

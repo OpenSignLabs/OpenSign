@@ -3,6 +3,7 @@ import { PDFName } from "pdf-lib";
 import { format } from "date-fns-tz";
 import { toZonedTime } from "date-fns-tz";
 import { base64ToArrayBuffer } from "./pdfPageView.js";
+import { copyPdfMetadata } from "../../utils/pdfDocumentUtils.js";
 
 export function generateTitleFromFilename(filename) {
   try {
@@ -118,6 +119,7 @@ export const reorderPdfPages = async (pdfArrayBuffer, orderArr) => {
       orderArr.map((n) => n - 1)
     );
     pages.forEach((p) => newPdf.addPage(p));
+    copyPdfMetadata(pdfDoc, newPdf);
     const pdfBase64 = await newPdf.saveAsBase64({ useObjectStreams: false });
     const arrayBuffer = base64ToArrayBuffer(pdfBase64);
     return { arrayBuffer, base64: pdfBase64, totalPages: orderArr.length };

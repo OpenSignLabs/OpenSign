@@ -14,7 +14,7 @@ export { urlValidator, placeholderWidth, placeholderHeight, contactBook, contrac
 export { getAppLogo, getTenantDetails, replaceMailVaribles, copytoData, convertPdfArrayBuffer, handleSendOTP, fetchUrl, getSignedUrl, fetchBase64, handleDownloadPdf, fileNameWithUnderscore } from "./utils/tenantDownloads.js";
 export { handleToPrint, handleDownloadCertificate, escapeRegExp, findContact } from "./utils/printCertificates.js";
 export { getContainerScale, getDefaultSignature, rotatePdfPage, base64ToArrayBuffer, removeBase64Prefix, convertBase64ToFile, isCustomFileAdapter, pendingButtonZoomScrollRef, onClickZoomIn, onClickZoomOut, handleRemoveWidgets, handleRotateWarning } from "./utils/pdfPageView.js";
-export { generateTitleFromFilename, signatureTypes, handleSignatureType, formatDateToDdMmmYyyy, deletePdfPage, reorderPdfPages, generatePdfName, formatTimeInTimezone, handleHeighlightWidget } from "./utils/pdfPageEdit.js";
+export { generateTitleFromFilename, signatureTypes, handleSignatureType, formatDateToDdMmmYyyy, deletePdfPage, reorderPdfPages, generatePdfName, formatTimeInTimezone, handleHeighlightWidget, copyPdfMetadata } from "./utils/pdfPageEdit.js";
 export { flattenPdf } from "./utils/pdfFlatten.js";
 export { mailTemplate, formatDateTime, updateDateWidgetsRes, selectCheckbox, checkRegularExpress, handleUnlinkSigner } from "./utils/widgetResponses.js";
 export { getOriginalWH, handleCheckResponse, decryptPdf, base64ToFile, getFileAsArrayBuffer } from "./utils/pdfResponse.js";
