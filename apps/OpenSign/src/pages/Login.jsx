@@ -9,6 +9,7 @@ import {
 } from "../constant/const";
 import Alert from "../primitives/Alert";
 import { appInfo } from "../constant/appinfo";
+import { applySavedTheme } from "../utils/theme";
 import { fetchAppInfo } from "../redux/reducers/infoReducer";
 import { showTenant } from "../redux/reducers/ShowTenant";
 import {
@@ -176,6 +177,7 @@ function Login() {
                 location?.state?.from || `/${menu.pageType}/${menu.pageId}`;
               const _role = _currentRole.replace("contracts_", "");
               const extInfo = JSON.parse(JSON.stringify(extUser));
+              applySavedTheme(extUser?.get("Theme"));
               localStorage.setItem("_user_role", _role);
               localStorage.setItem("Extand_Class", JSON.stringify([extUser]));
               localStorage.setItem("userEmail", extInfo?.Email);
@@ -234,6 +236,7 @@ function Login() {
           if (menu) {
             const extInfo = JSON.parse(JSON.stringify(extUser));
             const _role = _currentRole.replace("contracts_", "");
+            applySavedTheme(extUser?.get("Theme"));
             localStorage.setItem("_user_role", _role);
             const redirectUrl =
               location?.state?.from || `/${menu.pageType}/${menu.pageId}`;
@@ -368,6 +371,7 @@ function Login() {
             if (checkLanguage) {
               checkLanguage && i18n.changeLanguage(checkLanguage);
             }
+            applySavedTheme(extUser?.get("Theme"));
             const extInfo = JSON.parse(JSON.stringify(extUser));
             // Continue with storing user data and redirecting
             localStorage.setItem("Extand_Class", JSON.stringify([extUser]));
