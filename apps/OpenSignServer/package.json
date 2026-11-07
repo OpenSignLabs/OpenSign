@@ -13,6 +13,7 @@
     "lint-fix": "eslint --cache --fix ./cloud && eslint --cache --fix index.js",
     "prettier": "prettier --write 'cloud/{**/*,*}.js' 'index.js'",
     "start": "node index.js",
+    "test": "jasmine",
     "watch": "nodemon index.js"
   },
   "dependencies": {
