@@ -18,6 +18,7 @@ import {
   removeTrailingSegment
 } from "../constant/Utils";
 import { normalizeParseObjectResult } from "../utils/parseResult";
+import { mergePdfBuffers } from "../utils/pdfDocumentUtils";
 import { isCreditQuotaError } from "../utils/creditErrors";
 import { PDFDocument } from "pdf-lib";
 import axios from "axios";
@@ -315,12 +316,7 @@ const Forms = (props) => {
       }
 
       setfileload(true);
-      const merged = await PDFDocument.create();
-      for (const bytes of pdfBuffers) {
-        const doc = await PDFDocument.load(bytes, { ignoreEncryption: true });
-        const pages = await merged.copyPages(doc, doc.getPageIndices());
-        pages.forEach((p) => merged.addPage(p));
-      }
+      const merged = await mergePdfBuffers(pdfBuffers);
 
       const pdfBytes = await merged.save({ useObjectStreams: false });
       const name = generatePdfName(16);

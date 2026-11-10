@@ -1,5 +1,6 @@
 import axios from "axios";
 import { getErrorMessage, isCreditQuotaError } from "../utils/creditErrors";
+import { copyPdfMetadata } from "../utils/pdfDocumentUtils";
 import moment from "moment";
 import {
   PDFDocument,
@@ -3707,6 +3708,7 @@ export const reorderPdfPages = async (pdfArrayBuffer, orderArr) => {
       orderArr.map((n) => n - 1)
     );
     pages.forEach((p) => newPdf.addPage(p));
+    copyPdfMetadata(pdfDoc, newPdf);
     const pdfBase64 = await newPdf.saveAsBase64({ useObjectStreams: false });
     const arrayBuffer = base64ToArrayBuffer(pdfBase64);
     return { arrayBuffer, base64: pdfBase64, totalPages: orderArr.length };
