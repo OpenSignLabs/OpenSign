@@ -79,6 +79,15 @@ You can check your available API credits on the **Settings → API Token** page.
 
 You can also add regular **Signature** widgets to the document. When the document is signed using QES, it will be embedded with a digital signature. The qualified signature stamp will appear at the position specified by the Qualified Signature widget. You do not need to add multiple Qualified Signature widgets for each signer.
 
+### Keyboard Shortcuts and Mouse Controls
+
+Users should be able to use keyboard shortcuts and mouse controls while creating documents to improve the document editing experience.
+
+1. **Copy and Paste Widgets:** Select a widget and press `Ctrl + C` to copy it. Then press `Ctrl + V` to paste it at the desired location in the document using the mouse.
+2. **Select Multiple Widgets:** Hold down the `Ctrl` key and use the left mouse button to select multiple widgets.
+3. **Delete Widgets:** Users can remove selected widgets by clicking the Delete button.
+4. **Undo and Redo:** Users can undo and redo their actions using `Ctrl + Z` and `Ctrl + Y`, respectively.
+
 ### 📄 Document Page Controls
 - **Navigating Between Pages in OpenSign™**
   To navigate between pages of a document that you have uploaded either click on the previous page ∧ & V next page  buttons at the top or click on any of the page previews loaded on the left side.
