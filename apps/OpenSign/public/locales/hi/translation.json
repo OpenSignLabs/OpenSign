@@ -1649,6 +1649,8 @@
   "logic-action-optional": "वैकल्पिक करें",
   "logic-op-equals": "बराबर है",
   "logic-op-notEquals": "बराबर नहीं है",
+  "logic-op-greaterThan": "से बड़ा है",
+  "logic-op-lessThan": "से कम है",
   "logic-op-checked": "चेक किया गया है",
   "logic-op-unchecked": "चेक नहीं किया गया है",
   "widget-hidden-due-to-logic": "यह विजेट सशर्त तर्क के कारण छिपा हुआ है।",

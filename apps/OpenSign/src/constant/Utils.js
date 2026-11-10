@@ -29,6 +29,17 @@ import {
 } from "../utils";
 
 export const fontsizeArr = [2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28];
+export const getFontSizeForHeight = (height) => {
+  const numericHeight = Number(height);
+  if (!Number.isFinite(numericHeight) || numericHeight <= 0) {
+    return fontsizeArr[0];
+  }
+
+  const fittingSizes = fontsizeArr.filter(
+    (fontSize) => fontSize * 1.5 <= numericHeight
+  );
+  return fittingSizes[fittingSizes.length - 1] || fontsizeArr[0];
+};
 export const fontColorArr = ["red", "black", "blue", "yellow"];
 export const isMobile = window.innerWidth < 767;
 export const isTab = 767 < window.innerWidth < 1023;
@@ -1284,7 +1295,10 @@ export const onChangeInput = (
               textWidgetHeight &&
               !value
             ) {
-              return { ...position, Height: textWidgetHeight };
+              const dimension = [90, 270].includes(position.options?.rotation)
+                ? "Width"
+                : "Height";
+              return { ...position, [dimension]: textWidgetHeight };
             } else {
               return applyDuplicateWidgetValue(position);
             }
@@ -1335,11 +1349,15 @@ export const onChangeInput = (
             }
           };
         } else if (
-          currentPosition?.type === "text" &&
+          (currentPosition?.type === "text" ||
+            currentPosition?.type === textInputWidget) &&
           textWidgetHeight &&
           !value
         ) {
-          return { ...positionData, Height: textWidgetHeight };
+          const dimension = [90, 270].includes(positionData.options?.rotation)
+            ? "Width"
+            : "Height";
+          return { ...positionData, [dimension]: textWidgetHeight };
         } else {
           return applyDuplicateWidgetValue(positionData);
         }

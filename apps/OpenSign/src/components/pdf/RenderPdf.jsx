@@ -44,6 +44,10 @@ function RenderPdf(props) {
   const pendingDropRef = useRef(null);
   // Ref to suppress scroll-handler updates during programmatic scrolling
   const isScrollingToPage = useRef(false);
+  // Drawing can update the toolbar page without changing the user's scroll
+  // position. The page-change effect must not interpret that update as a
+  // request to scroll to the top of the drawn page.
+  const suppressPageScrollRef = useRef(false);
   // Stores the page number most recently set BY the scroll handler. The
   // page-change effect compares props.pageNumber against this value to detect
   // whether the change came from scrolling (skip programmatic scroll) or from
@@ -518,6 +522,12 @@ function RenderPdf(props) {
       lastScrollSetPage.current = props?.pageNumber || 1;
       return;
     }
+    if (suppressPageScrollRef.current) {
+      suppressPageScrollRef.current = false;
+      prevPageRef.current = props.pageNumber;
+      lastScrollSetPage.current = props.pageNumber;
+      return;
+    }
     // Detect whether this page change came from the scroll handler. If the new
     // pageNumber matches what scroll last set, this is a scroll-driven update
     // and we must NOT programmatically scroll (that would set isScrollingToPage
@@ -808,8 +818,8 @@ function RenderPdf(props) {
       drawEndRef.current.pageY - drawStartRef.current.pageY
     );
 
-    // Only create widget if the drawn area is large enough (minimum 30x20 pixels)
-    if (pageWidth > 30 && pageHeight > 20) {
+    // Keep the width guard against accidental clicks without rejecting short fields.
+    if (pageWidth > 30 && pageHeight > 0) {
       const drawPageNum = drawStartRef.current.pageNum;
       const containerScale = getContainerScale(
         props.pdfOriginalWH,
@@ -836,6 +846,7 @@ function RenderPdf(props) {
       if (props.addPositionOfSignature) {
         // If drawing on a different page, update pageNumber first
         if (drawPageNum !== props.pageNumber && props.setPageNumber) {
+          suppressPageScrollRef.current = true;
           props.setPageNumber(drawPageNum);
         }
         const type =

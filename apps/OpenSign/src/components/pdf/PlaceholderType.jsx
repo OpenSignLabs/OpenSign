@@ -6,6 +6,7 @@ import {
 } from "react";
 import {
   onChangeInput,
+  defaultWidthHeight,
   radioButtonWidget,
   textInputWidget,
   cellsWidget,
@@ -149,22 +150,30 @@ function PlaceholderType(props) {
       props?.pos?.type === name[0] ? `${name[0]}${lastWord}` : widgetName;
     return defaultData || props?.pos?.options?.hint || title;
   };
-  //useEffect is used to increase auto height of text/textInput widget when user using multiline option and enter value in next line
+  // Convert rendered line heights back to PDF units before growing the widget.
   useEffect(() => {
     if (!textRef.current) return;
     if (
       (type === "text" || type === textInputWidget) &&
       textRef.current &&
-      widgetValue
+      widgetData
     ) {
-      const el = textRef.current;
-      // Count actual number of lines
-      const lines = widgetValue?.split("\n")?.length || props.pos?.Height;
-      // Get line height from computed style
-      const lineHeight = parseInt(window.getComputedStyle(el).lineHeight);
+      const lines = widgetData.split("\n").length;
+      const containerScale = parseFloat(props.calculateFont(1));
+      const style = window.getComputedStyle(textRef.current);
+      const lineHeight =
+        style.lineHeight === "normal"
+          ? parseFloat(style.fontSize) * 1.5
+          : parseFloat(style.lineHeight);
+      const textWidgetHeight = (lines * lineHeight) / containerScale;
+      const dimension = [90, 270].includes(props.pos.options?.rotation)
+        ? "Width"
+        : "Height";
+      const currentHeight =
+        props.pos[dimension] ||
+        defaultWidthHeight(type)[dimension.toLowerCase()];
+      if (textWidgetHeight <= currentHeight) return;
 
-      const textWidgetHeight = lines * lineHeight;
-      // Set widget box height (your logic)
       onChangeInput(
         null,
         props.pos,

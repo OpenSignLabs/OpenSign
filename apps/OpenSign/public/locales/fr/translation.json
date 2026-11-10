@@ -1650,6 +1650,8 @@
   "logic-action-optional": "Rendre facultatif",
   "logic-op-equals": "est égal à",
   "logic-op-notEquals": "n'est pas égal à",
+  "logic-op-greaterThan": "est supérieur à",
+  "logic-op-lessThan": "est inférieur à",
   "logic-op-checked": "est coché",
   "logic-op-unchecked": "n'est pas coché",
   "widget-hidden-due-to-logic": "Ce widget est masqué en raison de la logique conditionnelle.",
