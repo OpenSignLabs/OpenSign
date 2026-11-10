@@ -153,6 +153,15 @@ The **Prefill Widgets** feature lets document creators prefill specific fields b
 - **Draw** – Allows the user to draw directly in this widget; use it when a prefill drawing is required.
 ---
 
+### Keyboard Shortcuts and Mouse Controls
+
+Users should be able to use keyboard shortcuts and mouse controls while creating documents to improve the document editing experience.
+
+1. **Copy and Paste Widgets:** Select a widget and press `Ctrl + C` to copy it. Then press `Ctrl + V` to paste it at the desired location in the document using the mouse.
+2. **Select Multiple Widgets:** Hold down the `Ctrl` key and use the left mouse button to select multiple widgets.
+3. **Delete Widgets:** Users can remove selected widgets by clicking the Delete button.
+4. **Undo and Redo:** Users can undo and redo their actions using `Ctrl + Z` and `Ctrl + Y`, respectively.
+
 ## Signers/Recipients 
 Below the **Prefill** section, you'll find the list of signers that were added while creating the document. From this panel, you can select a recipient to assign widgets or use the **Add Recipient** option to include additional signers. 
 
