@@ -1,3 +1,9 @@
+import {
+  issueDocumentAccess,
+  revokeDocumentAccess,
+  protectPrivateRecord,
+  recordUploadedFile,
+} from '../utils/documentAccess.js';
 import PDF from './parsefunction/pdf/PDF.js';
 import sendmailv3 from './parsefunction/sendMailv3.js';
 import usersignup from './parsefunction/usersignup.js';
@@ -138,3 +144,12 @@ Parse.Cloud.define('updateemailtemplates', updateEmailTemplates);
 Parse.Cloud.define('triggerevent', triggerEvent);
 Parse.Cloud.define('setwidgetpreferences', setWidgetPreferences);
 Parse.Cloud.define('createdocumentfromapp', createDocumentFromApp);
+
+// Private grants and upload receipts are created and changed only by trusted code.
+Parse.Cloud.beforeSave('contracts_DocumentAccessGrant', protectPrivateRecord);
+Parse.Cloud.beforeDelete('contracts_DocumentAccessGrant', protectPrivateRecord);
+Parse.Cloud.beforeSave('contracts_FileAccessReceipt', protectPrivateRecord);
+Parse.Cloud.beforeDelete('contracts_FileAccessReceipt', protectPrivateRecord);
+Parse.Cloud.afterSave(Parse.File, recordUploadedFile);
+Parse.Cloud.define('createdocumentaccess', issueDocumentAccess);
+Parse.Cloud.define('revokedocumentaccess', revokeDocumentAccess);

@@ -1,3 +1,5 @@
+import { createSigningLink } from '../../utils/documentAccess';
+import SecureSignerLink from '../../components/pdf/SecureSignerLink';
 import React, { useState, useEffect, useRef } from "react";
 import pad from "../../assets/images/pad.svg";
 import { Link, useLocation, useNavigate } from "react-router";
@@ -434,31 +436,18 @@ const TemplatesReport = (props) => {
   ) => {
     setIsDeleteModal({});
   };
-  const handleShare = (item) => {
+  const handleShare = async (item) => {
     setActLoader({ [item.objectId]: true });
-    const host = window.location.origin;
-    const sendMail = item?.SendMail || false;
-    const getUrl = (x) => {
-      //encode this url value `${item.objectId}/${x.Email}/${x.objectId}` to base64 using `btoa` function
-      if (x?.signerObjId) {
-        const encodeBase64 = btoa(
-          `${item.objectId}/${x.signerPtr.Email}/${x.signerPtr.objectId}/${sendMail}`
-        );
-        return `${host}/login/${encodeBase64}`;
-      } else {
-        const encodeBase64 = btoa(`${item.objectId}/${x.email}`);
-        return `${host}/login/${encodeBase64}`;
-      }
-    };
-    const placeholders = item?.Placeholders.filter(
-      (data) => data?.Role !== "prefill"
-    );
-    const urls = placeholders?.map((x) => ({
-      email: x.email ? x.email : x.signerPtr.Email,
-      url: getUrl(x)
-    }));
-    setShareUrls(urls);
-    setIsShare({ [item.objectId]: true });
+    try {
+      const recipients = (item.Placeholders || []).filter(p => p.Role !== 'prefill');
+      const urls = await Promise.all(recipients.map(async signer => ({
+        email: getSignerEmail(signer, item.Signers) || signer.email || '-',
+        url: await createSigningLink(item.objectId, signer.signerObjId, getSignerEmail(signer, item.Signers) || signer.email)
+      })));
+      setShareUrls(urls);
+      setIsShare({ [item.objectId]: true });
+    } catch { showAlert('danger', t('something-went-wrong-mssg')); }
+    finally { setActLoader({}); }
   };
 
   const copytoclipboard = (text) => {
@@ -998,54 +987,7 @@ const TemplatesReport = (props) => {
     setIsSubmit(false);
   });
   //function show signer list and share link to share signUrl
-  const handleShareList = () => {
-    const shareLinkList = [];
-    let signerMail = signerList;
-    for (let i = 0; i < signerMail.length; i++) {
-      const objectId = signerMail[i].objectId;
-      const hostUrl = window.location.origin;
-      const sendMail = false;
-      //encode this url value `${documentId}/${signerMail[i].Email}/${objectId}` to base64 using `btoa` function
-      const encodeBase64 = btoa(
-        `${documentId}/${signerMail[i].Email}/${objectId}/${sendMail}`
-      );
-      let signPdf = `${hostUrl}/login/${encodeBase64}`;
-      shareLinkList.push({
-        signerEmail: signerMail[i].Email,
-        url: signPdf,
-      });
-    }
-    return shareLinkList.map((data, ind) => {
-      return (
-        <div
-          className="flex flex-row justify-between items-center mb-1"
-          key={ind}
-        >
-          {copied && <Alert type="success">{t("copied")}</Alert>}
-          <span className="w-[220px] md:w-[300px] whitespace-nowrap overflow-hidden text-ellipsis  ">
-            {data.signerEmail}
-          </span>
-          <div className="flex flex-row items-center gap-3 ">
-            <button
-              onClick={() => copytoclipboard(data.url)}
-              type="button"
-              className="flex flex-row items-center op-link op-link-primary"
-            >
-              <i className="fa-light fa-copy" />
-              <span className=" hidden md:block ml-1 ">{t("copy-link")}</span>
-            </button>
-            <ShareButton
-              title={t("sign-url")}
-              text={t("sign-url")}
-              url={data.url}
-            >
-              <i className="fa-light fa-share-from-square op-link op-link-secondary no-underline"></i>
-            </ShareButton>
-          </div>
-        </div>
-      );
-    });
-  };
+  const handleShareList = () => (signerList || []).map((signer) => <SecureSignerLink key={signer.objectId} docId={documentId} recipientId={signer.objectId} email={signer.Email} />);
   const filteredPlaceholders = (placeholders = []) => {
     const filtered = placeholders?.filter((data) => data?.Role !== "prefill");
     return filtered;
