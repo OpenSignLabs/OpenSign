@@ -9,7 +9,8 @@ import {
   textInputWidget,
   textWidget,
   cellsWidget,
-  addWidgetOptions
+  addWidgetOptions,
+  getFontSizeForHeight
 } from "../constant/Utils";
 import { base64StringtoFile, uploadFile } from "./fileUtils";
 import { sanitizeFileName } from "./sanitizeFileName";
@@ -124,6 +125,15 @@ export const createCustomPositionWidget = ({
   roleName
 }) => {
   const { xPosition, yPosition, width, height } = customPosition;
+  const options = addWidgetOptions(
+    dragTypeValue,
+    owner,
+    signerPlaceHolder,
+    roleName
+  );
+  if ([textWidget, textInputWidget].includes(dragTypeValue)) {
+    options.fontSize = getFontSizeForHeight(height);
+  }
   const dropObj = {
     xPosition,
     yPosition,
@@ -132,12 +142,7 @@ export const createCustomPositionWidget = ({
     scale: containerScale,
     zIndex: posZIndex,
     type: dragTypeValue,
-    options: addWidgetOptions(
-      dragTypeValue,
-      owner,
-      signerPlaceHolder,
-      roleName
-    ),
+    options,
     Width: width,
     Height: height
   };

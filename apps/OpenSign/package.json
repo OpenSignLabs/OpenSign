@@ -158,7 +158,11 @@
     "fast-uri": "^3.1.5",
     "nanoid": ">=3.3.16",
     "ws": ">=8.21.0",
-    "protobufjs": ">=7.6.5"
+    "protobufjs": ">=7.6.5",
+    "@graphql-tools/utils": "12.1.0",
+    "@intlify/shared": "11.4.14",
+    "@intlify/core-base": "^11.4.14",
+    "vue-i18n": "^11.4.14"
   },
   "engines": {
     "node": "18 || 20 || 22"

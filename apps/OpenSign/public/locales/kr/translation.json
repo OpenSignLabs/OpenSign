@@ -1649,6 +1649,8 @@
   "logic-action-optional": "선택 사항으로 만들기",
   "logic-op-equals": "같음",
   "logic-op-notEquals": "같지 않음",
+  "logic-op-greaterThan": "보다 큼",
+  "logic-op-lessThan": "보다 작음",
   "logic-op-checked": "체크됨",
   "logic-op-unchecked": "체크되지 않음",
   "widget-hidden-due-to-logic": "이 위젯은 조건부 논리로 인해 숨겨져 있습니다.",

@@ -1708,7 +1708,7 @@ function PdfRequestFiles(
           dragTypeValue
         )
       ) {
-        setFontSize(12);
+        setFontSize(dropObj?.options?.fontSize || 12);
         setFontColor("black");
       }
       setCurrWidgetsDetails({ ...dropObj, pageNumber: pageNumber });

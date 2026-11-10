@@ -454,6 +454,7 @@ const TemplatePlaceholder = () => {
   };
   // `getSignerPos` is used to get placeholder position when user place it and save it in array
   const getSignerPos = (item, monitor, customOptions) => {
+    const targetPageNumber = customOptions?.pageNumber ?? pageNumber;
     if (uniqueId) {
       const signer = signersdata.find((x) => x.Id === uniqueId);
       const prefillUser = prefillSigner.find((x) => x.Id === uniqueId);
@@ -462,7 +463,7 @@ const TemplatePlaceholder = () => {
         setZIndex(posZIndex);
         const containerScale = getContainerScale(
           pdfOriginalWH,
-          pageNumber,
+          targetPageNumber,
           containerWH
         );
         const key = randomId();
@@ -486,7 +487,7 @@ const TemplatePlaceholder = () => {
             containerScale,
             posZIndex,
             dragTypeValue,
-            pageNumber,
+            pageNumber: targetPageNumber,
             owner,
             signerPlaceHolder: filterSignerPos?.placeHolder,
             roleName
@@ -523,7 +524,7 @@ const TemplatePlaceholder = () => {
             Height: widgetHeight / (containerScale * scale)
           };
           dropData.push(dropObj);
-          placeHolder = { pageNumber: pageNumber, pos: dropData };
+          placeHolder = { pageNumber: targetPageNumber, pos: dropData };
         } else {
           const offset = monitor.getClientOffset();
           //adding and updating drop position in array when user drop signature button in div
@@ -580,24 +581,24 @@ const TemplatePlaceholder = () => {
           };
 
           dropData.push(dropObj);
-          placeHolder = { pageNumber: pageNumber, pos: dropData };
+          placeHolder = { pageNumber: targetPageNumber, pos: dropData };
         }
 
         const getPlaceHolder = filterSignerPos?.placeHolder;
         if (getPlaceHolder) {
           //checking exist placeholder on same page
           currentPagePosition = getPlaceHolder.find(
-            (data) => data.pageNumber === pageNumber
+            (data) => data.pageNumber === targetPageNumber
           );
         }
         //checking current page has already some placeholders then update that placeholder and add upcoming placehoder position
         if (getPlaceHolder && currentPagePosition) {
           const updatePlace = getPlaceHolder.filter(
-            (data) => data.pageNumber !== pageNumber
+            (data) => data.pageNumber !== targetPageNumber
           );
           const getPos = currentPagePosition?.pos;
           const newSignPos = getPos.concat(dropData);
-          let xyPos = { pageNumber: pageNumber, pos: newSignPos };
+          let xyPos = { pageNumber: targetPageNumber, pos: newSignPos };
           updatePlace.push(xyPos);
           const updatesignerPos = signerPos.map((x) =>
             x.Id === uniqueId ? { ...x, placeHolder: updatePlace } : x
@@ -659,10 +660,10 @@ const TemplatePlaceholder = () => {
             "email"
           ].includes(dragTypeValue)
         ) {
-          setFontSize(12);
+          setFontSize(dropObj?.options?.fontSize || 12);
           setFontColor("black");
         }
-        setCurrWidgetsDetails({ ...dropObj, pageNumber: pageNumber });
+        setCurrWidgetsDetails({ ...dropObj, pageNumber: targetPageNumber });
       } else {
         setIsReceipent(false);
       }
@@ -1599,10 +1600,15 @@ const TemplatePlaceholder = () => {
         const textSize = fontSize || currWidgetsDetails?.options?.fontSize;
         const textColor = fontColor || currWidgetsDetails?.options?.fontColor;
         const addSignPos = getPageNumer?.[0]?.pos?.map((position) => {
+          const textHeight = Math.max(
+            position.Height || 0,
+            Math.ceil((textSize || 12) * 1.5)
+          );
           if (position.key === currWidgetsDetails?.key) {
             if (position.type === textInputWidget) {
               return {
                 ...position,
+                Height: textHeight,
                 options: {
                   ...position.options,
                   name: defaultdata?.name || "text",
@@ -1653,6 +1659,9 @@ const TemplatePlaceholder = () => {
             } else {
               return {
                 ...position,
+                ...(position.type === textWidget
+                  ? { Height: textHeight }
+                  : {}),
                 options: {
                   ...position.options,
                   name: defaultdata.name,
