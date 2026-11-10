@@ -14,6 +14,7 @@ import {
   embedDocId,
   embedWidgetsToDoc,
   defaultWidthHeight,
+  getFontSizeForHeight,
   contractUsers,
   contactBook,
   randomId,
@@ -394,6 +395,9 @@ function SignYourSelf() {
           true
         )
       };
+      if ([textWidget, textInputWidget].includes(dragTypeValue)) {
+        dropObj.options.fontSize = getFontSizeForHeight(height);
+      }
       dropData.push(dropObj);
     } else if (item === "onclick") {
       // Use the current page container (id="container") so that the
@@ -509,7 +513,7 @@ function SignYourSelf() {
         "email"
       ].includes(dragTypeValue)
     ) {
-      setFontSize(12);
+      setFontSize(dropObj?.options?.fontSize || 12);
       setFontColor("black");
     }
     setCurrWidgetsDetails({ ...dropObj, pageNumber: targetPageNumber });

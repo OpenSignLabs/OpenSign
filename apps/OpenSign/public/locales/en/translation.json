@@ -1649,6 +1649,8 @@
   "logic-action-optional": "Make optional",
   "logic-op-equals": "equals",
   "logic-op-notEquals": "does not equal",
+  "logic-op-greaterThan": "is greater than",
+  "logic-op-lessThan": "is less than",
   "logic-op-checked": "is checked",
   "logic-op-unchecked": "is not checked",
   "widget-hidden-due-to-logic": "This widget is hidden due to conditional logic.",

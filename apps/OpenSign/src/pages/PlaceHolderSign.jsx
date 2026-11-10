@@ -516,6 +516,7 @@ function PlaceHolderSign() {
     getSignerPos(item, monitor, customOptions);
   };
   const getSignerPos = (item, monitor, customOptions) => {
+    const targetPageNumber = customOptions?.pageNumber ?? pageNumber;
     if (uniqueId) {
       const signer = signersdata.find((x) => x.Id === uniqueId);
       const prefillUser = prefillSigner.find((x) => x.Id === uniqueId);
@@ -525,7 +526,7 @@ function PlaceHolderSign() {
         const key = randomId();
         const containerScale = getContainerScale(
           pdfOriginalWH,
-          pageNumber,
+          targetPageNumber,
           containerWH
         );
         let dropData = [],
@@ -549,7 +550,7 @@ function PlaceHolderSign() {
             containerScale,
             posZIndex,
             dragTypeValue,
-            pageNumber,
+            pageNumber: targetPageNumber,
             owner,
             signerPlaceHolder: filterSignerPos?.placeHolder,
             roleName
@@ -586,7 +587,7 @@ function PlaceHolderSign() {
             Height: widgetHeight / (containerScale * scale)
           };
           dropData.push(dropObj);
-          placeHolder = { pageNumber: pageNumber, pos: dropData };
+          placeHolder = { pageNumber: targetPageNumber, pos: dropData };
         } else {
           const offset = monitor.getClientOffset();
           //This method returns the offset of the current pointer (mouse) position relative to the client viewport.
@@ -643,23 +644,23 @@ function PlaceHolderSign() {
             Height: widgetHeight / (containerScale * scale)
           };
           dropData.push(dropObj);
-          placeHolder = { pageNumber: pageNumber, pos: dropData };
+          placeHolder = { pageNumber: targetPageNumber, pos: dropData };
         }
         const getPlaceHolder = filterSignerPos?.placeHolder;
         if (getPlaceHolder) {
           //checking exist placeholder on same page
           currentPagePosition = getPlaceHolder.find(
-            (data) => data.pageNumber === pageNumber
+            (data) => data.pageNumber === targetPageNumber
           );
         }
         //checking current page has already some placeholders then update that placeholder and add upcoming placehoder position
         if (getPlaceHolder && currentPagePosition) {
           const updatePlace = getPlaceHolder.filter(
-            (data) => data.pageNumber !== pageNumber
+            (data) => data.pageNumber !== targetPageNumber
           );
           const getPos = currentPagePosition?.pos;
           const newSignPos = getPos.concat(dropData);
-          let xyPos = { pageNumber: pageNumber, pos: newSignPos };
+          let xyPos = { pageNumber: targetPageNumber, pos: newSignPos };
           updatePlace.push(xyPos);
           let updatesignerPos;
 
@@ -722,12 +723,12 @@ function PlaceHolderSign() {
             "email"
           ].includes(dragTypeValue)
         ) {
-          setFontSize(12);
+          setFontSize(dropObj?.options?.fontSize || 12);
           setFontColor("black");
         } else if (dragTypeValue === radioButtonWidget) {
           setIsRadio(true);
         }
-        setCurrWidgetsDetails({ ...dropObj, pageNumber: pageNumber });
+        setCurrWidgetsDetails({ ...dropObj, pageNumber: targetPageNumber });
       }
     }
   };
@@ -1483,10 +1484,15 @@ function PlaceHolderSign() {
         const textSize = fontSize || currWidgetsDetails?.options?.fontSize;
         const textColor = fontColor || currWidgetsDetails?.options?.fontColor;
         const addSignPos = getPageNumer?.[0]?.pos?.map((position) => {
+          const textHeight = Math.max(
+            position.Height || 0,
+            Math.ceil((textSize || 12) * 1.5)
+          );
           if (position.key === currWidgetsDetails?.key) {
             if (position.type === textInputWidget) {
               return {
                 ...position,
+                Height: textHeight,
                 options: {
                   ...position.options,
                   name: defaultdata?.name || "text",
@@ -1537,6 +1543,9 @@ function PlaceHolderSign() {
             } else {
               return {
                 ...position,
+                ...(position.type === textWidget
+                  ? { Height: textHeight }
+                  : {}),
                 options: {
                   ...position.options,
                   name: defaultdata.name,

@@ -1649,6 +1649,8 @@
   "logic-action-optional": "Rendi facoltativo",
   "logic-op-equals": "è uguale a",
   "logic-op-notEquals": "non è uguale a",
+  "logic-op-greaterThan": "è maggiore di",
+  "logic-op-lessThan": "è minore di",
   "logic-op-checked": "è selezionato",
   "logic-op-unchecked": "non è selezionato",
   "widget-hidden-due-to-logic": "Questo widget è nascosto a causa della logica condizionale.",
