@@ -83,10 +83,10 @@ You can also add regular **Signature** widgets to the document. When the documen
 
 Users should be able to use keyboard shortcuts and mouse controls while creating documents to improve the document editing experience.
 
-1. **Copy and Paste Widgets:** Select a widget and press `Ctrl + C` to copy it. Then press `Ctrl + V` to paste it at the desired location in the document using the mouse.
-2. **Select Multiple Widgets:** Hold down the `Ctrl` key and use the left mouse button to select multiple widgets.
-3. **Delete Widgets:** Users can remove selected widgets by clicking the Delete button.
-4. **Undo and Redo:** Users can undo and redo their actions using `Ctrl + Z` and `Ctrl + Y`, respectively.
+1. **Copy and Paste Widgets:**  **Copy and Paste Widgets:** Select a widget and press `Ctrl + C` (Windows/Linux) or `⌘ + C` (Mac) to copy it. Then press `Ctrl + V` (Windows/Linux) or `⌘ + V` (Mac) to paste it at the desired location in the document using the mouse.
+2. **Select Multiple Widgets:** Hold down the `Ctrl` key (Windows/Linux) or `⌘ Command` key (Mac) and use the left mouse button to select multiple widgets.
+3. **Delete Widgets:** Users can remove selected widgets by clicking the **Delete** button.
+4. **Undo and Redo:** Users can undo and redo their actions using `Ctrl + Z` and `Ctrl + Y` (Windows/Linux), or `⌘ + Z` and `⌘ + Shift + Z` (Mac), respectively.
 
 ### 📄 Document Page Controls
 - **Navigating Between Pages in OpenSign™**
