@@ -551,13 +551,5 @@ export const usersActions = [
     redirectUrl: "",
     action: "delete",
     restrictAdmin: true
-  },
-  {
-    btnId: "1910",
-    hoverLabel: "Reset password",
-    btnIcon: "fa-light fa-key",
-    redirectUrl: "",
-    action: "resetpassword",
-    restrictAdmin: true
   }
 ];

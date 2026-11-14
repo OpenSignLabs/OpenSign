@@ -1,17 +1,16 @@
 import { appName } from '../../../Utils.js';
 import sendSystemMail from '../../parsefunction/sendSystemMail.js';
+import { OTP_EXPIRES_MIN } from '../../parsefunction/emailOtp.js';
 
-// Constants (adjust to your preference)
-export const OTP_LENGTH = 6;
-export const OTP_EXPIRES_MIN = 10; // OTP validity in minutes
-export const RESEND_COOLDOWN_SEC = 30; // Cooldown between OTP sends
-export const MAX_ATTEMPTS = 5; // Max allowed wrong attempts
-
-export function generateOtp(len = OTP_LENGTH) {
-  // 6-digit numeric OTP (000000–999999, padded)
-  const n = Math.floor(Math.random() * Math.pow(10, len));
-  return String(n).padStart(len, '0');
-}
+// Same rules as every other one-time code (adjust them in emailOtp.js).
+export {
+  OTP_LENGTH,
+  OTP_EXPIRES_MIN,
+  RESEND_COOLDOWN_SEC,
+  MAX_ATTEMPTS,
+  generateOtp,
+  codesMatch,
+} from '../../parsefunction/emailOtp.js';
 
 export async function sendDeleteOtpEmail(extUser, otp) {
   const _extUser = extUser && JSON.parse(JSON.stringify(extUser));

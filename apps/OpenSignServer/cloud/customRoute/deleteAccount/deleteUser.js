@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { cloudServerUrl, generateId, serverAppId } from '../../../Utils.js';
 import { deleteContactsInBatch, deleteDataFiles, deleteInBatches } from './deleteFileUrl.js';
-import { MAX_ATTEMPTS } from './deleteUtils.js';
+import { MAX_ATTEMPTS, codesMatch } from './deleteUtils.js';
 const serverUrl = cloudServerUrl;
 const appId = serverAppId;
 
@@ -311,7 +311,7 @@ export const deleteUserPost = async (req, res) => {
     if (expiry && Date.now() > expiry.getTime()) {
       return res.status(400).send('OTP has expired. Please request a new OTP.');
     }
-    if (otp !== savedOtp) {
+    if (!codesMatch(otp, savedOtp)) {
       // Increment tries on mismatch
       extUser.set('DeleteOTPTries', tries + 1);
       await extUser.save(null, { useMasterKey: true });

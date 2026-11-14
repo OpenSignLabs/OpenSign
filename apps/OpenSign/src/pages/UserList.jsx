@@ -12,7 +12,6 @@ import {
 } from "react-i18next";
 import DeleteUserModal from "../primitives/DeleteUserModal";
 import axios from "axios";
-import PasswordResetModal from "../primitives/PasswordResetModal";
 import { usersActions } from "../json/ReportJson";
 import { withSessionValidation } from "../utils";
 import Box from "@mui/material/Box";
@@ -278,20 +277,6 @@ const UserList = () => {
     }
   };
 
-  const submitPassword = withSessionValidation(async (userId, password) => {
-    setIsLoader(true);
-    setIsActModal({});
-    try {
-      const params = { userId, password };
-      await Parse.Cloud.run("resetpassword", params);
-      showAlert("success", t("password-has-been-reset"));
-    } catch (err) {
-      console.log("err while reset password", err);
-      showAlert("danger", t(err.message), 2000);
-    } finally {
-      setIsLoader(false);
-    }
-  });
   return (
     <Box sx={{ position: "relative" }}>
       {isLoader && (
@@ -587,15 +572,6 @@ const UserList = () => {
                                 onConfirm={() => handleDeleteAccount(item)}
                                 deleteRes={deleteUserRes}
                                 handleClose={handleCloseModal}
-                              />
-                              <PasswordResetModal
-                                isOpen={
-                                  isActModal["resetpassword_" + item.objectId]
-                                }
-                                userId={item?.UserId?.objectId}
-                                onClose={handleCloseModal}
-                                onSubmit={submitPassword}
-                                showAlert={showAlert}
                               />
                             </TableRow>
                           ))}

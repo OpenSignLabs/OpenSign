@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router";
-import axios from "axios";
 import {
   emailRegex,
 } from "../constant/const";
 import {
   contractUsers,
+  runPublicCloudFn,
   saveLanguageInLocal
 } from "../constant/Utils";
 import logo from "../assets/images/logo.png";
@@ -149,7 +149,7 @@ function GuestLogin() {
         setEnterOtp(true);
       }
     } catch (error) {
-      alert(t("something-went-wrong-mssg"));
+      alert(error?.message || t("something-went-wrong-mssg"));
       setLoading(false);
     }
   };
@@ -162,59 +162,42 @@ function GuestLogin() {
   //verify OTP send on via email
   const VerifyOTP = async (e) => {
     e.preventDefault();
-    const serverUrl =
-      localStorage.getItem("baseUrl") && localStorage.getItem("baseUrl");
-    const parseId =
-      localStorage.getItem("parseAppId") && localStorage.getItem("parseAppId");
     if (OTP) {
       setLoading(true);
       try {
-        let url = `${serverUrl}functions/AuthLoginAsMail`;
-        const headers = {
-          "Content-Type": "application/json",
-          "X-Parse-Application-Id": parseId
-        };
-        let body = {
+        const _user = await runPublicCloudFn("AuthLoginAsMail", {
           email: email?.toLowerCase()?.replace(/\s/g, ""),
-          otp: OTP
-        };
-        let user = await axios.post(url, body, { headers: headers });
-        if (user.data.result === "Invalid Otp") {
-          alert(t("invalid-otp"));
-          setLoading(false);
-        } else if (user.data.result === "user not found!") {
-          alert(t("user-not-found"));
-          setLoading(false);
+          otp: OTP,
+          docId: documentId
+        });
+        await Parse.User.become(_user.sessionToken);
+        const parseId = localStorage.getItem("parseAppId");
+        if (_user) {
+          localStorage.setItem("accesstoken", _user?.sessionToken);
+          localStorage.setItem("UserInformation", JSON.stringify(_user));
+          localStorage.setItem(
+            `Parse/${parseId}/currentUser`,
+            JSON.stringify(_user)
+          );
+        }
+        const contractUserDetails = await contractUsers();
+        if (contractUserDetails && contractUserDetails.length > 0) {
+          localStorage.setItem(
+            "Extand_Class",
+            JSON.stringify(contractUserDetails)
+          );
+        }
+        setLoading(false);
+        if (sendmail === "false") {
+          navigate(
+            `/load/recipientSignPdf/${documentId}/${contactId}?sendmail=${sendmail}`
+          );
         } else {
-          let _user = user.data.result;
-          await Parse.User.become(_user.sessionToken);
-          const parseId = localStorage.getItem("parseAppId");
-          if (_user) {
-            localStorage.setItem("accesstoken", _user?.sessionToken);
-            localStorage.setItem("UserInformation", JSON.stringify(_user));
-            localStorage.setItem(
-              `Parse/${parseId}/currentUser`,
-              JSON.stringify(_user)
-            );
-          }
-          const contractUserDetails = await contractUsers();
-          if (contractUserDetails && contractUserDetails.length > 0) {
-            localStorage.setItem(
-              "Extand_Class",
-              JSON.stringify(contractUserDetails)
-            );
-          }
-          setLoading(false);
-          if (sendmail === "false") {
-            navigate(
-              `/load/recipientSignPdf/${documentId}/${contactId}?sendmail=${sendmail}`
-            );
-          } else {
-            navigate(`/load/recipientSignPdf/${documentId}/${contactId}`);
-          }
+          navigate(`/load/recipientSignPdf/${documentId}/${contactId}`);
         }
       } catch (error) {
         console.log("err ", error);
+        alert(error?.message || t("something-went-wrong-mssg"));
         setLoading(false);
       }
     } else {
@@ -300,7 +283,10 @@ function GuestLogin() {
                   slotProps={{
                     htmlInput: {
                       required: true,
-                      pattern: "[0-9]{4}",
+                      pattern: "[0-9]{6}",
+                      maxLength: 6,
+                      inputMode: "numeric",
+                      autoComplete: "one-time-code",
                       onInvalid: (e) =>
                         e.target.setCustomValidity(t("input-required")),
                       onInput: (e) => e.target.setCustomValidity("")

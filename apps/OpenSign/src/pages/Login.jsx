@@ -2,22 +2,17 @@ import { useEffect, useState } from "react";
 import Parse from "parse";
 import { useDispatch } from "react-redux";
 import axios from "axios";
-import { NavLink, useNavigate, useLocation } from "react-router";
+import { useNavigate, useLocation } from "react-router";
 import BrandHero from "../components/BrandHero";
 import { bs } from "../theme/md3Theme";
 import { useWindowSize } from "../hook/useWindowSize";
-import ModalUi from "../primitives/ModalUi";
-import {
-  emailRegex,
-} from "../constant/const";
 import Alert from "../primitives/Alert";
 import { appInfo } from "../constant/appinfo";
 import { fetchAppInfo } from "../redux/reducers/infoReducer";
 import { showTenant } from "../redux/reducers/ShowTenant";
 import {
   getAppLogo,
-  saveLanguageInLocal,
-  usertimezone
+  saveLanguageInLocal
 } from "../constant/Utils";
 import Loader from "../primitives/Loader";
 import { useTranslation } from "react-i18next";
@@ -30,13 +25,7 @@ import {
 import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
 import Button from "@mui/material/Button";
-import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
-import Link from "@mui/material/Link";
-import IconButton from "@mui/material/IconButton";
-import InputAdornment from "@mui/material/InputAdornment";
-import Visibility from "@mui/icons-material/Visibility";
-import VisibilityOff from "@mui/icons-material/VisibilityOff";
 
 function Login() {
   const appName =
@@ -47,19 +36,11 @@ function Login() {
   const dispatch = useDispatch();
   const { width } = useWindowSize();
   const [state, setState] = useState({
-    email: "",
-    password: "",
     alertType: "success",
     alertMsg: "",
-    passwordVisible: false,
     loading: false,
     thirdpartyLoader: false,
   });
-  const [userDetails, setUserDetails] = useState({
-    Company: "",
-    Destination: ""
-  });
-  const [isModal, setIsModal] = useState(false);
   const [image, setImage] = useState();
   // A tenant's own logo (white-label); the default one is replaced by the brand mark.
   const isCustomLogo = image && image !== appInfo?.applogo;
@@ -137,58 +118,6 @@ function Login() {
       GetLoginData();
     }
   };
-  const handleChange = (event) => {
-    let { name, value } = event.target;
-    if (name === "email") {
-      value = value?.toLowerCase()?.replace(/\s/g, "");
-    }
-    setState({ ...state, [name]: value });
-  };
-
-  const handleLogin = async (
-  ) => {
-    const email = state?.email
-    const password = state?.password
-
-    if (!email || !password) {
-      return;
-    }
-    localStorage.removeItem("accesstoken");
-    try {
-      setState({ ...state, loading: true });
-      localStorage.setItem("appLogo", appInfo.applogo);
-      const _user = await Parse.Cloud.run("loginuser", { email, password });
-      if (!_user) {
-        setState({ ...state, loading: false });
-        return;
-      }
-      // Get extended user data (including 2FA status) using cloud function
-      try {
-        await Parse.User.become(_user.sessionToken);
-        setLocalVar(_user);
-        await continueLoginFlow();
-      } catch (error) {
-        console.error("Error checking 2FA status:", error);
-        showToast("danger", t("something-went-wrong-mssg"));
-      }
-    } catch (error) {
-      console.error("Error while logging in user", error);
-      if (error?.code === 1001) {
-        showToast("danger", t("action-prohibited"));
-      } else {
-        showToast("danger", t("invalid-username-password-region"));
-      }
-    }
-  };
-  const handleLoginBtn = async (event) => {
-    event.preventDefault();
-    if (!emailRegex.test(state.email)) {
-      alert(t("valid-email-alert"));
-      return;
-    }
-    await handleLogin();
-  };
-
   const setThirdpartyLoader = (value) => {
     setState({ ...state, thirdpartyLoader: value });
   };
@@ -256,8 +185,7 @@ function Login() {
       } catch (error) {
         console.error("err in fetching extUser", error);
         showToast("danger", `${error.message}`);
-        const payload = { sessionToken: _user.sessionToken };
-        handleSubmitbtn(payload);
+        logOutUser();
       } finally {
         setThirdpartyLoader(false);
       }
@@ -319,57 +247,7 @@ function Login() {
     }
   };
 
-  const togglePasswordVisibility = () => {
-    setState({ ...state, passwordVisible: !state.passwordVisible });
-  };
-
-  const handleSubmitbtn = async (e) => {
-    e.preventDefault();
-    if (userDetails.Destination && userDetails.Company) {
-      setThirdpartyLoader(true);
-      const payload = { sessionToken: localStorage.getItem("accesstoken") };
-      const userInformation = JSON.parse(
-        localStorage.getItem("UserInformation")
-      );
-      if (payload && payload.sessionToken) {
-        const params = {
-          userDetails: {
-            name: userInformation.name,
-            email: userInformation.email,
-            phone: userInformation?.phone || "",
-            role: "contracts_User",
-            company: userDetails.Company,
-            jobTitle: userDetails.Destination,
-            timezone: usertimezone
-          }
-        };
-        const userSignUp = await Parse.Cloud.run("usersignup", params);
-        if (userSignUp && userSignUp.sessionToken) {
-          const LocalUserDetails = {
-            name: userInformation.name,
-            email: userInformation.email,
-            phone: userInformation?.phone || "",
-            company: userDetails.Company,
-            jobTitle: userDetails.JobTitle
-          };
-          localStorage.setItem("userDetails", JSON.stringify(LocalUserDetails));
-          thirdpartyLoginfn(userSignUp.sessionToken);
-        } else {
-          alert(userSignUp.message);
-        }
-      } else if (
-        payload &&
-        payload.message.replace(/ /g, "_") === "Internal_server_err"
-      ) {
-        alert(t("server-error"));
-      }
-    } else {
-      showToast("warning", t("fill-required-details!"));
-    }
-  };
-
   const logOutUser = async () => {
-    setIsModal(false);
     try {
       await Parse.User.logOut();
     } catch (err) {
@@ -393,63 +271,6 @@ function Login() {
     localStorage.setItem("baseUrl", baseUrl);
     localStorage.setItem("parseAppId", appid);
     localStorage.setItem("favicon", favicon);
-  };
-
-  const continueLoginFlow = async () => {
-    try {
-      const userSettings = appInfo.settings;
-      const extUser = await Parse.Cloud.run("getUserDetails");
-      if (extUser) {
-        const IsDisabled = extUser?.get("IsDisabled") || false;
-        if (!IsDisabled) {
-          const userRole = extUser?.get("UserRole");
-          const menu =
-            userRole && userSettings?.find((menu) => menu.role === userRole);
-          if (menu) {
-            const _currentRole = userRole;
-            const redirectUrl =
-              location?.state?.from || `/${menu.pageType}/${menu.pageId}`;
-            const _role = _currentRole.replace("contracts_", "");
-            localStorage.setItem("_user_role", _role);
-            const checkLanguage = extUser?.get("Language");
-            if (checkLanguage) {
-              checkLanguage && i18n.changeLanguage(checkLanguage);
-            }
-            const extInfo = JSON.parse(JSON.stringify(extUser));
-            // Continue with storing user data and redirecting
-            localStorage.setItem("Extand_Class", JSON.stringify([extUser]));
-            localStorage.setItem("userEmail", extInfo.Email);
-            localStorage.setItem("username", extInfo.Name);
-            if (extInfo?.TenantId) {
-              const tenant = {
-                Id: extInfo?.TenantId?.objectId || "",
-                Name: extInfo?.TenantId?.TenantName || ""
-              };
-              localStorage.setItem("TenantId", tenant?.Id);
-              dispatch(showTenant(tenant?.Name));
-              localStorage.setItem("TenantName", tenant?.Name);
-            }
-            localStorage.setItem("PageLanding", menu.pageId);
-            localStorage.setItem("defaultmenuid", menu.menuId);
-            localStorage.setItem("pageType", menu.pageType);
-              setState({ ...state, loading: false });
-              navigate(redirectUrl);
-          } else {
-            setState({ ...state, loading: false });
-            setIsModal(true);
-          }
-        } else {
-          showToast("danger", t("do-not-access-contact-admin"));
-          logOutUser();
-        }
-      } else {
-          showToast("danger", t("user-not-found"));
-          logOutUser();
-      }
-    } catch (error) {
-      console.error("Error during login flow", error);
-      showToast("danger", error.message || t("something-went-wrong-mssg"));
-    }
   };
 
   return errMsg ? (
@@ -596,136 +417,35 @@ function Login() {
               )}
               <div>
                 <div>
-                  <form onSubmit={handleLoginBtn} aria-label="Login Form">
-                    <Typography id="loginHeading" variant="h4" component="h1">
-                      {t("welcome")}
-                    </Typography>
-                    <Box
-                      component="fieldset"
-                      sx={{ border: "none", p: 0, m: 0 }}
-                    >
-                      <Typography
-                        component="legend"
-                        variant="body1"
-                        sx={{ color: "text.secondary", mt: 0.5 }}
-                      >
-                        {t("Login-to-your-account")}
-                      </Typography>
-                      <Box sx={{ width: "100%", mt: 2.5, mb: 1 }}>
-                        <Typography
-                          component="label"
-                          htmlFor="email"
-                          variant="subtitle2"
-                          sx={{ display: "block", mb: 0.5 }}
-                        >
-                          {t("email")}
-                        </Typography>
-                        <TextField
-                          id="email"
-                          type="email"
-                          name="email"
-                          fullWidth
-                          size="small"
-                          autoComplete="username"
-                          value={state.email}
-                          onChange={handleChange}
-                          slotProps={{
-                            htmlInput: {
-                              required: true,
-                              onInvalid: (e) =>
-                                e.target.setCustomValidity(t("input-required")),
-                              onInput: (e) => e.target.setCustomValidity("")
-                            }
-                          }}
-                        />
-                        <Box sx={{ my: 1 }} />
-                        <Typography
-                          component="label"
-                          htmlFor="password"
-                          variant="subtitle2"
-                          sx={{ display: "block", mb: 0.5 }}
-                        >
-                          {t("password")}
-                        </Typography>
-                        <TextField
-                          id="password"
-                          type={state.passwordVisible ? "text" : "password"}
-                          name="password"
-                          fullWidth
-                          size="small"
-                          autoComplete="current-password"
-                          value={state.password}
-                          onChange={handleChange}
-                          slotProps={{
-                            htmlInput: {
-                              required: true,
-                              onInvalid: (e) =>
-                                e.target.setCustomValidity(t("input-required")),
-                              onInput: (e) => e.target.setCustomValidity("")
-                            },
-                            input: {
-                              endAdornment: (
-                                <InputAdornment position="end">
-                                  <IconButton
-                                    aria-label="toggle password visibility"
-                                    onClick={togglePasswordVisibility}
-                                    edge="end"
-                                    size="small"
-                                  >
-                                    {state.passwordVisible ? (
-                                      <VisibilityOff fontSize="small" />
-                                    ) : (
-                                      <Visibility fontSize="small" />
-                                    )}
-                                  </IconButton>
-                                </InputAdornment>
-                              )
-                            }
-                          }}
-                        />
-                        <Box sx={{ mt: 1 }}>
-                          <Link
-                            component={NavLink}
-                            to="/forgetpassword"
-                            underline="hover"
-                            sx={{ fontSize: 13, ml: 0.5 }}
-                          >
-                            {t("forgot-password")}?
-                          </Link>
-                        </Box>
-                      </Box>
-                    </Box>
-                    <Box
-                      sx={{
-                        display: "grid",
-                        gridTemplateColumns: "1fr",
-                        gap: 1.25,
-                        mt: 2
-                      }}
-                    >
-                      <Button
-                        type="submit"
-                        variant="contained"
-                        size="large"
-                        disabled={state.loading}
-                      >
-                        {state.loading ? t("loading") : t("login")}
-                      </Button>
-                      <Button
-                        type="button"
-                        variant="contained"
-                        color="secondary"
-                        size="large"
-                        disabled={state.loading}
-                        onClick={() => startBsIdLogin()}
-                        startIcon={
-                          <i className="fa-light fa-fingerprint" aria-hidden="true"></i>
-                        }
-                      >
-                        Sign in with BetterSign
-                      </Button>
-                    </Box>
-                  </form>
+                  <Typography id="loginHeading" variant="h4" component="h1">
+                    {t("welcome")}
+                  </Typography>
+                  <Typography
+                    variant="body1"
+                    sx={{ color: "text.secondary", mt: 0.5 }}
+                  >
+                    {t("Login-to-your-account")}
+                  </Typography>
+                  <Button
+                    type="button"
+                    variant="contained"
+                    size="large"
+                    fullWidth
+                    sx={{ mt: 2.5 }}
+                    disabled={state.loading}
+                    onClick={() => startBsIdLogin()}
+                    startIcon={
+                      <i className="fa-light fa-fingerprint" aria-hidden="true"></i>
+                    }
+                  >
+                    Sign in with BetterSign
+                  </Button>
+                  <Typography
+                    variant="body2"
+                    sx={{ color: "text.secondary", mt: 2 }}
+                  >
+                    {t("signer-link-hint")}
+                  </Typography>
                 </div>
               </div>
               <Box
@@ -746,94 +466,6 @@ function Login() {
               <Alert type={state.alertType}>{state.alertMsg}</Alert>
             )}
           </BrandHero>
-          <ModalUi
-            isOpen={isModal}
-            title={t("additional-info")}
-            showClose={false}
-          >
-            <Box component="form" sx={{ px: 2, py: 1.5 }}>
-              <Box sx={{ mb: 1.5 }}>
-                <Typography
-                  component="label"
-                  htmlFor="Company"
-                  variant="caption"
-                  sx={{ display: "flex", fontWeight: 600 }}
-                >
-                  {t("company")}{" "}
-                  <Box component="span" sx={{ color: "error.main", ml: 0.25 }}>
-                    *
-                  </Box>
-                </Typography>
-                <TextField
-                  type="text"
-                  id="Company"
-                  fullWidth
-                  size="small"
-                  value={userDetails.Company}
-                  onChange={(e) =>
-                    setUserDetails({
-                      ...userDetails,
-                      Company: e.target.value
-                    })
-                  }
-                  slotProps={{
-                    htmlInput: {
-                      required: true,
-                      onInvalid: (e) =>
-                        e.target.setCustomValidity(t("input-required")),
-                      onInput: (e) => e.target.setCustomValidity("")
-                    }
-                  }}
-                />
-              </Box>
-              <Box sx={{ mb: 1.5 }}>
-                <Typography
-                  component="label"
-                  htmlFor="JobTitle"
-                  variant="caption"
-                  sx={{ display: "flex", fontWeight: 600 }}
-                >
-                  {t("job-title")}
-                  <Box component="span" sx={{ color: "error.main", ml: 0.25 }}>
-                    *
-                  </Box>
-                </Typography>
-                <TextField
-                  type="text"
-                  id="JobTitle"
-                  fullWidth
-                  size="small"
-                  value={userDetails.Destination}
-                  onChange={(e) =>
-                    setUserDetails({
-                      ...userDetails,
-                      Destination: e.target.value
-                    })
-                  }
-                  slotProps={{
-                    htmlInput: {
-                      required: true,
-                      onInvalid: (e) =>
-                        e.target.setCustomValidity(t("input-required")),
-                      onInput: (e) => e.target.setCustomValidity("")
-                    }
-                  }}
-                />
-              </Box>
-              <Box sx={{ mt: 2, gap: 1, display: "flex", flexDirection: "row" }}>
-                <Button
-                  type="button"
-                  variant="contained"
-                  onClick={(e) => handleSubmitbtn(e)}
-                >
-                  {t("login")}
-                </Button>
-                <Button type="button" variant="text" onClick={logOutUser}>
-                  {t("cancel")}
-                </Button>
-              </Box>
-            </Box>
-          </ModalUi>
         </>
       ) : (
         <Box

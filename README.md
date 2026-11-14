@@ -39,6 +39,11 @@
 6. [License](#license)
 7. [Acknowledgments](#acknowledgments)
 
+> **BetterSign fork:** this repository is Open BetterSign. Its changes to OpenSign,
+> including Sign in with BetterSign as the only home page sign-in, recipients signing
+> through the emailed link, and the hardened 6-digit one-time code rules, are
+> described in [BetterSignUpdates.md](BetterSignUpdates.md).
+
 ---
 Please star ⭐ the repo to support us! 😀
 

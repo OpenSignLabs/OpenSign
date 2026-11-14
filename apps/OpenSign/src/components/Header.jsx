@@ -263,17 +263,6 @@ const Header = ({ isConsole, setIsLoggingOut }) => {
                       <MenuItem
                         onClick={() => {
                           setIsOpen(false);
-                          navigate("/changepassword");
-                        }}
-                      >
-                        <i className="fa-light fa-lock"></i>
-                        <Box component="span" sx={{ ml: 1 }}>
-                          {t("change-password")}
-                        </Box>
-                      </MenuItem>
-                      <MenuItem
-                        onClick={() => {
-                          setIsOpen(false);
                           navigate("/verify-document");
                         }}
                       >

@@ -77,6 +77,16 @@ Parse.Cloud.afterSave('contracts_Teams', TeamsAftersave);
 Parse.Cloud.beforeSave('contracts_Document', DocumentBeforesave);
 Parse.Cloud.beforeSave('contracts_Template', TemplateBeforeSave);
 
+// No password sign-in (/login, `loginuser`). Users sign in with BetterSign and
+// recipients through the signing link; both get sessions from /loginAs, which
+// doesn't run this trigger. See BetterSignUpdates.md.
+Parse.Cloud.beforeLogin(() => {
+  throw new Parse.Error(
+    Parse.Error.OPERATION_FORBIDDEN,
+    'Password sign-in is disabled. Sign in with BetterSign.'
+  );
+});
+
 // This afterFind function triggers after a query retrieves objects from the specified class, allowing for post-processing of the results.
 Parse.Cloud.afterFind(Parse.User, UserAfterFind);
 Parse.Cloud.afterFind('contracts_Document', DocumentBeforeFind);
