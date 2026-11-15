@@ -9,7 +9,9 @@
 // then on the document is append-only (utils/appendOnlyPdf.js): online
 // signers and OpenSign's seal append too, so this signature keeps verifying.
 //
-// Body (JSON): { pdf: <base64>, statement: <b64url CBOR>, signature: <b64url Multisig> }
+// Body (JSON): { pdf: <base64>, statement | message: <b64url>, signature: <b64url Multisig> }
+// `statement` is the bs-docsign CBOR; `message` the full canonical signed
+// message carrying it (statement.js buildSignedMessage).
 
 import crypto from 'node:crypto';
 import {
@@ -19,14 +21,15 @@ import {
 } from '../../../utils/appendOnlyPdf.js';
 import { finishSigning } from '../../parsefunction/pdf/PDF.js';
 import { notifyNextSigner } from './notify.js';
-import { apiError, config } from './auth.js';
+import { apiError, checkSignedFields, config, notConfigured } from './auth.js';
 import { findAccessibleDocument, signerState, toPublicDocument } from './documents.js';
-import { parseStatement, statementDigest } from './statement.js';
+import { ensureReceiverVlad } from './receiverVlad.js';
+import { parseStatement, signedMessageFrom } from './statement.js';
 import { verifySignature } from './verifier.js';
 
 const STATEMENT_SKEW_S = 120;
 const MAX_PDF_BYTES = 50 * 1024 * 1024;
-const B64URL_RE = /^[A-Za-z0-9_-]+$/;
+const MAX_STATEMENT_BYTES = 8192;
 const B64_RE = /^[A-Za-z0-9+/_-]+={0,2}$/;
 
 const sha256 = b => crypto.createHash('sha256').update(b).digest();
@@ -37,18 +40,15 @@ function log(event, fields) {
 
 export async function uploadSignature(req, res) {
   const { vlad, user } = req.bs;
-  const { pdf, statement, signature } = req.body || {};
+  await ensureReceiverVlad();
+  const c = config();
+  if (!c.receiverVlad) return notConfigured(res);
+  const { pdf, signature } = req.body || {};
   if (typeof pdf !== 'string' || !B64_RE.test(pdf)) {
     return apiError(res, 400, 'invalid_request', 'pdf must be the signed PDF in base64.');
   }
-  for (const [k, v] of [
-    ['statement', statement],
-    ['signature', signature],
-  ]) {
-    if (typeof v !== 'string' || !B64URL_RE.test(v) || v.length > 32768) {
-      return apiError(res, 400, 'invalid_request', `${k} is missing or not base64url.`);
-    }
-  }
+  const bad = checkSignedFields(req.body, MAX_STATEMENT_BYTES);
+  if (bad) return apiError(res, 400, 'invalid_request', bad);
   const pdfBytes = Buffer.from(pdf, 'base64');
   if (pdfBytes.length > MAX_PDF_BYTES || pdfBytes.subarray(0, 5).toString() !== '%PDF-') {
     return apiError(res, 400, 'invalid_pdf', 'pdf is not a PDF, or is too large.');
@@ -62,11 +62,16 @@ export async function uploadSignature(req, res) {
   if (!state.canSign) return apiError(res, 409, state.reason, state.message);
 
   // 2. The statement: this identity, this site, this document, these bytes.
-  const c = config();
+  // Signed as the canonical message from this identity to us.
+  let signed;
   let s;
-  const statementBytes = Buffer.from(statement, 'base64url');
   try {
-    s = parseStatement(statementBytes, 'bs-docsign');
+    signed = signedMessageFrom(req.body, {
+      senderVlad: Buffer.from(vlad, 'hex'),
+      receiverVlad: Buffer.from(c.receiverVlad, 'hex'),
+      type: 'bs-docsign',
+    });
+    s = parseStatement(signed.statementBytes, 'bs-docsign');
   } catch (e) {
     return apiError(res, 400, 'invalid_statement', e.message);
   }
@@ -127,7 +132,7 @@ export async function uploadSignature(req, res) {
   // 4. The identity's /keys/primary signed the statement.
   const v = await verifySignature({
     vladHex: vlad,
-    messageHex: statementDigest(statementBytes, 'bs-docsign').toString('hex'),
+    messageHex: signed.message.toString('hex'),
     signatureHex: Buffer.from(signature, 'base64url').toString('hex'),
     rp: c.rp,
   });

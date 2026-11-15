@@ -62,16 +62,55 @@ export function cbor(v) {
     .sort((a, b) => Buffer.compare(a[0], b[0]));
   return Buffer.concat([head(5, e.length), ...e.flat()]);
 }
-const digest = (domain, st) =>
-  crypto.createHash('sha256').update(Buffer.from(domain)).update(st).digest();
-
-// An identity: a VLAD and an Ed25519 "primary key" the mock verifier knows.
-export function identity() {
-  const { publicKey, privateKey } = crypto.generateKeyPairSync('ed25519');
-  return { vlad: crypto.randomBytes(40).toString('hex'), publicKey, privateKey };
+// What /keys/primary signs: bs-message's canonical TBS (BetterSignApps
+// crates/bs-message/src/message.rs build_tbs), written out here rather than
+// with the server's helper so the specs check it independently.
+//   "bettersign-message-v2" ‖ sender_vlad ‖ Varbytes("/keys/primary")
+//   ‖ receiver_vlad ‖ Varbytes(content_type) ‖ Varbytes(statement)
+const CONTENT_TYPE = {
+  'bs-login': 'application/vnd.bettersign.login+cbor',
+  'bs-docsign': 'application/vnd.bettersign.docsign+cbor',
+};
+function leb128(n) {
+  const out = [];
+  do {
+    out.push((n & 0x7f) | (n > 0x7f ? 0x80 : 0));
+    n >>>= 7;
+  } while (n > 0);
+  return Buffer.from(out);
+}
+const varbytes = b => Buffer.concat([leb128(b.length), b]);
+export const receiverVlad = () => process.env.BS_API_RECEIVER_VLAD;
+export function tbs(type, senderVladHex, st, over = {}) {
+  return Buffer.concat([
+    Buffer.from(over.domain ?? 'bettersign-message-v2'),
+    Buffer.from(senderVladHex, 'hex'),
+    varbytes(Buffer.from(over.keyPath ?? '/keys/primary')),
+    Buffer.from(over.receiverVlad ?? receiverVlad(), 'hex'),
+    varbytes(Buffer.from(over.contentType ?? CONTENT_TYPE[type])),
+    varbytes(st),
+  ]);
 }
 
-export function loginStatement(id, ch, over = {}, signer = id) {
+// Sign `st` as `id` and shape the request fields. `send`: 'statement' (the
+// server rebuilds the TBS), 'message' (the full TBS) or 'both'. `msg`
+// overrides parts of the TBS (see tbs()).
+function signed(type, id, st, { signer = id, send = 'statement', msg = {} } = {}) {
+  const m = tbs(type, id.vlad, st, msg);
+  const out = { signature: crypto.sign(null, m, signer.privateKey).toString('base64url') };
+  if (send !== 'message') out.statement = st.toString('base64url');
+  if (send !== 'statement') out.message = m.toString('base64url');
+  return out;
+}
+
+// An identity: a VLAD (sigil 0x1207, then random) and an Ed25519 "primary
+// key" the mock verifier knows.
+export function identity() {
+  const { publicKey, privateKey } = crypto.generateKeyPairSync('ed25519');
+  return { vlad: '8724' + crypto.randomBytes(38).toString('hex'), publicKey, privateKey };
+}
+
+export function loginStatement(id, ch, over = {}, signer = id, opts = {}) {
   const st = cbor({
     v: 1,
     type: 'bs-login',
@@ -84,11 +123,10 @@ export function loginStatement(id, ch, over = {}, signer = id) {
     iat: Math.floor(Date.now() / 1000),
     ...over,
   });
-  const sig = crypto.sign(null, digest('bs-login/v1/statement\n', st), signer.privateKey);
-  return { statement: st.toString('base64url'), signature: sig.toString('base64url') };
+  return signed('bs-login', id, st, { signer, ...opts });
 }
 
-export function docsignStatement(id, docId, base, file, over = {}) {
+export function docsignStatement(id, docId, base, file, over = {}, opts = {}) {
   const st = cbor({
     v: 1,
     type: 'bs-docsign',
@@ -102,17 +140,16 @@ export function docsignStatement(id, docId, base, file, over = {}) {
     iat: Math.floor(Date.now() / 1000),
     ...over,
   });
-  const sig = crypto.sign(null, digest('bs-docsign/v1/statement\n', st), id.privateKey);
-  return { statement: st.toString('base64url'), signature: sig.toString('base64url') };
+  return signed('bs-docsign', id, st, opts);
 }
 
 export const challenge = id =>
   req('POST', `${API}/api/v1/auth/challenge`, { body: { vlad: id.vlad } });
 
-export async function signIn(id, over, signer) {
+export async function signIn(id, over, signer, opts) {
   const ch = (await challenge(id)).json;
   return req('POST', `${API}/api/v1/auth/token`, {
-    body: { challengeId: ch.challengeId, ...loginStatement(id, ch, over, signer) },
+    body: { challengeId: ch.challengeId, ...loginStatement(id, ch, over, signer, opts) },
   });
 }
 
