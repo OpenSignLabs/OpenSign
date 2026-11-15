@@ -15,15 +15,6 @@ import { startVerifier, stopVerifier, VERIFIER_PORT, VERIFIER_SECRET } from './v
 const here = path.dirname(fileURLToPath(import.meta.url));
 const serverDir = path.resolve(here, '../../..');
 
-// Linked through BS_ID_USERS (the env fallback) rather than bs_Identity.
-const envKeys = crypto.generateKeyPairSync('ed25519');
-export const envIdentity = {
-  vlad: '8724' + crypto.randomBytes(38).toString('hex'),
-  publicKey: envKeys.publicKey,
-  privateKey: envKeys.privateKey,
-  email: 'env-linked@example.com',
-};
-
 const mongoBase = new URL(process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/');
 mongoBase.pathname = `/bsapi-int-${crypto.randomBytes(4).toString('hex')}`;
 
@@ -38,7 +29,6 @@ Object.assign(process.env, {
   BS_VERIFIER_URL: `http://localhost:${VERIFIER_PORT}`,
   BS_VERIFIER_SECRET: VERIFIER_SECRET,
   BS_API_RECEIVER_VLAD: '8724' + crypto.randomBytes(38).toString('hex'),
-  BS_ID_USERS: JSON.stringify({ [envIdentity.vlad]: envIdentity.email }),
   PASS_PHRASE: 'test',
 });
 
@@ -89,6 +79,9 @@ beforeAll(async () => {
     Parse
   );
   await require('../../../databases/migrations/20261115120000-create_bs_apiconfig.cjs').up(Parse);
+  await require('../../../databases/migrations/20261115150000-bs_identity_active_flag.cjs').up(
+    Parse
+  );
 }, 180000);
 
 afterAll(async () => {

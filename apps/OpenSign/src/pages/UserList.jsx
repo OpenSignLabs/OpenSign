@@ -7,6 +7,8 @@ import ModalUi from "../primitives/ModalUi";
 import pad from "../assets/images/pad.svg";
 import Tooltip from "../primitives/Tooltip";
 import AddUser from "../components/AddUser";
+import BsIdentities from "../components/BsIdentities";
+import EditUser from "../components/EditUser";
 import {
   useTranslation
 } from "react-i18next";
@@ -254,6 +256,13 @@ const UserList = () => {
       setIsActModal({ [`${act.action}_${item.objectId}`]: true });
   });
   const handleBtnVisibility = (act, item) => {
+    if (act.action === "edit") {
+      // An OrgAdmin can't edit the tenant Admin (updateuserbyadmin refuses).
+      return (
+        extClass?.[0]?.UserRole === "contracts_Admin" ||
+        item?.UserRole !== "contracts_Admin"
+      );
+    }
     if (act.restrictAdmin) {
       if (item?.UserRole === "contracts_Admin") {
         return false;
@@ -267,6 +276,20 @@ const UserList = () => {
       return true;
     } else {
       return true;
+    }
+  };
+  const handleUserEdited = (updated) => {
+    setUserList((prev) =>
+      prev.map((x) =>
+        x.objectId === updated.objectId ? { ...x, ...updated } : x
+      )
+    );
+    // Editing yourself: keep the cached profile in step.
+    if (updated.objectId === extClass?.[0]?.objectId) {
+      localStorage.setItem(
+        "Extand_Class",
+        JSON.stringify([{ ...extClass[0], ...updated }])
+      );
     }
   };
   const handleActiveToggleVisibility = (item) => {
@@ -564,6 +587,23 @@ const UserList = () => {
                                   </Box>
                                 </TableCell>
                               )}
+                              {isActModal["edit_" + item.objectId] && (
+                                <ModalUi
+                                  isOpen
+                                  title={t("edit-user")}
+                                  handleClose={handleCloseModal}
+                                >
+                                  <EditUser
+                                    user={item}
+                                    isSelf={
+                                      item.objectId === extClass?.[0]?.objectId
+                                    }
+                                    showAlert={showAlert}
+                                    onSaved={handleUserEdited}
+                                    onClose={handleCloseModal}
+                                  />
+                                </ModalUi>
+                              )}
                               <DeleteUserModal
                                 title={t("delete-account")}
                                 deleting={deleting}
@@ -656,6 +696,8 @@ const UserList = () => {
                       </Box>
                     </Box>
                   )}
+                  <Divider sx={{ my: 1 }} />
+                  <BsIdentities showAlert={showAlert} />
                   <ModalUi
                     isOpen={isModal.form}
                     title={formHeader}

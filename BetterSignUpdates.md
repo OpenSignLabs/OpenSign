@@ -21,6 +21,54 @@ operations are covered in [DEPLOYMENT.md](DEPLOYMENT.md).
 
 ## Change log
 
+### 2026-11-15: admins can edit users
+
+- The Users page has an **Edit** action (pencil) next to Delete. An admin can
+  change a user's name, phone, role and teams. **The email can't be changed**:
+  it's also the account's username, and documents and contacts find people by it.
+- Cloud function `updateuserbyadmin`
+  (`apps/OpenSignServer/cloud/parsefunction/updateUserByAdmin.js`), with the same
+  rules as `adduser`: admins and org admins only, within their tenant; an org
+  admin only within their own organization and not on the tenant admin; roles
+  OrgAdmin, Editor or User; teams from the user's organization. The tenant
+  admin's role can't be changed, and nobody can change their own role. Name and
+  phone are copied to `_User`.
+- A role change takes effect for permission checks at once. The user's menus
+  follow at their next sign-in.
+
+### 2026-11-15: manage VLAD links on the Users page; unknown VLADs are recorded
+
+- The Users page has a **BetterSign identities** section (admins only,
+  `apps/OpenSign/src/components/BsIdentities.jsx`). An admin can add a VLAD,
+  choose its account, give it a label, switch it on or off, or remove it. It
+  shows the links to accounts in the admin's tenant and the unassigned
+  identities. Cloud functions `bsidentitylist`, `bsidentitysave` and
+  `bsidentitydelete` (`apps/OpenSignServer/cloud/parsefunction/bsIdentityAdmin.js`).
+- A VLAD that signs in without an active link is added to `bs_Identity`
+  **turned off, with no account**, label `Sign-in attempt`, and `LastSeenAt` set
+  (bumped on later attempts). It's still refused. It's only recorded once the
+  identity is proven: bs-id's signed `id_token` for Sign in with BetterSign, the
+  verifier's signature check for the desktop API. So nobody can fill the table by
+  posting random VLADs.
+- The desktop API now gives an unlinked VLAD a challenge (so its signature can be
+  checked), and `/auth/token` answers `403 not_linked`. Before, `/auth/challenge`
+  answered `403 not_linked` straight away.
+- `bs_Identity` has an `Active` flag (the on/off switch) instead of `RevokedAt`.
+  A row is on only if `Active` is `true`, and it must have an account. Migration
+  `20261115150000-bs_identity_active_flag.cjs` converts existing rows
+  (`Active` = no `RevokedAt`).
+
+### 2026-11-15: VLAD links live only in MongoDB (`bs_Identity`)
+
+- `BS_ID_USERS` is gone. Which account a VLAD signs in to, for both Sign in with
+  BetterSign and the desktop API, is now read only from the master-key-only
+  `bs_Identity` class (`apps/OpenSignServer/utils/bsIdentity.js`).
+- Migration `20261115140000-move_bs_id_users_to_bs_identity.cjs` copies the old
+  `fly.toml` list (and `BS_ID_USERS`, if a deployment still sets it) into
+  `bs_Identity` with the label `Moved from BS_ID_USERS`. VLADs that already have a
+  row, and emails with no account, are skipped.
+- Linking or unlinking a VLAD no longer needs a redeploy; it takes effect at once.
+
 ### 2026-11-15: seal completed documents with docsign's BetterSign identity
 
 - OpenSign's seal on a completed document, and on its completion certificate,
@@ -120,8 +168,10 @@ device), so there is no password to steal.
   code at bs-id `/token`, verifies the ES256 `id_token` against bs-id `/jwks` (`iss`,
   `aud`, `nonce`, `exp`, `iat`) and returns a session for the account that the token's
   `vlad` maps to.
-- **Who may sign in:** `BS_ID_USERS` (`apps/OpenSignServer/fly.toml`) maps
-  `{ "<vladHex>": "<account email>" }`. The account must already exist. Unknown VLADs
+- **Who may sign in:** a VLAD needs an active row in the `bs_Identity` class
+  (master key only) pointing at an existing account. Admins manage these on the
+  Users page (BetterSign identities); an unknown VLAD that signs in shows up there,
+  turned off. Or [docs/BetterSignAPI.md §3](docs/BetterSignAPI.md#3-linking-a-vlad-to-an-account). Unknown VLADs
   are refused and logged as `{"event":"bsidlogin_denied","vlad":…}`.
 - **Configuration:** `BS_ID_URL` and `BS_ID_CLIENT_ID` on the server;
   `REACT_APP_BS_ID_URL` and `REACT_APP_BS_ID_CLIENT_ID` at frontend build time.
@@ -370,9 +420,11 @@ Docs: `BetterSignUpdates.md` (this file) and a link from `README.md`.
 
 ## Follow-ups
 
-- **New team members can't sign in until they're mapped.** Adding a user creates the
-  account, but they can only sign in once their BetterSign VLAD is added to
-  `BS_ID_USERS` and the API is redeployed.
+- **New team members can't sign in until they're linked.** Adding a user creates the
+  account, but they can only sign in once an admin links their BetterSign VLAD on the
+  Users page. Their first sign-in attempt puts the VLAD there, turned off.
+- **Admins can't change a user's email.** It's also the username, and documents
+  and contacts find people by it; changing it needs those updated together.
 - **The Add User form still shows a generated password** (`AddUser.jsx`). It can no
   longer be used and could be removed. The same goes for the password on the
   first-run admin setup page (`AddAdmin.jsx`).
@@ -398,7 +450,7 @@ Docs: `BetterSignUpdates.md` (this file) and a link from `README.md`.
      message) and falls back to the bs-id redirect.
   3. A cloud function that checks the phone's signed statement (origin, `rp`,
      single-use challenge, age) and the signature through the verifier's `/verify`,
-     then maps the VLAD with `BS_ID_USERS`. oauthService does the same for outline.
+     then maps the VLAD with `accountForVlad` (`bs_Identity`). oauthService does the same for outline.
      The statement should be signed in the canonical bs-message form
      ([What a VLAD signs to log in](#what-a-vlad-signs-to-log-in)), checked with
      `inspectSignedMessage`. The extension and oauthService sign the bare digest today,

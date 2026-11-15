@@ -25,7 +25,7 @@
 //   plus BS_VERIFIER_URL / BS_VERIFIER_SECRET (verifier.js)
 
 import crypto from 'node:crypto';
-import { accountForVlad, VLAD_HEX_RE } from '../../../utils/bsIdentity.js';
+import { accountForVlad, recordSignInAttempt, VLAD_HEX_RE } from '../../../utils/bsIdentity.js';
 import { ensureReceiverVlad } from './receiverVlad.js';
 import { parseStatement, signedMessageFrom } from './statement.js';
 import { verifySignature } from './verifier.js';
@@ -96,6 +96,18 @@ function sweep(className) {
     .catch(() => {});
 }
 
+// No active link, but nothing wrong with the link either: an admin can turn
+// one on from the Users page.
+const PENDING_REASONS = new Set(['not_linked', 'inactive']);
+
+const notLinked = res =>
+  apiError(
+    res,
+    403,
+    'not_linked',
+    "This BetterSign identity isn't linked to an OpenSign account. Ask an admin to add it."
+  );
+
 // POST /auth/challenge
 export async function createChallenge(req, res) {
   await ensureReceiverVlad();
@@ -105,15 +117,13 @@ export async function createChallenge(req, res) {
   if (!VLAD_HEX_RE.test(vlad) || vlad.length < 64 || vlad.length > 8192 || vlad.length % 2) {
     return apiError(res, 400, 'invalid_request', 'vlad must be the identity VLAD in hex.');
   }
+  // A VLAD with no active link still gets a challenge: once its signature
+  // verifies, /auth/token records the attempt for an admin to link
+  // (recordSignInAttempt) and refuses it. Only a broken link stops here.
   const account = await accountForVlad(vlad);
-  if (!account.user) {
+  if (!account.user && !PENDING_REASONS.has(account.reason)) {
     log('challenge_denied', { vlad: vlad.slice(0, 16), reason: account.reason });
-    return apiError(
-      res,
-      403,
-      'not_linked',
-      "This BetterSign identity isn't linked to an OpenSign account. Ask an admin to add it."
-    );
+    return notLinked(res);
   }
 
   const challenge = crypto.randomBytes(32).toString('base64url');
@@ -219,9 +229,13 @@ export async function issueToken(req, res) {
     });
   }
 
-  // Re-check the link: it may have been revoked since the challenge.
+  // The VLAD is proven now. No active link: record the attempt and refuse.
   const account = await accountForVlad(vlad);
-  if (!account.user) return deny('This BetterSign identity is no longer linked.', account.reason);
+  if (!account.user) {
+    log('token_denied', { vlad: vlad.slice(0, 16), reason: account.reason });
+    if (PENDING_REASONS.has(account.reason)) await recordSignInAttempt(vlad);
+    return notLinked(res);
+  }
 
   const expiresAt = new Date(Date.now() + c.tokenTtlS * 1000);
 
