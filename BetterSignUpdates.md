@@ -21,6 +21,15 @@ operations are covered in [DEPLOYMENT.md](DEPLOYMENT.md).
 
 ## Change log
 
+### 2026-11-15: a wrong verifier secret is reported as such
+
+- When the BetterSign verifier refuses this server's `BS_VERIFIER_SECRET`
+  (`401 bad_secret`: wrong or not set), the desktop API's sign-in and uploads now
+  return `502 verifier_misconfigured` ("This server's BetterSign verifier secret
+  is wrong or not set") and log an error. They used to return `401
+  access_denied`, "The identity's signature didn't verify", which sent people
+  looking at the identity instead of the server's settings.
+
 ### 2026-11-15: seal completed documents with docsign's BetterSign identity
 
 - OpenSign's seal on a completed document, and on its completion certificate,
