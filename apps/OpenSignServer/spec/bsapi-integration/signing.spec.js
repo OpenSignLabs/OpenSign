@@ -356,15 +356,17 @@ describe('desktop signing', () => {
   describe('VladSignatures and SignRevision', () => {
     it('can be changed only by the server', async () => {
       const email = `owner-sess-${tag()}@example.com`;
-      const userId = await mkUser(email, 'pw-secret');
+      const userId = await mkUser(email);
       const docId = await mkDoc({ ...owner, userId }, [bobC]);
       await req('PUT', `${PARSE}/classes/contracts_Document/${docId}`, {
         headers: MASTER,
         body: { ACL: { [userId]: { read: true, write: true } } },
       });
-      const login = await req('POST', `${PARSE}/login`, {
-        headers: PUBLIC,
-        body: { username: email, password: 'pw-secret' },
+      // Password sign-in is blocked (cloud/main.js beforeLogin); real users get
+      // their session from /loginAs, as Sign in with BetterSign does.
+      const login = await req('POST', `${PARSE}/loginAs`, {
+        headers: MASTER,
+        body: { userId },
       });
       const session = { ...PUBLIC, 'X-Parse-Session-Token': login.json.sessionToken };
 
