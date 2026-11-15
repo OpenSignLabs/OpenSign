@@ -13,9 +13,17 @@ import {
 import GenerateCertificate from './GenerateCertificate.js';
 import { pdflibAddPlaceholder } from '@signpdf/placeholder-pdf-lib';
 import { Placeholder } from './Placeholder.js';
+import {
+  extendsPdf,
+  fileKey,
+  isAppendOnly,
+  readDocumentPdf,
+  sealAppendOnly,
+} from '../../../utils/appendOnlyPdf.js';
 import { SignPdf } from '@signpdf/signpdf';
 import { P12Signer } from '@signpdf/signer-p12';
 import { buildDownloadFilename, parseUploadFile } from '../../../utils/fileUtils.js';
+import { setDocumentCount } from '../../../utils/CountUtils.js';
 import sendMailWithAttachment from '../sendMailWithAttachment.js';
 import sendSystemMail from '../sendSystemMail.js';
 import {
@@ -77,6 +85,55 @@ async function uploadFile(pdfName, filepath) {
   }
 }
 
+// Commit a signing only if the document is still at the revision it was
+// checked against: one atomic findOneAndUpdate on (objectId, SignRevision),
+// which also bumps SignRevision. Returns false if another signing committed
+// first, so two signers can't both build on the same file and drop one
+// signature. Parse's REST API has no conditional update, hence the database
+// controller; it skips save hooks (updateDoc does their part itself).
+export async function commitAtRevision(docId, baseRevision, body) {
+  const atRevision =
+    baseRevision === 0
+      ? { $or: [{ SignRevision: { $exists: false } }, { SignRevision: 0 }] }
+      : { SignRevision: baseRevision };
+  // As REST would store it (Dates inside AuditTrail become ISO strings).
+  const update = JSON.parse(JSON.stringify(body));
+  update.updatedAt = new Date().toISOString();
+  update.SignRevision = { __op: 'Increment', amount: 1 };
+  try {
+    await Parse.Server.database.update(
+      'contracts_Document',
+      { objectId: docId, ...atRevision },
+      update,
+      {}
+    );
+    return true;
+  } catch (err) {
+    if (err?.code === Parse.Error.OBJECT_NOT_FOUND) return false;
+    throw err;
+  }
+}
+
+// The document's current signing revision (see commitAtRevision).
+export async function signRevisionOf(docId) {
+  const doc = await new Parse.Query('contracts_Document').get(docId, { useMasterKey: true });
+  return doc.get('SignRevision') || 0;
+}
+
+const staleDocument = () =>
+  Object.assign(new Parse.Error(STALE_DOCUMENT, STALE_MESSAGE), { stale: true });
+
+// Best effort: remove an uploaded file a lost commit no longer needs.
+async function deleteUploadedFile(url) {
+  const name = decodeURIComponent(fileKey(url).split('/').pop() || '');
+  if (!name) return;
+  try {
+    await Parse.File.fromJSON({ __type: 'File', name, url }).destroy({ useMasterKey: true });
+  } catch (err) {
+    console.log('could not delete unused file', name, err?.message);
+  }
+}
+
 // `updateDoc` is used to update signedUrl, AuditTrail, Iscompleted in document
 async function updateDoc(
   docId,
@@ -87,7 +144,10 @@ async function updateDoc(
   className,
   sign,
   documentHash,
-  activity
+  activity,
+  auditExtra,
+  docExtra,
+  baseRevision
 ) {
   try {
     const UserPtr = { __type: 'Pointer', className: className, objectId: userId };
@@ -99,6 +159,7 @@ async function updateDoc(
       ipAddress: ipAddress,
       SignedOn: new Date(),
       Signature: sign,
+      ...auditExtra,
     };
     let updateAuditTrail;
     if (data.AuditTrail && data.AuditTrail.length > 0) {
@@ -128,11 +189,26 @@ async function updateDoc(
     } else {
       isCompleted = true;
     }
-    const body = { SignedUrl: url, AuditTrail: updateAuditTrail, IsCompleted: isCompleted };
+    const body = {
+      SignedUrl: url,
+      AuditTrail: updateAuditTrail,
+      IsCompleted: isCompleted,
+      ...docExtra,
+    };
     if (documentHash && isCompleted) {
       body.DocumentHash = documentHash;
     }
-    const signedRes = await axios.put(`${docUrl}/${docId}`, body, { headers });
+    // The commit skips DocumentBeforesave, so do its first-signing bookkeeping.
+    const firstSigning = !data.SignedUrl;
+    if (firstSigning && data.Signers?.length > 0) {
+      body.DocSentAt = { __type: 'Date', iso: new Date().toISOString() };
+    }
+    if (!(await commitAtRevision(docId, baseRevision, body))) {
+      throw staleDocument();
+    }
+    if (firstSigning && data.ExtUserPtr?.objectId) {
+      setDocumentCount(data.ExtUserPtr.objectId);
+    }
     return {
       isCompleted: isCompleted,
       message: 'success',
@@ -140,6 +216,7 @@ async function updateDoc(
       DocumentHash: documentHash && isCompleted ? documentHash : undefined,
     };
   } catch (err) {
+    if (err?.stale) throw err;
     console.log('update doc err ', err);
     return 'err';
   }
@@ -375,6 +452,186 @@ async function processPdf(_resDoc, PdfBuffer, reason) {
   const pdfWithPlaceholderBytes = await pdfDoc.save();
   return Buffer.from(pdfWithPlaceholderBytes);
 }
+// Parse.Error.SCRIPT_FAILED (Parse isn't defined yet when this module loads).
+export const STALE_DOCUMENT = 141;
+export const STALE_MESSAGE = 'This document changed since you opened it. Reload it and sign again.';
+
+/**
+ * Store a signer's PDF and record the signature: audit trail, completion,
+ * notification mails and, when everyone has signed, OpenSign's seal and the
+ * completion certificate. Shared by signPdf and /api/v1 desktop uploads.
+ *
+ * @param {boolean} appendOnly - a BetterSign identity has signed (or is
+ *   signing): the seal is appended, never a rewrite.
+ * @param {number} baseRevision - the document's SignRevision when this PDF was
+ *   checked against its file. If another signing has committed since,
+ *   nothing is stored and a stale error (`.stale`) is thrown.
+ * @param {object} [auditExtra] - extra fields for this signer's audit entry
+ * @param {object} [docExtra] - extra fields for the document update
+ */
+export async function finishSigning({
+  docId,
+  _resDoc,
+  signUser,
+  className,
+  pdfBuffer,
+  userIP,
+  sign = '',
+  isCustomMail = false,
+  mailProvider = '',
+  publicUrl,
+  appendOnly = false,
+  baseRevision,
+  auditExtra,
+  docExtra,
+}) {
+  const randomNumber = Math.floor(Math.random() * 5000);
+  const pfxname = `keystore_${randomNumber}.pfx`;
+  const auditActivity = 'Signed';
+  const username = signUser.Name;
+  const userEmail = signUser.Email;
+  try {
+    let PdfBuffer = pdfBuffer;
+    //  `P12Buffer` used to create buffer from p12 certificate
+    let pfxFile = process.env.PFX_BASE64;
+    let passphrase = process.env.PASS_PHRASE;
+    if (_resDoc?.ExtUserPtr?.TenantId?.PfxFile?.base64) {
+      pfxFile = _resDoc?.ExtUserPtr?.TenantId?.PfxFile?.base64;
+      passphrase = _resDoc?.ExtUserPtr?.TenantId?.PfxFile?.password;
+    }
+    const pfx = { name: pfxname, passphrase: passphrase };
+    const P12Buffer = Buffer.from(pfxFile, 'base64');
+    fs.writeFileSync(pfxname, P12Buffer);
+    const UserPtr = { __type: 'Pointer', className: className, objectId: signUser.objectId };
+    const obj = { UserPtr: UserPtr, SignedUrl: '', Activity: auditActivity, ipAddress: userIP };
+    let updateAuditTrail;
+    if (_resDoc.AuditTrail && _resDoc.AuditTrail.length > 0) {
+      updateAuditTrail = [..._resDoc.AuditTrail, obj];
+    } else {
+      updateAuditTrail = [obj];
+    }
+
+    // Both Signed and Approved entries count toward completion. Only
+    // signer/approver placeholders are counted; viewers and prefill are
+    // excluded.
+    const auditTrail = updateAuditTrail.filter(x => COMPLETION_ACTIVITIES.includes(x.Activity));
+    let isCompleted = false;
+    if (_resDoc.Signers && _resDoc.Signers.length > 0) {
+      const completionRelevant =
+        _resDoc?.Placeholders?.length > 0 ? _resDoc.Placeholders.filter(isCompletionRelevant) : [];
+      if (auditTrail.length >= completionRelevant.length && completionRelevant.length > 0) {
+        isCompleted = true;
+      }
+    } else {
+      isCompleted = true;
+    }
+    // below regex is used to replace all word with "_" except A to Z, a to z, numbers
+    const docName = _resDoc?.Name?.replace(/[^a-zA-Z0-9._-]/g, '_')?.toLowerCase();
+    const filename = docName?.length > 100 ? docName?.slice(0, 100) : docName;
+    const name = `${filename}_${randomNumber}.pdf`;
+    let filePath = `./exports/${name}`;
+    let signedFilePath = `./exports/signed_${name}`;
+    let pdfSize = PdfBuffer.length;
+    let documentHash;
+    if (isCompleted) {
+      const signersName = _resDoc.Signers?.map(x => x.Name + ' <' + x.Email + '>');
+      const reason =
+        signersName && signersName.length > 0
+          ? signersName?.join(', ')
+          : username + ' <' + userEmail + '>';
+      const p12Cert = new P12Signer(P12Buffer, { passphrase: passphrase || null });
+      signedFilePath = `./exports/signed_${name}`;
+      let signedDocs;
+      if (appendOnly) {
+        // A BetterSign identity signed: append the seal; flattening or
+        // re-saving would break that signature (utils/appendOnlyPdf.js).
+        signedDocs = await sealAppendOnly({
+          pdfBytes: PdfBuffer,
+          p12Signer: p12Cert,
+          reason: `Digitally signed by ${eSignName} for ${reason}`,
+          name: eSignName,
+          contactInfo: eSigncontact,
+        });
+      } else {
+        PdfBuffer = await processPdf(_resDoc, PdfBuffer, reason, UserPtr, userIP, sign);
+        //`new signPDF` create new instance of pdfBuffer and p12Buffer
+        const OBJ = new SignPdf();
+        // `signedDocs` is used to signpdf digitally
+        signedDocs = await OBJ.sign(PdfBuffer, p12Cert);
+      }
+
+      //`saveUrl` is used to save signed pdf in exports folder
+      fs.writeFileSync(signedFilePath, signedDocs);
+      pdfSize = signedDocs.length;
+      documentHash = generateDocumentHash(signedDocs);
+      console.log(`✅ PDF digitally signed created: ${signedFilePath} \n`);
+    } else {
+      //`saveUrl` is used to save signed pdf in exports folder
+      fs.writeFileSync(signedFilePath, PdfBuffer);
+      pdfSize = PdfBuffer.length;
+      console.log(`New Signed PDF created called: ${signedFilePath}`);
+    }
+
+    // Cheap early check, so a signing that has already lost doesn't upload.
+    if ((await signRevisionOf(docId)) !== baseRevision) {
+      unlinkFile(signedFilePath);
+      throw staleDocument();
+    }
+    // `uploadFile` is used to upload pdf to aws s3 and get it's url
+    const data = await uploadFile(`signed_${name}`, signedFilePath);
+
+    if (data && data.imageUrl) {
+      let updatedDoc;
+      try {
+        updatedDoc = await updateDoc(
+          docId, //docId
+          data.imageUrl, // SignedUrl
+          signUser.objectId, // userID
+          userIP, // client ipAddress,
+          _resDoc, // auditTrail, signers, etc data
+          className, // className based on flow
+          sign, // sign base64
+          isCompleted ? documentHash : undefined,
+          auditActivity,
+          auditExtra,
+          docExtra,
+          baseRevision
+        );
+      } catch (err) {
+        // Lost to a concurrent signing (or failed): this file is unused.
+        unlinkFile(signedFilePath);
+        if (err?.stale) await deleteUploadedFile(data.imageUrl);
+        throw err;
+      }
+      sendNotifyMail(_resDoc, signUser, mailProvider, publicUrl);
+      saveFileUsage(pdfSize, data.imageUrl, _resDoc?.CreatedBy?.objectId);
+      if (updatedDoc && updatedDoc.isCompleted) {
+        const hashForDoc = documentHash || updatedDoc?.DocumentHash;
+        const doc = { ..._resDoc, AuditTrail: updatedDoc.AuditTrail, SignedUrl: data.imageUrl };
+        if (hashForDoc) {
+          doc.DocumentHash = hashForDoc;
+        }
+        sendMailsaveCertifcate(doc, pfx, isCustomMail, mailProvider, `signed_${name}`);
+      } else {
+        unlinkFile(pfxname);
+      }
+      // below code is used to remove exported signed pdf file from exports folder
+      unlinkFile(signedFilePath);
+      // console.log(`New Signed PDF created called: ${filePath}`);
+      if (updatedDoc.message === 'success') {
+        return { status: 'success', data: data.imageUrl };
+      } else {
+        const error = new Error('Please provide required parameters!');
+        error.code = 400; // Set the error code (e.g., 400 for bad request)
+        throw error;
+      }
+    }
+  } catch (err) {
+    unlinkFile(pfxname);
+    throw err;
+  }
+}
+
 /**
  *
  * @param docId Id of Document in which user is signing
@@ -383,15 +640,12 @@ async function processPdf(_resDoc, PdfBuffer, reason) {
  */
 async function PDF(req) {
   const docId = req.params.docId;
-  const randomNumber = Math.floor(Math.random() * 5000);
-  const pfxname = `keystore_${randomNumber}.pfx`;
   try {
     const userIP = req.headers['x-real-ip']; // client IPaddress
     const reqUserId = req.params.userId;
     const isCustomMail = req.params.isCustomCompletionMail || false;
     const mailProvider = req.params.mailProvider || '';
     const sign = req.params.signature || '';
-    const auditActivity = 'Signed';
     const publicUrl = req.headers.public_url;
     // below bode is used to get info of docId
     const docQuery = new Parse.Query('contracts_Document');
@@ -446,119 +700,31 @@ async function PDF(req) {
         }
       }
     }
-    const username = signUser.Name;
-    const userEmail = signUser.Email;
     if (req.params.pdfFile) {
-      //  `PdfBuffer` used to create buffer from pdf file
-      let PdfBuffer = Buffer.from(req.params.pdfFile, 'base64');
-      //  `P12Buffer` used to create buffer from p12 certificate
-      let pfxFile = process.env.PFX_BASE64;
-      let passphrase = process.env.PASS_PHRASE;
-      if (_resDoc?.ExtUserPtr?.TenantId?.PfxFile?.base64) {
-        pfxFile = _resDoc?.ExtUserPtr?.TenantId?.PfxFile?.base64;
-        passphrase = _resDoc?.ExtUserPtr?.TenantId?.PfxFile?.password;
-      }
-      const pfx = { name: pfxname, passphrase: passphrase };
-      const P12Buffer = Buffer.from(pfxFile, 'base64');
-      fs.writeFileSync(pfxname, P12Buffer);
-      const UserPtr = { __type: 'Pointer', className: className, objectId: signUser.objectId };
-      const obj = { UserPtr: UserPtr, SignedUrl: '', Activity: auditActivity, ipAddress: userIP };
-      let updateAuditTrail;
-      if (_resDoc.AuditTrail && _resDoc.AuditTrail.length > 0) {
-        updateAuditTrail = [..._resDoc.AuditTrail, obj];
-      } else {
-        updateAuditTrail = [obj];
-      }
-
-      // Both Signed and Approved entries count toward completion. Only
-      // signer/approver placeholders are counted; viewers and prefill are
-      // excluded.
-      const auditTrail = updateAuditTrail.filter(x => COMPLETION_ACTIVITIES.includes(x.Activity));
-      let isCompleted = false;
-      if (_resDoc.Signers && _resDoc.Signers.length > 0) {
-        const completionRelevant =
-          _resDoc?.Placeholders?.length > 0
-            ? _resDoc.Placeholders.filter(isCompletionRelevant)
-            : [];
-        if (auditTrail.length >= completionRelevant.length && completionRelevant.length > 0) {
-          isCompleted = true;
-        }
-      } else {
-        isCompleted = true;
-      }
-      // below regex is used to replace all word with "_" except A to Z, a to z, numbers
-      const docName = _resDoc?.Name?.replace(/[^a-zA-Z0-9._-]/g, '_')?.toLowerCase();
-      const filename = docName?.length > 100 ? docName?.slice(0, 100) : docName;
-      const name = `${filename}_${randomNumber}.pdf`;
-      let filePath = `./exports/${name}`;
-      let signedFilePath = `./exports/signed_${name}`;
-      let pdfSize = PdfBuffer.length;
-      let documentHash;
-      if (isCompleted) {
-        const signersName = _resDoc.Signers?.map(x => x.Name + ' <' + x.Email + '>');
-        const reason =
-          signersName && signersName.length > 0
-            ? signersName?.join(', ')
-            : username + ' <' + userEmail + '>';
-        const p12Cert = new P12Signer(P12Buffer, { passphrase: passphrase || null });
-        signedFilePath = `./exports/signed_${name}`;
-        PdfBuffer = await processPdf(_resDoc, PdfBuffer, reason, UserPtr, userIP, sign);
-        //`new signPDF` create new instance of pdfBuffer and p12Buffer
-        const OBJ = new SignPdf();
-        // `signedDocs` is used to signpdf digitally
-        const signedDocs = await OBJ.sign(PdfBuffer, p12Cert);
-
-        //`saveUrl` is used to save signed pdf in exports folder
-        fs.writeFileSync(signedFilePath, signedDocs);
-        pdfSize = signedDocs.length;
-        documentHash = generateDocumentHash(signedDocs);
-        console.log(`✅ PDF digitally signed created: ${signedFilePath} \n`);
-      } else {
-        //`saveUrl` is used to save signed pdf in exports folder
-        fs.writeFileSync(signedFilePath, PdfBuffer);
-        pdfSize = PdfBuffer.length;
-        console.log(`New Signed PDF created called: ${signedFilePath}`);
-      }
-
-      // `uploadFile` is used to upload pdf to aws s3 and get it's url
-      const data = await uploadFile(`signed_${name}`, signedFilePath);
-
-      if (data && data.imageUrl) {
-        // `axios` is used to update signed pdf url in contracts_Document classes for given DocId
-        const updatedDoc = await updateDoc(
-          req.params.docId, //docId
-          data.imageUrl, // SignedUrl
-          signUser.objectId, // userID
-          userIP, // client ipAddress,
-          _resDoc, // auditTrail, signers, etc data
-          className, // className based on flow
-          sign, // sign base64
-          isCompleted ? documentHash : undefined,
-          auditActivity
-        );
-        sendNotifyMail(_resDoc, signUser, mailProvider, publicUrl);
-        saveFileUsage(pdfSize, data.imageUrl, _resDoc?.CreatedBy?.objectId);
-        if (updatedDoc && updatedDoc.isCompleted) {
-          const hashForDoc = documentHash || updatedDoc?.DocumentHash;
-          const doc = { ..._resDoc, AuditTrail: updatedDoc.AuditTrail, SignedUrl: data.imageUrl };
-          if (hashForDoc) {
-            doc.DocumentHash = hashForDoc;
-          }
-          sendMailsaveCertifcate(doc, pfx, isCustomMail, mailProvider, `signed_${name}`);
-        } else {
-          unlinkFile(pfxname);
-        }
-        // below code is used to remove exported signed pdf file from exports folder
-        unlinkFile(signedFilePath);
-        // console.log(`New Signed PDF created called: ${filePath}`);
-        if (updatedDoc.message === 'success') {
-          return { status: 'success', data: data.imageUrl };
-        } else {
-          const error = new Error('Please provide required parameters!');
-          error.code = 400; // Set the error code (e.g., 400 for bad request)
-          throw error;
+      const PdfBuffer = Buffer.from(req.params.pdfFile, 'base64');
+      const appendOnly = isAppendOnly(_resDoc);
+      if (appendOnly) {
+        // A BetterSign identity signed this document, so the browser must
+        // append its changes (embedWidgetsToDoc loads it forIncrementalUpdate).
+        const current = await readDocumentPdf(_resDoc.SignedUrl || _resDoc.URL);
+        if (!extendsPdf(current, PdfBuffer)) {
+          throw staleDocument();
         }
       }
+      return await finishSigning({
+        docId,
+        _resDoc,
+        signUser,
+        className,
+        pdfBuffer: PdfBuffer,
+        userIP,
+        sign,
+        isCustomMail,
+        mailProvider,
+        publicUrl,
+        appendOnly,
+        baseRevision: _resDoc.SignRevision || 0,
+      });
     } else {
       const error = new Error('Pdf file not present!');
       error.code = 400; // Set the error code (e.g., 400 for bad request)
@@ -572,7 +738,6 @@ async function PDF(req) {
     } catch (err) {
       console.log('err in saving debugginglog', err);
     }
-    unlinkFile(pfxname);
     throw err;
   }
 }

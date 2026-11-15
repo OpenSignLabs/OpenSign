@@ -14,6 +14,10 @@ import { appInfo } from "./appinfo";
 import { saveAs } from "file-saver";
 import printModule from "print-js";
 import fontkit from "@pdf-lib/fontkit";
+import {
+  flattenExceptSignatures,
+  isAppendOnlyPdf
+} from "../utils/appendOnlyPdf";
 import { SCALE_STEPS, themeColor } from "./const";
 import { format, toZonedTime } from "date-fns-tz";
 import i18n from "../i18n";
@@ -2583,7 +2587,11 @@ export const embedWidgetsToDoc = async (
         break; // Exit inner loop
       }
     }
-    form?.flatten();
+    if (isAppendOnlyPdf(pdfDoc)) {
+      flattenExceptSignatures(form);
+    } else {
+      form?.flatten();
+    }
   }
   if (!hasError) {
     const pdfBytes = await pdfDoc.saveAsBase64({ useObjectStreams: false });

@@ -1,7 +1,19 @@
 import { MAX_DESCRIPTION_LENGTH, MAX_NAME_LENGTH, MAX_NOTE_LENGTH } from '../../Utils.js';
 import { setDocumentCount } from '../../utils/CountUtils.js';
 
+// Server-managed signing state (utils/appendOnlyPdf.js). VladSignatures makes a
+// document append-only; a client that could clear it could get a desktop
+// signature rewritten away. SignRevision orders concurrent signings.
+const SERVER_ONLY_FIELDS = ['VladSignatures', 'SignRevision'];
+
 async function DocumentBeforesave(request) {
+  if (!request.master) {
+    for (const field of SERVER_ONLY_FIELDS) {
+      if (request.object.dirty(field)) {
+        throw new Parse.Error(Parse.Error.OPERATION_FORBIDDEN, `${field} is set by the server.`);
+      }
+    }
+  }
   if (!request.original) {
     const validations = [
       { field: 'Name', max: MAX_NAME_LENGTH },

@@ -1,0 +1,8 @@
+{
+  "spec_dir": "spec",
+  "spec_files": ["bsapi-integration/**/*[sS]pec.js"],
+  "helpers": ["bsapi-integration/support/setup.js"],
+  "env": {
+    "random": false
+  }
+}

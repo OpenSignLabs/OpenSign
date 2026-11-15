@@ -6,15 +6,7 @@ import {
   SIG_FLAGS,
   SignPdfError,
 } from '@signpdf/utils';
-import {
-  PDFArray,
-  PDFNumber,
-  PDFName,
-  PDFHexString,
-  PDFString,
-  PDFInvalidObject,
-  PDFDict,
-} from 'pdf-lib';
+import * as pdfLib from 'pdf-lib';
 
 export const Placeholder = ({
   pdfDoc,
@@ -29,7 +21,12 @@ export const Placeholder = ({
   subFilter = SUBFILTER_ADOBE_PKCS7_DETACHED,
   widgetRect = [0, 0, 0, 0],
   appName,
+  fieldName = 'Signature1',
+  // The pdf-lib build that loaded pdfDoc. Objects must come from the same
+  // build: append-only sealing loads with @cantoo/pdf-lib (appendOnlyPdf.js).
+  lib = pdfLib,
 }) => {
+  const { PDFArray, PDFNumber, PDFName, PDFHexString, PDFString, PDFInvalidObject, PDFDict } = lib;
   if (!pdfDoc && !pdfPage) {
     throw new SignPdfError('PDFDoc or PDFPage must be set.', SignPdfError.TYPE_INPUT);
   }
@@ -81,7 +78,7 @@ export const Placeholder = ({
     FT: 'Sig',
     Rect: rect,
     V: signatureDictRef,
-    T: PDFString.of('Signature1'),
+    T: PDFString.of(fieldName),
     F: ANNOTATION_FLAGS.PRINT,
     P: page.ref,
     AP: { N: doc.context.register(apStream) },
@@ -103,26 +100,19 @@ export const Placeholder = ({
     doc.catalog.set(PDFName.of('AcroForm'), acroFormRef);
   }
 
-  let sigFlags = acroForm.has(PDFName.of('SigFlags'))
-    ? acroForm.get(PDFName.of('SigFlags'))
-    : PDFNumber.of(0);
-
+  // SigFlags and Fields may be indirect objects (other tools write them that
+  // way): resolve them, so existing fields, an earlier signature's included,
+  // are kept rather than replaced.
+  const sigFlags = acroForm.lookupMaybe(PDFName.of('SigFlags'), PDFNumber) || PDFNumber.of(0);
   const updatedFlags = PDFNumber.of(
     sigFlags.asNumber() | SIG_FLAGS.SIGNATURES_EXIST | SIG_FLAGS.APPEND_ONLY
   );
   acroForm.set(PDFName.of('SigFlags'), updatedFlags);
 
-  let fields = acroForm.get(PDFName.of('Fields'));
-  if (fields instanceof PDFArray) {
+  const fields = acroForm.lookupMaybe(PDFName.of('Fields'), PDFArray);
+  if (fields) {
     fields.push(widgetDictRef);
-  }
-  // else if (fields) {
-  //   const newFields = PDFArray.withContext(doc.context);
-  //   fields.asArray().forEach(field => newFields.push(field));
-  //   newFields.push(widgetDictRef);
-  //   acroForm.set(PDFName.of('Fields'), newFields);
-  // }
-  else {
+  } else {
     const newFields = PDFArray.withContext(doc.context);
     newFields.push(widgetDictRef);
     acroForm.set(PDFName.of('Fields'), newFields);

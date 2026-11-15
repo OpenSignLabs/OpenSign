@@ -1,0 +1,48 @@
+name: bettersign-tests
+
+# Tests for the BetterSign desktop API (/api/v1) and append-only signing.
+# The rest of the upstream suite (apps/OpenSignServer `npm test`) isn't run
+# here: its specs are upstream's stale examples.
+
+permissions:
+  contents: read
+
+on:
+  pull_request:
+    branches: ['staging', 'main']
+  push:
+    branches: ['staging']
+
+jobs:
+  server:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/OpenSignServer
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: apps/OpenSignServer/package-lock.json
+      - run: npm ci
+      - name: Unit specs (no database)
+        run: npm run test:bsapi
+      - name: Integration specs (server on :8080, MongoDB via mongodb-runner)
+        run: npm run test:bsapi:integration
+
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/OpenSign
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: apps/OpenSign/package-lock.json
+      - run: npm ci
+      - run: npm test

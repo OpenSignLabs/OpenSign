@@ -13,6 +13,7 @@ import getReport from './parsefunction/getReport.js';
 import TemplateAfterSave from './parsefunction/TemplateAfterSave.js';
 import GetTemplate from './parsefunction/GetTemplate.js';
 import DocumentBeforesave from './parsefunction/DocumentBeforesave.js';
+import { bsIdentityBeforeSave } from '../utils/bsIdentity.js';
 import TemplateBeforeSave from './parsefunction/TemplateBeforesave.js';
 import DocumentBeforeFind from './parsefunction/DocumentAfterFind.js';
 import TemplateAfterFind from './parsefunction/TemplateAfterFind.js';
@@ -76,6 +77,7 @@ Parse.Cloud.afterSave('contracts_Teams', TeamsAftersave);
 // This beforeSave function triggers before an object is added or updated in the specified class, allowing for validation or modification.
 Parse.Cloud.beforeSave('contracts_Document', DocumentBeforesave);
 Parse.Cloud.beforeSave('contracts_Template', TemplateBeforeSave);
+Parse.Cloud.beforeSave('bs_Identity', bsIdentityBeforeSave);
 
 // No password sign-in (/login, `loginuser`). Users sign in with BetterSign and
 // recipients through the signing link; both get sessions from /loginAs, which
