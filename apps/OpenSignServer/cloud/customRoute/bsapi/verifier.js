@@ -18,7 +18,9 @@ export function verifierUrl() {
 }
 
 // Returns { ok: true } or { ok: false, unavailable, code, error }.
-export async function verifySignature({ vladHex, messageHex, signatureHex }) {
+// `rp` is the relying party the statement names (BS_API_RP); the verifier
+// treats it as a hint, but it should match.
+export async function verifySignature({ vladHex, messageHex, signatureHex, rp }) {
   const headers = { 'content-type': 'application/json' };
   if (process.env.BS_VERIFIER_SECRET) {
     headers['x-bs-verifier-secret'] = process.env.BS_VERIFIER_SECRET;
@@ -26,7 +28,7 @@ export async function verifySignature({ vladHex, messageHex, signatureHex }) {
   try {
     const res = await axios.post(
       verifierUrl() + '/verify',
-      { vlad: vladHex, nonce: messageHex, signature: signatureHex, rp: 'bs-opensign-api' },
+      { vlad: vladHex, nonce: messageHex, signature: signatureHex, rp },
       { headers, timeout: 30000, validateStatus: () => true }
     );
     const body = res.data || {};

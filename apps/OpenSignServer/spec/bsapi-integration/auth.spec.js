@@ -1,0 +1,383 @@
+// /api/v1 sign-in, VLAD links, and the read endpoints.
+import crypto from 'node:crypto';
+import {
+  API,
+  MASTER,
+  PARSE,
+  PUBLIC,
+  RP,
+  bearer,
+  challenge,
+  docRow,
+  getFile,
+  identity,
+  link,
+  loginStatement,
+  mkContact,
+  mkDoc,
+  mkOwner,
+  mkUser,
+  ptr,
+  req,
+  signIn,
+  tag,
+  tokenFor,
+} from './support/lib.js';
+import { verifier } from './support/verifier.js';
+import { envIdentity } from './support/setup.js';
+import { accountForVlad } from '../../utils/bsIdentity.js';
+
+const tokenRequest = body => req('POST', `${API}/api/v1/auth/token`, { body });
+const me = auth => req('GET', `${API}/api/v1/me`, { headers: auth });
+
+describe('/api/v1 sign-in', () => {
+  let alice;
+  let aliceId;
+
+  beforeAll(async () => {
+    alice = identity();
+    verifier.register(alice);
+    aliceId = await mkUser(`alice-${tag()}@example.com`);
+    await link(alice, aliceId);
+  });
+
+  beforeEach(() => {
+    verifier.mode = 'ok';
+  });
+
+  it('signs in a VLAD linked in bs_Identity', async () => {
+    const r = await signIn(alice);
+    expect(r.status).toBe(200);
+    expect(r.json.access_token).toMatch(/^bso_[A-Za-z0-9_-]{43}$/);
+    expect(r.json.token_type).toBe('Bearer');
+    const who = await me(bearer(r.json.access_token));
+    expect(who.json.vlad).toBe(alice.vlad);
+    expect(who.json.user.id).toBe(aliceId);
+  });
+
+  it('signs in a VLAD linked through BS_ID_USERS', async () => {
+    verifier.register(envIdentity);
+    await mkUser(envIdentity.email);
+    const r = await signIn(envIdentity);
+    expect(r.status).toBe(200);
+    expect((await me(bearer(r.json.access_token))).json.user.email).toBe(envIdentity.email);
+  });
+
+  it('gives the verifier the statement digest and the configured rp', async () => {
+    verifier.calls.length = 0;
+    await signIn(alice);
+    expect(verifier.calls.length).toBe(1);
+    expect(verifier.calls[0].vlad).toBe(alice.vlad);
+    expect(verifier.calls[0].nonce).toMatch(/^[0-9a-f]{64}$/);
+    expect(verifier.calls[0].rp).toBe(RP);
+  });
+
+  it('uses BS_API_RP for both the statement check and the verifier', async () => {
+    process.env.BS_API_RP = 'bs-opensign-staging';
+    try {
+      const ch = (await challenge(alice)).json;
+      expect(ch.rp).toBe('bs-opensign-staging');
+      verifier.calls.length = 0;
+      const r = await tokenRequest({ challengeId: ch.challengeId, ...loginStatement(alice, ch) });
+      expect(r.status).toBe(200);
+      expect(verifier.calls[0].rp).toBe('bs-opensign-staging');
+    } finally {
+      delete process.env.BS_API_RP;
+    }
+  });
+
+  it('uses a challenge once, even when requests race', async () => {
+    const ch = (await challenge(alice)).json;
+    const body = { challengeId: ch.challengeId, ...loginStatement(alice, ch) };
+    const results = await Promise.all([1, 2, 3, 4].map(() => tokenRequest(body)));
+    expect(results.filter(r => r.status === 200).length).toBe(1);
+    expect(results.filter(r => r.status === 400).length).toBe(3);
+    expect(results.find(r => r.status === 400).json.error).toBe('invalid_challenge');
+  });
+
+  const rejections = [
+    ['another origin', { origin: 'https://evil.example' }],
+    ['another rp', { rp: 'bs-delegate' }],
+    ['another challenge', { challenge: crypto.randomBytes(32) }],
+    ['a stale iat', { iat: Math.floor(Date.now() / 1000) - 600 }],
+  ];
+  for (const [name, over] of rejections) {
+    it(`rejects a statement for ${name}`, async () => {
+      const r = await signIn(alice, over);
+      expect(r.status).toBe(401);
+      expect(r.json.error).toBe('access_denied');
+    });
+  }
+
+  it("rejects another identity's VLAD on this challenge", async () => {
+    const other = identity();
+    const r = await signIn(alice, { vlad: Buffer.from(other.vlad, 'hex') });
+    expect(r.status).toBe(401);
+  });
+
+  it('rejects a signature by another key', async () => {
+    const r = await signIn(alice, {}, identity());
+    expect(r.status).toBe(401);
+    expect(r.json.code).toBe('rejected');
+  });
+
+  it('rejects malformed input', async () => {
+    const bad = await req('POST', `${API}/api/v1/auth/challenge`, { body: { vlad: 'xyz' } });
+    expect(bad.status).toBe(400);
+    const ch = (await challenge(alice)).json;
+    const garbage = await tokenRequest({
+      challengeId: ch.challengeId,
+      statement: 'AAAA',
+      signature: 'AAAA',
+    });
+    expect(garbage.status).toBe(400);
+    expect(garbage.json.error).toBe('invalid_statement');
+  });
+
+  it('refuses an unlinked VLAD a challenge', async () => {
+    const r = await challenge(identity());
+    expect(r.status).toBe(403);
+    expect(r.json.error).toBe('not_linked');
+  });
+
+  it("returns 503 and no token when the verifier can't decide", async () => {
+    verifier.mode = '503';
+    const r = await signIn(alice);
+    expect(r.status).toBe(503);
+    expect(r.json.error).toBe('verifier_unavailable');
+  });
+
+  it('requires a valid token', async () => {
+    expect((await me({})).status).toBe(401);
+    expect((await me(bearer('bso_' + 'A'.repeat(43)))).status).toBe(401);
+  });
+
+  it('stores tokens hashed and creates no Parse session', async () => {
+    const sessionsFor = async () =>
+      (
+        await req(
+          'GET',
+          `${PARSE}/classes/_Session?` +
+            new URLSearchParams({ where: JSON.stringify({ user: ptr('_User', aliceId) }) }),
+          { headers: MASTER }
+        )
+      ).json.results.length;
+    const sessionsBefore = await sessionsFor();
+    const token = (await signIn(alice)).json.access_token;
+    expect(await sessionsFor()).toBe(sessionsBefore);
+
+    const rows = await req(
+      'GET',
+      `${PARSE}/classes/bs_ApiToken?` +
+        new URLSearchParams({
+          where: JSON.stringify({ UserId: ptr('_User', aliceId) }),
+          order: '-createdAt',
+          limit: '1',
+        }),
+      { headers: MASTER }
+    );
+    const row = rows.json.results[0];
+    expect(row.TokenHash).toBe(crypto.createHash('sha256').update(token).digest('hex'));
+    expect(JSON.stringify(row)).not.toContain(token.slice(4));
+    expect(row.SessionToken).toBeUndefined();
+  });
+
+  it('logout revokes the token', async () => {
+    const auth = await tokenFor(alice);
+    expect((await req('POST', `${API}/api/v1/auth/logout`, { headers: auth })).status).toBe(204);
+    expect((await me(auth)).status).toBe(401);
+  });
+});
+
+describe('VLAD links (bs_Identity)', () => {
+  it('unlinking ends live tokens; relinking restores them', async () => {
+    const id = identity();
+    verifier.register(id);
+    const userId = await mkUser(`unlink-${tag()}@example.com`);
+    const row = (await link(id, userId)).json.objectId;
+    const auth = await tokenFor(id);
+
+    await req('PUT', `${PARSE}/classes/bs_Identity/${row}`, {
+      headers: MASTER,
+      body: { RevokedAt: { __type: 'Date', iso: new Date().toISOString() } },
+    });
+    expect((await me(auth)).status).toBe(401);
+    expect((await challenge(id)).status).toBe(403);
+
+    await req('PUT', `${PARSE}/classes/bs_Identity/${row}`, {
+      headers: MASTER,
+      body: { RevokedAt: { __op: 'Delete' } },
+    });
+    expect((await me(auth)).status).toBe(200);
+  });
+
+  it('allows one active link per VLAD', async () => {
+    const id = identity();
+    const a = await mkUser(`dup-a-${tag()}@example.com`);
+    const b = await mkUser(`dup-b-${tag()}@example.com`);
+    expect((await link(id, a)).status).toBe(201);
+    const second = await link(id, b);
+    expect(second.status).toBe(400);
+    expect(second.json.code).toBe(137); // DUPLICATE_VALUE
+  });
+
+  it('a revoked link and a new one: the new one wins', async () => {
+    const id = identity();
+    verifier.register(id);
+    const oldUser = await mkUser(`old-${tag()}@example.com`);
+    const newUser = await mkUser(`new-${tag()}@example.com`);
+    const old = (await link(id, oldUser)).json.objectId;
+    await req('PUT', `${PARSE}/classes/bs_Identity/${old}`, {
+      headers: MASTER,
+      body: { RevokedAt: { __type: 'Date', iso: new Date().toISOString() } },
+    });
+    expect((await link(id, newUser)).status).toBe(201);
+    for (let i = 0; i < 5; i++) {
+      expect((await accountForVlad(id.vlad)).user.id).toBe(newUser);
+    }
+    expect((await me(await tokenFor(id))).json.user.id).toBe(newUser);
+  });
+
+  it('refuses to guess between two active links', async () => {
+    const id = identity();
+    const a = await mkUser(`amb-a-${tag()}@example.com`);
+    const b = await mkUser(`amb-b-${tag()}@example.com`);
+    // Bypass the save hook, as a direct database write would.
+    for (const userId of [a, b]) {
+      await Parse.Server.database.create('bs_Identity', {
+        vlad: id.vlad,
+        UserId: ptr('_User', userId),
+      });
+    }
+    expect((await accountForVlad(id.vlad)).reason).toBe('ambiguous');
+    expect((await challenge(id)).status).toBe(403);
+  });
+
+  it('a revoked row blocks the VLAD even if BS_ID_USERS lists it', async () => {
+    await mkUser(envIdentity.email); // the account BS_ID_USERS names (may already exist)
+    const userId = await mkUser(`envblock-${tag()}@example.com`);
+    const row = (
+      await link(envIdentity, userId, {
+        RevokedAt: { __type: 'Date', iso: new Date().toISOString() },
+      })
+    ).json.objectId;
+    expect((await accountForVlad(envIdentity.vlad)).reason).toBe('revoked');
+    await req('DELETE', `${PARSE}/classes/bs_Identity/${row}`, { headers: MASTER });
+    expect((await accountForVlad(envIdentity.vlad)).source).toBe('BS_ID_USERS');
+  });
+
+  it("reports a link to an account that doesn't exist", async () => {
+    const id = identity();
+    await Parse.Server.database.create('bs_Identity', {
+      vlad: id.vlad,
+      UserId: ptr('_User', 'missingUser1'),
+    });
+    expect((await accountForVlad(id.vlad)).reason).toBe('no_account');
+  });
+
+  it('only the master key can read or write links and tokens', async () => {
+    const email = `eve-${tag()}@example.com`;
+    const signup = await req('POST', `${PARSE}/users`, {
+      headers: PUBLIC,
+      body: { username: email, password: 'pw', email },
+    });
+    const eve = { ...PUBLIC, 'X-Parse-Session-Token': signup.json.sessionToken };
+    const forged = await req('POST', `${PARSE}/classes/bs_Identity`, {
+      headers: eve,
+      body: { vlad: identity().vlad, UserId: ptr('_User', signup.json.objectId) },
+    });
+    expect(forged.status).not.toBe(201);
+    for (const className of ['bs_Identity', 'bs_ApiToken', 'bs_ApiChallenge']) {
+      const read = await req('GET', `${PARSE}/classes/${className}`, { headers: eve });
+      expect(read.status === 200 ? read.json.results.length : 0).toBe(0);
+    }
+    const schema = await req('GET', `${PARSE}/schemas/bs_Identity`, { headers: MASTER });
+    expect(schema.json.classLevelPermissions.create).toEqual({});
+  });
+});
+
+describe('/api/v1 documents', () => {
+  let owner;
+  let bob;
+  let ownerAuth;
+  let bobAuth;
+  let mine;
+  let bobsDraft;
+  let noExpiry;
+
+  beforeAll(async () => {
+    const ownerId = identity();
+    bob = identity();
+    verifier.register(ownerId);
+    verifier.register(bob);
+    owner = await mkOwner(`owner-${tag()}@example.com`);
+    const bobOwner = await mkOwner(`bob-${tag()}@example.com`);
+    await link(ownerId, owner.userId);
+    await link(bob, bobOwner.userId);
+    const bobContact = await mkContact(owner.userId, 'Bob', 'bob@example.com', bobOwner.userId);
+    mine = await mkDoc(owner, [bobContact]);
+    noExpiry = await mkDoc(owner, [bobContact], { expiry: false });
+    bobsDraft = await mkDoc(bobOwner, [], { sent: false });
+    ownerAuth = await tokenFor(ownerId);
+    bobAuth = await tokenFor(bob);
+  });
+
+  const list = (auth, query = '') =>
+    req('GET', `${API}/api/v1/documents${query}`, { headers: auth });
+
+  it("lists the owner's documents, not others'", async () => {
+    const ids = (await list(ownerAuth)).json.results.map(d => d.id);
+    expect(ids).toContain(mine);
+    expect(ids).not.toContain(bobsDraft);
+  });
+
+  it('describes a document in public field names', async () => {
+    const d = (await list(ownerAuth)).json.results.find(x => x.id === mine);
+    expect(d.status).toBe('in_progress');
+    expect(d.role).toBe('owner');
+    expect(d.signers[0].email).toBe('bob@example.com');
+    expect(d.signers[0].signed).toBe(false);
+    expect(d.appendOnly).toBe(false);
+  });
+
+  it('filters by status', async () => {
+    const drafts = (await list(bobAuth, '?status=draft')).json.results.map(d => d.id);
+    expect(drafts).toEqual([bobsDraft]);
+    expect((await list(ownerAuth, '?status=bogus')).status).toBe(400);
+  });
+
+  it('counts a document with no expiry date as in progress', async () => {
+    const got = await req('GET', `${API}/api/v1/documents/${noExpiry}`, { headers: ownerAuth });
+    expect(got.json.status).toBe('in_progress');
+    const ids = (await list(ownerAuth, '?status=in_progress&limit=100')).json.results.map(
+      d => d.id
+    );
+    expect(ids).toContain(noExpiry);
+    expect(ids).toContain(mine);
+    const expired = (await list(ownerAuth, '?status=expired')).json.results.map(d => d.id);
+    expect(expired).not.toContain(noExpiry);
+  });
+
+  it('shows a signer the documents they sign, with their fields', async () => {
+    const asSigner = (await list(bobAuth, '?role=signer')).json.results;
+    const d = asSigner.find(x => x.id === mine);
+    expect(d.role).toBe('signer');
+    expect(d.canSign).toBe(true);
+    expect(d.myFields).toEqual([
+      { page: 1, type: 'signature', x: 50, y: 100, width: 150, height: 50 },
+    ]);
+  });
+
+  it("keeps other people's documents private", async () => {
+    const r = await req('GET', `${API}/api/v1/documents/${bobsDraft}`, { headers: ownerAuth });
+    expect(r.status).toBe(404);
+  });
+
+  it('serves the file with its hash', async () => {
+    const f = await getFile(ownerAuth, mine);
+    expect(f.status).toBe(200);
+    expect(f.bytes.subarray(0, 5).toString()).toBe('%PDF-');
+    expect(f.sha).toBe(crypto.createHash('sha256').update(f.bytes).digest('hex'));
+    expect((await docRow(mine)).SignedUrl).toBeDefined();
+  });
+});

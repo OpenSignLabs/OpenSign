@@ -2,7 +2,7 @@
  * BetterSign desktop API (/api/v1): VLAD -> account links, sign-in
  * challenges and access tokens (all three master-key only: a client that
  * could create a bs_Identity row could link its VLAD to any account), and
- * contracts_Document.VladSignatures.
+ * contracts_Document.VladSignatures / SignRevision.
  *
  * @param {Parse} Parse
  */
@@ -51,7 +51,6 @@ exports.up = async Parse => {
     s.addString('TokenHash');
     s.addString('vlad');
     s.addPointer('UserId', '_User');
-    s.addString('SessionToken');
     s.addDate('ExpiresAt');
     s.addDate('RevokedAt');
     s.addString('ClientKey');
@@ -60,11 +59,24 @@ exports.up = async Parse => {
     s.addIndex('TokenHash_1', { TokenHash: 1 });
   });
 
-  // Signatures made on the desktop. Non-empty = the PDF is append-only from
-  // then on (utils/appendOnlyPdf.js).
+  // contracts_Document: VladSignatures (non-empty = the PDF is append-only,
+  // utils/appendOnlyPdf.js) and SignRevision (signings commit at a revision,
+  // PDF.js commitAtRevision). That commit writes through the database
+  // controller, which doesn't extend the schema the way REST does, so also
+  // make sure the other fields it writes exist.
+  const current = await new Parse.Schema('contracts_Document').get().catch(() => null);
+  const existing = current?.fields || {};
   const doc = new Parse.Schema('contracts_Document');
-  doc.addArray('VladSignatures');
-  await doc.update();
+  const add = {
+    VladSignatures: () => doc.addArray('VladSignatures'),
+    SignRevision: () => doc.addNumber('SignRevision'),
+    DocumentHash: () => doc.addString('DocumentHash'),
+    DocSentAt: () => doc.addDate('DocSentAt'),
+  };
+  for (const [field, addField] of Object.entries(add)) {
+    if (!existing[field]) addField();
+  }
+  await (current ? doc.update() : doc.save());
 };
 
 /**
@@ -74,6 +86,7 @@ exports.up = async Parse => {
 exports.down = async Parse => {
   const doc = new Parse.Schema('contracts_Document');
   doc.deleteField('VladSignatures');
+  doc.deleteField('SignRevision');
   await doc.update();
   for (const className of ['bs_ApiToken', 'bs_ApiChallenge', 'bs_Identity']) {
     const schema = new Parse.Schema(className);

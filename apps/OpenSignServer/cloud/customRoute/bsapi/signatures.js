@@ -17,7 +17,8 @@ import {
   extendsPdf,
   readDocumentPdf,
 } from '../../../utils/appendOnlyPdf.js';
-import { finishSigning, STALE_DOCUMENT } from '../../parsefunction/pdf/PDF.js';
+import { finishSigning } from '../../parsefunction/pdf/PDF.js';
+import { notifyNextSigner } from './notify.js';
 import { apiError, config } from './auth.js';
 import { findAccessibleDocument, signerState, toPublicDocument } from './documents.js';
 import { parseStatement, statementDigest } from './statement.js';
@@ -87,10 +88,12 @@ export async function uploadSignature(req, res) {
   }
 
   // 3. The upload is the current file with a signature appended over all of it.
-  const baseUrl = doc.get('SignedUrl') || doc.get('URL');
+  // The file and the revision come from the same read of the document, so a
+  // commit at this revision is a commit on top of this file (finishSigning).
+  const baseRevision = doc.get('SignRevision') || 0;
   let current;
   try {
-    current = await readDocumentPdf(baseUrl);
+    current = await readDocumentPdf(doc.get('SignedUrl') || doc.get('URL'));
   } catch (e) {
     console.log('bsapi: base download failed', doc.id, e?.message);
     return apiError(res, 502, 'file_unavailable', "Couldn't read the document's file.");
@@ -126,6 +129,7 @@ export async function uploadSignature(req, res) {
     vladHex: vlad,
     messageHex: statementDigest(statementBytes, 'bs-docsign').toString('hex'),
     signatureHex: Buffer.from(signature, 'base64url').toString('hex'),
+    rp: c.rp,
   });
   if (!v.ok) {
     log('upload_verify_failed', { vlad: vlad.slice(0, 16), docId: doc.id, code: v.code });
@@ -165,14 +169,15 @@ export async function uploadSignature(req, res) {
       pdfBuffer: pdfBytes,
       userIP: req.headers['x-real-ip'] || '',
       isCustomMail: !!(tenant?.CompletionBody && tenant?.CompletionSubject),
-      publicUrl: req.headers.public_url,
+      // The website, for links in emails (public_url is this API's host).
+      publicUrl: c.origin,
       appendOnly: true,
-      baseUrl,
+      baseRevision,
       auditExtra: { Vlad: vlad, SignedWith: 'BetterSign', SignedSha256: fileSha256 },
       docExtra: { VladSignatures: { __op: 'Add', objects: [entry] } },
     });
   } catch (e) {
-    if (e?.code === STALE_DOCUMENT) {
+    if (e?.stale) {
       return apiError(
         res,
         409,
@@ -185,6 +190,10 @@ export async function uploadSignature(req, res) {
   log('signed', { vlad: vlad.slice(0, 16), docId: doc.id, userId: user.id, fileSha256 });
 
   const updated = await findAccessibleDocument(doc.id, user.id);
+  if (!updated.get('IsCompleted')) {
+    // The browser emails the next signer itself; there's no browser here.
+    await notifyNextSigner(_resDoc, state.contact.id, c.origin);
+  }
   return res.status(201).json({ ...toPublicDocument(updated, user.id), signedSha256: fileSha256 });
 }
 

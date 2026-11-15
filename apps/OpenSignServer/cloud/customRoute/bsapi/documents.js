@@ -44,33 +44,50 @@ function baseQuery() {
   return q;
 }
 
-function applyStatus(q, status) {
-  const now = new Date();
+// The status filter, matching documentStatus(): a document with no
+// ExpiryDate never expires.
+function statusQuery(status, now = new Date()) {
+  const q = () => new Parse.Query('contracts_Document');
+  const open = () => {
+    const o = q();
+    o.notEqualTo('IsCompleted', true);
+    o.notEqualTo('IsDeclined', true);
+    return o;
+  };
   switch (status) {
-    case 'draft':
-      q.notEqualTo('IsCompleted', true);
-      q.notEqualTo('IsDeclined', true);
-      q.doesNotExist('SignedUrl');
-      break;
-    case 'in_progress':
-      q.notEqualTo('IsCompleted', true);
-      q.notEqualTo('IsDeclined', true);
-      q.exists('SignedUrl');
-      q.greaterThan('ExpiryDate', now);
-      break;
-    case 'completed':
-      q.equalTo('IsCompleted', true);
-      break;
-    case 'declined':
-      q.equalTo('IsDeclined', true);
-      break;
-    case 'expired':
-      q.notEqualTo('IsCompleted', true);
-      q.notEqualTo('IsDeclined', true);
-      q.exists('SignedUrl');
-      q.lessThan('ExpiryDate', now);
-      break;
+    case 'draft': {
+      const d = open();
+      d.doesNotExist('SignedUrl');
+      return d;
+    }
+    case 'in_progress': {
+      const notExpired = open();
+      notExpired.exists('SignedUrl');
+      notExpired.greaterThan('ExpiryDate', now);
+      const noExpiry = open();
+      noExpiry.exists('SignedUrl');
+      noExpiry.doesNotExist('ExpiryDate');
+      return Parse.Query.or(notExpired, noExpiry);
+    }
+    case 'completed': {
+      const c = q();
+      c.notEqualTo('IsDeclined', true);
+      c.equalTo('IsCompleted', true);
+      return c;
+    }
+    case 'declined': {
+      const d = q();
+      d.equalTo('IsDeclined', true);
+      return d;
+    }
+    case 'expired': {
+      const e = open();
+      e.exists('SignedUrl');
+      e.lessThan('ExpiryDate', now);
+      return e;
+    }
   }
+  return null;
 }
 
 export function documentStatus(doc, now = new Date()) {
@@ -192,10 +209,14 @@ export async function listDocuments(req, res) {
   const limit = Math.min(Math.max(parseInt(req.query.limit, 10) || 25, 1), MAX_LIMIT);
   const skip = Math.max(parseInt(req.query.skip, 10) || 0, 0);
 
-  const q = baseQuery();
+  let q = baseQuery();
   if (role === 'owner') q.equalTo('CreatedBy', userPtr(userId));
   else q.matchesQuery('Signers', signerContactsQuery(userId));
-  if (status) applyStatus(q, status);
+  if (status) {
+    q = Parse.Query.and(q, statusQuery(status));
+    q.include('Signers');
+    q.include('CreatedBy');
+  }
   q.descending('updatedAt');
   q.limit(limit);
   q.skip(skip);

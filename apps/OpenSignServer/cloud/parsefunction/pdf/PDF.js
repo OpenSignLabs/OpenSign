@@ -23,6 +23,7 @@ import {
 import { SignPdf } from '@signpdf/signpdf';
 import { P12Signer } from '@signpdf/signer-p12';
 import { buildDownloadFilename, parseUploadFile } from '../../../utils/fileUtils.js';
+import { setDocumentCount } from '../../../utils/CountUtils.js';
 import sendMailWithAttachment from '../sendMailWithAttachment.js';
 import sendSystemMail from '../sendSystemMail.js';
 import {
@@ -84,6 +85,55 @@ async function uploadFile(pdfName, filepath) {
   }
 }
 
+// Commit a signing only if the document is still at the revision it was
+// checked against: one atomic findOneAndUpdate on (objectId, SignRevision),
+// which also bumps SignRevision. Returns false if another signing committed
+// first, so two signers can't both build on the same file and drop one
+// signature. Parse's REST API has no conditional update, hence the database
+// controller; it skips save hooks (updateDoc does their part itself).
+export async function commitAtRevision(docId, baseRevision, body) {
+  const atRevision =
+    baseRevision === 0
+      ? { $or: [{ SignRevision: { $exists: false } }, { SignRevision: 0 }] }
+      : { SignRevision: baseRevision };
+  // As REST would store it (Dates inside AuditTrail become ISO strings).
+  const update = JSON.parse(JSON.stringify(body));
+  update.updatedAt = new Date().toISOString();
+  update.SignRevision = { __op: 'Increment', amount: 1 };
+  try {
+    await Parse.Server.database.update(
+      'contracts_Document',
+      { objectId: docId, ...atRevision },
+      update,
+      {}
+    );
+    return true;
+  } catch (err) {
+    if (err?.code === Parse.Error.OBJECT_NOT_FOUND) return false;
+    throw err;
+  }
+}
+
+// The document's current signing revision (see commitAtRevision).
+export async function signRevisionOf(docId) {
+  const doc = await new Parse.Query('contracts_Document').get(docId, { useMasterKey: true });
+  return doc.get('SignRevision') || 0;
+}
+
+const staleDocument = () =>
+  Object.assign(new Parse.Error(STALE_DOCUMENT, STALE_MESSAGE), { stale: true });
+
+// Best effort: remove an uploaded file a lost commit no longer needs.
+async function deleteUploadedFile(url) {
+  const name = decodeURIComponent(fileKey(url).split('/').pop() || '');
+  if (!name) return;
+  try {
+    await Parse.File.fromJSON({ __type: 'File', name, url }).destroy({ useMasterKey: true });
+  } catch (err) {
+    console.log('could not delete unused file', name, err?.message);
+  }
+}
+
 // `updateDoc` is used to update signedUrl, AuditTrail, Iscompleted in document
 async function updateDoc(
   docId,
@@ -96,7 +146,8 @@ async function updateDoc(
   documentHash,
   activity,
   auditExtra,
-  docExtra
+  docExtra,
+  baseRevision
 ) {
   try {
     const UserPtr = { __type: 'Pointer', className: className, objectId: userId };
@@ -147,7 +198,17 @@ async function updateDoc(
     if (documentHash && isCompleted) {
       body.DocumentHash = documentHash;
     }
-    const signedRes = await axios.put(`${docUrl}/${docId}`, body, { headers });
+    // The commit skips DocumentBeforesave, so do its first-signing bookkeeping.
+    const firstSigning = !data.SignedUrl;
+    if (firstSigning && data.Signers?.length > 0) {
+      body.DocSentAt = { __type: 'Date', iso: new Date().toISOString() };
+    }
+    if (!(await commitAtRevision(docId, baseRevision, body))) {
+      throw staleDocument();
+    }
+    if (firstSigning && data.ExtUserPtr?.objectId) {
+      setDocumentCount(data.ExtUserPtr.objectId);
+    }
     return {
       isCompleted: isCompleted,
       message: 'success',
@@ -155,6 +216,7 @@ async function updateDoc(
       DocumentHash: documentHash && isCompleted ? documentHash : undefined,
     };
   } catch (err) {
+    if (err?.stale) throw err;
     console.log('update doc err ', err);
     return 'err';
   }
@@ -401,8 +463,9 @@ export const STALE_MESSAGE = 'This document changed since you opened it. Reload 
  *
  * @param {boolean} appendOnly - a BetterSign identity has signed (or is
  *   signing): the seal is appended, never a rewrite.
- * @param {string} [baseUrl] - the file this PDF was checked to extend; if the
- *   document's file has changed since, nothing is stored.
+ * @param {number} baseRevision - the document's SignRevision when this PDF was
+ *   checked against its file. If another signing has committed since,
+ *   nothing is stored and a stale error (`.stale`) is thrown.
  * @param {object} [auditExtra] - extra fields for this signer's audit entry
  * @param {object} [docExtra] - extra fields for the document update
  */
@@ -418,7 +481,7 @@ export async function finishSigning({
   mailProvider = '',
   publicUrl,
   appendOnly = false,
-  baseUrl,
+  baseRevision,
   auditExtra,
   docExtra,
 }) {
@@ -509,35 +572,37 @@ export async function finishSigning({
       console.log(`New Signed PDF created called: ${signedFilePath}`);
     }
 
+    // Cheap early check, so a signing that has already lost doesn't upload.
+    if ((await signRevisionOf(docId)) !== baseRevision) {
+      unlinkFile(signedFilePath);
+      throw staleDocument();
+    }
     // `uploadFile` is used to upload pdf to aws s3 and get it's url
     const data = await uploadFile(`signed_${name}`, signedFilePath);
 
     if (data && data.imageUrl) {
-      // `axios` is used to update signed pdf url in contracts_Document classes for given DocId
-      if (baseUrl !== undefined) {
-        // Someone else's signature landed since this one was checked against
-        // the current file: storing ours would drop theirs from the PDF.
-        const latest = await new Parse.Query('contracts_Document').get(docId, {
-          useMasterKey: true,
-        });
-        if (fileKey(latest.get('SignedUrl') || latest.get('URL')) !== fileKey(baseUrl)) {
-          unlinkFile(signedFilePath);
-          throw new Parse.Error(STALE_DOCUMENT, STALE_MESSAGE);
-        }
+      let updatedDoc;
+      try {
+        updatedDoc = await updateDoc(
+          docId, //docId
+          data.imageUrl, // SignedUrl
+          signUser.objectId, // userID
+          userIP, // client ipAddress,
+          _resDoc, // auditTrail, signers, etc data
+          className, // className based on flow
+          sign, // sign base64
+          isCompleted ? documentHash : undefined,
+          auditActivity,
+          auditExtra,
+          docExtra,
+          baseRevision
+        );
+      } catch (err) {
+        // Lost to a concurrent signing (or failed): this file is unused.
+        unlinkFile(signedFilePath);
+        if (err?.stale) await deleteUploadedFile(data.imageUrl);
+        throw err;
       }
-      const updatedDoc = await updateDoc(
-        docId, //docId
-        data.imageUrl, // SignedUrl
-        signUser.objectId, // userID
-        userIP, // client ipAddress,
-        _resDoc, // auditTrail, signers, etc data
-        className, // className based on flow
-        sign, // sign base64
-        isCompleted ? documentHash : undefined,
-        auditActivity,
-        auditExtra,
-        docExtra
-      );
       sendNotifyMail(_resDoc, signUser, mailProvider, publicUrl);
       saveFileUsage(pdfSize, data.imageUrl, _resDoc?.CreatedBy?.objectId);
       if (updatedDoc && updatedDoc.isCompleted) {
@@ -638,14 +703,12 @@ async function PDF(req) {
     if (req.params.pdfFile) {
       const PdfBuffer = Buffer.from(req.params.pdfFile, 'base64');
       const appendOnly = isAppendOnly(_resDoc);
-      let baseUrl;
       if (appendOnly) {
         // A BetterSign identity signed this document, so the browser must
         // append its changes (embedWidgetsToDoc loads it forIncrementalUpdate).
-        baseUrl = _resDoc.SignedUrl || _resDoc.URL;
-        const current = await readDocumentPdf(baseUrl);
+        const current = await readDocumentPdf(_resDoc.SignedUrl || _resDoc.URL);
         if (!extendsPdf(current, PdfBuffer)) {
-          throw new Parse.Error(STALE_DOCUMENT, STALE_MESSAGE);
+          throw staleDocument();
         }
       }
       return await finishSigning({
@@ -660,7 +723,7 @@ async function PDF(req) {
         mailProvider,
         publicUrl,
         appendOnly,
-        baseUrl,
+        baseRevision: _resDoc.SignRevision || 0,
       });
     } else {
       const error = new Error('Pdf file not present!');

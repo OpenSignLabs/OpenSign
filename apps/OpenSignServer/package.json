@@ -15,6 +15,8 @@
     "prettier": "prettier --write '{cloud,spec}/{**/*,*}.js' 'index.js'",
     "start": "node index.js",
     "test": "mongodb-runner start && TESTING=true jasmine",
+    "test:bsapi": "jasmine --config=spec/support/bsapi.json",
+    "test:bsapi:integration": "mongodb-runner exec -- jasmine --config=spec/support/bsapi-integration.json",
     "watch": "nodemon index.js"
   },
   "dependencies": {

@@ -67,10 +67,14 @@ POST /api/v1/auth/token
    never counts as a pass.
 4. The VLAD is still linked to an account (section 3).
 
-The token lasts `BS_API_TOKEN_TTL_S` (30 min). Only its SHA-256 is stored.
-Each token holds an OpenSign session for the account whose expiry is cut to
-the token's. The link is checked on every call, so unlinking a VLAD ends its
-tokens immediately. `POST /auth/logout` revokes the token and its session.
+The token lasts `BS_API_TOKEN_TTL_S` (30 min). Only its SHA-256 is stored, and
+no OpenSign (Parse) session is created: handlers act for the account with the
+master key and explicit owner / signer checks. The link is checked on every
+call, so unlinking a VLAD ends its tokens immediately. `POST /auth/logout`
+revokes the token.
+
+The `rp` sent to the verifier is `BS_API_RP`, the same value statements must
+name.
 
 ## 2. Endpoints
 
@@ -118,8 +122,11 @@ A VLAD signs in only to an existing account an admin linked it to. The same
 list serves the website's Sign in with BetterSign (`bsidlogin`). It lives in
 `utils/bsIdentity.js`, which checks, in order:
 
-1. the `bs_Identity` class (master key only). A row with `RevokedAt` set
-   blocks the VLAD, even if the env list has it.
+1. the `bs_Identity` class (master key only). The VLAD's active row (no
+   `RevokedAt`) gives the account. If it has only revoked rows, it's blocked,
+   even if the env list has it. A save hook allows one active row per VLAD
+   (revoke the old link before adding a new one); if there are ever two, for
+   example from a direct database write, nobody signs in until one is revoked.
 2. `BS_ID_USERS`, JSON `{ "<vladHex>": "<account email>" }`, the original list.
 
 Link (or unlink) with the master key:
@@ -142,7 +149,7 @@ only by migration `20261114120000-create_bettersign_api_classes.cjs`.
 | --- | --- | --- |
 | `BS_VERIFIER_URL` | `https://verify.bettersign.ing` | |
 | `BS_VERIFIER_SECRET` | none | the verifier droplet's `BS_VERIFIER_SECRET`. **Required in production** |
-| `BS_API_ORIGIN` | `https://docsign.bettersign.ing` | the `origin` statements must name |
+| `BS_API_ORIGIN` | `https://docsign.bettersign.ing` | the `origin` statements must name, and the website that emailed links open |
 | `BS_API_RP` | `bs-opensign-api` | the `rp` statements must name |
 | `BS_API_TOKEN_TTL_S` | `1800` | |
 | `BS_ID_USERS` | none | fallback link list (section 3) |
@@ -200,14 +207,22 @@ domain, so neither can be used as the other:
    to), and the appended part contains a signature whose `ByteRange` covers
    the whole file. A changed base is `409 stale_base`: download again.
 4. The verifier accepts the statement's signature (`/verify`).
-5. Just before storing, the document's file is re-read; if someone else's
-   signature landed meanwhile, yours is refused with `409 stale_base` rather
-   than replacing theirs. (This narrows the race, it doesn't close it: there's
-   no compare-and-swap on the document row. Online signing has the same race
-   today.)
+5. It's stored only if nobody else's signature landed since the file you
+   signed. Every signing, online or desktop, commits with one atomic
+   compare-and-swap on the document's `SignRevision`
+   (`PDF.js commitAtRevision`), so of two signers working from the same
+   version, one wins and the other gets `409 stale_base` (online:
+   "This document changed since you opened it"). The loser's uploaded file is
+   deleted.
 
 Then it's recorded like any signature (audit trail `Signed`, with `Vlad` and
 `SignedWith: "BetterSign"`), plus an entry in the document's `VladSignatures`.
+If the document is sent in order, the next signer gets the "your turn to
+sign" email the browser would otherwise send, with a link to `BS_API_ORIGIN`.
+
+`VladSignatures` and `SignRevision` can only be changed with the master key
+(`DocumentBeforesave`): a client that could clear `VladSignatures` could get a
+desktop signature rewritten away.
 
 Not checked yet: that the PAdES signature inside the PDF is cryptographically
 valid and made by a key the VLAD's log authorises. That needs `bs-pades`
@@ -235,3 +250,17 @@ Viewers judge which changes are allowed after a signature. Drawing on a page
 after a desktop signature may show as "modified after signing" in Acrobat,
 even though that signature still verifies for its revision. Not yet tested
 against Acrobat or `bs-pades` verification.
+
+## 6. Tests
+
+```sh
+cd apps/OpenSignServer
+npm run test:bsapi              # unit: statements, append-only signing, emails (no database)
+npm run test:bsapi:integration  # the API end to end: in-process server, mock verifier, MongoDB
+cd ../OpenSign && npm test      # the signing page's append-only helpers
+```
+
+The integration specs run the server on `localhost:8080/app` (where
+`Utils.js` expects to reach itself), so that port must be free, and a mock
+verifier on `:8799`. `mongodb-runner exec` downloads and starts MongoDB.
+`.github/workflows/bettersign-tests.yml` runs all three on pull requests.

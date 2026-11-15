@@ -9,9 +9,9 @@
 //   4. Authorization: Bearer bso_… on every other call (requireToken)
 //
 // A challenge is single-use and lives 60 s. A token lives BS_API_TOKEN_TTL_S
-// (default 30 min) and is stored hashed. Each token holds an OpenSign session
-// for the account (via /loginAs) whose expiry is cut to the token's, so the
-// API runs existing cloud functions as that user.
+// (default 30 min) and is stored hashed. Handlers act for the token's account
+// with the master key and explicit owner / signer checks; no Parse session is
+// created.
 //
 // Env:
 //   BS_API_ORIGIN       the origin statements must name. Default https://docsign.bettersign.ing
@@ -20,10 +20,7 @@
 //   plus BS_VERIFIER_URL / BS_VERIFIER_SECRET (verifier.js)
 
 import crypto from 'node:crypto';
-import axios from 'axios';
-import { cloudServerUrl, serverAppId } from '../../../Utils.js';
 import { accountForVlad, VLAD_HEX_RE } from '../../../utils/bsIdentity.js';
-import { sessionViaLoginAs } from '../../parsefunction/bettersignlogin.js';
 import { parseStatement, statementDigest } from './statement.js';
 import { verifySignature } from './verifier.js';
 
@@ -164,6 +161,7 @@ export async function issueToken(req, res) {
     vladHex: vlad,
     messageHex: statementDigest(statementBytes).toString('hex'),
     signatureHex: Buffer.from(signature, 'base64url').toString('hex'),
+    rp: c.rp,
   });
   if (!v.ok) {
     log('verify_failed', { vlad: vlad.slice(0, 16), code: v.code, error: v.error });
@@ -185,16 +183,13 @@ export async function issueToken(req, res) {
   const account = await accountForVlad(vlad);
   if (!account.user) return deny('This BetterSign identity is no longer linked.', account.reason);
 
-  const login = await sessionViaLoginAs(account.user.id);
   const expiresAt = new Date(Date.now() + c.tokenTtlS * 1000);
-  await capSession(login.sessionToken, expiresAt);
 
   const token = 'bso_' + crypto.randomBytes(32).toString('base64url');
   const row = new Parse.Object('bs_ApiToken');
   row.set('TokenHash', sha256Hex(token));
   row.set('vlad', vlad);
   row.set('UserId', userPtr(account.user.id));
-  row.set('SessionToken', login.sessionToken);
   row.set('ExpiresAt', expiresAt);
   row.set('ClientKey', Buffer.from(s.extSignPub).toString('hex'));
   row.set('ReqId', Buffer.from(s.reqId).toString('hex'));
@@ -212,33 +207,7 @@ export async function issueToken(req, res) {
   });
 }
 
-// The /loginAs session lasts a year; make it end with the token.
-async function capSession(sessionToken, expiresAt) {
-  const q = new Parse.Query(Parse.Session);
-  q.equalTo('sessionToken', sessionToken);
-  const session = await q.first({ useMasterKey: true });
-  if (!session) return;
-  // The JS SDK treats expiresAt as read-only; the master key may set it over REST.
-  await axios.put(
-    `${cloudServerUrl}/classes/_Session/${session.id}`,
-    { expiresAt: { __type: 'Date', iso: expiresAt.toISOString() } },
-    {
-      headers: {
-        'X-Parse-Application-Id': serverAppId,
-        'X-Parse-Master-Key': process.env.MASTER_KEY,
-      },
-    }
-  );
-}
-
-async function endSession(sessionToken) {
-  const q = new Parse.Query(Parse.Session);
-  q.equalTo('sessionToken', sessionToken);
-  const session = await q.first({ useMasterKey: true });
-  if (session) await session.destroy({ useMasterKey: true });
-}
-
-// Middleware: Authorization: Bearer bso_… -> req.bs = { vlad, user, sessionToken, token }.
+// Middleware: Authorization: Bearer bso_… -> req.bs = { vlad, user, token }.
 export async function requireToken(req, res, next) {
   const m = /^Bearer (\S+)$/.exec(req.headers.authorization || '');
   if (!m || !TOKEN_RE.test(m[1])) {
@@ -262,7 +231,7 @@ export async function requireToken(req, res, next) {
     if (!account.user || account.user.id !== token.get('UserId').id) {
       return apiError(res, 401, 'invalid_token', 'This BetterSign identity is no longer linked.');
     }
-    req.bs = { vlad, user: account.user, sessionToken: token.get('SessionToken'), token };
+    req.bs = { vlad, user: account.user, token };
     return next();
   } catch (e) {
     return next(e);
@@ -271,9 +240,8 @@ export async function requireToken(req, res, next) {
 
 // POST /auth/logout (with the token)
 export async function logout(req, res) {
-  const { token, sessionToken } = req.bs;
+  const { token } = req.bs;
   token.set('RevokedAt', new Date());
   await token.save(null, { useMasterKey: true });
-  await endSession(sessionToken).catch(() => {});
   return res.status(204).end();
 }

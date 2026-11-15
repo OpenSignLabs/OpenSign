@@ -1,9 +1,8 @@
 {
   "spec_dir": "spec",
-  "spec_files": [
-    "bsapi/**/*[sS]pec.js"
-  ],
+  "spec_files": ["bsapi/**/*[sS]pec.js"],
   "helpers": [],
-  "stopSpecOnExpectationFailure": false,
-  "random": false
+  "env": {
+    "random": false
+  }
 }

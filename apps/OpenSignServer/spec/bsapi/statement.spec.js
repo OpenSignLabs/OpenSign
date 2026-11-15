@@ -1,6 +1,6 @@
 // Unit tests for the bs-login v1 statement parser (cloud/customRoute/bsapi/statement.js).
 // No database: run with `npx jasmine --config=spec/support/bsapi.json`.
-/* eslint-env jasmine, es2020 */
+/* eslint-env es2020 */
 import crypto from 'node:crypto';
 import {
   decodeCbor,

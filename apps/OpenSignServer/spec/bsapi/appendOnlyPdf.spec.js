@@ -1,7 +1,6 @@
 // Append-only signing (utils/appendOnlyPdf.js): an earlier signature (standing
 // in for a desktop VLAD PAdES signature) survives an online signer and
 // OpenSign's seal. No database: `npx jasmine --config=spec/support/bsapi.json`.
-/* eslint-env jasmine */
 import crypto from 'node:crypto';
 import forge from 'node-forge';
 import * as pdfLib from 'pdf-lib';
@@ -38,8 +37,10 @@ function digestsMatch(bytes) {
   const text = bytes.toString('latin1');
   return signatureByteRanges(bytes).map(([a, b, c, d]) => {
     const covered = Buffer.concat([bytes.subarray(a, a + b), bytes.subarray(c, c + d)]);
-    const hex = text.slice(b + 1, c - 1).replace(/(00)+$/, '');
-    const p7 = forge.pkcs7.messageFromAsn1(forge.asn1.fromDer(forge.util.hexToBytes(hex)));
+    // /Contents is zero-padded; parse the DER by its own length, since the
+    // signature itself may end in zero bytes.
+    const der = forge.util.hexToBytes(text.slice(b + 1, c - 1));
+    const p7 = forge.pkcs7.messageFromAsn1(forge.asn1.fromDer(der, { parseAllBytes: false }));
     const md = p7.rawCapture.authenticatedAttributes
       .map(
         x =>
@@ -110,6 +111,56 @@ describe('append-only signing', () => {
       expect((await pdfLib.PDFDocument.load(sealed)).getPageCount()).toBe(1);
     });
   }
+
+  it('keeps existing fields when the AcroForm stores Fields and SigFlags indirectly', async () => {
+    // Tools such as lopdf may write /Fields and /SigFlags as indirect objects.
+    const doc = await pdfLib.PDFDocument.create();
+    const page = doc.addPage([600, 800]);
+    doc.getForm().createTextField('company').addToPage(page, { x: 50, y: 600 });
+    const acroForm = doc.catalog.lookup(pdfLib.PDFName.of('AcroForm'), pdfLib.PDFDict);
+    const fieldsArray = acroForm.lookup(pdfLib.PDFName.of('Fields'), pdfLib.PDFArray);
+    acroForm.set(pdfLib.PDFName.of('Fields'), doc.context.register(fieldsArray));
+    acroForm.set(pdfLib.PDFName.of('SigFlags'), doc.context.register(pdfLib.PDFNumber.of(1)));
+    const base = Buffer.from(await doc.save({ useObjectStreams: false }));
+
+    const a = await cantoo.PDFDocument.load(base, {
+      forIncrementalUpdate: true,
+      updateMetadata: false,
+    });
+    Placeholder({
+      pdfDoc: a,
+      reason: 'VLAD',
+      location: 'n/a',
+      name: 'Alice',
+      contactInfo: 'a',
+      signatureLength: 8000,
+      fieldName: 'BetterSign alice',
+      lib: cantoo,
+    });
+    const signed = await new SignPdf().sign(Buffer.from(await a.save()), signer());
+    const sealed = await sealAppendOnly({
+      pdfBytes: signed,
+      p12Signer: signer(),
+      reason: 'Digitally signed by OpenSign',
+      name: 'OpenSign',
+      contactInfo: 'x',
+    });
+
+    const final = await cantoo.PDFDocument.load(sealed);
+    const names = final
+      .getForm()
+      .getFields()
+      .map(f => f.getName());
+    expect(names.length).toBe(3);
+    expect(names).toContain('company');
+    expect(names).toContain('BetterSign alice');
+    const sigFlags = final.catalog
+      .lookup(cantoo.PDFName.of('AcroForm'), cantoo.PDFDict)
+      .lookup(cantoo.PDFName.of('SigFlags'), cantoo.PDFNumber)
+      .asNumber();
+    expect(sigFlags & 3).toBe(3); // SignaturesExist | AppendOnly
+    expect(digestsMatch(sealed)).toEqual([true, true]);
+  });
 
   it("detects that a full re-save doesn't extend the file", async () => {
     const doc = await pdfLib.PDFDocument.create();

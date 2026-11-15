@@ -29,17 +29,33 @@ export const isAppendOnlyPdf = (pdfDoc) =>
   pdfDoc instanceof IncrementalPDFDocument;
 
 // form.flatten() removes every field, signature fields included, which would
-// delete the BetterSign signature from later revisions. Flatten the rest.
+// delete the BetterSign signature from later revisions. Flatten the rest,
+// skipping (and logging) a widget that can't be flattened, as flatten() does.
+//
+// flatten() also flattens "orphan" widgets: any widget annotation carrying its
+// own /FT. Signature widgets usually do (field and widget in one dictionary),
+// so that pass would flatten the signatures away; it isn't run here. That
+// matches pdf-lib's flatten(), which the normal signing path uses and which
+// has no such pass either.
 export const flattenExceptSignatures = (form) => {
-  form.updateFieldAppearances();
+  if (!form) return;
+  try {
+    form.updateFieldAppearances();
+  } catch (err) {
+    console.log("could not update field appearances", err);
+  }
   for (const field of form.getFields()) {
     if (field instanceof PDFSignature) continue;
     for (const widget of field.acroField.getWidgets()) {
-      form.flattenWidgetOntoPage(
-        form.findWidgetPage(widget),
-        widget,
-        form.findWidgetAppearanceRef(field, widget)
-      );
+      try {
+        form.flattenWidgetOntoPage(
+          form.findWidgetPage(widget),
+          widget,
+          form.findWidgetAppearanceRef(field, widget)
+        );
+      } catch (err) {
+        console.log("could not flatten a form widget", err);
+      }
     }
     form.removeField(field);
   }

@@ -100,26 +100,19 @@ export const Placeholder = ({
     doc.catalog.set(PDFName.of('AcroForm'), acroFormRef);
   }
 
-  let sigFlags = acroForm.has(PDFName.of('SigFlags'))
-    ? acroForm.get(PDFName.of('SigFlags'))
-    : PDFNumber.of(0);
-
+  // SigFlags and Fields may be indirect objects (other tools write them that
+  // way): resolve them, so existing fields, an earlier signature's included,
+  // are kept rather than replaced.
+  const sigFlags = acroForm.lookupMaybe(PDFName.of('SigFlags'), PDFNumber) || PDFNumber.of(0);
   const updatedFlags = PDFNumber.of(
     sigFlags.asNumber() | SIG_FLAGS.SIGNATURES_EXIST | SIG_FLAGS.APPEND_ONLY
   );
   acroForm.set(PDFName.of('SigFlags'), updatedFlags);
 
-  let fields = acroForm.get(PDFName.of('Fields'));
-  if (fields instanceof PDFArray) {
+  const fields = acroForm.lookupMaybe(PDFName.of('Fields'), PDFArray);
+  if (fields) {
     fields.push(widgetDictRef);
-  }
-  // else if (fields) {
-  //   const newFields = PDFArray.withContext(doc.context);
-  //   fields.asArray().forEach(field => newFields.push(field));
-  //   newFields.push(widgetDictRef);
-  //   acroForm.set(PDFName.of('Fields'), newFields);
-  // }
-  else {
+  } else {
     const newFields = PDFArray.withContext(doc.context);
     newFields.push(widgetDictRef);
     acroForm.set(PDFName.of('Fields'), newFields);
