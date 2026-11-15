@@ -146,7 +146,7 @@ at the cost of ~10–30 s cold starts) and/or replace the Mongo app with **Mongo
 3. **File storage is a single Fly volume.** Uploaded/generated documents live only on `opensign_files` (mounted at `/usr/src/app/files`). The mount shadows the repo's email templates, so the Dockerfile seeds them back at startup (see item 5). Volume snapshots exist (5-day) but there's no off-site backup.
 4. **MongoDB is self-managed.** Snapshots are Fly's defaults (daily, 5-day). No point-in-time recovery, no replica set. For anything you care about, add external backups or move to Atlas.
 5. **Email: Resend via SMTP — verified & delivering (2026-10-06).** Sending via `smtp.resend.com:465`, user `resend`, from `no-reply@send.bettersign.ing`. The sending subdomain `send.bettersign.ing` is **verified** in Resend (DKIM+SPF records in Cloudflare DNS). End-to-end test confirmed: OpenSign `sendmailv3` → Resend → **delivered** to `brendonp@ixiomsoftware.com` (a first test to `brendon@ixiomsoftware.com` hard-bounced — that mailbox doesn't exist; the real one has the `p`). The Fly volume shadowed the email templates, so the Dockerfile now **seeds** `files_seed/` → `./files` at startup (non-clobbering); verified present on the volume. No DMARC record was added — consider adding one before high-volume sending.
-6. **Document signing certificate is a self-signed DEMO cert.** `PFX_BASE64` / `PASS_PHRASE` are set (CN=`OpenSign Demo Signer`, ~825-day validity, node-forge-verified). Signatures will be cryptographically valid but **not trusted** by Adobe/OS trust stores — replace with a CA-issued (e.g. AATL) cert for anything real.
+6. **Document signing certificate is a self-signed DEMO cert.** `PFX_BASE64` / `PASS_PHRASE` are set (CN=`OpenSign Demo Signer`, ~825-day validity, node-forge-verified). Signatures will be cryptographically valid but **not trusted** by Adobe/OS trust stores — replace with a CA-issued (e.g. AATL) cert for anything real. With `SEAL_BACKEND=bs-service-identity` the seal comes from docsign's BetterSign identity instead (see "Seal with bs-service-identity" below); its certificate is self-issued too, so Adobe still shows it as untrusted.
 7. **Secrets were auto-generated; `MASTER_KEY` was rotated 2026-10-06.** `APP_ID`, `MASTER_KEY`, the Mongo password, and the signing cert/passphrase are saved to `DEPLOYMENT-SECRETS.local.txt` (gitignored, `chmod 600`). The `MASTER_KEY` grants full data access — keep it safe.
 8. **Open CORS (`*`) on the backend.** Fine for a test; for production, lock the backend to the known frontend origin.
 9. **No rate limiting / WAF** in front of the Fly backend (the frontend benefits from Cloudflare's edge, the API does not — it's hit directly).
@@ -226,6 +226,27 @@ either move the files mount to a dedicated path (e.g. mount at `/data` and set a
 fly secrets set PFX_BASE64="$(base64 -i your-cert.p12)" PASS_PHRASE="..." \
   --app docsign-bettersign-api
 ```
+
+### Seal with bs-service-identity instead of the PFX
+The Fly app `bs-service-identity` (BetterSignApps `server/bs-service-identity`;
+its README has its own runbook) is reachable only on the private network, at
+`BS_SERVICE_IDENTITY_URL` in `apps/OpenSignServer/fly.toml`. To switch the seal
+over (plan: [docs/BsServiceIdentitySealing.md](docs/BsServiceIdentitySealing.md) §5):
+```bash
+# The service's BS_SERVICE_TOKEN; the first command doesn't redeploy
+fly secrets set BS_SERVICE_IDENTITY_TOKEN="..." --stage --app docsign-bettersign-api
+# Rollout: seal with the service, fall back to the PFX if it fails
+fly secrets set SEAL_BACKEND=bs-service-identity SEAL_FALLBACK=p12 --app docsign-bettersign-api
+# Check from the API machine (expects JSON with the service's VLAD)
+fly ssh console --app docsign-bettersign-api -C \
+  "sh -c 'curl -s -H \"authorization: Bearer \$BS_SERVICE_IDENTITY_TOKEN\" \$BS_SERVICE_IDENTITY_URL/v1/identity'"
+# Fallbacks show in the logs as {"event":"seal_fallback",...}
+fly logs --app docsign-bettersign-api | grep seal_fallback
+# Once there are none: fail instead of falling back
+fly secrets unset SEAL_FALLBACK --app docsign-bettersign-api
+```
+To go back to the PFX: `fly secrets unset SEAL_BACKEND`. Documents already
+sealed by the service keep their `Seal` and `.sig`.
 
 ### Cut backend cost with scale-to-zero (optional)
 In `apps/OpenSignServer/fly.toml` set `auto_stop_machines = "suspend"` and

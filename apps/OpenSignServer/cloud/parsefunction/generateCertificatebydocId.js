@@ -1,15 +1,10 @@
-import { SignPdf } from '@signpdf/signpdf';
-import { P12Signer } from '@signpdf/signer-p12';
-import { pdflibAddPlaceholder } from '@signpdf/placeholder-pdf-lib';
-import { PDFDocument } from 'pdf-lib';
 import fs from 'node:fs';
 import dotenv from 'dotenv';
 import GenerateCertificate from './pdf/GenerateCertificate.js';
 import { getSecureUrl } from '../../Utils.js';
 import { parseUploadFile } from '../../utils/fileUtils.js';
+import { sealPdf, storeSeal } from '../../utils/seal.js';
 dotenv.config({ quiet: true });
-const eSignName = 'OpenSign';
-const eSigncontact = 'hello@opensignlabs.com';
 
 // `uploadFile` is used to create url in from pdfFile
 async function uploadFile(pdfName, filepath) {
@@ -44,10 +39,6 @@ export default async function generateCertificatebydocId(req) {
   if (!docId) {
     throw new Parse.Error(Parse.Error.INVALID_QUERY, 'please provide parameter.');
   }
-  //  `P12Buffer` used to create buffer from p12 certificate
-  const pfxFile = process.env.PFX_BASE64;
-  // const P12Buffer = fs.readFileSync();
-  const P12Buffer = Buffer.from(pfxFile, 'base64');
   const certificatePath = `./exports/certificate_${docId}.pdf`;
   try {
     const getDocument = new Parse.Query('contracts_Document');
@@ -64,30 +55,22 @@ export default async function generateCertificatebydocId(req) {
       const completedAt = lastObj.SignedOn;
       const doc = { ..._docRes, completedAt: completedAt };
       const certificate = await GenerateCertificate(doc);
-      const certificatePdf = await PDFDocument.load(certificate);
-      const p12 = new P12Signer(P12Buffer, { passphrase: process.env.PASS_PHRASE || null });
-      //  `pdflibAddPlaceholder` is used to add code of only digital sign in certificate
-      pdflibAddPlaceholder({
-        pdfDoc: certificatePdf,
-        reason: `Digitally signed by ${eSignName}.`,
-        location: 'n/a',
-        name: eSignName,
-        contactInfo: eSigncontact,
-        signatureLength: 16000,
+      // Sealed like the one made at completion (utils/seal.js), with the
+      // tenant's certificate if it has one.
+      const sealed = await sealPdf({
+        pdfBytes: Buffer.from(certificate),
+        doc,
+        certificate: true,
+        filename: 'certificate.pdf',
       });
-      const pdfWithPlaceholderBytes = await certificatePdf.save();
-      const CertificateBuffer = Buffer.from(pdfWithPlaceholderBytes);
-      //`new signPDF` create new instance of CertificateBuffer and p12Buffer
-      const certificateOBJ = new SignPdf();
-      // `signedCertificate` is used to sign certificate digitally
-      const signedCertificate = await certificateOBJ.sign(CertificateBuffer, p12);
 
       //below is used to save signed certificate in exports folder
-      fs.writeFileSync(certificatePath, signedCertificate);
+      fs.writeFileSync(certificatePath, sealed.pdf);
       const file = await uploadFile('certificate.pdf', certificatePath);
       const updateDoc = new Parse.Object('contracts_Document');
       updateDoc.id = doc.objectId;
       updateDoc.set('CertificateUrl', file.imageUrl);
+      updateDoc.set('CertificateSeal', await storeSeal(sealed, 'certificate.pdf'));
       const updateDocRes = await updateDoc.save(null, { useMasterKey: true });
       unlinkCertificate(certificatePath);
       return { CertificateUrl: file.imageUrl };

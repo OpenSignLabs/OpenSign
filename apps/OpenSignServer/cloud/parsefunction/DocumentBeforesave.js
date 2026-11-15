@@ -3,8 +3,9 @@ import { setDocumentCount } from '../../utils/CountUtils.js';
 
 // Server-managed signing state (utils/appendOnlyPdf.js). VladSignatures makes a
 // document append-only; a client that could clear it could get a desktop
-// signature rewritten away. SignRevision orders concurrent signings.
-const SERVER_ONLY_FIELDS = ['VladSignatures', 'SignRevision'];
+// signature rewritten away. SignRevision orders concurrent signings. Seal and
+// CertificateSeal record how OpenSign sealed the files (utils/seal.js).
+const SERVER_ONLY_FIELDS = ['VladSignatures', 'SignRevision', 'Seal', 'CertificateSeal'];
 
 async function DocumentBeforesave(request) {
   if (!request.master) {

@@ -8,6 +8,10 @@ primary_region = "sjc"
   PARSE_MOUNT = "/app"
   USE_LOCAL = "TRUE"
   PORT = "8080"
+  # The seal (utils/seal.js). SEAL_BACKEND is unset (the PFX) until the
+  # rollout in docs/BsServiceIdentitySealing.md §5; BS_SERVICE_IDENTITY_TOKEN
+  # is a secret (the service's BS_SERVICE_TOKEN).
+  BS_SERVICE_IDENTITY_URL = "http://bs-service-identity.internal:8789"
   # "Sign in with BetterSign" through bs-id (cloud/parsefunction/bsidlogin.js).
   # BS_ID_USERS maps a VLAD (hex, public) to the email of an existing account.
   BS_ID_URL = "https://id.bettersign.ing"
