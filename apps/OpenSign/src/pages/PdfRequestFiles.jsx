@@ -71,6 +71,7 @@ import PlaceholderCopy from "../components/pdf/PlaceholderCopy";
 import TextFontSetting from "../components/pdf/TextFontSetting";
 import WidgetsValueModal from "../components/pdf/WidgetsValueModal";
 import * as utils from "../utils";
+import { isAppendOnlyDoc, loadPdfForSigning } from "../utils/appendOnlyPdf";
 import { useWindowSize } from "../hook/useWindowSize";
 import { useScroll } from "../context/ScrollPdfContext";
 import Button from "@mui/material/Button";
@@ -757,7 +758,11 @@ function PdfRequestFiles(
               setHandleError("Document not Found!");
             }
             try {
-              const pdfDoc = await PDFDocument.load(pdfArrBuffer);
+              // Signed with BetterSign: append this signature, don't rewrite.
+              const pdfDoc = await loadPdfForSigning(
+                pdfArrBuffer,
+                isAppendOnlyDoc(pdfDetails[0])
+              );
               const extUserPtr = pdfDetails[0].ExtUserPtr;
               const HeaderDocId = extUserPtr?.HeaderDocId;
               //embed document's object id to all pages in pdf document

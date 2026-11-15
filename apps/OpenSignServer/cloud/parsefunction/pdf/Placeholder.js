@@ -6,15 +6,7 @@ import {
   SIG_FLAGS,
   SignPdfError,
 } from '@signpdf/utils';
-import {
-  PDFArray,
-  PDFNumber,
-  PDFName,
-  PDFHexString,
-  PDFString,
-  PDFInvalidObject,
-  PDFDict,
-} from 'pdf-lib';
+import * as pdfLib from 'pdf-lib';
 
 export const Placeholder = ({
   pdfDoc,
@@ -29,7 +21,12 @@ export const Placeholder = ({
   subFilter = SUBFILTER_ADOBE_PKCS7_DETACHED,
   widgetRect = [0, 0, 0, 0],
   appName,
+  fieldName = 'Signature1',
+  // The pdf-lib build that loaded pdfDoc. Objects must come from the same
+  // build: append-only sealing loads with @cantoo/pdf-lib (appendOnlyPdf.js).
+  lib = pdfLib,
 }) => {
+  const { PDFArray, PDFNumber, PDFName, PDFHexString, PDFString, PDFInvalidObject, PDFDict } = lib;
   if (!pdfDoc && !pdfPage) {
     throw new SignPdfError('PDFDoc or PDFPage must be set.', SignPdfError.TYPE_INPUT);
   }
@@ -81,7 +78,7 @@ export const Placeholder = ({
     FT: 'Sig',
     Rect: rect,
     V: signatureDictRef,
-    T: PDFString.of('Signature1'),
+    T: PDFString.of(fieldName),
     F: ANNOTATION_FLAGS.PRINT,
     P: page.ref,
     AP: { N: doc.context.register(apStream) },
