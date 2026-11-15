@@ -21,6 +21,34 @@ operations are covered in [DEPLOYMENT.md](DEPLOYMENT.md).
 
 ## Change log
 
+### 2026-11-15: seal completed documents with docsign's BetterSign identity
+
+- OpenSign's seal on a completed document, and on its completion certificate,
+  can now come from **bs-service-identity**. That's docsign's own BetterSign
+  identity, a private Fly app (`bs-service-identity`, BetterSignApps
+  `server/bs-service-identity`, PR #200). The demo PFX is no longer needed for
+  that seal. Plan and reasons: [docs/BsServiceIdentitySealing.md](docs/BsServiceIdentitySealing.md).
+- All sealing goes through `apps/OpenSignServer/utils/seal.js`. `SEAL_BACKEND`
+  chooses `p12` (the default, today's behaviour) or `bs-service-identity`. A
+  tenant that uploaded its own certificate is always sealed with it.
+- A seal by the service also produces a `.sig` file, the BetterSign proof needed
+  to verify it later. It's stored next to the PDF, and the document records how
+  it was sealed in two new server-only fields:
+  - `Seal` (the signed PDF) and `CertificateSeal` (the certificate):
+    `{ backend, recordId, logId, plogVlad, verificationKey, fieldName, sealedLength, sealedAt, sigUrl }`
+    for the service, `{ backend: 'p12', tenantCertificate }` for a PFX.
+  - `sealedLength`: the `.sig` verifies only the first `sealedLength` bytes of
+    the file.
+- If the service is down, the last signer's signing fails and nothing is stored.
+  They can try again. `SEAL_FALLBACK=p12` seals with the PFX instead (for the
+  rollout only); those seals are recorded with `fallback: true`.
+- The seal no longer carries a reason, location or contact. bs-sdk writes the
+  signature itself and has no fields for them yet. The certificate's name is
+  the service's `BS_SERVICE_SIGNER_NAME`, and the field is named
+  `OpenSign seal <time>`.
+- Flattening and sealing a normal (not append-only) document are now two steps:
+  `processPdf` only flattens, then the seal is added.
+
 ### 2026-11-15: VLAD sign-in signs the canonical bs-message form
 
 - The desktop API (`/api/v1`, [docs/BetterSignAPI.md](docs/BetterSignAPI.md)) now

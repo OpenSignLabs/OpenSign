@@ -35,6 +35,11 @@ import { shared } from './support/setup.js';
 import { mailer } from '../../cloud/customRoute/bsapi/notify.js';
 import { commitAtRevision } from '../../cloud/parsefunction/pdf/PDF.js';
 import { presignedlocalUrl } from '../../cloud/parsefunction/getSignedUrl.js';
+import { sealAppendOnly } from '../../utils/appendOnlyPdf.js';
+import { P12Signer } from '@signpdf/signer-p12';
+import { SignPdf } from '@signpdf/signpdf';
+import { pdflibAddPlaceholder } from '@signpdf/placeholder-pdf-lib';
+import { startSealService, sealService } from './support/sealService.js';
 
 const uploadedFiles = () => fs.readdirSync(path.resolve('files/files')).length;
 
@@ -353,7 +358,147 @@ describe('desktop signing', () => {
     });
   });
 
-  describe('VladSignatures and SignRevision', () => {
+  describe('the seal', () => {
+    const fetchBytes = async url =>
+      Buffer.from(await (await fetch(presignedlocalUrl(url))).arrayBuffer());
+    const fileOf = async docId => {
+      const row = await docRow(docId);
+      return fetchBytes(row.SignedUrl || row.URL);
+    };
+
+    it('records a PFX seal by default', async () => {
+      const docId = await mkDoc(owner, [daveC]);
+      const current = await fileOf(docId);
+      const r = await signPdf(docId, daveC, await browserPdf(current, false));
+      expect(r.json?.result?.status).toBe('success');
+      const row = await docRow(docId);
+      expect(row.Seal).toEqual(
+        jasmine.objectContaining({ backend: 'p12', tenantCertificate: false })
+      );
+      expect(row.Seal.sigUrl).toBeUndefined();
+      expect(await certificateOf(docId)).toBeTruthy();
+      expect((await docRow(docId)).CertificateSeal.backend).toBe('p12');
+    });
+
+    describe('with bs-service-identity', () => {
+      let stop;
+      const env = {};
+      const KEYS = ['SEAL_BACKEND', 'BS_SERVICE_IDENTITY_URL', 'BS_SERVICE_IDENTITY_TOKEN'];
+
+      beforeAll(async () => {
+        for (const k of KEYS) env[k] = process.env[k];
+        // The stand-in seals with the test certificate, so the result is a
+        // real PDF signature the specs can check. Like the service, it
+        // appends only when asked to and may re-save otherwise. A P12Signer
+        // signs once (it consumes its buffer), so one per seal.
+        let port;
+        ({ port, stop } = await startSealService(async (pdf, query) => {
+          const p12Signer = new P12Signer(shared.p12, { passphrase: 'test' });
+          if (query.append_only === 'true') {
+            return sealAppendOnly({
+              pdfBytes: pdf,
+              p12Signer,
+              reason: 'seal',
+              name: 'svc',
+              contactInfo: '',
+            });
+          }
+          const doc = await pdfLib.PDFDocument.load(pdf);
+          pdflibAddPlaceholder({
+            pdfDoc: doc,
+            reason: 'seal',
+            location: '',
+            name: 'svc',
+            contactInfo: '',
+          });
+          return new SignPdf().sign(Buffer.from(await doc.save()), p12Signer);
+        }));
+        Object.assign(process.env, {
+          SEAL_BACKEND: 'bs-service-identity',
+          BS_SERVICE_IDENTITY_URL: `http://127.0.0.1:${port}`,
+          BS_SERVICE_IDENTITY_TOKEN: sealService.token,
+        });
+      });
+
+      afterAll(async () => {
+        for (const k of KEYS) {
+          if (env[k] === undefined) delete process.env[k];
+          else process.env[k] = env[k];
+        }
+        await stop();
+      });
+
+      beforeEach(() => {
+        sealService.calls = [];
+        sealService.mode = 'ok';
+      });
+
+      it('seals after a desktop signature, keeps it, and stores the proof', async () => {
+        const docId = await mkDoc(owner, [bobC, daveC], { sendInOrder: true });
+        const s = await signedBy(bob, B, docId, 'bob');
+        expect((await upload(B, docId, s.pdf, s.stmt)).status).toBe(201);
+        const current = (await getFile(B, docId)).bytes;
+        const r = await signPdf(docId, daveC, await browserPdf(current, true));
+        expect(r.json?.result?.status).toBe('success');
+
+        const final = (await getFile(B, docId)).bytes;
+        expect(final.subarray(0, s.pdf.length).equals(s.pdf)).toBe(true);
+        const sigs = verifyAll(final);
+        expect(sigs.length).toBe(2);
+        expect(sigs.every(x => x.ok)).toBe(true);
+
+        const docCall = sealService.calls[0];
+        expect(docCall.query.append_only).toBe('true');
+        expect(docCall.query.field_name).toMatch(/^OpenSign seal [^.]+Z$/);
+
+        const row = await docRow(docId);
+        expect(row.Seal).toEqual(
+          jasmine.objectContaining({
+            backend: 'bs-service-identity',
+            recordId: 'rec-1',
+            logId: 'log-1',
+            fieldName: docCall.query.field_name,
+            sealedLength: final.length,
+          })
+        );
+        expect((await fetchBytes(row.Seal.sigUrl)).toString()).toBe('proof-1');
+
+        expect(await certificateOf(docId)).toBeTruthy();
+        const cert = await waitFor(async () => (await docRow(docId)).CertificateSeal);
+        expect(cert.backend).toBe('bs-service-identity');
+        expect(cert.sigUrl).toBeTruthy();
+      });
+
+      it('lets the service seal a flattened document', async () => {
+        const docId = await mkDoc(owner, [daveC]);
+        const current = await fileOf(docId);
+        const r = await signPdf(docId, daveC, await browserPdf(current, false));
+        expect(r.json?.result?.status).toBe('success');
+        expect(sealService.calls[0].query.append_only).toBeUndefined();
+        expect((await docRow(docId)).Seal.backend).toBe('bs-service-identity');
+      });
+
+      it("doesn't complete the document when the service is down", async () => {
+        const docId = await mkDoc(owner, [daveC]);
+        const current = await fileOf(docId);
+        sealService.mode = '503';
+        const r = await signPdf(docId, daveC, await browserPdf(current, false));
+        expect(r.json?.result?.status).not.toBe('success');
+        const row = await docRow(docId);
+        expect(row.IsCompleted).not.toBe(true);
+        expect(row.Seal).toBeUndefined();
+        expect(row.SignRevision || 0).toBe(0);
+
+        // The signer tries again once it's back.
+        sealService.mode = 'ok';
+        const again = await signPdf(docId, daveC, await browserPdf(current, false));
+        expect(again.json?.result?.status).toBe('success');
+        expect((await docRow(docId)).Seal.backend).toBe('bs-service-identity');
+      });
+    });
+  });
+
+  describe('server-only fields (VladSignatures, SignRevision, Seal, CertificateSeal)', () => {
     it('can be changed only by the server', async () => {
       const email = `owner-sess-${tag()}@example.com`;
       const userId = await mkUser(email);
@@ -370,7 +515,12 @@ describe('desktop signing', () => {
       });
       const session = { ...PUBLIC, 'X-Parse-Session-Token': login.json.sessionToken };
 
-      for (const body of [{ VladSignatures: [] }, { SignRevision: 0 }]) {
+      for (const body of [
+        { VladSignatures: [] },
+        { SignRevision: 0 },
+        { Seal: { backend: 'p12' } },
+        { CertificateSeal: { backend: 'p12' } },
+      ]) {
         const r = await req('PUT', `${PARSE}/classes/contracts_Document/${docId}`, {
           headers: session,
           body,
