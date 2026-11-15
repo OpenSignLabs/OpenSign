@@ -278,6 +278,14 @@ describe('/api/v1 sign-in', () => {
     expect(r.json.error).toBe('verifier_unavailable');
   });
 
+  it("says the server is misconfigured, not the signature, when the verifier refuses our secret", async () => {
+    verifier.mode = 'bad_secret';
+    const r = await signIn(alice);
+    expect(r.status).toBe(502);
+    expect(r.json.error).toBe('verifier_misconfigured');
+    expect(r.json.access_token).toBeUndefined();
+  });
+
   it('requires a valid token', async () => {
     expect((await me({})).status).toBe(401);
     expect((await me(bearer('bso_' + 'A'.repeat(43)))).status).toBe(401);

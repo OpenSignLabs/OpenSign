@@ -166,6 +166,14 @@ describe('desktop signing', () => {
       expect(r.status).toBe(503);
       expect((await docRow(docId)).VladSignatures).toBeUndefined();
     });
+
+    it('when the verifier refuses our secret: 502 verifier_misconfigured', async () => {
+      verifier.mode = 'bad_secret';
+      const r = await upload(B, docId, pdf, docsignStatement(bob, docId, base, pdf));
+      expect(r.status).toBe(502);
+      expect(r.json.error).toBe('verifier_misconfigured');
+      expect((await docRow(docId)).VladSignatures).toBeUndefined();
+    });
   });
 
   describe('desktop first, then online', () => {
