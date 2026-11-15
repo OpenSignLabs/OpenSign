@@ -1,10 +1,12 @@
 // /api/v1 sign-in for the BetterSign desktop app: no browser, no bs-id.
 //
-//   1. POST /auth/challenge { vlad }                      -> { challengeId, challenge, origin, rp, expiresAt }
+//   1. POST /auth/challenge { vlad }
+//      -> { challengeId, challenge, origin, rp, receiverVlad, expiresAt }
 //   2. the app builds a bs-login v1 statement (statement.js) naming our origin,
-//      our rp and that challenge, and signs its digest with /keys/primary
-//   3. POST /auth/token { challengeId, statement, signature } (base64url)
-//      -> we check the statement, the verifier checks the signature
+//      our rp and that challenge, and signs it with /keys/primary in
+//      bs-message's canonical form (buildSignedMessage) addressed to receiverVlad
+//   3. POST /auth/token { challengeId, statement | message, signature } (base64url)
+//      -> we check the signed message and statement, the verifier the signature
 //      -> { access_token: "bso_…", token_type: "Bearer", expires_in }
 //   4. Authorization: Bearer bso_… on every other call (requireToken)
 //
@@ -16,12 +18,16 @@
 // Env:
 //   BS_API_ORIGIN       the origin statements must name. Default https://docsign.bettersign.ing
 //   BS_API_RP           the rp statements must name. Default bs-opensign-api
+//   BS_API_RECEIVER_VLAD this server's VLAD (hex), the receiver_vlad of every
+//                       signed message. Unset: one generated once and stored
+//                       (receiverVlad.js). Malformed: sign-in is off
 //   BS_API_TOKEN_TTL_S  token lifetime in seconds. Default 1800
 //   plus BS_VERIFIER_URL / BS_VERIFIER_SECRET (verifier.js)
 
 import crypto from 'node:crypto';
 import { accountForVlad, VLAD_HEX_RE } from '../../../utils/bsIdentity.js';
-import { parseStatement, statementDigest } from './statement.js';
+import { ensureReceiverVlad } from './receiverVlad.js';
+import { parseStatement, signedMessageFrom } from './statement.js';
 import { verifySignature } from './verifier.js';
 
 const CHALLENGE_TTL_MS = 60 * 1000;
@@ -30,18 +36,46 @@ const TOKEN_RE = /^bso_[A-Za-z0-9_-]{43}$/;
 const B64URL_RE = /^[A-Za-z0-9_-]+$/;
 const ID_RE = /^[A-Za-z0-9]{1,32}$/;
 const MAX_STATEMENT_BYTES = 8192;
+const MAX_MESSAGE_BYTES = 32768;
 const MAX_SIGNATURE_BYTES = 16384;
+// A VLAD's wire encoding starts with its multicodec sigil, 0x1207 as a varint.
+const RECEIVER_VLAD_RE = /^8724(?:[0-9a-f]{2})+$/;
 
 export function config() {
+  const receiverVlad = (process.env.BS_API_RECEIVER_VLAD || '').trim().toLowerCase();
   return {
     origin: (process.env.BS_API_ORIGIN || 'https://docsign.bettersign.ing').replace(/\/$/, ''),
     rp: process.env.BS_API_RP || 'bs-opensign-api',
+    receiverVlad: RECEIVER_VLAD_RE.test(receiverVlad) ? receiverVlad : null,
     tokenTtlS: Number(process.env.BS_API_TOKEN_TTL_S) || 1800,
   };
 }
 
 export const apiError = (res, status, error, message, extra = {}) =>
   res.status(status).json({ error, message, ...extra });
+
+export const notConfigured = res =>
+  apiError(res, 503, 'not_configured', 'BetterSign sign-in is not set up on this server.');
+
+// Validate the signed-input fields of a request body: `signature`, and
+// `statement` and/or `message` (base64url). Returns an error message or null.
+export function checkSignedFields(body, maxStatement) {
+  const { statement, message, signature } = body || {};
+  if (statement === undefined && message === undefined) {
+    return 'statement or message is required.';
+  }
+  for (const [k, v, max] of [
+    ['statement', statement, maxStatement],
+    ['message', message, MAX_MESSAGE_BYTES],
+    ['signature', signature, MAX_SIGNATURE_BYTES],
+  ]) {
+    if (k !== 'signature' && v === undefined) continue;
+    if (typeof v !== 'string' || !B64URL_RE.test(v) || v.length > Math.ceil((max * 4) / 3)) {
+      return `${k} is missing or not base64url.`;
+    }
+  }
+  return null;
+}
 
 const sha256Hex = s => crypto.createHash('sha256').update(s).digest('hex');
 const nowSec = () => Math.floor(Date.now() / 1000);
@@ -64,6 +98,9 @@ function sweep(className) {
 
 // POST /auth/challenge
 export async function createChallenge(req, res) {
+  await ensureReceiverVlad();
+  const c = config();
+  if (!c.receiverVlad) return notConfigured(res);
   const vlad = String(req.body?.vlad || '').toLowerCase();
   if (!VLAD_HEX_RE.test(vlad) || vlad.length < 64 || vlad.length > 8192 || vlad.length % 2) {
     return apiError(res, 400, 'invalid_request', 'vlad must be the identity VLAD in hex.');
@@ -79,7 +116,6 @@ export async function createChallenge(req, res) {
     );
   }
 
-  const c = config();
   const challenge = crypto.randomBytes(32).toString('base64url');
   const expiresAt = new Date(Date.now() + CHALLENGE_TTL_MS);
   const row = new Parse.Object('bs_ApiChallenge');
@@ -96,24 +132,22 @@ export async function createChallenge(req, res) {
     challenge,
     origin: c.origin,
     rp: c.rp,
+    receiverVlad: c.receiverVlad,
     expiresAt: expiresAt.toISOString(),
   });
 }
 
 // POST /auth/token
 export async function issueToken(req, res) {
-  const { challengeId, statement, signature } = req.body || {};
+  await ensureReceiverVlad();
+  const c = config();
+  if (!c.receiverVlad) return notConfigured(res);
+  const { challengeId, signature } = req.body || {};
   if (typeof challengeId !== 'string' || !ID_RE.test(challengeId)) {
     return apiError(res, 400, 'invalid_request', 'challengeId is missing.');
   }
-  for (const [k, v, max] of [
-    ['statement', statement, MAX_STATEMENT_BYTES],
-    ['signature', signature, MAX_SIGNATURE_BYTES],
-  ]) {
-    if (typeof v !== 'string' || !B64URL_RE.test(v) || v.length > Math.ceil((max * 4) / 3)) {
-      return apiError(res, 400, 'invalid_request', `${k} is missing or not base64url.`);
-    }
-  }
+  const bad = checkSignedFields(req.body, MAX_STATEMENT_BYTES);
+  if (bad) return apiError(res, 400, 'invalid_request', bad);
 
   // Take the challenge first: one attempt per challenge, so two requests
   // racing with the same statement can't both get a token. Uses is an atomic
@@ -134,11 +168,17 @@ export async function issueToken(req, res) {
   }
   ch.destroy({ useMasterKey: true }).catch(() => {});
 
-  const c = config();
-  const statementBytes = Buffer.from(statement, 'base64url');
+  // What was signed must be the canonical message from the challenge's VLAD to
+  // us, carrying a bs-login statement.
+  let signed;
   let s;
   try {
-    s = parseStatement(statementBytes);
+    signed = signedMessageFrom(req.body, {
+      senderVlad: Buffer.from(ch.get('vlad'), 'hex'),
+      receiverVlad: Buffer.from(c.receiverVlad, 'hex'),
+      type: 'bs-login',
+    });
+    s = parseStatement(signed.statementBytes);
   } catch (e) {
     return apiError(res, 400, 'invalid_statement', e.message);
   }
@@ -159,7 +199,7 @@ export async function issueToken(req, res) {
 
   const v = await verifySignature({
     vladHex: vlad,
-    messageHex: statementDigest(statementBytes).toString('hex'),
+    messageHex: signed.message.toString('hex'),
     signatureHex: Buffer.from(signature, 'base64url').toString('hex'),
     rp: c.rp,
   });

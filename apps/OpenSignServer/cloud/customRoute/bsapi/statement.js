@@ -6,23 +6,19 @@
 // A canonical-CBOR map of exactly nine keys:
 //   { v: 1, type: "bs-login", vlad: <bytes>, origin: <text>, rp: <text>,
 //     challenge: <32B>, reqId: <16B>, extSignPub: <32B>, iat: <uint> }
-// The identity signs digest = SHA-256("bs-login/v1/statement\n" ‖ statement)
-// with its current /keys/primary, and the verifier's /verify checks that.
+// The identity signs it with its current /keys/primary inside bs-message's
+// canonical form (buildSignedMessage below), and the verifier's /verify
+// checks that.
 //
 // For the desktop app, extSignPub is the app install's own public key (audit
 // only: it names which client asked).
 //
 // Uploading a desktop-signed PDF uses a second statement, bs-docsign v1, with
-// its own domain so neither can stand in for the other:
+// its own type and content_type so neither can stand in for the other:
 //   { v: 1, type: "bs-docsign", vlad: <bytes>, origin: <text>, rp: <text>,
 //     docId: <text>, base: <32B>, file: <32B>, reqId: <16B>, iat: <uint> }
 // base = SHA-256 of the file the app downloaded, file = SHA-256 of the file it
-// uploads. digest = SHA-256("bs-docsign/v1/statement\n" ‖ statement).
-
-import crypto from 'node:crypto';
-
-export const STATEMENT_DOMAIN = 'bs-login/v1/statement\n';
-export const DOCSIGN_DOMAIN = 'bs-docsign/v1/statement\n';
+// uploads.
 
 const dec = new TextDecoder('utf-8', { fatal: true });
 
@@ -127,7 +123,6 @@ const KINDS = {
       iat: 'number',
     },
     lengths: { vlad: 0, challenge: 32, reqId: 16, extSignPub: 32 },
-    domain: STATEMENT_DOMAIN,
   },
   'bs-docsign': {
     fields: {
@@ -143,7 +138,6 @@ const KINDS = {
       iat: 'number',
     },
     lengths: { vlad: 0, base: 32, file: 32, reqId: 16 },
-    domain: DOCSIGN_DOMAIN,
   },
 };
 
@@ -171,11 +165,120 @@ export function parseStatement(bytes, type = 'bs-login') {
   return s;
 }
 
-// The bytes the identity's /keys/primary signs.
-export function statementDigest(bytes, type = 'bs-login') {
-  return crypto
-    .createHash('sha256')
-    .update(Buffer.from(KINDS[type].domain, 'utf8'))
-    .update(bytes)
-    .digest();
+// What the identity's /keys/primary actually signs: the statement wrapped in
+// bs-message's canonical to-be-signed form (BetterSignApps
+// crates/bs-message/src/message.rs build_tbs), the same bytes bs-auth signs.
+// Every VLAD sign-in signs this form, not just this API:
+//
+//   TBS = "bettersign-message-v2" ‖ sender_vlad ‖ Varbytes(sender_key_path)
+//         ‖ receiver_vlad ‖ Varbytes(content_type) ‖ Varbytes(body)
+//
+// Varbytes = unsigned LEB128 length, then the bytes. A VLAD is its wire
+// encoding (self-delimiting; the same bytes as the `vlad` hex). Here:
+//   sender_vlad     the signing identity (= the statement's vlad)
+//   sender_key_path "/keys/primary"
+//   receiver_vlad   this server's VLAD (BS_API_RECEIVER_VLAD)
+//   content_type    MESSAGE_CONTENT_TYPES[statement type]
+//   body            the bs-login / bs-docsign statement CBOR, unchanged
+// The signature is a Multisig over the TBS bytes themselves, no extra hash.
+export const MESSAGE_DOMAIN = 'bettersign-message-v2';
+export const SENDER_KEY_PATH = '/keys/primary';
+export const MESSAGE_CONTENT_TYPES = {
+  'bs-login': 'application/vnd.bettersign.login+cbor',
+  'bs-docsign': 'application/vnd.bettersign.docsign+cbor',
+};
+
+export function varint(n) {
+  const out = [];
+  do {
+    let b = n % 128;
+    n = Math.floor(n / 128);
+    if (n > 0) b |= 0x80;
+    out.push(b);
+  } while (n > 0);
+  return Buffer.from(out);
+}
+
+const varbytes = b => Buffer.concat([varint(b.length), b]);
+
+// Build the TBS. VLADs are Buffers of their wire bytes.
+export function buildSignedMessage({ senderVlad, receiverVlad, type, body }) {
+  return Buffer.concat([
+    Buffer.from(MESSAGE_DOMAIN, 'utf8'),
+    senderVlad,
+    varbytes(Buffer.from(SENDER_KEY_PATH, 'utf8')),
+    receiverVlad,
+    varbytes(Buffer.from(MESSAGE_CONTENT_TYPES[type], 'utf8')),
+    varbytes(body),
+  ]);
+}
+
+// Check that `bytes` is exactly a canonical TBS from senderVlad to
+// receiverVlad carrying a statement of `type`, and return the statement
+// (body) bytes. Throws, naming the first part that's wrong. The statement
+// itself is still to be parsed and checked by the caller.
+export function inspectSignedMessage(bytes, { senderVlad, receiverVlad, type }) {
+  const buf = Buffer.from(bytes);
+  let i = 0;
+  const fail = part => new Error(`signed message is not canonical: ${part}`);
+  const fixed = (expected, part) => {
+    if (!buf.subarray(i, i + expected.length).equals(expected)) throw fail(part);
+    i += expected.length;
+  };
+  // Minimal-length LEB128, as the unsigned-varint crate requires.
+  const length = part => {
+    let n = 0;
+    for (let k = 0; k < 9; k++) {
+      if (i >= buf.length) throw fail(part);
+      const b = buf[i++];
+      n += (b & 0x7f) * 2 ** (7 * k);
+      if (!(b & 0x80)) {
+        if (k > 0 && b === 0) throw fail(part);
+        if (n > buf.length - i) throw fail(part);
+        return n;
+      }
+    }
+    throw fail(part);
+  };
+  const field = part => {
+    const n = length(part);
+    const v = buf.subarray(i, i + n);
+    i += n;
+    return v;
+  };
+  const text = (expected, part) => {
+    if (!field(part).equals(Buffer.from(expected, 'utf8'))) throw fail(part);
+  };
+
+  fixed(Buffer.from(MESSAGE_DOMAIN, 'utf8'), 'domain separator');
+  fixed(senderVlad, 'sender_vlad');
+  text(SENDER_KEY_PATH, 'sender_key_path');
+  fixed(receiverVlad, 'receiver_vlad');
+  text(MESSAGE_CONTENT_TYPES[type], 'content_type');
+  const body = field('body');
+  if (i !== buf.length) throw fail('trailing bytes');
+  return Buffer.from(body);
+}
+
+// The two ways a client may send what it signed: the full TBS (`message`,
+// inspected as above) or just the statement (`statement`, wrapped here).
+// Either way the verifier gets canonical TBS bytes. Returns
+// { statementBytes, message }; throws on a malformed or mismatched message.
+export function signedMessageFrom({ message, statement }, { senderVlad, receiverVlad, type }) {
+  if (message) {
+    const body = inspectSignedMessage(Buffer.from(message, 'base64url'), {
+      senderVlad,
+      receiverVlad,
+      type,
+    });
+    if (statement && !Buffer.from(statement, 'base64url').equals(body)) {
+      throw new Error('statement is not the signed message body');
+    }
+    return { statementBytes: body, message: Buffer.from(message, 'base64url') };
+  }
+  const statementBytes = Buffer.from(statement, 'base64url');
+  return {
+    statementBytes,
+    message: buildSignedMessage({ senderVlad, receiverVlad, type, body: statementBytes }),
+  };
 }

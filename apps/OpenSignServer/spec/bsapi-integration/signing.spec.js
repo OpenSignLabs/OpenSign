@@ -72,10 +72,10 @@ describe('desktop signing', () => {
     mailer.send = async params => mail.push(params);
   });
 
-  async function signedBy(id, auth, docId, name) {
+  async function signedBy(id, auth, docId, name, opts) {
     const base = (await getFile(auth, docId)).bytes;
     const pdf = await desktopSign(base, name, shared.p12);
-    return { base, pdf, stmt: docsignStatement(id, docId, base, pdf) };
+    return { base, pdf, stmt: docsignStatement(id, docId, base, pdf, {}, opts) };
   }
 
   describe('rejections', () => {
@@ -122,6 +122,11 @@ describe('desktop signing', () => {
         'that is stale',
         (b, p, id) => docsignStatement(bob, id, b, p, { iat: Math.floor(Date.now() / 1000) - 900 }),
       ],
+      [
+        'signed for another receiver',
+        (b, p, id) =>
+          docsignStatement(bob, id, b, p, {}, { msg: { receiverVlad: '8724' + 'ee'.repeat(38) } }),
+      ],
     ];
     for (const [name, make] of bad) {
       it(`a statement ${name}: 401`, async () => {
@@ -129,6 +134,21 @@ describe('desktop signing', () => {
         expect(r.status).toBe(401);
       });
     }
+
+    it('a full signed message with the login content type: 400', async () => {
+      const contentType = 'application/vnd.bettersign.login+cbor';
+      const stmt = docsignStatement(
+        bob,
+        docId,
+        base,
+        pdf,
+        {},
+        { send: 'message', msg: { contentType } }
+      );
+      const r = await upload(B, docId, pdf, stmt);
+      expect(r.status).toBe(400);
+      expect(r.json.message).toMatch(/content_type/);
+    });
 
     it('a non-signer is refused', async () => {
       const r = await upload(E, docId, pdf, docsignStatement(erin, docId, base, pdf));
@@ -247,7 +267,8 @@ describe('desktop signing', () => {
       const docId = await mkDoc(owner, [bobC, erinC]);
       const one = await signedBy(bob, B, docId, 'bob');
       expect((await upload(B, docId, one.pdf, one.stmt)).status).toBe(201);
-      const two = await signedBy(erin, E, docId, 'erin');
+      // Erin's app sends the full signed message rather than the statement.
+      const two = await signedBy(erin, E, docId, 'erin', { send: 'message' });
       const r = await upload(E, docId, two.pdf, two.stmt);
       expect(r.json.status).toBe('completed');
       expect(await certificateOf(docId)).toBeTruthy();
@@ -335,15 +356,17 @@ describe('desktop signing', () => {
   describe('VladSignatures and SignRevision', () => {
     it('can be changed only by the server', async () => {
       const email = `owner-sess-${tag()}@example.com`;
-      const userId = await mkUser(email, 'pw-secret');
+      const userId = await mkUser(email);
       const docId = await mkDoc({ ...owner, userId }, [bobC]);
       await req('PUT', `${PARSE}/classes/contracts_Document/${docId}`, {
         headers: MASTER,
         body: { ACL: { [userId]: { read: true, write: true } } },
       });
-      const login = await req('POST', `${PARSE}/login`, {
-        headers: PUBLIC,
-        body: { username: email, password: 'pw-secret' },
+      // Password sign-in is blocked (cloud/main.js beforeLogin); real users get
+      // their session from /loginAs, as Sign in with BetterSign does.
+      const login = await req('POST', `${PARSE}/loginAs`, {
+        headers: MASTER,
+        body: { userId },
       });
       const session = { ...PUBLIC, 'X-Parse-Session-Token': login.json.sessionToken };
 

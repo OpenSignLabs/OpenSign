@@ -6,6 +6,7 @@ operations are covered in [DEPLOYMENT.md](DEPLOYMENT.md).
 - [Change log](#change-log)
 - [Home page and sign-in](#home-page-and-sign-in)
   - [Sign in with BetterSign](#sign-in-with-bettersign)
+  - [What a VLAD signs to log in](#what-a-vlad-signs-to-log-in)
   - [Recipients: the emailed signing link](#recipients-the-emailed-signing-link)
   - [No username/password sign-in](#no-usernamepassword-sign-in)
   - [Brand UI](#brand-ui)
@@ -19,6 +20,22 @@ operations are covered in [DEPLOYMENT.md](DEPLOYMENT.md).
 ---
 
 ## Change log
+
+### 2026-11-15: VLAD sign-in signs the canonical bs-message form
+
+- The desktop API (`/api/v1`, [docs/BetterSignAPI.md](docs/BetterSignAPI.md)) now
+  requires sign-in and upload statements to be signed as bs-auth signs messages:
+  `DOMAIN_SEP ‖ sender_vlad ‖ sender_key_path ‖ receiver_vlad ‖ content_type ‖ body`.
+  See [What a VLAD signs to log in](#what-a-vlad-signs-to-log-in).
+- A client may send the full signed bytes as `message`; the server inspects them
+  and refuses anything not in that form before asking the verifier.
+- New setting `BS_API_RECEIVER_VLAD` (this server's VLAD). If it isn't set, the
+  server generates a random one on first use and stores it in the master-key-only
+  `bs_ApiConfig` class (migration `20261115120000-create_bs_apiconfig.cjs`), so it
+  stays the same across machines and restarts. A malformed value turns the desktop
+  API's sign-in and uploads off (`503 not_configured`).
+- Signatures over the old `SHA-256("bs-login/v1/statement\n" ‖ statement)` digest
+  are refused.
 
 ### 2026-11-13: sign-in lockdown and one-time code hardening
 
@@ -84,6 +101,30 @@ device), so there is no password to steal.
 - This replaced the earlier push-to-phone "Log in with BetterSign" button
   (`BetterSignLogin.jsx`, removed). The `bettersignlogin` cloud function stays for the
   BetterSign Worker, and `bsidlogin` reuses its `/loginAs` helper.
+
+### What a VLAD signs to log in
+
+**Any login where a VLAD signs something signs the canonical bs-message form**,
+the same bytes bs-auth signs (BetterSignApps `crates/bs-message/src/message.rs`
+`build_tbs`):
+
+```
+"bettersign-message-v2" ‖ sender_vlad ‖ Varbytes(sender_key_path)
+‖ receiver_vlad ‖ Varbytes(content_type) ‖ Varbytes(body)
+```
+
+`sender_vlad` is the identity signing in, `sender_key_path` is `/keys/primary`,
+`receiver_vlad` is the site's VLAD (`BS_API_RECEIVER_VLAD`, generated and stored
+if unset), `content_type` says
+what the body is (`application/vnd.bettersign.login+cbor` for sign-in) and `body`
+is the sign-in statement (origin, `rp`, challenge, time). `Varbytes` is an unsigned
+LEB128 length then the bytes. The signature covers these bytes directly.
+
+The desktop API checks this today (`apps/OpenSignServer/cloud/customRoute/bsapi/statement.js`,
+`inspectSignedMessage`); new VLAD sign-in paths, such as the extension sign-in in
+[Follow-ups](#follow-ups), should reuse it rather than sign a statement or digest
+directly. Website sign-in through bs-id is unaffected: bs-id checks the passkey and
+OpenSign checks bs-id's `id_token`.
 
 ### Recipients: the emailed signing link
 
@@ -330,6 +371,10 @@ Docs: `BetterSignUpdates.md` (this file) and a link from `README.md`.
   3. A cloud function that checks the phone's signed statement (origin, `rp`,
      single-use challenge, age) and the signature through the verifier's `/verify`,
      then maps the VLAD with `BS_ID_USERS`. oauthService does the same for outline.
+     The statement should be signed in the canonical bs-message form
+     ([What a VLAD signs to log in](#what-a-vlad-signs-to-log-in)), checked with
+     `inspectSignedMessage`. The extension and oauthService sign the bare digest today,
+     so they need the same change.
   
   The extension's password fill has nothing to fill here any more, because the site
   has no password form.

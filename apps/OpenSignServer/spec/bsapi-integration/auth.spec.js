@@ -18,9 +18,11 @@ import {
   mkOwner,
   mkUser,
   ptr,
+  receiverVlad,
   req,
   signIn,
   tag,
+  tbs,
   tokenFor,
 } from './support/lib.js';
 import { verifier } from './support/verifier.js';
@@ -63,13 +65,142 @@ describe('/api/v1 sign-in', () => {
     expect((await me(bearer(r.json.access_token))).json.user.email).toBe(envIdentity.email);
   });
 
-  it('gives the verifier the statement digest and the configured rp', async () => {
+  it('gives the verifier the canonical signed message and the configured rp', async () => {
+    const ch = (await challenge(alice)).json;
+    const body = { challengeId: ch.challengeId, ...loginStatement(alice, ch) };
     verifier.calls.length = 0;
-    await signIn(alice);
+    expect((await tokenRequest(body)).status).toBe(200);
     expect(verifier.calls.length).toBe(1);
     expect(verifier.calls[0].vlad).toBe(alice.vlad);
-    expect(verifier.calls[0].nonce).toMatch(/^[0-9a-f]{64}$/);
+    const st = Buffer.from(body.statement, 'base64url');
+    expect(verifier.calls[0].nonce).toBe(tbs('bs-login', alice.vlad, st).toString('hex'));
     expect(verifier.calls[0].rp).toBe(RP);
+  });
+
+  it('names its receiver VLAD in the challenge', async () => {
+    const ch = (await challenge(alice)).json;
+    expect(ch.receiverVlad).toBe(receiverVlad());
+  });
+
+  it('signs in with the full signed message, or with both fields', async () => {
+    expect((await signIn(alice, {}, alice, { send: 'message' })).status).toBe(200);
+    expect((await signIn(alice, {}, alice, { send: 'both' })).status).toBe(200);
+  });
+
+  // A full message that isn't canonical, or isn't from this identity to us
+  // for a login, is named as such before the verifier is asked.
+  const notCanonical = [
+    ['another domain separator', { domain: 'bettersign-message-v1' }, /domain separator/],
+    ['another key path', { keyPath: '/keys/secondary' }, /sender_key_path/],
+    ['another receiver', { receiverVlad: '8724' + 'ee'.repeat(38) }, /receiver_vlad/],
+    [
+      'the docsign content type',
+      { contentType: 'application/vnd.bettersign.docsign+cbor' },
+      /content_type/,
+    ],
+  ];
+  for (const [name, msg, err] of notCanonical) {
+    it(`rejects a signed message with ${name}`, async () => {
+      verifier.calls.length = 0;
+      const r = await signIn(alice, {}, alice, { send: 'message', msg });
+      expect(r.status).toBe(400);
+      expect(r.json.error).toBe('invalid_statement');
+      expect(r.json.message).toMatch(err);
+      expect(verifier.calls.length).toBe(0);
+    });
+    it(`rejects a statement signed with ${name}`, async () => {
+      const r = await signIn(alice, {}, alice, { msg });
+      expect(r.status).toBe(401);
+      expect(r.json.code).toBe('rejected');
+    });
+  }
+
+  it('rejects a signature over the old statement digest', async () => {
+    const ch = (await challenge(alice)).json;
+    const { statement } = loginStatement(alice, ch);
+    const st = Buffer.from(statement, 'base64url');
+    const digest = crypto
+      .createHash('sha256')
+      .update(Buffer.from('bs-login/v1/statement\n'))
+      .update(st)
+      .digest();
+    const r = await tokenRequest({
+      challengeId: ch.challengeId,
+      statement,
+      signature: crypto.sign(null, digest, alice.privateKey).toString('base64url'),
+    });
+    expect(r.status).toBe(401);
+  });
+
+  it('rejects a statement that is not the signed message body', async () => {
+    const ch = (await challenge(alice)).json;
+    const { message, signature } = loginStatement(alice, ch, {}, alice, { send: 'message' });
+    const { statement } = loginStatement(alice, ch);
+    const r = await tokenRequest({ challengeId: ch.challengeId, message, statement, signature });
+    expect(r.status).toBe(400);
+    expect(r.json.message).toMatch(/not the signed message body/);
+  });
+
+  describe('without BS_API_RECEIVER_VLAD', () => {
+    let saved;
+    beforeEach(() => {
+      saved = process.env.BS_API_RECEIVER_VLAD;
+      delete process.env.BS_API_RECEIVER_VLAD;
+    });
+    afterEach(() => {
+      process.env.BS_API_RECEIVER_VLAD = saved;
+    });
+
+    const stored = async () =>
+      (
+        await req(
+          'GET',
+          `${PARSE}/classes/bs_ApiConfig?` +
+            new URLSearchParams({ where: JSON.stringify({ Key: 'receiverVlad' }) }),
+          { headers: MASTER }
+        )
+      ).json.results;
+
+    it('generates one, stores it, and signs in with it', async () => {
+      const ch = (await challenge(alice)).json;
+      expect(ch.receiverVlad).toMatch(/^8724[0-9a-f]{64}$/);
+      expect(process.env.BS_API_RECEIVER_VLAD).toBe(ch.receiverVlad);
+      const rows = await stored();
+      expect(rows.length).toBe(1);
+      expect(rows[0].Value).toBe(ch.receiverVlad);
+
+      const r = await tokenRequest({
+        challengeId: ch.challengeId,
+        ...loginStatement(alice, ch, {}, alice, { msg: { receiverVlad: ch.receiverVlad } }),
+      });
+      expect(r.status).toBe(200);
+    });
+
+    it('reuses the stored one after a restart, and under a race', async () => {
+      const first = (await stored())[0]?.Value ?? (await challenge(alice)).json.receiverVlad;
+      // A restart: the env is empty again, the row is still there.
+      delete process.env.BS_API_RECEIVER_VLAD;
+      const results = await Promise.all([1, 2, 3].map(() => challenge(alice)));
+      for (const r of results) expect(r.json.receiverVlad).toBe(first);
+      expect((await stored()).length).toBe(1);
+    });
+
+    it('is not readable without the master key', async () => {
+      const r = await req('GET', `${PARSE}/classes/bs_ApiConfig`, { headers: PUBLIC });
+      expect(r.status).not.toBe(200);
+    });
+  });
+
+  it('turns sign-in off when BS_API_RECEIVER_VLAD is not a VLAD', async () => {
+    const saved = process.env.BS_API_RECEIVER_VLAD;
+    try {
+      process.env.BS_API_RECEIVER_VLAD = 'abcd';
+      const r = await challenge(alice);
+      expect(r.status).toBe(503);
+      expect(r.json.error).toBe('not_configured');
+    } finally {
+      process.env.BS_API_RECEIVER_VLAD = saved;
+    }
   });
 
   it('uses BS_API_RP for both the statement check and the verifier', async () => {

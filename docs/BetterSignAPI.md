@@ -14,14 +14,59 @@ Code: `apps/OpenSignServer/cloud/customRoute/bsapi/`.
 
 ## 1. Sign-in
 
+### What a VLAD signs: the canonical signed message
+
+**Every VLAD sign-in signs the same form**, the canonical to-be-signed bytes
+(TBS) of a bs-message, exactly what bs-auth signs (BetterSignApps
+`crates/bs-message/src/message.rs` `build_tbs`). This API's sign-in and
+upload statements use it, and any new VLAD login should too: an identity's
+key then only ever signs one shape, which names who it's from, which key,
+who it's for and what kind of content it is, so a signature made for one
+purpose or one server can't be replayed as another.
+
+```
+TBS = DOMAIN_SEP ‖ sender_vlad ‖ Varbytes(sender_key_path)
+      ‖ receiver_vlad ‖ Varbytes(content_type) ‖ Varbytes(body)
+```
+
+| Part | Value here |
+| --- | --- |
+| `DOMAIN_SEP` | the 21 ASCII bytes `bettersign-message-v2` (no length, no terminator) |
+| `sender_vlad` | the signing identity's VLAD, in its wire encoding (self-delimiting; the same bytes as the `vlad` hex). Must equal the statement's `vlad` |
+| `sender_key_path` | `/keys/primary` |
+| `receiver_vlad` | this server's VLAD, `receiverVlad` from `/auth/challenge` (`BS_API_RECEIVER_VLAD`) |
+| `content_type` | `application/vnd.bettersign.login+cbor` for sign-in, `application/vnd.bettersign.docsign+cbor` for uploads |
+| `body` | the statement CBOR (below), unchanged |
+
+`Varbytes(x)` is `x`'s length as an unsigned LEB128 varint (shortest form),
+then `x`. The signature is a **Multisig** by `/keys/primary` over the TBS bytes
+themselves, with no extra hash. The verifier gets `nonce = hex(TBS)`.
+
+Send either:
+
+- `statement`: the body only. OpenSign builds the TBS from it, so if your
+  bytes differ anywhere the signature just doesn't verify (`401`).
+- `message`: the full TBS you signed. OpenSign inspects it before asking the
+  verifier and refuses anything not exactly in this form, from you, to this
+  server, for this content type, with no trailing bytes: `400
+  invalid_statement`, naming the part (`domain separator`, `sender_vlad`,
+  `sender_key_path`, `receiver_vlad`, `content_type`, `body`, `trailing
+  bytes`). Easier to debug.
+
+Both may be sent; then `statement` must be the message's body.
+
+The desktop app refuses to sign anything that isn't this layout with its own
+VLAD, `/keys/primary` and an allow-listed content type.
+
 ```
 Desktop app                          OpenSign                              bs-verifier
   POST /auth/challenge {vlad}  ─────▶  linked VLAD? store 32B challenge (60 s, single use)
-                               ◀─────  {challengeId, challenge, origin, rp, expiresAt}
+                               ◀─────  {challengeId, challenge, origin, rp, receiverVlad, expiresAt}
   build bs-login v1 statement,
-  sign its digest with /keys/primary
-  POST /auth/token             ─────▶  check statement ── POST /verify {vlad, nonce, signature} ─▶
-    {challengeId, statement, signature}                ◀─ 200 (current /keys/primary, log verified)
+  sign it as a canonical signed
+  message with /keys/primary
+  POST /auth/token             ─────▶  check message + statement ── POST /verify {vlad, nonce: TBS, signature} ─▶
+    {challengeId, statement|message, signature}       ◀─ 200 (current /keys/primary, log verified)
                                ◀─────  {access_token: "bso_…", expires_in: 1800}
   Authorization: Bearer bso_…  on every other call
 ```
@@ -45,27 +90,32 @@ exactly nine keys:
 | `extSignPub` | bytes(32) | the desktop install's own public key (audit only) |
 | `iat` | uint | Unix seconds; must be within ±120 s of the server clock |
 
-The identity signs
-`digest = SHA-256("bs-login/v1/statement\n" ‖ statement)` with
-`/keys/primary`, producing a **Multisig**. Send both base64url:
+The identity signs it in the canonical signed message above (content type
+`application/vnd.bettersign.login+cbor`). Send base64url:
 
 ```http
 POST /api/v1/auth/token
 { "challengeId": "…", "statement": "<b64url CBOR>", "signature": "<b64url Multisig>" }
+// or "message": "<b64url TBS>" in place of (or as well as) "statement"
 ```
+
+(An earlier draft signed `SHA-256("bs-login/v1/statement\n" ‖ statement)`.
+That is no longer accepted.)
 
 ### What OpenSign checks
 
 1. The challenge exists, hasn't expired and hasn't been used. It's taken
    atomically, so one challenge gives at most one token, even under a race.
    Any attempt uses it up; a failed one needs a new challenge.
-2. The statement is a well-formed bs-login v1 statement for that challenge's
+2. What was signed is the canonical signed message from that challenge's VLAD
+   to our `receiverVlad`, with `/keys/primary` and the login content type.
+3. The statement is a well-formed bs-login v1 statement for that challenge's
    VLAD, our `origin` and `rp`, that challenge, with a fresh `iat`.
-3. The verifier's `/verify` returns 200 for `{vlad, nonce: hex(digest),
+4. The verifier's `/verify` returns 200 for `{vlad, nonce: hex(TBS),
    signature}`. Anything else fails. A verifier 503 (it couldn't resolve the
    log) is returned as `503 verifier_unavailable`, so the app can retry; it
    never counts as a pass.
-4. The VLAD is still linked to an account (section 3).
+5. The VLAD is still linked to an account (section 3).
 
 The token lasts `BS_API_TOKEN_TTL_S` (30 min). Only its SHA-256 is stored, and
 no OpenSign (Parse) session is created: handlers act for the account with the
@@ -82,7 +132,7 @@ Errors are `{ "error": "<code>", "message": "…" }`.
 
 | Method & path | Returns |
 | --- | --- |
-| `POST /auth/challenge` `{vlad}` | `{challengeId, challenge, origin, rp, expiresAt}`; `403 not_linked` |
+| `POST /auth/challenge` `{vlad}` | `{challengeId, challenge, origin, rp, receiverVlad, expiresAt}`; `403 not_linked`; `503 not_configured` if `BS_API_RECEIVER_VLAD` is malformed |
 | `POST /auth/token` | `{access_token, token_type, expires_in, expires_at}`; `401 access_denied`, `400 invalid_challenge`/`invalid_statement`, `503 verifier_unavailable` |
 | `POST /auth/logout` | 204 |
 | `GET /me` | `{vlad, user: {id, email, name}}` |
@@ -141,7 +191,9 @@ curl -X POST "$SERVER/app/classes/bs_Identity" \
 ```
 
 `bs_Identity`, `bs_ApiChallenge` and `bs_ApiToken` are created master-key
-only by migration `20261114120000-create_bettersign_api_classes.cjs`.
+only by migration `20261114120000-create_bettersign_api_classes.cjs`, and
+`bs_ApiConfig` (the generated receiver VLAD) by
+`20261115120000-create_bs_apiconfig.cjs`.
 
 ## 4. Configuration (Fly secrets)
 
@@ -151,6 +203,7 @@ only by migration `20261114120000-create_bettersign_api_classes.cjs`.
 | `BS_VERIFIER_SECRET` | none | the verifier droplet's `BS_VERIFIER_SECRET`. **Required in production** |
 | `BS_API_ORIGIN` | `https://docsign.bettersign.ing` | the `origin` statements must name, and the website that emailed links open |
 | `BS_API_RP` | `bs-opensign-api` | the `rp` statements must name |
+| `BS_API_RECEIVER_VLAD` | generated | this server's VLAD (hex wire encoding, starts `8724`): the `receiver_vlad` every signed message must name. Unset: the first sign-in generates one (`8724` + 32 random bytes, not a real identity), stores it in `bs_ApiConfig` so every machine and restart uses it, and loads it into this variable. Set but malformed: sign-in and uploads return `503 not_configured` |
 | `BS_API_TOKEN_TTL_S` | `1800` | |
 | `BS_ID_USERS` | none | fallback link list (section 3) |
 
@@ -165,7 +218,7 @@ server certificate.
 GET  /documents/:id                → canSign, myFields
 GET  /documents/:id/file           → PDF bytes, X-Content-SHA256 (= base)
      sign locally: field + PAdES, appended
-POST /documents/:id/signatures     ← { pdf, statement, signature }
+POST /documents/:id/signatures     ← { pdf, statement | message, signature }
 ```
 
 ```http
@@ -177,8 +230,8 @@ POST /api/v1/documents/:id/signatures
 
 ### The upload statement (bs-docsign v1)
 
-Canonical CBOR, like the sign-in statement, but its own type and signing
-domain, so neither can be used as the other:
+Canonical CBOR, like the sign-in statement, but its own type and content
+type, so neither can be used as the other:
 
 | Key | Type | Value |
 | --- | --- | --- |
@@ -193,16 +246,19 @@ domain, so neither can be used as the other:
 | `reqId` | bytes(16) | random |
 | `iat` | uint | Unix seconds, within ±120 s |
 
-`digest = SHA-256("bs-docsign/v1/statement\n" ‖ statement)`, signed with
-`/keys/primary`.
+Signed in the canonical signed message (section 1), content type
+`application/vnd.bettersign.docsign+cbor`. As with sign-in, send `statement`
+or the full `message`.
 
 ### What OpenSign checks
 
 1. It's your turn: you're a signer with a pending field, the document is sent,
    not completed, declined or expired, and earlier signers are done when it's
    sent in order.
-2. The statement names you, this site, this document, the current file
-   (`base`) and exactly the uploaded bytes (`file`), and is fresh.
+2. What was signed is the canonical signed message from you to us with the
+   docsign content type, and the statement names you, this site, this
+   document, the current file (`base`) and exactly the uploaded bytes
+   (`file`), and is fresh.
 3. The upload **starts with the current file byte for byte** (only appended
    to), and the appended part contains a signature whose `ByteRange` covers
    the whole file. A changed base is `409 stale_base`: download again.
