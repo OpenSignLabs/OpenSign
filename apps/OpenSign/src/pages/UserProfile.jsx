@@ -2,7 +2,7 @@ import React, {
   useState,
   useEffect,
 } from "react";
-import { Navigate, useNavigate } from "react-router";
+import { Navigate } from "react-router";
 import Parse from "parse";
 import { SaveFileSize } from "../constant/saveFileSize";
 import dp from "../assets/images/dp.png";
@@ -30,7 +30,6 @@ import Link from "@mui/material/Link";
 import LinearProgress from "@mui/material/LinearProgress";
 
 function UserProfile() {
-  const navigate = useNavigate();
   const { t } = useTranslation();
   let UserProfile =
     localStorage.getItem("UserInformation") &&
@@ -259,9 +258,9 @@ function UserProfile() {
   const handleResend = async (e) => {
     e.preventDefault();
     setOtpLoader(true);
-    await handleSendOTP(Parse.User.current().getEmail());
+    const isSent = await handleSendOTP(Parse.User.current().getEmail());
     setOtpLoader(false);
-    alert(t("otp-sent-alert"));
+    if (isSent) alert(t("otp-sent-alert"));
   };
 
   const handleCancel = () => {
@@ -614,17 +613,16 @@ function UserProfile() {
               >
                 {editmode ? t("save") : t("edit")}
               </Button>
-              <Button
-                type="button"
-                variant={editmode ? "text" : "contained"}
-                color={editmode ? "primary" : "secondary"}
-                onClick={() =>
-                  editmode ? handleCancel() : navigate("/changepassword")
-                }
-                sx={editmode ? { width: 100 } : undefined}
-              >
-                {editmode ? t("cancel") : t("change-password")}
-              </Button>
+              {editmode && (
+                <Button
+                  type="button"
+                  variant="text"
+                  onClick={handleCancel}
+                  sx={{ width: 100 }}
+                >
+                  {t("cancel")}
+                </Button>
+              )}
               <Link
                 component="button"
                 type="button"

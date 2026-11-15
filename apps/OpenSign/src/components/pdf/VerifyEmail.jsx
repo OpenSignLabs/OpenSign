@@ -61,7 +61,10 @@ function VerifyEmail(props) {
                 onChange={(e) => props.setOtp(e.target.value)}
                 slotProps={{
                   htmlInput: {
-                    pattern: "[0-9]{4}",
+                    pattern: "[0-9]{6}",
+                    maxLength: 6,
+                    inputMode: "numeric",
+                    autoComplete: "one-time-code",
                     onInvalid: (e) =>
                       e.target.setCustomValidity(t("input-required")),
                     onInput: (e) => e.target.setCustomValidity("")

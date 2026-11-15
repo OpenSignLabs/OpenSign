@@ -2931,20 +2931,30 @@ export const convertPdfArrayBuffer = async (url) => {
     return "Error";
   }
 };
-//`handleSendOTP` function is used to send otp on user's email using `SendOTPMailV1` cloud function
+//`runPublicCloudFn` calls a cloud function without a session token (sign-in and
+// one-time code flows). Errors are rethrown with the server's message.
+export const runPublicCloudFn = async (name, body) => {
+  const url = `${localStorage.getItem("baseUrl")}functions/${name}`;
+  const headers = {
+    "Content-Type": "application/json",
+    "X-Parse-Application-Id": localStorage.getItem("parseAppId")
+  };
+  try {
+    const res = await axios.post(url, body, { headers: headers });
+    return res.data?.result;
+  } catch (error) {
+    throw new Error(error?.response?.data?.error || error.message);
+  }
+};
+//`handleSendOTP` function is used to send otp on the signed-in user's email using `SendOTPMailV1` cloud function
+// returns true when the code was sent
 export const handleSendOTP = async (email) => {
   try {
-    let url = `${localStorage.getItem("baseUrl")}functions/SendOTPMailV1`;
-    const headers = {
-      "Content-Type": "application/json",
-      "X-Parse-Application-Id": localStorage.getItem("parseAppId")
-    };
-    const body = {
-      email: email
-    };
-    await axios.post(url, body, { headers: headers });
+    await Parse.Cloud.run("SendOTPMailV1", { email: email });
+    return true;
   } catch (error) {
     alert(error.message);
+    return false;
   }
 };
 export const fetchUrl = async (url, fileName) => {

@@ -22,9 +22,7 @@ import DocSuccessPage from "./pages/DocSuccessPage";
 import DragProvider from "./components/DragProivder";
 import Title from "./components/Title";
 const DebugPdf = lazyWithRetry(() => import("./pages/DebugPdf"));
-const ForgetPassword = lazyWithRetry(() => import("./pages/ForgetPassword"));
 const GuestLogin = lazyWithRetry(() => import("./pages/GuestLogin"));
-const ChangePassword = lazyWithRetry(() => import("./pages/ChangePassword"));
 const UserProfile = lazyWithRetry(() => import("./pages/UserProfile"));
 const Opensigndrive = lazyWithRetry(() => import("./pages/Opensigndrive"));
 const ManageSign = lazyWithRetry(() => import("./pages/Managesign"));
@@ -89,16 +87,8 @@ function App() {
               element={<Lazy Page={GuestLogin} />}
             />
             <Route path="/debugpdf" element={<Lazy Page={DebugPdf} />} />
-              <Route
-                path="/forgetpassword"
-                element={<Lazy Page={ForgetPassword} />}
-              />
             <Route element={<HomeLayout />}>
                   <Route path="/users" element={<UserList />} />
-                  <Route
-                    path="/changepassword"
-                    element={<Lazy Page={ChangePassword} />}
-                  />
               <Route path="/form/:id" element={<Form />} />
               <Route path="/report/:id" element={<Report />} />
               <Route path="/dashboard/:id" element={<Dashboard />} />

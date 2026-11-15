@@ -1613,5 +1613,6 @@
   "access-code-upgrade-msg": "Access codes are available on paid plans only. Upgrade your plan to add access codes for recipients.",
   "show-access-code": "Show access code",
   "hide-access-code": "Hide access code",
-  "already-copied-to-clipboard": "Already copied to clipboard"
+  "already-copied-to-clipboard": "Already copied to clipboard",
+  "signer-link-hint": "Asked to sign a document? Open the link in the email you received."
 }
