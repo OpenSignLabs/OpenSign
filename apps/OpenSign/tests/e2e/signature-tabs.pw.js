@@ -2,7 +2,7 @@ import path from "node:path";
 import { test, expect } from "./support/fixtures.js";
 import { createSignerDocument, prepareAdminUser, waitForCompleted } from "./support/parse.js";
 import { confirmField, drawStroke, finish, openSigner } from "./support/signer.js";
-import { cells, image, initials, signature } from "./support/widgets.js";
+import { cells, image, initials, signature, stamp } from "./support/widgets.js";
 
 test.beforeAll(prepareAdminUser);
 
@@ -65,6 +65,36 @@ test("a document with required cells completes after typing them (#80)", async (
   await page.getByText("signature-1").first().click();
   await drawStroke(page);
   await confirmField(page);
+  await finish(page);
+  expect((await waitForCompleted(ids.docId)).IsCompleted).toBe(true);
+});
+
+test("a stamp is uploaded as an image and the document completes", async ({ page }) => {
+  const ids = await createSignerDocument({ name: "e2e stamp", pages: [{ pageNumber: 1, pos: [stamp("stamp-1", 300)] }] });
+  await openSigner(page, ids);
+  await page.getByText("stamp-1").first().click();
+  await modal(page).locator("input[type=file]").setInputFiles(path.resolve("tests/e2e/support/red.png"));
+  await expect(modal(page).locator("img").first()).toBeVisible();
+  await confirmField(page);
+  await finish(page);
+  expect((await waitForCompleted(ids.docId)).IsCompleted).toBe(true);
+});
+
+test("confirming the last field closes the modal and the document completes (#67)", async ({ page }) => {
+  const ids = await createSignerDocument({
+    name: "e2e save path",
+    pages: [{ pageNumber: 1, pos: [signature("first-signature", 120), signature("second-signature", 400)] }]
+  });
+  await openSigner(page, ids);
+  await page.getByText("first-signature").first().click();
+  await drawStroke(page);
+  await expect(page.getByRole("button", { name: /Next Field/ })).toBeVisible();
+  await confirmField(page);
+  await expect(modal(page).getByText("second-signature")).toBeVisible();
+  await drawStroke(page);
+  await expect(modal(page).getByText("1 of 2 fields left")).toBeVisible();
+  await confirmField(page);
+  await expect(page.locator(".op-modal-box")).toHaveCount(0);
   await finish(page);
   expect((await waitForCompleted(ids.docId)).IsCompleted).toBe(true);
 });

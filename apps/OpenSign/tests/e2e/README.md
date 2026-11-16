@@ -32,15 +32,19 @@ npx playwright test -c playwright.e2e.config.js
 ## What is covered
 
 - Guest signer completion with a digitally signed PDF.
-- Text, signature (draw and type), initials, image, radio, checkbox,
-  dropdown, date and cells widgets.
-- Linked fields and next-field navigation.
+- Text, signature (draw and type), initials, image, stamp, radio,
+  checkbox, dropdown, date and cells widgets.
+- Linked fields and next-field navigation, including the last field.
 - The radio value drawn in the signed PDF.
-- Decline with a reason, the owner dashboard and the template editor.
+- Decline with a reason, the owner dashboard, the template editor and the
+  sidebar reports (templates, documents by status, contactbook).
+- The prefill modal: fill, pick a recipient, create the document.
+- A 30-page template: leaving the editor, and DOM activity while idle.
+- The password-reset copy indicator.
 
 ## Not covered yet
 
 - OTP verification: the signer needs an account with a `contracts_Users`
   profile, or the email link flow.
-- Stamp widget, prefill modal, QES and the report pages beyond the
-  dashboard.
+- QES, and whether the PDF editor bundle loads only on its own pages
+  (needs a production build, not the Vite dev server).
