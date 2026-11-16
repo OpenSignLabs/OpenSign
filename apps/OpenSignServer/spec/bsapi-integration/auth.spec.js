@@ -27,7 +27,8 @@ import {
 } from './support/lib.js';
 import { verifier } from './support/verifier.js';
 import { createRequire } from 'node:module';
-import { accountForVlad } from '../../utils/bsIdentity.js';
+import { accountForVlad, recordSignInAttempt } from '../../utils/bsIdentity.js';
+import { resetRateLimits } from '../../cloud/customRoute/bsapi/rateLimit.js';
 
 const require = createRequire(import.meta.url);
 const moveEnvLinks = require('../../databases/migrations/20261115140000-move_bs_id_users_to_bs_identity.cjs');
@@ -310,6 +311,67 @@ describe('/api/v1 sign-in', () => {
     expect((await identityRows(id.vlad)).length).toBe(0);
   });
 
+  it('refuses a VLAD whose link is off, and notes the attempt on that link', async () => {
+    const id = identity();
+    verifier.register(id);
+    const userId = await mkUser(`apioff-${tag()}@example.com`);
+    await link(id, userId, { Active: false });
+    expect((await signIn(id)).status).toBe(403);
+    const rows = await identityRows(id.vlad);
+    expect(rows.length).toBe(1);
+    expect(rows[0].UserId.objectId).toBe(userId);
+    expect(rows[0].LastSeenAt).toBeDefined();
+  });
+
+  it("refuses a challenge to a VLAD whose linked account doesn't exist", async () => {
+    const id = identity();
+    await Parse.Server.database.create('bs_Identity', {
+      objectId: `gone${tag()}`,
+      vlad: id.vlad,
+      UserId: ptr('_User', 'missingUser2'),
+      Active: true,
+    });
+    const r = await challenge(id);
+    expect(r.status).toBe(403);
+    expect(r.json.error).toBe('not_linked');
+  });
+
+  describe('rate limit', () => {
+    const saved = process.env.BS_API_AUTH_RATE_PER_MIN;
+    beforeEach(() => {
+      process.env.BS_API_AUTH_RATE_PER_MIN = '3';
+      resetRateLimits();
+    });
+    afterEach(() => {
+      process.env.BS_API_AUTH_RATE_PER_MIN = saved;
+      resetRateLimits();
+    });
+
+    it('limits challenges and tokens per client IP, each route on its own', async () => {
+      const id = identity();
+      for (let i = 0; i < 3; i++) expect((await challenge(id)).status).toBe(200);
+      const limited = await challenge(id);
+      expect(limited.status).toBe(429);
+      expect(limited.json.error).toBe('rate_limited');
+      expect(Number(limited.headers.get('retry-after'))).toBeGreaterThan(0);
+      // /auth/token counts separately.
+      expect((await tokenRequest({})).status).toBe(400);
+    });
+
+    it("keys on Fly-Client-IP, not the client's X-Forwarded-For", async () => {
+      const id = identity();
+      const from = ip => ({
+        'fly-client-ip': ip,
+        'x-forwarded-for': `10.0.0.${Math.floor(Math.random() * 250)}`,
+      });
+      const ask = ip =>
+        req('POST', `${API}/api/v1/auth/challenge`, { headers: from(ip), body: { vlad: id.vlad } });
+      for (let i = 0; i < 3; i++) expect((await ask('203.0.113.7')).status).toBe(200);
+      expect((await ask('203.0.113.7')).status).toBe(429);
+      expect((await ask('203.0.113.8')).status).toBe(200);
+    });
+  });
+
   it("returns 503 and no token when the verifier can't decide", async () => {
     verifier.mode = '503';
     const r = await signIn(alice);
@@ -317,7 +379,7 @@ describe('/api/v1 sign-in', () => {
     expect(r.json.error).toBe('verifier_unavailable');
   });
 
-  it("says the server is misconfigured, not the signature, when the verifier refuses our secret", async () => {
+  it('says the server is misconfigured, not the signature, when the verifier refuses our secret', async () => {
     verifier.mode = 'bad_secret';
     const r = await signIn(alice);
     expect(r.status).toBe(502);
@@ -462,6 +524,33 @@ describe('VLAD links (bs_Identity)', () => {
     });
   });
 
+  it("an update that doesn't send Active leaves it as it is", async () => {
+    const id = identity();
+    const userId = await mkUser(`keep-${tag()}@example.com`);
+    const rowId = `keep${tag()}`;
+    // A row from before the Active migration.
+    await Parse.Server.database.create('bs_Identity', {
+      objectId: rowId,
+      vlad: id.vlad,
+      UserId: ptr('_User', userId),
+    });
+    await req('PUT', `${PARSE}/classes/bs_Identity/${rowId}`, {
+      headers: MASTER,
+      body: { Label: 'Renamed' },
+    });
+    const row = (await identityRows(id.vlad))[0];
+    expect(row.Label).toBe('Renamed');
+    expect(row.Active).toBeUndefined();
+  });
+
+  it('records simultaneous first attempts as one row', async () => {
+    const id = identity();
+    await Promise.all(Array.from({ length: 6 }, () => recordSignInAttempt(id.vlad)));
+    const rows = await identityRows(id.vlad);
+    expect(rows.length).toBe(1);
+    expect(rows[0].Label).toBe('Sign-in attempt');
+  });
+
   it("reports a link to an account that doesn't exist", async () => {
     const id = identity();
     await Parse.Server.database.create('bs_Identity', {
@@ -547,6 +636,15 @@ describe('VLAD links (bs_Identity)', () => {
       await withEnvUsers({ [id.vlad]: email }, () => moveEnvLinks.up(Parse));
       expect((await identityRows(id.vlad)).length).toBe(1);
       expect((await accountForVlad(id.vlad)).reason).toBe('inactive');
+    });
+
+    it('finds the account from the SHA-256 of its email', async () => {
+      const id = identity();
+      const email = `hashed-${tag()}@example.com`;
+      const userId = await mkUser(email);
+      const hash = crypto.createHash('sha256').update(email).digest('hex');
+      await withEnvUsers({ [id.vlad]: hash }, () => moveEnvLinks.up(Parse));
+      expect((await accountForVlad(id.vlad)).user.id).toBe(userId);
     });
 
     it("skips an account that doesn't exist", async () => {

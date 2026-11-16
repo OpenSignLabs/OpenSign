@@ -11,6 +11,7 @@ import path from 'node:path';
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
 import { startVerifier, stopVerifier, VERIFIER_PORT, VERIFIER_SECRET } from './verifier.js';
+import { BSID_URL, startBsId, stopBsId } from './bsid.js';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const serverDir = path.resolve(here, '../../..');
@@ -28,6 +29,9 @@ Object.assign(process.env, {
   USE_LOCAL: 'true',
   BS_VERIFIER_URL: `http://localhost:${VERIFIER_PORT}`,
   BS_VERIFIER_SECRET: VERIFIER_SECRET,
+  BS_ID_URL: BSID_URL,
+  // Every spec signs in from localhost; auth.spec tests the limit itself.
+  BS_API_AUTH_RATE_PER_MIN: '100000',
   BS_API_RECEIVER_VLAD: '8724' + crypto.randomBytes(38).toString('hex'),
   PASS_PHRASE: 'test',
 });
@@ -56,6 +60,7 @@ beforeAll(async () => {
   process.env.PFX_BASE64 = shared.p12.toString('base64');
 
   await startVerifier();
+  await startBsId();
   const { ParseServer } = await import('parse-server');
   const { app, config } = await import('../../../index.js');
   delete config.databaseAdapter;
@@ -100,5 +105,6 @@ afterAll(async () => {
     // nothing left to close
   }
   await stopVerifier();
+  await stopBsId();
   for (const f of artifacts()) if (!before.has(f)) fs.rmSync(f, { force: true });
 });

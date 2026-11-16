@@ -148,6 +148,45 @@ describe('Users page: BetterSign identities', () => {
     expect(row.json.UserId.objectId).toBe(outsider.userId);
   });
 
+  describe('as an org admin', () => {
+    let orgAdmin;
+    beforeAll(async () => {
+      orgAdmin = await mkMember(tenant, 'contracts_OrgAdmin');
+    });
+
+    it('can list and link within the tenant', async () => {
+      const id = identity();
+      const r = await call(orgAdmin, 'bsidentitysave', { vlad: id.vlad, userId: member.userId });
+      expect(r.status).toBe(200);
+      const list = (await call(orgAdmin, 'bsidentitylist')).json.result;
+      expect(list.identities.some(i => i.vlad === id.vlad)).toBe(true);
+    });
+
+    // Known issue (BetterSignUpdates.md, Follow-ups): an org admin can link a
+    // VLAD they hold to the tenant admin and sign in as them. Enable this spec
+    // when bsIdentityAdmin.js applies updateuserbyadmin's org-admin rules.
+    xit("can't link a VLAD to the tenant admin, or touch the tenant admin's links", async () => {
+      const id = identity();
+      const r = await call(orgAdmin, 'bsidentitysave', {
+        vlad: id.vlad,
+        userId: admin.userId,
+        active: true,
+      });
+      expect(r.json.code).toBe(119);
+      const list = (await call(orgAdmin, 'bsidentitylist')).json.result;
+      expect(list.accounts.some(a => a.userId === admin.userId)).toBe(false);
+    });
+  });
+
+  // Known issue (BetterSignUpdates.md, Follow-ups): unassigned rows are shared
+  // by every tenant. Enable this spec when they're scoped.
+  xit("doesn't show another tenant's admins the unassigned sign-in attempts", async () => {
+    const pending = identity();
+    await recordSignInAttempt(pending.vlad);
+    const r = await call(outsider, 'bsidentitylist');
+    expect(r.json.result.identities.some(i => i.vlad === pending.vlad)).toBe(false);
+  });
+
   it('deletes a link', async () => {
     const id = identity();
     const rowId = (await link(id, member.userId)).json.objectId;

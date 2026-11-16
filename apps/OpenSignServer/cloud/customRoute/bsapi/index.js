@@ -8,11 +8,12 @@ import express from 'express';
 import { createChallenge, issueToken, logout, requireToken, apiError } from './auth.js';
 import { me, listDocuments, getDocument, getDocumentFile } from './documents.js';
 import { uploadSignature } from './signatures.js';
+import { authRateLimit } from './rateLimit.js';
 
 export const router = express.Router();
 
-router.post('/auth/challenge', createChallenge);
-router.post('/auth/token', issueToken);
+router.post('/auth/challenge', authRateLimit('challenge'), createChallenge);
+router.post('/auth/token', authRateLimit('token'), issueToken);
 
 router.use(requireToken);
 router.post('/auth/logout', logout);

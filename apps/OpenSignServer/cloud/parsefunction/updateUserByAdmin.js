@@ -8,7 +8,8 @@
 //   - roles are OrgAdmin, Editor or User. A tenant Admin's role never
 //     changes here, and nobody changes their own role (so an admin can't lock
 //     themselves out);
-//   - teams must belong to the user's organization.
+//   - teams must belong to the user's organization; a user can stay in an
+//     inactive team but not be added to one.
 //
 // Params: { extUserId, name?, phone?, role?, teams? (team ids) }
 // Returns the contracts_Users row, TeamIds included.
@@ -89,6 +90,10 @@ export default async function updateUserByAdmin(request) {
       teams.some(t => t.get('OrganizationId')?.id !== targetOrgId)
     ) {
       throw forbidden();
+    }
+    const current = new Set((target.get('TeamIds') || []).map(t => t?.id || t?.objectId));
+    if (teams.some(t => t.get('IsActive') === false && !current.has(t.id))) {
+      throw invalid("That team isn't active.");
     }
     target.set(
       'TeamIds',

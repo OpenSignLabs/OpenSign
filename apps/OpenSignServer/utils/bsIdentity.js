@@ -41,7 +41,8 @@ export async function accountForVlad(vladHex) {
 
 // A VLAD whose owner proved it (bs-id's id_token, or the verifier) tried to
 // sign in and has no active link. First time: add an inactive row with no
-// account. After that: bump LastSeenAt on its unassigned row, if it has one.
+// account. After that: bump LastSeenAt on its unassigned row, or else on its
+// newest row (a link that's turned off), so admins see it's still trying.
 // Never throws; a failure here mustn't change the sign-in answer.
 export async function recordSignInAttempt(vladHex) {
   try {
@@ -49,27 +50,49 @@ export async function recordSignInAttempt(vladHex) {
     if (!VLAD_HEX_RE.test(vlad)) return;
     const q = new Parse.Query('bs_Identity');
     q.equalTo('vlad', vlad);
+    q.descending('createdAt');
     q.limit(10);
     const rows = await q.find({ useMasterKey: true });
     if (rows.some(r => r.get('Active') === true)) return;
-    const row = rows.length ? rows.find(r => !r.get('UserId')) : new Parse.Object('bs_Identity');
-    if (!row) return;
-    if (!row.id) {
-      row.set('vlad', vlad);
-      row.set('Label', ATTEMPT_LABEL);
-      row.set('Active', false);
-      row.setACL(new Parse.ACL());
+    const row = rows.find(r => !r.get('UserId')) || rows[0];
+    if (row) {
+      row.set('LastSeenAt', new Date());
+      await row.save(null, { useMasterKey: true });
+      return;
     }
-    row.set('LastSeenAt', new Date());
-    await row.save(null, { useMasterKey: true });
+    const created = new Parse.Object('bs_Identity');
+    created.set('vlad', vlad);
+    created.set('Label', ATTEMPT_LABEL);
+    created.set('Active', false);
+    created.set('LastSeenAt', new Date());
+    created.setACL(new Parse.ACL());
+    await created.save(null, { useMasterKey: true });
+    await dropDuplicateAttempts(vlad);
   } catch (e) {
     console.error('bsIdentity: could not record a sign-in attempt', e?.message || e);
   }
 }
 
+// Two first attempts at once can each add a row. Keep the oldest unassigned
+// row and delete the rest; every racer picks the same one.
+async function dropDuplicateAttempts(vlad) {
+  const q = new Parse.Query('bs_Identity');
+  q.equalTo('vlad', vlad);
+  q.doesNotExist('UserId');
+  q.equalTo('Active', false);
+  q.ascending('createdAt');
+  q.addAscending('objectId');
+  q.limit(10);
+  const rows = await q.find({ useMasterKey: true });
+  if (rows.length > 1) {
+    await Parse.Object.destroyAll(rows.slice(1), { useMasterKey: true }).catch(() => {});
+  }
+}
+
 // beforeSave for bs_Identity: store vlad as lower-case hex, default Active to
-// false, and allow only one active row per VLAD, with an account, so a lookup
-// is never a guess.
+// false on a new row (an update that doesn't send Active leaves it alone), and
+// allow only one active row per VLAD, with an account, so a lookup is never a
+// guess.
 export async function bsIdentityBeforeSave(request) {
   const row = request.object;
   const vlad = String(row.get('vlad') || '').toLowerCase();
@@ -77,7 +100,7 @@ export async function bsIdentityBeforeSave(request) {
     throw new Parse.Error(Parse.Error.VALIDATION_ERROR, 'vlad must be lower-case hex.');
   }
   row.set('vlad', vlad);
-  if (typeof row.get('Active') !== 'boolean') row.set('Active', false);
+  if (!request.original && typeof row.get('Active') !== 'boolean') row.set('Active', false);
   if (!row.get('Active')) return;
   if (!row.get('UserId')) {
     throw new Parse.Error(

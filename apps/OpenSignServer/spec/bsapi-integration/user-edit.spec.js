@@ -107,6 +107,40 @@ describe('Users page: editing a user', () => {
     expect((await get('contracts_Users', admin.extId)).UserRole).toBe('contracts_Admin');
   });
 
+  it("reports a user that doesn't exist", async () => {
+    const r = await edit(admin, { extUserId: 'noSuchUser1', name: 'x' });
+    expect(r.json.code).toBe(101);
+  });
+
+  it('can edit a deactivated user', async () => {
+    const off = await mkMember(tenant, 'contracts_User', {
+      OrganizationId: ptr('contracts_Organizations', org),
+      TeamIds: [ptr('contracts_Teams', teamA)],
+      IsDisabled: true,
+    });
+    const r = await edit(admin, { extUserId: off.extId, name: 'Still Here' });
+    expect(r.status).toBe(200);
+    expect((await get('contracts_Users', off.extId)).IsDisabled).toBe(true);
+  });
+
+  it('keeps a user in an inactive team but adds nobody to one', async () => {
+    const closed = await mk('contracts_Teams', {
+      Name: `Closed ${tag()}`,
+      IsActive: false,
+      OrganizationId: ptr('contracts_Organizations', org),
+    });
+    const r = await edit(admin, { extUserId: user.extId, teams: [teamA, closed] });
+    expect(r.status).toBe(400);
+    expect(r.json.code).toBe(142);
+
+    const member = await mkMember(tenant, 'contracts_User', {
+      OrganizationId: ptr('contracts_Organizations', org),
+      TeamIds: [ptr('contracts_Teams', closed)],
+    });
+    const keep = await edit(admin, { extUserId: member.extId, teams: [closed, teamA] });
+    expect(keep.status).toBe(200);
+  });
+
   it("only takes teams from the user's organization, and at least one", async () => {
     expect((await edit(admin, { extUserId: user.extId, teams: [otherTeam] })).json.code).toBe(119);
     expect((await edit(admin, { extUserId: user.extId, teams: [] })).json.code).toBe(142);
