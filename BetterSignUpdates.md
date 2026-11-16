@@ -12,9 +12,9 @@ operations are covered in [DEPLOYMENT.md](DEPLOYMENT.md).
   - [Brand UI](#brand-ui)
 - [One-time codes (OTC)](#one-time-codes-otc)
 - [API changes](#api-changes)
-- [Deploying these changes](#deploying-these-changes)
-- [Testing](#testing)
-- [Files changed](#files-changed)
+- [Deploying the sign-in lockdown](#deploying-the-sign-in-lockdown-2026-11-13)
+- [Testing the sign-in lockdown](#testing-the-sign-in-lockdown-2026-11-13)
+- [Changes from upstream OpenSign](#changes-from-upstream-opensign)
 - [Follow-ups](#follow-ups)
 
 ---
@@ -69,6 +69,12 @@ operations are covered in [DEPLOYMENT.md](DEPLOYMENT.md).
   row, and emails with no account, are skipped.
 - Linking or unlinking a VLAD no longer needs a redeploy; it takes effect at once.
 
+### 2026-11-15: signed-in users can create documents again
+
+- `DocumentBeforesave` refused every document created with a user's session
+  ("VladSignatures is set by the server."), so Request Signatures failed. New
+  documents are now checked with `has()`; updates still with `dirty()`.
+
 ### 2026-11-15: a wrong verifier secret is reported as such
 
 - When the BetterSign verifier refuses this server's `BS_VERIFIER_SECRET`
@@ -122,6 +128,25 @@ operations are covered in [DEPLOYMENT.md](DEPLOYMENT.md).
 - Signatures over the old `SHA-256("bs-login/v1/statement\n" ‖ statement)` digest
   are refused.
 
+### 2026-11-14: BetterSign desktop API (`/api/v1`) and append-only signing
+
+- A REST API for the BetterSign desktop app, which holds the user's VLAD and keys:
+  sign in by signing a challenge (checked by the BetterSign verifier), list and
+  download documents, and upload a PDF signed on the desktop. Reference:
+  [docs/BetterSignAPI.md](docs/BetterSignAPI.md).
+- VLAD -> account links moved to the master-key-only `bs_Identity` class
+  (`utils/bsIdentity.js`), shared with Sign in with BetterSign.
+- Once a VLAD has signed a document, it's **append-only**: online signers and
+  OpenSign's seal add incremental updates instead of rewriting the PDF, so the
+  desktop signature stays valid (`utils/appendOnlyPdf.js` on both server and
+  frontend).
+- Signing commits are a compare-and-swap on `contracts_Document.SignRevision`, so
+  two signers working from the same version can't both be stored.
+- Desktop uploads email the next signer for in-order documents, as browser
+  signing does.
+- Tests: `npm run test:bsapi` and `npm run test:bsapi:integration`
+  (`apps/OpenSignServer`), also run in CI (`.github/workflows/bettersign-tests.yml`).
+
 ### 2026-11-13: sign-in lockdown and one-time code hardening
 
 - **Home page:** Sign in with BetterSign is the only way to sign in. The
@@ -150,6 +175,29 @@ operations are covered in [DEPLOYMENT.md](DEPLOYMENT.md).
 - The web app was restyled to the bettersign.ing brand. See [Brand UI](#brand-ui).
 - "Sign in with BetterSign" through bs-id (OIDC + PKCE) replaced the push-to-phone
   login button. See [Sign in with BetterSign](#sign-in-with-bettersign).
+
+### 2026-10-09: Material Design 3 web UI
+
+- The web client's DaisyUI/Tailwind components were replaced with Material UI v7
+  themed as Material Design 3 (`src/theme/md3Theme.js`, `ThemeModeProvider.jsx`).
+  Presentation only; logic unchanged. Playbook: `apps/OpenSign/MD3_MIGRATION.md`.
+
+### 2026-10-07: Cloudflare + Fly.io deployment
+
+- Frontend on Cloudflare Workers Static Assets, Parse Server and MongoDB on Fly.io
+  (`deploy/`, `apps/OpenSignServer/Dockerfile`, `fly.toml`). See
+  [DEPLOYMENT.md](DEPLOYMENT.md).
+- Public file uploads enabled (`FILE_UPLOAD_PUBLIC`) for OpenSign's token-less
+  uploads; `Content-Length` exposed cross-origin.
+- `patches/parse+8.6.0.patch` fixes parse-js 8.6.0's upload "body stream is locked"
+  error (applied by `patch-package` on install).
+
+### 2026-10-06: sign on phone
+
+- "Sign on phone" for a signature field (`src/components/pdf/PhoneSign.jsx`) and the
+  `bettersignlogin` cloud function, both through the bs-opensign signing Worker. The
+  push-to-phone login button was later replaced by bs-id (2026-11-06);
+  `bettersignlogin` stays for that Worker.
 
 ---
 
@@ -339,9 +387,24 @@ already updated.
 | `verifyemail` | `{ email, otp }`; checked the code against `email` | `{ otp }`; the code is checked against the signed-in user's email. `email` is ignored. |
 | `defaultdata_Otp` class | Readable and writable with the app ID | Master key only |
 
+Added by this fork (none of these exist upstream):
+
+| Endpoint or class | What it is |
+|---|---|
+| `/api/v1/*` (REST) | Desktop API; see [docs/BetterSignAPI.md](docs/BetterSignAPI.md) |
+| `bsidlogin` | Sign in with BetterSign: exchanges a bs-id code for a session |
+| `bettersignlogin` | Session for an identity verified by the BetterSign Worker |
+| `bsidentitylist`, `bsidentitysave`, `bsidentitydelete` | Users page: manage VLAD links (admins) |
+| `updateuserbyadmin` | Users page: edit a user's name, phone, role, teams (admins) |
+| `bs_Identity`, `bs_ApiChallenge`, `bs_ApiToken`, `bs_ApiConfig` classes | Master key only. VLAD links, sign-in challenges, API tokens, generated settings |
+| `contracts_Document` fields `VladSignatures`, `SignRevision`, `Seal`, `CertificateSeal` | Writable only with the master key |
+
 ---
 
-## Deploying these changes
+## Deploying the sign-in lockdown (2026-11-13)
+
+Later changes list their own deploy steps in their PRs and in the change log.
+
 
 1. **Deploy the API** (`fly deploy` for `docsign-bettersign-api`, see
    [DEPLOYMENT.md](DEPLOYMENT.md)). Migrations run when the server starts, which
@@ -363,7 +426,11 @@ already updated.
 
 ---
 
-## Testing
+## Testing the sign-in lockdown (2026-11-13)
+
+The desktop API, sealing, VLAD links and user editing have automated tests:
+`npm run test:bsapi` and `npm run test:bsapi:integration` in `apps/OpenSignServer`.
+
 
 Done:
 
@@ -393,37 +460,111 @@ Not yet done; needs a running API and real email:
 
 ---
 
-## Files changed
+## Changes from upstream OpenSign
+
+This section lists every file this fork changes, so that merging a newer
+upstream OpenSign shows where conflicts can happen and what has to survive them.
+Keep it current: any PR that touches an upstream file adds or updates its row.
+
+- **Fork point:** upstream commit `e5f2c5c0a`. Upstream remotes: `upstream`
+  (OpenSignLabs/OpenSign) next to `origin` (Ixiom-Software/BetterOpenSign).
+- **Upstream since then** (as of 2026-11-15): `upstream/main` is 26 commits
+  ahead of the fork point, `upstream/staging` 20.
+- **Regenerate the raw list:**
+
+  ```sh
+  git fetch upstream
+  git diff --name-status $(git merge-base HEAD upstream/main) HEAD   # A added, M modified, D deleted
+  git log --oneline --no-merges $(git merge-base HEAD upstream/main)..HEAD -- <file>   # why a file changed
+  ```
+
+### Upstream files we modified (conflict risk)
 
 Server (`apps/OpenSignServer/`):
 
-| File | Change |
-|---|---|
-| `cloud/parsefunction/emailOtp.js` | New. Shared code rules: generate, hash, send, verify, recipient check |
-| `cloud/parsefunction/SendMailOTPv1.js` | Uses `emailOtp.js`; recipient or own-email rule |
-| `cloud/parsefunction/AuthLoginAsMail.js` | Uses `emailOtp.js`; requires `docId`; reuses `sessionViaLoginAs` |
-| `cloud/parsefunction/VerifyEmail.js` | Uses `emailOtp.js`; checks the signed-in user's own email |
-| `cloud/customRoute/deleteAccount/deleteUtils.js` | Shares the constants and generator from `emailOtp.js` |
-| `cloud/customRoute/deleteAccount/deleteUser.js` | Constant-time code comparison |
-| `cloud/main.js` | `beforeLogin` hook blocking password sign-in |
-| `databases/migrations/20261113000000-lock_defaultdata_otp.cjs` | New. Locks `defaultdata_Otp`, removes plaintext codes |
+| File | What we changed | Since |
+|---|---|---|
+| `index.js` | Public file uploads (`FILE_UPLOAD_PUBLIC`), `Content-Length` exposed cross-origin | 2026-10-07 |
+| `cloud/main.js` | Registers our cloud functions (`bettersignlogin`, `bsidlogin`, `bsidentity*`, `updateuserbyadmin`) and the `bs_Identity` save hook; `beforeLogin` hook blocking password sign-in | 2026-10-06 → 11-15 |
+| `cloud/customRoute/customApp.js` | Mounts the desktop API router (`bsapi`) at `/api/v1` | 2026-11-14 |
+| `cloud/parsefunction/pdf/PDF.js` | Append-only signing once a VLAD signed; signing commits as a compare-and-swap on `SignRevision`; the seal goes through `utils/seal.js` | 2026-11-14 → 11-15 |
+| `cloud/parsefunction/pdf/Placeholder.js` | Signature placeholder keeps indirect AcroForm `/Fields` and `/SigFlags` (needed for incremental updates) | 2026-11-14 |
+| `cloud/parsefunction/DocumentBeforesave.js` | `VladSignatures`, `SignRevision`, `Seal`, `CertificateSeal` writable only with the master key (creates checked with `has()`) | 2026-11-14 → 11-15 |
+| `cloud/parsefunction/generateCertificatebydocId.js` | Certificate sealed through `utils/seal.js` | 2026-11-15 |
+| `cloud/parsefunction/SendMailOTPv1.js`, `AuthLoginAsMail.js`, `VerifyEmail.js` | Rewritten on `emailOtp.js` (recipient-only, hashed 6-digit codes) | 2026-11-13 |
+| `cloud/customRoute/deleteAccount/deleteUtils.js`, `deleteUser.js` | Share `emailOtp.js` constants; constant-time code comparison | 2026-11-13 |
+| `package.json`, `package-lock.json` | `@cantoo/pdf-lib`; test scripts `test:bsapi`, `test:bsapi:integration` | 2026-11-14 |
+| `.env.example` (repo root) | Seal settings (`SEAL_BACKEND`, `BS_SERVICE_IDENTITY_*`) | 2026-11-15 |
 
-Frontend (`apps/OpenSign/`):
+Frontend (`apps/OpenSign/`). Almost every file under `src/` was also restyled
+by the Material Design 3 migration (2026-10-09, 129 files, presentation only:
+DaisyUI/Tailwind markup replaced with MUI v7, logic untouched; rules in
+`MD3_MIGRATION.md`). Expect markup conflicts in any upstream UI change; take
+upstream's logic and keep our MUI markup. The files below also have behaviour
+changes:
 
-| File | Change |
-|---|---|
-| `src/pages/Login.jsx` | BetterSign-only sign-in card; password form, code form and the unreachable "additional info" modal removed |
-| `src/pages/GuestLogin.jsx` | 6-digit code input; sends `docId`; shows server errors |
-| `src/components/pdf/VerifyEmail.jsx` | 6-digit code input |
-| `src/constant/Utils.js` | `runPublicCloudFn`; `handleSendOTP` sends the session and reports success |
-| `src/pages/SignyourselfPdf.jsx`, `src/pages/UserProfile.jsx` | "Code sent" only on success; Change Password button removed from the profile |
-| `src/App.jsx` | `/forgetpassword` and `/changepassword` routes removed |
-| `src/components/Header.jsx` | Change Password menu item removed |
-| `src/pages/UserList.jsx`, `src/json/ReportJson.js` | Admin "Reset password" action removed |
-| `src/pages/ForgetPassword.jsx`, `src/pages/ChangePassword.jsx`, `src/primitives/PasswordResetModal.jsx` | Deleted |
-| `public/locales/en/translation.json` | New `signer-link-hint` text |
+| File | What we changed | Since |
+|---|---|---|
+| `src/pages/Login.jsx` | BetterSign-only sign-in card (bs-id); password form, code form and "additional info" modal removed | 2026-10-06 → 11-13 |
+| `src/pages/GuestLogin.jsx` | 6-digit code input; sends `docId`; shows server errors | 2026-11-13 |
+| `src/pages/UserList.jsx` | Reset-password action removed; Edit user action; BetterSign identities section | 2026-11-13 → 11-15 |
+| `src/json/ReportJson.js` | `usersActions`: reset password removed, Edit added | 2026-11-13 → 11-15 |
+| `src/pages/UserProfile.jsx` | Change Password button removed; "code sent" only on success | 2026-11-13 |
+| `src/pages/SignyourselfPdf.jsx`, `src/components/pdf/VerifyEmail.jsx` | 6-digit codes; "code sent" only on success | 2026-11-13 |
+| `src/pages/PdfRequestFiles.jsx` | Append-only signing for documents a VLAD signed | 2026-11-14 |
+| `src/components/pdf/WidgetsValueModal.jsx` | "Sign on phone" (PhoneSign) | 2026-10-06 |
+| `src/constant/Utils.js` | `runPublicCloudFn`; `handleSendOTP` sends the session; keeps signature fields when flattening an append-only PDF | 2026-11-13 → 11-14 |
+| `src/App.jsx` | `/auth/bettersign/callback` route; `/forgetpassword`, `/changepassword` removed | 2026-11-06 → 11-13 |
+| `src/components/Header.jsx`, `Footer.jsx`, `FullScreenButton.jsx`, `ThemeToggle.jsx`, `sidebar/Menu.jsx`, `Sidebar.jsx`, `SubMenu.jsx`, `src/layout/HomeLayout.jsx` | BetterSign brand (ink top bar, wordmark, green pills, brand footer); Change Password menu item removed | 2026-11-06 → 11-13 |
+| `src/index.css`, `src/styles/dark-theme-improvements.css`, `tailwind.config.js`, `index.html`, `public/manifest.json` | Brand colours and DaisyUI themes, theme-color | 2026-11-06 |
+| `public/locales/en/translation.json` | `signer-link-hint`, `bs-identities.*`, edit-user strings (English only; other languages fall back) | 2026-11-13 → 11-15 |
+| `package.json`, `package-lock.json` | MUI v7, `@cantoo/pdf-lib`, `patch-package` postinstall | 2026-10-07 → 11-14 |
 
-Docs: `BetterSignUpdates.md` (this file) and a link from `README.md`.
+Repo root: `README.md` (link to this file), `.gitignore`.
+
+### Upstream files we deleted
+
+`apps/OpenSign/src/pages/ForgetPassword.jsx`, `src/pages/ChangePassword.jsx`,
+`src/primitives/PasswordResetModal.jsx` (no password sign-in). If upstream
+changes them, drop the change; if upstream adds new imports of them, remove those.
+
+### Files only this fork has (no conflicts expected)
+
+- **Desktop API:** `apps/OpenSignServer/cloud/customRoute/bsapi/*`,
+  `utils/bsIdentity.js`, `utils/appendOnlyPdf.js`, docs `docs/BetterSignAPI.md`.
+- **Sealing:** `apps/OpenSignServer/utils/seal.js`, `docs/BsServiceIdentitySealing.md`.
+- **Sign-in and admin cloud functions:** `cloud/parsefunction/bsidlogin.js`,
+  `bettersignlogin.js`, `emailOtp.js`, `bsIdentityAdmin.js`, `updateUserByAdmin.js`.
+- **Frontend:** `src/theme/md3Theme.js`, `src/theme/ThemeModeProvider.jsx`,
+  `src/constant/bsid.js`, `src/components/BrandHero.jsx`, `BsIdentities.jsx`,
+  `EditUser.jsx`, `pdf/PhoneSign.jsx`, `src/utils/appendOnlyPdf.js` (+ test),
+  `src/assets/images/bettersign-icon.png`, `patches/parse+8.6.0.patch`,
+  `MD3_MIGRATION.md`.
+- **Tests and CI:** `apps/OpenSignServer/spec/bsapi/*`, `spec/bsapi-integration/*`,
+  `spec/support/bsapi*.json`, `.github/workflows/bettersign-tests.yml`.
+- **Deployment:** `deploy/*`, `apps/OpenSignServer/Dockerfile`,
+  `apps/OpenSignServer/fly.toml`, `DEPLOYMENT.md`.
+- **Database migrations** (`apps/OpenSignServer/databases/migrations/`, run in
+  this order on startup; keep their timestamps after upstream's):
+  `20261113000000-lock_defaultdata_otp`, `20261114120000-create_bettersign_api_classes`,
+  `20261115120000-create_bs_apiconfig`, `20261115140000-move_bs_id_users_to_bs_identity`,
+  `20261115150000-bs_identity_active_flag`.
+
+### Upgrading to a newer upstream
+
+1. Branch from `staging`, `git merge upstream/main` (merge, don't rebase: the
+   fork's history is shared).
+2. Resolve conflicts with the tables above: keep upstream's fixes, re-apply our
+   behaviour. The riskiest files are `pdf/PDF.js` (signing and sealing),
+   `cloud/main.js` (registrations and the `beforeLogin` block), `Login.jsx` and
+   anything upstream adds that signs in with a password or sends one-time codes.
+3. Check new upstream migrations don't undo ours (class permissions on
+   `defaultdata_Otp`, `bs_*` classes, `contracts_Document` fields).
+4. Check new upstream routes or cloud functions don't reopen password sign-in or
+   send codes to arbitrary emails.
+5. Run `npm run test:bsapi` and `npm run test:bsapi:integration`
+   (`apps/OpenSignServer`), and the frontend `vite build` and `vitest run`.
+6. Update this section: new fork point, and any rows that changed.
 
 ---
 
