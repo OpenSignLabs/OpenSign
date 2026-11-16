@@ -1614,5 +1614,29 @@
   "show-access-code": "Show access code",
   "hide-access-code": "Hide access code",
   "already-copied-to-clipboard": "Already copied to clipboard",
-  "signer-link-hint": "Asked to sign a document? Open the link in the email you received."
+  "signer-link-hint": "Asked to sign a document? Open the link in the email you received.",
+  "edit-user": "Edit user",
+  "user-updated": "User updated.",
+  "email-not-editable": "The email can't be changed.",
+  "admin-role-locked": "The admin's role can't be changed.",
+  "own-role-locked": "You can't change your own role.",
+  "bs-identities": {
+    "title": "BetterSign identities",
+    "help": "Which BetterSign identity (VLAD) signs in to which account. An identity that tries to sign in without a link appears here unassigned and off: choose its account and turn it on.",
+    "add": "Add BetterSign identity",
+    "vlad": "VLAD",
+    "vlad-help": "The identity's VLAD in hex.",
+    "account": "Account",
+    "account-help": "Leave unassigned to add it turned off.",
+    "label": "Label",
+    "last-attempt": "Last sign-in attempt",
+    "active": "Active",
+    "unassigned": "Unassigned",
+    "choose-account": "Choose an account first",
+    "empty": "No BetterSign identities yet.",
+    "saved": "Saved.",
+    "deleted": "Identity removed.",
+    "delete-title": "Remove BetterSign identity",
+    "delete-confirm": "Remove this identity? It won't be able to sign in until it's added again."
+  }
 }

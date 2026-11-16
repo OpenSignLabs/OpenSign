@@ -135,8 +135,8 @@ Errors are `{ "error": "<code>", "message": "…" }`.
 
 | Method & path | Returns |
 | --- | --- |
-| `POST /auth/challenge` `{vlad}` | `{challengeId, challenge, origin, rp, receiverVlad, expiresAt}`; `403 not_linked`; `503 not_configured` if `BS_API_RECEIVER_VLAD` is malformed |
-| `POST /auth/token` | `{access_token, token_type, expires_in, expires_at}`; `401 access_denied`, `400 invalid_challenge`/`invalid_statement`, `502 verifier_misconfigured`, `503 verifier_unavailable` |
+| `POST /auth/challenge` `{vlad}` | `{challengeId, challenge, origin, rp, receiverVlad, expiresAt}`, also for a VLAD with no active link; `403 not_linked` only for a broken link (two active rows, or a missing account); `429 rate_limited`; `503 not_configured` if `BS_API_RECEIVER_VLAD` is malformed |
+| `POST /auth/token` | `{access_token, token_type, expires_in, expires_at}`; `403 not_linked` (signature good, no active link: the VLAD is recorded for an admin, section 3), `401 access_denied`, `400 invalid_challenge`/`invalid_statement`, `429 rate_limited`, `502 verifier_misconfigured`, `503 verifier_unavailable` |
 | `POST /auth/logout` | 204 |
 | `GET /me` | `{vlad, user: {id, email, name}}` |
 | `GET /documents?role=owner\|signer&status=…&limit=&skip=` | `{results: [Document], limit, skip}`. `status`: `draft`, `in_progress`, `completed`, `declined`, `expired`. `limit` ≤ 100 |
@@ -172,25 +172,39 @@ OpenSign's `getWidgetPosition` applies.
 ## 3. Linking a VLAD to an account
 
 A VLAD signs in only to an existing account an admin linked it to. The same
-list serves the website's Sign in with BetterSign (`bsidlogin`). It lives in
-`utils/bsIdentity.js`, which checks, in order:
+list serves the website's Sign in with BetterSign (`bsidlogin`). It's the
+`bs_Identity` class (master key only), read by `utils/bsIdentity.js`:
+`{ vlad, UserId, Label, Active, LastSeenAt }`. The VLAD's active row
+(`Active: true`) gives the account; with none, it's blocked. A save hook keeps
+`Active` false unless it's set, refuses an active row with no account, and
+allows one active row per VLAD (turn the old link off before turning a new one
+on). If there are ever two, for example from a direct database write, nobody
+signs in until one is off. (The old `BS_ID_USERS` env list is no longer read;
+migration `20261115140000-move_bs_id_users_to_bs_identity.cjs` moved it into
+`bs_Identity`.)
 
-1. the `bs_Identity` class (master key only). The VLAD's active row (no
-   `RevokedAt`) gives the account. If it has only revoked rows, it's blocked,
-   even if the env list has it. A save hook allows one active row per VLAD
-   (revoke the old link before adding a new one); if there are ever two, for
-   example from a direct database write, nobody signs in until one is revoked.
-2. `BS_ID_USERS`, JSON `{ "<vladHex>": "<account email>" }`, the original list.
+A VLAD that proves itself (its `/auth/token` signature verifies, or bs-id
+vouches for it at Sign in with BetterSign) but has no active link is refused
+and recorded: a new row with `Active: false`, no account, `Label`
+`Sign-in attempt` and `LastSeenAt`. Later attempts bump `LastSeenAt` on that
+row, or, for a VLAD whose link is turned off, on its newest row. Simultaneous
+first attempts are reduced to one row.
 
-Link (or unlink) with the master key:
+Admins manage links on the Users page (BetterSign identities), through the
+cloud functions `bsidentitylist`, `bsidentitysave` and `bsidentitydelete`
+(`cloud/parsefunction/bsIdentityAdmin.js`). An admin sees links to accounts in
+their tenant plus unassigned rows, and can link only to accounts in their
+tenant.
+
+Or with the master key:
 
 ```sh
 curl -X POST "$SERVER/app/classes/bs_Identity" \
   -H "X-Parse-Application-Id: $APP_ID" -H "X-Parse-Master-Key: $MASTER_KEY" \
   -H 'content-type: application/json' \
-  -d '{"vlad":"<lower-case hex>","Label":"Alice desktop","ACL":{},
+  -d '{"vlad":"<lower-case hex>","Label":"Alice desktop","Active":true,"ACL":{},
        "UserId":{"__type":"Pointer","className":"_User","objectId":"<user id>"}}'
-# unlink: PUT …/bs_Identity/<id> {"RevokedAt":{"__type":"Date","iso":"<now>"}}
+# turn off: PUT …/bs_Identity/<id> {"Active":false}
 ```
 
 `bs_Identity`, `bs_ApiChallenge` and `bs_ApiToken` are created master-key
@@ -208,7 +222,7 @@ only by migration `20261114120000-create_bettersign_api_classes.cjs`, and
 | `BS_API_RP` | `bs-opensign-api` | the `rp` statements must name |
 | `BS_API_RECEIVER_VLAD` | generated | this server's VLAD (hex wire encoding, starts `8724`): the `receiver_vlad` every signed message must name. Unset: the first sign-in generates one (`8724` + 32 random bytes, not a real identity), stores it in `bs_ApiConfig` so every machine and restart uses it, and loads it into this variable. Set but malformed: sign-in and uploads return `503 not_configured` |
 | `BS_API_TOKEN_TTL_S` | `1800` | |
-| `BS_ID_USERS` | none | fallback link list (section 3) |
+| `BS_API_AUTH_RATE_PER_MIN` | `30` | requests per client IP per minute to each of `/auth/challenge` and `/auth/token`; over it, `429 rate_limited` with `Retry-After`. Counted per machine, keyed on Fly's `Fly-Client-IP` |
 
 ## 5. Signing on the desktop
 

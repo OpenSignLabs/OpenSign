@@ -5,8 +5,9 @@
 // apps/OpenSign/src/constant/bsid.js) and hands us the code. We:
 //   1. exchange it at bs-id /token (public client: code_verifier, no secret),
 //   2. verify the id_token (ES256 against bs-id /jwks; iss, aud, nonce, exp),
-//   3. map its `vlad` to an existing OpenSign account (utils/bsIdentity.js:
-//      the bs_Identity class, then BS_ID_USERS),
+//   3. map its `vlad` to an existing OpenSign account (the bs_Identity class,
+//      utils/bsIdentity.js); a VLAD with no active link is recorded for an
+//      admin to link and refused,
 //   4. mint a Parse session for that account (same /loginAs path as
 //      bettersignlogin), which Login.jsx finishes with thirdpartyLoginfn.
 //
@@ -16,7 +17,6 @@
 // Env:
 //   BS_ID_URL        bs-id origin (= the id_token `iss`). Default https://id.bettersign.ing
 //   BS_ID_CLIENT_ID  this app's client_id at bs-id. Default bs-opensign
-//   BS_ID_USERS      JSON { "<vladHex>": "<account email>" } (see utils/bsIdentity.js)
 //
 // Params: { code, codeVerifier, redirectUri, nonce }
 // Returns: { sessionToken, objectId, email }
@@ -24,7 +24,7 @@
 import crypto from 'node:crypto';
 import axios from 'axios';
 import { sessionViaLoginAs } from './bettersignlogin.js';
-import { accountForVlad } from '../../utils/bsIdentity.js';
+import { accountForVlad, recordSignInAttempt } from '../../utils/bsIdentity.js';
 
 const B64URL_RE = /^[A-Za-z0-9_-]+$/;
 const JWKS_TTL_MS = 10 * 60 * 1000;
@@ -131,11 +131,13 @@ export default async function bsidlogin(request) {
   const vlad = claims.vlad.toLowerCase();
   const account = await accountForVlad(vlad);
   if (account.reason === 'no_account') {
-    console.log(JSON.stringify({ event: 'bsidlogin_no_account', vlad, email: account.email }));
+    console.log(JSON.stringify({ event: 'bsidlogin_no_account', vlad }));
     throw fail('The account linked to this BetterSign identity does not exist.');
   }
   if (!account.user) {
     console.log(JSON.stringify({ event: 'bsidlogin_denied', vlad, reason: account.reason }));
+    // bs-id vouched for this VLAD: list it on the Users page for an admin.
+    if (account.reason !== 'ambiguous') await recordSignInAttempt(vlad);
     throw fail(
       `This BetterSign identity isn't linked to an account. Ask an admin to add it (VLAD ${vlad.slice(0, 16)}…).`
     );

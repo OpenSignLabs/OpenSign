@@ -11,18 +11,10 @@ import path from 'node:path';
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
 import { startVerifier, stopVerifier, VERIFIER_PORT, VERIFIER_SECRET } from './verifier.js';
+import { BSID_URL, startBsId, stopBsId } from './bsid.js';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const serverDir = path.resolve(here, '../../..');
-
-// Linked through BS_ID_USERS (the env fallback) rather than bs_Identity.
-const envKeys = crypto.generateKeyPairSync('ed25519');
-export const envIdentity = {
-  vlad: '8724' + crypto.randomBytes(38).toString('hex'),
-  publicKey: envKeys.publicKey,
-  privateKey: envKeys.privateKey,
-  email: 'env-linked@example.com',
-};
 
 const mongoBase = new URL(process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/');
 mongoBase.pathname = `/bsapi-int-${crypto.randomBytes(4).toString('hex')}`;
@@ -37,8 +29,10 @@ Object.assign(process.env, {
   USE_LOCAL: 'true',
   BS_VERIFIER_URL: `http://localhost:${VERIFIER_PORT}`,
   BS_VERIFIER_SECRET: VERIFIER_SECRET,
+  BS_ID_URL: BSID_URL,
+  // Every spec signs in from localhost; auth.spec tests the limit itself.
+  BS_API_AUTH_RATE_PER_MIN: '100000',
   BS_API_RECEIVER_VLAD: '8724' + crypto.randomBytes(38).toString('hex'),
-  BS_ID_USERS: JSON.stringify({ [envIdentity.vlad]: envIdentity.email }),
   PASS_PHRASE: 'test',
 });
 
@@ -66,6 +60,7 @@ beforeAll(async () => {
   process.env.PFX_BASE64 = shared.p12.toString('base64');
 
   await startVerifier();
+  await startBsId();
   const { ParseServer } = await import('parse-server');
   const { app, config } = await import('../../../index.js');
   delete config.databaseAdapter;
@@ -89,6 +84,9 @@ beforeAll(async () => {
     Parse
   );
   await require('../../../databases/migrations/20261115120000-create_bs_apiconfig.cjs').up(Parse);
+  await require('../../../databases/migrations/20261115150000-bs_identity_active_flag.cjs').up(
+    Parse
+  );
 }, 180000);
 
 afterAll(async () => {
@@ -107,5 +105,6 @@ afterAll(async () => {
     // nothing left to close
   }
   await stopVerifier();
+  await stopBsId();
   for (const f of artifacts()) if (!before.has(f)) fs.rmSync(f, { force: true });
 });
