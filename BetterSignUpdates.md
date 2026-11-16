@@ -21,6 +21,30 @@ operations are covered in [DEPLOYMENT.md](DEPLOYMENT.md).
 
 ## Change log
 
+### 2026-11-15: review fixes for VLAD links and user editing
+
+- **Rate limit on desktop sign-in.** `/api/v1/auth/challenge` and `/auth/token`
+  allow 30 requests per client IP per minute each (`BS_API_AUTH_RATE_PER_MIN`),
+  then answer `429 rate_limited`. They now store a challenge and call the
+  verifier for any VLAD, so this keeps anyone from filling `bs_ApiChallenge` or
+  loading the verifier through us. Keyed on `Fly-Client-IP`, which the client
+  can't set (`cloud/customRoute/bsapi/rateLimit.js`).
+- **Sign-in attempts:** a VLAD whose link is turned off now has its attempts
+  noted (`LastSeenAt` on its newest row). Two first attempts at once no longer
+  leave two rows.
+- **`bs_Identity` save hook** sets `Active` to false only on new rows; an update
+  that doesn't send `Active` leaves it alone.
+- **Users page:** an unassigned identity shows "Unassigned" instead of an empty
+  account box.
+- **Editing users:** a user can stay in an inactive team but can't be added to
+  one.
+- **No personal email in source:** the move migration names the built-in link's
+  account by the SHA-256 of its email (the repo is public).
+- **Tests:** Sign in with BetterSign against a mock bs-id (`bsidlogin.spec.js`),
+  the rate limit, attempts by turned-off links, simultaneous attempts, org
+  admins, user-edit edge cases, and frontend tests for `BsIdentities.jsx` and
+  `EditUser.jsx`. Two pending specs describe the known issues below.
+
 ### 2026-11-15: admins can edit users
 
 - The Users page has an **Edit** action (pencil) next to Delete. An admin can
@@ -537,7 +561,7 @@ changes them, drop the change; if upstream adds new imports of them, remove thos
   `bettersignlogin.js`, `emailOtp.js`, `bsIdentityAdmin.js`, `updateUserByAdmin.js`.
 - **Frontend:** `src/theme/md3Theme.js`, `src/theme/ThemeModeProvider.jsx`,
   `src/constant/bsid.js`, `src/components/BrandHero.jsx`, `BsIdentities.jsx`,
-  `EditUser.jsx`, `pdf/PhoneSign.jsx`, `src/utils/appendOnlyPdf.js` (+ test),
+  `EditUser.jsx` (both with `*.test.jsx`), `pdf/PhoneSign.jsx`, `src/utils/appendOnlyPdf.js` (+ test),
   `src/assets/images/bettersign-icon.png`, `patches/parse+8.6.0.patch`,
   `MD3_MIGRATION.md`.
 - **Tests and CI:** `apps/OpenSignServer/spec/bsapi/*`, `spec/bsapi-integration/*`,
@@ -570,6 +594,40 @@ changes them, drop the change; if upstream adds new imports of them, remove thos
 
 ## Follow-ups
 
+Known issues, found in review on 2026-11-15:
+
+- **An org admin can sign in as the tenant admin (security, fix first).** The
+  BetterSign identities functions (`cloud/parsefunction/bsIdentityAdmin.js`) let
+  org admins in and offer every account in the tenant. So an org admin can link a
+  VLAD they hold to the tenant admin's account, turn it on and sign in as them. They
+  can also change or remove the tenant admin's links and link to users in other
+  organizations. `updateuserbyadmin` already has the right rules (org admins only in
+  their organization, never the tenant admin); `bsIdentityAdmin.js` should apply the
+  same ones. Pending spec: `bsidentity-admin.spec.js`, "as an org admin … can't link
+  a VLAD to the tenant admin". Until then, only give the OrgAdmin role to people you
+  would trust as tenant admin.
+- **Unassigned sign-in attempts are shared by every tenant.** Any tenant's admin
+  sees them and can link one to an account in their tenant, so its owner would
+  sign into that tenant. Harmless while docsign has one tenant. Fix: show unassigned
+  rows only to `contracts_Admin`, or record which site the attempt came from.
+  Pending spec: "doesn't show another tenant's admins the unassigned sign-in attempts".
+- **Users can change their own role (upstream, security).** A user's own
+  `contracts_Users` row is writable with their session (the ACL `adduser` sets), and
+  nothing checks saves to that class. So a user can set their own `UserRole` to
+  `contracts_Admin` through the REST API, which also gets around
+  `updateuserbyadmin`'s rules. Fix: a `beforeSave` on `contracts_Users` that lets
+  only the master key change `UserRole`, `TenantId`, `OrganizationId` and `TeamIds`
+  (check upstream's own pages that save this class first).
+- **Sign-in is refused for a moment after deploying the `Active` flag.** Migrations
+  run in the background after the server starts taking requests (`index.js`). Until
+  `20261115150000-bs_identity_active_flag` has run, existing `bs_Identity` rows have
+  no `Active` and count as off: linked VLADs are refused and live desktop tokens
+  stop. If the migration fails partway, the remaining rows stay off. After that
+  deploy, check `fly logs` for `Migrated 20261115150000` and sign in once. Longer
+  term, run migrations before the server listens.
+
+Other follow-ups:
+
 - **New team members can't sign in until they're linked.** Adding a user creates the
   account, but they can only sign in once an admin links their BetterSign VLAD on the
   Users page. Their first sign-in attempt puts the VLAD there, turned off.
@@ -586,6 +644,16 @@ changes them, drop the change; if upstream adds new imports of them, remove thos
   from this fork would make every recipient confirm their email.
 - **`resetpassword` and `loginuser`** are still registered on the server. They no
   longer do anything useful and could be removed.
+- **`npm run lint` doesn't run in either app.** ESLint 9 ignores the
+  `.eslintrc.json` files (upstream's), the repo-root config needs
+  `eslint-plugin-react` in the server, and the frontend config needs
+  `eslint-plugin-react-hooks`, which isn't installed. Until the configs move to
+  `eslint.config.js`, lint the server with
+  `ESLINT_USE_FLAT_CONFIG=false npx eslint --no-eslintrc -c .eslintrc.json --env jasmine <files>`
+  (in `apps/OpenSignServer`). Use the same flags for the frontend with
+  `--resolve-plugins-relative-to .`, a copy of its config without
+  `react-hooks`, and `--rule react/react-in-jsx-scope:off` (the app uses the
+  automatic JSX runtime).
 - **The new `signer-link-hint` text is English only.** Other languages fall back to
   English.
 - **No sign-in through the BetterSign browser extension yet.** Sign in with BetterSign

@@ -135,8 +135,8 @@ Errors are `{ "error": "<code>", "message": "…" }`.
 
 | Method & path | Returns |
 | --- | --- |
-| `POST /auth/challenge` `{vlad}` | `{challengeId, challenge, origin, rp, receiverVlad, expiresAt}`, also for a VLAD with no active link; `403 not_linked` only for a broken link (two active rows, or a missing account); `503 not_configured` if `BS_API_RECEIVER_VLAD` is malformed |
-| `POST /auth/token` | `{access_token, token_type, expires_in, expires_at}`; `403 not_linked` (signature good, no active link: the VLAD is recorded for an admin, section 3), `401 access_denied`, `400 invalid_challenge`/`invalid_statement`, `502 verifier_misconfigured`, `503 verifier_unavailable` |
+| `POST /auth/challenge` `{vlad}` | `{challengeId, challenge, origin, rp, receiverVlad, expiresAt}`, also for a VLAD with no active link; `403 not_linked` only for a broken link (two active rows, or a missing account); `429 rate_limited`; `503 not_configured` if `BS_API_RECEIVER_VLAD` is malformed |
+| `POST /auth/token` | `{access_token, token_type, expires_in, expires_at}`; `403 not_linked` (signature good, no active link: the VLAD is recorded for an admin, section 3), `401 access_denied`, `400 invalid_challenge`/`invalid_statement`, `429 rate_limited`, `502 verifier_misconfigured`, `503 verifier_unavailable` |
 | `POST /auth/logout` | 204 |
 | `GET /me` | `{vlad, user: {id, email, name}}` |
 | `GET /documents?role=owner\|signer&status=…&limit=&skip=` | `{results: [Document], limit, skip}`. `status`: `draft`, `in_progress`, `completed`, `declined`, `expired`. `limit` ≤ 100 |
@@ -186,7 +186,9 @@ migration `20261115140000-move_bs_id_users_to_bs_identity.cjs` moved it into
 A VLAD that proves itself (its `/auth/token` signature verifies, or bs-id
 vouches for it at Sign in with BetterSign) but has no active link is refused
 and recorded: a new row with `Active: false`, no account, `Label`
-`Sign-in attempt` and `LastSeenAt`; later attempts bump `LastSeenAt`.
+`Sign-in attempt` and `LastSeenAt`. Later attempts bump `LastSeenAt` on that
+row, or, for a VLAD whose link is turned off, on its newest row. Simultaneous
+first attempts are reduced to one row.
 
 Admins manage links on the Users page (BetterSign identities), through the
 cloud functions `bsidentitylist`, `bsidentitysave` and `bsidentitydelete`
@@ -220,6 +222,7 @@ only by migration `20261114120000-create_bettersign_api_classes.cjs`, and
 | `BS_API_RP` | `bs-opensign-api` | the `rp` statements must name |
 | `BS_API_RECEIVER_VLAD` | generated | this server's VLAD (hex wire encoding, starts `8724`): the `receiver_vlad` every signed message must name. Unset: the first sign-in generates one (`8724` + 32 random bytes, not a real identity), stores it in `bs_ApiConfig` so every machine and restart uses it, and loads it into this variable. Set but malformed: sign-in and uploads return `503 not_configured` |
 | `BS_API_TOKEN_TTL_S` | `1800` | |
+| `BS_API_AUTH_RATE_PER_MIN` | `30` | requests per client IP per minute to each of `/auth/challenge` and `/auth/token`; over it, `429 rate_limited` with `Retry-After`. Counted per machine, keyed on Fly's `Fly-Client-IP` |
 
 ## 5. Signing on the desktop
 
