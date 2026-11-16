@@ -1,25 +1,14 @@
-import { UI_FONT } from "../../constant/fonts";
-import React, { forwardRef, useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import ModalUi from "../../primitives/ModalUi";
 import {
-  getMonth,
   getYear,
-  radioButtonWidget,
   compressedFileSize,
-  textWidget,
-  months,
-  changeDateToMomentFormat,
   convertBase64ToFile,
   generatePdfName,
-  drawWidget,
   getBase64MimeType,
-  isBase64
 } from "../../constant/Utils";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
 import { range } from "pdf-lib";
 import { useTranslation } from "react-i18next";
-import moment from "moment";
 import AsyncSelect from "react-select/async";
 import axios from "axios";
 import AddContact from "../../primitives/AddContact";
@@ -29,93 +18,9 @@ import {
   setPrefillImg,
 } from "../../redux/reducers/widgetSlice";
 import * as utils from "../../utils";
-import Draw from "./tab/Draw";
-import PenColorComponent from "./tab/PenColorComponent";
-
-const widgetTitle = "font-medium";
-const widgetLabelCss = (isRequired = false) => {
-  return `${isRequired ? "after:content-['_*'] after:text-red-500" : ""} block text-xs font-semibold`;
-};
-const ShowTextWidget = ({ position, handleWidgetDetails }) => {
-  const inputRef = useRef(null);
-  const [inputValue, setInputValue] = useState(position.options.response || "");
-
-  return (
-    <input
-      ref={inputRef}
-      rows={1}
-      value={inputValue}
-      onChange={(e) => {
-        setInputValue(e.target.value);
-        handleWidgetDetails(position, e.target.value);
-      }}
-      className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
-    />
-  );
-};
-const ImageComponent = (props) => {
-  const { t } = useTranslation();
-  const prefillImg = useSelector((state) => state.widget.prefillImg);
-  const imageRefs = useRef({});
-
-  let imgUrl = "";
-  const isBase64Url = isBase64(props?.position?.SignUrl);
-  if (isBase64Url) {
-    imgUrl = props?.position?.SignUrl;
-  } else {
-    const getPrefillImg = prefillImg?.find(
-      (x) => x.id === props?.position?.key
-    );
-    imgUrl = getPrefillImg?.base64;
-  }
-
-  return (
-    <>
-      <span
-        className={`${widgetLabelCss(props?.position?.options?.status === "required")} ${widgetTitle}`}
-      >
-        {props?.position.options?.name}
-      </span>
-      {imgUrl ? (
-        <>
-          <div className="cursor-pointer op-card border-[1px] border-gray-400 flex flex-col w-full h-full justify-center items-center ">
-            <img
-              alt="print img"
-              ref={(el) => (imageRefs.current[props?.id] = el)} // Assign ref dynamicallys
-              src={imgUrl}
-              draggable="false"
-              className="object-contain h-full w-full aspect-[5/2]"
-              onLoad={() => props?.handleImageLoaded?.(props?.position.key)}
-              onError={() => props?.handleImageLoaded?.(props?.position.key)}
-            />
-          </div>
-          <span
-            onClick={() => props?.handleClearImage(props?.position)}
-            className="flex justify-start text-blue-500 underline cursor-pointer"
-          >
-            {t("clear")}
-          </span>
-        </>
-      ) : (
-        <div
-          className="cursor-pointer op-card border-[1px] op-border-hover flex flex-col overflow-hidden w-full h-full aspect-[5/2] justify-center items-center"
-          onClick={() => imageRefs.current[props?.id]?.click()}
-        >
-          <input
-            type="file"
-            onChange={(e) => props?.onImageChange?.(e, props?.position)}
-            className="filetype"
-            accept="image/png,image/jpeg"
-            ref={(el) => (imageRefs.current[props?.id] = el)} // Assign ref dynamically
-            hidden
-          />
-          <i className="fa-light text-base-content fa-cloud-upload-alt text-[25px]"></i>
-          <div className="text-[10px] text-base-content">{t("upload")}</div>
-        </div>
-      )}
-    </>
-  );
-};
+import { createPrefillWidgetRenderer } from "./prefillWidgetRenderer";
+import { createEmbedPrefill } from "./prefillWidgetActions";
+import { getPrefillWidgets } from "./prefillWidgetList";
 
 function PrefillWidgetModal(props) {
   const { t } = useTranslation();
@@ -135,53 +40,10 @@ function PrefillWidgetModal(props) {
   const years = range(1950, getYear(new Date()) + 16, 1);
 
   // useMemo to memoize the calculation of unique widgets
-  const uniqueWidget = useMemo(() => {
-    //functions to used remove duplicate name values across all pages
-    if (!props.prefillData) return [];
-    //This will help us track which name values have already been encountered across all pages.
-    const uniqueNames = new Set();
-    //Filter and flatten placeholder widgets while keeping unique names
-    const filteredArray = props.prefillData?.placeHolder?.map((item) => ({
-      ...item,
-      pos: item.pos.filter((curr) => {
-        if (uniqueNames.has(curr?.options?.name)) return false; //Duplicate name found, remove it
-        uniqueNames.add(curr?.options?.name); //First time seen, add to set
-        return true;
-      })
-    }));
-    // Flatten the filtered array, exclude read-only widgets,
-    // carry yPosition for sorting, then sort by pageNumber asc → yPosition asc
-    // (mirrors the newSignPos.sort in PdfRequestFiles so widgets appear in
-    // the same top-to-bottom, page-1-first order as they do in the document)
-    const flatArray = filteredArray
-      ?.flatMap((page) =>
-        page.pos
-          .filter((widget) => {
-            if (widget.options?.isReadOnly) return false;
-            // Only pending fields. A checked checkbox stores [0], where 0 is a
-            // valid option index, so array length decides, not truthiness.
-            // Signature, stamp, initials and image keep their value in SignUrl.
-            if (widget.SignUrl) return false;
-            const value = widget.options?.response;
-            if (Array.isArray(value)) return value.length === 0;
-            if (typeof value === "string") return value.trim() === "";
-            if (typeof value === "number") return false;
-            return value == null;
-          })
-          .map((widget) => ({
-            widget,
-            pageNumber: page.pageNumber,
-            yPosition: widget.yPosition ?? 0
-          }))
-      )
-      ?.sort((a, b) =>
-        a.pageNumber !== b.pageNumber
-          ? a.pageNumber - b.pageNumber  // primary: page order (page 1 first)
-          : a.yPosition - b.yPosition    // secondary: top-to-bottom within page
-      );
-
-    return flatArray || [];
-  }, [props.prefillData]);
+  const uniqueWidget = useMemo(
+    () => getPrefillWidgets(props.prefillData),
+    [props.prefillData]
+  );
 
   // Reset loader state when modal closes
   useEffect(() => {
@@ -232,46 +94,6 @@ function PrefillWidgetModal(props) {
       }
     }
   }, [props?.isPrefillModal, uniqueWidget]);
-  const ExampleCustomInput = forwardRef(({ value, onClick }, ref) => (
-    <div
-      style={{ fontFamily: UI_FONT }}
-      className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full"
-      onClick={onClick}
-      ref={ref}
-    >
-      {value}
-      <i className="fa-light fa-calendar ml-[5px]"></i>
-    </div>
-  ));
-  ExampleCustomInput.displayName = "ExampleCustomInput";
-
-  const handleDate = (position) => {
-    // The getDatePickerDate function retrieves the date in the correct format supported by the DatePicker.
-    const getDate = utils.getDatePickerDate(
-      position?.options.response,
-      position?.options?.validation?.format
-    );
-    return getDate;
-  };
-  //function to set date with required date format onchange date
-  const handleOnDateChange = (date, position) => {
-    const format = position?.options?.validation?.format || "MM/dd/yyyy";
-    let updateDate = date;
-    let newDate;
-    const isSpecialDateFormat =
-      format && ["dd-MM-yyyy", "dd.MM.yyyy", "dd/MM/yyyy"].includes(format);
-    if (isSpecialDateFormat) {
-      newDate = moment(updateDate).format(changeDateToMomentFormat(format));
-    } else {
-      //using moment package is used to change date as per the format provided in selectDate obj e.g. - MM/dd/yyyy -> 03/12/2024
-      newDate = new Date(updateDate);
-      newDate = moment(newDate.getTime()).format(
-        changeDateToMomentFormat(format)
-      );
-    }
-    handleWidgetDetails(position, newDate);
-  };
-
   const handleSavePrefillImg = async (base64) => {
     setLoading(true);
     try {
@@ -467,320 +289,14 @@ function PrefillWidgetModal(props) {
       canvasRef.current.clear();
     }
   };
-  const handleWidgetType = (position, id) => {
-    switch (position?.type) {
-      case "checkbox":
-        return (
-          <>
-            <span
-              className={`${widgetLabelCss(position?.options?.status === "required")} ${widgetTitle}`}
-            >
-              {position.options?.name}
-            </span>
-            <div className="flex flex-col gap-y-1">
-              {position.options?.values?.map((data, ind) => (
-                <div
-                  key={ind}
-                  className="select-none-cls flex items-center text-center gap-0.5"
-                >
-                  <input
-                    id={`modal-checkbox-${position.key + ind}`}
-                    className="mt-[2px] op-checkbox op-checkbox-xs"
-                    type="checkbox"
-                    checked={selectCheckbox(ind, position)}
-                    onChange={(e) =>
-                      handleCheckboxValue(e.target.checked, ind, position)
-                    }
-                  />
-                  <label
-                    htmlFor={`modal-checkbox-${position.key + ind}`}
-                    className="text-xs mb-0 text-center ml-[3px] cursor-pointer"
-                  >
-                    {data}
-                  </label>
-                </div>
-              ))}
-            </div>
-          </>
-        );
-      case textWidget:
-        return (
-          <>
-            <span
-              className={`${widgetLabelCss(position?.options?.status === "required")} ${widgetTitle}`}
-            >
-              {position.options?.name}
-            </span>
-            <ShowTextWidget
-              position={position}
-              handleWidgetDetails={handleWidgetDetails}
-            />
-          </>
-        );
-      case "dropdown": {
-        if (position?.options?.isMultiSelect) {
-          const optionLabel = (value) =>
-            value == null
-              ? ""
-              : typeof value === "object"
-                ? String(value.name ?? value.value ?? "")
-                : String(value);
-          const optionsList = (position?.options?.values || [])
-            .map(optionLabel)
-            .filter((value) => value !== "");
-          const currentValues = Array.isArray(position?.options?.response)
-            ? position.options.response.map(optionLabel)
-            : position?.options?.response
-              ? [optionLabel(position.options.response)]
-              : [];
-          const persist = (next) => handleWidgetDetails(position, next);
-          return (
-            <div className="flex flex-col gap-1 max-h-40 overflow-auto border border-base-300 rounded p-2">
-              {optionsList.length === 0 ? (
-                <div className="text-xs text-base-content/60">{t("no-options")}</div>
-              ) : (
-                optionsList.map((data, ind) => (
-                  <label key={ind} className="flex items-center gap-2 text-xs text-base-content cursor-pointer">
-                    <input
-                      type="checkbox"
-                      className="op-checkbox op-checkbox-xs rounded-[1px]"
-                      checked={currentValues.includes(data)}
-                      onChange={(e) => {
-                        const next = e.target.checked
-                          ? [...currentValues, data]
-                          : currentValues.filter((v) => v !== data);
-                        persist(next);
-                      }}
-                    />
-                    <span>{data}</span>
-                  </label>
-                ))
-              )}
-            </div>
-          );
-        }
-        return (
-          <select
-            className="op-select op-select-bordered op-select-sm focus:outline-none hover:border-base-content text-base-content w-full text-xs"
-            id="myDropdown"
-            value={position?.options?.response || ""}
-            onChange={(e) => handleWidgetDetails(position, e.target.value)}
-          >
-            <option value="" disabled hidden>
-              {t("choose-one")}
-            </option>
-            {position?.options?.values?.map((data, ind) => (
-              <option key={ind} value={data?.trim()}>
-                {data?.trim()}
-              </option>
-            ))}
-          </select>
-        );
-      }
+  const handleWidgetType = createPrefillWidgetRenderer({
+    t, penColor, setPenColor, years, prefillImg, selectCheckbox,
+    handleCheckboxValue, handleRadioCheck, handleWidgetDetails, handleClearImage,
+    handleImageLoaded, onImageChange, handleSignatureChange, getCanvasRef,
+    clearCanvasById
+  });
+  const handleEmbedPrefill = createEmbedPrefill({ props, handleSavePrefillImg });
 
-      case "date":
-        return (
-          <>
-            <span
-              className={`${widgetLabelCss(position?.options?.status === "required")} ${widgetTitle}`}
-            >
-              {position.options?.name}
-            </span>
-            <DatePicker
-              portalId="datepicker-portal-root"
-              renderCustomHeader={({ date, changeYear, changeMonth }) => (
-                <div className="flex justify-start ml-2">
-                  <select
-                    className="bg-transparent outline-none"
-                    value={months[getMonth(date)]}
-                    onChange={({ target: { value } }) =>
-                      changeMonth(months.indexOf(value))
-                    }
-                  >
-                    {months.map((option) => (
-                      <option key={option} value={option}>
-                        {option}
-                      </option>
-                    ))}
-                  </select>
-                  <select
-                    className="bg-transparent outline-none"
-                    value={getYear(date)}
-                    onChange={({ target: { value } }) => changeYear(value)}
-                  >
-                    {years.map((option) => (
-                      <option key={option} value={option}>
-                        {option}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              )}
-              closeOnScroll={true}
-              selected={handleDate(position)}
-              onChange={(date) => handleOnDateChange(date, position)}
-              customInput={<ExampleCustomInput />}
-              dateFormat={position?.options?.validation?.format || "MM/dd/yyyy"}
-            />
-          </>
-        );
-      case "image":
-        return (
-          <ImageComponent
-            position={position}
-            onImageChange={onImageChange}
-            handleImageLoaded={handleImageLoaded}
-            handleClearImage={handleClearImage}
-            id={id}
-          />
-        );
-      case radioButtonWidget:
-        return (
-          <>
-            <span
-              className={`${widgetLabelCss(position?.options?.status === "required")} ${widgetTitle}`}
-            >
-              {position.options?.name}
-            </span>
-            <div className="flex flex-col gap-y-1">
-              {position.options?.values.map((data, ind) => (
-                <div
-                  key={ind}
-                  className="select-none-cls flex items-center text-center gap-0.5"
-                >
-                  <input
-                    id={`modal-radio-${position.key + ind}`}
-                    className="mt-[2px] op-radio op-radio-xs"
-                    type="radio"
-                    checked={handleRadioCheck(data, position)}
-                    onChange={() => handleWidgetDetails(position, data)}
-                  />
-                  <label
-                    htmlFor={`modal-radio-${position.key + ind}`}
-                    className="text-xs mb-0 ml-[2px] cursor-pointer"
-                  >
-                    {data}
-                  </label>
-                </div>
-              ))}
-            </div>
-          </>
-        );
-      case drawWidget:
-        return (
-          <div>
-            <span
-              className={`${widgetLabelCss(position?.options?.status === "required")} ${widgetTitle}`}
-            >
-              {position.options?.name}
-            </span>
-            <Draw
-              key={position.key + "_" + (prefillImg?.length || 0)}
-              penColor={penColor}
-              canvasRef={getCanvasRef(position.key)}
-              currWidgetsDetails={position}
-              handleSignatureChange={handleSignatureChange}
-              prefillCls={"prefillCanvas"}
-            />
-            <div className="flex flex-row justify-between mt-[10px]">
-              <PenColorComponent
-                penColor={penColor}
-                setPenColor={setPenColor}
-              />
-              <span
-                onClick={() => {
-                  clearCanvasById(position?.key);
-                  handleClearImage(position);
-                }}
-                className="flex justify-start text-blue-500 underline cursor-pointer"
-              >
-                {t("clear")}
-              </span>
-            </div>
-          </div>
-        );
-      default:
-        return position?.SignUrl ? (
-          <div className="pointer-events-none">
-            <img
-              alt="image"
-              draggable="false"
-              src={position?.SignUrl}
-              className="w-full h-full"
-            />
-          </div>
-        ) : (
-          <div className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full">
-            No widget
-          </div>
-        );
-    }
-  };
-
-  const handleEmbedPrefill = async (item) => {
-    //checking is there any draw widget response have base64 url then generate that base64 to url and save it
-    const prefillWidgets = props.xyPosition?.find((x) => x.Role === "prefill");
-    let updatedXyPosition = [];
-    if (prefillWidgets) {
-      const isDrawWidget = (prefillWidgets.placeHolder ?? []).some((ph) =>
-        (ph?.pos ?? []).some((p) => p?.type === drawWidget)
-      );
-      if (isDrawWidget) {
-        const getPrefill = props.xyPosition.find((x) => x?.Role === "prefill");
-        const getPlaceholder = getPrefill?.placeHolder ?? [];
-        const updatedData = await Promise.all(
-          getPlaceholder.map(async (page) => ({
-            ...page,
-            pos: await Promise.all(
-              page.pos.map(async (item) => {
-                if (item?.type === drawWidget) {
-                  const widgetResponse = item?.options?.response;
-
-                  // Skip if no response
-                  if (!widgetResponse) return item;
-
-                  // If already URL, do not re-upload
-                  if (
-                    typeof widgetResponse === "string" &&
-                    widgetResponse.startsWith("http")
-                  ) {
-                    return item;
-                  }
-
-                  // Convert THIS widget's base64 → URL
-                  const drawUrl = await handleSavePrefillImg(widgetResponse);
-                  return {
-                    ...item,
-                    options: {
-                      ...item.options,
-                      response: drawUrl
-                    }
-                  };
-                }
-
-                return item;
-              })
-            )
-          }))
-        );
-
-        updatedXyPosition = props.xyPosition.map((obj) => {
-          if (obj.Role === "prefill") {
-            return {
-              ...obj,
-              placeHolder: updatedData
-            };
-          }
-          return obj;
-        });
-
-        props.setXyPosition(updatedXyPosition);
-      }
-    }
-
-      await props.handleCreateDocument();
-  };
-  //`loadOptions` function to use show all list of signer in dropdown
   const loadOptions = async (inputValue) => {
     try {
       const baseURL = localStorage.getItem("baseUrl");
