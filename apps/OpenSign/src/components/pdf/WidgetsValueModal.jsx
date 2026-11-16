@@ -34,7 +34,9 @@ import {
 } from "../../constant/Utils";
 import moment from "moment";
 import {
+  setIsShowModal,
   setScrollTriggerId,
+  setPrefillImg,
   setPrefillImgLoad,
   setSignatureRes,
 } from "../../redux/reducers/widgetSlice";
@@ -51,7 +53,6 @@ const fontOptions = [
 ];
 const textInputcls =
   "op-input op-input-bordered op-input-sm focus:outline-none text-base-content hover:border-base-content w-full text-xs";
-const isTabCls = "bg-[#002864] text-white rounded-[15px] px-[10px] py-[4px]";
 
 function WidgetsValueModal(props) {
   const dispatch = useDispatch();
@@ -304,7 +305,7 @@ function WidgetsValueModal(props) {
     isImageOrStamp, xyPosition, uniqueId, prefillImg, currentUserName,
     kiosk_signer, props, typedSignature, setTypedSignature, setTextWidth,
     setTextHeight, dispatch, image, originalImage, isImageSelect, removeBgEnabled,
-    setOriginalImage, setIsLoader, setRemoveBgEnabled
+    setOriginalImage, setIsLoader, setRemoveBgEnabled, penColor
   });
   const { convertToImg, handleWidgetsResponse } = signatureEffects;
   const fieldActions = createFieldActions({
@@ -329,7 +330,8 @@ function WidgetsValueModal(props) {
     handleCellsInput, hint, getDropdownText, startDate, months, getMonth, years,
     getYear, handleOnDateChange, selectDate, setSelectDate, handleSaveDate,
     widgetTypeTranslation, radioButtonWidget, handleRadioCheck, handleCheckRadio,
-    textWidget, drawWidget, props, savesigncheckbox
+    textWidget, drawWidget, props, savesigncheckbox, setIsImageSelect,
+    isSignOrInitials
   });
 
   const modalActions = useModalActions({

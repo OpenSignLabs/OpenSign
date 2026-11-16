@@ -8,6 +8,9 @@ import CellsInput from "./widgets/CellsInput";
 import { selectCheckbox } from "../../constant/Utils";
 import { createSignatureTabs } from "./widgetsValueModalSignatureTabs";
 
+/** Class names of the active signature tab. */
+const isTabCls = "bg-[#002864] text-white rounded-[15px] px-[10px] py-[4px]";
+
 /** Build the modal's widget-specific input renderer. */
 export function createWidgetTypeRenderer(context) {
   const {
@@ -32,7 +35,7 @@ export function createWidgetTypeRenderer(context) {
     const myStampImg = {
       src: myStamp
     };
-    const Tabs = createSignatureTabs(context);
+    const Tabs = createSignatureTabs({ ...context, isStampOrImage, myStampImg });
 
     switch (type) {
       case "image":

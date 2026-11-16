@@ -6,7 +6,8 @@ export function createSignatureTabs(context) {
     convertToImg, fontSelect, typedSignature, setPenColor, accesstoken, mysign,
     image, onImageChange, isImageSelect, isImageOrStamp, removeBgEnabled,
     setRemoveBgEnabled, previousWidgetRes, setTypedSignature, fontOptions,
-    setFontSelect, myStamp, savesigncheckbox
+    setFontSelect, myStamp, savesigncheckbox, isStampOrImage, myStampImg,
+    setIsImageSelect, isSignOrInitials
   } = context;
   const Tabs = [
       //My signature tab
