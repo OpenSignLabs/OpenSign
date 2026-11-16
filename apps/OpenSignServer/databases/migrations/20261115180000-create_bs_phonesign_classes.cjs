@@ -7,30 +7,7 @@
  * @param {Parse} Parse
  */
 
-const MASTER_ONLY = {
-  get: {},
-  find: {},
-  count: {},
-  create: {},
-  update: {},
-  delete: {},
-  addField: {},
-  protectedFields: {},
-};
-
-// Create the class, or if a request already auto-created it, lock it down.
-async function ensureMasterOnly(Parse, className, addFields) {
-  const schema = new Parse.Schema(className);
-  addFields(schema);
-  schema.setCLP(MASTER_ONLY);
-  try {
-    await schema.save();
-  } catch (e) {
-    const existing = new Parse.Schema(className);
-    existing.setCLP(MASTER_ONLY);
-    await existing.update();
-  }
-}
+const { ensureMasterOnly } = require('../migrationUtils.cjs');
 
 exports.up = async Parse => {
   await ensureMasterOnly(Parse, 'bs_WebSession', s => {
@@ -50,6 +27,7 @@ exports.up = async Parse => {
     s.addString('Challenge');
     s.addString('EphSecret');
     s.addString('Status');
+    s.addDate('IssuedAt');
     s.addDate('ExpiresAt');
     s.addString('Statement');
     s.addString('Signature');

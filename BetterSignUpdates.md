@@ -36,9 +36,18 @@ operations are covered in [DEPLOYMENT.md](DEPLOYMENT.md).
   BetterSign relay (`relay.bettersign.ing`): straight to the app if it's open,
   otherwise the relay wakes the phone with FCM. The modal shows which happened.
 - **Checked like any VLAD signature.** The app signs a new `bs-docsign-field`
-  statement (document, field, challenge) in the canonical bs-message form. The
-  verifier checks it before the image is applied. Statement, signature and image
-  are kept in `bs_PhoneSignRequest`.
+  statement in the canonical bs-message form. It names the document, the field,
+  a challenge and the SHA-256 of the image it returns. The verifier checks it
+  before the image is applied. Statement, signature and image are kept in
+  `bs_PhoneSignRequest`.
+- **Only when the user can sign now.** The phone isn't asked for a finished or
+  declined document, or when it isn't the user's turn.
+- **The request carries no document title.** It isn't encrypted, and anyone who
+  claims the user's relay address first would read it; the app looks the title
+  up itself. That risk is described in docs/BetterSignPhoneSign.md §8.
+- **Stored server-wide values can't split.** `bs_ApiConfig` (the receiver VLAD,
+  and now the relay key) gets a unique index on `Key`, so two machines starting
+  at once can't end up with different values.
 - **New:**
   - cloud functions `bsphonesignstart` and `bsphonesignpoll`;
   - `GET /api/v1/relay-key`, the key docsign signs requests with;
@@ -399,16 +408,19 @@ Frontend (`apps/OpenSign/`):
 |---|---|
 | `apps/OpenSignServer/cloud/parsefunction/bsPhoneSign.js` | New. `bsphonesignstart` / `bsphonesignpoll` |
 | `apps/OpenSignServer/cloud/customRoute/bsapi/relay.js` | New. Relay client: signed calls, request envelope, HPKE open of the answer |
-| `apps/OpenSignServer/cloud/customRoute/bsapi/apiConfig.js` | New. Stored server-wide values, shared with `receiverVlad.js` |
+| `apps/OpenSignServer/cloud/customRoute/bsapi/apiConfig.js` | New. Stored server-wide values (unique per key), shared with `receiverVlad.js` |
 | `apps/OpenSignServer/cloud/customRoute/bsapi/statement.js` | `bs-docsign-field` statement |
 | `apps/OpenSignServer/cloud/customRoute/bsapi/index.js` | `GET /relay-key` |
 | `apps/OpenSignServer/utils/bsWebSession.js` | New. Which sessions came from Sign in with BetterSign |
 | `apps/OpenSignServer/cloud/parsefunction/bsidlogin.js` | Records the session; returns `bettersign: true` |
 | `apps/OpenSignServer/databases/migrations/20261115180000-create_bs_phonesign_classes.cjs` | New. `bs_WebSession`, `bs_PhoneSignRequest` |
+| `apps/OpenSignServer/databases/migrationUtils.cjs` | New. `ensureMasterOnly`, shared by the BetterSign migrations |
 | `apps/OpenSign/src/components/pdf/PhoneSign.jsx` | Rewritten: no phone number, sends on open, shows delivery |
 | `apps/OpenSign/src/components/pdf/WidgetsValueModal.jsx` | Button only for a BetterSign session on a saved document |
 | `apps/OpenSign/src/pages/SignyourselfPdf.jsx`, `PdfRequestFiles.jsx` | Pass the document id |
 | `apps/OpenSign/src/pages/Login.jsx` | Marks the BetterSign session (`bsSession`) |
+| `apps/OpenSign/public/locales/en/translation.json` | `phone-sign.*` text (other languages fall back to English) |
+| `apps/OpenSign/src/components/pdf/PhoneSign.test.jsx`, `apps/OpenSignServer/spec/bsapi/relay.spec.js`, `apps/OpenSignServer/spec/bsapi-integration/phonesign.spec.js` | Tests, with stand-ins for the relay, the phone and bs-id |
 | `docs/BetterSignPhoneSign.md` | New |
 
 Docs: `BetterSignUpdates.md` (this file) and a link from `README.md`.

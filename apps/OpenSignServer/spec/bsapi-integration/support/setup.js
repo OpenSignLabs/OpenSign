@@ -1,6 +1,6 @@
 // Jasmine helper: runs OpenSign's server in-process on :8080/app (Utils.js
-// calls itself there), with a mock BetterSign verifier on :8799 and relay on
-// :8798, against a throwaway database on MONGODB_URI (set by
+// calls itself there), with mock BetterSign services (verifier :8799, relay
+// :8798, bs-id :8797), against a throwaway database on MONGODB_URI (set by
 // `mongodb-runner exec`).
 //
 // Utils.js reads the environment when it loads, so set it here, before any
@@ -13,6 +13,7 @@ import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
 import { startVerifier, stopVerifier, VERIFIER_PORT, VERIFIER_SECRET } from './verifier.js';
 import { startRelay, stopRelay, RELAY_PORT } from './relay.js';
+import { startBsId, stopBsId, BSID_URL } from './bsid.js';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const serverDir = path.resolve(here, '../../..');
@@ -40,6 +41,7 @@ Object.assign(process.env, {
   BS_VERIFIER_URL: `http://localhost:${VERIFIER_PORT}`,
   BS_VERIFIER_SECRET: VERIFIER_SECRET,
   BS_RELAY_URL: `http://localhost:${RELAY_PORT}`,
+  BS_ID_URL: BSID_URL,
   BS_API_RECEIVER_VLAD: '8724' + crypto.randomBytes(38).toString('hex'),
   BS_ID_USERS: JSON.stringify({ [envIdentity.vlad]: envIdentity.email }),
   PASS_PHRASE: 'test',
@@ -70,6 +72,7 @@ beforeAll(async () => {
 
   await startVerifier();
   await startRelay();
+  await startBsId();
   const { ParseServer } = await import('parse-server');
   const { app, config } = await import('../../../index.js');
   delete config.databaseAdapter;
@@ -115,5 +118,6 @@ afterAll(async () => {
   }
   await stopVerifier();
   await stopRelay();
+  await stopBsId();
   for (const f of artifacts()) if (!before.has(f)) fs.rmSync(f, { force: true });
 });

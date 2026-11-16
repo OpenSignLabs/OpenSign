@@ -277,8 +277,10 @@ export function relayAuthMessage(host, method, path, ts, body) {
   ]);
 }
 
-let keyPending = null;
-let keyCache = null;
+const keyFromSeed = seedHex => ({ seedHex, ...ed25519FromSeed(Buffer.from(seedHex, 'hex')) });
+let envKey = null;
+let storedKey = null;
+let storedPending = null;
 
 // docsign's relay key: BS_RELAY_SIGNING_KEY, else one generated once and kept
 // in bs_ApiConfig so every machine signs with the same key (the phone checks
@@ -287,15 +289,16 @@ export async function relayKey() {
   const env = (process.env.BS_RELAY_SIGNING_KEY || '').trim().toLowerCase();
   if (env) {
     if (!SEED_HEX_RE.test(env)) throw new Error('BS_RELAY_SIGNING_KEY must be 64 hex characters');
-    if (keyCache?.seedHex !== env)
-      keyCache = { seedHex: env, ...ed25519FromSeed(Buffer.from(env, 'hex')) };
-    return keyCache;
+    if (envKey?.seedHex !== env) envKey = keyFromSeed(env);
+    return envKey;
   }
-  if (keyCache) return keyCache;
-  keyPending ??= storedConfigValue('relaySigningKey', () => crypto.randomBytes(32).toString('hex'))
-    .then(seedHex => (keyCache = { seedHex, ...ed25519FromSeed(Buffer.from(seedHex, 'hex')) }))
-    .finally(() => (keyPending = null));
-  return keyPending;
+  if (storedKey) return storedKey;
+  storedPending ??= storedConfigValue('relaySigningKey', () =>
+    crypto.randomBytes(32).toString('hex')
+  )
+    .then(seedHex => (storedKey = keyFromSeed(seedHex)))
+    .finally(() => (storedPending = null));
+  return storedPending;
 }
 
 // One signed call. `path` is relative to the relay URL ("/v1/req"); the

@@ -10,13 +10,19 @@ export const RELAY_PORT = 8798;
 const ED_SPKI = Buffer.from('302a300506032b6570032100', 'hex');
 
 export const relay = {
-  // 'ok' | 'unknown' (no phone registered for `to`)
+  // 'ok' | 'unknown' (no phone registered for `to`) | 'ratelimited'
   mode: 'ok',
   delivery: 'pushed',
   requests: new Map(), // reqId (b64u) -> { env, to, exp, from, response }
   last: null,
+  // Called with each accepted request before the relay answers.
+  onRequest: null,
   respond(reqId, env) {
     this.requests.get(reqId).response = env;
+  },
+  // The relay deleted the request (its exp passed).
+  expire(reqId) {
+    this.requests.get(reqId).exp = 0;
   },
 };
 
@@ -43,7 +49,7 @@ export function startRelay() {
   server = http.createServer((req, res) => {
     const chunks = [];
     req.on('data', c => chunks.push(c));
-    req.on('end', () => {
+    req.on('end', async () => {
       const raw = Buffer.concat(chunks);
       const send = (status, obj) => {
         res.writeHead(status, { 'content-type': 'application/json' });
@@ -55,9 +61,11 @@ export function startRelay() {
       if (req.method === 'POST' && url.pathname === '/v1/req') {
         const body = JSON.parse(raw.toString());
         if (relay.mode === 'unknown') return send(404, { error: 'unknown-recipient' });
+        if (relay.mode === 'ratelimited') return send(429, { error: 'rate-limited' });
         const rec = { ...body, from, response: null };
         relay.requests.set(body.reqId, rec);
         relay.last = rec;
+        if (relay.onRequest) await relay.onRequest(rec);
         return send(202, { recipientPub: 'x', delivery: relay.delivery });
       }
       const m = /^\/v1\/resp\/([A-Za-z0-9_-]+)$/.exec(url.pathname);

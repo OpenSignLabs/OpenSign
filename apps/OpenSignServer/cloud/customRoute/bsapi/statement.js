@@ -23,7 +23,10 @@
 // "Sign on phone" in the web app (parsefunction/bsPhoneSign.js) uses a third,
 // bs-docsign-field v1, approving one field:
 //   { v: 1, type: "bs-docsign-field", vlad: <bytes>, origin: <text>, rp: <text>,
-//     docId: <text>, fieldId: <text>, challenge: <32B>, reqId: <16B>, iat: <uint> }
+//     docId: <text>, fieldId: <text>, challenge: <32B>, reqId: <16B>,
+//     imageHash: <32B>, iat: <uint> }
+// imageHash = SHA-256 of the PNG the app returns, so the signature covers the
+// image that goes on the document.
 
 const dec = new TextDecoder('utf-8', { fatal: true });
 
@@ -155,9 +158,10 @@ const KINDS = {
       fieldId: 'string',
       challenge: 'bytes',
       reqId: 'bytes',
+      imageHash: 'bytes',
       iat: 'number',
     },
-    lengths: { vlad: 0, challenge: 32, reqId: 16 },
+    lengths: { vlad: 0, challenge: 32, reqId: 16, imageHash: 32 },
   },
 };
 

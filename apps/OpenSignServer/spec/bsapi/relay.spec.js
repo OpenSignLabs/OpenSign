@@ -14,6 +14,7 @@ import {
   newX25519,
   openEnvelope,
   relayAuthMessage,
+  relayKey,
   REQUEST_CT,
   REQUEST_ENV_DOMAIN,
   RESPONSE_CT,
@@ -21,6 +22,7 @@ import {
   sha256,
 } from '../../cloud/customRoute/bsapi/relay.js';
 import { decodeCbor, parseStatement } from '../../cloud/customRoute/bsapi/statement.js';
+import { openEphSecret, sealEphSecret } from '../../cloud/parsefunction/bsPhoneSign.js';
 
 const vectors = JSON.parse(
   fs.readFileSync(new URL('./fixtures/relay-envelopes.json', import.meta.url))
@@ -212,6 +214,7 @@ describe('bs-docsign-field statement', () => {
     fieldId: 'field-1',
     challenge: crypto.randomBytes(32),
     reqId: crypto.randomBytes(16),
+    imageHash: sha256(Buffer.from('png')),
     iat: Math.floor(Date.now() / 1000),
   };
 
@@ -229,5 +232,63 @@ describe('bs-docsign-field statement', () => {
     expect(() =>
       parseStatement(encodeCbor({ ...s, challenge: crypto.randomBytes(16) }), 'bs-docsign-field')
     ).toThrowError(/challenge/);
+  });
+
+  it('needs the 32-byte hash of the image', () => {
+    const { imageHash, ...without } = s;
+    expect(imageHash.length).toBe(32);
+    expect(() => parseStatement(encodeCbor(without), 'bs-docsign-field')).toThrow();
+    expect(() =>
+      parseStatement(encodeCbor({ ...s, imageHash: crypto.randomBytes(16) }), 'bs-docsign-field')
+    ).toThrowError(/imageHash/);
+  });
+});
+
+describe('relayKey from BS_RELAY_SIGNING_KEY', () => {
+  const saved = process.env.BS_RELAY_SIGNING_KEY;
+  afterEach(() => {
+    if (saved === undefined) delete process.env.BS_RELAY_SIGNING_KEY;
+    else process.env.BS_RELAY_SIGNING_KEY = saved;
+  });
+
+  it('is the key of that seed, and follows a change', async () => {
+    const seed = crypto.randomBytes(32).toString('hex');
+    process.env.BS_RELAY_SIGNING_KEY = seed.toUpperCase();
+    const k = await relayKey();
+    expect(k.pub.equals(ed25519FromSeed(Buffer.from(seed, 'hex')).pub)).toBeTrue();
+    const other = crypto.randomBytes(32).toString('hex');
+    process.env.BS_RELAY_SIGNING_KEY = other;
+    expect((await relayKey()).seedHex).toBe(other);
+  });
+
+  it('refuses a malformed seed', async () => {
+    process.env.BS_RELAY_SIGNING_KEY = 'abc';
+    await expectAsync(relayKey()).toBeRejectedWithError(/64 hex/);
+  });
+});
+
+describe('the one-time key at rest', () => {
+  const saved = process.env.MASTER_KEY;
+  beforeAll(() => (process.env.MASTER_KEY = 'unit-test-master'));
+  afterAll(() => {
+    if (saved === undefined) delete process.env.MASTER_KEY;
+    else process.env.MASTER_KEY = saved;
+  });
+  const secret = crypto.randomBytes(32);
+  const reqIdHex = crypto.randomBytes(16).toString('hex');
+
+  it('round-trips and never stores the raw secret', () => {
+    const sealed = sealEphSecret(secret, reqIdHex);
+    expect(sealed).not.toContain(secret.toString('hex'));
+    expect(sealed).not.toContain(secret.toString('base64url'));
+    expect(openEphSecret(sealed, reqIdHex).equals(secret)).toBeTrue();
+  });
+
+  it("can't be opened for another request or with another master key", () => {
+    const sealed = sealEphSecret(secret, reqIdHex);
+    expect(() => openEphSecret(sealed, crypto.randomBytes(16).toString('hex'))).toThrow();
+    process.env.MASTER_KEY = 'another-master';
+    expect(() => openEphSecret(sealed, reqIdHex)).toThrow();
+    process.env.MASTER_KEY = 'unit-test-master';
   });
 });

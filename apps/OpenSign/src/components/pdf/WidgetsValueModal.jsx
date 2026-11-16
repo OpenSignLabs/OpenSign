@@ -63,7 +63,7 @@ import {
   getInitials,
   isValidBase64
 } from "../../utils";
-import PhoneSign, { isBetterSignSession } from "./PhoneSign";
+import PhoneSign, { canSignOnPhone } from "./PhoneSign";
 import Draw from "./tab/Draw";
 import DefaultSignature from "./tab/DefaultSignature";
 import UploadImage from "./tab/UploadImage";
@@ -109,8 +109,6 @@ function WidgetsValueModal(props) {
     penColors,
     docId
   } = props;
-  // Only for someone who signed in with BetterSign, on a saved document.
-  const canSignOnPhone = !!docId && isBetterSignSession();
   const previousWidgetRes = signatureResponse?.find(
     (item) => item.type === currWidgetsDetails?.type
   );
@@ -1536,7 +1534,7 @@ function WidgetsValueModal(props) {
                 <Box sx={{ height: "100%", mt: 1.5 }}>
                   {Tabs.find((t) => t.id === isTab)?.render()}
                 </Box>
-                {canSignOnPhone && ["signature", "initials"].includes(type) && (
+                {canSignOnPhone(docId, type) && (
                   <Box sx={{ mx: 1.5, my: 1 }}>
                     <Button
                       type="button"
@@ -1545,7 +1543,7 @@ function WidgetsValueModal(props) {
                       fullWidth
                       onClick={() => setShowPhoneSign(true)}
                     >
-                      📱 Sign on phone (BetterSign)
+                      {t("phone-sign.button")}
                     </Button>
                     <PhoneSign
                       isOpen={showPhoneSign}

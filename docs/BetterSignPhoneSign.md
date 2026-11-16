@@ -77,7 +77,7 @@ Cloud functions (`apps/OpenSignServer/cloud/parsefunction/bsPhoneSign.js`):
 | Code | When |
 |---|---|
 | `101` | No such document, or the app has never connected to the relay (`unknown-recipient`: "Open the app on your phone, then try again") |
-| `119` | The session isn't from Sign in with BetterSign |
+| `119` | The session isn't from Sign in with BetterSign, or the user can't sign the document now. A signer needs a pending field and their turn (as the desktop API's `signerState`); a document you sign yourself needs to be yours and unfinished |
 | `155` | The relay's rate limit. A sender the phone hasn't answered yet shares 10 requests an hour per identity |
 | `100` | The relay is unreachable |
 
@@ -108,7 +108,6 @@ DocsignSignRequest {
   receiverVlad: <bytes>,              // docsign's VLAD, the receiver of the signed message
   docId: "…", fieldId: "…",
   kind: "signature" | "initials",
-  title: "…",                         // the document's name, for display
   challenge: <32B>,
   ephPub: <32B X25519>,               // seal the answer to this
   iat, exp                            // = the header's
@@ -116,9 +115,11 @@ DocsignSignRequest {
 ```
 
 The request is **signed, not sealed**. docsign doesn't know the identity's
-`/keys/encrypt` key (`id.enc`), which only pairing hands out today. The body
-holds the document's title and ids and nothing secret. Sealing it to `id.enc`
-once docsign can resolve that key is a follow-up.
+`/keys/encrypt` key (`id.enc`), which only pairing hands out today. So the
+request carries no document title: whoever holds the relay binding for the
+identity can read it (§8). The app gets the title itself from the docsign API
+(`GET /api/v1/documents/{docId}`, §6). Sealing the request to `id.enc` once
+docsign can resolve that key is a follow-up.
 
 ### 4.2 Answer (app → docsign)
 
@@ -147,8 +148,13 @@ A `bs-docsign-field` v1 statement:
 
 ```jsonc
 { v: 1, type: "bs-docsign-field", vlad: <bytes>, origin, rp,
-  docId, fieldId, challenge: <32B>, reqId: <16B>, iat }
+  docId, fieldId, challenge: <32B>, reqId: <16B>,
+  imageHash: <32B SHA-256 of the PNG in the answer>, iat }
 ```
+
+`imageHash` puts the image that goes on the document under the VLAD signature.
+The envelope around the answer can't vouch for it: HPKE base mode doesn't
+authenticate the sender, and docsign doesn't know the app's `id.sign`.
 
 It is wrapped in bs-message's canonical form, like every VLAD signature to
 docsign (BetterSignUpdates.md, "What a VLAD signs to log in"):
@@ -171,15 +177,30 @@ On the answer (`bsphonesignpoll`):
    to the identity's `to`. `from` itself is the app's `id.sign`, which docsign
    doesn't know.
 2. The statement names this VLAD, this site (`origin`, `rp`), the document, the
-   field, the challenge and the request, and `iat` is within 2 minutes.
+   field, the challenge and the request.
+   - Its `imageHash` is the SHA-256 of the image in the answer.
+   - Its `iat` falls while the request was open, allowing a minute of clock
+     difference. It is judged against the request, not the time of the poll, so
+     a verifier outage can't age out a good answer.
 3. The image is a PNG of at most 512 KiB.
 4. The verifier's `/verify` accepts `vladSig` over the canonical message for the
    VLAD's current `/keys/primary`. If the verifier is down, the poll stays
    `pending`; the relay keeps the answer until the request expires.
 
-The request row (`bs_PhoneSignRequest`, master key only) keeps the statement,
-signature and image once signed. Its one-time key is deleted when the request
-settles.
+Before sending, `bsphonesignstart` also checks that the user can sign the
+document now (the `119` row above), so the phone never rings for a finished
+document.
+
+The request row (`bs_PhoneSignRequest`, master key only) is saved before the
+request is pushed. If the relay refuses it, the row is deleted. Once signed, the
+row keeps the statement, signature and image.
+
+The request's one-time X25519 key is stored encrypted:
+- AES-256-GCM under a key derived from `MASTER_KEY`;
+- bound to the request id;
+- deleted when the request settles.
+
+Unsigned rows are swept 10 minutes after they expire.
 
 ## 6. What the BetterSign app needs
 
@@ -190,7 +211,8 @@ the app hasn't connected (the relay has no binding for the identity).
    registers and polls only for relays named by a browser or agent grant
    (`fill_service.dart` `_relays`). For docsign it should register
    `to = sha256(vlad)` with its FCM token at `https://relay.bettersign.ing`, and
-   long-poll `/v1/inbox` while open.
+   long-poll `/v1/inbox` while open. Register as soon as the identity exists:
+   the relay binds `to` to the first key that registers it (§8).
 2. **Route `docsign-sign-request` to a new handler**, alongside the fill and
    agent content types. It must not require a `grantId`.
 3. **Check the sender before showing anything:**
@@ -200,15 +222,19 @@ the app hasn't connected (the relay has no binding for the identity).
    - check that `header.from` equals the `pub` from `GET <docsign API>/api/v1/relay-key`,
      fetched over HTTPS from the docsign API the app already knows (as
      `opensign_client.dart` does), and that its `origin` equals `body.origin`.
+   - check that the docsign API knows the document: `GET /api/v1/documents/{docId}`
+     with the app's API token (it signs in with `opensign_auth.dart`). This also
+     gives the title to show, which the request doesn't carry.
    A request that fails any check is dropped with no screen. Optionally,
    remember the key per origin and warn when it changes.
-4. **Show it:** the origin, the document title and whether it's a signature or
-   initials. Approval needs App Lock. Call `POST /v1/seen/{reqId}` when it's on
+4. **Show it:** the origin, the document title (from step 3) and whether it's a
+   signature or initials. Approval needs App Lock. Call `POST /v1/seen/{reqId}` when it's on
    screen, so the relay cancels the held push.
 5. **On approve:**
-   - build and sign the statement (§4.3) with the identity's `/keys/primary`;
    - render the image (`document_signing.dart` `generateInitialsPng`, or the
      saved signature);
+   - build the statement (§4.3), with `imageHash` = SHA-256 of that PNG, and
+     sign it with the identity's `/keys/primary`;
    - seal the answer to `ephPub`;
    - `POST /v1/resp/{reqId}`.
 6. **On decline:** answer `result: "denied", reason: "user"`.
@@ -241,6 +267,19 @@ The frontend has no settings. `REACT_APP_BS_SIGN_URL` is no longer read.
 - **`fieldId` isn't checked against the document's placeholders.** Self-signed
   documents only save their fields when signing finishes. The statement still
   binds the approval to the field the browser asked for.
+- **Someone can claim a user's relay address first.** The relay binds `to` to
+  the first key that registers it (trust on first use), and VLADs aren't secret
+  (`BS_ID_USERS` lists them). Someone who registers `sha256(vlad)` before the
+  user's phone does:
+  - receives that user's docsign requests: document and field ids, origin and
+    kind, but no title;
+  - blocks the real phone from registering (`bound-to-other-key`), so Sign on
+    phone doesn't work for that user.
+
+  They can't approve anything: the VLAD signature is checked. Closing this
+  needs the relay to accept a binding only with proof of the VLAD's key (a
+  relay change), or docsign sealing requests to `id.enc`. Until then, the app
+  should register as soon as the identity exists.
 - **The request isn't sealed** (§4.1).
 - **The relay's unknown-sender budget** is 10 requests an hour per identity
   until the phone has answered docsign once.
