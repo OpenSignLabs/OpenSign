@@ -18,9 +18,14 @@ All are required. The suite fails fast when one is missing.
   satisfy the password policy.
 - `E2E_BASE_DOC_ID`: id of an unsigned document with one signer. New
   documents are cloned from it.
+- `E2E_SIGNER_EMAIL`: email of that signer. It must belong to an existing
+  user, which the OTP login needs.
 
-Optional: `E2E_CHROME_PATH` uses an installed Chrome instead of the
-Playwright one.
+Optional:
+
+- `E2E_CHROME_PATH` uses an installed Chrome instead of the Playwright one.
+- `E2E_MAIL_LOG` is the log file of an SMTP sink that receives the stack's
+  mail. The OTP tests read the code from it and are skipped without it.
 
 ## Run
 
@@ -41,10 +46,10 @@ npx playwright test -c playwright.e2e.config.js
 - The prefill modal: fill, pick a recipient, create the document.
 - A 30-page template: leaving the editor, and DOM activity while idle.
 - The password-reset copy indicator.
+- The OTP login from the emailed link: request the code, verify it, wrong
+  code and resend.
 
 ## Not covered yet
 
-- OTP verification: the signer needs an account with a `contracts_Users`
-  profile, or the email link flow.
 - QES, and whether the PDF editor bundle loads only on its own pages
   (needs a production build, not the Vite dev server).
