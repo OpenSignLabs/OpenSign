@@ -6,30 +6,13 @@
  * @param {Parse} Parse
  */
 
-const MASTER_ONLY = {
-  get: {},
-  find: {},
-  count: {},
-  create: {},
-  update: {},
-  delete: {},
-  addField: {},
-  protectedFields: {},
-};
+const { ensureMasterOnly } = require('../migrationUtils.cjs');
 
 exports.up = async Parse => {
-  const schema = new Parse.Schema('bs_ApiConfig');
-  schema.addString('Key');
-  schema.addString('Value');
-  schema.setCLP(MASTER_ONLY);
-  try {
-    await schema.save();
-  } catch (e) {
-    // Auto-created by a request before this ran: lock it down.
-    const existing = new Parse.Schema('bs_ApiConfig');
-    existing.setCLP(MASTER_ONLY);
-    await existing.update();
-  }
+  await ensureMasterOnly(Parse, 'bs_ApiConfig', s => {
+    s.addString('Key');
+    s.addString('Value');
+  });
 };
 
 /**

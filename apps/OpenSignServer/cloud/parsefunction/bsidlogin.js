@@ -19,12 +19,14 @@
 //   BS_ID_CLIENT_ID  this app's client_id at bs-id. Default bs-opensign
 //
 // Params: { code, codeVerifier, redirectUri, nonce }
-// Returns: { sessionToken, objectId, email }
+// Returns: { sessionToken, objectId, email, bettersign } (bettersign: the session
+// was recorded as a BetterSign one)
 
 import crypto from 'node:crypto';
 import axios from 'axios';
 import { sessionViaLoginAs } from './bettersignlogin.js';
 import { accountForVlad, recordSignInAttempt } from '../../utils/bsIdentity.js';
+import { recordBsIdSession } from '../../utils/bsWebSession.js';
 
 const B64URL_RE = /^[A-Za-z0-9_-]+$/;
 const JWKS_TTL_MS = 10 * 60 * 1000;
@@ -56,7 +58,10 @@ async function bsIdKey(c, kid) {
   }
   const jwk = jwksCache.keys.find(k => k.kid === kid);
   if (!jwk) throw new Error('id_token kid not in bs-id jwks');
-  return crypto.createPublicKey({ key: { kty: 'EC', crv: 'P-256', x: jwk.x, y: jwk.y }, format: 'jwk' });
+  return crypto.createPublicKey({
+    key: { kty: 'EC', crv: 'P-256', x: jwk.x, y: jwk.y },
+    format: 'jwk',
+  });
 }
 
 export async function verifyIdToken(c, idToken, nonce) {
@@ -80,9 +85,11 @@ export async function verifyIdToken(c, idToken, nonce) {
   if (p.aud !== c.clientId) throw new Error('id_token aud is not this app');
   if (p.nonce !== nonce) throw new Error('id_token nonce does not match this sign-in');
   if (typeof p.exp !== 'number' || p.exp < now - 30) throw new Error('id_token expired');
-  if (typeof p.iat !== 'number' || p.iat > now + 60) throw new Error('id_token iat is in the future');
+  if (typeof p.iat !== 'number' || p.iat > now + 60)
+    throw new Error('id_token iat is in the future');
   if (typeof p.sub !== 'string' || !p.sub) throw new Error('id_token has no sub');
-  if (typeof p.vlad !== 'string' || !/^[0-9a-f]+$/i.test(p.vlad)) throw new Error('id_token has no vlad');
+  if (typeof p.vlad !== 'string' || !/^[0-9a-f]+$/i.test(p.vlad))
+    throw new Error('id_token has no vlad');
   return p;
 }
 
@@ -144,8 +151,17 @@ export default async function bsidlogin(request) {
   }
   const { user, email } = account;
 
-  // 4. Session for that account.
+  // 4. Session for that account, remembered as a BetterSign session (for
+  // "Sign on phone", utils/bsWebSession.js). The sign-in doesn't depend on
+  // that: if it can't be recorded, the session just isn't a BetterSign one.
   const login = await sessionViaLoginAs(user.id);
+  let bettersign = true;
+  try {
+    await recordBsIdSession(login.sessionToken, vlad, user.id);
+  } catch (e) {
+    bettersign = false;
+    console.log(JSON.stringify({ event: 'bsidlogin_session_not_recorded', error: e.message }));
+  }
   console.log(JSON.stringify({ event: 'bsidlogin', vlad: vlad.slice(0, 16), userId: user.id }));
-  return { sessionToken: login.sessionToken, objectId: user.id, email };
+  return { sessionToken: login.sessionToken, objectId: user.id, email, bettersign };
 }

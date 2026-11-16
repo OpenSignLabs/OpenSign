@@ -2376,6 +2376,7 @@ function PdfRequestFiles(
               signatureTypes={signatureType}
               allowCellResize={false}
               penColors={pdfDetails?.[0]?.PenColors}
+              docId={pdfDetails?.[0]?.objectId}
             />
           )}
           <DownloadPdfZip

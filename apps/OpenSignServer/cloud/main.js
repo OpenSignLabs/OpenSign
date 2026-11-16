@@ -56,6 +56,7 @@ import recreateDocument from './parsefunction/recreateDocument.js';
 import loginUser from './parsefunction/loginUser.js';
 import bettersignlogin from './parsefunction/bettersignlogin.js';
 import bsidlogin from './parsefunction/bsidlogin.js';
+import { bsphonesignstart, bsphonesignpoll } from './parsefunction/bsPhoneSign.js';
 import updateUserByAdmin from './parsefunction/updateUserByAdmin.js';
 import {
   deleteBsIdentity,
@@ -149,6 +150,8 @@ Parse.Cloud.define('recreatedoc', recreateDocument);
 Parse.Cloud.define('loginuser', loginUser);
 Parse.Cloud.define('bettersignlogin', bettersignlogin);
 Parse.Cloud.define('bsidlogin', bsidlogin);
+Parse.Cloud.define('bsphonesignstart', bsphonesignstart);
+Parse.Cloud.define('bsphonesignpoll', bsphonesignpoll);
 Parse.Cloud.define('bsidentitylist', listBsIdentities);
 Parse.Cloud.define('bsidentitysave', saveBsIdentity);
 Parse.Cloud.define('bsidentitydelete', deleteBsIdentity);

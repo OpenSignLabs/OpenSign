@@ -1,157 +1,138 @@
-// PhoneSign — "Sign on phone" via BetterSign (Experiment #2).
+// PhoneSign: "Sign on phone" with BetterSign.
 //
-// A self-contained modal that lets a signer apply a field by authorizing it on
-// their phone instead of drawing/typing. It talks to the BetterSign signing
-// coordinator Worker (REACT_APP_BS_SIGN_URL, see Experiments/bs-opensign/web):
-//   POST /api/sign/push/start { phone, docId, fieldId, docHash, docTitle }
-//   GET  /api/sign/poll?sessionId=...   (long-poll)
-// On approval the phone returns the user's initials/signature image plus a
-// cryptographic signature over the document hash; `onSigned(initialsPng, meta)`
-// hands the image back so the caller drops it into the field (same write path as
-// the draw/type signature pad).
+// Only for someone who signed in with BetterSign (isBetterSignSession): the
+// server knows their identity from that sign-in, so there is nothing to type.
+// Opening the modal sends the field to their BetterSign app over the app's own
+// connection to the BetterSign relay; if the app isn't open, the relay wakes
+// the phone with a push notification. They approve it there and the image
+// their app returns is applied to the field.
 //
-// This uses the dependency-free *push* flow (no QR library needed in the app).
-// The QR flow is demonstrated by the experiment's standalone page.
+// Server side: apps/OpenSignServer/cloud/parsefunction/bsPhoneSign.js
+//   bsphonesignstart { docId, fieldId, kind } -> { requestId, delivery }
+//   bsphonesignpoll  { requestId, delivery }  -> { status, delivery?, image? }
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import Parse from "parse";
+import { useTranslation } from "react-i18next";
 import ModalUi from "../../primitives/ModalUi";
-import { getEnv } from "../../constant/Utils";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
+import CircularProgress from "@mui/material/CircularProgress";
 
-function signBaseUrl() {
-  const env = typeof getEnv === "function" ? getEnv() : null;
+// Set after Sign in with BetterSign, to that session's token, so any other
+// session (the emailed signing link, a later sign-in) doesn't match.
+export const BS_SESSION_KEY = "bsSession";
+
+// Login.jsx: remember the session bsidlogin returned, if the server recorded
+// it as a BetterSign one.
+export function markBetterSignSession(res) {
+  if (res?.bettersign && res?.sessionToken) {
+    localStorage.setItem(BS_SESSION_KEY, res.sessionToken);
+  }
+}
+
+export function isBetterSignSession() {
+  const marked = localStorage.getItem(BS_SESSION_KEY);
+  return !!marked && marked === localStorage.getItem("accesstoken");
+}
+
+// Whether to offer "Sign on phone" for a widget: a BetterSign session, a saved
+// document, and a signature or initials field.
+export function canSignOnPhone(docId, widgetType) {
   return (
-    env?.REACT_APP_BS_SIGN_URL ||
-    process.env.REACT_APP_BS_SIGN_URL ||
-    ""
-  ).replace(/\/$/, "");
+    !!docId &&
+    ["signature", "initials"].includes(widgetType) &&
+    isBetterSignSession()
+  );
 }
 
-// SHA-256 hex of the field's identifying material. This is what the phone signs,
-// binding the signature to this document + field.
-async function docHashHex(docId, fieldId, docTitle) {
-  const material = `${docId || ""}|${fieldId || ""}|${docTitle || ""}`;
-  const buf = await crypto.subtle.digest(
-    "SHA-256",
-    new TextEncoder().encode(material)
-  );
-  return [...new Uint8Array(buf)]
-    .map((b) => b.toString(16).padStart(2, "0"))
-    .join("");
-}
+const DELIVERY = ["live", "seen", "pushed", "queued"];
+const RETRY_MS = 1500;
 
 export default function PhoneSign({
   isOpen,
   onClose,
-  fieldKey,
   docId,
-  docTitle,
+  fieldKey,
+  kind,
   onSigned
 }) {
-  const [phone, setPhone] = useState("");
+  const { t } = useTranslation();
   const [status, setStatus] = useState("");
   const [isError, setIsError] = useState(false);
   const [busy, setBusy] = useState(false);
-  const abortRef = useRef(null);
+  const runRef = useRef(0);
 
-  const base = signBaseUrl();
+  const fail = (msg) => {
+    setBusy(false);
+    setIsError(true);
+    setStatus(msg);
+  };
+  const waiting = (delivery) =>
+    t(`phone-sign.${DELIVERY.includes(delivery) ? delivery : "queued"}`);
 
-  function stop() {
-    if (abortRef.current) {
-      abortRef.current.abort();
-      abortRef.current = null;
+  async function send() {
+    const run = ++runRef.current;
+    const live = () => run === runRef.current;
+    setBusy(true);
+    setIsError(false);
+    setStatus(t("phone-sign.sending"));
+    let requestId;
+    let delivery;
+    try {
+      const res = await Parse.Cloud.run("bsphonesignstart", {
+        docId,
+        fieldId: String(fieldKey),
+        kind: kind === "initials" ? "initials" : "signature"
+      });
+      requestId = res.requestId;
+      delivery = res.delivery;
+    } catch (e) {
+      if (live()) fail(e?.message || t("phone-sign.send-failed"));
+      return;
+    }
+    while (live()) {
+      setStatus(waiting(delivery));
+      let res;
+      try {
+        res = await Parse.Cloud.run("bsphonesignpoll", { requestId, delivery });
+      } catch (e) {
+        if (!live()) return;
+        setStatus(t("phone-sign.retrying"));
+        await new Promise((r) => setTimeout(r, RETRY_MS));
+        continue;
+      }
+      if (!live()) return;
+      if (res.status === "signed") {
+        setBusy(false);
+        setStatus(t("phone-sign.signed"));
+        onSigned && onSigned(res.image);
+        return;
+      }
+      if (res.status === "denied") return fail(t("phone-sign.denied"));
+      if (res.status === "expired") return fail(t("phone-sign.expired"));
+      if (res.status === "failed") return fail(t("phone-sign.failed"));
+      if (res.delivery) delivery = res.delivery;
+      if (res.retry) await new Promise((r) => setTimeout(r, RETRY_MS));
     }
   }
 
+  // Send as soon as the modal opens; stop waiting when it closes.
+  useEffect(() => {
+    if (isOpen) send();
+    return () => {
+      runRef.current++;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen]);
+
   function close() {
-    stop();
+    runRef.current++;
     setBusy(false);
     setStatus("");
     setIsError(false);
     onClose && onClose();
-  }
-
-  async function poll(sessionId) {
-    const ctrl = new AbortController();
-    abortRef.current = ctrl;
-    while (!ctrl.signal.aborted) {
-      let res, body;
-      try {
-        res = await fetch(
-          `${base}/api/sign/poll?sessionId=${encodeURIComponent(sessionId)}`,
-          { signal: ctrl.signal }
-        );
-        body = await res.json();
-      } catch (e) {
-        if (ctrl.signal.aborted) return;
-        setStatus("Connection lost — retrying…");
-        await new Promise((r) => setTimeout(r, 1500));
-        continue;
-      }
-      if (body.status === "authorized") {
-        setBusy(false);
-        setStatus("Signed ✓");
-        onSigned && onSigned(body.initialsPng, body);
-        return;
-      }
-      if (body.status === "denied") {
-        setBusy(false);
-        setIsError(true);
-        setStatus("Signing was declined on the phone.");
-        return;
-      }
-      if (body.status === "expired" || res.status === 404) {
-        setBusy(false);
-        setIsError(true);
-        setStatus("This request expired. Please try again.");
-        return;
-      }
-      // pending: the poll endpoint long-polls; loop immediately.
-    }
-  }
-
-  async function send() {
-    if (!base) {
-      setIsError(true);
-      setStatus("Signing service not configured (REACT_APP_BS_SIGN_URL).");
-      return;
-    }
-    if (!phone.trim()) return;
-    setBusy(true);
-    setIsError(false);
-    setStatus("Sending request to your phone…");
-    try {
-      const docHash = await docHashHex(docId, fieldKey, docTitle);
-      const res = await fetch(`${base}/api/sign/push/start`, {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({
-          phone: phone.trim(),
-          docId: docId || "",
-          fieldId: fieldKey || "",
-          docHash,
-          docTitle: docTitle || ""
-        })
-      });
-      const body = await res.json();
-      if (!res.ok || !body.sessionId) {
-        setBusy(false);
-        setIsError(true);
-        setStatus(
-          body.error || "Could not send the request. Is this number registered?"
-        );
-        return;
-      }
-      setStatus("Request sent — approve it on your phone…");
-      poll(body.sessionId);
-    } catch (e) {
-      setBusy(false);
-      setIsError(true);
-      setStatus("Error: " + (e?.message || e));
-    }
   }
 
   if (!isOpen) return null;
@@ -159,50 +140,37 @@ export default function PhoneSign({
   return (
     <ModalUi
       isOpen={isOpen}
-      title="Sign on phone (BetterSign)"
+      title={t("phone-sign.title")}
       handleClose={close}
       reduceWidth="max-w-[420px]"
     >
       <Box sx={{ px: 2, py: 1.5, color: "text.primary" }}>
-        <Typography sx={{ fontSize: "0.875rem", mb: 1.5 }}>
-          Enter the phone number registered in the BetterSign app. A signing
-          request is pushed to your phone; approve it there and your initials are
-          applied to this field.
-        </Typography>
-        <TextField
-          type="tel"
-          fullWidth
-          size="small"
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
-          placeholder="+1 555 123 4567"
-          disabled={busy}
-          sx={{ mb: 1.5 }}
-        />
-        {status && (
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 1.5 }}>
+          {busy && <CircularProgress size={20} />}
           <Typography
+            role="status"
             sx={{
               fontSize: "0.875rem",
-              mb: 1.5,
               color: isError ? "error.main" : "text.primary"
             }}
           >
             {status}
           </Typography>
-        )}
+        </Box>
         <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 1 }}>
           <Button type="button" variant="text" size="small" onClick={close}>
-            Close
+            {busy ? t("phone-sign.cancel") : t("phone-sign.close")}
           </Button>
-          <Button
-            type="button"
-            variant="contained"
-            size="small"
-            onClick={send}
-            disabled={busy}
-          >
-            {busy ? "Waiting…" : "Send request"}
-          </Button>
+          {isError && (
+            <Button
+              type="button"
+              variant="contained"
+              size="small"
+              onClick={send}
+            >
+              {t("phone-sign.send-again")}
+            </Button>
+          )}
         </Box>
       </Box>
     </ModalUi>

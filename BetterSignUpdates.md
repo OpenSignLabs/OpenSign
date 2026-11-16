@@ -21,6 +21,44 @@ operations are covered in [DEPLOYMENT.md](DEPLOYMENT.md).
 
 ## Change log
 
+### 2026-11-15: "Sign on phone" pushes to the BetterSign app
+
+- **No more phone number.** "Sign on phone" sends the field straight to the
+  signer's BetterSign app, addressed by the VLAD they signed in with. The
+  phone-number box and its coordinator Worker (`bs-opensign-sign`,
+  `REACT_APP_BS_SIGN_URL`) are gone. Design and protocol:
+  [docs/BetterSignPhoneSign.md](docs/BetterSignPhoneSign.md).
+- **Only for Sign in with BetterSign.** `bsidlogin` now records the session and
+  its VLAD in `bs_WebSession`. The button shows only while that session is the
+  current one, and the server refuses everyone else. Recipients on the emailed
+  link never see it.
+- **Delivered over the app's own connection.** The request goes through the
+  BetterSign relay (`relay.bettersign.ing`): straight to the app if it's open,
+  otherwise the relay wakes the phone with FCM. The modal shows which happened.
+- **Checked like any VLAD signature.** The app signs a new `bs-docsign-field`
+  statement in the canonical bs-message form. It names the document, the field,
+  a challenge and the SHA-256 of the image it returns. The verifier checks it
+  before the image is applied. Statement, signature and image are kept in
+  `bs_PhoneSignRequest`.
+- **Only when the user can sign now.** The phone isn't asked for a finished or
+  declined document, or when it isn't the user's turn.
+- **The request carries no document title.** It isn't encrypted, and anyone who
+  claims the user's relay address first would read it; the app looks the title
+  up itself. That risk is described in docs/BetterSignPhoneSign.md §8.
+- **Stored server-wide values can't split.** `bs_ApiConfig` (the receiver VLAD,
+  and now the relay key) gets a unique index on `Key`, so two machines starting
+  at once can't end up with different values.
+- **New:**
+  - cloud functions `bsphonesignstart` and `bsphonesignpoll`;
+  - `GET /api/v1/relay-key`, the key docsign signs requests with;
+  - settings `BS_RELAY_URL` and `BS_RELAY_SIGNING_KEY` (optional);
+  - migration `20261115180000-create_bs_phonesign_classes.cjs`.
+- **Needs the BetterSign app.** The app doesn't handle these requests yet
+  ([docs/BetterSignPhoneSign.md §6](docs/BetterSignPhoneSign.md#6-what-the-bettersign-app-needs)).
+  Until it does, the button says the app hasn't connected.
+- **The Sign on phone button used to send the field key as the document id.**
+  It now sends the real document id.
+
 ### 2026-11-15: review fixes for VLAD links and user editing
 
 - **Rate limit on desktop sign-in.** `/api/v1/auth/challenge` and `/auth/token`
@@ -509,7 +547,7 @@ Server (`apps/OpenSignServer/`):
 | File | What we changed | Since |
 |---|---|---|
 | `index.js` | Public file uploads (`FILE_UPLOAD_PUBLIC`), `Content-Length` exposed cross-origin | 2026-10-07 |
-| `cloud/main.js` | Registers our cloud functions (`bettersignlogin`, `bsidlogin`, `bsidentity*`, `updateuserbyadmin`) and the `bs_Identity` save hook; `beforeLogin` hook blocking password sign-in | 2026-10-06 → 11-15 |
+| `cloud/main.js` | Registers our cloud functions (`bettersignlogin`, `bsidlogin`, `bsidentity*`, `updateuserbyadmin`, `bsphonesign*`) and the `bs_Identity` save hook; `beforeLogin` hook blocking password sign-in | 2026-10-06 → 11-15 |
 | `cloud/customRoute/customApp.js` | Mounts the desktop API router (`bsapi`) at `/api/v1` | 2026-11-14 |
 | `cloud/parsefunction/pdf/PDF.js` | Append-only signing once a VLAD signed; signing commits as a compare-and-swap on `SignRevision`; the seal goes through `utils/seal.js` | 2026-11-14 → 11-15 |
 | `cloud/parsefunction/pdf/Placeholder.js` | Signature placeholder keeps indirect AcroForm `/Fields` and `/SigFlags` (needed for incremental updates) | 2026-11-14 |
@@ -529,19 +567,19 @@ changes:
 
 | File | What we changed | Since |
 |---|---|---|
-| `src/pages/Login.jsx` | BetterSign-only sign-in card (bs-id); password form, code form and "additional info" modal removed | 2026-10-06 → 11-13 |
+| `src/pages/Login.jsx` | BetterSign-only sign-in card (bs-id); password form, code form and "additional info" modal removed; marks a Sign in with BetterSign session (`bsSession`) for Sign on phone | 2026-10-06 → 11-15 |
 | `src/pages/GuestLogin.jsx` | 6-digit code input; sends `docId`; shows server errors | 2026-11-13 |
 | `src/pages/UserList.jsx` | Reset-password action removed; Edit user action; BetterSign identities section | 2026-11-13 → 11-15 |
 | `src/json/ReportJson.js` | `usersActions`: reset password removed, Edit added | 2026-11-13 → 11-15 |
 | `src/pages/UserProfile.jsx` | Change Password button removed; "code sent" only on success | 2026-11-13 |
-| `src/pages/SignyourselfPdf.jsx`, `src/components/pdf/VerifyEmail.jsx` | 6-digit codes; "code sent" only on success | 2026-11-13 |
-| `src/pages/PdfRequestFiles.jsx` | Append-only signing for documents a VLAD signed | 2026-11-14 |
-| `src/components/pdf/WidgetsValueModal.jsx` | "Sign on phone" (PhoneSign) | 2026-10-06 |
+| `src/pages/SignyourselfPdf.jsx`, `src/components/pdf/VerifyEmail.jsx` | 6-digit codes; "code sent" only on success; `SignyourselfPdf` passes the document id to Sign on phone | 2026-11-13 → 11-15 |
+| `src/pages/PdfRequestFiles.jsx` | Append-only signing for documents a VLAD signed; passes the document id to Sign on phone | 2026-11-14 → 11-15 |
+| `src/components/pdf/WidgetsValueModal.jsx` | "Sign on phone" (PhoneSign), only for a Sign in with BetterSign session on a saved document | 2026-10-06 → 11-15 |
 | `src/constant/Utils.js` | `runPublicCloudFn`; `handleSendOTP` sends the session; keeps signature fields when flattening an append-only PDF | 2026-11-13 → 11-14 |
 | `src/App.jsx` | `/auth/bettersign/callback` route; `/forgetpassword`, `/changepassword` removed | 2026-11-06 → 11-13 |
 | `src/components/Header.jsx`, `Footer.jsx`, `FullScreenButton.jsx`, `ThemeToggle.jsx`, `sidebar/Menu.jsx`, `Sidebar.jsx`, `SubMenu.jsx`, `src/layout/HomeLayout.jsx` | BetterSign brand (ink top bar, wordmark, green pills, brand footer); Change Password menu item removed | 2026-11-06 → 11-13 |
 | `src/index.css`, `src/styles/dark-theme-improvements.css`, `tailwind.config.js`, `index.html`, `public/manifest.json` | Brand colours and DaisyUI themes, theme-color | 2026-11-06 |
-| `public/locales/en/translation.json` | `signer-link-hint`, `bs-identities.*`, edit-user strings (English only; other languages fall back) | 2026-11-13 → 11-15 |
+| `public/locales/en/translation.json` | `signer-link-hint`, `bs-identities.*`, edit-user strings, `phone-sign.*` (English only; other languages fall back) | 2026-11-13 → 11-15 |
 | `package.json`, `package-lock.json` | MUI v7, `@cantoo/pdf-lib`, `patch-package` postinstall | 2026-10-07 → 11-14 |
 
 Repo root: `README.md` (link to this file), `.gitignore`.
@@ -556,12 +594,15 @@ changes them, drop the change; if upstream adds new imports of them, remove thos
 
 - **Desktop API:** `apps/OpenSignServer/cloud/customRoute/bsapi/*`,
   `utils/bsIdentity.js`, `utils/appendOnlyPdf.js`, docs `docs/BetterSignAPI.md`.
+- **Sign on phone:** `cloud/parsefunction/bsPhoneSign.js`, `utils/bsWebSession.js`,
+  the relay client `cloud/customRoute/bsapi/relay.js`, docs
+  `docs/BetterSignPhoneSign.md`.
 - **Sealing:** `apps/OpenSignServer/utils/seal.js`, `docs/BsServiceIdentitySealing.md`.
 - **Sign-in and admin cloud functions:** `cloud/parsefunction/bsidlogin.js`,
   `bettersignlogin.js`, `emailOtp.js`, `bsIdentityAdmin.js`, `updateUserByAdmin.js`.
 - **Frontend:** `src/theme/md3Theme.js`, `src/theme/ThemeModeProvider.jsx`,
   `src/constant/bsid.js`, `src/components/BrandHero.jsx`, `BsIdentities.jsx`,
-  `EditUser.jsx` (both with `*.test.jsx`), `pdf/PhoneSign.jsx`, `src/utils/appendOnlyPdf.js` (+ test),
+  `EditUser.jsx` (both with `*.test.jsx`), `pdf/PhoneSign.jsx` (+ test), `src/utils/appendOnlyPdf.js` (+ test),
   `src/assets/images/bettersign-icon.png`, `patches/parse+8.6.0.patch`,
   `MD3_MIGRATION.md`.
 - **Tests and CI:** `apps/OpenSignServer/spec/bsapi/*`, `spec/bsapi-integration/*`,
@@ -572,7 +613,9 @@ changes them, drop the change; if upstream adds new imports of them, remove thos
   this order on startup; keep their timestamps after upstream's):
   `20261113000000-lock_defaultdata_otp`, `20261114120000-create_bettersign_api_classes`,
   `20261115120000-create_bs_apiconfig`, `20261115140000-move_bs_id_users_to_bs_identity`,
-  `20261115150000-bs_identity_active_flag`.
+  `20261115150000-bs_identity_active_flag`, `20261115180000-create_bs_phonesign_classes`.
+  Shared helpers live next to them in `databases/migrationUtils.cjs` (not in
+  `migrations/`, where `parse-dbtool` would run them).
 
 ### Upgrading to a newer upstream
 
@@ -656,6 +699,15 @@ Other follow-ups:
   automatic JSX runtime).
 - **The new `signer-link-hint` text is English only.** Other languages fall back to
   English.
+- **"Sign on phone" needs the BetterSign app to handle it.** The app has to
+  register with the relay for the identity and handle `docsign-sign-request`
+  ([docs/BetterSignPhoneSign.md §6](docs/BetterSignPhoneSign.md#6-what-the-bettersign-app-needs)).
+  Other gaps are listed in §8 of that doc:
+  - an approval isn't yet a VLAD entry in the audit trail;
+  - the request isn't sealed;
+  - someone can claim a user's relay address before their phone does, then read
+    their request ids and block Sign on phone for them (needs a relay change);
+  - sessions from before the deploy need a new sign-in.
 - **No sign-in through the BetterSign browser extension yet.** Sign in with BetterSign
   works with or without the extension, but always through bs-id's passkey page (a QR
   scan on a computer). The extension's "approve on your phone, no QR" sign-in

@@ -1638,5 +1638,23 @@
     "deleted": "Identity removed.",
     "delete-title": "Remove BetterSign identity",
     "delete-confirm": "Remove this identity? It won't be able to sign in until it's added again."
+  },
+  "phone-sign": {
+    "button": "📱 Sign on phone (BetterSign)",
+    "title": "Sign on phone (BetterSign)",
+    "sending": "Sending to your BetterSign app…",
+    "live": "Sent to your BetterSign app. Approve it there.",
+    "seen": "Your BetterSign app is showing the request. Approve it there.",
+    "pushed": "Notification sent to your phone. Open it to approve.",
+    "queued": "Waiting for your phone. Open the BetterSign app to approve.",
+    "retrying": "Connection lost, retrying…",
+    "signed": "Signed",
+    "send-failed": "Couldn't send the request to your phone.",
+    "denied": "You declined the request on your phone.",
+    "expired": "The request expired. Send it again.",
+    "failed": "Your phone's answer couldn't be verified.",
+    "cancel": "Cancel",
+    "close": "Close",
+    "send-again": "Send again"
   }
 }

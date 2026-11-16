@@ -17,6 +17,7 @@ import {
 import Loader from "../primitives/Loader";
 import { useTranslation } from "react-i18next";
 import SelectLanguage from "../components/pdf/SelectLanguage";
+import { markBetterSignSession } from "../components/pdf/PhoneSign";
 import {
   BSID_CALLBACK_PATH,
   startBsIdLogin,
@@ -74,6 +75,8 @@ function Login() {
         nonce: cb.nonce,
         redirectUri: cb.redirectUri
       });
+      // Marks this session as a BetterSign one ("Sign on phone", PhoneSign.jsx).
+      markBetterSignSession(res);
       await thirdpartyLoginfn(res.sessionToken);
     } catch (error) {
       console.error("BetterSign sign-in failed", error);

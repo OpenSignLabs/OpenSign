@@ -19,6 +19,14 @@
 //     docId: <text>, base: <32B>, file: <32B>, reqId: <16B>, iat: <uint> }
 // base = SHA-256 of the file the app downloaded, file = SHA-256 of the file it
 // uploads.
+//
+// "Sign on phone" in the web app (parsefunction/bsPhoneSign.js) uses a third,
+// bs-docsign-field v1, approving one field:
+//   { v: 1, type: "bs-docsign-field", vlad: <bytes>, origin: <text>, rp: <text>,
+//     docId: <text>, fieldId: <text>, challenge: <32B>, reqId: <16B>,
+//     imageHash: <32B>, iat: <uint> }
+// imageHash = SHA-256 of the PNG the app returns, so the signature covers the
+// image that goes on the document.
 
 const dec = new TextDecoder('utf-8', { fatal: true });
 
@@ -139,10 +147,26 @@ const KINDS = {
     },
     lengths: { vlad: 0, base: 32, file: 32, reqId: 16 },
   },
+  'bs-docsign-field': {
+    fields: {
+      v: 'number',
+      type: 'string',
+      vlad: 'bytes',
+      origin: 'string',
+      rp: 'string',
+      docId: 'string',
+      fieldId: 'string',
+      challenge: 'bytes',
+      reqId: 'bytes',
+      imageHash: 'bytes',
+      iat: 'number',
+    },
+    lengths: { vlad: 0, challenge: 32, reqId: 16, imageHash: 32 },
+  },
 };
 
-// Decode and shape-check a statement of the given type (bs-login or
-// bs-docsign). Throws on anything else; the caller still checks the values.
+// Decode and shape-check a statement of the given type (bs-login,
+// bs-docsign or bs-docsign-field). Throws on anything else; the caller still checks the values.
 export function parseStatement(bytes, type = 'bs-login') {
   const kind = KINDS[type];
   const notIt = () => new Error(`not a ${type} v1 statement`);
@@ -186,6 +210,7 @@ export const SENDER_KEY_PATH = '/keys/primary';
 export const MESSAGE_CONTENT_TYPES = {
   'bs-login': 'application/vnd.bettersign.login+cbor',
   'bs-docsign': 'application/vnd.bettersign.docsign+cbor',
+  'bs-docsign-field': 'application/vnd.bettersign.docsign-field+cbor',
 };
 
 export function varint(n) {
