@@ -134,16 +134,23 @@ export default async function bsidlogin(request) {
     throw fail('BetterSign sign-in could not be verified.');
   }
 
+  // 3 and 4: the account and its session.
+  return signInVlad(claims.vlad.toLowerCase(), 'bsidlogin');
+}
+
+// A VLAD that has proved itself (bs-id's id_token, or the phone's signature
+// in bsextlogin.js) -> a session for its linked account. `event` prefixes the
+// log lines.
+export async function signInVlad(vlad, event) {
   // 3. VLAD -> account.
-  const vlad = claims.vlad.toLowerCase();
   const account = await accountForVlad(vlad);
   if (account.reason === 'no_account') {
-    console.log(JSON.stringify({ event: 'bsidlogin_no_account', vlad }));
+    console.log(JSON.stringify({ event: `${event}_no_account`, vlad }));
     throw fail('The account linked to this BetterSign identity does not exist.');
   }
   if (!account.user) {
-    console.log(JSON.stringify({ event: 'bsidlogin_denied', vlad, reason: account.reason }));
-    // bs-id vouched for this VLAD: list it on the Users page for an admin.
+    console.log(JSON.stringify({ event: `${event}_denied`, vlad, reason: account.reason }));
+    // The VLAD proved itself: list it on the Users page for an admin.
     if (account.reason !== 'ambiguous') await recordSignInAttempt(vlad);
     throw fail(
       `This BetterSign identity isn't linked to an account. Ask an admin to add it (VLAD ${vlad.slice(0, 16)}…).`
@@ -160,8 +167,8 @@ export default async function bsidlogin(request) {
     await recordBsIdSession(login.sessionToken, vlad, user.id);
   } catch (e) {
     bettersign = false;
-    console.log(JSON.stringify({ event: 'bsidlogin_session_not_recorded', error: e.message }));
+    console.log(JSON.stringify({ event: `${event}_session_not_recorded`, error: e.message }));
   }
-  console.log(JSON.stringify({ event: 'bsidlogin', vlad: vlad.slice(0, 16), userId: user.id }));
+  console.log(JSON.stringify({ event, vlad: vlad.slice(0, 16), userId: user.id }));
   return { sessionToken: login.sessionToken, objectId: user.id, email, bettersign };
 }

@@ -161,6 +161,7 @@ at the cost of ~10–30 s cold starts) and/or replace the Mongo app with **Mongo
     - **Who may sign in:** a VLAD needs an active row in the `bs_Identity` class (master key only) pointing at an existing account. Unknown VLADs are refused, logged as `{"event":"bsidlogin_denied","vlad":…}`, and added to `bs_Identity` turned off with no account. An admin links them on the Users page (BetterSign identities), or with the master-key `curl` in [docs/BetterSignAPI.md §3](docs/BetterSignAPI.md#3-linking-a-vlad-to-an-account); it takes effect at once, no redeploy.
     - **bs-id side:** the clients `bs-opensign` (callback `https://docsign.bettersign.ing/auth/bettersign/callback`) and `bs-opensign-dev` (`http://localhost:3000/...`) must be in bs-id's client registry, deployed with `npx wrangler deploy --env prod` in BetterSignApps.
     - Optional frontend overrides (build-time): `REACT_APP_BS_ID_URL` (default `https://id.bettersign.ing`), `REACT_APP_BS_ID_CLIENT_ID` (default `bs-opensign`). Server: `BS_ID_URL`, `BS_ID_CLIENT_ID`.
+    - **Through the extension (no QR after the first time):** needs the `bs-opensign` clients deployed with `extensionLogin: true` (BetterSignApps `server/bs-id`), and `BS_API_ORIGIN` set to the site's origin as the browser sees it (default `https://docsign.bettersign.ing`) plus the verifier settings (`BS_VERIFIER_URL`, `BS_VERIFIER_SECRET`). Cloud fns `bsextchallenge` and `bsextlogin`; see BetterSignUpdates.md, "After the first time".
 
 ---
 

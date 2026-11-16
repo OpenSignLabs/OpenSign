@@ -20,7 +20,7 @@ import SelectLanguage from "../components/pdf/SelectLanguage";
 import { markBetterSignSession } from "../components/pdf/PhoneSign";
 import {
   BSID_CALLBACK_PATH,
-  startBsIdLogin,
+  signInWithBetterSign,
   takeBsIdCallback
 } from "../constant/bsid";
 import Box from "@mui/material/Box";
@@ -46,6 +46,9 @@ function Login() {
   // A tenant's own logo (white-label); the default one is replaced by the brand mark.
   const isCustomLogo = image && image !== appInfo?.applogo;
   const [errMsg, setErrMsg] = useState();
+  // null when idle; while signing in, "" or what to show ("Approve on your
+  // phone…" while the extension path waits for the phone).
+  const [signInStatus, setSignInStatus] = useState(null);
   useEffect(() => {
     handleUserExist();
     // eslint-disable-next-line
@@ -84,6 +87,23 @@ function Login() {
     }
   };
 
+  // "Sign in with BetterSign": a tap on the phone if this browser is linked
+  // through the BetterSign extension, otherwise off to bs-id for the passkey.
+  const startBetterSignLogin = async () => {
+    setSignInStatus("");
+    const r = await signInWithBetterSign({ onStatus: setSignInStatus });
+    if (r.result === "redirecting") return;
+    setSignInStatus(null);
+    if (r.result === "ok") {
+      markBetterSignSession(r.value);
+      await thirdpartyLoginfn(r.value.sessionToken);
+    } else if (r.result === "denied") {
+      showToast("danger", "Sign-in was denied on your phone.");
+    } else {
+      console.error("BetterSign sign-in failed", r.error);
+      showToast("danger", r.error?.message || t("something-went-wrong-mssg"));
+    }
+  };
 
   const setLocalVar = (user) => {
     localStorage.setItem("accesstoken", user.sessionToken);
@@ -435,14 +455,23 @@ function Login() {
                     size="large"
                     fullWidth
                     sx={{ mt: 2.5 }}
-                    disabled={state.loading}
-                    onClick={() => startBsIdLogin()}
+                    disabled={state.loading || signInStatus !== null}
+                    onClick={startBetterSignLogin}
                     startIcon={
                       <i className="fa-light fa-fingerprint" aria-hidden="true"></i>
                     }
                   >
                     Sign in with BetterSign
                   </Button>
+                  {signInStatus && (
+                    <Typography
+                      variant="body2"
+                      role="status"
+                      sx={{ color: "text.secondary", mt: 1.5, textAlign: "center" }}
+                    >
+                      {signInStatus}
+                    </Typography>
+                  )}
                   <Typography
                     variant="body2"
                     sx={{ color: "text.secondary", mt: 2 }}

@@ -295,6 +295,30 @@ device), so there is no password to steal.
 - **Configuration:** `BS_ID_URL` and `BS_ID_CLIENT_ID` on the server;
   `REACT_APP_BS_ID_URL` and `REACT_APP_BS_ID_CLIENT_ID` at frontend build time.
   Defaults are `https://id.bettersign.ing` and `bs-opensign`.
+
+### After the first time: a tap on the phone, no QR
+
+If the BetterSign browser extension is installed and paired, bs-id's passkey page
+offers **Remember this browser** (the `bs-opensign` clients have `extensionLogin`).
+That links the extension to this site. From then on, **Sign in with BetterSign**
+asks the extension first, and the user approves on their phone with one tap
+(BetterSignApps `docs/Technical/extension-login-design.md` §4.3):
+
+- The browser half is the shared kit vendored from BetterSignApps `server/bs-login`
+  (`apps/OpenSign/src/vendor/bs-login/browser.js`); `constant/bsid.js` gives it this
+  site's settings. If the extension isn't there, this browser isn't linked, or the
+  phone doesn't answer, it goes to bs-id's passkey page as before.
+- `bsextchallenge` issues a single-use challenge (`bs_LoginChallenge`, master key
+  only, 3 minutes). The phone signs a bs-login statement naming this origin
+  (`BS_API_ORIGIN`), the bs-id client (`BS_ID_CLIENT_ID`) and that challenge.
+- `bsextlogin` (`cloud/parsefunction/bsextlogin.js`) uses up the challenge, checks the
+  statement with the vendored `apps/OpenSignServer/vendor/bs-login/server.js` and the
+  signature through the verifier, then signs in the account the VLAD maps to, exactly
+  as `bsidlogin` does (same `bs_Identity` rules, same BetterSign session).
+- Both functions are limited per IP (`BS_API_AUTH_RATE_PER_MIN`).
+- To update the vendored copies, run BetterSignApps
+  `server/bs-login/scripts/vendor.mjs` (see its README).
+
 - This replaced the earlier push-to-phone "Log in with BetterSign" button
   (`BetterSignLogin.jsx`, removed). The `bettersignlogin` cloud function stays for the
   BetterSign Worker, and `bsidlogin` reuses its `/loginAs` helper.
@@ -318,8 +342,8 @@ is the sign-in statement (origin, `rp`, challenge, time). `Varbytes` is an unsig
 LEB128 length then the bytes. The signature covers these bytes directly.
 
 The desktop API checks this today (`apps/OpenSignServer/cloud/customRoute/bsapi/statement.js`,
-`inspectSignedMessage`); new VLAD sign-in paths, such as the extension sign-in in
-[Follow-ups](#follow-ups), should reuse it rather than sign a statement or digest
+`inspectSignedMessage`); new VLAD sign-in paths should reuse it rather than sign a
+statement or digest
 directly. Website sign-in through bs-id is unaffected: bs-id checks the passkey and
 OpenSign checks bs-id's `id_token`.
 
@@ -708,23 +732,9 @@ Other follow-ups:
   - someone can claim a user's relay address before their phone does, then read
     their request ids and block Sign on phone for them (needs a relay change);
   - sessions from before the deploy need a new sign-in.
-- **No sign-in through the BetterSign browser extension yet.** Sign in with BetterSign
-  works with or without the extension, but always through bs-id's passkey page (a QR
-  scan on a computer). The extension's "approve on your phone, no QR" sign-in
-  (BetterSignApps `docs/Technical/extension-login-design.md`) isn't enabled for this
-  site. It needs:
-  1. `extensionLogin: true` on the `bs-opensign` and `bs-opensign-dev` clients in
-     bs-id (`apps/Experiments/bs-id/src/worker.js`), so bs-id offers "Remember this
-     browser" and links the extension to docsign at the first passkey sign-in.
-  2. A docsign sign-in step that asks the extension (`bs-login/request` page
-     message) and falls back to the bs-id redirect.
-  3. A cloud function that checks the phone's signed statement (origin, `rp`,
-     single-use challenge, age) and the signature through the verifier's `/verify`,
-     then maps the VLAD with `accountForVlad` (`bs_Identity`). oauthService does the same for outline.
-     The statement should be signed in the canonical bs-message form
-     ([What a VLAD signs to log in](#what-a-vlad-signs-to-log-in)), checked with
-     `inspectSignedMessage`. The extension and oauthService sign the bare digest today,
-     so they need the same change.
-  
-  The extension's password fill has nothing to fill here any more, because the site
-  has no password form.
+- **The extension sign-in's signature isn't the canonical form yet.** The phone signs
+  the bare digest `SHA-256("bs-login/v1/statement\n" ‖ statement)`, as it does for
+  oauthService, not the canonical bs-message form
+  ([What a VLAD signs to log in](#what-a-vlad-signs-to-log-in)). The check lives in
+  one place (BetterSignApps `server/bs-login`, vendored here), so moving to the
+  canonical form is a change to the phone and that package, then a re-vendor.

@@ -1,8 +1,9 @@
-// Which web sessions came from "Sign in with BetterSign" (bsidlogin), and for
-// which VLAD. Features that need the signer's BetterSign identity, such as
-// "Sign on phone" (cloud/parsefunction/bsPhoneSign.js), are only for these
-// sessions: a recipient who opened the emailed link, or anyone with a session
-// minted another way, has no row.
+// Which web sessions came from "Sign in with BetterSign" (bsidlogin, or
+// bsextlogin through the extension), and for which VLAD. Features that need
+// the signer's BetterSign identity, such as "Sign on phone"
+// (cloud/parsefunction/bsPhoneSign.js), are only for these sessions: a
+// recipient who opened the emailed link, or anyone with a session minted
+// another way, has no row.
 //
 // bs_WebSession (master key only): { TokenHash: sha256(session token) hex,
 // vlad, UserId, ExpiresAt }. The Parse session itself still has to be valid;
