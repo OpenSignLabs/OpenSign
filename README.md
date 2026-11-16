@@ -41,8 +41,11 @@
 
 > **BetterSign fork:** this repository is Open BetterSign. Its changes to OpenSign,
 > including Sign in with BetterSign as the only home page sign-in, recipients signing
-> through the emailed link, and the hardened 6-digit one-time code rules, are
-> described in [BetterSignUpdates.md](BetterSignUpdates.md).
+> through the emailed link, the hardened 6-digit one-time code rules, the BetterSign
+> desktop API and VLAD management on the Users page, are described in
+> [BetterSignUpdates.md](BetterSignUpdates.md). Its
+> [Changes from upstream OpenSign](BetterSignUpdates.md#changes-from-upstream-opensign)
+> section lists every file the fork changes, for merging newer OpenSign releases.
 
 ---
 Please star ⭐ the repo to support us! 😀

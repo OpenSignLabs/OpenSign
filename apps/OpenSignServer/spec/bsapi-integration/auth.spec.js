@@ -26,8 +26,33 @@ import {
   tokenFor,
 } from './support/lib.js';
 import { verifier } from './support/verifier.js';
-import { envIdentity } from './support/setup.js';
-import { accountForVlad } from '../../utils/bsIdentity.js';
+import { createRequire } from 'node:module';
+import { accountForVlad, recordSignInAttempt } from '../../utils/bsIdentity.js';
+import { resetRateLimits } from '../../cloud/customRoute/bsapi/rateLimit.js';
+
+const require = createRequire(import.meta.url);
+const moveEnvLinks = require('../../databases/migrations/20261115140000-move_bs_id_users_to_bs_identity.cjs');
+const activeFlag = require('../../databases/migrations/20261115150000-bs_identity_active_flag.cjs');
+
+async function withEnvUsers(map, fn) {
+  const saved = process.env.BS_ID_USERS;
+  process.env.BS_ID_USERS = JSON.stringify(map);
+  try {
+    return await fn();
+  } finally {
+    if (saved === undefined) delete process.env.BS_ID_USERS;
+    else process.env.BS_ID_USERS = saved;
+  }
+}
+
+const identityRows = async vlad =>
+  (
+    await req(
+      'GET',
+      `${PARSE}/classes/bs_Identity?` + new URLSearchParams({ where: JSON.stringify({ vlad }) }),
+      { headers: MASTER }
+    )
+  ).json.results;
 
 const tokenRequest = body => req('POST', `${API}/api/v1/auth/token`, { body });
 const me = auth => req('GET', `${API}/api/v1/me`, { headers: auth });
@@ -55,14 +80,6 @@ describe('/api/v1 sign-in', () => {
     const who = await me(bearer(r.json.access_token));
     expect(who.json.vlad).toBe(alice.vlad);
     expect(who.json.user.id).toBe(aliceId);
-  });
-
-  it('signs in a VLAD linked through BS_ID_USERS', async () => {
-    verifier.register(envIdentity);
-    await mkUser(envIdentity.email);
-    const r = await signIn(envIdentity);
-    expect(r.status).toBe(200);
-    expect((await me(bearer(r.json.access_token))).json.user.email).toBe(envIdentity.email);
   });
 
   it('gives the verifier the canonical signed message and the configured rp', async () => {
@@ -265,10 +282,94 @@ describe('/api/v1 sign-in', () => {
     expect(garbage.json.error).toBe('invalid_statement');
   });
 
-  it('refuses an unlinked VLAD a challenge', async () => {
-    const r = await challenge(identity());
+  it('refuses an unlinked VLAD, and records it once its signature verifies', async () => {
+    const id = identity();
+    verifier.register(id);
+    expect((await challenge(id)).status).toBe(200);
+    const r = await signIn(id);
     expect(r.status).toBe(403);
     expect(r.json.error).toBe('not_linked');
+    const rows = await identityRows(id.vlad);
+    expect(rows.length).toBe(1);
+    expect(rows[0].Active).toBe(false);
+    expect(rows[0].UserId).toBeUndefined();
+    expect(rows[0].Label).toBe('Sign-in attempt');
+    expect(rows[0].ACL).toEqual({});
+    const first = rows[0].LastSeenAt.iso;
+
+    await new Promise(resolve => setTimeout(resolve, 5));
+    expect((await signIn(id)).status).toBe(403);
+    const again = await identityRows(id.vlad);
+    expect(again.length).toBe(1);
+    expect(again[0].LastSeenAt.iso > first).toBe(true);
+  });
+
+  it("doesn't record an unlinked VLAD whose signature fails", async () => {
+    const id = identity(); // not registered with the verifier: not_found
+    expect((await challenge(id)).status).toBe(200);
+    expect((await signIn(id)).status).toBe(401);
+    expect((await identityRows(id.vlad)).length).toBe(0);
+  });
+
+  it('refuses a VLAD whose link is off, and notes the attempt on that link', async () => {
+    const id = identity();
+    verifier.register(id);
+    const userId = await mkUser(`apioff-${tag()}@example.com`);
+    await link(id, userId, { Active: false });
+    expect((await signIn(id)).status).toBe(403);
+    const rows = await identityRows(id.vlad);
+    expect(rows.length).toBe(1);
+    expect(rows[0].UserId.objectId).toBe(userId);
+    expect(rows[0].LastSeenAt).toBeDefined();
+  });
+
+  it("refuses a challenge to a VLAD whose linked account doesn't exist", async () => {
+    const id = identity();
+    await Parse.Server.database.create('bs_Identity', {
+      objectId: `gone${tag()}`,
+      vlad: id.vlad,
+      UserId: ptr('_User', 'missingUser2'),
+      Active: true,
+    });
+    const r = await challenge(id);
+    expect(r.status).toBe(403);
+    expect(r.json.error).toBe('not_linked');
+  });
+
+  describe('rate limit', () => {
+    const saved = process.env.BS_API_AUTH_RATE_PER_MIN;
+    beforeEach(() => {
+      process.env.BS_API_AUTH_RATE_PER_MIN = '3';
+      resetRateLimits();
+    });
+    afterEach(() => {
+      process.env.BS_API_AUTH_RATE_PER_MIN = saved;
+      resetRateLimits();
+    });
+
+    it('limits challenges and tokens per client IP, each route on its own', async () => {
+      const id = identity();
+      for (let i = 0; i < 3; i++) expect((await challenge(id)).status).toBe(200);
+      const limited = await challenge(id);
+      expect(limited.status).toBe(429);
+      expect(limited.json.error).toBe('rate_limited');
+      expect(Number(limited.headers.get('retry-after'))).toBeGreaterThan(0);
+      // /auth/token counts separately.
+      expect((await tokenRequest({})).status).toBe(400);
+    });
+
+    it("keys on Fly-Client-IP, not the client's X-Forwarded-For", async () => {
+      const id = identity();
+      const from = ip => ({
+        'fly-client-ip': ip,
+        'x-forwarded-for': `10.0.0.${Math.floor(Math.random() * 250)}`,
+      });
+      const ask = ip =>
+        req('POST', `${API}/api/v1/auth/challenge`, { headers: from(ip), body: { vlad: id.vlad } });
+      for (let i = 0; i < 3; i++) expect((await ask('203.0.113.7')).status).toBe(200);
+      expect((await ask('203.0.113.7')).status).toBe(429);
+      expect((await ask('203.0.113.8')).status).toBe(200);
+    });
   });
 
   it("returns 503 and no token when the verifier can't decide", async () => {
@@ -276,6 +377,14 @@ describe('/api/v1 sign-in', () => {
     const r = await signIn(alice);
     expect(r.status).toBe(503);
     expect(r.json.error).toBe('verifier_unavailable');
+  });
+
+  it('says the server is misconfigured, not the signature, when the verifier refuses our secret', async () => {
+    verifier.mode = 'bad_secret';
+    const r = await signIn(alice);
+    expect(r.status).toBe(502);
+    expect(r.json.error).toBe('verifier_misconfigured');
+    expect(r.json.access_token).toBeUndefined();
   });
 
   it('requires a valid token', async () => {
@@ -330,16 +439,34 @@ describe('VLAD links (bs_Identity)', () => {
 
     await req('PUT', `${PARSE}/classes/bs_Identity/${row}`, {
       headers: MASTER,
-      body: { RevokedAt: { __type: 'Date', iso: new Date().toISOString() } },
+      body: { Active: false },
     });
     expect((await me(auth)).status).toBe(401);
-    expect((await challenge(id)).status).toBe(403);
+    expect((await signIn(id)).status).toBe(403);
 
     await req('PUT', `${PARSE}/classes/bs_Identity/${row}`, {
       headers: MASTER,
-      body: { RevokedAt: { __op: 'Delete' } },
+      body: { Active: true },
     });
     expect((await me(auth)).status).toBe(200);
+  });
+
+  it('an active link needs an account', async () => {
+    const r = await req('POST', `${PARSE}/classes/bs_Identity`, {
+      headers: MASTER,
+      body: { vlad: identity().vlad, Active: true, ACL: {} },
+    });
+    expect(r.status).toBe(400);
+    expect(r.json.code).toBe(142); // VALIDATION_ERROR
+  });
+
+  it('a new row is off unless it says otherwise', async () => {
+    const id = identity();
+    verifier.register(id);
+    const userId = await mkUser(`off-${tag()}@example.com`);
+    expect((await link(id, userId, { Active: undefined })).status).toBe(201);
+    expect((await identityRows(id.vlad))[0].Active).toBe(false);
+    expect((await accountForVlad(id.vlad)).reason).toBe('inactive');
   });
 
   it('allows one active link per VLAD', async () => {
@@ -352,7 +479,7 @@ describe('VLAD links (bs_Identity)', () => {
     expect(second.json.code).toBe(137); // DUPLICATE_VALUE
   });
 
-  it('a revoked link and a new one: the new one wins', async () => {
+  it('an old link turned off and a new one: the new one wins', async () => {
     const id = identity();
     verifier.register(id);
     const oldUser = await mkUser(`old-${tag()}@example.com`);
@@ -360,7 +487,7 @@ describe('VLAD links (bs_Identity)', () => {
     const old = (await link(id, oldUser)).json.objectId;
     await req('PUT', `${PARSE}/classes/bs_Identity/${old}`, {
       headers: MASTER,
-      body: { RevokedAt: { __type: 'Date', iso: new Date().toISOString() } },
+      body: { Active: false },
     });
     expect((await link(id, newUser)).status).toBe(201);
     for (let i = 0; i < 5; i++) {
@@ -376,32 +503,61 @@ describe('VLAD links (bs_Identity)', () => {
     // Bypass the save hook, as a direct database write would.
     for (const userId of [a, b]) {
       await Parse.Server.database.create('bs_Identity', {
+        objectId: `raw${tag()}`,
         vlad: id.vlad,
         UserId: ptr('_User', userId),
+        Active: true,
       });
     }
     expect((await accountForVlad(id.vlad)).reason).toBe('ambiguous');
     expect((await challenge(id)).status).toBe(403);
   });
 
-  it('a revoked row blocks the VLAD even if BS_ID_USERS lists it', async () => {
-    await mkUser(envIdentity.email); // the account BS_ID_USERS names (may already exist)
-    const userId = await mkUser(`envblock-${tag()}@example.com`);
-    const row = (
-      await link(envIdentity, userId, {
-        RevokedAt: { __type: 'Date', iso: new Date().toISOString() },
-      })
-    ).json.objectId;
-    expect((await accountForVlad(envIdentity.vlad)).reason).toBe('revoked');
-    await req('DELETE', `${PARSE}/classes/bs_Identity/${row}`, { headers: MASTER });
-    expect((await accountForVlad(envIdentity.vlad)).source).toBe('BS_ID_USERS');
+  it('ignores BS_ID_USERS: links live only in bs_Identity', async () => {
+    const id = identity();
+    verifier.register(id);
+    const email = `envonly-${tag()}@example.com`;
+    await mkUser(email);
+    await withEnvUsers({ [id.vlad]: email }, async () => {
+      expect((await accountForVlad(id.vlad)).reason).toBe('not_linked');
+      expect((await signIn(id)).status).toBe(403);
+    });
+  });
+
+  it("an update that doesn't send Active leaves it as it is", async () => {
+    const id = identity();
+    const userId = await mkUser(`keep-${tag()}@example.com`);
+    const rowId = `keep${tag()}`;
+    // A row from before the Active migration.
+    await Parse.Server.database.create('bs_Identity', {
+      objectId: rowId,
+      vlad: id.vlad,
+      UserId: ptr('_User', userId),
+    });
+    await req('PUT', `${PARSE}/classes/bs_Identity/${rowId}`, {
+      headers: MASTER,
+      body: { Label: 'Renamed' },
+    });
+    const row = (await identityRows(id.vlad))[0];
+    expect(row.Label).toBe('Renamed');
+    expect(row.Active).toBeUndefined();
+  });
+
+  it('records simultaneous first attempts as one row', async () => {
+    const id = identity();
+    await Promise.all(Array.from({ length: 6 }, () => recordSignInAttempt(id.vlad)));
+    const rows = await identityRows(id.vlad);
+    expect(rows.length).toBe(1);
+    expect(rows[0].Label).toBe('Sign-in attempt');
   });
 
   it("reports a link to an account that doesn't exist", async () => {
     const id = identity();
     await Parse.Server.database.create('bs_Identity', {
+      objectId: `raw${tag()}`,
       vlad: id.vlad,
       UserId: ptr('_User', 'missingUser1'),
+      Active: true,
     });
     expect((await accountForVlad(id.vlad)).reason).toBe('no_account');
   });
@@ -424,6 +580,80 @@ describe('VLAD links (bs_Identity)', () => {
     }
     const schema = await req('GET', `${PARSE}/schemas/bs_Identity`, { headers: MASTER });
     expect(schema.json.classLevelPermissions.create).toEqual({});
+  });
+
+  it('the Active migration keeps old rows on or off as RevokedAt had them', async () => {
+    const [on, off, orphan] = [identity(), identity(), identity()];
+    const userId = await mkUser(`flag-${tag()}@example.com`);
+    const old = { __type: 'Date', iso: new Date().toISOString() };
+    // Old-shape rows, as they were before the migration (no save hook).
+    for (const [id, extra] of [
+      [on, { UserId: ptr('_User', userId) }],
+      [off, { UserId: ptr('_User', userId), RevokedAt: old }],
+      [orphan, {}],
+    ]) {
+      await Parse.Server.database.create('bs_Identity', {
+        objectId: `old${tag()}`,
+        vlad: id.vlad,
+        ...extra,
+      });
+    }
+    await activeFlag.up(Parse);
+    const rows = await Promise.all([on, off, orphan].map(id => identityRows(id.vlad)));
+    expect(rows.map(r => r[0].Active)).toEqual([true, false, false]);
+    expect(rows.every(r => r[0].RevokedAt === undefined)).toBe(true);
+    const schema = await req('GET', `${PARSE}/schemas/bs_Identity`, { headers: MASTER });
+    expect(schema.json.fields.RevokedAt).toBeUndefined();
+    expect(schema.json.fields.Active.type).toBe('Boolean');
+  });
+
+  describe('moving BS_ID_USERS into bs_Identity (migration)', () => {
+    it('links each listed VLAD to its account, once', async () => {
+      const id = identity();
+      verifier.register(id);
+      const email = `moved-${tag()}@example.com`;
+      const userId = await mkUser(email);
+      await withEnvUsers({ [id.vlad.toUpperCase()]: ` ${email.toUpperCase()}` }, async () => {
+        await moveEnvLinks.up(Parse);
+        await moveEnvLinks.up(Parse);
+      });
+      const rows = await identityRows(id.vlad);
+      expect(rows.length).toBe(1);
+      expect(rows[0].Label).toBe('Moved from BS_ID_USERS');
+      expect(rows[0].ACL).toEqual({});
+      const account = await accountForVlad(id.vlad);
+      expect(account.source).toBe('bs_Identity');
+      expect(account.user.id).toBe(userId);
+      expect((await me(await tokenFor(id))).json.user.id).toBe(userId);
+    });
+
+    it('leaves a VLAD that already has a row, even a revoked one', async () => {
+      const id = identity();
+      const email = `listed-${tag()}@example.com`;
+      await mkUser(email);
+      const linked = await mkUser(`linked-${tag()}@example.com`);
+      await link(id, linked, { Active: false });
+      await withEnvUsers({ [id.vlad]: email }, () => moveEnvLinks.up(Parse));
+      expect((await identityRows(id.vlad)).length).toBe(1);
+      expect((await accountForVlad(id.vlad)).reason).toBe('inactive');
+    });
+
+    it('finds the account from the SHA-256 of its email', async () => {
+      const id = identity();
+      const email = `hashed-${tag()}@example.com`;
+      const userId = await mkUser(email);
+      const hash = crypto.createHash('sha256').update(email).digest('hex');
+      await withEnvUsers({ [id.vlad]: hash }, () => moveEnvLinks.up(Parse));
+      expect((await accountForVlad(id.vlad)).user.id).toBe(userId);
+    });
+
+    it("skips an account that doesn't exist", async () => {
+      const id = identity();
+      await withEnvUsers({ [id.vlad]: `nobody-${tag()}@example.com` }, () =>
+        moveEnvLinks.up(Parse)
+      );
+      expect((await identityRows(id.vlad)).length).toBe(0);
+    });
   });
 });
 

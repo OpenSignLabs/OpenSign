@@ -268,8 +268,9 @@ The frontend has no settings. `REACT_APP_BS_SIGN_URL` is no longer read.
   documents only save their fields when signing finishes. The statement still
   binds the approval to the field the browser asked for.
 - **Someone can claim a user's relay address first.** The relay binds `to` to
-  the first key that registers it (trust on first use), and VLADs aren't secret
-  (`BS_ID_USERS` lists them). Someone who registers `sha256(vlad)` before the
+  the first key that registers it (trust on first use), and VLADs aren't secret:
+  they're public identifiers, and the old `BS_ID_USERS` list is in this public
+  repo's history. Someone who registers `sha256(vlad)` before the
   user's phone does:
   - receives that user's docsign requests: document and field ids, origin and
     kind, but no title;

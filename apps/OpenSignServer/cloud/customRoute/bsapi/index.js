@@ -9,11 +9,12 @@ import { config, createChallenge, issueToken, logout, requireToken, apiError } f
 import { relayKey } from './relay.js';
 import { me, listDocuments, getDocument, getDocumentFile } from './documents.js';
 import { uploadSignature } from './signatures.js';
+import { authRateLimit } from './rateLimit.js';
 
 export const router = express.Router();
 
-router.post('/auth/challenge', createChallenge);
-router.post('/auth/token', issueToken);
+router.post('/auth/challenge', authRateLimit('challenge'), createChallenge);
+router.post('/auth/token', authRateLimit('token'), issueToken);
 // The key docsign signs its "Sign on phone" requests with, so the app can
 // check a request names this site (docs/BetterSignPhoneSign.md).
 router.get('/relay-key', async (req, res) => {

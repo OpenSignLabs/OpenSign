@@ -5,7 +5,7 @@ import http from 'node:http';
 import crypto from 'node:crypto';
 import { relayAuthMessage } from '../../../cloud/customRoute/bsapi/relay.js';
 
-export const RELAY_PORT = 8798;
+export const RELAY_PORT = 8796;
 
 const ED_SPKI = Buffer.from('302a300506032b6570032100', 'hex');
 

@@ -250,7 +250,7 @@ export async function mkUser(email, password = 'pw-' + email) {
 export const link = (id, userId, extra = {}) =>
   req('POST', `${PARSE}/classes/bs_Identity`, {
     headers: MASTER,
-    body: { vlad: id.vlad, UserId: ptr('_User', userId), ACL: {}, ...extra },
+    body: { vlad: id.vlad, UserId: ptr('_User', userId), Active: true, ACL: {}, ...extra },
   });
 
 export async function mkOwner(email) {
@@ -270,6 +270,40 @@ export async function mkOwner(email) {
     },
   });
   return { userId, extId: ext.json.objectId };
+}
+
+export async function mkTenant() {
+  const r = await req('POST', `${PARSE}/classes/partners_Tenant`, {
+    headers: MASTER,
+    body: { TenantName: `T-${tag()}` },
+  });
+  return r.json.objectId;
+}
+
+// A user with a contracts_Users row in the tenant (plus `extra` fields);
+// returns { userId, extId, email, session }.
+export async function mkMember(tenantId, role = 'contracts_User', extra = {}) {
+  const email = `${role.split('_').pop().toLowerCase()}-${tag()}@example.com`;
+  const userId = await mkUser(email);
+  const ext = await req('POST', `${PARSE}/classes/contracts_Users`, {
+    headers: MASTER,
+    body: {
+      Name: email.split('@')[0],
+      Email: email,
+      UserId: ptr('_User', userId),
+      TenantId: ptr('partners_Tenant', tenantId),
+      UserRole: role,
+      ...extra,
+    },
+  });
+  // Password sign-in is blocked (cloud/main.js beforeLogin); use /loginAs.
+  const login = await req('POST', `${PARSE}/loginAs`, { headers: MASTER, body: { userId } });
+  return {
+    userId,
+    extId: ext.json.objectId,
+    email,
+    session: { ...PUBLIC, 'X-Parse-Session-Token': login.json.sessionToken },
+  };
 }
 
 export async function mkContact(ownerId, name, email, userId) {

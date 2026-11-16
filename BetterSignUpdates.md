@@ -12,9 +12,9 @@ operations are covered in [DEPLOYMENT.md](DEPLOYMENT.md).
   - [Brand UI](#brand-ui)
 - [One-time codes (OTC)](#one-time-codes-otc)
 - [API changes](#api-changes)
-- [Deploying these changes](#deploying-these-changes)
-- [Testing](#testing)
-- [Files changed](#files-changed)
+- [Deploying the sign-in lockdown](#deploying-the-sign-in-lockdown-2026-11-13)
+- [Testing the sign-in lockdown](#testing-the-sign-in-lockdown-2026-11-13)
+- [Changes from upstream OpenSign](#changes-from-upstream-opensign)
 - [Follow-ups](#follow-ups)
 
 ---
@@ -58,6 +58,93 @@ operations are covered in [DEPLOYMENT.md](DEPLOYMENT.md).
   Until it does, the button says the app hasn't connected.
 - **The Sign on phone button used to send the field key as the document id.**
   It now sends the real document id.
+
+### 2026-11-15: review fixes for VLAD links and user editing
+
+- **Rate limit on desktop sign-in.** `/api/v1/auth/challenge` and `/auth/token`
+  allow 30 requests per client IP per minute each (`BS_API_AUTH_RATE_PER_MIN`),
+  then answer `429 rate_limited`. They now store a challenge and call the
+  verifier for any VLAD, so this keeps anyone from filling `bs_ApiChallenge` or
+  loading the verifier through us. Keyed on `Fly-Client-IP`, which the client
+  can't set (`cloud/customRoute/bsapi/rateLimit.js`).
+- **Sign-in attempts:** a VLAD whose link is turned off now has its attempts
+  noted (`LastSeenAt` on its newest row). Two first attempts at once no longer
+  leave two rows.
+- **`bs_Identity` save hook** sets `Active` to false only on new rows; an update
+  that doesn't send `Active` leaves it alone.
+- **Users page:** an unassigned identity shows "Unassigned" instead of an empty
+  account box.
+- **Editing users:** a user can stay in an inactive team but can't be added to
+  one.
+- **No personal email in source:** the move migration names the built-in link's
+  account by the SHA-256 of its email (the repo is public).
+- **Tests:** Sign in with BetterSign against a mock bs-id (`bsidlogin.spec.js`),
+  the rate limit, attempts by turned-off links, simultaneous attempts, org
+  admins, user-edit edge cases, and frontend tests for `BsIdentities.jsx` and
+  `EditUser.jsx`. Two pending specs describe the known issues below.
+
+### 2026-11-15: admins can edit users
+
+- The Users page has an **Edit** action (pencil) next to Delete. An admin can
+  change a user's name, phone, role and teams. **The email can't be changed**:
+  it's also the account's username, and documents and contacts find people by it.
+- Cloud function `updateuserbyadmin`
+  (`apps/OpenSignServer/cloud/parsefunction/updateUserByAdmin.js`), with the same
+  rules as `adduser`: admins and org admins only, within their tenant; an org
+  admin only within their own organization and not on the tenant admin; roles
+  OrgAdmin, Editor or User; teams from the user's organization. The tenant
+  admin's role can't be changed, and nobody can change their own role. Name and
+  phone are copied to `_User`.
+- A role change takes effect for permission checks at once. The user's menus
+  follow at their next sign-in.
+
+### 2026-11-15: manage VLAD links on the Users page; unknown VLADs are recorded
+
+- The Users page has a **BetterSign identities** section (admins only,
+  `apps/OpenSign/src/components/BsIdentities.jsx`). An admin can add a VLAD,
+  choose its account, give it a label, switch it on or off, or remove it. It
+  shows the links to accounts in the admin's tenant and the unassigned
+  identities. Cloud functions `bsidentitylist`, `bsidentitysave` and
+  `bsidentitydelete` (`apps/OpenSignServer/cloud/parsefunction/bsIdentityAdmin.js`).
+- A VLAD that signs in without an active link is added to `bs_Identity`
+  **turned off, with no account**, label `Sign-in attempt`, and `LastSeenAt` set
+  (bumped on later attempts). It's still refused. It's only recorded once the
+  identity is proven: bs-id's signed `id_token` for Sign in with BetterSign, the
+  verifier's signature check for the desktop API. So nobody can fill the table by
+  posting random VLADs.
+- The desktop API now gives an unlinked VLAD a challenge (so its signature can be
+  checked), and `/auth/token` answers `403 not_linked`. Before, `/auth/challenge`
+  answered `403 not_linked` straight away.
+- `bs_Identity` has an `Active` flag (the on/off switch) instead of `RevokedAt`.
+  A row is on only if `Active` is `true`, and it must have an account. Migration
+  `20261115150000-bs_identity_active_flag.cjs` converts existing rows
+  (`Active` = no `RevokedAt`).
+
+### 2026-11-15: VLAD links live only in MongoDB (`bs_Identity`)
+
+- `BS_ID_USERS` is gone. Which account a VLAD signs in to, for both Sign in with
+  BetterSign and the desktop API, is now read only from the master-key-only
+  `bs_Identity` class (`apps/OpenSignServer/utils/bsIdentity.js`).
+- Migration `20261115140000-move_bs_id_users_to_bs_identity.cjs` copies the old
+  `fly.toml` list (and `BS_ID_USERS`, if a deployment still sets it) into
+  `bs_Identity` with the label `Moved from BS_ID_USERS`. VLADs that already have a
+  row, and emails with no account, are skipped.
+- Linking or unlinking a VLAD no longer needs a redeploy; it takes effect at once.
+
+### 2026-11-15: signed-in users can create documents again
+
+- `DocumentBeforesave` refused every document created with a user's session
+  ("VladSignatures is set by the server."), so Request Signatures failed. New
+  documents are now checked with `has()`; updates still with `dirty()`.
+
+### 2026-11-15: a wrong verifier secret is reported as such
+
+- When the BetterSign verifier refuses this server's `BS_VERIFIER_SECRET`
+  (`401 bad_secret`: wrong or not set), the desktop API's sign-in and uploads now
+  return `502 verifier_misconfigured` ("This server's BetterSign verifier secret
+  is wrong or not set") and log an error. They used to return `401
+  access_denied`, "The identity's signature didn't verify", which sent people
+  looking at the identity instead of the server's settings.
 
 ### 2026-11-15: seal completed documents with docsign's BetterSign identity
 
@@ -103,6 +190,25 @@ operations are covered in [DEPLOYMENT.md](DEPLOYMENT.md).
 - Signatures over the old `SHA-256("bs-login/v1/statement\n" ‖ statement)` digest
   are refused.
 
+### 2026-11-14: BetterSign desktop API (`/api/v1`) and append-only signing
+
+- A REST API for the BetterSign desktop app, which holds the user's VLAD and keys:
+  sign in by signing a challenge (checked by the BetterSign verifier), list and
+  download documents, and upload a PDF signed on the desktop. Reference:
+  [docs/BetterSignAPI.md](docs/BetterSignAPI.md).
+- VLAD -> account links moved to the master-key-only `bs_Identity` class
+  (`utils/bsIdentity.js`), shared with Sign in with BetterSign.
+- Once a VLAD has signed a document, it's **append-only**: online signers and
+  OpenSign's seal add incremental updates instead of rewriting the PDF, so the
+  desktop signature stays valid (`utils/appendOnlyPdf.js` on both server and
+  frontend).
+- Signing commits are a compare-and-swap on `contracts_Document.SignRevision`, so
+  two signers working from the same version can't both be stored.
+- Desktop uploads email the next signer for in-order documents, as browser
+  signing does.
+- Tests: `npm run test:bsapi` and `npm run test:bsapi:integration`
+  (`apps/OpenSignServer`), also run in CI (`.github/workflows/bettersign-tests.yml`).
+
 ### 2026-11-13: sign-in lockdown and one-time code hardening
 
 - **Home page:** Sign in with BetterSign is the only way to sign in. The
@@ -132,6 +238,29 @@ operations are covered in [DEPLOYMENT.md](DEPLOYMENT.md).
 - "Sign in with BetterSign" through bs-id (OIDC + PKCE) replaced the push-to-phone
   login button. See [Sign in with BetterSign](#sign-in-with-bettersign).
 
+### 2026-10-09: Material Design 3 web UI
+
+- The web client's DaisyUI/Tailwind components were replaced with Material UI v7
+  themed as Material Design 3 (`src/theme/md3Theme.js`, `ThemeModeProvider.jsx`).
+  Presentation only; logic unchanged. Playbook: `apps/OpenSign/MD3_MIGRATION.md`.
+
+### 2026-10-07: Cloudflare + Fly.io deployment
+
+- Frontend on Cloudflare Workers Static Assets, Parse Server and MongoDB on Fly.io
+  (`deploy/`, `apps/OpenSignServer/Dockerfile`, `fly.toml`). See
+  [DEPLOYMENT.md](DEPLOYMENT.md).
+- Public file uploads enabled (`FILE_UPLOAD_PUBLIC`) for OpenSign's token-less
+  uploads; `Content-Length` exposed cross-origin.
+- `patches/parse+8.6.0.patch` fixes parse-js 8.6.0's upload "body stream is locked"
+  error (applied by `patch-package` on install).
+
+### 2026-10-06: sign on phone
+
+- "Sign on phone" for a signature field (`src/components/pdf/PhoneSign.jsx`) and the
+  `bettersignlogin` cloud function, both through the bs-opensign signing Worker. The
+  push-to-phone login button was later replaced by bs-id (2026-11-06);
+  `bettersignlogin` stays for that Worker.
+
 ---
 
 ## Home page and sign-in
@@ -158,8 +287,10 @@ device), so there is no password to steal.
   code at bs-id `/token`, verifies the ES256 `id_token` against bs-id `/jwks` (`iss`,
   `aud`, `nonce`, `exp`, `iat`) and returns a session for the account that the token's
   `vlad` maps to.
-- **Who may sign in:** `BS_ID_USERS` (`apps/OpenSignServer/fly.toml`) maps
-  `{ "<vladHex>": "<account email>" }`. The account must already exist. Unknown VLADs
+- **Who may sign in:** a VLAD needs an active row in the `bs_Identity` class
+  (master key only) pointing at an existing account. Admins manage these on the
+  Users page (BetterSign identities); an unknown VLAD that signs in shows up there,
+  turned off. Or [docs/BetterSignAPI.md §3](docs/BetterSignAPI.md#3-linking-a-vlad-to-an-account). Unknown VLADs
   are refused and logged as `{"event":"bsidlogin_denied","vlad":…}`.
 - **Configuration:** `BS_ID_URL` and `BS_ID_CLIENT_ID` on the server;
   `REACT_APP_BS_ID_URL` and `REACT_APP_BS_ID_CLIENT_ID` at frontend build time.
@@ -318,9 +449,24 @@ already updated.
 | `verifyemail` | `{ email, otp }`; checked the code against `email` | `{ otp }`; the code is checked against the signed-in user's email. `email` is ignored. |
 | `defaultdata_Otp` class | Readable and writable with the app ID | Master key only |
 
+Added by this fork (none of these exist upstream):
+
+| Endpoint or class | What it is |
+|---|---|
+| `/api/v1/*` (REST) | Desktop API; see [docs/BetterSignAPI.md](docs/BetterSignAPI.md) |
+| `bsidlogin` | Sign in with BetterSign: exchanges a bs-id code for a session |
+| `bettersignlogin` | Session for an identity verified by the BetterSign Worker |
+| `bsidentitylist`, `bsidentitysave`, `bsidentitydelete` | Users page: manage VLAD links (admins) |
+| `updateuserbyadmin` | Users page: edit a user's name, phone, role, teams (admins) |
+| `bs_Identity`, `bs_ApiChallenge`, `bs_ApiToken`, `bs_ApiConfig` classes | Master key only. VLAD links, sign-in challenges, API tokens, generated settings |
+| `contracts_Document` fields `VladSignatures`, `SignRevision`, `Seal`, `CertificateSeal` | Writable only with the master key |
+
 ---
 
-## Deploying these changes
+## Deploying the sign-in lockdown (2026-11-13)
+
+Later changes list their own deploy steps in their PRs and in the change log.
+
 
 1. **Deploy the API** (`fly deploy` for `docsign-bettersign-api`, see
    [DEPLOYMENT.md](DEPLOYMENT.md)). Migrations run when the server starts, which
@@ -342,7 +488,11 @@ already updated.
 
 ---
 
-## Testing
+## Testing the sign-in lockdown (2026-11-13)
+
+The desktop API, sealing, VLAD links and user editing have automated tests:
+`npm run test:bsapi` and `npm run test:bsapi:integration` in `apps/OpenSignServer`.
+
 
 Done:
 
@@ -372,66 +522,160 @@ Not yet done; needs a running API and real email:
 
 ---
 
-## Files changed
+## Changes from upstream OpenSign
+
+This section lists every file this fork changes, so that merging a newer
+upstream OpenSign shows where conflicts can happen and what has to survive them.
+Keep it current: any PR that touches an upstream file adds or updates its row.
+
+- **Fork point:** upstream commit `e5f2c5c0a`. Upstream remotes: `upstream`
+  (OpenSignLabs/OpenSign) next to `origin` (Ixiom-Software/BetterOpenSign).
+- **Upstream since then** (as of 2026-11-15): `upstream/main` is 26 commits
+  ahead of the fork point, `upstream/staging` 20.
+- **Regenerate the raw list:**
+
+  ```sh
+  git fetch upstream
+  git diff --name-status $(git merge-base HEAD upstream/main) HEAD   # A added, M modified, D deleted
+  git log --oneline --no-merges $(git merge-base HEAD upstream/main)..HEAD -- <file>   # why a file changed
+  ```
+
+### Upstream files we modified (conflict risk)
 
 Server (`apps/OpenSignServer/`):
 
-| File | Change |
-|---|---|
-| `cloud/parsefunction/emailOtp.js` | New. Shared code rules: generate, hash, send, verify, recipient check |
-| `cloud/parsefunction/SendMailOTPv1.js` | Uses `emailOtp.js`; recipient or own-email rule |
-| `cloud/parsefunction/AuthLoginAsMail.js` | Uses `emailOtp.js`; requires `docId`; reuses `sessionViaLoginAs` |
-| `cloud/parsefunction/VerifyEmail.js` | Uses `emailOtp.js`; checks the signed-in user's own email |
-| `cloud/customRoute/deleteAccount/deleteUtils.js` | Shares the constants and generator from `emailOtp.js` |
-| `cloud/customRoute/deleteAccount/deleteUser.js` | Constant-time code comparison |
-| `cloud/main.js` | `beforeLogin` hook blocking password sign-in |
-| `databases/migrations/20261113000000-lock_defaultdata_otp.cjs` | New. Locks `defaultdata_Otp`, removes plaintext codes |
+| File | What we changed | Since |
+|---|---|---|
+| `index.js` | Public file uploads (`FILE_UPLOAD_PUBLIC`), `Content-Length` exposed cross-origin | 2026-10-07 |
+| `cloud/main.js` | Registers our cloud functions (`bettersignlogin`, `bsidlogin`, `bsidentity*`, `updateuserbyadmin`, `bsphonesign*`) and the `bs_Identity` save hook; `beforeLogin` hook blocking password sign-in | 2026-10-06 → 11-15 |
+| `cloud/customRoute/customApp.js` | Mounts the desktop API router (`bsapi`) at `/api/v1` | 2026-11-14 |
+| `cloud/parsefunction/pdf/PDF.js` | Append-only signing once a VLAD signed; signing commits as a compare-and-swap on `SignRevision`; the seal goes through `utils/seal.js` | 2026-11-14 → 11-15 |
+| `cloud/parsefunction/pdf/Placeholder.js` | Signature placeholder keeps indirect AcroForm `/Fields` and `/SigFlags` (needed for incremental updates) | 2026-11-14 |
+| `cloud/parsefunction/DocumentBeforesave.js` | `VladSignatures`, `SignRevision`, `Seal`, `CertificateSeal` writable only with the master key (creates checked with `has()`) | 2026-11-14 → 11-15 |
+| `cloud/parsefunction/generateCertificatebydocId.js` | Certificate sealed through `utils/seal.js` | 2026-11-15 |
+| `cloud/parsefunction/SendMailOTPv1.js`, `AuthLoginAsMail.js`, `VerifyEmail.js` | Rewritten on `emailOtp.js` (recipient-only, hashed 6-digit codes) | 2026-11-13 |
+| `cloud/customRoute/deleteAccount/deleteUtils.js`, `deleteUser.js` | Share `emailOtp.js` constants; constant-time code comparison | 2026-11-13 |
+| `package.json`, `package-lock.json` | `@cantoo/pdf-lib`; test scripts `test:bsapi`, `test:bsapi:integration` | 2026-11-14 |
+| `.env.example` (repo root) | Seal settings (`SEAL_BACKEND`, `BS_SERVICE_IDENTITY_*`) | 2026-11-15 |
 
-Frontend (`apps/OpenSign/`):
+Frontend (`apps/OpenSign/`). Almost every file under `src/` was also restyled
+by the Material Design 3 migration (2026-10-09, 129 files, presentation only:
+DaisyUI/Tailwind markup replaced with MUI v7, logic untouched; rules in
+`MD3_MIGRATION.md`). Expect markup conflicts in any upstream UI change; take
+upstream's logic and keep our MUI markup. The files below also have behaviour
+changes:
 
-| File | Change |
-|---|---|
-| `src/pages/Login.jsx` | BetterSign-only sign-in card; password form, code form and the unreachable "additional info" modal removed |
-| `src/pages/GuestLogin.jsx` | 6-digit code input; sends `docId`; shows server errors |
-| `src/components/pdf/VerifyEmail.jsx` | 6-digit code input |
-| `src/constant/Utils.js` | `runPublicCloudFn`; `handleSendOTP` sends the session and reports success |
-| `src/pages/SignyourselfPdf.jsx`, `src/pages/UserProfile.jsx` | "Code sent" only on success; Change Password button removed from the profile |
-| `src/App.jsx` | `/forgetpassword` and `/changepassword` routes removed |
-| `src/components/Header.jsx` | Change Password menu item removed |
-| `src/pages/UserList.jsx`, `src/json/ReportJson.js` | Admin "Reset password" action removed |
-| `src/pages/ForgetPassword.jsx`, `src/pages/ChangePassword.jsx`, `src/primitives/PasswordResetModal.jsx` | Deleted |
-| `public/locales/en/translation.json` | New `signer-link-hint` text |
+| File | What we changed | Since |
+|---|---|---|
+| `src/pages/Login.jsx` | BetterSign-only sign-in card (bs-id); password form, code form and "additional info" modal removed; marks a Sign in with BetterSign session (`bsSession`) for Sign on phone | 2026-10-06 → 11-15 |
+| `src/pages/GuestLogin.jsx` | 6-digit code input; sends `docId`; shows server errors | 2026-11-13 |
+| `src/pages/UserList.jsx` | Reset-password action removed; Edit user action; BetterSign identities section | 2026-11-13 → 11-15 |
+| `src/json/ReportJson.js` | `usersActions`: reset password removed, Edit added | 2026-11-13 → 11-15 |
+| `src/pages/UserProfile.jsx` | Change Password button removed; "code sent" only on success | 2026-11-13 |
+| `src/pages/SignyourselfPdf.jsx`, `src/components/pdf/VerifyEmail.jsx` | 6-digit codes; "code sent" only on success; `SignyourselfPdf` passes the document id to Sign on phone | 2026-11-13 → 11-15 |
+| `src/pages/PdfRequestFiles.jsx` | Append-only signing for documents a VLAD signed; passes the document id to Sign on phone | 2026-11-14 → 11-15 |
+| `src/components/pdf/WidgetsValueModal.jsx` | "Sign on phone" (PhoneSign), only for a Sign in with BetterSign session on a saved document | 2026-10-06 → 11-15 |
+| `src/constant/Utils.js` | `runPublicCloudFn`; `handleSendOTP` sends the session; keeps signature fields when flattening an append-only PDF | 2026-11-13 → 11-14 |
+| `src/App.jsx` | `/auth/bettersign/callback` route; `/forgetpassword`, `/changepassword` removed | 2026-11-06 → 11-13 |
+| `src/components/Header.jsx`, `Footer.jsx`, `FullScreenButton.jsx`, `ThemeToggle.jsx`, `sidebar/Menu.jsx`, `Sidebar.jsx`, `SubMenu.jsx`, `src/layout/HomeLayout.jsx` | BetterSign brand (ink top bar, wordmark, green pills, brand footer); Change Password menu item removed | 2026-11-06 → 11-13 |
+| `src/index.css`, `src/styles/dark-theme-improvements.css`, `tailwind.config.js`, `index.html`, `public/manifest.json` | Brand colours and DaisyUI themes, theme-color | 2026-11-06 |
+| `public/locales/en/translation.json` | `signer-link-hint`, `bs-identities.*`, edit-user strings, `phone-sign.*` (English only; other languages fall back) | 2026-11-13 → 11-15 |
+| `package.json`, `package-lock.json` | MUI v7, `@cantoo/pdf-lib`, `patch-package` postinstall | 2026-10-07 → 11-14 |
 
-"Sign on phone" (2026-11-15):
+Repo root: `README.md` (link to this file), `.gitignore`.
 
-| File | Change |
-|---|---|
-| `apps/OpenSignServer/cloud/parsefunction/bsPhoneSign.js` | New. `bsphonesignstart` / `bsphonesignpoll` |
-| `apps/OpenSignServer/cloud/customRoute/bsapi/relay.js` | New. Relay client: signed calls, request envelope, HPKE open of the answer |
-| `apps/OpenSignServer/cloud/customRoute/bsapi/apiConfig.js` | New. Stored server-wide values (unique per key), shared with `receiverVlad.js` |
-| `apps/OpenSignServer/cloud/customRoute/bsapi/statement.js` | `bs-docsign-field` statement |
-| `apps/OpenSignServer/cloud/customRoute/bsapi/index.js` | `GET /relay-key` |
-| `apps/OpenSignServer/utils/bsWebSession.js` | New. Which sessions came from Sign in with BetterSign |
-| `apps/OpenSignServer/cloud/parsefunction/bsidlogin.js` | Records the session; returns `bettersign: true` |
-| `apps/OpenSignServer/databases/migrations/20261115180000-create_bs_phonesign_classes.cjs` | New. `bs_WebSession`, `bs_PhoneSignRequest` |
-| `apps/OpenSignServer/databases/migrationUtils.cjs` | New. `ensureMasterOnly`, shared by the BetterSign migrations |
-| `apps/OpenSign/src/components/pdf/PhoneSign.jsx` | Rewritten: no phone number, sends on open, shows delivery |
-| `apps/OpenSign/src/components/pdf/WidgetsValueModal.jsx` | Button only for a BetterSign session on a saved document |
-| `apps/OpenSign/src/pages/SignyourselfPdf.jsx`, `PdfRequestFiles.jsx` | Pass the document id |
-| `apps/OpenSign/src/pages/Login.jsx` | Marks the BetterSign session (`bsSession`) |
-| `apps/OpenSign/public/locales/en/translation.json` | `phone-sign.*` text (other languages fall back to English) |
-| `apps/OpenSign/src/components/pdf/PhoneSign.test.jsx`, `apps/OpenSignServer/spec/bsapi/relay.spec.js`, `apps/OpenSignServer/spec/bsapi-integration/phonesign.spec.js` | Tests, with stand-ins for the relay, the phone and bs-id |
-| `docs/BetterSignPhoneSign.md` | New |
+### Upstream files we deleted
 
-Docs: `BetterSignUpdates.md` (this file) and a link from `README.md`.
+`apps/OpenSign/src/pages/ForgetPassword.jsx`, `src/pages/ChangePassword.jsx`,
+`src/primitives/PasswordResetModal.jsx` (no password sign-in). If upstream
+changes them, drop the change; if upstream adds new imports of them, remove those.
+
+### Files only this fork has (no conflicts expected)
+
+- **Desktop API:** `apps/OpenSignServer/cloud/customRoute/bsapi/*`,
+  `utils/bsIdentity.js`, `utils/appendOnlyPdf.js`, docs `docs/BetterSignAPI.md`.
+- **Sign on phone:** `cloud/parsefunction/bsPhoneSign.js`, `utils/bsWebSession.js`,
+  the relay client `cloud/customRoute/bsapi/relay.js`, docs
+  `docs/BetterSignPhoneSign.md`.
+- **Sealing:** `apps/OpenSignServer/utils/seal.js`, `docs/BsServiceIdentitySealing.md`.
+- **Sign-in and admin cloud functions:** `cloud/parsefunction/bsidlogin.js`,
+  `bettersignlogin.js`, `emailOtp.js`, `bsIdentityAdmin.js`, `updateUserByAdmin.js`.
+- **Frontend:** `src/theme/md3Theme.js`, `src/theme/ThemeModeProvider.jsx`,
+  `src/constant/bsid.js`, `src/components/BrandHero.jsx`, `BsIdentities.jsx`,
+  `EditUser.jsx` (both with `*.test.jsx`), `pdf/PhoneSign.jsx` (+ test), `src/utils/appendOnlyPdf.js` (+ test),
+  `src/assets/images/bettersign-icon.png`, `patches/parse+8.6.0.patch`,
+  `MD3_MIGRATION.md`.
+- **Tests and CI:** `apps/OpenSignServer/spec/bsapi/*`, `spec/bsapi-integration/*`,
+  `spec/support/bsapi*.json`, `.github/workflows/bettersign-tests.yml`.
+- **Deployment:** `deploy/*`, `apps/OpenSignServer/Dockerfile`,
+  `apps/OpenSignServer/fly.toml`, `DEPLOYMENT.md`.
+- **Database migrations** (`apps/OpenSignServer/databases/migrations/`, run in
+  this order on startup; keep their timestamps after upstream's):
+  `20261113000000-lock_defaultdata_otp`, `20261114120000-create_bettersign_api_classes`,
+  `20261115120000-create_bs_apiconfig`, `20261115140000-move_bs_id_users_to_bs_identity`,
+  `20261115150000-bs_identity_active_flag`, `20261115180000-create_bs_phonesign_classes`.
+  Shared helpers live next to them in `databases/migrationUtils.cjs` (not in
+  `migrations/`, where `parse-dbtool` would run them).
+
+### Upgrading to a newer upstream
+
+1. Branch from `staging`, `git merge upstream/main` (merge, don't rebase: the
+   fork's history is shared).
+2. Resolve conflicts with the tables above: keep upstream's fixes, re-apply our
+   behaviour. The riskiest files are `pdf/PDF.js` (signing and sealing),
+   `cloud/main.js` (registrations and the `beforeLogin` block), `Login.jsx` and
+   anything upstream adds that signs in with a password or sends one-time codes.
+3. Check new upstream migrations don't undo ours (class permissions on
+   `defaultdata_Otp`, `bs_*` classes, `contracts_Document` fields).
+4. Check new upstream routes or cloud functions don't reopen password sign-in or
+   send codes to arbitrary emails.
+5. Run `npm run test:bsapi` and `npm run test:bsapi:integration`
+   (`apps/OpenSignServer`), and the frontend `vite build` and `vitest run`.
+6. Update this section: new fork point, and any rows that changed.
 
 ---
 
 ## Follow-ups
 
-- **New team members can't sign in until they're mapped.** Adding a user creates the
-  account, but they can only sign in once their BetterSign VLAD is added to
-  `BS_ID_USERS` and the API is redeployed.
+Known issues, found in review on 2026-11-15:
+
+- **An org admin can sign in as the tenant admin (security, fix first).** The
+  BetterSign identities functions (`cloud/parsefunction/bsIdentityAdmin.js`) let
+  org admins in and offer every account in the tenant. So an org admin can link a
+  VLAD they hold to the tenant admin's account, turn it on and sign in as them. They
+  can also change or remove the tenant admin's links and link to users in other
+  organizations. `updateuserbyadmin` already has the right rules (org admins only in
+  their organization, never the tenant admin); `bsIdentityAdmin.js` should apply the
+  same ones. Pending spec: `bsidentity-admin.spec.js`, "as an org admin … can't link
+  a VLAD to the tenant admin". Until then, only give the OrgAdmin role to people you
+  would trust as tenant admin.
+- **Unassigned sign-in attempts are shared by every tenant.** Any tenant's admin
+  sees them and can link one to an account in their tenant, so its owner would
+  sign into that tenant. Harmless while docsign has one tenant. Fix: show unassigned
+  rows only to `contracts_Admin`, or record which site the attempt came from.
+  Pending spec: "doesn't show another tenant's admins the unassigned sign-in attempts".
+- **Users can change their own role (upstream, security).** A user's own
+  `contracts_Users` row is writable with their session (the ACL `adduser` sets), and
+  nothing checks saves to that class. So a user can set their own `UserRole` to
+  `contracts_Admin` through the REST API, which also gets around
+  `updateuserbyadmin`'s rules. Fix: a `beforeSave` on `contracts_Users` that lets
+  only the master key change `UserRole`, `TenantId`, `OrganizationId` and `TeamIds`
+  (check upstream's own pages that save this class first).
+- **Sign-in is refused for a moment after deploying the `Active` flag.** Migrations
+  run in the background after the server starts taking requests (`index.js`). Until
+  `20261115150000-bs_identity_active_flag` has run, existing `bs_Identity` rows have
+  no `Active` and count as off: linked VLADs are refused and live desktop tokens
+  stop. If the migration fails partway, the remaining rows stay off. After that
+  deploy, check `fly logs` for `Migrated 20261115150000` and sign in once. Longer
+  term, run migrations before the server listens.
+
+Other follow-ups:
+
+- **New team members can't sign in until they're linked.** Adding a user creates the
+  account, but they can only sign in once an admin links their BetterSign VLAD on the
+  Users page. Their first sign-in attempt puts the VLAD there, turned off.
+- **Admins can't change a user's email.** It's also the username, and documents
+  and contacts find people by it; changing it needs those updated together.
 - **The Add User form still shows a generated password** (`AddUser.jsx`). It can no
   longer be used and could be removed. The same goes for the password on the
   first-run admin setup page (`AddAdmin.jsx`).
@@ -443,6 +687,16 @@ Docs: `BetterSignUpdates.md` (this file) and a link from `README.md`.
   from this fork would make every recipient confirm their email.
 - **`resetpassword` and `loginuser`** are still registered on the server. They no
   longer do anything useful and could be removed.
+- **`npm run lint` doesn't run in either app.** ESLint 9 ignores the
+  `.eslintrc.json` files (upstream's), the repo-root config needs
+  `eslint-plugin-react` in the server, and the frontend config needs
+  `eslint-plugin-react-hooks`, which isn't installed. Until the configs move to
+  `eslint.config.js`, lint the server with
+  `ESLINT_USE_FLAT_CONFIG=false npx eslint --no-eslintrc -c .eslintrc.json --env jasmine <files>`
+  (in `apps/OpenSignServer`). Use the same flags for the frontend with
+  `--resolve-plugins-relative-to .`, a copy of its config without
+  `react-hooks`, and `--rule react/react-in-jsx-scope:off` (the app uses the
+  automatic JSX runtime).
 - **The new `signer-link-hint` text is English only.** Other languages fall back to
   English.
 - **"Sign on phone" needs the BetterSign app to handle it.** The app has to
@@ -451,6 +705,8 @@ Docs: `BetterSignUpdates.md` (this file) and a link from `README.md`.
   Other gaps are listed in §8 of that doc:
   - an approval isn't yet a VLAD entry in the audit trail;
   - the request isn't sealed;
+  - someone can claim a user's relay address before their phone does, then read
+    their request ids and block Sign on phone for them (needs a relay change);
   - sessions from before the deploy need a new sign-in.
 - **No sign-in through the BetterSign browser extension yet.** Sign in with BetterSign
   works with or without the extension, but always through bs-id's passkey page (a QR
@@ -464,7 +720,7 @@ Docs: `BetterSignUpdates.md` (this file) and a link from `README.md`.
      message) and falls back to the bs-id redirect.
   3. A cloud function that checks the phone's signed statement (origin, `rp`,
      single-use challenge, age) and the signature through the verifier's `/verify`,
-     then maps the VLAD with `BS_ID_USERS`. oauthService does the same for outline.
+     then maps the VLAD with `accountForVlad` (`bs_Identity`). oauthService does the same for outline.
      The statement should be signed in the canonical bs-message form
      ([What a VLAD signs to log in](#what-a-vlad-signs-to-log-in)), checked with
      `inspectSignedMessage`. The extension and oauthService sign the bare digest today,

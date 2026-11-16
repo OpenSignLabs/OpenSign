@@ -20,7 +20,7 @@ import {
 } from './support/lib.js';
 import { verifier } from './support/verifier.js';
 import { relay } from './support/relay.js';
-import { bsid } from './support/bsid.js';
+import { bsidLoginParams } from './support/bsid.js';
 import { recordBsIdSession } from '../../utils/bsWebSession.js';
 import { storedConfigEntry } from '../../cloud/customRoute/bsapi/apiConfig.js';
 import {
@@ -415,18 +415,11 @@ describe('Sign in with BetterSign marks the session', () => {
     await link(dan, danId);
   });
 
-  const signIn = () => {
-    const nonce = crypto.randomBytes(16).toString('base64url');
-    return req('POST', `${PARSE}/functions/bsidlogin`, {
+  const signIn = () =>
+    req('POST', `${PARSE}/functions/bsidlogin`, {
       headers: PUBLIC,
-      body: {
-        code: bsid.issue(dan.vlad, nonce),
-        codeVerifier: crypto.randomBytes(32).toString('base64url'),
-        nonce,
-        redirectUri: 'https://docsign.bettersign.ing/auth/bettersign/callback',
-      },
+      body: bsidLoginParams(dan.vlad),
     });
-  };
 
   it('records the session and its VLAD', async () => {
     const r = await signIn();

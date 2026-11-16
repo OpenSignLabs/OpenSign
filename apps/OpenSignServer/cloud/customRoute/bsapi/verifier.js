@@ -5,7 +5,10 @@
 //
 // Any non-200 is a failed sign-in. A 503 (resolve_failed, incomplete_log) means
 // the verifier couldn't get the log and made no decision; we surface it as
-// `unavailable` so the client can retry, but it never counts as a pass.
+// `unavailable` so the client can retry, but it never counts as a pass. A 401
+// bad_secret means the verifier refused *us* (BS_VERIFIER_SECRET is wrong or
+// unset) before looking at the signature; we surface it as `misconfigured` so
+// it isn't reported as the identity's signature failing.
 //
 // Env:
 //   BS_VERIFIER_URL     default https://verify.bettersign.ing
@@ -17,7 +20,7 @@ export function verifierUrl() {
   return (process.env.BS_VERIFIER_URL || 'https://verify.bettersign.ing').replace(/\/$/, '');
 }
 
-// Returns { ok: true } or { ok: false, unavailable, code, error }.
+// Returns { ok: true } or { ok: false, unavailable, misconfigured, code, error }.
 // `rp` is the relying party the statement names (BS_API_RP); the verifier
 // treats it as a hint, but it should match.
 export async function verifySignature({ vladHex, messageHex, signatureHex, rp }) {
@@ -36,6 +39,7 @@ export async function verifySignature({ vladHex, messageHex, signatureHex, rp })
     return {
       ok: false,
       unavailable: res.status === 503,
+      misconfigured: body.code === 'bad_secret',
       code: body.code || `http_${res.status}`,
       error: body.error || `verifier http ${res.status}`,
     };

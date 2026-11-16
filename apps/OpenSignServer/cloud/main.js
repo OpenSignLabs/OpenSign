@@ -57,6 +57,12 @@ import loginUser from './parsefunction/loginUser.js';
 import bettersignlogin from './parsefunction/bettersignlogin.js';
 import bsidlogin from './parsefunction/bsidlogin.js';
 import { bsphonesignstart, bsphonesignpoll } from './parsefunction/bsPhoneSign.js';
+import updateUserByAdmin from './parsefunction/updateUserByAdmin.js';
+import {
+  deleteBsIdentity,
+  listBsIdentities,
+  saveBsIdentity,
+} from './parsefunction/bsIdentityAdmin.js';
 import addUser from './parsefunction/addUser.js';
 import filterDocs from './parsefunction/filterDocs.js';
 import sendDeleteUserMail from './parsefunction/sendDeleteUserMail.js';
@@ -146,6 +152,10 @@ Parse.Cloud.define('bettersignlogin', bettersignlogin);
 Parse.Cloud.define('bsidlogin', bsidlogin);
 Parse.Cloud.define('bsphonesignstart', bsphonesignstart);
 Parse.Cloud.define('bsphonesignpoll', bsphonesignpoll);
+Parse.Cloud.define('bsidentitylist', listBsIdentities);
+Parse.Cloud.define('bsidentitysave', saveBsIdentity);
+Parse.Cloud.define('bsidentitydelete', deleteBsIdentity);
+Parse.Cloud.define('updateuserbyadmin', updateUserByAdmin);
 Parse.Cloud.define('adduser', addUser);
 Parse.Cloud.define('filterdocs', filterDocs);
 Parse.Cloud.define('senddeleterequest', sendDeleteUserMail);

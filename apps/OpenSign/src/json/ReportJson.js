@@ -544,6 +544,14 @@ export default function reportJson(id) {
 
 export const usersActions = [
   {
+    btnId: "4740",
+    hoverLabel: "Edit",
+    btnColor: "op-btn-primary",
+    btnIcon: "fa-light fa-pen",
+    redirectUrl: "",
+    action: "edit"
+  },
+  {
     btnId: "4741",
     hoverLabel: "Delete",
     btnColor: "op-btn-secondary",

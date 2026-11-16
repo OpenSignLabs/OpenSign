@@ -9,7 +9,7 @@ export const VERIFIER_SECRET = 'bsapi-test-verifier-secret';
 
 export const verifier = {
   keys: new Map(), // vladHex -> KeyObject
-  mode: 'ok', // 'ok' | '503'
+  mode: 'ok', // 'ok' | '503' | 'bad_secret'
   calls: [],
   register(id) {
     this.keys.set(id.vlad, id.publicKey);
@@ -28,7 +28,10 @@ export function startVerifier() {
         res.end(JSON.stringify(obj));
       };
       if (req.url !== '/verify') return send(404, { ok: false });
-      if (req.headers['x-bs-verifier-secret'] !== VERIFIER_SECRET) {
+      if (
+        verifier.mode === 'bad_secret' ||
+        req.headers['x-bs-verifier-secret'] !== VERIFIER_SECRET
+      ) {
         return send(401, { ok: false, code: 'bad_secret', error: 'bad secret' });
       }
       const call = JSON.parse(body);
