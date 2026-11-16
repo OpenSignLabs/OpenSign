@@ -239,6 +239,7 @@ const BsIdentities = ({ showAlert }) => {
                         onChange={(e) =>
                           save(row.id, { userId: e.target.value || null })
                         }
+                        slotProps={{ select: { displayEmpty: true } }}
                         sx={inputSx}
                       >
                         {accountOptions}
@@ -368,6 +369,11 @@ const BsIdentities = ({ showAlert }) => {
               }
               size="small"
               helperText={t("bs-identities.account-help")}
+              // Show "Unassigned" rather than an empty box.
+              slotProps={{
+                select: { displayEmpty: true },
+                inputLabel: { shrink: true }
+              }}
               sx={inputSx}
             >
               {accountOptions}
