@@ -1,6 +1,6 @@
-// Vendored from BetterSignApps server/bs-login/src/cbor.js (commit 0ea2796).
+// Vendored from BetterSignApps server/signInWithBetterSignButton/src/cbor.js (commit fe4d432).
 // Don't edit here: change it there and run
-//   node server/bs-login/scripts/vendor.mjs <this folder> server
+//   node server/signInWithBetterSignButton/scripts/vendor.mjs <this folder> server
 // --- end of vendoring note ---
 // Minimal strict CBOR decoder for the phone's LoginStatement (bs_fill v1.3,
 // client/browserExtension/docs/PROTOCOL.md §1.3). Only what a statement uses: unsigned

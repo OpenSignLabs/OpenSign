@@ -1,6 +1,6 @@
-// Vendored from BetterSignApps server/bs-login/src/server.js (commit 0ea2796).
+// Vendored from BetterSignApps server/signInWithBetterSignButton/src/server.js (commit fe4d432).
 // Don't edit here: change it there and run
-//   node server/bs-login/scripts/vendor.mjs <this folder> server
+//   node server/signInWithBetterSignButton/scripts/vendor.mjs <this folder> server
 // --- end of vendoring note ---
 // The server half of "Sign in with BetterSign" through the browser extension
 // (docs/Technical/extension-login-design.md §4.3, §6.3): check the phone's

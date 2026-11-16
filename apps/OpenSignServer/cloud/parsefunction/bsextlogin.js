@@ -4,7 +4,7 @@
 //
 // The first sign-in in a browser goes through bs-id's passkey page (bsidlogin),
 // where "Remember this browser" links the extension to this site. After that,
-// Login.jsx (through vendor/bs-login/browser.js):
+// Login.jsx (through vendor/signInWithBetterSignButton/browser.js):
 //   1. asks the extension whether this browser is linked; if so
 //   2. bsextchallenge {} -> { challengeId, challenge }
 //   3. asks the extension to sign in; the phone approves and signs a bs-login
@@ -12,8 +12,8 @@
 //   4. bsextlogin { challengeId, statement, vladSig } -> the same result as
 //      bsidlogin: { sessionToken, objectId, email, bettersign }
 //
-// The statement check is the shared one (vendor/bs-login/server.js, from
-// BetterSignApps server/bs-login), as oauthService and apiDelegateService use.
+// The statement check is the shared one (vendor/signInWithBetterSignButton/server.js, from
+// BetterSignApps server/signInWithBetterSignButton), as oauthService and apiDelegateService use.
 // A challenge is single-use (one attempt) and lives CHALLENGE_TTL_MS.
 //
 // Env:
@@ -25,7 +25,7 @@
 //   plus BS_VERIFIER_URL / BS_VERIFIER_SECRET (customRoute/bsapi/verifier.js)
 
 import { RateLimiterMemory } from 'rate-limiter-flexible';
-import { newChallenge, verifyExtensionLogin } from '../../vendor/bs-login/server.js';
+import { newChallenge, verifyExtensionLogin } from '../../vendor/signInWithBetterSignButton/server.js';
 import { verifySignature } from '../customRoute/bsapi/verifier.js';
 import { signInVlad } from './bsidlogin.js';
 

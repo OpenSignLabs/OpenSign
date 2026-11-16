@@ -1,6 +1,6 @@
 // "Sign in with BetterSign": this site's settings for the shared sign-in kit
-// (src/vendor/bs-login/browser.js, vendored from BetterSignApps
-// server/bs-login).
+// (src/vendor/signInWithBetterSignButton/browser.js, vendored from BetterSignApps
+// server/signInWithBetterSignButton).
 //
 // signInWithBetterSign() tries the BetterSign extension first: if this browser
 // was linked to this site ("Remember this browser" at the first passkey
@@ -19,7 +19,7 @@ import { getEnv } from "./Utils";
 import {
   signInWithBetterSign as signIn,
   takePasskeyCallback
-} from "../vendor/bs-login/browser";
+} from "../vendor/signInWithBetterSignButton/browser";
 
 export const BSID_CALLBACK_PATH = "/auth/bettersign/callback";
 

@@ -1,6 +1,6 @@
-// Vendored from BetterSignApps server/bs-login/src/browser.js (commit 0ea2796).
+// Vendored from BetterSignApps server/signInWithBetterSignButton/src/browser.js (commit fe4d432).
 // Don't edit here: change it there and run
-//   node server/bs-login/scripts/vendor.mjs <this folder> browser
+//   node server/signInWithBetterSignButton/scripts/vendor.mjs <this folder> browser
 // --- end of vendoring note ---
 // The browser half of "Sign in with BetterSign": try the BetterSign extension
 // (a tap on the phone, no QR), and fall back to the passkey at bs-id.
@@ -128,6 +128,11 @@ export async function startPasskeySignIn({ bsIdUrl, clientId, redirectUri, scope
     code_challenge_method: "S256",
   }).toString();
   window.location.assign(dest.toString());
+}
+
+/** Whether this tab started a passkey sign-in that hasn't come back yet. */
+export function hasPendingPasskeySignIn() {
+  return sessionStorage.getItem(FLOW_KEY) !== null;
 }
 
 /**

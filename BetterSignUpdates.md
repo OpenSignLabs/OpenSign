@@ -304,20 +304,20 @@ That links the extension to this site. From then on, **Sign in with BetterSign**
 asks the extension first, and the user approves on their phone with one tap
 (BetterSignApps `docs/Technical/extension-login-design.md` §4.3):
 
-- The browser half is the shared kit vendored from BetterSignApps `server/bs-login`
-  (`apps/OpenSign/src/vendor/bs-login/browser.js`); `constant/bsid.js` gives it this
+- The browser half is the shared kit vendored from BetterSignApps `server/signInWithBetterSignButton`
+  (`apps/OpenSign/src/vendor/signInWithBetterSignButton/browser.js`); `constant/bsid.js` gives it this
   site's settings. If the extension isn't there, this browser isn't linked, or the
   phone doesn't answer, it goes to bs-id's passkey page as before.
 - `bsextchallenge` issues a single-use challenge (`bs_LoginChallenge`, master key
   only, 3 minutes). The phone signs a bs-login statement naming this origin
   (`BS_API_ORIGIN`), the bs-id client (`BS_ID_CLIENT_ID`) and that challenge.
 - `bsextlogin` (`cloud/parsefunction/bsextlogin.js`) uses up the challenge, checks the
-  statement with the vendored `apps/OpenSignServer/vendor/bs-login/server.js` and the
+  statement with the vendored `apps/OpenSignServer/vendor/signInWithBetterSignButton/server.js` and the
   signature through the verifier, then signs in the account the VLAD maps to, exactly
   as `bsidlogin` does (same `bs_Identity` rules, same BetterSign session).
 - Both functions are limited per IP (`BS_API_AUTH_RATE_PER_MIN`).
 - To update the vendored copies, run BetterSignApps
-  `server/bs-login/scripts/vendor.mjs` (see its README).
+  `server/signInWithBetterSignButton/scripts/vendor.mjs` (see its README).
 
 - This replaced the earlier push-to-phone "Log in with BetterSign" button
   (`BetterSignLogin.jsx`, removed). The `bettersignlogin` cloud function stays for the
@@ -736,5 +736,5 @@ Other follow-ups:
   the bare digest `SHA-256("bs-login/v1/statement\n" ‖ statement)`, as it does for
   oauthService, not the canonical bs-message form
   ([What a VLAD signs to log in](#what-a-vlad-signs-to-log-in)). The check lives in
-  one place (BetterSignApps `server/bs-login`, vendored here), so moving to the
+  one place (BetterSignApps `server/signInWithBetterSignButton`, vendored here), so moving to the
   canonical form is a change to the phone and that package, then a re-vendor.
