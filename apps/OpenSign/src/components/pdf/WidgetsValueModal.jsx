@@ -41,6 +41,7 @@ import {
   setSignatureRes,
 } from "../../redux/reducers/widgetSlice";
 import { useDispatch, useSelector } from "react-redux";
+import Loader from "../../primitives/Loader";
 import {
 } from "../../utils";
 
@@ -343,7 +344,7 @@ function WidgetsValueModal(props) {
     getYear, handleOnDateChange, selectDate, setSelectDate, handleSaveDate,
     widgetTypeTranslation, radioButtonWidget, handleRadioCheck, handleCheckRadio,
     textWidget, drawWidget, props, savesigncheckbox, setIsImageSelect,
-    isSignOrInitials
+    isSignOrInitials, ExampleCustomInput
   });
 
 

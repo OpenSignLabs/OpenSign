@@ -1,3 +1,9 @@
+import Draw from "./tab/Draw";
+import DefaultSignature from "./tab/DefaultSignature";
+import UploadImage from "./tab/UploadImage";
+import TypeSignature from "./tab/TypeSignature";
+import PenColorComponent from "./tab/PenColorComponent";
+
 /** Create the signature, initials, image, and stamp tab configuration. */
 export function createSignatureTabs(context) {
   const {

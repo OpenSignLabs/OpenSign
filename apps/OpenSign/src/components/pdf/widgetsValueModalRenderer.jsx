@@ -25,7 +25,7 @@ export function createWidgetTypeRenderer(context) {
     handleCellsInput, hint, getDropdownText, startDate, months, getMonth, years,
     getYear, handleOnDateChange, selectDate, setSelectDate, handleSaveDate,
     widgetTypeTranslation, radioButtonWidget, handleRadioCheck, handleCheckRadio,
-    textWidget, drawWidget, props
+    textWidget, drawWidget, props, ExampleCustomInput
   } = context;
   const getWidgetType = (type) => {
     const isStampOrImage =
