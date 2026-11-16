@@ -253,6 +253,21 @@ function PlaceholderType(props) {
     }
   }, [props?.startDate, props?.selectDate?.format]);
 
+  /** Label of a radio option, which may be a string or { name }. */
+  const getRadioLabel = (data) => {
+    if (typeof data === "string") return data;
+    if (data && typeof data === "object" && data.name != null)
+      return String(data.name);
+    return "";
+  };
+
+  /** Whether a radio option matches the current response or the default (#65). */
+  const handleRadioCheck = (data) => {
+    if (props?.isPrefillModal) return false;
+    const current = widgetValue ? widgetValue : props.pos?.options?.defaultValue;
+    return isRadioSelected(current, data);
+  };
+
   const renderContext = {
     props,
     widgetCls,
@@ -278,7 +293,9 @@ function PlaceholderType(props) {
     date,
     defaultData,
     response,
-    selectWidgetCls
+    selectWidgetCls,
+    handleRadioCheck,
+    getRadioLabel
   };
   return (
     renderSignature(type, renderContext) ??

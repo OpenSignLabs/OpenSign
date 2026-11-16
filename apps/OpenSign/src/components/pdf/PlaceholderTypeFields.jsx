@@ -67,13 +67,44 @@ export function renderField(type, context) {
       };
       const isEditable =
         props.isPlaceholder || props.isSignYourself || props.isSelfSign;
+      // Signers type in place (#64): keep one character per cell and save the value.
+      const canTypeCells = !props.isPlaceholder && canEditInline && !isReadOnly;
+      const handleCellChange = (event, index) => {
+        const chars = Array.from({ length: count }, (_, i) => cells[i] || " ");
+        const typed = event.target.value.slice(-1);
+        chars[index] = typed || " ";
+        const next = chars.join("").trimEnd();
+        setwidgetValue(next);
+        if (props.setXyPosition) {
+          persistInlineValue(
+            next,
+            props.pos,
+            props.xyPosition,
+            props.index,
+            props.setXyPosition,
+            props.data?.Id || props.uniqueId,
+            false,
+            null,
+            props.pos?.options?.fontSize || 12,
+            props.pos?.options?.fontColor || "black",
+            null,
+            null
+          );
+        }
+        if (typed) {
+          event.target.parentElement?.nextElementSibling
+            ?.querySelector("input")
+            ?.focus();
+        }
+      };
       return (
         <CellsWidget
           isEnabled={iswidgetEnable}
           count={count}
           height={height}
           value={cells.join("")}
-          editable={isEditable}
+          editable={isEditable || canTypeCells}
+          onChange={canTypeCells ? handleCellChange : undefined}
           resizable={props?.isAllowModify}
           fontSize={fontSize}
           fontColor={fontColor}
