@@ -1,3 +1,9 @@
+import Draw from "./tab/Draw";
+import DefaultSignature from "./tab/DefaultSignature";
+import UploadImage from "./tab/UploadImage";
+import TypeSignature from "./tab/TypeSignature";
+import PenColorComponent from "./tab/PenColorComponent";
+
 /** Create the signature, initials, image, and stamp tab configuration. */
 export function createSignatureTabs(context) {
   const {
@@ -6,7 +12,8 @@ export function createSignatureTabs(context) {
     convertToImg, fontSelect, typedSignature, setPenColor, accesstoken, mysign,
     image, onImageChange, isImageSelect, isImageOrStamp, removeBgEnabled,
     setRemoveBgEnabled, previousWidgetRes, setTypedSignature, fontOptions,
-    setFontSelect, myStamp, savesigncheckbox
+    setFontSelect, myStamp, savesigncheckbox, isStampOrImage, myStampImg,
+    setIsImageSelect, isSignOrInitials
   } = context;
   const Tabs = [
       //My signature tab

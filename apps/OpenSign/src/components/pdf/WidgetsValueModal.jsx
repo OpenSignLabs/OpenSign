@@ -34,11 +34,14 @@ import {
 } from "../../constant/Utils";
 import moment from "moment";
 import {
+  setIsShowModal,
   setScrollTriggerId,
+  setPrefillImg,
   setPrefillImgLoad,
   setSignatureRes,
 } from "../../redux/reducers/widgetSlice";
 import { useDispatch, useSelector } from "react-redux";
+import Loader from "../../primitives/Loader";
 import {
 } from "../../utils";
 
@@ -51,7 +54,6 @@ const fontOptions = [
 ];
 const textInputcls =
   "op-input op-input-bordered op-input-sm focus:outline-none text-base-content hover:border-base-content w-full text-xs";
-const isTabCls = "bg-[#002864] text-white rounded-[15px] px-[10px] py-[4px]";
 
 function WidgetsValueModal(props) {
   const dispatch = useDispatch();
@@ -304,7 +306,7 @@ function WidgetsValueModal(props) {
     isImageOrStamp, xyPosition, uniqueId, prefillImg, currentUserName,
     kiosk_signer, props, typedSignature, setTypedSignature, setTextWidth,
     setTextHeight, dispatch, image, originalImage, isImageSelect, removeBgEnabled,
-    setOriginalImage, setIsLoader, setRemoveBgEnabled
+    setOriginalImage, setIsLoader, setRemoveBgEnabled, penColor
   });
   const { convertToImg, handleWidgetsResponse } = signatureEffects;
   const fieldActions = createFieldActions({
@@ -317,21 +319,6 @@ function WidgetsValueModal(props) {
     ExampleCustomInput, handleOnDateChange, getDropdownText,
     handleOnchangeTextBox, updateCells, handleCellsInput
   } = fieldActions;
-  const getWidgetType = createWidgetTypeRenderer({
-    currWidgetsDetails, myStamp, t, setIsTab, isTabEnabled, defaultSignImg,
-    uniqueId, autoSignAll, myInitial, penColor, canvasRef, handleSignatureChange,
-    penColors, convertToImg, fontSelect, typedSignature, setPenColor, mysign,
-    accesstoken, image, onImageChange, isImageSelect, isImageOrStamp,
-    removeBgEnabled, setRemoveBgEnabled, previousWidgetRes, setTypedSignature,
-    fontOptions, setFontSelect, isSignTypes, isLoader, isTab, widgetRef,
-    selectedCheckbox, handleCheckboxValue, textInputWidget, widgetValue,
-    handleOnchangeTextBox, textInputcls, handleValidation, cellsWidget,
-    handleCellsInput, hint, getDropdownText, startDate, months, getMonth, years,
-    getYear, handleOnDateChange, selectDate, setSelectDate, handleSaveDate,
-    widgetTypeTranslation, radioButtonWidget, handleRadioCheck, handleCheckRadio,
-    textWidget, drawWidget, props, savesigncheckbox
-  });
-
   const modalActions = useModalActions({
     currWidgetsDetails, props, setIsOptional, uniqueId, xyPosition, lastWidget,
     setIsLastWidget, isOptional, t, widgetValue, setIsShowValidation,
@@ -344,6 +331,22 @@ function WidgetsValueModal(props) {
     clearWidgetResponse, handleClickOnNext, handleDisable, handleclose, handleFinish,
     handleFinishButton, formatWidgetName
   } = modalActions;
+  const getWidgetType = createWidgetTypeRenderer({
+    currWidgetsDetails, myStamp, t, setIsTab, isTabEnabled, defaultSignImg,
+    uniqueId, autoSignAll, myInitial, penColor, canvasRef, handleSignatureChange,
+    penColors, convertToImg, fontSelect, typedSignature, setPenColor, mysign,
+    accesstoken, image, onImageChange, isImageSelect, isImageOrStamp,
+    removeBgEnabled, setRemoveBgEnabled, previousWidgetRes, setTypedSignature,
+    fontOptions, setFontSelect, isSignTypes, isLoader, isTab, widgetRef,
+    selectedCheckbox, handleCheckboxValue, textInputWidget, widgetValue,
+    handleOnchangeTextBox, textInputcls, handleValidation, cellsWidget,
+    handleCellsInput, hint, getDropdownText, startDate, months, getMonth, years,
+    getYear, handleOnDateChange, selectDate, setSelectDate, handleSaveDate,
+    widgetTypeTranslation, radioButtonWidget, handleRadioCheck, handleCheckRadio,
+    textWidget, drawWidget, props, savesigncheckbox, setIsImageSelect,
+    isSignOrInitials, ExampleCustomInput
+  });
+
 
   return (
     <>

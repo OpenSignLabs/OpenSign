@@ -13,7 +13,7 @@ export function useSignatureEffects(context) {
     previousWidgetRes: _unusedPrevious, currentUserName, kiosk_signer, props,
     typedSignature, setTypedSignature, setTextWidth, setTextHeight, dispatch,
     image, originalImage, isImageSelect, removeBgEnabled, setOriginalImage,
-    setIsLoader, setRemoveBgEnabled
+    setIsLoader, setRemoveBgEnabled, penColor
   } = context;
   useEffect(() => {
     const loadFont = async () => {
