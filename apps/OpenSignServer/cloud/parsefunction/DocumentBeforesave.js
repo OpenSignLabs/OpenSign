@@ -10,7 +10,10 @@ const SERVER_ONLY_FIELDS = ['VladSignatures', 'SignRevision', 'Seal', 'Certifica
 async function DocumentBeforesave(request) {
   if (!request.master) {
     for (const field of SERVER_ONLY_FIELDS) {
-      if (request.object.dirty(field)) {
+      // A new object has no id yet in beforeSave, and dirty() is true for
+      // every field of an object without an id, so check creates with has().
+      const set = request.original ? request.object.dirty(field) : request.object.has(field);
+      if (set) {
         throw new Parse.Error(Parse.Error.OPERATION_FORBIDDEN, `${field} is set by the server.`);
       }
     }

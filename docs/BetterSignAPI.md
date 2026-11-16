@@ -114,7 +114,10 @@ That is no longer accepted.)
 4. The verifier's `/verify` returns 200 for `{vlad, nonce: hex(TBS),
    signature}`. Anything else fails. A verifier 503 (it couldn't resolve the
    log) is returned as `503 verifier_unavailable`, so the app can retry; it
-   never counts as a pass.
+   never counts as a pass. A verifier `401 bad_secret` (it refused this
+   server's `BS_VERIFIER_SECRET` before looking at the signature) is returned
+   as `502 verifier_misconfigured`, not `access_denied`: fix the secret, not
+   the identity.
 5. The VLAD is still linked to an account (section 3).
 
 The token lasts `BS_API_TOKEN_TTL_S` (30 min). Only its SHA-256 is stored, and
@@ -133,13 +136,13 @@ Errors are `{ "error": "<code>", "message": "…" }`.
 | Method & path | Returns |
 | --- | --- |
 | `POST /auth/challenge` `{vlad}` | `{challengeId, challenge, origin, rp, receiverVlad, expiresAt}`, also for a VLAD with no active link; `403 not_linked` only for a broken link (two active rows, or a missing account); `503 not_configured` if `BS_API_RECEIVER_VLAD` is malformed |
-| `POST /auth/token` | `{access_token, token_type, expires_in, expires_at}`; `403 not_linked` (signature good, no active link: the VLAD is recorded for an admin, section 3), `401 access_denied`, `400 invalid_challenge`/`invalid_statement`, `503 verifier_unavailable` |
+| `POST /auth/token` | `{access_token, token_type, expires_in, expires_at}`; `403 not_linked` (signature good, no active link: the VLAD is recorded for an admin, section 3), `401 access_denied`, `400 invalid_challenge`/`invalid_statement`, `502 verifier_misconfigured`, `503 verifier_unavailable` |
 | `POST /auth/logout` | 204 |
 | `GET /me` | `{vlad, user: {id, email, name}}` |
 | `GET /documents?role=owner\|signer&status=…&limit=&skip=` | `{results: [Document], limit, skip}`. `status`: `draft`, `in_progress`, `completed`, `declined`, `expired`. `limit` ≤ 100 |
 | `GET /documents/:id` | `Document` if you own it or are a signer, else 404 |
 | `GET /documents/:id/file?version=current\|original` | the PDF. `X-Content-SHA256` is its hash |
-| `POST /documents/:id/signatures` | your desktop-signed PDF (section 5). `201` + `Document` + `signedSha256`; `409` with `stale_base`, `already_signed`, `not_your_turn`, `not_a_signer`, `completed`, `expired`…; `400 not_appended`/`no_signature`; `401 access_denied`; `503 verifier_unavailable` |
+| `POST /documents/:id/signatures` | your desktop-signed PDF (section 5). `201` + `Document` + `signedSha256`; `409` with `stale_base`, `already_signed`, `not_your_turn`, `not_a_signer`, `completed`, `expired`…; `400 not_appended`/`no_signature`; `401 access_denied`; `502 verifier_misconfigured`; `503 verifier_unavailable` |
 
 ```jsonc
 // Document

@@ -166,6 +166,14 @@ describe('desktop signing', () => {
       expect(r.status).toBe(503);
       expect((await docRow(docId)).VladSignatures).toBeUndefined();
     });
+
+    it('when the verifier refuses our secret: 502 verifier_misconfigured', async () => {
+      verifier.mode = 'bad_secret';
+      const r = await upload(B, docId, pdf, docsignStatement(bob, docId, base, pdf));
+      expect(r.status).toBe(502);
+      expect(r.json.error).toBe('verifier_misconfigured');
+      expect((await docRow(docId)).VladSignatures).toBeUndefined();
+    });
   });
 
   describe('desktop first, then online', () => {
@@ -533,6 +541,34 @@ describe('desktop signing', () => {
         body: { Note: 'owners can still edit other fields' },
       });
       expect(ok.status).toBe(200);
+    });
+
+    // Request Signatures creates the document with the user's session.
+    it('lets a user create a document, but not with them set', async () => {
+      const email = `owner-create-${tag()}@example.com`;
+      const userId = await mkUser(email);
+      const login = await req('POST', `${PARSE}/loginAs`, {
+        headers: MASTER,
+        body: { userId },
+      });
+      const session = { ...PUBLIC, 'X-Parse-Session-Token': login.json.sessionToken };
+      const doc = {
+        Name: 'created by a user',
+        CreatedBy: { __type: 'Pointer', className: '_User', objectId: userId },
+      };
+
+      const ok = await req('POST', `${PARSE}/classes/contracts_Document`, {
+        headers: session,
+        body: doc,
+      });
+      expect(ok.status).toBe(201);
+
+      const r = await req('POST', `${PARSE}/classes/contracts_Document`, {
+        headers: session,
+        body: { ...doc, VladSignatures: [] },
+      });
+      expect(r.status).toBe(400);
+      expect(r.json.code).toBe(119); // OPERATION_FORBIDDEN
     });
   });
 });

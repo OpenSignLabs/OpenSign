@@ -138,6 +138,16 @@ export async function uploadSignature(req, res) {
   });
   if (!v.ok) {
     log('upload_verify_failed', { vlad: vlad.slice(0, 16), docId: doc.id, code: v.code });
+    if (v.misconfigured) {
+      console.error('bsapi: the verifier refused BS_VERIFIER_SECRET (wrong or not set)');
+      return apiError(
+        res,
+        502,
+        'verifier_misconfigured',
+        "This server's BetterSign verifier secret is wrong or not set. Ask the administrator.",
+        { code: v.code }
+      );
+    }
     if (v.unavailable) {
       return apiError(
         res,
