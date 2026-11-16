@@ -25,18 +25,9 @@ export const getPrefillWidgets = (prefillData) => {
     const flatArray = filteredArray
       ?.flatMap((page) =>
         page.pos
-          .filter((widget) => {
-            if (widget.options?.isReadOnly) return false;
-            // Only pending fields. A checked checkbox stores [0], where 0 is a
-            // valid option index, so array length decides, not truthiness.
-            // Signature, stamp, initials and image keep their value in SignUrl.
-            if (widget.SignUrl) return false;
-            const value = widget.options?.response;
-            if (Array.isArray(value)) return value.length === 0;
-            if (typeof value === "string") return value.trim() === "";
-            if (typeof value === "number") return false;
-            return value == null;
-          })
+          // Every editable widget is shown, answered or not: this list renders
+          // the prefill form, it is not a "next field" walker (#83).
+          .filter((widget) => !widget.options?.isReadOnly)
           .map((widget) => ({
             widget,
             pageNumber: page.pageNumber,
