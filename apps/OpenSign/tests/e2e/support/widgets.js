@@ -2,6 +2,7 @@ let keyCounter = 1000;
 
 const SIZES = {
   "text input": { Width: 150, Height: 19 },
+  text: { Width: 150, Height: 19 },
   signature: { Width: 150, Height: 60 },
   initials: { Width: 50, Height: 50 },
   stamp: { Width: 150, Height: 60 },
@@ -122,3 +123,21 @@ export const initials = (name, y) => widget("initials", { x: 300, y, options: { 
  * @returns {object} Widget position.
  */
 export const image = (name, y) => widget("image", { x: 60, y, options: { name } });
+
+/**
+ * Build a stamp widget.
+ * @param {string} name Widget name.
+ * @param {number} y Vertical position.
+ * @returns {object} Widget position.
+ */
+export const stamp = (name, y) => widget("stamp", { x: 300, y, options: { name } });
+
+/**
+ * Build the plain text widget the owner fills in the prefill role.
+ * @param {string} name Widget name, shown as the label in the prefill modal.
+ * @param {number} y Vertical position.
+ * @param {object} [extra] Extra options, for example a saved response.
+ * @returns {object} Widget position.
+ */
+export const prefillText = (name, y, extra = {}) =>
+  widget("text", { x: 180, y, options: { name, fontSize: 12, fontColor: "black", ...extra } });

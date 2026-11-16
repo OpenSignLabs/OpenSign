@@ -86,3 +86,55 @@ export const createSignerDocument = async ({ name, pages, otp = false }) => {
   const created = await parseRequest("classes/contracts_Document", { method: "POST", body });
   return { docId: created.objectId, contactId: role.signerObjId };
 };
+
+/**
+ * Create a second user in the admin's tenant so the admin can act on it.
+ * @param {string} email Email and username of the new user.
+ * @returns {Promise<string>} Object id of the new `contracts_Users` row.
+ */
+export const createTeammate = async (email) => {
+  const env = readEnv();
+  const where = encodeURIComponent(JSON.stringify({ Email: env.E2E_ADMIN_EMAIL }));
+  const { results } = await parseRequest(`classes/contracts_Users?where=${where}&limit=1`);
+  const { objectId, createdAt, updatedAt, className, UserId, Email, Name, ...admin } = results[0];
+  const existing = await parseRequest(`classes/_User?where=${encodeURIComponent(JSON.stringify({ email }))}&limit=1`);
+  const userId = existing.results.length
+    ? existing.results[0].objectId
+    : (await parseRequest("users", { method: "POST", body: { username: email, email, password: env.E2E_ADMIN_PASSWORD } })).objectId;
+  const rows = await parseRequest(`classes/contracts_Users?where=${encodeURIComponent(JSON.stringify({ Email: email }))}&limit=1`);
+  if (rows.results.length) return rows.results[0].objectId;
+  const created = await parseRequest("classes/contracts_Users", {
+    method: "POST",
+    body: {
+      ...admin,
+      Email: email,
+      Name: "E2E Teammate",
+      UserRole: "contracts_User",
+      UserId: { __type: "Pointer", className: "_User", objectId: userId }
+    }
+  });
+  return created.objectId;
+};
+
+/**
+ * Create a template with a prefill role (widgets the owner fills) plus the signer role of the first template.
+ * @param {{name: string, prefillWidgets: object[]}} spec Template name and the owner's widgets.
+ * @returns {Promise<string>} Template object id.
+ */
+export const createPrefillTemplate = async ({ name, prefillWidgets }) => {
+  const { results } = await parseRequest("classes/contracts_Template?limit=1");
+  const { objectId, createdAt, updatedAt, className, ...base } = results[0];
+  const prefillRole = {
+    signerPtr: {},
+    signerObjId: "",
+    blockColor: "#e0e0e0",
+    Role: "prefill",
+    Id: 990001,
+    placeHolder: [{ pageNumber: 1, pos: prefillWidgets }]
+  };
+  const created = await parseRequest("classes/contracts_Template", {
+    method: "POST",
+    body: { ...base, Name: name, Placeholders: [prefillRole, ...base.Placeholders] }
+  });
+  return created.objectId;
+};
