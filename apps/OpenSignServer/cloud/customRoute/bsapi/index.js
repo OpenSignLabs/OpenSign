@@ -5,7 +5,8 @@
 // Express 5 passes rejected promises from async handlers to the error handler.
 
 import express from 'express';
-import { createChallenge, issueToken, logout, requireToken, apiError } from './auth.js';
+import { config, createChallenge, issueToken, logout, requireToken, apiError } from './auth.js';
+import { relayKey } from './relay.js';
 import { me, listDocuments, getDocument, getDocumentFile } from './documents.js';
 import { uploadSignature } from './signatures.js';
 
@@ -13,6 +14,12 @@ export const router = express.Router();
 
 router.post('/auth/challenge', createChallenge);
 router.post('/auth/token', issueToken);
+// The key docsign signs its "Sign on phone" requests with, so the app can
+// check a request names this site (docs/BetterSignPhoneSign.md).
+router.get('/relay-key', async (req, res) => {
+  const key = await relayKey();
+  res.json({ pub: key.pub.toString('base64url'), origin: config().origin });
+});
 
 router.use(requireToken);
 router.post('/auth/logout', logout);

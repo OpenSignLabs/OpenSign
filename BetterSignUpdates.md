@@ -21,6 +21,35 @@ operations are covered in [DEPLOYMENT.md](DEPLOYMENT.md).
 
 ## Change log
 
+### 2026-11-15: "Sign on phone" pushes to the BetterSign app
+
+- **No more phone number.** "Sign on phone" sends the field straight to the
+  signer's BetterSign app, addressed by the VLAD they signed in with. The
+  phone-number box and its coordinator Worker (`bs-opensign-sign`,
+  `REACT_APP_BS_SIGN_URL`) are gone. Design and protocol:
+  [docs/BetterSignPhoneSign.md](docs/BetterSignPhoneSign.md).
+- **Only for Sign in with BetterSign.** `bsidlogin` now records the session and
+  its VLAD in `bs_WebSession`. The button shows only while that session is the
+  current one, and the server refuses everyone else. Recipients on the emailed
+  link never see it.
+- **Delivered over the app's own connection.** The request goes through the
+  BetterSign relay (`relay.bettersign.ing`): straight to the app if it's open,
+  otherwise the relay wakes the phone with FCM. The modal shows which happened.
+- **Checked like any VLAD signature.** The app signs a new `bs-docsign-field`
+  statement (document, field, challenge) in the canonical bs-message form. The
+  verifier checks it before the image is applied. Statement, signature and image
+  are kept in `bs_PhoneSignRequest`.
+- **New:**
+  - cloud functions `bsphonesignstart` and `bsphonesignpoll`;
+  - `GET /api/v1/relay-key`, the key docsign signs requests with;
+  - settings `BS_RELAY_URL` and `BS_RELAY_SIGNING_KEY` (optional);
+  - migration `20261115180000-create_bs_phonesign_classes.cjs`.
+- **Needs the BetterSign app.** The app doesn't handle these requests yet
+  ([docs/BetterSignPhoneSign.md §6](docs/BetterSignPhoneSign.md#6-what-the-bettersign-app-needs)).
+  Until it does, the button says the app hasn't connected.
+- **The Sign on phone button used to send the field key as the document id.**
+  It now sends the real document id.
+
 ### 2026-11-15: seal completed documents with docsign's BetterSign identity
 
 - OpenSign's seal on a completed document, and on its completion certificate,
@@ -364,6 +393,24 @@ Frontend (`apps/OpenSign/`):
 | `src/pages/ForgetPassword.jsx`, `src/pages/ChangePassword.jsx`, `src/primitives/PasswordResetModal.jsx` | Deleted |
 | `public/locales/en/translation.json` | New `signer-link-hint` text |
 
+"Sign on phone" (2026-11-15):
+
+| File | Change |
+|---|---|
+| `apps/OpenSignServer/cloud/parsefunction/bsPhoneSign.js` | New. `bsphonesignstart` / `bsphonesignpoll` |
+| `apps/OpenSignServer/cloud/customRoute/bsapi/relay.js` | New. Relay client: signed calls, request envelope, HPKE open of the answer |
+| `apps/OpenSignServer/cloud/customRoute/bsapi/apiConfig.js` | New. Stored server-wide values, shared with `receiverVlad.js` |
+| `apps/OpenSignServer/cloud/customRoute/bsapi/statement.js` | `bs-docsign-field` statement |
+| `apps/OpenSignServer/cloud/customRoute/bsapi/index.js` | `GET /relay-key` |
+| `apps/OpenSignServer/utils/bsWebSession.js` | New. Which sessions came from Sign in with BetterSign |
+| `apps/OpenSignServer/cloud/parsefunction/bsidlogin.js` | Records the session; returns `bettersign: true` |
+| `apps/OpenSignServer/databases/migrations/20261115180000-create_bs_phonesign_classes.cjs` | New. `bs_WebSession`, `bs_PhoneSignRequest` |
+| `apps/OpenSign/src/components/pdf/PhoneSign.jsx` | Rewritten: no phone number, sends on open, shows delivery |
+| `apps/OpenSign/src/components/pdf/WidgetsValueModal.jsx` | Button only for a BetterSign session on a saved document |
+| `apps/OpenSign/src/pages/SignyourselfPdf.jsx`, `PdfRequestFiles.jsx` | Pass the document id |
+| `apps/OpenSign/src/pages/Login.jsx` | Marks the BetterSign session (`bsSession`) |
+| `docs/BetterSignPhoneSign.md` | New |
+
 Docs: `BetterSignUpdates.md` (this file) and a link from `README.md`.
 
 ---
@@ -386,6 +433,13 @@ Docs: `BetterSignUpdates.md` (this file) and a link from `README.md`.
   longer do anything useful and could be removed.
 - **The new `signer-link-hint` text is English only.** Other languages fall back to
   English.
+- **"Sign on phone" needs the BetterSign app to handle it.** The app has to
+  register with the relay for the identity and handle `docsign-sign-request`
+  ([docs/BetterSignPhoneSign.md §6](docs/BetterSignPhoneSign.md#6-what-the-bettersign-app-needs)).
+  Other gaps are listed in §8 of that doc:
+  - an approval isn't yet a VLAD entry in the audit trail;
+  - the request isn't sealed;
+  - sessions from before the deploy need a new sign-in.
 - **No sign-in through the BetterSign browser extension yet.** Sign in with BetterSign
   works with or without the extension, but always through bs-id's passkey page (a QR
   scan on a computer). The extension's "approve on your phone, no QR" sign-in

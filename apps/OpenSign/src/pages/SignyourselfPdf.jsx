@@ -1557,6 +1557,7 @@ function SignYourSelf() {
           index={widgetModalIndex} //current page index
           isSave={true}
           signatureTypes={signatureTypes}
+          docId={pdfDetails?.[0]?.objectId}
         />
       )}
       <WidgetNameModal

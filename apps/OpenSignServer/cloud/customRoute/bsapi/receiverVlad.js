@@ -12,9 +12,7 @@
 // server. Set BS_API_RECEIVER_VLAD to a real VLAD if OpenSign ever gets one.
 
 import crypto from 'node:crypto';
-
-const CONFIG_CLASS = 'bs_ApiConfig';
-const KEY = 'receiverVlad';
+import { storedConfigEntry } from './apiConfig.js';
 
 export const randomVlad = () => '8724' + crypto.randomBytes(32).toString('hex');
 
@@ -29,24 +27,8 @@ export async function ensureReceiverVlad() {
   await pending;
 }
 
-// The oldest row wins, so two machines creating one at once still agree.
-const oldest = () =>
-  new Parse.Query(CONFIG_CLASS)
-    .equalTo('Key', KEY)
-    .ascending('createdAt')
-    .addAscending('objectId')
-    .first({ useMasterKey: true });
-
 async function loadOrCreate() {
-  let row = await oldest();
-  if (!row) {
-    const created = new Parse.Object(CONFIG_CLASS);
-    created.set('Key', KEY);
-    created.set('Value', randomVlad());
-    created.setACL(new Parse.ACL());
-    await created.save(null, { useMasterKey: true });
-    row = await oldest();
-    console.log(JSON.stringify({ event: 'bsapi_receiver_vlad_created', vlad: row.get('Value') }));
-  }
-  process.env.BS_API_RECEIVER_VLAD = row.get('Value');
+  const { value, created } = await storedConfigEntry('receiverVlad', randomVlad);
+  if (created) console.log(JSON.stringify({ event: 'bsapi_receiver_vlad_created', vlad: value }));
+  process.env.BS_API_RECEIVER_VLAD = value;
 }

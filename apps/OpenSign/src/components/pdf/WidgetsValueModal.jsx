@@ -63,7 +63,7 @@ import {
   getInitials,
   isValidBase64
 } from "../../utils";
-import PhoneSign from "./PhoneSign";
+import PhoneSign, { isBetterSignSession } from "./PhoneSign";
 import Draw from "./tab/Draw";
 import DefaultSignature from "./tab/DefaultSignature";
 import UploadImage from "./tab/UploadImage";
@@ -106,15 +106,18 @@ function WidgetsValueModal(props) {
     setXyPosition,
     isSave,
     signatureTypes,
-    penColors
+    penColors,
+    docId
   } = props;
+  // Only for someone who signed in with BetterSign, on a saved document.
+  const canSignOnPhone = !!docId && isBetterSignSession();
   const previousWidgetRes = signatureResponse?.find(
     (item) => item.type === currWidgetsDetails?.type
   );
   const [penColor, setPenColor] = useState("");
   const [isOptional, setIsOptional] = useState(true);
   const [isTab, setIsTab] = useState("");
-  // Experiment #2: "Sign on phone" (BetterSign) modal visibility.
+  // "Sign on phone" (BetterSign) modal visibility.
   const [showPhoneSign, setShowPhoneSign] = useState(false);
   const [textWidth, setTextWidth] = useState(0);
   const [textHeight, setTextHeight] = useState(0);
@@ -424,9 +427,9 @@ function WidgetsValueModal(props) {
     setIsAutoSign(false);
   };
 
-  // Experiment #2: apply a signature image returned by the BetterSign phone
-  // handshake. Mirrors handleSaveSignature's write path (onSaveSign + setXyPosition)
-  // but the image comes from the phone instead of the draw/type pad.
+  // Apply the image the signer approved in their BetterSign app. Mirrors
+  // handleSaveSignature's write path (onSaveSign + setXyPosition) but the image
+  // comes from the phone instead of the draw/type pad.
   const applyPhoneSignature = (signImg) => {
     if (!signImg) return;
     const widgetsType = currWidgetsDetails?.type;
@@ -1533,7 +1536,7 @@ function WidgetsValueModal(props) {
                 <Box sx={{ height: "100%", mt: 1.5 }}>
                   {Tabs.find((t) => t.id === isTab)?.render()}
                 </Box>
-                {["signature", "initials"].includes(type) && (
+                {canSignOnPhone && ["signature", "initials"].includes(type) && (
                   <Box sx={{ mx: 1.5, my: 1 }}>
                     <Button
                       type="button"
@@ -1547,11 +1550,9 @@ function WidgetsValueModal(props) {
                     <PhoneSign
                       isOpen={showPhoneSign}
                       onClose={() => setShowPhoneSign(false)}
+                      docId={docId}
                       fieldKey={currWidgetsDetails?.key}
-                      docId={currWidgetsDetails?.key}
-                      docTitle={
-                        typeof document !== "undefined" ? document.title : ""
-                      }
+                      kind={type}
                       onSigned={(img) => {
                         setShowPhoneSign(false);
                         applyPhoneSignature(img);

@@ -15,12 +15,12 @@ alternative) running as a split frontend/backend across **Cloudflare** and **Fly
 | ↳ alias | https://opensign.bettersign.ing → **301 redirects** to docsign (Page Rule) | Cloudflare |
 | **Backend API** (Parse Server) | https://docsign-bettersign-api.fly.dev | Fly.io (Docker) |
 | **Database** (MongoDB) | `docsign-bettersign-mongo.internal:27017` (private, no public IP) | Fly.io (Docker) |
-| **BetterSign** signing coordinator | https://bs-opensign-sign.brendonp.workers.dev (separate `bs-opensign` project) | Cloudflare Worker + Durable Object |
+| **BetterSign relay** ("Sign on phone") | https://relay.bettersign.ing (BetterSignApps `server/bs-fill-relay`) | Cloudflare Worker + Durable Object |
 
-> **docsign.bettersign.ing is the single canonical URL.** The BetterSign Worker's CORS
-> `ALLOWED_ORIGIN` is `https://docsign.bettersign.ing`, so phone-signing/login only work
-> from that origin — `opensign.bettersign.ing` 301-redirects to it so every entry point
-> lands on the working domain.
+> **docsign.bettersign.ing is the single canonical URL.** bs-id's `bs-opensign` client
+> only redirects back to it, so Sign in with BetterSign only works from that origin —
+> `opensign.bettersign.ing` 301-redirects to it so every entry point lands on the working
+> domain.
 
 Health checks:
 - `curl https://docsign.bettersign.ing/` → app shell (HTTP 200)
@@ -153,10 +153,10 @@ at the cost of ~10–30 s cold starts) and/or replace the Mongo app with **Mongo
 10. **`cf` is a beta CLI.** The deploy flow is config-file driven (`cloudflare.config.ts` + `wrangler.config.ts`); quirks are documented in §8.
 11. **Document upload "body stream is locked" — root cause was a Parse SDK bug exposed by the split-origin setup (FIXED).** The real cause is a bug in **parse-js 8.6.0** `RESTController.js`: when a `progress` callback is passed to `Parse.File.save()` (OpenSign always does), the SDK calls `response.body.getReader()` (locking the stream) *before* checking `Content-Length`, then — when it reads `Content-Length` as `0` — calls `response.json()` on the now-locked body → `Failed to execute 'json' on 'Response': body stream is locked`. `Content-Length` is **not** readable cross-origin unless exposed, and even when exposed browsers don't reliably surface it, so our **split-origin** deployment (app on `opensign.bettersign.ing`, API on `*.fly.dev`) makes the SDK always take the buggy `length === 0` branch. Same-origin OpenSign (hosted) reads `Content-Length` fine, so it never trips — that's why it's upstream-latent. **Fix:** `apps/OpenSign/patches/parse+8.6.0.patch` (via `patch-package`, wired into `postinstall`) moves `getReader()` into the `length > 0` branch so the `length === 0` path can `response.json()` on an unlocked body. Verified in-browser (repro throws; patched logic returns the file URL) and the live bundle serves the patched chunk. The same bug exists in `ParseFile.download` but OpenSign doesn't use that path, so it's left alone.
 12. **Public file uploads are enabled** (`index.js` → `fileUpload.enableForPublic`). OpenSign's frontend saves `Parse.File` objects without a session token and doesn't hydrate `Parse.User.current()`. Parse Server's secure default (`enableForPublic:false`) rejects unauthenticated uploads with code 130; enabling public uploads matches OpenSign's hosted config so anonymous/guest flows work. Trade-off: anyone who can reach the API can POST files to storage. Set the Fly secret `FILE_UPLOAD_PUBLIC=false` to lock it back down.
-13. **BetterSign (phone sign + login) — integrated; `docsign` origin only.** This fork ships a BetterSign integration (sign a field / log in via phone) that calls a separate coordinator Worker (`bs-opensign-sign`, in your own `bs-opensign` project — not this repo). OpenSign-side wiring is complete: the frontend component (`PhoneSign.jsx`), the `bettersignlogin` cloud fn, and the `BS_LOGIN_SECRET` Fly secret are all present. The login page's push-to-phone "Log in with BetterSign" button (`BetterSignLogin.jsx`) was removed in favour of the passkey sign-in (item 14); `bettersignlogin` stays for the Worker and its `/loginAs` helper is reused by `bsidlogin`.
-    - **"failed to fetch" root cause (FIXED): the coordinator Worker URL was never baked into the deployed bundle.** `REACT_APP_BS_SIGN_URL` was added to `apps/OpenSign/.env` *after* the frontend had already been built/deployed, and there's no runtime `window.RUNTIME_ENV`, so `signBaseUrl()` resolved to `""` and the signing/login fetches never reached the Worker. Fix: rebuild with the env var present (verified the URL is now baked into the live chunks) and redeploy. **Any change to `apps/OpenSign/.env` requires a frontend rebuild + redeploy** — these values are compile-time, not runtime.
-    - **Origin constraint:** the Worker's CORS `ALLOWED_ORIGIN` is `https://docsign.bettersign.ing`, so signing/login only work from that origin. `docsign` is therefore the single canonical URL and `opensign.bettersign.ing` 301-redirects to it (Cloudflare Page Rule + a proxied `A 192.0.2.1` DNS record for opensign so the rule can fire — a Worker custom domain would otherwise intercept before the rule).
-    - **Remaining operational gotchas, on the Worker/phone side (not this repo):** (a) the signer's phone must be **registered** in the BetterSign app first, else `start` returns `404 "No BetterSign device registered…"` (this is the current expected response for an unregistered test number); (b) the Worker's `VERIFIER_SECRET` must be set or `poll` never reaches `authorized`. To allow another signing origin later, update `ALLOWED_ORIGIN` in the `bs-opensign` Worker and redeploy it.
+13. **Sign on phone (BetterSign).** A signer who signed in with BetterSign can approve a signature or initials field in their BetterSign app. The API pushes the request to the app through the BetterSign relay (`https://relay.bettersign.ing`), addressed by the VLAD from their sign-in: straight to the app if it's open, else the relay wakes the phone with FCM. No phone number, no separate Worker. Design and protocol: [docs/BetterSignPhoneSign.md](docs/BetterSignPhoneSign.md).
+    - **Server settings (all optional):** `BS_RELAY_URL` (default `https://relay.bettersign.ing`) and `BS_RELAY_SIGNING_KEY` (docsign's relay key, an Ed25519 seed in hex; unset, one is generated once and kept in `bs_ApiConfig`). The app checks requests against `GET /api/v1/relay-key`.
+    - **Replaced:** the phone-number flow through the `bs-opensign-sign` coordinator Worker and `REACT_APP_BS_SIGN_URL`. The frontend no longer reads `REACT_APP_BS_SIGN_URL`; it can be dropped from `apps/OpenSign/.env`. The `bettersignlogin` cloud fn and `BS_LOGIN_SECRET` stay for now (`bsidlogin` reuses its `/loginAs` helper).
+    - **Needs the phone app:** the BetterSign app has to register with the relay and handle the `docsign-sign-request` content type (docs/BetterSignPhoneSign.md §6). Until it does, the button reports that the app hasn't connected.
 14. **Sign in with BetterSign (bs-id OIDC).** The login page's BetterSign sign-in, through bs-id (`https://id.bettersign.ing`, BetterSignApps `apps/Experiments/bs-id`): the passkey on the phone (QR scan or same device) instead of a push. The browser runs authorization code + PKCE (`apps/OpenSign/src/constant/bsid.js`) and returns to `/auth/bettersign/callback`; the `bsidlogin` cloud fn exchanges the code at bs-id `/token`, verifies the ES256 id_token against `/jwks` (`iss`, `aud`, `nonce`, `exp`) and signs in the account its `vlad` maps to.
     - **Who may sign in:** `BS_ID_USERS` in `apps/OpenSignServer/fly.toml` maps `{ "<vladHex>": "<account email>" }`. The account must already exist; unknown VLADs are refused and logged as `{"event":"bsidlogin_denied","vlad":…}` (`fly logs`), so the full VLAD can be copied from there into the map. Edit the map, then `fly deploy` the API.
     - **bs-id side:** the clients `bs-opensign` (callback `https://docsign.bettersign.ing/auth/bettersign/callback`) and `bs-opensign-dev` (`http://localhost:3000/...`) must be in bs-id's client registry, deployed with `npx wrangler deploy --env prod` in BetterSignApps.
@@ -193,9 +193,8 @@ cat > wrangler.jsonc <<'JSON'
 JSON
 npx wrangler deploy
 ```
-`apps/OpenSign/.env` (gitignored) must hold `REACT_APP_APPID=729aeaeb26bf`,
-`REACT_APP_SERVERURL=https://docsign-bettersign-api.fly.dev/app` and
-`REACT_APP_BS_SIGN_URL=https://bs-opensign-sign.brendonp.workers.dev` before the build.
+`apps/OpenSign/.env` (gitignored) must hold `REACT_APP_APPID=729aeaeb26bf`
+and `REACT_APP_SERVERURL=https://docsign-bettersign-api.fly.dev/app` before the build.
 
 ### Redeploy / restart the backend
 The Fly apps belong to the **gtc6244@gmail.com** Fly account (`fly auth whoami`); other

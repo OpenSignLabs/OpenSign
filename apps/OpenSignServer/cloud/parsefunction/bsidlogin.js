@@ -19,12 +19,13 @@
 //   BS_ID_USERS      JSON { "<vladHex>": "<account email>" } (see utils/bsIdentity.js)
 //
 // Params: { code, codeVerifier, redirectUri, nonce }
-// Returns: { sessionToken, objectId, email }
+// Returns: { sessionToken, objectId, email, bettersign: true }
 
 import crypto from 'node:crypto';
 import axios from 'axios';
 import { sessionViaLoginAs } from './bettersignlogin.js';
 import { accountForVlad } from '../../utils/bsIdentity.js';
+import { recordBsIdSession } from '../../utils/bsWebSession.js';
 
 const B64URL_RE = /^[A-Za-z0-9_-]+$/;
 const JWKS_TTL_MS = 10 * 60 * 1000;
@@ -142,8 +143,10 @@ export default async function bsidlogin(request) {
   }
   const { user, email } = account;
 
-  // 4. Session for that account.
+  // 4. Session for that account, remembered as a BetterSign session (for
+  // "Sign on phone", utils/bsWebSession.js).
   const login = await sessionViaLoginAs(user.id);
+  await recordBsIdSession(login.sessionToken, vlad, user.id);
   console.log(JSON.stringify({ event: 'bsidlogin', vlad: vlad.slice(0, 16), userId: user.id }));
-  return { sessionToken: login.sessionToken, objectId: user.id, email };
+  return { sessionToken: login.sessionToken, objectId: user.id, email, bettersign: true };
 }
