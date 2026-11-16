@@ -318,6 +318,18 @@ function WidgetsValueModal(props) {
     ExampleCustomInput, handleOnDateChange, getDropdownText,
     handleOnchangeTextBox, updateCells, handleCellsInput
   } = fieldActions;
+  const modalActions = useModalActions({
+    currWidgetsDetails, props, setIsOptional, uniqueId, xyPosition, lastWidget,
+    setIsLastWidget, isOptional, t, widgetValue, setIsShowValidation,
+    isShowValidation, dispatch, setXyPosition, signature, image, myInitial,
+    defaultSignImg, myStamp, typedSignature, handleSaveBtn, isSave, handleClear,
+    setIsFinish, setPageNumber: props.setPageNumber, selectedCheckbox, isTab, widgetTypeTranslation
+  });
+  const {
+    handleCheckOptional, HandleRequiredField, validateExpression, handleValidation,
+    clearWidgetResponse, handleClickOnNext, handleDisable, handleclose, handleFinish,
+    handleFinishButton, formatWidgetName
+  } = modalActions;
   const getWidgetType = createWidgetTypeRenderer({
     currWidgetsDetails, myStamp, t, setIsTab, isTabEnabled, defaultSignImg,
     uniqueId, autoSignAll, myInitial, penColor, canvasRef, handleSignatureChange,
@@ -334,18 +346,6 @@ function WidgetsValueModal(props) {
     isSignOrInitials
   });
 
-  const modalActions = useModalActions({
-    currWidgetsDetails, props, setIsOptional, uniqueId, xyPosition, lastWidget,
-    setIsLastWidget, isOptional, t, widgetValue, setIsShowValidation,
-    isShowValidation, dispatch, setXyPosition, signature, image, myInitial,
-    defaultSignImg, myStamp, typedSignature, handleSaveBtn, isSave, handleClear,
-    setIsFinish, setPageNumber: props.setPageNumber, selectedCheckbox, isTab, widgetTypeTranslation
-  });
-  const {
-    handleCheckOptional, HandleRequiredField, validateExpression, handleValidation,
-    clearWidgetResponse, handleClickOnNext, handleDisable, handleclose, handleFinish,
-    handleFinishButton, formatWidgetName
-  } = modalActions;
 
   return (
     <>
