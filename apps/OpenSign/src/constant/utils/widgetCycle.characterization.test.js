@@ -1,8 +1,10 @@
 // @vitest-environment node
-// Characterization + spec tests for #68:
-// - lock the observable behavior of UtilsPart04 / UtilsPart08
-// - specify the dependency-free cycle break (Part04 <-> Part08)
+// Characterization + spec tests for #68 / #69:
+// - lock the observable behavior of widgetSizing / widgetInlineEditing
+//   (ex-UtilsPart04 / ex-UtilsPart08)
+// - specify the dependency-free cycle break (no sizing <-> editing import)
 // - lock the facade export names (constant/Utils.js)
+// - lock the #69 responsibility renames (old UtilsPartNN paths are gone)
 import { describe, it, expect } from "vitest";
 import fs from "node:fs";
 import path from "node:path";
@@ -21,8 +23,8 @@ globalThis.window = globalThis.window || {
   navigator: { userAgent: "vitest" }
 };
 
-const Part04 = await import("./UtilsPart04.js");
-const Part08 = await import("./UtilsPart08.js");
+const Part04 = await import("./widgetSizing.js");
+const Part08 = await import("./widgetInlineEditing.js");
 
 describe("#68 facade exports stay unchanged", () => {
   it("keeps every Part04/Part08 export name in constant/Utils.js", () => {
@@ -49,16 +51,45 @@ describe("#68 facade exports stay unchanged", () => {
 });
 
 describe("#68 dependency-free cycle break", () => {
-  it("UtilsPart04 no longer imports UtilsPart08", () => {
-    expect(/from\s+["']\.\/UtilsPart08(\.js)?["']/.test(read("UtilsPart04.js"))).toBe(
-      false
-    );
+  it("widgetSizing no longer imports widgetInlineEditing", () => {
+    expect(
+      /from\s+["']\.\/widgetInlineEditing(\.js)?["']/.test(
+        read("widgetSizing.js")
+      )
+    ).toBe(false);
   });
 
-  it("UtilsPart08 no longer imports UtilsPart04", () => {
-    expect(/from\s+["']\.\/UtilsPart04(\.js)?["']/.test(read("UtilsPart08.js"))).toBe(
-      false
-    );
+  it("widgetInlineEditing no longer imports widgetSizing", () => {
+    expect(
+      /from\s+["']\.\/widgetSizing(\.js)?["']/.test(
+        read("widgetInlineEditing.js")
+      )
+    ).toBe(false);
+  });
+
+  it("#69 old UtilsPart04/08 paths are gone", () => {
+    expect(fs.existsSync(path.join(here, "UtilsPart04.js"))).toBe(false);
+    expect(fs.existsSync(path.join(here, "UtilsPart08.js"))).toBe(false);
+  });
+
+  it("#69 responsibility modules exist", () => {
+    for (const name of [
+      "widgetSizing.js",
+      "widgetState.js",
+      "widgetInput.js",
+      "widgetInlineEditing.js",
+      "signatureSave.js",
+      "placeholderTools.js",
+      "pdfFlatten.js",
+      "pdfFieldDrawing.js",
+      "widgetResponses.js",
+      "pdfResponse.js",
+      "signerMail.js",
+      "widgetLifecycle.js",
+      "widgetPrimitives.js"
+    ]) {
+      expect(fs.existsSync(path.join(here, name)), `${name} exists`).toBe(true);
+    }
   });
 
   it("both sides share one dependency-free primitive module", () => {

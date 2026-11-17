@@ -1,6 +1,6 @@
 import { drawWidget } from "./UtilsPart01.js";
-import { convertTextToImg } from "./UtilsPart08.js";
-import { placeholderHeight } from "./UtilsPart12.js";
+import { convertTextToImg } from "./widgetInlineEditing.js";
+import { placeholderHeight } from "./placeholderTools.js";
 
 export function onSaveSign(
   type,

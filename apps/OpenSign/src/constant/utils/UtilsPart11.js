@@ -4,7 +4,7 @@ import { drawWidget } from "./UtilsPart01.js";
 import { radioButtonWidget } from "./UtilsPart01.js";
 import { fileasbytes } from "./UtilsPart01.js";
 import { isBase64, isEmptyValue } from "./UtilsPart10.js";
-import { convertBase64ToImg } from "./UtilsPart09.js";
+import { convertBase64ToImg } from "./signatureSave.js";
 import { drawWidgetPosition } from "./pdfWidgetDrawing";
 
 export const embedWidgetsToDoc = async (
