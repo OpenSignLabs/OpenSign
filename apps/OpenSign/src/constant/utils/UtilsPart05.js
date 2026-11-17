@@ -5,6 +5,7 @@ import { fetchImageBase64 } from "./UtilsPart10.js";
 import { changeImageWH } from "./UtilsPart10.js";
 import { getTenantDetails } from "./UtilsPart13.js";
 import { widgets } from "./UtilsPart02.js";
+import { DEFAULT_COMPLETION_DAYS } from "../runtimeConfig.js";
 
 export const signPdfFun = async (
   base64Url,
@@ -190,7 +191,7 @@ export const createDocument = async (
       SendInOrderStrict: Doc?.SendInOrderStrict || false,
       IsTourEnabled: Doc?.IsTourEnabled || false,
       AllowModifications: Doc?.AllowModifications || false,
-      TimeToCompleteDays: parseInt(Doc?.TimeToCompleteDays) || 15,
+      TimeToCompleteDays: parseInt(Doc?.TimeToCompleteDays) || DEFAULT_COMPLETION_DAYS,
       DocSentAt: { __type: "Date", iso: isoDate },
       ...SignatureType,
       ...NotifyOnSignatures,

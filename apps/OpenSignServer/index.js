@@ -15,7 +15,7 @@ import { app as customRoute } from './cloud/customRoute/customApp.js';
 import { exec } from 'child_process';
 import { createTransport } from 'nodemailer';
 import { appName, cloudServerUrl, serverAppId, smtpenable, smtpsecure, useLocal } from './Utils.js';
-import { resolveDeploymentBrand } from './utils/brandContext.js';
+import { REMINDER_INTERVAL_MS, resolveDeploymentBrand } from './utils/brandContext.js';
 import { SSOAuth } from './auth/authadapter.js';
 import runDbMigrations from './migrationdb/index.js';
 import { validateSignedLocalUrl } from './cloud/parsefunction/getSignedUrl.js';
@@ -371,6 +371,6 @@ if (!process.env.TESTING) {
     };
     // run once after startup (delayed) then hourly
     setTimeout(runReminders, 60000);
-    setInterval(runReminders, 60 * 60 * 1000);
+    setInterval(runReminders, REMINDER_INTERVAL_MS);
   });
 }

@@ -71,6 +71,7 @@ import * as utils from "../utils";
 import CustomizeMail from "../components/pdf/CustomizeMail";
 import { resetWidgetState, setPrefillImg } from "../redux/reducers/widgetSlice";
 import ShareButton from "../primitives/ShareButton";
+import { DEFAULT_COMPLETION_DAYS } from "../constant/runtimeConfig";
 import { useWindowSize } from "../hook/useWindowSize";
 import { useScroll } from "../context/ScrollPdfContext";
 
@@ -891,7 +892,7 @@ const TemplatePlaceholder = () => {
       }
       templateCls.set(
         "TimeToCompleteDays",
-        parseInt(pdfDetails?.[0]?.TimeToCompleteDays) || 15
+        parseInt(pdfDetails?.[0]?.TimeToCompleteDays) || DEFAULT_COMPLETION_DAYS
       );
       if (pdfDetails[0]?.Bcc?.length) {
         const Bcc = pdfDetails[0]?.Bcc.map((x) => ({
@@ -1014,7 +1015,8 @@ const TemplatePlaceholder = () => {
               ? pdfDetails[0]?.NotifyOnSignatures
               : false,
           TimeToCompleteDays:
-            parseInt(pdfDetails?.[0]?.TimeToCompleteDays) || 15,
+            parseInt(pdfDetails?.[0]?.TimeToCompleteDays) ||
+            DEFAULT_COMPLETION_DAYS,
           ...Bcc,
           ...Cc,
           ...RedirectUrl
@@ -1410,7 +1412,8 @@ const TemplatePlaceholder = () => {
             ? updateTemplate?.[0]?.NotifyOnSignatures
             : false,
         TimeToCompleteDays:
-          parseInt(updateTemplate?.[0]?.TimeToCompleteDays) || 15,
+          parseInt(updateTemplate?.[0]?.TimeToCompleteDays) ||
+          DEFAULT_COMPLETION_DAYS,
         RemindOnceInEvery:
           parseInt(updateTemplate?.[0]?.RemindOnceInEvery) || 0,
         ...penColors,
