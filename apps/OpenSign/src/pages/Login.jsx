@@ -11,11 +11,11 @@ import Alert from "../primitives/Alert";
 import { appInfo } from "../constant/appinfo";
 import { fetchAppInfo } from "../redux/reducers/infoReducer";
 import { showTenant } from "../redux/reducers/ShowTenant";
+import { getAppLogo } from "../constant/utils/UtilsPart13.js";
 import {
-  getAppLogo,
   saveLanguageInLocal,
   usertimezone
-} from "../constant/Utils";
+} from "../constant/utils/UtilsPart01.js";
 import Loader from "../primitives/Loader";
 import { useTranslation } from "react-i18next";
 import SelectLanguage from "../components/pdf/SelectLanguage";

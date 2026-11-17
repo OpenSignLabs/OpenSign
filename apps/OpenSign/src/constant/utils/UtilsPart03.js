@@ -1,5 +1,5 @@
 import { format } from "date-fns-tz";
-import { addPreferenceOpt } from "../../utils";
+import { addPreferenceOpt } from "../../utils/widgetUtils";
 import { textInputWidget } from "./UtilsPart01.js";
 import { drawWidget } from "./UtilsPart01.js";
 import { textWidget } from "./UtilsPart01.js";

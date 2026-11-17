@@ -1,8 +1,8 @@
 // Public facade for the OpenSign utility modules.
-export { fontsizeArr, getFontSizeForHeight, fontColorArr, isMobile, isTab, isHighResolution, isTabAndMobile, textInputWidget, drawWidget, textWidget, radioButtonWidget, isRadioSelected, cellsWidget, getEnv, defaultMailBody, defaultMailSubject, nonPresentMaskCss, randomId, range, getYear, years, months, fileasbytes, openInNewTab, getUserCountry, getSecureUrl, generateId, removeTrailingSegment, color } from "./utils/UtilsPart01.js";
-export { nameColor, toDataUrl, getDrive, pdfNewWidthFun, contractUsers, handleWidgetResize, widgets, getDate, selectFormat } from "./utils/UtilsPart02.js";
+export { fontsizeArr, getFontSizeForHeight, fontColorArr, isMobile, isTab, isHighResolution, isTabAndMobile, textInputWidget, drawWidget, textWidget, radioButtonWidget, isRadioSelected, cellsWidget, getEnv, defaultMailBody, defaultMailSubject, nonPresentMaskCss, randomId, range, getYear, years, months, fileasbytes, openInNewTab, getUserCountry, getSecureUrl, generateId, removeTrailingSegment, color, saveLanguageInLocal, usertimezone, contractUsers, getBase64FromUrl } from "./utils/UtilsPart01.js";
+export { nameColor, toDataUrl, getDrive, pdfNewWidthFun, handleWidgetResize, widgets, getDate, selectFormat } from "./utils/UtilsPart02.js";
 export { changeDateToMomentFormat, getSignerPages, addWidgetOptions, addWidgetSelfsignOptions } from "./utils/UtilsPart03.js";
-export { defaultWidthHeight, getBase64FromUrl, arrayBufferToBase64, getBase64FromIMG, convertPNGtoJPEG, handleSignYourselfWidgetResize } from "./utils/UtilsPart04.js";
+export { defaultWidthHeight, arrayBufferToBase64, getBase64FromIMG, convertPNGtoJPEG, handleSignYourselfWidgetResize } from "./utils/UtilsPart04.js";
 export { signPdfFun, createDocument, getFirstLetter } from "./utils/UtilsPart05.js";
 export { darkenColor, addZIndex, nextPendingWidget } from "./utils/UtilsPart06.js";
 export { onChangeInput } from "./utils/UtilsPart07.js";
@@ -13,8 +13,8 @@ export { embedWidgetsToDoc } from "./utils/UtilsPart11.js";
 export { urlValidator, placeholderWidth, placeholderHeight, contactBook, contractDocument, addDefaultSignatureImg, getMonth, handleCopyNextToWidget, getFileName } from "./utils/UtilsPart12.js";
 export { getAppLogo, getTenantDetails, replaceMailVaribles, copytoData, convertPdfArrayBuffer, handleSendOTP, fetchUrl, getSignedUrl, fetchBase64, handleDownloadPdf, fileNameWithUnderscore } from "./utils/UtilsPart13.js";
 export { handleToPrint, handleDownloadCertificate, escapeRegExp, findContact } from "./utils/UtilsPart14.js";
-export { getContainerScale, saveLanguageInLocal, getDefaultSignature, rotatePdfPage, base64ToArrayBuffer, removeBase64Prefix, convertBase64ToFile, isCustomFileAdapter, pendingButtonZoomScrollRef, onClickZoomIn, onClickZoomOut, handleRemoveWidgets, handleRotateWarning } from "./utils/UtilsPart15.js";
-export { generateTitleFromFilename, signatureTypes, handleSignatureType, formatDateToDdMmmYyyy, deletePdfPage, reorderPdfPages, generatePdfName, formatTimeInTimezone, usertimezone, handleHeighlightWidget } from "./utils/UtilsPart16.js";
+export { getContainerScale, getDefaultSignature, rotatePdfPage, base64ToArrayBuffer, removeBase64Prefix, convertBase64ToFile, isCustomFileAdapter, pendingButtonZoomScrollRef, onClickZoomIn, onClickZoomOut, handleRemoveWidgets, handleRotateWarning } from "./utils/UtilsPart15.js";
+export { generateTitleFromFilename, signatureTypes, handleSignatureType, formatDateToDdMmmYyyy, deletePdfPage, reorderPdfPages, generatePdfName, formatTimeInTimezone, handleHeighlightWidget } from "./utils/UtilsPart16.js";
 export { flattenPdf } from "./utils/UtilsPart17.js";
 export { mailTemplate, formatDateTime, updateDateWidgetsRes, selectCheckbox, checkRegularExpress, handleUnlinkSigner } from "./utils/UtilsPart19.js";
 export { getOriginalWH, handleCheckResponse, decryptPdf, base64ToFile, getFileAsArrayBuffer } from "./utils/UtilsPart20.js";

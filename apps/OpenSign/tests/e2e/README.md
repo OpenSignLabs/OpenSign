@@ -48,8 +48,9 @@ npx playwright test -c playwright.e2e.config.js
 - The password-reset copy indicator.
 - The OTP login from the emailed link: request the code, verify it, wrong
   code and resend.
+- The login page loads without the PDF editor bundle (react-datepicker
+  code and the PDF worker only load on PDF pages, production build).
 
 ## Not covered yet
 
-- QES, and whether the PDF editor bundle loads only on its own pages
-  (needs a production build, not the Vite dev server).
+- QES.

@@ -1,5 +1,5 @@
 import { format } from "date-fns-tz";
-import { applyNumberFormulasToPages } from "../../utils";
+import { applyNumberFormulasToPages } from "../../utils/widgetUtils";
 import { textInputWidget } from "./UtilsPart01.js";
 import { getDuplicateAutoApplyName } from "./UtilsPart01.js";
 import { reuseUnchangedWidgets } from "./UtilsPart06.js";

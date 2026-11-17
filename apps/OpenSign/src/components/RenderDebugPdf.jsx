@@ -1,5 +1,8 @@
 import React from "react";
-import { Document, Page } from "react-pdf";
+import { Document, Page, pdfjs } from "react-pdf";
+
+// The worker URL lives with the PDF chunk, not the login bundle (#55).
+pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/legacy/build/pdf.worker.min.mjs`;
 import { Stage, Layer, Rect, Text } from "react-konva";
 import { useTranslation } from "react-i18next";
 const RenderDebugPdf = (props) => {
