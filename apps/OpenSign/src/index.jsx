@@ -2,7 +2,10 @@ import ReactDOM from "react-dom/client";
 import "./index.css";
 import "./styles/dark-theme-improvements.css";
 import App from "./App";
-import { showUpgradeProgress, hideUpgradeProgress } from "./utils";
+import {
+  showUpgradeProgress,
+  hideUpgradeProgress
+} from "./utils/upgradeProgress";
 import { Provider } from "react-redux";
 import { store } from "./redux/store";
 import Parse from "parse";

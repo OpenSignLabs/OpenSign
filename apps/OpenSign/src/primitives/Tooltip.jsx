@@ -1,6 +1,6 @@
 import React from "react";
 import { Tooltip as ReactTooltip } from "react-tooltip";
-import { openInNewTab } from "../constant/Utils";
+import { openInNewTab } from "../constant/utils/UtilsPart01.js";
 const Tooltip = ({
   id,
   message,

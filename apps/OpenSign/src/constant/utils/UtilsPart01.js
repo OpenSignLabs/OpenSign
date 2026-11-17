@@ -1,4 +1,5 @@
 import Parse from "parse";
+import axios from "axios";
 import { resolveMailBrandPresentation } from "../mailBrand";
 
 export const fontsizeArr = [2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28];
@@ -284,3 +285,57 @@ export const color = [
   "#66ccff",
   "#ffffcc"
 ];
+
+// Login-path helpers live here so the login bundle never pulls the pdf-lib
+// modules below (UtilsPart02/04/08/10/11/15-19). They are re-exported from
+// the ../Utils facade, so every existing import keeps working (#55).
+export const saveLanguageInLocal = (i18n) => {
+  const detectedLanguage = i18n.language || "en";
+  localStorage.setItem("i18nextLng", detectedLanguage);
+};
+
+export const usertimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+export const contractUsers = async () => {
+  try {
+    const url = `${localStorage.getItem("baseUrl")}functions/getUserDetails`;
+    const parseAppId = localStorage.getItem("parseAppId");
+    const accesstoken = localStorage.getItem("accesstoken");
+    const token = { "X-Parse-Session-Token": accesstoken };
+    const headers = {
+      headers: {
+        "Content-Type": "application/json",
+        "X-Parse-Application-Id": parseAppId,
+        ...token
+      }
+    };
+    const userDetails = await axios.post(url, {}, headers);
+    let data = [];
+    if (userDetails?.data?.result) {
+      const json = JSON.parse(JSON.stringify(userDetails.data.result));
+      data.push(json);
+    }
+    return data;
+  } catch (err) {
+    console.log("Err in getUserDetails cloud function", err);
+    return "Error: Something went wrong!";
+  }
+};
+
+export async function getBase64FromUrl(url, autosign) {
+  const data = await fetch(url);
+  const blob = await data.blob();
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(blob);
+    reader.onloadend = function () {
+      const pdfBase = this.result;
+      if (autosign) {
+        resolve(pdfBase);
+      } else {
+        const suffixbase64 = pdfBase.split(",").pop();
+        resolve(suffixbase64);
+      }
+    };
+  });
+}

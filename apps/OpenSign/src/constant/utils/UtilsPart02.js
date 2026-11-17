@@ -72,32 +72,6 @@ export const pdfNewWidthFun = (divRef) => {
   return pdfWidth;
 };
 
-export const contractUsers = async () => {
-  try {
-    const url = `${localStorage.getItem("baseUrl")}functions/getUserDetails`;
-    const parseAppId = localStorage.getItem("parseAppId");
-    const accesstoken = localStorage.getItem("accesstoken");
-    const token = { "X-Parse-Session-Token": accesstoken };
-    const headers = {
-      headers: {
-        "Content-Type": "application/json",
-        "X-Parse-Application-Id": parseAppId,
-        ...token
-      }
-    };
-    const userDetails = await axios.post(url, {}, headers);
-    let data = [];
-    if (userDetails?.data?.result) {
-      const json = JSON.parse(JSON.stringify(userDetails.data.result));
-      data.push(json);
-    }
-    return data;
-  } catch (err) {
-    console.log("Err in getUserDetails cloud function", err);
-    return "Error: Something went wrong!";
-  }
-};
-
 export const handleWidgetResize = (
   ref,
   key,

@@ -1,17 +1,15 @@
 import { useEffect, useState } from "react";
 import Parse from "parse";
 import Loader from "../primitives/Loader";
-import {
-  copytoData,
-  usertimezone
-} from "../constant/Utils";
+import { copytoData } from "../constant/utils/UtilsPart13.js";
+import { usertimezone } from "../constant/utils/UtilsPart01.js";
 import {
   emailRegex,
 } from "../constant/const";
 import {
   useTranslation
 } from "react-i18next";
-import { withSessionValidation } from "../utils";
+import { withSessionValidation } from "../utils/withSessionValidation";
 
 function generatePassword(length) {
   const characters =

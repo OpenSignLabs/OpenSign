@@ -3,10 +3,10 @@ import { useTranslation } from "react-i18next";
 import ModalUi from "./ModalUi";
 import {
   getSignedUrl,
-  handleDownloadCertificate,
   handleDownloadPdf,
   fileNameWithUnderscore
-} from "../constant/Utils";
+} from "../constant/utils/UtilsPart13.js";
+import { handleDownloadCertificate } from "../constant/utils/UtilsPart14.js";
 import Loader from "./Loader";
 import JSZip from "jszip";
 import { saveAs } from "file-saver";

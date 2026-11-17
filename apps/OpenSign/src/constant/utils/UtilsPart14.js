@@ -3,7 +3,7 @@ import { saveAs } from "file-saver";
 import printModule from "print-js";
 import i18n from "../../i18n";
 import { color } from "./UtilsPart01.js";
-import { getBase64FromUrl } from "./UtilsPart04.js";
+import { getBase64FromUrl } from "./UtilsPart01.js";
 import { appName } from "./UtilsPart01.js";
 
 export const handleToPrint = async (event, setIsDownloading, pdfDetails) => {

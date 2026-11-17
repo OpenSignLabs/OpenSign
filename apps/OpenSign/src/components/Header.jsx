@@ -5,11 +5,11 @@ import ThemeToggle from "./ThemeToggle";
 import { useNavigate } from "react-router";
 import Parse from "parse";
 import { useWindowSize } from "../hook/useWindowSize";
+import { getAppLogo } from "../constant/utils/UtilsPart13.js";
 import {
-  getAppLogo,
   openInNewTab,
   saveLanguageInLocal
-} from "../constant/Utils";
+} from "../constant/utils/UtilsPart01.js";
 import { useTranslation } from "react-i18next";
 import { appInfo } from "../constant/appinfo";
 import { useDispatch, useSelector } from "react-redux";

@@ -44,24 +44,6 @@ export const defaultWidthHeight = (type) => {
   }
 };
 
-export async function getBase64FromUrl(url, autosign) {
-  const data = await fetch(url);
-  const blob = await data.blob();
-  return new Promise((resolve) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(blob);
-    reader.onloadend = function () {
-      const pdfBase = this.result;
-      if (autosign) {
-        resolve(pdfBase);
-      } else {
-        const suffixbase64 = pdfBase.split(",").pop();
-        resolve(suffixbase64);
-      }
-    };
-  });
-}
-
 export const arrayBufferToBase64 = (buffer) => {
   const bytes = new Uint8Array(buffer);
   const chunk = 0x8000;

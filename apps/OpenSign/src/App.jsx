@@ -1,20 +1,12 @@
 import { useState, useEffect } from "react";
-import { lazyWithRetry, hideUpgradeProgress } from "./utils";
+import { lazyWithRetry } from "./utils/lazyWithRetry";
+import { hideUpgradeProgress } from "./utils/upgradeProgress";
 import { Routes, Route, BrowserRouter, Navigate } from "react-router";
-import { getEnv } from "./constant/Utils";
-import { pdfjs } from "react-pdf";
-import Form from "./pages/Form";
-import Report from "./pages/Report";
-import Dashboard from "./pages/Dashboard";
+import { getEnv } from "./constant/utils/UtilsPart01.js";
 import HomeLayout from "./layout/HomeLayout";
 import PageNotFound from "./pages/PageNotFound";
 import ValidateRoute from "./primitives/ValidateRoute";
 import Validate from "./primitives/Validate";
-import TemplatePlaceholder from "./pages/TemplatePlaceholder";
-import SignYourSelf from "./pages/SignyourselfPdf";
-import DraftDocument from "./components/pdf/DraftDocument";
-import PlaceHolderSign from "./pages/PlaceHolderSign";
-import PdfRequestFiles from "./pages/PdfRequestFiles";
 import Lazy from "./primitives/LazyPage";
 import Loader from "./primitives/Loader";
 import UserList from "./pages/UserList";
@@ -42,8 +34,20 @@ const Preferences = lazyWithRetry(() => import("./pages/Preferences"));
 const Login = lazyWithRetry(() => import("./pages/Login"));
 const VerifyDocument = lazyWithRetry(() => import("./pages/VerifyDocument"));
 const EmailBuilder = lazyWithRetry(() => import("./pages/EmailBuilder"));
-
-pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/legacy/build/pdf.worker.min.mjs`;
+// The PDF editor pages stay out of the login chunk: react-pdf, pdf-lib and
+// react-datepicker only load when one of these routes renders (#55).
+const Form = lazyWithRetry(() => import("./pages/Form"));
+const Report = lazyWithRetry(() => import("./pages/Report"));
+const Dashboard = lazyWithRetry(() => import("./pages/Dashboard"));
+const TemplatePlaceholder = lazyWithRetry(
+  () => import("./pages/TemplatePlaceholder")
+);
+const SignYourSelf = lazyWithRetry(() => import("./pages/SignyourselfPdf"));
+const DraftDocument = lazyWithRetry(
+  () => import("./components/pdf/DraftDocument")
+);
+const PlaceHolderSign = lazyWithRetry(() => import("./pages/PlaceHolderSign"));
+const PdfRequestFiles = lazyWithRetry(() => import("./pages/PdfRequestFiles"));
 const AppLoader = () => {
   return (
     <div className="flex justify-center items-center h-[100vh]">
@@ -110,7 +114,7 @@ function App() {
               <Route
                 exact
                 path="/load/recipientSignPdf/:docId/:contactBookId"
-                element={<DragProvider Page={PdfRequestFiles} />}
+                element={<DragProvider Page={PdfRequestFiles} lazy />}
               />
             </Route>
             <Route
@@ -134,39 +138,39 @@ function App() {
                     path="/changepassword"
                     element={<Lazy Page={ChangePassword} />}
                   />
-              <Route path="/form/:id" element={<Form />} />
-              <Route path="/report/:id" element={<Report />} />
-              <Route path="/dashboard/:id" element={<Dashboard />} />
+              <Route path="/form/:id" element={<Lazy Page={Form} />} />
+              <Route path="/report/:id" element={<Lazy Page={Report} />} />
+              <Route path="/dashboard/:id" element={<Lazy Page={Dashboard} />} />
               <Route path="/profile" element={<Lazy Page={UserProfile} />} />
               <Route path="/drive" element={<Lazy Page={Opensigndrive} />} />
               <Route path="/managesign" element={<Lazy Page={ManageSign} />} />
               <Route
                 path="/template/:templateId"
-                element={<DragProvider Page={TemplatePlaceholder} />}
+                element={<DragProvider Page={TemplatePlaceholder} lazy />}
               />
               {/* signyouself route with no rowlevel data using docId from url */}
               <Route
                 path="/signaturePdf/:docId"
-                element={<DragProvider Page={SignYourSelf} />}
+                element={<DragProvider Page={SignYourSelf} lazy />}
               />
               {/* draft document route to handle and navigate route page according to document status */}
               <Route
                 path="/draftDocument"
-                element={<DragProvider Page={DraftDocument} />}
+                element={<DragProvider Page={DraftDocument} lazy />}
               />
               {/* recipient placeholder set route with no rowlevel data using docId from url*/}
               <Route
                 path="/placeHolderSign/:docId"
-                element={<DragProvider Page={PlaceHolderSign} />}
+                element={<DragProvider Page={PlaceHolderSign} lazy />}
               />
               {/* recipient signature route with no rowlevel data using docId from url */}
               <Route
                 path="/recipientSignPdf/:docId/:contactBookId"
-                element={<DragProvider Page={PdfRequestFiles} />}
+                element={<DragProvider Page={PdfRequestFiles} lazy />}
               />
               <Route
                 path="/recipientSignPdf/:docId"
-                element={<DragProvider Page={PdfRequestFiles} />}
+                element={<DragProvider Page={PdfRequestFiles} lazy />}
               />
               <Route
                 path="/verify-document"
@@ -178,7 +182,7 @@ function App() {
               />
             </Route>
             <Route path="/success" element={<DocSuccessPage />} />
-            <Route path="/emailbuilder" element={<EmailBuilder />} />
+            <Route path="/emailbuilder" element={<Lazy Page={EmailBuilder} />} />
             <Route path="*" element={<PageNotFound />} />
           </Routes>
         </BrowserRouter>

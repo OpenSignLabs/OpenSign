@@ -146,7 +146,7 @@ export const formatTimeInTimezone = (date, timezone) => {
   return generatedDate;
 };
 
-export const usertimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
 
 export const handleHeighlightWidget = (
   getCurrentSignerPos,

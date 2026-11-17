@@ -1,5 +1,5 @@
 import logo from "../assets/images/logo.png";
-import { getEnv } from "./Utils";
+import { getEnv } from "./utils/UtilsPart01.js";
 import { getRuntimeConfig } from "./runtimeConfig";
 import { hasExplicitRuntimeConfig } from "./deploymentRuntime";
 

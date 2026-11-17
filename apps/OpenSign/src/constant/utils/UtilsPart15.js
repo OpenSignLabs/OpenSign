@@ -4,7 +4,7 @@ import Parse from "parse";
 import { SCALE_STEPS } from "../const";
 import i18n from "../../i18n";
 import { getSecureUrl } from "./UtilsPart01.js";
-import { getBase64FromUrl } from "./UtilsPart04.js";
+import { getBase64FromUrl } from "./UtilsPart01.js";
 import { fileNameWithUnderscore } from "./UtilsPart13.js";
 import { compensateRotation } from "./UtilsPart14.js";
 
@@ -50,11 +50,6 @@ export const getContainerScale = (pdfOriginalWH, pageNumber, containerWH) => {
   );
   const containerScale = containerWH?.width / getPdfPageWidth?.width || 1;
   return containerScale;
-};
-
-export const saveLanguageInLocal = (i18n) => {
-  const detectedLanguage = i18n.language || "en";
-  localStorage.setItem("i18nextLng", detectedLanguage);
 };
 
 export const getDefaultSignature = async (objectId) => {

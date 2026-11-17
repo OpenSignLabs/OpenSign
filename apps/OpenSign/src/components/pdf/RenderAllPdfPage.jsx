@@ -1,7 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Document, Page } from "react-pdf";
+import { Document, Page, pdfjs } from "react-pdf";
 import { useSelector } from "react-redux";
+
+// The worker URL lives with the PDF chunk, not the login bundle (#55).
+pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/legacy/build/pdf.worker.min.mjs`;
 import { PDFDocument } from "pdf-lib";
 import {
   base64ToArrayBuffer,
