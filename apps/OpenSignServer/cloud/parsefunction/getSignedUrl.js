@@ -1,6 +1,6 @@
 import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl as presign } from '@aws-sdk/s3-request-presigner';
-import { useLocal } from '../../Utils.js';
+import { useLocal } from '../../utils/appConfig.js';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import { isAuthenticated } from '../../utils/AuthUtils.js';

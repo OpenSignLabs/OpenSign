@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { cloudServerUrl, serverAppId } from '../Utils.js';
+import { cloudServerUrl, serverAppId } from './appConfig.js';
 
 function formatFixedDate(date = new Date()) {
   const dd = String(date.getDate()).padStart(2, '0');
