@@ -1,48 +1,8 @@
-import { textInputWidget } from "./UtilsPart01.js";
-import { drawWidget } from "./UtilsPart01.js";
-import { textWidget } from "./UtilsPart01.js";
-import { radioButtonWidget } from "./UtilsPart01.js";
-import { cellsWidget } from "./UtilsPart01.js";
-import { convertTextToImg } from "./UtilsPart08.js";
+import { convertTextToImg } from "./widgetPrimitives.js";
+import { defaultWidthHeight } from "./widgetPrimitives.js";
 
-export const defaultWidthHeight = (type) => {
-  switch (type) {
-    case "signature":
-      return { width: 150, height: 60 };
-    case "stamp":
-      return { width: 150, height: 60 };
-    case "checkbox":
-      return { width: 15, height: 19 };
-    case textInputWidget:
-      return { width: 150, height: 19 };
-    case cellsWidget:
-      return { width: 112, height: 22 };
-    case "dropdown":
-      return { width: 120, height: 22 };
-    case "initials":
-      return { width: 50, height: 50 };
-    case "name":
-      return { width: 150, height: 19 };
-    case "company":
-      return { width: 150, height: 19 };
-    case "job title":
-      return { width: 150, height: 19 };
-    case "date":
-      return { width: 100, height: 20 };
-    case "image":
-      return { width: 70, height: 70 };
-    case "email":
-      return { width: 150, height: 19 };
-    case radioButtonWidget:
-      return { width: 5, height: 10 };
-    case textWidget:
-      return { width: 150, height: 19 };
-    case drawWidget:
-      return { width: 150, height: 60 };
-    default:
-      return { width: 150, height: 60 };
-  }
-};
+// Re-exported so the facade (constant/Utils.js) keeps its source module.
+export { defaultWidthHeight };
 
 export const arrayBufferToBase64 = (buffer) => {
   const bytes = new Uint8Array(buffer);
@@ -67,23 +27,28 @@ export async function getBase64FromIMG(url) {
   });
 }
 
+// Paint the image over a white background (JPEG has no alpha channel).
+const paintWhiteBackgroundCanvas = (img) => {
+  const canvas = document.createElement("canvas");
+  canvas.width = img.width;
+  canvas.height = img.height;
+  const ctx = canvas.getContext("2d");
+  ctx.fillStyle = "#ffffff"; // white color
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.drawImage(img, 0, 0);
+  return canvas;
+};
+
 export const convertPNGtoJPEG = (base64Data) => {
   return new Promise((resolve, reject) => {
-    const canvas = document.createElement("canvas");
     const img = new Image();
     img.src = base64Data;
 
     img.onload = () => {
-      canvas.width = img.width;
-      canvas.height = img.height;
-
-      const ctx = canvas.getContext("2d");
-      ctx.fillStyle = "#ffffff"; // white color
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.drawImage(img, 0, 0);
       // Convert to JPEG by using the canvas.toDataURL() method
-      const jpegBase64Data = canvas.toDataURL("image/jpeg");
-
+      const jpegBase64Data = paintWhiteBackgroundCanvas(img).toDataURL(
+        "image/jpeg"
+      );
       resolve(jpegBase64Data);
     };
 
@@ -91,6 +56,49 @@ export const convertPNGtoJPEG = (base64Data) => {
       reject(error);
     };
   });
+};
+
+// For rotated widgets (90°/270°) the visual dimensions are swapped, so the
+// data model keeps the original-orientation dimensions.
+const resolveStoredDimensions = (ref, containerScale, rotation) => {
+  const factor = containerScale || 1;
+  const widgetWidth = ref.offsetWidth / factor;
+  const widgetHeight = ref.offsetHeight / factor;
+  const isSwapped = [90, 270].includes(rotation || 0);
+  const storedWidth = isSwapped ? widgetHeight : widgetWidth;
+  const storedHeight = isSwapped ? widgetWidth : widgetHeight;
+  return { storedWidth, storedHeight };
+};
+
+// Regenerate the image when a "type" signature is resized.
+const refreshTypeSignatureImage = (url, widgetDims) => {
+  if (!(url.typeSignature && url.signatureType === "type")) return null;
+  const signImg = convertTextToImg(
+    url.typeFont ?? "Fasthand",
+    url.typeSignature,
+    url.fontColor ?? "blue",
+    widgetDims
+  );
+  return {
+    SignUrl: signImg,
+    options: { ...url.options, response: signImg }
+  };
+};
+
+// Resize a single widget position entry, leaving other keys untouched.
+const resizePositionEntry = (url, key, stored) => {
+  if (url.key !== key) return url;
+  const base = {
+    ...url,
+    Width: stored.storedWidth,
+    Height: stored.storedHeight,
+    IsResize: true
+  };
+  const refreshed = refreshTypeSignatureImage(url, {
+    Width: stored.storedWidth,
+    Height: stored.storedHeight
+  });
+  return refreshed ? { ...base, ...refreshed } : base;
 };
 
 export const handleSignYourselfWidgetResize = (
@@ -107,54 +115,18 @@ export const handleSignYourselfWidgetResize = (
     return;
   }
 
-  // Compute widget dimensions only once
-  const { offsetWidth, offsetHeight } = ref;
-  const factor = containerScale || 1;
-  const widgetWidth = offsetWidth / factor;
-  const widgetHeight = offsetHeight / factor;
-
   // Single pass to update only the targeted index/key
   const updated = xyPosition.map((item, idx) => {
     if (idx !== index) return item;
-
     return {
       ...item,
       pos: item.pos.map((url) => {
-        if (url.key !== key) return url;
-
-        // For rotated widgets (90°/270°), the visual dimensions are swapped.
-        // Store the original-orientation dimensions in the data model.
-        const rotation = url.options?.rotation || 0;
-        const isRotSwapped = [90, 270].includes(rotation);
-        const storedWidth = isRotSwapped ? widgetHeight : widgetWidth;
-        const storedHeight = isRotSwapped ? widgetWidth : widgetHeight;
-        const widgetDims = { Width: storedWidth, Height: storedHeight };
-
-        // Base fields for every resized signature
-        const base = {
-          ...url,
-          Width: storedWidth,
-          Height: storedHeight,
-          IsResize: true
-        };
-
-        // If it's a “type” signature, regenerate the image and options
-        if (url.typeSignature && url.signatureType === "type") {
-          const signImg = convertTextToImg(
-            url.typeFont ?? "Fasthand",
-            url.typeSignature,
-            url.fontColor ?? "blue",
-            widgetDims
-          );
-
-          return {
-            ...base,
-            SignUrl: signImg,
-            options: { ...url.options, response: signImg }
-          };
-        }
-
-        return base;
+        const stored = resolveStoredDimensions(
+          ref,
+          containerScale,
+          url.options?.rotation
+        );
+        return resizePositionEntry(url, key, stored);
       })
     };
   });

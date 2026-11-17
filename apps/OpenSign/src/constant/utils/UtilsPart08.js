@@ -2,10 +2,82 @@ import { rgb } from "pdf-lib";
 import fontkit from "@pdf-lib/fontkit";
 import { getRuntimePdfFontUrl } from "../runtimeConfig";
 import { fileasbytes } from "./UtilsPart01.js";
-import { defaultWidthHeight } from "./UtilsPart04.js";
+import { defaultWidthHeight } from "./widgetPrimitives.js";
+import { convertTextToImg } from "./widgetPrimitives.js";
 import { compensateRotation } from "./UtilsPart14.js";
 import { appName } from "./UtilsPart01.js";
 import { color } from "./UtilsPart01.js";
+
+// Re-exported so the facade (constant/Utils.js) keeps its source module.
+export { convertTextToImg };
+
+// Grow one position entry, falling back to the widget default height.
+const growPositionHeight = (position, signKey, widgetType, delta) => {
+  if (position.key !== signKey) return position;
+  return {
+    ...position,
+    Height: position.Height
+      ? position.Height + delta
+      : defaultWidthHeight(widgetType).height + delta
+  };
+};
+
+// Self-sign flow: positions live directly on the page entry.
+const growSelfSignedHeight = (
+  xyPosition,
+  index,
+  signKey,
+  widgetType,
+  delta,
+  setXyPosition
+) => {
+  const getXYdata = xyPosition[index].pos;
+  const updatePosition = getXYdata.map((position) =>
+    growPositionHeight(position, signKey, widgetType, delta)
+  );
+  const updatePlaceholder = xyPosition.map((obj, ind) => {
+    if (ind === index) {
+      return { ...obj, pos: updatePosition };
+    }
+    return obj;
+  });
+  setXyPosition(updatePlaceholder);
+};
+
+// Signer flow: positions live under the signer's placeholders.
+const growSignerHeight = (
+  signerPos,
+  userId,
+  index,
+  signKey,
+  widgetType,
+  delta,
+  setXyPosition,
+  xyPosition
+) => {
+  const filterSignerPos = signerPos.filter((data) => data.Id === userId);
+  const getPlaceHolder = filterSignerPos[0]?.placeHolder;
+  const getPageNumer = getPlaceHolder.filter(
+    (data) => data.pageNumber === index
+  );
+  if (getPageNumer.length === 0) return;
+  const addSignPos = getPageNumer[0].pos.map((position) =>
+    growPositionHeight(position, signKey, widgetType, delta)
+  );
+  const newUpdateSignPos = getPlaceHolder.map((obj) => {
+    if (obj.pageNumber === index) {
+      return { ...obj, pos: addSignPos };
+    }
+    return obj;
+  });
+  const newUpdateSigner = xyPosition.map((obj) => {
+    if (obj.Id === userId) {
+      return { ...obj, placeHolder: newUpdateSignPos };
+    }
+    return obj;
+  });
+  setXyPosition(newUpdateSigner);
+};
 
 export const onChangeHeightOfTextArea = (
   height,
@@ -17,69 +89,31 @@ export const onChangeHeightOfTextArea = (
   userId
 ) => {
   const isSigners = xyPosition.some((data) => data.signerPtr);
-  let filterSignerPos;
-  if (isSigners) {
-    if (userId) {
-      filterSignerPos = xyPosition.filter((data) => data.Id === userId);
-    }
-    const getPlaceHolder = filterSignerPos[0]?.placeHolder;
-
-    const getPageNumer = getPlaceHolder.filter(
-      (data) => data.pageNumber === index
+  if (!isSigners) {
+    growSelfSignedHeight(
+      xyPosition,
+      index,
+      signKey,
+      widgetType,
+      height,
+      setXyPosition
     );
-    if (getPageNumer.length > 0) {
-      const getXYdata = getPageNumer[0].pos;
-      const getPosData = getXYdata;
-      const addSignPos = getPosData.map((position) => {
-        if (position.key === signKey) {
-          return {
-            ...position,
-            Height: position.Height
-              ? position.Height + height
-              : defaultWidthHeight(widgetType).height + height
-          };
-        }
-        return position;
-      });
-      const newUpdateSignPos = getPlaceHolder.map((obj) => {
-        if (obj.pageNumber === index) {
-          return { ...obj, pos: addSignPos };
-        }
-        return obj;
-      });
-
-      const newUpdateSigner = xyPosition.map((obj) => {
-        if (obj.Id === userId) {
-          return { ...obj, placeHolder: newUpdateSignPos };
-        }
-        return obj;
-      });
-
-      setXyPosition(newUpdateSigner);
-    }
-  } else {
-    let getXYdata = xyPosition[index].pos;
-
-    const updatePosition = getXYdata.map((position) => {
-      if (position.key === signKey) {
-        return {
-          ...position,
-          Height: position.Height
-            ? position.Height + height
-            : defaultWidthHeight(widgetType).height + height
-        };
-      }
-      return position;
-    });
-
-    const updatePlaceholder = xyPosition.map((obj, ind) => {
-      if (ind === index) {
-        return { ...obj, pos: updatePosition };
-      }
-      return obj;
-    });
-    setXyPosition(updatePlaceholder);
+    return;
   }
+  let filterSignerPos;
+  if (userId) {
+    filterSignerPos = xyPosition.filter((data) => data.Id === userId);
+  }
+  growSignerHeight(
+    filterSignerPos,
+    userId,
+    index,
+    signKey,
+    widgetType,
+    height,
+    setXyPosition,
+    xyPosition
+  );
 };
 
 export const calculateInitialWidthHeight = (widgetData) => {
@@ -160,83 +194,38 @@ export const embedDocId = async (pdfOriginalWH, pdfDoc, documentId) => {
   const fontBytes = await fileasbytes(pdfFontUrl);
   pdfDoc.registerFontkit(fontkit);
   const font = await pdfDoc.embedFont(fontBytes, { subset: true });
-  //pdfOriginalWH contained all pdf's pages width and height
+  //pdfOriginalWH contained all pdf's width and height of pages
   for (let i = 0; i < pdfOriginalWH?.length; i++) {
-    const fontSize = 10;
-    const textContent = documentId && `${appName} DocumentId: ${documentId} `;
-    const pages = pdfDoc.getPages();
-    const page = pages[i];
-    const getSize = pdfOriginalWH[i];
-    try {
-      const getObj = compensateRotation(
-        page.getRotation().angle,
-        10,
-        5,
-        1,
-        getSize,
-        fontSize,
-        rgb(0.5, 0.5, 0.5),
-        font,
-        page
-      );
-      page.drawText(textContent, getObj);
-    } catch (err) {
-      console.log("Err in embed docId on page", i + 1, err?.message);
-    }
+    await embedDocIdOnPage(pdfDoc, pdfOriginalWH, i, documentId, font, appName);
   }
 };
 
-export function convertTextToImg(fontStyle, text, color, widgetDims) {
-  // read your widget dimensions:
-  const maxWidth = widgetDims.Width;
-  const maxHeight = widgetDims.Height;
-  const baselineFontSizePx = maxHeight;
-  const fontFamily = fontStyle || "Fasthand";
-  const fillColor = color || "blue";
-
-  // 1. Use a temporary canvas to measure actual text size
-  const tempCanvas = document.createElement("canvas");
-  const tempCtx = tempCanvas.getContext("2d");
-  tempCtx.font = `${baselineFontSizePx}px ${fontFamily}`;
-  const metrics = tempCtx.measureText(text);
-
-  const actualHeight =
-    metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent;
-  const actualWidth = metrics.width;
-
-  // const renderscale = 3;
-  // 2. Scale font size so text height fills canvas
-  const scaleX = maxWidth / actualWidth;
-  const scaleY = maxHeight / actualHeight;
-  const scale = Math.min(scaleX, scaleY, 1);
-  // final font-size
-  // const finalFontSizePx = baselineFontSizePx * scale * renderscale;
-  const finalFontSizePx = baselineFontSizePx * scale;
-  // 3. Create the final canvas
-  const pxRatio = window.devicePixelRatio * 2 || 3;
-  const canvas = document.createElement("canvas");
-  canvas.width = Math.ceil(maxWidth * pxRatio);
-  canvas.height = Math.ceil(maxHeight * pxRatio);
-  const ctx = canvas.getContext("2d");
-  ctx.scale(pxRatio, pxRatio);
-
-  // 4. Setup text with final font
-  ctx.font = `${finalFontSizePx}px ${fontFamily}`;
-  ctx.fillStyle = fillColor;
-  ctx.textAlign = "center";
-  ctx.textBaseline = "alphabetic";
-
-  const newMetrics = ctx.measureText(text);
-  const ascent = newMetrics.actualBoundingBoxAscent;
-  const descent = newMetrics.actualBoundingBoxDescent;
-
-  // 5. Align text vertically so it touches top and bottom
-  const y = maxHeight / 2 + (ascent - descent) / 2;
-
-  ctx.clearRect(0, 0, maxWidth, maxHeight);
-  ctx.fillText(text, maxWidth / 2, y);
-
-  // 6. Output image
-  const dataUrl = canvas.toDataURL("image/png");
-  return dataUrl;
-}
+// Draw the document-id footer on one page, tolerating rotated pages.
+const embedDocIdOnPage = async (
+  pdfDoc,
+  pdfOriginalWH,
+  pageIndex,
+  documentId,
+  font,
+  appName
+) => {
+  const fontSize = 10;
+  const textContent = documentId && `${appName} DocumentId: ${documentId} `;
+  const page = pdfDoc.getPages()[pageIndex];
+  try {
+    const getObj = compensateRotation(
+      page.getRotation().angle,
+      10,
+      5,
+      1,
+      pdfOriginalWH[pageIndex],
+      fontSize,
+      rgb(0.5, 0.5, 0.5),
+      font,
+      page
+    );
+    page.drawText(textContent, getObj);
+  } catch (err) {
+    console.log("Err in embed docId on page", pageIndex + 1, err?.message);
+  }
+};
