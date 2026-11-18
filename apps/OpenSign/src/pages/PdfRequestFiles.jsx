@@ -66,6 +66,7 @@ import Loader from "../primitives/Loader";
 import { isCreditQuotaError } from "../utils/creditErrors";
 import PdfDeclineModal from "../primitives/PdfDeclineModal";
 import { serverUrl_fn } from "../constant/appinfo";
+import { DEFAULT_COMPLETION_DAYS } from "../constant/runtimeConfig";
 import AgreementSign from "../components/pdf/AgreementSign";
 import WidgetComponent from "../components/pdf/WidgetComponent";
 import PlaceholderCopy from "../components/pdf/PlaceholderCopy";
@@ -666,7 +667,7 @@ function PdfRequestFiles(
       documentId;
     const addExtraDays = pdfDetails[0]?.TimeToCompleteDays
       ? pdfDetails[0].TimeToCompleteDays
-      : 15;
+      : DEFAULT_COMPLETION_DAYS;
     let updateExpiryDate;
     updateExpiryDate = new Date();
     updateExpiryDate.setDate(updateExpiryDate.getDate() + addExtraDays);
@@ -924,7 +925,8 @@ function PdfRequestFiles(
       const requestSubject =
         updatedDoc.updatedPdfDetails?.[0]?.RequestSubject || mailSubject;
       if (user) {
-        const addExtraDays = signedDocument?.TimeToCompleteDays || 15;
+        const addExtraDays =
+          signedDocument?.TimeToCompleteDays || DEFAULT_COMPLETION_DAYS;
         let expDate = expiryDate || signedDocument?.ExpiryDate?.iso;
         if (!expiryDate) {
           const d = new Date();
