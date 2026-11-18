@@ -1,4 +1,10 @@
+import dotenv from 'dotenv';
 import { getServerConfig } from './serverConfig.js';
+
+// dotenv must load before getServerConfig runs: ESM evaluates imports before
+// the entry point body, so relying on index.js's dotenv.config() leaves
+// cloudServerUrl frozen to defaults on .env-file-only boots (#85).
+dotenv.config({ quiet: true });
 
 // Centralized server identity, limits and mail flags. cloudServerUrl is
 // derived from the server config (PORT/PARSE_MOUNT), never hardcoded.
