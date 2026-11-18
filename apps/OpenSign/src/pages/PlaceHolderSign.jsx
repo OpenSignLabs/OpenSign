@@ -52,6 +52,7 @@ import PlaceholderCopy from "../components/pdf/PlaceholderCopy";
 import DropdownWidgetOption from "../components/pdf/DropdownWidgetOption";
 import WidgetNameModal from "../components/pdf/WidgetNameModal";
 import { SaveFileSize } from "../constant/saveFileSize";
+import { DEFAULT_COMPLETION_DAYS } from "../constant/runtimeConfig";
 import { useDispatch, useSelector } from "react-redux";
 import PdfTools from "../components/pdf/PdfTools";
 import { useTranslation, Trans } from "react-i18next";
@@ -1218,7 +1219,7 @@ function PlaceHolderSign() {
       });
       const addExtraDays = pdfDetails?.[0]?.TimeToCompleteDays
         ? pdfDetails[0].TimeToCompleteDays
-        : 15;
+        : DEFAULT_COMPLETION_DAYS;
       const currentUser = signersdata.find((x) => x.Email === currentId);
       setCurrentId(currentUser?.objectId);
       // Compute expiry date with extra days
@@ -1981,7 +1982,8 @@ function PlaceHolderSign() {
             ? updateDocument?.[0]?.NotifyOnSignatures
             : false,
         TimeToCompleteDays:
-          parseInt(updateDocument?.[0]?.TimeToCompleteDays) || 15,
+          parseInt(updateDocument?.[0]?.TimeToCompleteDays) ||
+          DEFAULT_COMPLETION_DAYS,
         RemindOnceInEvery:
           parseInt(updateDocument?.[0]?.RemindOnceInEvery) || 0,
         ...penColors,
