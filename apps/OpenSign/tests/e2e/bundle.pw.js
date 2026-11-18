@@ -17,7 +17,10 @@ const watchBundles = (page, state) => {
     try {
       const path = response.url().split("?")[0];
       if (/\.m?js$/.test(path)) {
-        if (!response.ok()) {
+        // Redirects are followed by the browser (for example the
+        // http->https hop of the CDN worker under an http preview),
+        // so only 4xx/5xx responses count as failed chunks.
+        if (response.status() >= 400) {
           state.failedChunks.push(`${response.status()} ${response.url()}`);
         } else {
           state.bodies.push(await response.text());
