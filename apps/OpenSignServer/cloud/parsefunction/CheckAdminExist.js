@@ -1,5 +1,5 @@
 // `CheckAdminExist` is used to check is admin with org exist or not in db
-import { ALL_ADMIN_ROLES } from '../../../utils/roles.js';
+import { ALL_ADMIN_ROLES } from '../../utils/roles.js';
 
 export default async function CheckAdminExist() {
   try {
