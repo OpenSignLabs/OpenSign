@@ -2,8 +2,8 @@ import { format } from "date-fns-tz";
 import { applyNumberFormulasToPages } from "../../utils/widgetUtils";
 import { textInputWidget } from "./UtilsPart01.js";
 import { getDuplicateAutoApplyName } from "./UtilsPart01.js";
-import { reuseUnchangedWidgets } from "./UtilsPart06.js";
-import { addInitialData } from "./UtilsPart08.js";
+import { reuseUnchangedWidgets } from "./widgetState.js";
+import { addInitialData } from "./widgetInlineEditing.js";
 
 export const onChangeInput = (
   value,

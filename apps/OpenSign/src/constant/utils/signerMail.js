@@ -1,6 +1,6 @@
 import axios from "axios";
 import { replaceMailVaribles } from "./UtilsPart13.js";
-import { mailTemplate } from "./UtilsPart19.js";
+import { mailTemplate } from "./widgetResponses.js";
 
 export const sendEmailToSigners = async (
   pdfDetails,

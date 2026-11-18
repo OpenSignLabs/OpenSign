@@ -6,7 +6,7 @@ import { drawWidget } from "./UtilsPart01.js";
 import { textWidget } from "./UtilsPart01.js";
 import { radioButtonWidget } from "./UtilsPart01.js";
 import { cellsWidget } from "./UtilsPart01.js";
-import { convertTextToImg } from "./UtilsPart08.js";
+import { convertTextToImg } from "./widgetInlineEditing.js";
 
 export const nameColor = [
   "#304fbf",

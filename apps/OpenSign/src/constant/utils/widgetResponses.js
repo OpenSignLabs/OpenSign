@@ -7,7 +7,7 @@ import { resolveMailBrandPresentation } from "../mailBrand";
 import { applyDuplicateResponsesToPages } from "./UtilsPart01.js";
 import { color } from "./UtilsPart01.js";
 import { selectFormat } from "./UtilsPart02.js";
-import { widgetDataValue } from "./UtilsPart08.js";
+import { widgetDataValue } from "./widgetInlineEditing.js";
 import { formatTimeInTimezone } from "./UtilsPart16.js";
 import { appName } from "./UtilsPart01.js";
 

@@ -10,7 +10,7 @@ import {
   randomId
 } from "./UtilsPart01.js";
 import { isEmptyValue } from "./UtilsPart10.js";
-import { placeholderWidth, placeholderHeight } from "./UtilsPart12.js";
+import { placeholderWidth, placeholderHeight } from "./placeholderTools.js";
 import { compensateRotation } from "./UtilsPart14.js";
 import { getWidgetPosition } from "./UtilsPart15.js";
 import { getWidgetsFontColor, forceBreakLongWord } from "./UtilsPart10.js";
