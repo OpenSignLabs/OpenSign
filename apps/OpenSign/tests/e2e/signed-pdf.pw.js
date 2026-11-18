@@ -14,7 +14,11 @@ const completeWithRadio = async (page, name, radioWidget, choose) => {
     pages: [{ pageNumber: 1, pos: [radioWidget, signature("signature-1", 120)] }]
   });
   await openSigner(page, ids);
-  if (choose !== undefined) await page.locator("input[type=radio]").nth(choose).check();
+  if (choose !== undefined) {
+    // The inline radio settles a tick after the click, so assert with a retry.
+    await page.locator("input[type=radio]").nth(choose).click();
+    await expect(page.locator("input[type=radio]").nth(choose)).toBeChecked();
+  }
   await page.getByText("signature-1").first().click();
   await drawStroke(page);
   await page.getByText("Next Field").click();

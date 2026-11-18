@@ -30,9 +30,11 @@ test("radio buttons select one option inline", async ({ page }) => {
   await openWidgetsDocument(page, "e2e radio");
   const radios = page.locator("input[type=radio]");
   await expect(radios).toHaveCount(3);
-  await radios.nth(1).check();
+  // The inline radio persists through the signer state, so the checked
+  // state settles a tick after the click: use the retrying assertion.
+  await radios.nth(1).click();
   await expect(radios.nth(1)).toBeChecked();
-  await radios.nth(2).check();
+  await radios.nth(2).click();
   await expect(radios.nth(2)).toBeChecked();
   await expect(radios.nth(1)).not.toBeChecked();
 });
