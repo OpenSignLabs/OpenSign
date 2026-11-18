@@ -13,6 +13,7 @@ import {
   maxNoteLength,
   maxTitleLength
 } from "../../constant/const";
+import { DEFAULT_COMPLETION_DAYS } from "../../constant/runtimeConfig";
 import { useTranslation } from "react-i18next";
 import { Tooltip } from "react-tooltip";
 import SignersInput from "../shared/fields/SignersInput";
@@ -54,7 +55,7 @@ const EditTemplate = ({
     Cc: template?.Cc,
     RedirectUrl: template?.RedirectUrl || "",
     AllowModifications: template?.AllowModifications || false,
-    TimeToCompleteDays: template?.TimeToCompleteDays || 15,
+    TimeToCompleteDays: template?.TimeToCompleteDays || DEFAULT_COMPLETION_DAYS,
   });
   const pensList = ["blue", "red", "black"];
   const [selectedColors, setSelectedColors] = useState(

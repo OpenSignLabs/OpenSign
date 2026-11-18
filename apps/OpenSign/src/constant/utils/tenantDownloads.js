@@ -5,7 +5,7 @@ import { saveAs } from "file-saver";
 import i18n from "../../i18n";
 import { persistBrandPresentation } from "../brandPresentation";
 import { buildDownloadFilename } from "../../utils/fileUtils";
-import { appName } from "./UtilsPart01.js";
+import { appName } from "./coreConstants.js";
 
 export const getAppLogo = async () => {
   const domain = window.location.host;

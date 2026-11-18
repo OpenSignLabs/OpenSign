@@ -1,16 +1,15 @@
 // Dependency-free widget primitives shared by the sizing module
-// (widgetSizing, ex-UtilsPart04) and the inline-editing module
-// (widgetInlineEditing, ex-UtilsPart08).
-// This module only reads the leaf widget-type constants from UtilsPart01,
-// which itself imports no UtilsPart* module, so the historic
-// UtilsPart04 <-> UtilsPart08 import cycle cannot reform through here.
+// (widgetSizing) and the inline-editing module (widgetInlineEditing).
+// This module only reads the leaf widget-type constants from coreConstants,
+// which itself imports no sibling util module, so the historic
+// sizing <-> inline-editing import cycle cannot reform through here.
 import {
   textInputWidget,
   drawWidget,
   textWidget,
   radioButtonWidget,
   cellsWidget
-} from "./UtilsPart01.js";
+} from "./coreConstants.js";
 
 // Fixed dimensions keyed by literal widget type.
 const FIXED_DIMS = {

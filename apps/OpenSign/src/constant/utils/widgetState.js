@@ -1,5 +1,5 @@
-import { color } from "./UtilsPart01.js";
-import { widgets } from "./UtilsPart02.js";
+import { color } from "./coreConstants.js";
+import { widgets } from "./widgetCatalog.js";
 
 export const darkenColor = (color, factor) => {
   // Remove '#' from the color code and parse it to get RGB values

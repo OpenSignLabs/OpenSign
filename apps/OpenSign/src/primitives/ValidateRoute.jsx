@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import Parse from "parse";
 import { Outlet } from "react-router";
-import { saveLanguageInLocal } from "../constant/utils/UtilsPart01.js";
+import { saveLanguageInLocal } from "../constant/utils/coreConstants.js";
 import { useTranslation } from "react-i18next";
 import { isLocalQaIdentityEnabled } from "../qa/localQaIdentity";
 const ValidateRoute = () => {

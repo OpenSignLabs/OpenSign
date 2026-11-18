@@ -1,13 +1,13 @@
 import moment from "moment";
 // Direct part imports: the ../constant/Utils facade is never imported here
 // so the login bundle is not coupled to the pdf-lib modules (#55).
-import { generateTitleFromFilename } from "../constant/utils/UtilsPart16.js";
-import { selectFormat } from "../constant/utils/UtilsPart02.js";
+import { generateTitleFromFilename } from "../constant/utils/pdfPageEdit.js";
+import { selectFormat } from "../constant/utils/widgetCatalog.js";
 import {
   changeDateToMomentFormat,
   addWidgetOptions
-} from "../constant/utils/UtilsPart03.js";
-import { isBase64 } from "../constant/utils/UtilsPart10.js";
+} from "../constant/utils/widgetOptions.js";
+import { isBase64 } from "../constant/utils/imageHandling.js";
 import {
   drawWidget,
   radioButtonWidget,
@@ -15,7 +15,7 @@ import {
   textWidget,
   cellsWidget,
   getFontSizeForHeight
-} from "../constant/utils/UtilsPart01.js";
+} from "../constant/utils/coreConstants.js";
 import { base64StringtoFile, uploadFile } from "./fileUtils";
 import { sanitizeFileName } from "./sanitizeFileName";
 import Parse from "parse";

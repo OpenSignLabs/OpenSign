@@ -3,10 +3,10 @@ import { degrees } from "pdf-lib";
 import Parse from "parse";
 import { SCALE_STEPS } from "../const";
 import i18n from "../../i18n";
-import { getSecureUrl } from "./UtilsPart01.js";
-import { getBase64FromUrl } from "./UtilsPart01.js";
-import { fileNameWithUnderscore } from "./UtilsPart13.js";
-import { compensateRotation } from "./UtilsPart14.js";
+import { getSecureUrl } from "./coreConstants.js";
+import { getBase64FromUrl } from "./coreConstants.js";
+import { fileNameWithUnderscore } from "./tenantDownloads.js";
+import { compensateRotation } from "./printCertificates.js";
 
 export function getWidgetPosition(page, image, sizeRatio, getSize) {
   let pageWidth;

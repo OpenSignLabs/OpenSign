@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { runtimeUrls } from "../constant/const";
 import {
   nonPresentMaskCss
-} from "../constant/utils/UtilsPart01.js";
+} from "../constant/utils/coreConstants.js";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import Sidebar from "../components/sidebar/Sidebar";

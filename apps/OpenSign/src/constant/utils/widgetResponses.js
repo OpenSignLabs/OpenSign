@@ -4,12 +4,12 @@ import { format } from "date-fns-tz";
 import { toZonedTime } from "date-fns-tz";
 import { renderMailBrandLogo } from "../mailBrand";
 import { resolveMailBrandPresentation } from "../mailBrand";
-import { applyDuplicateResponsesToPages } from "./UtilsPart01.js";
-import { color } from "./UtilsPart01.js";
-import { selectFormat } from "./UtilsPart02.js";
+import { applyDuplicateResponsesToPages } from "./coreConstants.js";
+import { color } from "./coreConstants.js";
+import { selectFormat } from "./widgetCatalog.js";
 import { widgetDataValue } from "./widgetInlineEditing.js";
-import { formatTimeInTimezone } from "./UtilsPart16.js";
-import { appName } from "./UtilsPart01.js";
+import { formatTimeInTimezone } from "./pdfPageEdit.js";
+import { appName } from "./coreConstants.js";
 
 export function _drawOptionList(page, field, rect, font) {
   let selected = [];

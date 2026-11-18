@@ -1,7 +1,7 @@
 import { rgb } from "pdf-lib";
 import { PDFName } from "pdf-lib";
 import { PDFDict } from "pdf-lib";
-import { color } from "./UtilsPart01.js";
+import { color } from "./coreConstants.js";
 
 export function _drawTextField(page, field, rect, font) {
   let text = "";

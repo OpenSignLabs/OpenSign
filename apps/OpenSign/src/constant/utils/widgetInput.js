@@ -1,7 +1,7 @@
 import { format } from "date-fns-tz";
 import { applyNumberFormulasToPages } from "../../utils/widgetUtils";
-import { textInputWidget } from "./UtilsPart01.js";
-import { getDuplicateAutoApplyName } from "./UtilsPart01.js";
+import { textInputWidget } from "./coreConstants.js";
+import { getDuplicateAutoApplyName } from "./coreConstants.js";
 import { reuseUnchangedWidgets } from "./widgetState.js";
 import { addInitialData } from "./widgetInlineEditing.js";
 

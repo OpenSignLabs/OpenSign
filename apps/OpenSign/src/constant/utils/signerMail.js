@@ -1,6 +1,7 @@
 import axios from "axios";
-import { replaceMailVaribles } from "./UtilsPart13.js";
+import { replaceMailVaribles } from "./tenantDownloads.js";
 import { mailTemplate } from "./widgetResponses.js";
+import { DEFAULT_COMPLETION_DAYS } from "../runtimeConfig.js";
 
 export const sendEmailToSigners = async (
   pdfDetails,
@@ -15,7 +16,8 @@ export const sendEmailToSigners = async (
   const getDocumentExpDate = pdfDetails?.[0]?.ExpiryDate?.iso;
   const getTemplateExpDate = new Date(pdfDetails[0]?.createdAt);
   getTemplateExpDate.setDate(
-    getTemplateExpDate.getDate() + (pdfDetails[0]?.TimeToCompleteDays || 15)
+    getTemplateExpDate.getDate() +
+    (pdfDetails[0]?.TimeToCompleteDays || DEFAULT_COMPLETION_DAYS)
   );
   const expireDate = getDocumentExpDate
     ? getDocumentExpDate
