@@ -7,6 +7,7 @@
     "publicUrl.spec.js",
     "serverConfig.spec.js",
     "dotenvOrdering.spec.js",
+    "checkAdminExist.spec.js",
     "envConfig.spec.js",
     "utilsFacade.spec.js"
   ],
