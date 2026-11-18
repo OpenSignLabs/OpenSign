@@ -4,15 +4,15 @@ import { PDFName } from "pdf-lib";
 import { StandardFonts } from "pdf-lib";
 import { PDFArray } from "pdf-lib";
 import { PDFDict } from "pdf-lib";
-import { toPdfBytes } from "./UtilsPart16.js";
-import { hasSignatureField } from "./UtilsPart16.js";
+import { toPdfBytes } from "./pdfPageEdit.js";
+import { hasSignatureField } from "./pdfPageEdit.js";
 import { _drawTextField } from "./pdfFieldDrawing.js";
 import { _drawCheckBox } from "./pdfFieldDrawing.js";
 import { _drawRadioGroup } from "./pdfFieldDrawing.js";
 import { _drawDropdown } from "./pdfFieldDrawing.js";
 import { _drawOptionList } from "./widgetResponses.js";
 import { _removeWidgetAnnotations } from "./widgetResponses.js";
-import { widgets } from "./UtilsPart02.js";
+import { widgets } from "./widgetCatalog.js";
 
 export const flattenPdf = async (pdfFile) => {
   const inputBytes = toPdfBytes(pdfFile);

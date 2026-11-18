@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import Parse from "parse";
 import Loader from "../primitives/Loader";
-import { copytoData } from "../constant/utils/UtilsPart13.js";
-import { usertimezone } from "../constant/utils/UtilsPart01.js";
+import { copytoData } from "../constant/utils/tenantDownloads.js";
+import { usertimezone } from "../constant/utils/coreConstants.js";
 import {
   emailRegex,
 } from "../constant/const";

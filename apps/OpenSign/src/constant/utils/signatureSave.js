@@ -1,4 +1,4 @@
-import { drawWidget } from "./UtilsPart01.js";
+import { drawWidget } from "./coreConstants.js";
 import { convertTextToImg } from "./widgetInlineEditing.js";
 import { placeholderHeight } from "./placeholderTools.js";
 

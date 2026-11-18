@@ -1,10 +1,10 @@
 import axios from "axios";
 import { getErrorMessage } from "../../utils/creditErrors";
 import Parse from "parse";
-import { fetchImageBase64 } from "./UtilsPart10.js";
-import { changeImageWH } from "./UtilsPart10.js";
-import { getTenantDetails } from "./UtilsPart13.js";
-import { widgets } from "./UtilsPart02.js";
+import { fetchImageBase64 } from "./imageHandling.js";
+import { changeImageWH } from "./imageHandling.js";
+import { getTenantDetails } from "./tenantDownloads.js";
+import { widgets } from "./widgetCatalog.js";
 import { DEFAULT_COMPLETION_DAYS } from "../runtimeConfig.js";
 
 export const signPdfFun = async (

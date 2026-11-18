@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import Confetti from "react-confetti"; // Import the confetti library
-import { getBase64FromUrl } from "../constant/utils/UtilsPart01.js";
-import { handleDownloadPdf } from "../constant/utils/UtilsPart13.js";
+import { getBase64FromUrl } from "../constant/utils/coreConstants.js";
+import { handleDownloadPdf } from "../constant/utils/tenantDownloads.js";
 import {
   handleDownloadCertificate,
   handleToPrint
-} from "../constant/utils/UtilsPart14.js";
+} from "../constant/utils/printCertificates.js";
 import ModalUi from "../primitives/ModalUi";
 import Loader from "../primitives/Loader";
 import DownloadPdfZip from "../primitives/DownloadPdfZip";

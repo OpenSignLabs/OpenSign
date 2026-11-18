@@ -1,7 +1,7 @@
 import axios from "axios";
-import { removeTrailingSegment } from "./UtilsPart01.js";
-import { isEmptyValue } from "./UtilsPart10.js";
-import { generatePdfName } from "./UtilsPart16.js";
+import { removeTrailingSegment } from "./coreConstants.js";
+import { isEmptyValue } from "./imageHandling.js";
+import { generatePdfName } from "./pdfPageEdit.js";
 
 export const getOriginalWH = async (pdf) => {
   let pdfWHObj = [];

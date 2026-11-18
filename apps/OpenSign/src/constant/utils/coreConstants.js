@@ -287,7 +287,9 @@ export const color = [
 ];
 
 // Login-path helpers live here so the login bundle never pulls the pdf-lib
-// modules below (UtilsPart02/04/08/10/11/15-19). They are re-exported from
+// modules below (widgetCatalog, widgetSizing, widgetInlineEditing,
+// imageHandling, widgetEmbedding, pdfPageView, pdfPageEdit and their
+// pdf-lib peers). They are re-exported from
 // the ../Utils facade, so every existing import keeps working (#55).
 export const saveLanguageInLocal = (i18n) => {
   const detectedLanguage = i18n.language || "en";

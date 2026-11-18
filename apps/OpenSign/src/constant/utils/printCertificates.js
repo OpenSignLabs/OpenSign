@@ -2,9 +2,9 @@ import axios from "axios";
 import { saveAs } from "file-saver";
 import printModule from "print-js";
 import i18n from "../../i18n";
-import { color } from "./UtilsPart01.js";
-import { getBase64FromUrl } from "./UtilsPart01.js";
-import { appName } from "./UtilsPart01.js";
+import { color } from "./coreConstants.js";
+import { getBase64FromUrl } from "./coreConstants.js";
+import { appName } from "./coreConstants.js";
 
 export const handleToPrint = async (event, setIsDownloading, pdfDetails) => {
   event.preventDefault();

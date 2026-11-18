@@ -1,6 +1,6 @@
 import moment from "moment";
 import { format } from "date-fns-tz";
-import { changeDateToMomentFormat } from "./UtilsPart03.js";
+import { changeDateToMomentFormat } from "./widgetOptions.js";
 
 export const handleDeleteWidget = (key, Id, pageNumber, signerPos) => {
   // Find the signer by ID

@@ -1,9 +1,9 @@
 import fontkit from "@pdf-lib/fontkit";
 import { getRuntimePdfFontUrl } from "../runtimeConfig";
-import { drawWidget } from "./UtilsPart01.js";
-import { radioButtonWidget } from "./UtilsPart01.js";
-import { fileasbytes } from "./UtilsPart01.js";
-import { isBase64, isEmptyValue } from "./UtilsPart10.js";
+import { drawWidget } from "./coreConstants.js";
+import { radioButtonWidget } from "./coreConstants.js";
+import { fileasbytes } from "./coreConstants.js";
+import { isBase64, isEmptyValue } from "./imageHandling.js";
 import { convertBase64ToImg } from "./signatureSave.js";
 import { drawWidgetPosition } from "./pdfWidgetDrawing";
 

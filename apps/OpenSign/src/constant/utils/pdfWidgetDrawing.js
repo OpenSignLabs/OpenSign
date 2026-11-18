@@ -8,14 +8,14 @@ import {
   radioButtonWidget,
   cellsWidget,
   randomId
-} from "./UtilsPart01.js";
-import { isEmptyValue } from "./UtilsPart10.js";
+} from "./coreConstants.js";
+import { isEmptyValue } from "./imageHandling.js";
 import { placeholderWidth, placeholderHeight } from "./placeholderTools.js";
-import { compensateRotation } from "./UtilsPart14.js";
-import { getWidgetPosition } from "./UtilsPart15.js";
-import { getWidgetsFontColor, forceBreakLongWord } from "./UtilsPart10.js";
-import { changeDateToMomentFormat } from "./UtilsPart03.js";
-import { isBase64 } from "./UtilsPart10.js";
+import { compensateRotation } from "./printCertificates.js";
+import { getWidgetPosition } from "./pdfPageView.js";
+import { getWidgetsFontColor, forceBreakLongWord } from "./imageHandling.js";
+import { changeDateToMomentFormat } from "./widgetOptions.js";
+import { isBase64 } from "./imageHandling.js";
 
 /** Draw one widget into its PDF page while preserving its field-specific layout. */
 export const drawWidgetPosition = async ({

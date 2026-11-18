@@ -5,8 +5,8 @@ import {
   getSignedUrl,
   handleDownloadPdf,
   fileNameWithUnderscore
-} from "../constant/utils/UtilsPart13.js";
-import { handleDownloadCertificate } from "../constant/utils/UtilsPart14.js";
+} from "../constant/utils/tenantDownloads.js";
+import { handleDownloadCertificate } from "../constant/utils/printCertificates.js";
 import Loader from "./Loader";
 import JSZip from "jszip";
 import { saveAs } from "file-saver";

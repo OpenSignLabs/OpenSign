@@ -1,10 +1,10 @@
 // @vitest-environment node
 // Characterization + spec tests for #68 / #69:
 // - lock the observable behavior of widgetSizing / widgetInlineEditing
-//   (ex-UtilsPart04 / ex-UtilsPart08)
 // - specify the dependency-free cycle break (no sizing <-> editing import)
 // - lock the facade export names (constant/Utils.js)
-// - lock the #69 responsibility renames (old UtilsPartNN paths are gone)
+// - the full rename lock (new paths, no legacy files, 141 facade names)
+//   lives in responsibilityRename.characterization.test.js
 import { describe, it, expect } from "vitest";
 import fs from "node:fs";
 import path from "node:path";
@@ -13,7 +13,7 @@ import { fileURLToPath } from "node:url";
 const here = path.dirname(fileURLToPath(import.meta.url));
 const read = (name) => fs.readFileSync(path.join(here, name), "utf8");
 
-// Minimal browser stubs: UtilsPart01 reads window.innerWidth at import time.
+// Minimal browser stubs: coreConstants reads window.innerWidth at import time.
 globalThis.window = globalThis.window || {
   innerWidth: 1280,
   devicePixelRatio: 1,
@@ -67,42 +67,19 @@ describe("#68 dependency-free cycle break", () => {
     ).toBe(false);
   });
 
-  it("#69 old UtilsPart04/08 paths are gone", () => {
-    expect(fs.existsSync(path.join(here, "UtilsPart04.js"))).toBe(false);
-    expect(fs.existsSync(path.join(here, "UtilsPart08.js"))).toBe(false);
-  });
-
-  it("#69 responsibility modules exist", () => {
-    for (const name of [
-      "widgetSizing.js",
-      "widgetState.js",
-      "widgetInput.js",
-      "widgetInlineEditing.js",
-      "signatureSave.js",
-      "placeholderTools.js",
-      "pdfFlatten.js",
-      "pdfFieldDrawing.js",
-      "widgetResponses.js",
-      "pdfResponse.js",
-      "signerMail.js",
-      "widgetLifecycle.js",
-      "widgetPrimitives.js"
-    ]) {
-      expect(fs.existsSync(path.join(here, name)), `${name} exists`).toBe(true);
-    }
-  });
-
   it("both sides share one dependency-free primitive module", () => {
+    const featureModules =
+      "widgetCatalog|widgetOptions|widgetState|widgetInput|widgetInlineEditing|signatureSave|imageHandling|widgetEmbedding|tenantDownloads|printCertificates|pdfPageView|pdfPageEdit|pdfFlatten|pdfFieldDrawing|widgetResponses|pdfResponse|signerMail|widgetLifecycle|widgetSizing";
     const names = fs.readdirSync(here);
     const primitive = names.find(
       (n) =>
         /^widget[A-Za-z]*\.js$/.test(n) &&
         !n.startsWith("widgetUtils") &&
         read(n).includes("defaultWidthHeight") &&
-        !/from\s+["']\.\/UtilsPart(0[2-9]|1[0-9]|2[0-2])(\.js)?["']/.test(
+        !new RegExp(`from\\s+["']\\.\\/(${featureModules})(\\.js)?["']`).test(
           read(n)
         ) &&
-        !/from\s+["']\.\/UtilsPart0[48](\.js)?["']/.test(read(n))
+        !/from\s+["']\.\/UtilsPart05(\.js)?["']/.test(read(n))
     );
     expect(
       primitive,
@@ -110,8 +87,8 @@ describe("#68 dependency-free cycle break", () => {
     ).toBeTruthy();
   });
 
-  it("the leaf constant module imports no widget part (acyclic base)", () => {
-    expect(/from\s+["']\.\/UtilsPart/.test(read("UtilsPart01.js"))).toBe(false);
+  it("the leaf constant module imports no sibling util module (acyclic base)", () => {
+    expect(/from\s+["']\.\//.test(read("coreConstants.js"))).toBe(false);
   });
 });
 

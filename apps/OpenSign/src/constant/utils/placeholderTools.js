@@ -1,5 +1,5 @@
 import axios from "axios";
-import { generateId } from "./UtilsPart01.js";
+import { generateId } from "./coreConstants.js";
 import { defaultWidthHeight } from "./widgetSizing.js";
 
 export function urlValidator(url) {

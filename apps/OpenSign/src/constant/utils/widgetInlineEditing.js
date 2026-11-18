@@ -1,12 +1,12 @@
 import { rgb } from "pdf-lib";
 import fontkit from "@pdf-lib/fontkit";
 import { getRuntimePdfFontUrl } from "../runtimeConfig";
-import { fileasbytes } from "./UtilsPart01.js";
+import { fileasbytes } from "./coreConstants.js";
 import { defaultWidthHeight } from "./widgetPrimitives.js";
 import { convertTextToImg } from "./widgetPrimitives.js";
-import { compensateRotation } from "./UtilsPart14.js";
-import { appName } from "./UtilsPart01.js";
-import { color } from "./UtilsPart01.js";
+import { compensateRotation } from "./printCertificates.js";
+import { appName } from "./coreConstants.js";
+import { color } from "./coreConstants.js";
 
 // Re-exported so the facade (constant/Utils.js) keeps its source module.
 export { convertTextToImg };

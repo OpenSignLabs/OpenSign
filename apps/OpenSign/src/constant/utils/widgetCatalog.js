@@ -1,11 +1,11 @@
 import axios from "axios";
 import moment from "moment";
 import { format } from "date-fns-tz";
-import { textInputWidget } from "./UtilsPart01.js";
-import { drawWidget } from "./UtilsPart01.js";
-import { textWidget } from "./UtilsPart01.js";
-import { radioButtonWidget } from "./UtilsPart01.js";
-import { cellsWidget } from "./UtilsPart01.js";
+import { textInputWidget } from "./coreConstants.js";
+import { drawWidget } from "./coreConstants.js";
+import { textWidget } from "./coreConstants.js";
+import { radioButtonWidget } from "./coreConstants.js";
+import { cellsWidget } from "./coreConstants.js";
 import { convertTextToImg } from "./widgetInlineEditing.js";
 
 export const nameColor = [

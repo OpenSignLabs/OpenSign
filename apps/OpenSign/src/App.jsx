@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { lazyWithRetry } from "./utils/lazyWithRetry";
 import { hideUpgradeProgress } from "./utils/upgradeProgress";
 import { Routes, Route, BrowserRouter, Navigate } from "react-router";
-import { getEnv } from "./constant/utils/UtilsPart01.js";
+import { getEnv } from "./constant/utils/coreConstants.js";
 import HomeLayout from "./layout/HomeLayout";
 import PageNotFound from "./pages/PageNotFound";
 import ValidateRoute from "./primitives/ValidateRoute";
