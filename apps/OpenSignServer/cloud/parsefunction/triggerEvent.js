@@ -54,8 +54,12 @@ export default async function triggerEvent(request) {
 
       let updatedAuditTrail;
 
-      if (existingIndex !== -1) {
-        // update existing entry
+      // Do not overwrite a completion activity (e.g. 'Signed') with 'Viewed';
+      // instead append a separate 'Viewed' entry to preserve audit integrity.
+      const completionActivities = ['Signed'];
+      if (existingIndex !== -1 && completionActivities.includes(auditTrail[existingIndex]?.Activity)) {
+        updatedAuditTrail = [...auditTrail, newEntry];
+      } else if (existingIndex !== -1) {
         updatedAuditTrail = [...auditTrail];
         updatedAuditTrail[existingIndex] = {
           ...updatedAuditTrail[existingIndex],
@@ -65,7 +69,6 @@ export default async function triggerEvent(request) {
           ViewedOn: date,
         };
       } else {
-        // add new entry
         updatedAuditTrail = [...auditTrail, newEntry];
       }
 
