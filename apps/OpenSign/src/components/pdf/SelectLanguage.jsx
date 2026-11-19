@@ -12,7 +12,8 @@ function SelectLanguage(props) {
     { value: "de", text: "Deutsch" }, //german
     { value: "hi", text: "हिन्दी" }, //hindi
     { value: "kr", text: "한국어" }, //korean
-    { value: "zh", text: "中文" } //chinese
+    { value: "zh", text: "中文" }, //chinese
+    { value: "ja", text: "日本語" } //japanese
   ];
   const defaultLanguage = i18next.language || "en";
   const [lang, setLang] = useState(defaultLanguage);

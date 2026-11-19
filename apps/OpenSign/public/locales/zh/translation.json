@@ -977,6 +977,8 @@
   "contact-already-exists": "联系人已存在。",
   "docx-error": "我们目前在处理 DOCX 文件时遇到一些问题。请上传 PDF 文件",
   "docx-error-contact": "或通过 support@opensignlabs.com 联系我们",
+  "excel-error": "我们目前在处理 Excel 文件时遇到一些问题。请上传 PDF 文件",
+  "excel-error-contact": "或通过 support@opensignlabs.com 联系我们",
   "agreement-note": "注意：同意此声明并不意味着你立即签署文档。这仅允许你以电子方式审阅文档。你将有机会完整阅读并随后决定是否签署。",
   "draft-template-info-p1": "要使模板公开，它必须只包含单个角色；或者，如果包含多个角色，所有额外角色都必须已分配给签署人。未分配的公开角色应保持为空，并且必须置于第一个位置。",
   "visit-below-link": "访问以下链接了解更多 -",

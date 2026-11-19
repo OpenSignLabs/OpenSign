@@ -48,7 +48,27 @@ export const handleToPrint = async (event, setIsDownloading, pdfDetails) => {
       window.open(blobUrl, "_blank");
       setIsDownloading("");
     } else {
-      printModule({ printable: pdf, type: "pdf", base64: true });
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch PDF: ${response.status}`);
+      }
+      const blob = await response.blob();
+      const blobUrl = URL.createObjectURL(blob);
+      const iframe = document.createElement("iframe");
+      iframe.style.position = "fixed";
+      iframe.style.right = "0";
+      iframe.style.bottom = "0";
+      iframe.style.width = "0";
+      iframe.style.height = "0";
+      iframe.style.border = "0";
+      iframe.src = blobUrl;
+      document.body.appendChild(iframe);
+      iframe.onload = () => {
+        setTimeout(() => {
+          iframe.contentWindow.focus();
+          iframe.contentWindow.print();
+        }, 1000);
+      };
       setIsDownloading("");
     }
   } catch (err) {

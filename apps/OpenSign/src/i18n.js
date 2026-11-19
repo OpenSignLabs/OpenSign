@@ -27,7 +27,7 @@ i18n
     },
     // i18next v22+ renamed `whitelist` to `supportedLngs`; the old key was
     // silently ignored, so `en-US` reached the backend and 404'd.
-    supportedLngs: ["en", "es", "fr", "it", "de", "hi", "kr", "zh"],
+    supportedLngs: ["en", "es", "fr", "it", "de", "hi", "kr", "zh", "ja"],
     // Resolve regional locales to their base language: en-US -> en, es-PE -> es.
     nonExplicitSupportedLngs: true,
     // Never request a regional file; only en/es/fr/... exist on disk.
