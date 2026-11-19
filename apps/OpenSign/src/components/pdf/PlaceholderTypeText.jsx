@@ -91,6 +91,7 @@ export function renderText(type, context) {
           style={{
             fontFamily: UI_FONT,
             fontSize: fontSize,
+            lineHeight: 1.25,
             color: fontColor,
             background: "white",
             pointerEvents: canEditInline ? "auto" : "none",
@@ -137,6 +138,7 @@ export function renderText(type, context) {
           style={{
             fontFamily: "Arial, sans-serif",
             fontSize: fontSize,
+            lineHeight: 1.25,
             color: fontColor,
             background: "white"
           }}
@@ -157,6 +159,7 @@ export function renderText(type, context) {
           style={{
             fontFamily: UI_FONT,
             fontSize: fontSize,
+            lineHeight: 1.25,
             color: fontColor,
             background: "white",
             pointerEvents: canEditInline ? "auto" : "none",
@@ -203,6 +206,7 @@ export function renderText(type, context) {
           style={{
             fontFamily: "Arial, sans-serif",
             fontSize: fontSize,
+            lineHeight: 1.25,
             color: fontColor,
             background: "white"
           }}
