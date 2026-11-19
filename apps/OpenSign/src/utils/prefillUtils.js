@@ -1,15 +1,19 @@
 import { SaveFileSize } from "../constant/saveFileSize";
+// Direct part imports: the ../constant/Utils facade is never imported here
+// so the login bundle is not coupled to the pdf-lib modules (#55).
+import { convertBase64ToFile } from "../constant/utils/pdfPageView.js";
 import {
-  convertBase64ToFile,
   convertPdfArrayBuffer,
-  createDocument,
-  generatePdfName,
-  embedWidgetsToDoc,
+  getSignedUrl
+} from "../constant/utils/tenantDownloads.js";
+import { createDocument } from "../constant/utils/UtilsPart05.js";
+import { generatePdfName } from "../constant/utils/pdfPageEdit.js";
+import { embedWidgetsToDoc } from "../constant/utils/widgetEmbedding.js";
+import {
   randomId,
   getBase64FromUrl,
-  drawWidget,
-  getSignedUrl
-} from "../constant/Utils";
+  drawWidget
+} from "../constant/utils/coreConstants.js";
 import { PDFDocument } from "pdf-lib";
 
 export const prefillBlockColor = "transparent";

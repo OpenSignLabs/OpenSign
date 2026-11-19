@@ -1,0 +1,17 @@
+{
+  "spec_dir": "spec",
+  "spec_files": [
+    "unit.spec.js",
+    "brandContext.spec.js",
+    "clientIp.spec.js",
+    "publicUrl.spec.js",
+    "serverConfig.spec.js",
+    "dotenvOrdering.spec.js",
+    "checkAdminExist.spec.js",
+    "envConfig.spec.js",
+    "utilsFacade.spec.js"
+  ],
+  "helpers": [],
+  "stopSpecOnExpectationFailure": false,
+  "random": false
+}

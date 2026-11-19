@@ -1,3 +1,4 @@
+import { logger } from '../../utils/logger.js';
 export default async function savecontact(request) {
   const name = request.params.name;
   const phone = request.params.phone;
@@ -63,7 +64,7 @@ export default async function savecontact(request) {
           return parseData;
         }
       } catch (err) {
-        console.log('err ', err);
+        logger.info('err ', err);
         if (err.code === 202) {
           const params = { email: email };
           const userRes = await Parse.Cloud.run('getUserId', params);

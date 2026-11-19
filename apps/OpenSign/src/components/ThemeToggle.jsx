@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import Parse from "parse";
+import { applyTheme } from "../utils/theme";
 
 const ThemeToggle = () => {
   const [isDark, setIsDark] = useState(false);
@@ -13,15 +15,18 @@ const ThemeToggle = () => {
     }
   }, []);
 
-  const handleChange = () => {
+  const handleChange = async () => {
     const newTheme = !isDark;
+    const theme = newTheme ? "dark" : "light";
     setIsDark(newTheme);
-    if (newTheme) {
-      document.documentElement.setAttribute("data-theme", "opensigndark");
-      localStorage.setItem("theme", "dark");
-    } else {
-      document.documentElement.setAttribute("data-theme", "opensigncss");
-      localStorage.setItem("theme", "light");
+    applyTheme(theme);
+    if (Parse.User.current()) {
+      try {
+        await Parse.Cloud.run("updatepreferences", { Theme: theme });
+      } catch (err) {
+        // The theme still applies on this device; it can be saved on the next change.
+        console.error("Error saving theme preference: ", err);
+      }
     }
   };
 

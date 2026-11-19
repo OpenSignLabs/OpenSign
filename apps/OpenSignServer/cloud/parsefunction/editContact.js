@@ -1,3 +1,4 @@
+import { logger } from '../../utils/logger.js';
 export default async function editContact(request) {
   const { contactId, name, email, phone, tenantId } = request.params;
   const company = request.params?.company;
@@ -68,7 +69,7 @@ export default async function editContact(request) {
           return parseData;
         }
       } catch (err) {
-        console.log('err ', err);
+        logger.info('err ', err);
         if (err.code === 202) {
           const params = { email: email };
           const userRes = await Parse.Cloud.run('getUserId', params);

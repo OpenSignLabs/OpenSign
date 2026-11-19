@@ -1,3 +1,4 @@
+import { logger } from '../../utils/logger.js';
 export default async function updateTourStatus(request) {
   const tourstatus = request.params.TourStatus;
   const extUserId = request.params.ExtUserId;
@@ -10,7 +11,7 @@ export default async function updateTourStatus(request) {
       const res = await updateUser.save(null, { sessionToken: request.user.getSessionToken() });
       return res;
     } catch (err) {
-      console.log('Err ', err);
+      logger.info('Err ', err);
       const code = err?.code || 400;
       const msg = err?.message || 'Something went wrong.';
       throw new Parse.Error(code, msg);

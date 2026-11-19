@@ -1,3 +1,4 @@
+import { logger } from '../../utils/logger.js';
 export default async function updateSignatureType(request) {
   if (!request?.user) {
     throw new Parse.Error(Parse.Error.INVALID_SESSION_TOKEN, 'User is not authenticated.');
@@ -40,7 +41,7 @@ export default async function updateSignatureType(request) {
           throw new Parse.Error(Parse.Error.OPERATION_FORBIDDEN, 'Premission denied.');
         }
       } catch (err) {
-        console.log('err in addorganization', err);
+        logger.info('err in addorganization', err);
         const code = err?.code || 400;
         const msg = err?.message || 'Something went wrong.';
         throw new Parse.Error(code, msg);

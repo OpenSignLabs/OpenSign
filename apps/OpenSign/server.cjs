@@ -140,6 +140,12 @@ const server = http.createServer((req, res) => {
 
   fs.stat(filePath, (err, stats) => {
     if (err) {
+      // A missing asset (path with an extension) must not be masked by the
+      // SPA fallback: answer 404 so broken references stay visible.
+      if (path.extname(filePath)) {
+        res.writeHead(404, { "Content-Type": "text/plain" });
+        return res.end("Not Found");
+      }
       // No file at this path → SPA fallback to index.html
       return sendIndex(req, res);
     }

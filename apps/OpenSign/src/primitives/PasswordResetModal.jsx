@@ -101,7 +101,7 @@ export default function PasswordResetModal({
       await navigator.clipboard.writeText(password);
       showAlert("success", t("copied"), 1200);
       setCopied(true);
-      setTimeout(() => setCopied(false, 1200));
+      setTimeout(() => setCopied(false), 1200);
     } catch (e) {
       console.error("Clipboard error", e);
     }

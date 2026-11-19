@@ -1,13 +1,20 @@
 import axios from 'axios';
 import { cloudServerUrl, serverAppId } from '../../Utils.js';
+import { logger } from '../../utils/logger.js';
 const serverUrl = cloudServerUrl; //process.env.SERVER_URL;
 const APPID = serverAppId;
 const masterKEY = process.env.MASTER_KEY;
 
+function normalizeEmail(email) {
+  return String(email || '')
+    .toLowerCase()
+    .replace(/\s/g, '');
+}
+
 async function saveUser(userDetails) {
-  const normalizedEmail = normalizeEmail(userDetails.email.toLowerCase().replace(/\s/g, ''));
+  const normalizedEmail = normalizeEmail(userDetails.email);
   const userQuery = new Parse.Query(Parse.User);
-  userQuery.equalTo('username', userDetails.email);
+  userQuery.equalTo('username', normalizedEmail);
   const userRes = await userQuery.first({ useMasterKey: true });
 
   if (userRes) {
@@ -25,13 +32,13 @@ async function saveUser(userDetails) {
       },
     });
     const login = await axiosRes.data;
-    // console.log("login ", login);
+    // logger.info("login ", login);
     return { id: login.objectId, sessionToken: login.sessionToken };
   } else {
     const user = new Parse.User();
-    user.set('username', userDetails.email);
+    user.set('username', normalizedEmail);
     user.set('password', userDetails.password);
-    user.set('email', userDetails?.email?.toLowerCase()?.replace(/\s/g, ''));
+    user.set('email', normalizedEmail);
     user.set('normalizedEmail', normalizedEmail);
 
     if (userDetails?.phone) {
@@ -40,7 +47,7 @@ async function saveUser(userDetails) {
     user.set('name', userDetails.name);
 
     const res = await user.signUp();
-    // console.log("res ", res);
+    // logger.info("res ", res);
     return { id: res.id, sessionToken: res.getSessionToken() };
   }
 }
@@ -61,7 +68,7 @@ export default async function usersignup(request) {
     if (extUser) {
       return { message: 'User already exist' };
     } else {
-      // console.log("role ", role);
+      // logger.info("role ", role);
       const partnerCls = Parse.Object.extend('partners_Tenant');
       const partnerQuery = new partnerCls();
       partnerQuery.set('UserId', {
@@ -97,7 +104,7 @@ export default async function usersignup(request) {
         partnerQuery.set('Address', userDetails.address);
       }
       const tenantRes = await partnerQuery.save(null, { useMasterKey: true });
-      // console.log("tenantRes ", tenantRes);
+      // logger.info("tenantRes ", tenantRes);
       const extCls = Parse.Object.extend(extClass + '_Users');
       const newObj = new extCls();
       newObj.set('UserId', {
@@ -129,6 +136,6 @@ export default async function usersignup(request) {
       return { message: 'User sign up', sessionToken: user.sessionToken };
     }
   } catch (err) {
-    console.log('Err ', err);
+    logger.info('Err ', err);
   }
 }

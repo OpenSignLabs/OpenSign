@@ -1,5 +1,5 @@
 import { SaveFileSize } from "../constant/saveFileSize";
-import { getSecureUrl } from "../constant/Utils";
+import { getSecureUrl } from "../constant/utils/coreConstants.js";
 import Parse from "parse";
 import i18n from "../i18n";
 

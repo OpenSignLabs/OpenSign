@@ -1,3 +1,4 @@
+import { randomInt } from 'node:crypto';
 import { appName } from '../../../Utils.js';
 import sendSystemMail from '../../parsefunction/sendSystemMail.js';
 import { escapeHtml, resolveBrandContext } from '../../../utils/brandContext.js';
@@ -9,8 +10,9 @@ export const RESEND_COOLDOWN_SEC = 30; // Cooldown between OTP sends
 export const MAX_ATTEMPTS = 5; // Max allowed wrong attempts
 
 export function generateOtp(len = OTP_LENGTH) {
-  // 6-digit numeric OTP (000000–999999, padded)
-  const n = Math.floor(Math.random() * Math.pow(10, len));
+  // 6-digit numeric OTP (000000–999999, padded), drawn from a CSPRNG.
+  const max = Math.pow(10, len);
+  const n = randomInt(0, max);
   return String(n).padStart(len, '0');
 }
 

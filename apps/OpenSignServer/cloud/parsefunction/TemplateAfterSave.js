@@ -1,7 +1,8 @@
+import { logger } from '../../utils/logger.js';
 export default async function TemplateAfterSave(request) {
   try {
     if (!request.original) {
-      console.log('new entry is insert in contracts_Template', request?.object?.id);
+      logger.info('new entry is insert in contracts_Template', request?.object?.id);
       const obj = request.object;
       const objId = obj?.id;
       const ip = request?.headers?.['x-real-ip'] || '';
@@ -30,8 +31,8 @@ export default async function TemplateAfterSave(request) {
       }
     }
   } catch (err) {
-    console.log('err in aftersave of contracts_Template');
-    console.log(err);
+    logger.info('err in aftersave of contracts_Template');
+    logger.info(err);
   }
 
   async function updateTemplateMeta({ objId, createdAt, ip, originIp }) {

@@ -3,6 +3,11 @@ const OPEN_SIGN_EMAIL_LOGO = 'https://qikinnovation.ams3.digitaloceanspaces.com/
 const OPEN_SIGN_ACCENT = '#47a3ad';
 const OPEN_SIGN_PDF_FONT = 'https://cdn.opensignlabs.com/webfonts/times.ttf';
 
+// Centralized server defaults (issue #72): single source for values that were
+// previously repeated inline. Defaults keep the behavior the server always had.
+export const REMINDER_INTERVAL_MS = 60 * 60 * 1000;
+export const LOCALHOST_HOSTNAMES = Object.freeze(['localhost', '127.0.0.1']);
+
 const readValue = (value, key) => {
   if (!value) return undefined;
   if (typeof value.get === 'function') return value.get(key);

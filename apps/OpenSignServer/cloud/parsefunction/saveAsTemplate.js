@@ -1,4 +1,5 @@
 import { randomId } from '../../Utils.js';
+import { logger } from '../../utils/logger.js';
 
 export default async function saveAsTemplate(request) {
   const docId = request.params.docId;
@@ -139,7 +140,7 @@ export default async function saveAsTemplate(request) {
       throw new Parse.Error(Parse.Error.OBJECT_NOT_FOUND, 'document not found.');
     }
   } catch (err) {
-    console.log('Err in save as template', err);
+    logger.info('Err in save as template', err);
     throw err;
   }
 }

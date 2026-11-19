@@ -1,6 +1,6 @@
 services:
   server:
-    image: opensign/opensignserver:main
+    image: ghcr.io/snxrcs/opensignserver:latest
     container_name: OpenSignServer-container
     volumes:
       - opensign-files:/usr/src/app/files
@@ -25,7 +25,7 @@ services:
     networks:
       - app-network
   client:
-    image: opensign/opensign:main
+    image: ghcr.io/snxrcs/opensign:latest
     container_name: OpenSign-container
     depends_on:
       - server

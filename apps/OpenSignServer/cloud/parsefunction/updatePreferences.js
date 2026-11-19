@@ -1,3 +1,4 @@
+import { logger } from '../../utils/logger.js';
 export default async function updatePreferences(request) {
   if (!request?.user) {
     throw new Parse.Error(Parse.Error.INVALID_SESSION_TOKEN, 'User is not authenticated.');
@@ -6,7 +7,13 @@ export default async function updatePreferences(request) {
   const NotifyOnSignatures = request.params.NotifyOnSignatures;
   const Timezone = request.params.Timezone;
   const UseNameAsSender = request.params.UseNameAsSender;
-  if (SignatureType?.length > 0 || NotifyOnSignatures !== undefined || Timezone) {
+  const Theme = request.params.Theme;
+  if (
+    SignatureType?.length > 0 ||
+    NotifyOnSignatures !== undefined ||
+    Timezone ||
+    Theme !== undefined
+  ) {
     try {
       const orgQuery = new Parse.Query('contracts_Users');
       orgQuery.equalTo('UserId', {
@@ -64,6 +71,12 @@ export default async function updatePreferences(request) {
         if (UseNameAsSender !== undefined) {
           newOrg.set('UseNameAsSender', UseNameAsSender);
         }
+        if (Theme !== undefined) {
+          if (Theme !== 'dark' && Theme !== 'light') {
+            throw new Parse.Error(Parse.Error.INVALID_QUERY, 'Invalid theme.');
+          }
+          newOrg.set('Theme', Theme);
+        }
         const updateUserRes = await newOrg.save(null, { useMasterKey: true });
         if (updateUserRes) {
           const _updateUserRes = JSON.parse(JSON.stringify(updateUserRes));
@@ -73,7 +86,7 @@ export default async function updatePreferences(request) {
         throw new Parse.Error(Parse.Error.OPERATION_FORBIDDEN, 'Premission denied.');
       }
     } catch (err) {
-      console.log('err in addorganization', err);
+      logger.info('err in addorganization', err);
       const code = err?.code || 400;
       const msg = err?.message || 'Something went wrong.';
       throw new Parse.Error(code, msg);

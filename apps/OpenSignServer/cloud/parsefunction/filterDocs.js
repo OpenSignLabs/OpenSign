@@ -1,3 +1,4 @@
+import { logger } from '../../utils/logger.js';
 /**
  * Escapes special characters in a string so it can safely be used in a RegExp.
  */
@@ -49,7 +50,7 @@ async function fetchDocumentsByName(
   try {
     return await query.find({ useMasterKey: true });
   } catch (err) {
-    console.error('Error fetching contracts_Document by Name:', err);
+    logger.error('Error fetching contracts_Document by Name:', err);
     // Wrap low-level or network errors in a script-level error
     throw new Parse.Error(
       Parse.Error.SCRIPT_FAILED,
@@ -76,7 +77,7 @@ export default async function filterDocs(request) {
     return docs;
   } catch (error) {
     // handle error
-    console.log('err while filtering doc', error);
+    logger.info('err while filtering doc', error);
     throw error;
   }
 }

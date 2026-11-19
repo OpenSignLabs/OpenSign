@@ -1,3 +1,4 @@
+import { logger } from '../../utils/logger.js';
 export default async function addUser(request) {
   const { phone, name, password, organization, team, tenantId, timezone, role } = request.params;
   const email = request.params?.email?.toLowerCase()?.replace(/\s/g, '');
@@ -125,7 +126,7 @@ export default async function addUser(request) {
           return parseData;
         }
       } catch (err) {
-        console.log('err ', err);
+        logger.info('err ', err);
         if (err.code === 202) {
           if (await existingUserQuery.first({ useMasterKey: true })) {
             throw new Parse.Error(Parse.Error.EMAIL_TAKEN, 'User already exists.');

@@ -1,6 +1,6 @@
 {
   "name": "open_sign_server",
-  "version": "2.37.0",
+  "version": "2.38.1",
   "description": "opensign server using the parse-server module",
   "repository": {
     "type": "git",
@@ -13,6 +13,7 @@
     "lint-fix": "eslint --cache --fix ./cloud && eslint --cache --fix index.js",
     "prettier": "prettier --write 'cloud/{**/*,*}.js' 'index.js'",
     "start": "node index.js",
+    "test": "jasmine",
     "watch": "nodemon index.js"
   },
   "dependencies": {
@@ -35,6 +36,7 @@
     "generate-api-key": "^1.0.2",
     "googleapis": "^171.4.0",
     "jose": "^6.2.3",
+    "ldapts": "^9.3.1",
     "libreoffice-convert": "^1.8.1",
     "mailgun.js": "^13.0.0",
     "moment": "^2.30.1",
@@ -82,7 +84,8 @@
     "websocket-driver": ">=0.7.5",
     "js-yaml": "^3.15.0",
     "lodash": "^4.18.0",
-    "undici": "^7.29.0",
+    "undici": ">=7.30.0",
+    "proxy-addr": ">=2.0.7",
     "uuid": ">=11.1.1",
     "body-parser": ">=2.3.0",
     "@graphql-tools/utils": "$@graphql-tools/utils",

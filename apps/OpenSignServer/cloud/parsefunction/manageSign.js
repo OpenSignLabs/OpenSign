@@ -1,3 +1,4 @@
+import { logger } from '../../utils/logger.js';
 export default async function manageSign(request) {
   const { signature, userId, initials, id, title, stamp } = request.params;
 
@@ -23,7 +24,7 @@ export default async function manageSign(request) {
     const signRes = await signatureCls.save(null, { useMasterKey: true });
     return signRes;
   } catch (err) {
-    console.error('Error saving signature:', err);
+    logger.error('Error saving signature:', err);
     throw err;
   }
 }

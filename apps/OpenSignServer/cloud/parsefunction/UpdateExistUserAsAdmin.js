@@ -1,3 +1,4 @@
+import { logger } from '../../utils/logger.js';
 async function updateUserExceptAdmin(data) {
   const Contracts = Parse.Object.extend('contracts_Users');
   let skip = 0;
@@ -30,9 +31,9 @@ async function updateUserExceptAdmin(data) {
 
       // Save all the updated entries
       await Parse.Object.saveAll(results, { useMasterKey: true });
-      console.log(`${results.length} user roles updated successfully`);
+      logger.info(`${results.length} user roles updated successfully`);
     } catch (error) {
-      console.error('Error while updating user roles:', error);
+      logger.error('Error while updating user roles:', error);
       hasMore = false; // Stop if there's an error
     }
   }
@@ -60,7 +61,7 @@ export default async function UpdateExistUserAsAdmin(request) {
       extCls.equalTo('Email', email);
       extCls.notEqualTo('IsDisabled', true);
       const extRes = await extCls.first({ useMasterKey: true });
-      console.log('extRes ', extRes);
+      logger.info('extRes ', extRes);
       if (extRes) {
         const _extRes = JSON.parse(JSON.stringify(extRes));
         const tenantId = {
@@ -127,7 +128,7 @@ export default async function UpdateExistUserAsAdmin(request) {
       }
     }
   } catch (err) {
-    console.log('err in updateExistUserAsAdmin', err);
+    logger.info('err in updateExistUserAsAdmin', err);
     const code = err.code || 400;
     const msg = err.message || 'something went wrong.';
     throw new Parse.Error(code, msg);

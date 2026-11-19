@@ -7,6 +7,7 @@ import SelectFolder from "../components/shared/fields/SelectFolder";
 import SignersInput from "../components/shared/fields/SignersInput";
 import PageNotFound from "./PageNotFound";
 import { SaveFileSize } from "../constant/saveFileSize";
+import { DEFAULT_COMPLETION_DAYS } from "../constant/runtimeConfig";
 import {
   generatePdfName,
   generateTitleFromFilename,
@@ -18,6 +19,7 @@ import {
   removeTrailingSegment
 } from "../constant/Utils";
 import { normalizeParseObjectResult } from "../utils/parseResult";
+import { mergePdfBuffers } from "../utils/pdfDocumentUtils";
 import { isCreditQuotaError } from "../utils/creditErrors";
 import { PDFDocument } from "pdf-lib";
 import axios from "axios";
@@ -65,7 +67,7 @@ const Forms = (props) => {
     Name: "",
     Description: "",
     Note: "",
-    TimeToCompleteDays: 15,
+    TimeToCompleteDays: DEFAULT_COMPLETION_DAYS,
     SendinOrder: "false",
     SendInOrderStrict: "false",
     password: "",
@@ -271,7 +273,6 @@ const Forms = (props) => {
             setpercentage(0);
             const config = {
               headers: {
-                "content-type": "multipart/form-data",
                 sessiontoken: Parse.User.current().getSessionToken()
               },
               signal: abortController.signal,
@@ -305,6 +306,55 @@ const Forms = (props) => {
             }
             return;
           }
+        } else if (
+          file.type === "application/vnd.ms-excel" ||
+          file.type === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ||
+          file.name.toLowerCase().endsWith(".xls") ||
+          file.name.toLowerCase().endsWith(".xlsx")
+        ) {
+          try {
+            const baseApi = localStorage.getItem("baseUrl") || "";
+            const url = removeTrailingSegment(baseApi) + "/exceltopdf";
+            let fd = new FormData();
+            fd.append("file", file);
+            setfileload(true);
+            setpercentage(0);
+            const config = {
+              headers: {
+                "content-type": "multipart/form-data",
+                sessiontoken: Parse.User.current().getSessionToken()
+              },
+              signal: abortController.signal,
+              onUploadProgress: (progressEvent) => {
+                if (progressEvent.total) {
+                  const percentCompleted = Math.round(
+                    (progressEvent.loaded * 100) / progressEvent.total
+                  );
+                  setpercentage(percentCompleted);
+                }
+              }
+            };
+            const res = await axios.post(url, fd, config);
+            if (res.data?.url) {
+              const pdfRes = await axios.get(res.data.url, {
+                responseType: "arraybuffer"
+              });
+              pdfBuffers.push(pdfRes.data);
+            }
+            setfileload(false);
+          } catch (err) {
+            setfileload(false);
+            removeFile(e);
+            console.log("err in excel to pdf ", err);
+            const error =
+                  t("excel-error");
+            if (err?.code === 209) {
+              dispatch(sessionStatus(false));
+            } else {
+              alert(error);
+            }
+            return;
+          }
         }
       }
 
@@ -315,12 +365,7 @@ const Forms = (props) => {
       }
 
       setfileload(true);
-      const merged = await PDFDocument.create();
-      for (const bytes of pdfBuffers) {
-        const doc = await PDFDocument.load(bytes, { ignoreEncryption: true });
-        const pages = await merged.copyPages(doc, doc.getPageIndices());
-        pages.forEach((p) => merged.addPage(p));
-      }
+      const merged = await mergePdfBuffers(pdfBuffers);
 
       const pdfBytes = await merged.save({ useObjectStreams: false });
       const name = generatePdfName(16);
@@ -524,7 +569,7 @@ const Forms = (props) => {
               props.title === "Sign Yourself"
                 ? "Note to myself"
                 : "Please review and sign this document",
-            TimeToCompleteDays: 15,
+            TimeToCompleteDays: DEFAULT_COMPLETION_DAYS,
             SendinOrder: sendinorder,
             password: "",
             file: "",
@@ -623,7 +668,7 @@ const Forms = (props) => {
         props.title === "Sign Yourself"
           ? "Note to myself"
           : "Please review and sign this document",
-      TimeToCompleteDays: 15,
+      TimeToCompleteDays: DEFAULT_COMPLETION_DAYS,
       SendinOrder: sendinorder,
       password: "",
       file: "",
@@ -841,7 +886,7 @@ const Forms = (props) => {
             )}
             <div className="text-xs">
               <label className="block">
-                {`${`${t("report-heading.File")} (${t("file-type")}`}${", docx)"}`}
+                {`${`${t("report-heading.File")} (${t("file-type")}`}${", docx, xlsx, xls)"}`}
                 <span className="text-red-500 text-[13px]">*</span>
               </label>
               {fileupload.length > 0 ? (
@@ -869,7 +914,7 @@ const Forms = (props) => {
                     className="op-file-input op-file-input-bordered op-file-input-sm focus:outline-none hover:border-base-content w-full text-xs"
                     onChange={(e) => handleFileInput(e)}
                     ref={inputFileRef}
-                    accept="application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,image/png,image/jpeg"
+                    accept="application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,image/png,image/jpeg"
                     onInvalid={(e) =>
                       e.target.setCustomValidity(t("input-required"))
                     }

@@ -2,10 +2,17 @@ import fs from 'node:fs';
 import https from 'https';
 import formData from 'form-data';
 import Mailgun from 'mailgun.js';
-import { smtpenable, smtpsecure, normalizeMailSubject, updateMailCount } from '../../Utils.js';
+import {
+  smtpenable,
+  smtpsecure,
+  normalizeMailSubject,
+  updateMailCount,
+} from '../../Utils.js';
+import { getServerConfig, rewritePublicApiUrl } from '../../utils/serverConfig.js';
 import { renderComplaintFooter, resolveBrandContext } from '../../utils/brandContext.js';
 import { createTransport } from 'nodemailer';
 import axios from 'axios';
+import { getSmtpPort } from '../../utils/envConfig.js';
 
 function safeUnlink(filePath, label = 'file') {
   if (fs.existsSync(filePath)) {
@@ -30,7 +37,7 @@ async function sendMailProvider(params) {
     if (smtpenable) {
       let transporterConfig = {
         host: process.env.SMTP_HOST,
-        port: process.env.SMTP_PORT || 465,
+        port: getSmtpPort(process.env),
         secure: smtpsecure,
       };
 
@@ -65,7 +72,16 @@ async function sendMailProvider(params) {
             if (isSecure) {
               https
                 .get(params.url, async function (response) {
+                  // An error body (404/500) must never be attached as the PDF.
+                  if (response.statusCode !== 200) {
+                    response.resume();
+                    safeUnlink(testPdf, 'pdf');
+                    resolve('error');
+                    return;
+                  }
                   response.pipe(Pdf);
+                  // Writing completion is handled by the attachment-download
+                  // change; this PR only rejects a non-200 response.
                   response.on('end', () => resolve('success'));
                 })
                 .on('error', e => {
@@ -75,9 +91,10 @@ async function sendMailProvider(params) {
             } else {
               const httpsAgent = new https.Agent({ rejectUnauthorized: false }); // Disable SSL validation
               const localUrl = params.url;
-              const newlocalUrl = localUrl.replace(
-                'https://localhost:3001/api',
-                'http://localhost:8080'
+              const newlocalUrl = rewritePublicApiUrl(
+                localUrl,
+                process.env.PUBLIC_API_URL,
+                getServerConfig(process.env).serverOrigin
               );
               axios
                 .get(newlocalUrl, { responseType: 'stream', httpsAgent: httpsAgent })
@@ -95,6 +112,10 @@ async function sendMailProvider(params) {
         };
         // `writeToLocalDisk` is used to create pdf file from doc url
         const ress = await writeToLocalDisk();
+        if (ress !== 'success') {
+          safeUnlink(testPdf, 'pdf');
+          return { status: 'error' };
+        }
         if (ress) {
           function readTolocal() {
             return new Promise((resolve, reject) => {
@@ -106,6 +127,10 @@ async function sendMailProvider(params) {
           }
           //  `PdfBuffer` used to create buffer from pdf file
           let PdfBuffer = await readTolocal();
+          if (!PdfBuffer || PdfBuffer.length === 0) {
+            safeUnlink(testPdf, 'pdf');
+            return { status: 'error' };
+          }
           const pdfName = params.pdfName && `${params.pdfName}.pdf`;
           const filename = params.filename;
           const file = {
@@ -116,28 +141,33 @@ async function sendMailProvider(params) {
 
           let attachment;
           const certificatePath = params.certificatePath || `./exports/certificate.pdf`;
+          let certificateBuffer = null;
           if (fs.existsSync(certificatePath)) {
             try {
-              //  `certificateBuffer` used to create buffer from pdf file
-              const certificateBuffer = fs.readFileSync(certificatePath);
-              const certificate = {
-                filename: 'certificate.pdf',
-                content: smtpenable ? certificateBuffer : undefined, //fs.readFileSync('./exports/exported_file_1223.pdf'),
-                data: smtpenable ? undefined : certificateBuffer,
-              };
-              attachment = [file, certificate];
+              const stat = fs.statSync(certificatePath);
+              if (stat.size > 0) {
+                certificateBuffer = fs.readFileSync(certificatePath);
+              }
             } catch (err) {
-              attachment = [file];
               console.log('sendMailWithAttachment read certificate error', err);
             }
+          }
+          if (certificateBuffer && certificateBuffer.length > 0) {
+            const certificate = {
+              filename: 'certificate.pdf',
+              content: smtpenable ? certificateBuffer : undefined,
+              data: smtpenable ? undefined : certificateBuffer,
+            };
+            attachment = [file, certificate];
           } else {
             attachment = [file];
           }
           const from = params.from || '';
           const mailsender = smtpenable ? process.env.SMTP_USER_EMAIL : process.env.MAILGUN_SENDER;
+          const displayName = from && !String(from).includes('@') ? from : brand.productName;
           const replyto = params?.replyto || '';
           const messageParams = {
-            from: from + ' <' + mailsender + '>',
+            from: displayName + ' <' + mailsender + '>',
             to: params.recipient,
             subject: normalizeMailSubject(params.subject),
             text: params.text || 'mail',
@@ -188,9 +218,10 @@ async function sendMailProvider(params) {
     } else {
       const from = params.from || '';
       const mailsender = smtpenable ? process.env.SMTP_USER_EMAIL : process.env.MAILGUN_SENDER;
+      const displayName = from && !String(from).includes('@') ? from : brand.productName;
       const replyto = params?.replyto || '';
       const messageParams = {
-        from: from + ' <' + mailsender + '>',
+        from: displayName + ' <' + mailsender + '>',
         to: params.recipient,
         subject: normalizeMailSubject(params.subject),
         text: params.text || 'mail',

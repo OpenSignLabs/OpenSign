@@ -15,10 +15,14 @@ import { app as customRoute } from './cloud/customRoute/customApp.js';
 import { exec } from 'child_process';
 import { createTransport } from 'nodemailer';
 import { appName, cloudServerUrl, serverAppId, smtpenable, smtpsecure, useLocal } from './Utils.js';
-import { resolveDeploymentBrand } from './utils/brandContext.js';
+import { REMINDER_INTERVAL_MS, resolveDeploymentBrand } from './utils/brandContext.js';
 import { SSOAuth } from './auth/authadapter.js';
 import runDbMigrations from './migrationdb/index.js';
 import { validateSignedLocalUrl } from './cloud/parsefunction/getSignedUrl.js';
+import { parseTrustProxy, resolveClientIp } from './utils/clientIp.js';
+import { getServerConfig } from './utils/serverConfig.js';
+import { getDatabaseUri, getSmtpPort } from './utils/envConfig.js';
+import { parseOriginList, resolvePublicUrl } from './utils/publicUrl.js';
 let fsAdapter;
 
 if (useLocal !== 'true') {
@@ -66,13 +70,13 @@ if (smtpenable) {
   try {
     let transporterConfig = {
       host: process.env.SMTP_HOST,
-      port: process.env.SMTP_PORT || 465,
+      port: getSmtpPort(process.env),
       secure: smtpsecure,
     };
 
     // ✅ Add auth only if BOTH username & password exist
-    const smtpUser = process.env.SMTP_USERNAME;
-    const smtpPass = process.env.SMTP_PASS;
+    const smtpUser = process.env.SMTP_USERNAME || process.env.SMTP_USER;
+    const smtpPass = process.env.SMTP_PASS || process.env.SMTP_PASSWORD;
 
     if (smtpUser && smtpPass) {
       transporterConfig.auth = {
@@ -104,8 +108,7 @@ if (smtpenable) {
 const mailsender = smtpenable ? process.env.SMTP_USER_EMAIL : process.env.MAILGUN_SENDER;
 const deploymentSenderName = resolveDeploymentBrand().senderName;
 export const config = {
-  databaseURI:
-    process.env.DATABASE_URI || process.env.MONGODB_URI || 'mongodb://localhost:27017/dev',
+  databaseURI: getDatabaseUri(process.env),
   cloud: function () {
     import('./cloud/main.js');
   },
@@ -114,17 +117,28 @@ export const config = {
   maxLimit: 500,
   maxUploadSize: '100mb',
   masterKey: process.env.MASTER_KEY, //Add your master key here. Keep it secret!
-  masterKeyIps: ['0.0.0.0/0', '::/0'], // '::1'
+  // The master key overrides every ACL, so it is only accepted from the
+  // addresses that actually need it: loopback by default, overridable for
+  // deployments that run the API in a separate container network.
+  masterKeyIps: (process.env.MASTER_KEY_IPS || '127.0.0.1,::1')
+    .split(',')
+    .map(value => value.trim())
+    .filter(Boolean),
   serverURL: cloudServerUrl, // Don't forget to change to https if needed
   verifyUserEmails: false,
   publicServerURL: process.env.SERVER_URL || cloudServerUrl,
   // Your apps name. This will appear in the subject and body of the emails that are sent.
   appName: appName,
+  // Reject trivially weak passwords at signup and at password change.
+  // This Parse Server release accepts only these two keys.
+  passwordPolicy: {
+    validatorPattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/,
+  },
   allowClientClassCreation: false,
   allowExpiredAuthDataToken: false,
   enableInsecureAuthAdapters: false,
   databaseOptions: { allowPublicExplain: false },
-  encodeParseObjectInCloudFunction: true,
+  // encodeParseObjectInCloudFunction removed (unsupported in this parse-server version)
   ...(isMailAdapter === true
     ? {
         emailAdapter: {
@@ -137,16 +151,16 @@ export const config = {
               // The template used by Parse Server to send an email for password
               // reset; this is a reserved template name.
               passwordResetEmail: {
-                subjectPath: './files/password_reset_email_subject.txt',
-                textPath: './files/password_reset_email.txt',
-                htmlPath: './files/password_reset_email.html',
+                subjectPath: './email-templates/password_reset_email_subject.txt',
+                textPath: './email-templates/password_reset_email.txt',
+                htmlPath: './email-templates/password_reset_email.html',
               },
               // The template used by Parse Server to send an email for email
               // address verification; this is a reserved template name.
               verificationEmail: {
-                subjectPath: './files/verification_email_subject.txt',
-                textPath: './files/verification_email.txt',
-                htmlPath: './files/verification_email.html',
+                subjectPath: './email-templates/verification_email_subject.txt',
+                textPath: './email-templates/verification_email.txt',
+                htmlPath: './email-templates/verification_email.html',
               },
             },
             apiCallback: async ({ payload, locale }) => {
@@ -169,32 +183,64 @@ export const config = {
 // javascriptKey, restAPIKey, dotNetKey, clientKey
 
 export const app = express();
-app.use(cors());
-app.use(express.json({ limit: '100mb' }));
+// Only the configured public origins may call the API from a browser.
+// Requests without an Origin header (server to server, curl) keep working.
+const corsAllowlist = (
+  process.env.CORS_ORIGINS ||
+  [process.env.SERVER_URL, process.env.PUBLIC_URL, process.env.HOST_URL]
+    .filter(Boolean)
+    .join(',')
+)
+  .split(',')
+  .map(origin => origin.trim().replace(/\/$/, ''))
+  .filter(Boolean);
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin || corsAllowlist.length === 0) return callback(null, true);
+      return callback(null, corsAllowlist.includes(origin.replace(/\/$/, '')));
+    },
+  })
+);
+
+
+// Baseline security headers. A CSP is added at the reverse proxy, where the
+// asset and font origins are known.
+app.use((req, res, next) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'SAMEORIGIN');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  res.setHeader('Permissions-Policy', 'geolocation=(), microphone=(), camera=()');
+  res.setHeader('Strict-Transport-Security', 'max-age=15552000; includeSubDomains');
+  next();
+});app.use(express.json({ limit: '100mb' }));
 app.use(express.urlencoded({ limit: '100mb', extended: true }));
+/**
+ * Base URL for email links: PUBLIC_URL, else the origin of SERVER_URL.
+ * Extra custom domains come from PUBLIC_URL_ALLOWLIST.
+ */
+const publicUrlConfig = {
+  baseUrl:
+    process.env.PUBLIC_URL ||
+    (process.env.SERVER_URL ? new URL(process.env.SERVER_URL).origin : ''),
+  allowlist: parseOriginList(process.env.PUBLIC_URL_ALLOWLIST),
+};
 app.use(function (req, res, next) {
   req.headers['x-real-ip'] = getUserIP(req);
-  let publicUrl = 'https://' + req?.get('host');
-  req.headers['public_url'] = publicUrl;
+  req.headers['public_url'] = resolvePublicUrl(
+    { host: req?.get('host'), origin: req.headers.origin },
+    publicUrlConfig
+  );
   next();
 });
+/**
+ * Client IP for the audit trail. Proxy headers are used only as configured
+ * by TRUST_PROXY (hop count or "cloudflare").
+ */
+const trustProxy = parseTrustProxy(process.env.TRUST_PROXY);
 function getUserIP(request) {
-  const cloudflareIp = request.headers['cf-connecting-ip'];
-  if (typeof cloudflareIp === 'string' && cloudflareIp.trim()) {
-    return cloudflareIp.trim();
-  }
-
-  const forwardedFor = request.headers['x-forwarded-for'];
-  if (typeof forwardedFor === 'string' && forwardedFor.trim()) {
-    return forwardedFor.split(',')[0].trim();
-  }
-
-  const realIp = request.headers['x-real-ip'];
-  if (typeof realIp === 'string' && realIp.trim()) {
-    return realIp.trim();
-  }
-
-  return request.socket?.remoteAddress || '';
+  return resolveClientIp(request.headers, request.socket?.remoteAddress, trustProxy);
 }
 
 app.use(async function (req, res, next) {
@@ -242,7 +288,7 @@ app.get('/', function (req, res) {
 });
 
 if (!process.env.TESTING) {
-  const port = process.env.PORT || 8080;
+  const { port, bindHost } = getServerConfig(process.env);
   const httpServer = http.createServer(app);
   // Set the Keep-Alive and headers timeout to 100 seconds
   httpServer.keepAliveTimeout = 100000; // in milliseconds
@@ -254,7 +300,7 @@ if (!process.env.TESTING) {
     // otherwise the platform's readiness probe never succeeds and the deploy is killed.
     console.error('Database migration failed:', error);
   }
-  httpServer.listen(port, '0.0.0.0', function () {
+  httpServer.listen(port, bindHost, function () {
     console.log('opensign-server running on port ' + port + '.');
     const isWindows = process.platform === 'win32';
     // console.log('isWindows', isWindows);
@@ -273,5 +319,58 @@ if (!process.env.TESTING) {
       }
       console.log(`Command output: ${stdout}`);
     });
+
+    // Automatic reminders scheduler (issue #2268): runs hourly.
+    const runReminders = async () => {
+      try {
+        const now = new Date();
+        const q = new Parse.Query('contracts_Document');
+        q.equalTo('AutomaticReminders', true);
+        q.notEqualTo('IsCompleted', true);
+        q.notEqualTo('IsDeclined', true);
+        q.notEqualTo('IsArchive', true);
+        q.lessThanOrEqualTo('NextReminderDate', now);
+        q.limit(100);
+        const docs = await q.find({ useMasterKey: true });
+        for (const doc of docs) {
+          try {
+            const expiry = doc.get('ExpiryDate');
+            if (expiry && new Date(expiry) < now) {
+              doc.set('AutomaticReminders', false);
+              await doc.save(null, { useMasterKey: true });
+              continue;
+            }
+            const creator = doc.get('ExtUserPtr');
+            const creatorEmail = creator?.get?.('Email') || doc.get('SenderMail');
+            const pdfName = doc.get('Name') || 'Document';
+            if (creatorEmail) {
+              await Parse.Cloud.sendEmail({
+                sender: `${appName} <${process.env.SMTP_USER_EMAIL || process.env.MAILGUN_SENDER || ''}>`,
+                recipient: creatorEmail,
+                subject: `Reminder: "${pdfName}" is still pending signature`,
+                text: `Reminder: "${pdfName}" is still pending signature.`,
+                html: `<p>Reminder: "${pdfName}" is still pending signature.</p>`,
+              });
+            }
+            const every = doc.get('RemindOnceInEvery') || 5;
+            const next = new Date(doc.get('NextReminderDate') || now);
+            next.setDate(next.getDate() + every);
+            if (expiry && next > new Date(expiry)) {
+              doc.set('AutomaticReminders', false);
+            } else {
+              doc.set('NextReminderDate', next);
+            }
+            await doc.save(null, { useMasterKey: true });
+          } catch (e) {
+            console.log('reminder error for doc', doc?.id, e?.message);
+          }
+        }
+      } catch (e) {
+        console.log('reminder scheduler error', e?.message);
+      }
+    };
+    // run once after startup (delayed) then hourly
+    setTimeout(runReminders, 60000);
+    setInterval(runReminders, REMINDER_INTERVAL_MS);
   });
 }

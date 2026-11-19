@@ -1,7 +1,8 @@
+import { logger } from '../../utils/logger.js';
 async function DocumentAftersave(request) {
   try {
     if (!request.original) {
-      console.log('new entry is insert in contracts_Document ', request?.object?.id);
+      logger.info('new entry is insert in contracts_Document ', request?.object?.id);
       const obj = request.object;
       const objId = obj?.id;
       const createdAt = obj?.createdAt || obj?.get?.('createdAt');
@@ -34,8 +35,8 @@ async function DocumentAftersave(request) {
       }
     }
   } catch (err) {
-    console.log('err in aftersave of contracts_Document');
-    console.log(err);
+    logger.info('err in aftersave of contracts_Document');
+    logger.info(err);
   }
 
   async function updateDocumentMeta({ objId, createdAt, folder, ip, originIp }) {
@@ -43,6 +44,11 @@ async function DocumentAftersave(request) {
     documentQuery.include('ExtUserPtr.TenantId');
 
     const doc = await documentQuery.get(objId, { useMasterKey: true });
+    // OriginIp is independent of the folder type: every document must record
+    // who created it, because the completion certificate reads it.
+    if (!originIp && ip) {
+      doc.set('OriginIp', ip);
+    }
     if (folder === undefined || folder === 'AIDoc') {
       // ExpiryDate
       const timeToCompleteDays =
@@ -54,11 +60,6 @@ async function DocumentAftersave(request) {
         const expiryDate = new Date(createdAt);
         expiryDate.setDate(expiryDate.getDate() + timeToCompleteDays);
         doc.set('ExpiryDate', expiryDate);
-      }
-
-      // OriginIp
-      if (!originIp) {
-        doc.set('OriginIp', ip);
       }
 
       // Automatic reminders

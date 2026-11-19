@@ -259,7 +259,26 @@ function Placeholder(props) {
             props.setXyPosition(updatesignerPos);
           }
           props?.closeWidgetTour?.();
-          dispatch(setIsShowModal({ [props.pos.key]: true }));
+          // Inline editing: text widgets are edited in-field; only open the
+          // modal for non-text widgets (signature, image, stamp, etc.).
+          // Types edited in place. Signature, stamp, initials and image stay
+          // on the modal because they need a drawing pad or a file picker.
+          const inlineTypes = [
+            "text",
+            textInputWidget,
+            "name",
+            "company",
+            "job title",
+            "email",
+            "checkbox",
+            radioButtonWidget,
+            "dropdown",
+            "date",
+            cellsWidget
+          ];
+          if (!inlineTypes.includes(props.pos.type)) {
+            dispatch(setIsShowModal({ [props.pos.key]: true }));
+          }
       }
     }
     //placeholder, template flow
@@ -279,7 +298,22 @@ function Placeholder(props) {
       } else if (props?.data?.Role === "prefill") {
         props?.handleClosePrefillTour?.();
         props?.closeWidgetTour?.();
-        dispatch(setIsShowModal({ [props.pos.key]: true }));
+        const inlineTypes = [
+          "text",
+          textInputWidget,
+          "name",
+          "company",
+          "job title",
+          "email",
+          "checkbox",
+          radioButtonWidget,
+          "dropdown",
+          "date",
+          cellsWidget
+        ];
+        if (!inlineTypes.includes(props.pos.type)) {
+          dispatch(setIsShowModal({ [props.pos.key]: true }));
+        }
         props.setUniqueId(props?.data?.Id);
         props?.setRoleName("prefill");
       }
@@ -552,6 +586,67 @@ function Placeholder(props) {
               className="fa-light fa-gear icon text-[#188ae2] text-[14px] z-[99] -top-[18px] pointer-events-auto"
             ></i>
           )}
+          {props.isPlaceholder &&
+            ["text", textInputWidget, "name", "company", "job title", "email"].includes(
+              props.pos.type
+            ) && (
+              <i
+                className={`fa-light ${props.pos?.options?.isMasked ? "fa-eye-slash" : "fa-eye"} icon text-[#188ae2] right-[34px] -top-[18px]`}
+                title={props.pos?.options?.isMasked ? "Unmask field" : "Mask field"}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  const isMasked = !props.pos?.options?.isMasked;
+                  props.setXyPosition((prev) => {
+                    const isSignerList = prev.some(
+                      (item) => item.signerPtr || item.Role === "prefill"
+                    );
+                    if (isSignerList) {
+                      const signerId = props.data?.Id || props.uniqueId;
+                      return prev.map((item) => {
+                        if (item.Id !== signerId) return item;
+                        const placeHolder = (item.placeHolder || []).map((page) =>
+                          page.pageNumber !== props.widgetPageNum
+                            ? page
+                            : {
+                                ...page,
+                                pos: page.pos.map((widget) =>
+                                  widget.key === props.pos.key
+                                    ? {
+                                        ...widget,
+                                        options: { ...widget.options, isMasked }
+                                      }
+                                    : widget
+                                )
+                              }
+                        );
+                        return { ...item, placeHolder };
+                      });
+                    }
+                    return prev.map((item, index) =>
+                      index === props.index
+                        ? {
+                            ...item,
+                            pos: item.pos.map((widget) =>
+                              widget.key === props.pos.key
+                                ? {
+                                    ...widget,
+                                    options: { ...widget.options, isMasked }
+                                  }
+                                : widget
+                            )
+                          }
+                        : item
+                    );
+                  });
+                  props.setCurrWidgetsDetails?.({
+                    ...props.pos,
+                    options: { ...props.pos.options, isMasked },
+                    pageNumber: props.widgetPageNum
+                  });
+                }}
+                onTouchEnd={(e) => e.stopPropagation()}
+              />
+            )}
           {/* copy icon for all widgets (except QES) */}
             <i
               className="fa-light fa-copy icon text-[#188ae2] right-[12px] -top-[18px] "
@@ -792,6 +887,7 @@ function Placeholder(props) {
             ...(props.pos?.Width ? { width: props.pos?.Width - 5 } : {}),
             ...(props.pos?.Height ? { height: props.pos?.Height } : {}),
             fontSize: fontSize,
+            lineHeight: 1.25,
             color: fontColor,
             zIndex: 99,
             cursor: getCursor(),
@@ -802,7 +898,8 @@ function Placeholder(props) {
             whiteSpace: "pre-wrap",
             overflow: "visible",
             outline: props.isAreaSelected ? "2px solid #6b7280" : "none",
-            border: "none"
+            border: "none",
+            WebkitTextSecurity: props.pos?.options?.isMasked ? "disc" : "none"
           }}
         >
           {
@@ -854,6 +951,7 @@ function Placeholder(props) {
             topLeft: false
           }}
           bounds="parent"
+          cancel="input, select, textarea, button, label, option"
           className="signYourselfBlock"
           style={{
             border: "1.5px solid #007bff",
@@ -1011,6 +1109,17 @@ function Placeholder(props) {
             )}
           <div
             className="flex items-stretch justify-center"
+            data-dbg={JSON.stringify({
+              t: props.pos?.type,
+              wSigner: props.data?.signerObjId || null,
+              sSigner: props.signerObjId || null,
+              needSign: !!props.isNeedSign,
+              selfSign: !!props.isSelfSign,
+              signYourself: !!props.isSignYourself,
+              placeholder: !!props.isPlaceholder,
+              ro: !!props.pos?.options?.isReadOnly,
+              role: props.data?.Role || null
+            })}
             style={{
               left: xPos(props.pos),
               top: yPos(props.pos),

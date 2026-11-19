@@ -1,9 +1,11 @@
-import { getRuntimeConfig } from "./runtimeConfig";
+import {
+  OPEN_SIGN_EMAIL_ACCENT,
+  OPEN_SIGN_EMAIL_LOGO_URL,
+  getRuntimeConfig
+} from "./runtimeConfig";
 
 const OPEN_SIGN_NAME = "OpenSign™";
-const OPEN_SIGN_EMAIL_LOGO =
-  "https://qikinnovation.ams3.digitaloceanspaces.com/logo.png";
-const OPEN_SIGN_EMAIL_ACCENT = "#47a3ad";
+const OPEN_SIGN_EMAIL_LOGO = OPEN_SIGN_EMAIL_LOGO_URL;
 
 function resolveEmailLogoUrl(logoUrl, appUrl) {
   if (!logoUrl?.startsWith("/")) return logoUrl;

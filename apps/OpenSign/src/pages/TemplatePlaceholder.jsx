@@ -11,6 +11,7 @@ import Header from "../components/pdf/PdfHeader";
 import useWidgetHistory from "../hook/useWidgetHistory";
 import WidgetNameModal from "../components/pdf/WidgetNameModal";
 import {
+  arrayBufferToBase64,
   copytoData,
   pdfNewWidthFun,
   contractUsers,
@@ -33,7 +34,6 @@ import {
   signatureTypes,
   getTenantDetails,
   handleSignatureType,
-  getBase64FromUrl,
   convertPdfArrayBuffer,
   generatePdfName,
   textWidget,
@@ -71,6 +71,7 @@ import * as utils from "../utils";
 import CustomizeMail from "../components/pdf/CustomizeMail";
 import { resetWidgetState, setPrefillImg } from "../redux/reducers/widgetSlice";
 import ShareButton from "../primitives/ShareButton";
+import { DEFAULT_COMPLETION_DAYS } from "../constant/runtimeConfig";
 import { useWindowSize } from "../hook/useWindowSize";
 import { useScroll } from "../context/ScrollPdfContext";
 
@@ -287,7 +288,9 @@ const TemplatePlaceholder = () => {
         const url = documentData[0] && documentData[0]?.URL;
         if (url) {
           const arrayBuffer = await convertPdfArrayBuffer(url);
-          const base64Pdf = await getBase64FromUrl(url);
+          // One download is enough: encode the buffer we already have.
+          const base64Pdf =
+            arrayBuffer === "Error" ? "" : arrayBufferToBase64(arrayBuffer);
           if (arrayBuffer === "Error") {
             setHandleError(t("something-went-wrong-mssg"));
           } else {
@@ -889,7 +892,7 @@ const TemplatePlaceholder = () => {
       }
       templateCls.set(
         "TimeToCompleteDays",
-        parseInt(pdfDetails?.[0]?.TimeToCompleteDays) || 15
+        parseInt(pdfDetails?.[0]?.TimeToCompleteDays) || DEFAULT_COMPLETION_DAYS
       );
       if (pdfDetails[0]?.Bcc?.length) {
         const Bcc = pdfDetails[0]?.Bcc.map((x) => ({
@@ -1012,7 +1015,8 @@ const TemplatePlaceholder = () => {
               ? pdfDetails[0]?.NotifyOnSignatures
               : false,
           TimeToCompleteDays:
-            parseInt(pdfDetails?.[0]?.TimeToCompleteDays) || 15,
+            parseInt(pdfDetails?.[0]?.TimeToCompleteDays) ||
+            DEFAULT_COMPLETION_DAYS,
           ...Bcc,
           ...Cc,
           ...RedirectUrl
@@ -1408,7 +1412,8 @@ const TemplatePlaceholder = () => {
             ? updateTemplate?.[0]?.NotifyOnSignatures
             : false,
         TimeToCompleteDays:
-          parseInt(updateTemplate?.[0]?.TimeToCompleteDays) || 15,
+          parseInt(updateTemplate?.[0]?.TimeToCompleteDays) ||
+          DEFAULT_COMPLETION_DAYS,
         RemindOnceInEvery:
           parseInt(updateTemplate?.[0]?.RemindOnceInEvery) || 0,
         ...penColors,
@@ -1444,6 +1449,7 @@ const TemplatePlaceholder = () => {
     defaultValue,
     isHideLabel,
     layout,
+    isMultiSelect,
   ) => {
     const widgetPageNumber = currWidgetsDetails?.pageNumber || pageNumber;
     const isPrefill = signerPos.some(
@@ -1542,6 +1548,7 @@ const TemplatePlaceholder = () => {
                   name: dropdownName,
                   status: status,
                   values: dropdownOptions,
+                  isMultiSelect: isMultiSelect || false,
                   defaultValue: defaultValue,
                   fontSize: textSize || 12,
                   fontColor: textColor || "black",

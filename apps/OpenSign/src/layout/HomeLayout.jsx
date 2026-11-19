@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { runtimeUrls } from "../constant/const";
 import {
   nonPresentMaskCss
-} from "../constant/Utils";
+} from "../constant/utils/coreConstants.js";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import Sidebar from "../components/sidebar/Sidebar";
@@ -263,7 +263,7 @@ const HomeLayout = () => {
               </div>
             </PageScrollContainer>
           </div>
-          {isTour && (
+          {isTour && tourConfigs.length > 0 && (
             <Tour
               onRequestClose={closeTour}
               steps={tourConfigs}

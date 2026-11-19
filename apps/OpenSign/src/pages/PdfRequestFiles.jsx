@@ -66,6 +66,7 @@ import Loader from "../primitives/Loader";
 import { isCreditQuotaError } from "../utils/creditErrors";
 import PdfDeclineModal from "../primitives/PdfDeclineModal";
 import { serverUrl_fn } from "../constant/appinfo";
+import { DEFAULT_COMPLETION_DAYS } from "../constant/runtimeConfig";
 import AgreementSign from "../components/pdf/AgreementSign";
 import WidgetComponent from "../components/pdf/WidgetComponent";
 import PlaceholderCopy from "../components/pdf/PlaceholderCopy";
@@ -177,16 +178,25 @@ function PdfRequestFiles(
     sendmail = getQuery?.[1]?.split("=")[1]; //false
   }
 
-  const routeId = route && route?.split("/"); // ['', 'load', 'recipientSignPdf', ':docId', ':contactBookId']
-  if (routeId && routeId.length > 4) {
-    // this condition will be occur only in guest flow in which load routeId will be include
-    isGuestSignFlow = true;
-    getDocId = routeId[3];
-    contactBookId = routeId[4];
+  // The app can be deployed under a sub-path, so the base has to be removed
+  // before the route is parsed and the segments are located by name.
+  const deploymentBase = (import.meta.env.BASE_URL || "/").replace(/\/$/, "");
+  const routePath =
+    deploymentBase && route.startsWith(deploymentBase)
+      ? route.slice(deploymentBase.length)
+      : route;
+  const routeId = routePath.split("/").filter(Boolean);
+  const signRouteIndex = routeId.indexOf("recipientSignPdf");
+  if (signRouteIndex !== -1) {
+    // guest flow: /load/recipientSignPdf/:docId/:contactBookId
+    isGuestSignFlow =
+      signRouteIndex > 0 && routeId.slice(0, signRouteIndex).includes("load");
+    getDocId = routeId[signRouteIndex + 1] || "";
+    contactBookId = routeId[signRouteIndex + 2] || "";
   } else {
-    // this condition will be occur only in if user is logged in and load routeId will be exclude
-    getDocId = routeId[2];
-    contactBookId = routeId?.[3] || "";
+    // fallback that keeps the previous indexing for unknown shapes
+    getDocId = routeId[1] || "";
+    contactBookId = routeId[2] || "";
   }
   let getDocumentId =
     getDocId ||
@@ -657,7 +667,7 @@ function PdfRequestFiles(
       documentId;
     const addExtraDays = pdfDetails[0]?.TimeToCompleteDays
       ? pdfDetails[0].TimeToCompleteDays
-      : 15;
+      : DEFAULT_COMPLETION_DAYS;
     let updateExpiryDate;
     updateExpiryDate = new Date();
     updateExpiryDate.setDate(updateExpiryDate.getDate() + addExtraDays);
@@ -736,7 +746,7 @@ function PdfRequestFiles(
               //condition to embed prefill widgets details in pdf in public signing flow
               if (prefillDetails && props.templateId) {
                 const prefillwidgets = prefillDetails?.placeHolder;
-                const pdfDoc = await PDFDocument.load(pdfArrBuffer);
+                const pdfDoc = await PDFDocument.load(pdfArrBuffer, { ignoreEncryption: true });
                 const pdfbase64 = await embedWidgetsToDoc(
                   prefillwidgets,
                   pdfDoc,
@@ -760,7 +770,7 @@ function PdfRequestFiles(
               setHandleError("Document not Found!");
             }
             try {
-              const pdfDoc = await PDFDocument.load(pdfArrBuffer);
+              const pdfDoc = await PDFDocument.load(pdfArrBuffer, { ignoreEncryption: true });
               const extUserPtr = pdfDetails[0].ExtUserPtr;
               const HeaderDocId = extUserPtr?.HeaderDocId;
               //embed document's object id to all pages in pdf document
@@ -778,7 +788,7 @@ function PdfRequestFiles(
                 scale
               );
               //get ExistUserPtr object id of user class to get tenantDetails
-              if (!pdfBytes?.error) {
+              if (pdfBytes && !pdfBytes?.error) {
                 const objectId = pdfDetails?.[0]?.ExtUserPtr?.UserId?.objectId;
                 //function for call to embed signature in pdf and get digital signature pdf
                 const resSign = await signPdfFun(
@@ -915,7 +925,8 @@ function PdfRequestFiles(
       const requestSubject =
         updatedDoc.updatedPdfDetails?.[0]?.RequestSubject || mailSubject;
       if (user) {
-        const addExtraDays = signedDocument?.TimeToCompleteDays || 15;
+        const addExtraDays =
+          signedDocument?.TimeToCompleteDays || DEFAULT_COMPLETION_DAYS;
         let expDate = expiryDate || signedDocument?.ExpiryDate?.iso;
         if (!expiryDate) {
           const d = new Date();
@@ -1159,6 +1170,9 @@ function PdfRequestFiles(
   //function for update TourStatus
   const closeTour = async () => {
     setWidgetsTour(false);
+    // The tour scrolls the document to the unsigned widget; bring the page
+    // back so the top bar with cancel/finish stays reachable.
+    window.scrollTo({ top: 0 });
   };
 
   const tourConfig = [
@@ -1212,6 +1226,10 @@ function PdfRequestFiles(
           const currentDecline = { currnt: "YouDeclined", isDeclined: true };
           setIsDecline(currentDecline);
           setIsUiLoading(false);
+          if (redirectUrl) {
+            setRedirectTimeLeft(5);
+            setIsredirectCanceled(false);
+          }
         }
       })
       .catch((err) => {

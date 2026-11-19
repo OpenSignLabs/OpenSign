@@ -1035,6 +1035,8 @@
   "contact-already-exists": "연락처가 이미 존재합니다.",
   "docx-error": "현재 DOCX 파일 처리 중 일부 문제가 발생했습니다. PDF 파일을 업로드하세요.",
   "docx-error-contact": "또는 support@opensignlabs.com으로 문의하세요.",
+  "excel-error": "현재 Excel 파일 처리 중 일부 문제가 발생했습니다. PDF 파일을 업로드하세요.",
+  "excel-error-contact": "또는 support@opensignlabs.com으로 문의하세요.",
   "agreement-note": "참고: 이에 동의한다고 해서 즉시 문서에 서명하는 것은 아닙니다. 이는 단지 전자적으로 문서를 검토할 수 있도록 허용하는 것입니다. 전체를 읽고 서명 여부를 결정할 기회가 있습니다.",
   "draft-template-info-p1": "템플릿을 공개하려면 단일 역할을 포함하거나 여러 역할을 포함하는 경우 모든 추가 역할이 이미 서명자에게 할당되어 있어야 합니다. 할당되지 않은 공개 역할은 비워두고 첫 번째 위치에 배치해야 합니다.",
   "visit-below-link": "자세한 내용은 아래 링크를 방문하세요 -",
@@ -1662,7 +1664,7 @@
   "eideasy-downloading": "서명된 문서를 다운로드하는 중…",
   "eideasy-sign-btn": "eID Easy로 서명",
   "signature-type-hint": "디지털: 그리기/입력/업로드로 서명합니다. 적격: 신원 확인이 포함된 eID Easy를 통한 QES.",
-   "access-code": "접속 코드",
+  "access-code": "접속 코드",
   "access-code-set": "접속 코드가 설정됨",
   "access-code-add": "접속 코드 추가",
   "access-code-help": "이 서명자만 아는 선택적 비밀번호입니다. 문서를 보거나 서명하기 전에 반드시 입력해야 합니다. 전화 또는 직접 만나서 등 별도의 경로로 수신자에게 전달하세요.",
@@ -1721,5 +1723,6 @@
     "active-plan-message": "{{plan}} 요금제가 활성화되어 있습니다. 결제에서 관리하세요.",
     "billing-action-message": "다른 요금제를 선택하기 전에 기존 요금제의 결제 조치가 필요합니다.",
     "trial-unavailable-message": "이 계정은 추가 무료 체험 대상이 아닙니다. 결제에서 관리하거나 결제를 완료하세요."
-  }
+  },
+  "allow-multiple-selection": "다중 선택 허용"
 }

@@ -9,6 +9,7 @@ import EmailComponent from "../components/pdf/EmailComponent";
 import WidgetComponent from "../components/pdf/WidgetComponent";
 import PdfDeclineModal from "../primitives/PdfDeclineModal";
 import {
+  arrayBufferToBase64,
   getTenantDetails,
   contractDocument,
   embedDocId,
@@ -31,7 +32,6 @@ import {
   onClickZoomIn,
   onClickZoomOut,
   rotatePdfPage,
-  getBase64FromUrl,
   convertBase64ToFile,
   generatePdfName,
   handleRemoveWidgets,
@@ -238,7 +238,9 @@ function SignYourSelf() {
         if (url) {
           //convert document url in array buffer format to use embed widgets in pdf using pdf-lib
           const arrayBuffer = await convertPdfArrayBuffer(url);
-          const base64Pdf = await getBase64FromUrl(url);
+          // One download is enough: encode the buffer we already have.
+          const base64Pdf =
+            arrayBuffer === "Error" ? "" : arrayBufferToBase64(arrayBuffer);
           if (arrayBuffer === "Error") {
             setHandleError(t("something-went-wrong-mssg"));
           } else {
@@ -717,7 +719,7 @@ function SignYourSelf() {
           setIsUiLoading(true);
           // Load a PDFDocument from the existing PDF bytes
           try {
-            const pdfDoc = await PDFDocument.load(pdfArrayBuffer);
+            const pdfDoc = await PDFDocument.load(pdfArrayBuffer, { ignoreEncryption: true });
             const isSignYourSelfFlow = true;
             const extUserPtr = pdfDetails[0].ExtUserPtr;
             const HeaderDocId = extUserPtr?.HeaderDocId;
@@ -735,7 +737,14 @@ function SignYourSelf() {
             );
             //function for call to embed signature in pdf and get digital signature pdf
             if (!pdfBytes?.error) {
-              await signPdfFun(pdfBytes, documentId);
+              await signPdfFun(
+                pdfBytes,
+                documentId,
+                pdfDetails?.[0]?.ExtUserPtr?.UserId?.objectId,
+                pdfDetails?.[0]?.ExtUserPtr?.UserId?.objectId,
+                xyPosition,
+                "Signed"
+              );
             } else {
               setIsUiLoading(false);
               setIsAlert({
@@ -1040,6 +1049,7 @@ function SignYourSelf() {
     defaultValue,
     isHideLabel,
     layout,
+    isMultiSelect,
   ) => {
     const widgetPageNumber = currWidgetsDetails?.pageNumber || pageNumber;
     const getPageNumer = xyPosition.filter(
@@ -1071,6 +1081,7 @@ function SignYourSelf() {
                 ...position.options,
                 name: dropdownName,
                 values: dropdownOptions,
+                isMultiSelect: isMultiSelect || false,
                 ...widgetLayout,
                 isReadOnly: isReadOnly,
                 isHideLabel: isHideLabel || false,
@@ -1318,6 +1329,9 @@ function SignYourSelf() {
   ];
   const closeWidgetTour = () => {
     setWidgetsTour(false);
+    // The tour scrolls the document to the unsigned widget; bring the page
+    // back so the top bar with cancel/finish stays reachable.
+    window.scrollTo({ top: 0 });
   };
 
   return (

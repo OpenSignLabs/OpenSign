@@ -1,3 +1,4 @@
+import { logger } from '../../utils/logger.js';
 export default async function getUserListByOrg(req) {
   const OrganizationId = req.params.organizationId;
   const orgPtr = {
@@ -54,7 +55,7 @@ export default async function getUserListByOrg(req) {
         return [];
       }
     } catch (err) {
-      console.log('err in getuserlist', err);
+      logger.info('err in getuserlist', err);
       throw err;
     }
   }

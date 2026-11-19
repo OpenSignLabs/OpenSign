@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { cloudServerUrl, serverAppId } from '../../Utils.js';
+import { logger } from '../../utils/logger.js';
 
 export default async function GetTemplate(request) {
   const serverUrl = cloudServerUrl; //process.env.SERVER_URL;
@@ -77,14 +78,14 @@ export default async function GetTemplate(request) {
           return { error: "template deleted or you don't have access." };
         }
       } catch (err) {
-        console.log('err', err);
+        logger.info('err', err);
         return err;
       }
     } else {
       return { error: "template deleted or you don't have access." };
     }
   } catch (err) {
-    console.log('err', err);
+    logger.info('err', err);
     if (err?.response?.data?.code === 209 || err.code == 209) {
       return { error: 'Invalid session token' };
     } else {

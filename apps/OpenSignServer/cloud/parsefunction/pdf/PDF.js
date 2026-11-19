@@ -19,7 +19,7 @@ import GenerateCertificate from './GenerateCertificate.js';
 import { pdflibAddPlaceholder } from '@signpdf/placeholder-pdf-lib';
 import { Placeholder } from './Placeholder.js';
 import { SignPdf } from '@signpdf/signpdf';
-import { P12Signer } from '@signpdf/signer-p12';
+import { IssuerPreservingP12Signer } from './IssuerPreservingP12Signer.js';
 import { buildDownloadFilename, parseUploadFile } from '../../../utils/fileUtils.js';
 import sendMailWithAttachment from '../sendMailWithAttachment.js';
 import sendSystemMail from '../sendSystemMail.js';
@@ -311,7 +311,7 @@ async function sendMailsaveCertifcate(doc, pfx, isCustomMail, mailProvider, file
   const certificate = await GenerateCertificate(doc);
   const certificatePdf = await PDFDocument.load(certificate);
   const P12Buffer = fs.readFileSync(pfx.name);
-  const p12 = new P12Signer(P12Buffer, { passphrase: pfx.passphrase || null });
+  const p12 = new IssuerPreservingP12Signer(P12Buffer, { passphrase: pfx.passphrase || null });
   //  `pdflibAddPlaceholder` is used to add code of only digitial sign in certificate
   pdflibAddPlaceholder({
     pdfDoc: certificatePdf,
@@ -361,12 +361,24 @@ async function sendMailsaveCertifcate(doc, pfx, isCustomMail, mailProvider, file
  */
 async function processPdf(_resDoc, PdfBuffer, reason) {
   // No CC merge; operate directly on the original PDF
-  const pdfDoc = await PDFDocument.load(PdfBuffer);
-  const form = pdfDoc.getForm();
-  // Updates the field appearances to ensure visual changes are reflected.
-  form.updateFieldAppearances();
-  // Flattens the form, converting all form fields into non-editable, static content
-  form.flatten();
+  const pdfDoc = await PDFDocument.load(PdfBuffer, { ignoreEncryption: true });
+  try {
+    const form = pdfDoc.getForm();
+    // Updates the field appearances to ensure visual changes are reflected.
+    if (form && typeof form.updateFieldAppearances === 'function') {
+      form.updateFieldAppearances();
+    }
+    // Flattens the form, converting all form fields into non-editable, static content
+    if (form && typeof form.flatten === 'function') {
+      form.flatten();
+    }
+  } catch (e) {
+    // A PDF without a usable form must not abort the signing.
+    console.log('processPdf form flatten skipped:', e?.message);
+  }
+  // The placeholder registers /ByteRange and /Contents before it attaches the
+  // signature field. Saving after a failure would leave an orphaned placeholder
+  // that the signer can fill without a registered signature, so abort instead.
   Placeholder({
     pdfDoc: pdfDoc,
     reason: `Digitally signed by ${eSignName} for ${reason}`,
@@ -375,7 +387,11 @@ async function processPdf(_resDoc, PdfBuffer, reason) {
     contactInfo: eSigncontact,
     signatureLength: 16000,
   });
-  const pdfWithPlaceholderBytes = await pdfDoc.save();
+  // Appearances were already updated above; saving with the default would run
+  // the same update again outside the guard and could abort the signing.
+  const pdfWithPlaceholderBytes = await pdfDoc.save({
+    updateFieldAppearances: false,
+  });
   return Buffer.from(pdfWithPlaceholderBytes);
 }
 /**
@@ -402,9 +418,14 @@ async function PDF(req) {
     docQuery.equalTo('objectId', docId);
     docQuery.notEqualTo('IsDeclined', true);
     docQuery.notEqualTo('IsArchive', true);
+    docQuery.notEqualTo('IsCompleted', true);
     const resDoc = await docQuery.first({ useMasterKey: true });
     if (!resDoc) {
-      throw new Parse.Error(Parse.Error.OBJECT_NOT_FOUND, 'Document not found.');
+      throw new Parse.Error(Parse.Error.OBJECT_NOT_FOUND, 'Document not found or no longer signable.');
+    }
+    const expiryDate = resDoc?.get('ExpiryDate');
+    if (expiryDate && new Date(expiryDate) < new Date()) {
+      throw new Parse.Error(Parse.Error.OPERATION_FORBIDDEN, 'Document has expired and can no longer be signed.');
     }
     const IsEnableOTP = resDoc?.get('IsEnableOTP') || false;
     // if `IsEnableOTP` is false then we don't have to check authentication
@@ -451,7 +472,7 @@ async function PDF(req) {
     }
     const username = signUser.Name;
     const userEmail = signUser.Email;
-    if (req.params.pdfFile) {
+    if (req.params.pdfFile && typeof req.params.pdfFile === 'string') {
       //  `PdfBuffer` used to create buffer from pdf file
       let PdfBuffer = Buffer.from(req.params.pdfFile, 'base64');
       //  `P12Buffer` used to create buffer from p12 certificate
@@ -462,6 +483,12 @@ async function PDF(req) {
         passphrase = _resDoc?.ExtUserPtr?.TenantId?.PfxFile?.password;
       }
       const pfx = { name: pfxname, passphrase: passphrase };
+      if (!pfxFile) {
+        throw new Parse.Error(
+          Parse.Error.SCRIPT_FAILED,
+          'PFX certificate is not configured (PFX_BASE64 missing).'
+        );
+      }
       const P12Buffer = Buffer.from(pfxFile, 'base64');
       fs.writeFileSync(pfxname, P12Buffer);
       const UserPtr = { __type: 'Pointer', className: className, objectId: signUser.objectId };
@@ -503,7 +530,9 @@ async function PDF(req) {
           signersName && signersName.length > 0
             ? signersName?.join(', ')
             : username + ' <' + userEmail + '>';
-        const p12Cert = new P12Signer(P12Buffer, { passphrase: passphrase || null });
+        const p12Cert = new IssuerPreservingP12Signer(P12Buffer, {
+          passphrase: passphrase || null,
+        });
         signedFilePath = `./exports/signed_${name}`;
         PdfBuffer = await processPdf(_resDoc, PdfBuffer, reason, UserPtr, userIP, sign);
         //`new signPDF` create new instance of pdfBuffer and p12Buffer

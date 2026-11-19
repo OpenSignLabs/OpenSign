@@ -1,8 +1,10 @@
 // `CheckAdminExist` is used to check is admin with org exist or not in db
+import { ALL_ADMIN_ROLES } from '../../utils/roles.js';
+
 export default async function CheckAdminExist() {
   try {
     const extClsQuery = new Parse.Query('contracts_Users');
-    extClsQuery.equalTo('UserRole', 'contracts_Admin');
+    extClsQuery.containedIn('UserRole', ALL_ADMIN_ROLES);
     extClsQuery.notEqualTo('IsDisabled', true);
     const extAdminRes = await extClsQuery.find({ useMasterKey: true });
     // must be only one admin

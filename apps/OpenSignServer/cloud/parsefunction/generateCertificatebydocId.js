@@ -1,13 +1,14 @@
 import { SignPdf } from '@signpdf/signpdf';
-import { P12Signer } from '@signpdf/signer-p12';
 import { pdflibAddPlaceholder } from '@signpdf/placeholder-pdf-lib';
 import { PDFDocument } from 'pdf-lib';
 import fs from 'node:fs';
 import dotenv from 'dotenv';
 import GenerateCertificate from './pdf/GenerateCertificate.js';
+import { IssuerPreservingP12Signer } from './pdf/IssuerPreservingP12Signer.js';
 import { getSecureUrl } from '../../Utils.js';
 import { parseUploadFile } from '../../utils/fileUtils.js';
 import { resolveDeploymentBrand } from '../../utils/brandContext.js';
+import { isAuthenticated } from '../../utils/AuthUtils.js';
 dotenv.config({ quiet: true });
 const deploymentBrand = resolveDeploymentBrand();
 const eSignName = deploymentBrand.digitalSignature.name;
@@ -57,8 +58,26 @@ export default async function generateCertificatebydocId(req) {
       'ExtUserPtr,Signers,AuditTrail.UserPtr,Placeholders,ExtUserPtr.TenantId,ExtUserPtr.UserId'
     );
     const docRes = await getDocument.get(docId, { useMasterKey: true });
+    // OriginIp is recorded at creation time by DocumentAftersave from the
+    // creator's request. Do not write it here: this endpoint is reachable by
+    // the recipient, so the value would be theirs.
 
-    if (docRes && docRes?.get('IsCompleted') && !docRes?.get('CertificateUrl')) {
+    if (docRes && docRes?.get('IsCompleted')) {
+    const existingCert = docRes?.get('CertificateUrl');
+    if (existingCert) {
+      // Never hand a certificate of an OTP-protected document to an anonymous
+      // caller; the query above runs with the master key.
+      if (docRes?.get('IsEnableOTP')) {
+        const isAuth = await isAuthenticated(req?.user);
+        if (!isAuth) {
+          throw new Parse.Error(
+            Parse.Error.INVALID_SESSION_TOKEN,
+            'User is not authenticated.'
+          );
+        }
+      }
+      return { CertificateUrl: existingCert };
+    }
       const _docRes = JSON.parse(JSON.stringify(docRes));
       const filteredaudit = _docRes?.AuditTrail?.filter(x => x?.UserPtr?.objectId);
       // Create a reversed copy of the array and find the last object with 'signedOn'
@@ -67,7 +86,9 @@ export default async function generateCertificatebydocId(req) {
       const doc = { ..._docRes, completedAt: completedAt };
       const certificate = await GenerateCertificate(doc);
       const certificatePdf = await PDFDocument.load(certificate);
-      const p12 = new P12Signer(P12Buffer, { passphrase: process.env.PASS_PHRASE || null });
+      const p12 = new IssuerPreservingP12Signer(P12Buffer, {
+        passphrase: process.env.PASS_PHRASE || null,
+      });
       //  `pdflibAddPlaceholder` is used to add code of only digital sign in certificate
       pdflibAddPlaceholder({
         pdfDoc: certificatePdf,

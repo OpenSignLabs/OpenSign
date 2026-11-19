@@ -9,13 +9,14 @@ import {
 } from "../constant/const";
 import Alert from "../primitives/Alert";
 import { appInfo } from "../constant/appinfo";
+import { applySavedTheme } from "../utils/theme";
 import { fetchAppInfo } from "../redux/reducers/infoReducer";
 import { showTenant } from "../redux/reducers/ShowTenant";
+import { getAppLogo } from "../constant/utils/tenantDownloads.js";
 import {
-  getAppLogo,
   saveLanguageInLocal,
   usertimezone
-} from "../constant/Utils";
+} from "../constant/utils/coreConstants.js";
 import Loader from "../primitives/Loader";
 import { useTranslation } from "react-i18next";
 import SelectLanguage from "../components/pdf/SelectLanguage";
@@ -65,8 +66,13 @@ function Login() {
   };
 
   const showToast = (type, msg) => {
-    setState({ ...state, loading: false, alertType: type, alertMsg: msg });
-    setTimeout(() => setState({ ...state, alertMsg: "" }), 2000);
+    setState((prev) => ({
+      ...prev,
+      loading: false,
+      alertType: type,
+      alertMsg: msg
+    }));
+    setTimeout(() => setState((prev) => ({ ...prev, alertMsg: "" })), 2000);
   };
 
   const checkUserExt = async () => {
@@ -134,7 +140,11 @@ function Login() {
   };
   const handleLoginBtn = async (event) => {
     event.preventDefault();
-    if (!emailRegex.test(state.email)) {
+    if (!state.email || !state.email.trim()) {
+      alert(t("input-required"));
+      return;
+    }
+    if (state.email.includes("@") && !emailRegex.test(state.email)) {
       alert(t("valid-email-alert"));
       return;
     }
@@ -142,7 +152,7 @@ function Login() {
   };
 
   const setThirdpartyLoader = (value) => {
-    setState({ ...state, thirdpartyLoader: value });
+    setState((prev) => ({ ...prev, thirdpartyLoader: value }));
   };
 
   const thirdpartyLoginfn = async (sessionToken) => {
@@ -176,6 +186,7 @@ function Login() {
                 location?.state?.from || `/${menu.pageType}/${menu.pageId}`;
               const _role = _currentRole.replace("contracts_", "");
               const extInfo = JSON.parse(JSON.stringify(extUser));
+              applySavedTheme(extUser?.get("Theme"));
               localStorage.setItem("_user_role", _role);
               localStorage.setItem("Extand_Class", JSON.stringify([extUser]));
               localStorage.setItem("userEmail", extInfo?.Email);
@@ -206,10 +217,10 @@ function Login() {
           logOutUser();
         }
       } catch (error) {
-        console.error("err in fetching extUser", err);
-        showToast("danger", `${err.message}`);
-        const payload = { sessionToken: _user.sessionToken };
-        handleSubmitbtn(payload);
+        console.error("err in fetching extUser", error);
+        showToast("danger", `${error?.message || t("something-went-wrong-mssg")}`);
+        const payload = { sessionToken: _user?.sessionToken };
+        if (payload.sessionToken) handleSubmitbtn(payload);
       } finally {
         setThirdpartyLoader(false);
       }
@@ -234,6 +245,7 @@ function Login() {
           if (menu) {
             const extInfo = JSON.parse(JSON.stringify(extUser));
             const _role = _currentRole.replace("contracts_", "");
+            applySavedTheme(extUser?.get("Theme"));
             localStorage.setItem("_user_role", _role);
             const redirectUrl =
               location?.state?.from || `/${menu.pageType}/${menu.pageId}`;
@@ -277,7 +289,8 @@ function Login() {
 
 
   const handleSubmitbtn = async (e) => {
-    e.preventDefault();
+    // Also called from the recovery path, which has no DOM event.
+    e?.preventDefault?.();
     if (userDetails.Destination && userDetails.Company) {
       setThirdpartyLoader(true);
       const payload = { sessionToken: localStorage.getItem("accesstoken") };
@@ -303,18 +316,15 @@ function Login() {
             email: userInformation.email,
             phone: userInformation?.phone || "",
             company: userDetails.Company,
-            jobTitle: userDetails.JobTitle
+            jobTitle: userDetails.Destination
           };
           localStorage.setItem("userDetails", JSON.stringify(LocalUserDetails));
           thirdpartyLoginfn(userSignUp.sessionToken);
         } else {
-          alert(userSignUp.message);
+          alert(userSignUp?.message || t("something-went-wrong-mssg"));
         }
-      } else if (
-        payload &&
-        payload.message.replace(/ /g, "_") === "Internal_server_err"
-      ) {
-        alert(t("server-error"));
+      } else {
+        alert(t("something-went-wrong-mssg"));
       }
     } else {
       showToast("warning", t("fill-required-details!"));
@@ -368,6 +378,7 @@ function Login() {
             if (checkLanguage) {
               checkLanguage && i18n.changeLanguage(checkLanguage);
             }
+            applySavedTheme(extUser?.get("Theme"));
             const extInfo = JSON.parse(JSON.stringify(extUser));
             // Continue with storing user data and redirecting
             localStorage.setItem("Extand_Class", JSON.stringify([extUser]));
@@ -509,7 +520,7 @@ function Login() {
                           </label>
                           <input
                             id="email"
-                            type="email"
+                            type="text"
                             className="op-input op-input-bordered op-input-sm hover:border-base-content w-full text-xs"
                             name="email"
                             autoComplete="username"

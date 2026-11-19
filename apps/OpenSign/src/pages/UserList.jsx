@@ -14,7 +14,7 @@ import DeleteUserModal from "../primitives/DeleteUserModal";
 import axios from "axios";
 import PasswordResetModal from "../primitives/PasswordResetModal";
 import { usersActions } from "../json/ReportJson";
-import { withSessionValidation } from "../utils";
+import { withSessionValidation } from "../utils/withSessionValidation";
 
 const heading = ["Sr.No", "Name", "Email", "Phone", "Role", "Team", "Active"];
 const UserList = () => {

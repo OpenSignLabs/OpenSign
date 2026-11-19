@@ -3,6 +3,7 @@ import Mailgun from 'mailgun.js';
 import { smtpenable, smtpsecure, normalizeMailSubject, updateMailCount } from '../../Utils.js';
 import { renderComplaintFooter, resolveBrandContext } from '../../utils/brandContext.js';
 import { createTransport } from 'nodemailer';
+import { getSmtpPort } from '../../utils/envConfig.js';
 async function sendMailProvider(req) {
   const brand = resolveBrandContext({});
   const extUserId = req.params?.extUserId || '';
@@ -17,7 +18,7 @@ async function sendMailProvider(req) {
     if (smtpenable) {
       let transporterConfig = {
         host: process.env.SMTP_HOST,
-        port: process.env.SMTP_PORT || 465,
+        port: getSmtpPort(process.env),
         secure: smtpsecure,
       };
 
@@ -42,9 +43,10 @@ async function sendMailProvider(req) {
 
     const from = req.params.from || '';
     const mailsender = smtpenable ? process.env.SMTP_USER_EMAIL : process.env.MAILGUN_SENDER;
+    const displayName = from && !String(from).includes('@') ? from : brand.productName;
     const replyto = req.params?.replyto || '';
     const messageParams = {
-      from: from + ' <' + mailsender + '>',
+      from: displayName + ' <' + mailsender + '>',
       to: req.params.recipient,
       subject: normalizeMailSubject(req.params.subject),
       text: req.params.text || 'mail',

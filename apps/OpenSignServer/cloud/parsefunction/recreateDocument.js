@@ -1,4 +1,5 @@
 import { setDocumentCount } from '../../utils/CountUtils.js';
+import { logger } from '../../utils/logger.js';
 
 export default async function recreateDocument(request) {
   const { docId } = request.params;
@@ -54,15 +55,15 @@ export default async function recreateDocument(request) {
       } else {
         createDoc.set(key, value);
       }
-      // console.log(`${key}: ${value}`);
+      // logger.info(`${key}: ${value}`);
     });
     const createDocRes = await createDoc.save(null, { useMasterKey: true });
-    // console.log('createDocRes', createDocRes);
+    // logger.info('createDocRes', createDocRes);
     const newDoc = JSON.parse(JSON.stringify(createDocRes));
     setDocumentCount(_docRes?.ExtUserPtr?.objectId);
     return { objectId: newDoc.objectId, createdAt: newDoc.createdAt, updatedAt: newDoc.updatedAt };
   } catch (err) {
-    console.log('err in recreate document', err);
+    logger.info('err in recreate document', err);
     throw err;
   }
 }

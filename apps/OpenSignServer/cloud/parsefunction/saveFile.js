@@ -1,5 +1,6 @@
 import { flattenPdf, getSecureUrl } from '../../Utils.js';
 import { parseUploadFile } from '../../utils/fileUtils.js';
+import { logger } from '../../utils/logger.js';
 
 export default async function saveFile(request) {
   if (!request.params.fileBase64) {
@@ -50,7 +51,7 @@ export default async function saveFile(request) {
       throw new Parse.Error(Parse.Error.INVALID_SESSION_TOKEN, 'User is not authenticated.');
     }
   } catch (err) {
-    console.log('err in savetoS3', err);
+    logger.info('err in savetoS3', err);
     throw err;
   }
 }

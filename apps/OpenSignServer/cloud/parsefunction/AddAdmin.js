@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { cloudServerUrl, serverAppId } from '../../Utils.js';
+import { logger } from '../../utils/logger.js';
 const serverUrl = cloudServerUrl; //process.env.SERVER_URL;
 const APPID = serverAppId;
 const masterKEY = process.env.MASTER_KEY;
@@ -55,7 +56,7 @@ async function addTeamAndOrg(extUser) {
       const extUserRes = await updateUser.save(null, { useMasterKey: true });
     }
   } catch (err) {
-    console.log('err in add team, role, org', err);
+    logger.info('err in add team, role, org', err);
   }
 }
 
@@ -79,7 +80,7 @@ async function saveUser(userDetails) {
       },
     });
     const login = await axiosRes.data;
-    // console.log("login ", login);
+    // logger.info("login ", login);
     return { id: login.objectId, sessionToken: login.sessionToken };
   } else {
     const user = new Parse.User();
@@ -92,7 +93,7 @@ async function saveUser(userDetails) {
     user.set('name', userDetails.name);
 
     const res = await user.signUp();
-    // console.log("res ", res);
+    // logger.info("res ", res);
     return { id: res.id, sessionToken: res.getSessionToken() };
   }
 }
@@ -145,7 +146,7 @@ export default async function AddAdmin(request) {
         partnerQuery.set('Address', userDetails.address);
       }
       const tenantRes = await partnerQuery.save(null, { useMasterKey: true });
-      // console.log("tenantRes ", tenantRes);
+      // logger.info("tenantRes ", tenantRes);
       const newObj = new Parse.Object('contracts_Users');
       newObj.set('UserId', {
         __type: 'Pointer',
@@ -188,6 +189,6 @@ export default async function AddAdmin(request) {
       return { message: 'User sign up', sessionToken: user.sessionToken };
     }
   } catch (err) {
-    console.log('Err ', err);
+    logger.info('Err ', err);
   }
 }
