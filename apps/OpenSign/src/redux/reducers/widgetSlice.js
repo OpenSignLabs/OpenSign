@@ -1,5 +1,6 @@
 // reducers/widgetSlice.js
 import { createSlice } from "@reduxjs/toolkit";
+import { DEFAULT_SIGNATURE_FONT } from "../../constant/fonts";
 
 const initialState = {
   isShowModal: false,
@@ -12,7 +13,7 @@ const initialState = {
   scrollTriggerId: "",
   prefillImg: [],
   prefillImgLoad: {},
-  typedSignFont: "Fasthand",
+  typedSignFont: DEFAULT_SIGNATURE_FONT,
   signatureResponse: [],
   isBulkLoader: false,
   invalidRow: { record: null, page: null, label: "" }
