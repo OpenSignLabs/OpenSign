@@ -50,8 +50,6 @@ jobs:
     defaults:
       run:
         working-directory: apps/OpenSign
-    env:
-      NODE_ENV: production
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -64,19 +62,21 @@ jobs:
           cache-dependency-path: apps/OpenSign/package-lock.json
 
       - name: Install dependencies
-        run: npm ci --legacy-peer-deps || npm install --legacy-peer-deps
+        run: npm ci --include=dev --legacy-peer-deps || npm install --include=dev --legacy-peer-deps
 
       - name: Run Vitest unit tests
         run: npm test
 
       - name: Verify production build (Vite)
         run: |
-          npx vite build > /tmp/vite_out.log 2>&1 || {
-            echo "## Vite Build Failure Log" >> $GITHUB_STEP_SUMMARY
+          npm run build > /tmp/vite.log 2>&1 || {
+            STATUS=$?
+            echo "## Vite Build Error (Exit code: $STATUS)" >> $GITHUB_STEP_SUMMARY
             echo '```text' >> $GITHUB_STEP_SUMMARY
-            cat /tmp/vite_out.log >> $GITHUB_STEP_SUMMARY
+            cat /tmp/vite.log >> $GITHUB_STEP_SUMMARY
             echo '```' >> $GITHUB_STEP_SUMMARY
-            exit 1
+            cat /tmp/vite.log
+            exit $STATUS
           }
         env:
           NODE_OPTIONS: "--max-old-space-size=8192"

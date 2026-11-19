@@ -7,8 +7,8 @@ WORKDIR /usr/src/app
 # Copy package.json and package-lock.json first to leverage Docker cache
 COPY apps/OpenSign/package*.json ./
 
-# Install application dependencies
-RUN npm install --legacy-peer-deps
+# Install application dependencies (include devDependencies for building Vite bundle)
+RUN npm install --include=dev --legacy-peer-deps
 
 # Copy the application source code into the container
 COPY apps/OpenSign/ .
@@ -17,11 +17,13 @@ COPY apps/OpenSign/ .
 RUN chmod +x entrypoint.sh
 
 # Build environment variables
-ENV NODE_ENV=production
 ENV GENERATE_SOURCEMAP=false
 
 # Build production bundle with Vite
 RUN npm run build
+
+# Switch to production runtime
+ENV NODE_ENV=production
 
 # Inject env.js loader into index.html
 RUN sed -i 's|<head>|<head><script src="/env.js"></script>|' build/index.html
