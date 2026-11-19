@@ -8,7 +8,7 @@ WORKDIR /usr/src/app
 COPY apps/OpenSign/package*.json ./
 
 # Install application dependencies (include devDependencies for building Vite bundle)
-RUN npm install --include=dev --legacy-peer-deps
+RUN npm ci --include=dev --legacy-peer-deps || npm install --include=dev --legacy-peer-deps
 
 # Copy the application source code into the container
 COPY apps/OpenSign/ .
