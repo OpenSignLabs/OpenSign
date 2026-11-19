@@ -70,6 +70,13 @@ jobs:
         run: npm test
 
       - name: Verify production build (Vite)
-        run: npx vite build
+        run: |
+          npx vite build > /tmp/vite_out.log 2>&1 || {
+            echo "## Vite Build Failure Log" >> $GITHUB_STEP_SUMMARY
+            echo '```text' >> $GITHUB_STEP_SUMMARY
+            cat /tmp/vite_out.log >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            exit 1
+          }
         env:
           NODE_OPTIONS: "--max-old-space-size=8192"
