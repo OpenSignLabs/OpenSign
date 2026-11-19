@@ -1,6 +1,6 @@
 services:
   server:
-    image: ghcr.io/alfonsodg/opensignserver:v3.1.1-fork
+    image: ghcr.io/snxrcs/opensignserver:latest
     container_name: OpenSignServer-container
     restart: unless-stopped
     volumes:
@@ -27,7 +27,7 @@ services:
     networks:
       - app-network
   client:
-    image: ghcr.io/alfonsodg/opensign:v3.1.1-fork
+    image: ghcr.io/snxrcs/opensign:latest
     container_name: OpenSign-container
     restart: unless-stopped
     depends_on:

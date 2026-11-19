@@ -1,0 +1,71 @@
+name: CI - Test & Build Verification
+
+on:
+  push:
+    branches:
+      - staging
+      - main
+  pull_request:
+    branches:
+      - staging
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  server-ci:
+    name: OpenSign Server (Node.js & Jasmine)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/OpenSignServer
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 22.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+          cache: npm
+          cache-dependency-path: apps/OpenSignServer/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run ESLint
+        run: npm run lint
+
+      - name: Run Jasmine unit tests
+        run: npm test
+
+  client-ci:
+    name: OpenSign Client (Vite, React & Vitest)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/OpenSign
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 22.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+          cache: npm
+          cache-dependency-path: apps/OpenSign/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run Vitest unit tests
+        run: npm test
+
+      - name: Verify production build (Vite)
+        run: npm run build
+        env:
+          NODE_OPTIONS: "--max-old-space-size=8192"
