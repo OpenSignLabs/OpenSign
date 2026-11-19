@@ -1,4 +1,5 @@
 import crypto from 'node:crypto';
+import { logger } from '../../utils/logger.js';
 export default async function loginUser(request) {
   const username = request.params.email;
   const password = request.params.password;
@@ -7,7 +8,7 @@ export default async function loginUser(request) {
     try {
       // Pass the username and password to logIn function
       const user = await Parse.User.logIn(username, password);
-      // console.log('user ', user);
+      // logger.info('user ', user);
       if (user) {
         const _user = user?.toJSON();
         return {
@@ -17,7 +18,7 @@ export default async function loginUser(request) {
         throw new Parse.Error(Parse.Error.OBJECT_NOT_FOUND, 'user not found.');
       }
     } catch (err) {
-      console.log('err in login user', err);
+      logger.info('err in login user', err);
       throw err;
     }
   } else {

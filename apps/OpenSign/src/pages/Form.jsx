@@ -7,6 +7,7 @@ import SelectFolder from "../components/shared/fields/SelectFolder";
 import SignersInput from "../components/shared/fields/SignersInput";
 import PageNotFound from "./PageNotFound";
 import { SaveFileSize } from "../constant/saveFileSize";
+import { DEFAULT_COMPLETION_DAYS } from "../constant/runtimeConfig";
 import {
   generatePdfName,
   generateTitleFromFilename,
@@ -65,7 +66,7 @@ const Forms = (props) => {
     Name: "",
     Description: "",
     Note: "",
-    TimeToCompleteDays: 15,
+    TimeToCompleteDays: DEFAULT_COMPLETION_DAYS,
     SendinOrder: "false",
     SendInOrderStrict: "false",
     password: "",
@@ -271,7 +272,6 @@ const Forms = (props) => {
             setpercentage(0);
             const config = {
               headers: {
-                "content-type": "multipart/form-data",
                 sessiontoken: Parse.User.current().getSessionToken()
               },
               signal: abortController.signal,
@@ -524,7 +524,7 @@ const Forms = (props) => {
               props.title === "Sign Yourself"
                 ? "Note to myself"
                 : "Please review and sign this document",
-            TimeToCompleteDays: 15,
+            TimeToCompleteDays: DEFAULT_COMPLETION_DAYS,
             SendinOrder: sendinorder,
             password: "",
             file: "",
@@ -623,7 +623,7 @@ const Forms = (props) => {
         props.title === "Sign Yourself"
           ? "Note to myself"
           : "Please review and sign this document",
-      TimeToCompleteDays: 15,
+      TimeToCompleteDays: DEFAULT_COMPLETION_DAYS,
       SendinOrder: sendinorder,
       password: "",
       file: "",

@@ -52,6 +52,7 @@ import PlaceholderCopy from "../components/pdf/PlaceholderCopy";
 import DropdownWidgetOption from "../components/pdf/DropdownWidgetOption";
 import WidgetNameModal from "../components/pdf/WidgetNameModal";
 import { SaveFileSize } from "../constant/saveFileSize";
+import { DEFAULT_COMPLETION_DAYS } from "../constant/runtimeConfig";
 import { useDispatch, useSelector } from "react-redux";
 import PdfTools from "../components/pdf/PdfTools";
 import { useTranslation, Trans } from "react-i18next";
@@ -134,6 +135,7 @@ function PlaceHolderSign() {
   const [isAddUser, setIsAddUser] = useState({});
   const [signerExistModal, setSignerExistModal] = useState(false);
   const [isDontShow, setIsDontShow] = useState(true);
+  const [widgetClipboard, setWidgetClipboard] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const [isUiLoading, setIsUiLoading] = useState(false);
@@ -178,6 +180,65 @@ function PlaceHolderSign() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Keyboard shortcuts: Ctrl/Cmd+C/X/V for widget copy/cut/paste (#36)
+  useEffect(() => {
+    const handler = (e) => {
+      const mod = e.ctrlKey || e.metaKey;
+      if (!mod) return;
+      // Never hijack the native clipboard while the user types in a field.
+      const target = e.target;
+      const isEditableTarget =
+        target?.isContentEditable ||
+        ["INPUT", "TEXTAREA", "SELECT"].includes(target?.tagName);
+      if (isEditableTarget) return;
+      const key = e.key.toLowerCase();
+      // Copy and cut need a selection; paste only needs the clipboard.
+      if (key !== "v" && !currWidgetsDetails?.key) return;
+      if (key === "c") {
+        setWidgetClipboard({ pos: { ...currWidgetsDetails }, dataId: uniqueId });
+        e.preventDefault();
+      } else if (key === "x") {
+        setWidgetClipboard({ pos: { ...currWidgetsDetails }, dataId: uniqueId });
+        if (currWidgetsDetails?.key) {
+          handleDeleteWidget(currWidgetsDetails.key, uniqueId, pageNumber);
+        }
+        e.preventDefault();
+      } else if (key === "v" && widgetClipboard?.pos) {
+        const p = widgetClipboard.pos;
+        const newPos = {
+          ...p,
+          key: String(randomId(12)),
+          xPosition: (p.xPosition || 0) + 10,
+          yPosition: (p.yPosition || 0) + 10,
+        };
+        // paste into the current signer's placeholder
+        setSignerPos((prev) => {
+          const signerId = uniqueId;
+          const filterSignerPos = prev.filter((d) => d.Id === signerId);
+          if (filterSignerPos.length > 0) {
+            const getPlaceHolder = filterSignerPos[0].placeHolder || [];
+            const pageIdx = getPlaceHolder.findIndex((ph) => ph.pageNumber === pageNumber);
+            let updatedPlaceHolder;
+            if (pageIdx >= 0) {
+              updatedPlaceHolder = getPlaceHolder.map((ph, i) =>
+                i === pageIdx ? { ...ph, pos: [...ph.pos, newPos] } : ph
+              );
+            } else {
+              updatedPlaceHolder = [...getPlaceHolder, { pageNumber, pos: [newPos] }];
+            }
+            return prev.map((obj) =>
+              obj.Id === signerId ? { ...obj, placeHolder: updatedPlaceHolder } : obj
+            );
+          }
+          return prev;
+        });
+        e.preventDefault();
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [currWidgetsDetails, uniqueId, pageNumber, widgetClipboard]);
 
 
   //function to fetch tenant Details
@@ -951,6 +1012,35 @@ function PlaceHolderSign() {
   };
 
   const handleSaveDoc = async () => {
+    // Gate sending on sender email verification (mirrors SignyourselfPdf/PdfRequestFiles)
+    try {
+      const currentUser = JSON.parse(
+        localStorage.getItem(
+          `Parse/${localStorage.getItem("parseAppId")}/currentUser`
+        ) || "{}"
+      );
+      let isEmailVerified = currentUser?.emailVerified;
+      const isEnableOTP = pdfDetails?.[0]?.IsEnableOTP || false;
+      if (isEnableOTP && !isEmailVerified) {
+        try {
+          const userQuery = new Parse.Query(Parse.User);
+          const user = await userQuery.get(currentUser?.objectId, {
+            sessionToken: localStorage.getItem("accesstoken")
+          });
+          if (user) isEmailVerified = user?.get("emailVerified");
+        } catch (e) {
+          console.log("err in get email verification ", e);
+        }
+      }
+      if (!isEnableOTP || isEmailVerified) {
+        // proceed
+      } else {
+        alert(t("email-not-verified-send") || t("something-went-wrong-mssg"));
+        return;
+      }
+    } catch (e) {
+      console.log("err checking email verification", e);
+    }
     let isPrefillEmpty = false,
       unfilledTextWidgetId;
     const prefillExist = signerPos?.find((data) => data.Role === "prefill");
@@ -995,9 +1085,19 @@ function PlaceHolderSign() {
 
     let canSaveWithoutSignatureWidget = isPlaceholderExist;
 
-    //checking if there are any signer list which do not have signture widget then show signers name on tour messages
-    if (unassignedWidget.length > 0) {
-      const getSigner = unassignedWidget.map((x, index) => {
+    if (prefillExist && isPrefillEmpty) {
+      setIsSendAlert({ mssg: "prefill", alert: true });
+      setUnSignedWidgetId(unfilledTextWidgetId);
+      return;
+    }
+    if (signersdata?.length === 0) {
+      alert(t("atleast-one-recipient-alert"));
+      return;
+    }
+
+    // signers who do not have a signature widget are named in the confirmation
+    const signerName = unassignedWidget
+      .map((x, index) => {
         const signer = signersdata.find(
           (y) =>
             y.Id === x.Id || (x.signerObjId && y.objectId === x.signerObjId)
@@ -1011,20 +1111,28 @@ function PlaceHolderSign() {
           x.Role ||
           x.Id
         );
-      });
-      const signerName = getSigner.join(", ");
-      setSignersName(signerName);
-      setIsSendAlert({ mssg: "sure", alert: true });
-      setUniqueId(unassignedWidget[0]?.Id);
-      setRoleName("");
+      })
+      .join(", ");
+
+    // Every send is confirmed, and cancelling prevents the document from being
+    // marked as sent.
+    const proceed = window.confirm(
+      t("sure-send-without-widget", {
+        names: signerName,
+        defaultValue: signerName
+          ? `Some recipients (${signerName}) have no signature widget. Send anyway?`
+          : "Send this document for signatures?"
+      })
+    );
+    if (!proceed) {
+      if (unassignedWidget[0]) {
+        setUniqueId(unassignedWidget[0]?.Id);
+        setRoleName("");
+      }
+      return;
     }
 
-    if (prefillExist && isPrefillEmpty) {
-      setIsSendAlert({ mssg: "prefill", alert: true });
-      setUnSignedWidgetId(unfilledTextWidgetId);
-    } else if (signersdata?.length === 0) {
-      alert(t("atleast-one-recipient-alert"));
-    } else if (canSaveWithoutSignatureWidget && unassignedWidget.length === 0) {
+    if (canSaveWithoutSignatureWidget) {
       const IsSignerNotExist = filterPrefill?.filter((x) => !x.signerObjId);
       // below condition is used to hightlight the widget whose value is not provided by signer
       if (IsSignerNotExist && IsSignerNotExist?.length > 0) {
@@ -1111,7 +1219,7 @@ function PlaceHolderSign() {
       });
       const addExtraDays = pdfDetails?.[0]?.TimeToCompleteDays
         ? pdfDetails[0].TimeToCompleteDays
-        : 15;
+        : DEFAULT_COMPLETION_DAYS;
       const currentUser = signersdata.find((x) => x.Email === currentId);
       setCurrentId(currentUser?.objectId);
       // Compute expiry date with extra days
@@ -1874,7 +1982,8 @@ function PlaceHolderSign() {
             ? updateDocument?.[0]?.NotifyOnSignatures
             : false,
         TimeToCompleteDays:
-          parseInt(updateDocument?.[0]?.TimeToCompleteDays) || 15,
+          parseInt(updateDocument?.[0]?.TimeToCompleteDays) ||
+          DEFAULT_COMPLETION_DAYS,
         RemindOnceInEvery:
           parseInt(updateDocument?.[0]?.RemindOnceInEvery) || 0,
         ...penColors,

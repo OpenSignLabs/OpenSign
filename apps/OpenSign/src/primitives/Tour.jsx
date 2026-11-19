@@ -134,8 +134,11 @@ export default function Tour({
       defaultOpen={isOpen}
       // scrollOffset={-100} // available only for v1
       inViewThreshold={{ y: 150, x: 30 }}
-      onClickMask={() => {}}
-      disableKeyboardNavigation={["esc"]}
+      // A step whose selector is missing (widget on another page, hidden
+      // field) leaves the mask without a popover: keep the mask and Esc as
+      // exits so the user can never get trapped behind the tour.
+      onClickMask={(clickProps) => clickProps?.setIsOpen?.(false)}
+      disableKeyboardNavigation={[]}
       showBadge={showNumber}
       showNavigation={showNavigation}
       showPrevNextButtons={showNavigation}

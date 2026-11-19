@@ -1,4 +1,5 @@
 import { getSignedLocalUrl } from './getSignedUrl.js';
+import { logger } from '../../utils/logger.js';
 
 export default async function fileUpload(request) {
   const url = request.params.url;
@@ -7,7 +8,7 @@ export default async function fileUpload(request) {
     const urlwithjwt = getSignedLocalUrl(url, 200);
     return { url: urlwithjwt };
   } catch (err) {
-    console.log('Err ', err);
+    logger.info('Err ', err);
     throw err;
   }
 }

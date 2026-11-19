@@ -13,6 +13,9 @@ on:
 
 jobs:
   docker:
+    # Pushes to Docker Hub with upstream secrets; the fork publishes to GHCR
+    # through publish-ghcr.yml instead.
+    if: github.repository == 'OpenSignLabs/OpenSign'
     runs-on: ubuntu-latest
     strategy:
       matrix:

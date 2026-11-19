@@ -1,3 +1,4 @@
+import { logger } from '../../utils/logger.js';
 export default async function updateContactTour(request) {
   const contactId = request.params.contactId;
   try {
@@ -27,7 +28,7 @@ export default async function updateContactTour(request) {
       throw new Parse.Error(Parse.Error.OBJECT_NOT_FOUND, 'contact not found.');
     }
   } catch (err) {
-    console.log('Err in contracts_Contactbook class ', err);
+    logger.info('Err in contracts_Contactbook class ', err);
     throw err;
   }
 }

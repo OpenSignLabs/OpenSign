@@ -1,3 +1,4 @@
+import { logger } from '../../utils/logger.js';
 export default async function TeamsAftersave(req) {
   if (!req.original) {
     try {
@@ -24,7 +25,7 @@ export default async function TeamsAftersave(req) {
       req.object.set('Ancestors', updatedAncestors);
       await req.object.save(null, { useMasterKey: true });
     } catch (err) {
-      console.log('Err in team aftersave', err);
+      logger.info('Err in team aftersave', err);
     }
   }
 }

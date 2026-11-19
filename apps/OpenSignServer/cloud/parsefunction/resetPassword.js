@@ -1,3 +1,4 @@
+import { logger } from '../../utils/logger.js';
 export default async function resetPassword(request) {
   const userId = request.params.userId;
   const newPassword = request.params.password;
@@ -56,7 +57,7 @@ export default async function resetPassword(request) {
 
     return { status: 'success', message: 'Password has been reset.' };
   } catch (error) {
-    console.error('Error while resetting password:', error);
+    logger.error('Error while resetting password:', error);
     throw error;
   }
 }

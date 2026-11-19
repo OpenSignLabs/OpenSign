@@ -1,3 +1,4 @@
+import { logger } from '../../utils/logger.js';
 export default async function isUserInContactBook(request) {
   try {
     if (request.user) {
@@ -11,7 +12,7 @@ export default async function isUserInContactBook(request) {
       return res;
     }
   } catch (err) {
-    console.log('err', err);
+    logger.info('err', err);
     throw err;
   }
 }

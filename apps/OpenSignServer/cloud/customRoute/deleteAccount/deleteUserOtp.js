@@ -5,6 +5,7 @@ import {
   OTP_EXPIRES_MIN,
   RESEND_COOLDOWN_SEC,
 } from './deleteUtils.js';
+import { logger } from '../../../utils/logger.js';
 
 export const deleteUserOtp = async (req, res) => {
   const { userId } = req.params;
@@ -38,7 +39,7 @@ export const deleteUserOtp = async (req, res) => {
     await extUser.save(null, { useMasterKey: true });
     return res.json({ ok: true, cooldownSec: RESEND_COOLDOWN_SEC, expiresInMin: OTP_EXPIRES_MIN });
   } catch (err) {
-    console.log('Error sending delete OTP (POST /otp):', err?.response?.data || err);
+    logger.info('Error sending delete OTP (POST /otp):', err?.response?.data || err);
     return res.status(500).json({ error: 'Failed to send OTP' });
   }
 };

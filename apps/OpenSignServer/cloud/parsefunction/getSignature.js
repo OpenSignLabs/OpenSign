@@ -1,3 +1,4 @@
+import { logger } from '../../utils/logger.js';
 export default async function getSignature(request) {
   const { userId } = request.params;
   if (!userId) {
@@ -12,7 +13,7 @@ export default async function getSignature(request) {
     const result = await query.first({ useMasterKey: true });
     return result;
   } catch (err) {
-    console.error('Error fetching signature:', err);
+    logger.error('Error fetching signature:', err);
     throw err;
   }
 }

@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { cloudServerUrl, serverAppId } from '../../Utils.js';
+import { logger } from '../../utils/logger.js';
 export default async function getDrive(request) {
   const serverUrl = cloudServerUrl; //process.env.SERVER_URL;
   const appId = serverAppId;
@@ -41,14 +42,14 @@ export default async function getDrive(request) {
         const res = await query.find({ useMasterKey: true });
         return res;
       } catch (err) {
-        console.log('err', err);
+        logger.info('err', err);
         return { error: "You don't have access to drive" };
       }
     } else {
       return { error: 'Please provide required parameter!' };
     }
   } catch (err) {
-    console.log('err', err?.response?.data || err);
+    logger.info('err', err?.response?.data || err);
     if (err.code == 209) {
       return { error: 'Invalid session token' };
     } else {

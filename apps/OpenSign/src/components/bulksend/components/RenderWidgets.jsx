@@ -1,3 +1,4 @@
+import { UI_FONT } from "../../../constant/fonts";
 import { forwardRef, memo, useEffect, useMemo, useRef, useState } from "react";
 import DatePicker from "react-datepicker";
 import SignatureCanvas from "react-signature-canvas";
@@ -42,7 +43,7 @@ const DateWidget = ({ widget, isRequired, onChange, showLabel }) => {
 
   const PrefillDateInput = forwardRef(({ value, onClick }, ref) => (
     <div
-      style={{ fontFamily: "Arial, sans-serif" }}
+      style={{ fontFamily: UI_FONT }}
       className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full"
       onClick={onClick}
       ref={ref}

@@ -1,3 +1,4 @@
+import { logger } from '../../utils/logger.js';
 export default async function getTeams(request) {
   const activeTeams = request.params.active;
   if (!request?.user) {
@@ -30,7 +31,7 @@ export default async function getTeams(request) {
       return [];
     }
   } catch (err) {
-    console.log('err in getTeams', err);
+    logger.info('err in getTeams', err);
     const code = err?.code || 400;
     const msg = err?.message || 'Something went wrong.';
     throw new Parse.Error(code, msg);

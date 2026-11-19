@@ -1,3 +1,4 @@
+import { logger } from '../../utils/logger.js';
 async function getTenantByUserId(userId, contactId) {
   try {
     if (contactId) {
@@ -43,7 +44,7 @@ async function getTenantByUserId(userId, contactId) {
       }
     }
   } catch (err) {
-    console.log('err in getTenant ', err);
+    logger.info('err in getTenant ', err);
     return 'user does not exist!';
   }
 }

@@ -1,5 +1,6 @@
 import { MAX_DESCRIPTION_LENGTH, MAX_NAME_LENGTH, MAX_NOTE_LENGTH } from '../../Utils.js';
 import { setTemplateCount } from '../../utils/CountUtils.js';
+import { logger } from '../../utils/logger.js';
 
 async function TemplateBeforeSave(request) {
   if (!request.original) {
@@ -37,7 +38,7 @@ async function TemplateBeforeSave(request) {
       }
     }
   } catch (err) {
-    console.log('err in template beforesave', err.message);
+    logger.info('err in template beforesave', err.message);
   }
 }
 export default TemplateBeforeSave;

@@ -7,7 +7,7 @@ import {
 import {
   contractUsers,
   saveLanguageInLocal
-} from "../constant/Utils";
+} from "../constant/utils/coreConstants.js";
 import logo from "../assets/images/logo.png";
 import { appInfo } from "../constant/appinfo";
 import Parse from "parse";

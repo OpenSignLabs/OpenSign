@@ -2,10 +2,11 @@ import { S3Client, DeleteObjectCommand } from '@aws-sdk/client-s3';
 import fs from 'node:fs/promises';
 import pLimit from 'p-limit';
 import { serverAppId } from '../../../Utils.js';
+import { LOCALHOST_HOSTNAMES } from '../../../utils/brandContext.js';
 
 // === Configuration ===
 const serverHost = new URL(process.env.SERVER_URL).hostname;
-const LOCAL_HOSTS = ['localhost', '127.0.0.1', serverHost];
+const LOCAL_HOSTS = [...LOCALHOST_HOSTNAMES, serverHost];
 const CONCURRENCY_LIMIT = 5;
 
 // === S3 Client Setup ===
@@ -26,12 +27,17 @@ function createS3Client({ region, accessKeyId, secretAccessKey, endpoint = null 
   return new S3Client(config);
 }
 
-const s3 = createS3Client({
-  region: process.env.DO_REGION,
-  endpoint: process.env.DO_ENDPOINT,
-  accessKeyId: process.env.DO_ACCESS_KEY_ID,
-  secretAccessKey: process.env.DO_SECRET_ACCESS_KEY,
-});
+let _s3 = null;
+function getS3Client() {
+  if (_s3) return _s3;
+  _s3 = createS3Client({
+    region: process.env.DO_REGION,
+    endpoint: process.env.DO_ENDPOINT,
+    accessKeyId: process.env.DO_ACCESS_KEY_ID,
+    secretAccessKey: process.env.DO_SECRET_ACCESS_KEY,
+  });
+  return _s3;
+}
 
 // === Helpers ===
 function getS3ParamsFromUrl(fileUrl) {
@@ -50,7 +56,7 @@ async function deleteS3File(fileUrl) {
   if (!params) return;
 
   try {
-    await s3.send(new DeleteObjectCommand(params));
+    await getS3Client().send(new DeleteObjectCommand(params));
     // console.log(`✅ Deleted from S3: ${params.Key}`);
   } catch (err) {
     console.error(`❌ S3 delete failed: ${params.Key}:`, err.message);

@@ -124,7 +124,7 @@ const sendDeleteUserMail = async req => {
     });
     return 'mail sent.';
   } catch (err) {
-    console.log('Err in sending delete user email ', err);
+    logger.info('Err in sending delete user email ', err);
     throw new Parse.Error(Parse.Error.SCRIPT_FAILED, err.message);
   }
 };

@@ -1,3 +1,4 @@
+import { logger } from '../../utils/logger.js';
 /**
  * Checks if a user exists in the extended class 'contracts_Users' based on the provided email.
  * @param email - The request contains parameters, such as the user's email.
@@ -22,7 +23,7 @@ export default async function isextenduser(request) {
     }
   } catch (err) {
     // Handle errors
-    console.log('Error in userexist', err);
+    logger.info('Error in userexist', err);
     const code = err?.code || 400;
     const message = err?.message || 'Something went wrong.';
     throw new Parse.Error(code, message);

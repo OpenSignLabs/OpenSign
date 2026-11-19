@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import Loader from "./Loader";
 import { useTranslation } from "react-i18next";
 import axios from "axios";
-import { getTenantDetails } from "../constant/Utils";
+import { getTenantDetails } from "../constant/utils/tenantDownloads.js";
 import { emailRegex } from "../constant/const";
 import { useDispatch } from "react-redux";
 import { sessionStatus } from "../redux/reducers/userReducer";

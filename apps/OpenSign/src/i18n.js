@@ -25,7 +25,13 @@ i18n
     interpolation: {
       escapeValue: false // Not needed for react as it escapes by default
     },
-    whitelist: ["en", "es", "fr", "it", "de", "hi", "kr"] // List of allowed languages
+    // i18next v22+ renamed `whitelist` to `supportedLngs`; the old key was
+    // silently ignored, so `en-US` reached the backend and 404'd.
+    supportedLngs: ["en", "es", "fr", "it", "de", "hi", "kr"],
+    // Resolve regional locales to their base language: en-US -> en, es-PE -> es.
+    nonExplicitSupportedLngs: true,
+    // Never request a regional file; only en/es/fr/... exist on disk.
+    load: "languageOnly"
   });
 
 export default i18n;

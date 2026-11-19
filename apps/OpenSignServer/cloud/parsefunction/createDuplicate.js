@@ -1,3 +1,4 @@
+import { logger } from '../../utils/logger.js';
 export default async function createDuplicate(request) {
   const templateId = request.params.templateId;
 
@@ -106,7 +107,7 @@ export default async function createDuplicate(request) {
         );
       }
     } catch (err) {
-      console.log('err while creating duplicate', err);
+      logger.info('err while creating duplicate', err);
       throw err;
     }
   }

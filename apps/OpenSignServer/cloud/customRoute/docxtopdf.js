@@ -17,13 +17,13 @@ async function killStuckProcesses() {
     // Kill soffice processes older than 2 minutes
     if (process.platform === 'linux' || process.platform === 'darwin') {
       await execAsync("pkill -9 -f 'soffice.*--headless' || true");
-      console.log('[DOCX2PDF] Cleaned up stuck processes');
+      logger.info('[DOCX2PDF] Cleaned up stuck processes');
     } else if (process.platform === 'win32') {
       await execAsync('taskkill /F /IM soffice.bin /T || exit 0');
-      console.log('[DOCX2PDF] Cleaned up stuck processes (Windows)');
+      logger.info('[DOCX2PDF] Cleaned up stuck processes (Windows)');
     }
   } catch (err) {
-    console.error('[DOCX2PDF] Error killing processes:', err.message);
+    logger.error('[DOCX2PDF] Error killing processes:', err.message);
   }
 }
 
@@ -156,7 +156,7 @@ export default async function docxtopdf(req, res) {
     // FIX: Increased timeout for large files, added nice priority
     const pdfBuffer = await runWithLimit(async () => {
       // Log for monitoring
-      console.log(
+      logger.info(
         `[DOCX2PDF] Starting conversion, size: ${(uploadedSizeBytes / 1024 / 1024).toFixed(2)}MB, active: ${active}, queued: ${queue.length}`
       );
 
@@ -167,10 +167,10 @@ export default async function docxtopdf(req, res) {
           timeoutMs,
           'DOCX->PDF'
         );
-        console.log(`[DOCX2PDF] Completed in ${Date.now() - startTime}ms`);
+        logger.info(`[DOCX2PDF] Completed in ${Date.now() - startTime}ms`);
         return result;
       } catch (error) {
-        console.error(`[DOCX2PDF] Failed after ${Date.now() - startTime}ms:`, error.message);
+        logger.error(`[DOCX2PDF] Failed after ${Date.now() - startTime}ms:`, error.message);
         // Clean up on error
         await killStuckProcesses();
         throw error;
@@ -216,7 +216,7 @@ export default async function docxtopdf(req, res) {
     } else {
       msg = message;
     }
-    console.error(`[DOCX2PDF] Error: ${msg}`);
+    logger.error(`[DOCX2PDF] Error: ${msg}`);
     return res.status(400).json({ error: message });
   }
 }

@@ -78,7 +78,7 @@ const DatePicker = ({
         dateFormat={
           selectDate ? selectDate?.format : format ? format : "MM/dd/yyyy"
         }
-        portalId="root-portal"
+
       />
       {showClear && handleClear && (
         <span

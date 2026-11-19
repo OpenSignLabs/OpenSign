@@ -1,3 +1,4 @@
+import { logger } from '../../utils/logger.js';
 async function getUserId(request) {
   try {
     const username = request.params.username;
@@ -11,7 +12,7 @@ async function getUserId(request) {
     const user = await query.first({ useMasterKey: true });
     return { id: user.id };
   } catch (err) {
-    console.log('err', err);
+    logger.info('err', err);
     return err;
   }
 }

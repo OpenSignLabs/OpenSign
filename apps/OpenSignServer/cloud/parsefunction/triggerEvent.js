@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { cloudServerUrl, serverAppId } from '../../Utils.js';
+import { logger } from '../../utils/logger.js';
 
 export default async function triggerEvent(request) {
   const event = request.params.event;
@@ -54,8 +55,12 @@ export default async function triggerEvent(request) {
 
       let updatedAuditTrail;
 
-      if (existingIndex !== -1) {
-        // update existing entry
+      // Do not overwrite a completion activity (e.g. 'Signed') with 'Viewed';
+      // instead append a separate 'Viewed' entry to preserve audit integrity.
+      const completionActivities = ['Signed'];
+      if (existingIndex !== -1 && completionActivities.includes(auditTrail[existingIndex]?.Activity)) {
+        updatedAuditTrail = [...auditTrail, newEntry];
+      } else if (existingIndex !== -1) {
         updatedAuditTrail = [...auditTrail];
         updatedAuditTrail[existingIndex] = {
           ...updatedAuditTrail[existingIndex],
@@ -65,7 +70,6 @@ export default async function triggerEvent(request) {
           ViewedOn: date,
         };
       } else {
-        // add new entry
         updatedAuditTrail = [...auditTrail, newEntry];
       }
 
@@ -78,7 +82,7 @@ export default async function triggerEvent(request) {
 
     return { message: 'event called!' };
   } catch (err) {
-    console.log(
+    logger.info(
       `triggerEvent error: `,
       err?.response?.data?.error || err?.message || 'Something went wrong!'
     );

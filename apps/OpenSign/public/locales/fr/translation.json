@@ -1722,5 +1722,6 @@
     "active-plan-message": "Votre forfait {{plan}} est actif. Gérez-le depuis Facturation.",
     "billing-action-message": "Votre forfait actuel nécessite une action de facturation avant d’en sélectionner un autre.",
     "trial-unavailable-message": "Ce compte n’est pas éligible à un nouvel essai gratuit. Utilisez Facturation pour gérer ou terminer le paiement."
-  }
+  },
+  "allow-multiple-selection": "Autoriser la sélection multiple"
 }

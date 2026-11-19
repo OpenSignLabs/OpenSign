@@ -82,7 +82,7 @@ const Sidebar = () => {
   return (
     <aside
       className={`os-sidebar os-shell-sidebar absolute inset-y-0 lg:relative overflow-y-auto transition-all z-[500] shadow-lg hide-scrollbar
-     ${isOpen ? "w-full md:w-64" : "w-0"}`}
+     ${isOpen ? "w-full md:w-64" : "w-0 overflow-hidden"}`}
     >
       <div className="os-sidebar-identity flex px-2 py-3 gap-2 items-center shadow-md">
         <button

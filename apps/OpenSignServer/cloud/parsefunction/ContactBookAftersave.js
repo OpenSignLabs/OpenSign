@@ -1,3 +1,4 @@
+import { logger } from '../../utils/logger.js';
 async function ContactbookAftersave(request) {
   /* In beforesave or aftersave if you want to check if an object is being inserted or updated 
     you can check as follows */
@@ -42,10 +43,10 @@ async function ContactbookAftersave(request) {
           acl.setWriteAccess(user.id, true);
           object.setACL(acl);
           await object.save(null, { useMasterKey: true });
-          // console.log('res update new user with contac', res);
+          // logger.info('res update new user with contac', res);
         }
       } catch (err) {
-        // console.log('err ', err);
+        // logger.info('err ', err);
         if (err.code === 202) {
           const userQuery = new Parse.Query(Parse.User);
           userQuery.equalTo('email', Email);
@@ -60,12 +61,12 @@ async function ContactbookAftersave(request) {
           acl.setWriteAccess(userRes.id, true);
           object.setACL(acl);
           await object.save(null, { useMasterKey: true });
-          // console.log('res update existing user with contact', res);
+          // logger.info('res update existing user with contact', res);
         }
       }
     }
   } else {
-    console.log('Object being update');
+    logger.info('Object being update');
   }
 }
 export default ContactbookAftersave;

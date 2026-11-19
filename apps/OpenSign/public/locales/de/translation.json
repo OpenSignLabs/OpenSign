@@ -1661,7 +1661,7 @@
   "eideasy-downloading": "Signiertes Dokument wird heruntergeladen…",
   "eideasy-sign-btn": "Mit eID Easy signieren",
   "signature-type-hint": "Digital: Mit Zeichnen/Eingeben/Hochladen signieren. Qualifiziert: QES über eID Easy mit Identitätsprüfung.",
-   "access-code": "Zugangscode",
+  "access-code": "Zugangscode",
   "access-code-set": "Zugangscode festgelegt",
   "access-code-add": "Zugangscode hinzufügen",
   "access-code-help": "Optionales Geheimnis, das nur dieser Unterzeichner kennt. Vor dem Anzeigen oder Unterschreiben des Dokuments wird die Eingabe verlangt. Geben Sie den Code dem Empfänger auf einem anderen Kanal weiter (Telefon, persönlich).",
@@ -1720,5 +1720,6 @@
     "active-plan-message": "Ihr Tarif {{plan}} ist aktiv. Verwalten Sie ihn unter Abrechnung.",
     "billing-action-message": "Ihr vorhandener Tarif erfordert eine Abrechnungsaktion, bevor ein anderer Tarif ausgewählt werden kann.",
     "trial-unavailable-message": "Dieses Konto ist nicht für eine weitere kostenlose Testphase berechtigt. Verwalten oder schließen Sie die Zahlung unter Abrechnung ab."
-  }
+  },
+  "allow-multiple-selection": "Mehrfachauswahl erlauben"
 }

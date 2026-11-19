@@ -1,3 +1,4 @@
+import { logger } from '../../utils/logger.js';
 export default async function updateEmailTemplates(request) {
   const { tenantId, details } = request.params;
 
@@ -32,7 +33,7 @@ export default async function updateEmailTemplates(request) {
       return res;
     }
   } catch (error) {
-    console.log('error while updating email templates:', error);
+    logger.info('error while updating email templates:', error);
     throw error;
   }
 }

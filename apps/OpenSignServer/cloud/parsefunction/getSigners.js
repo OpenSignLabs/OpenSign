@@ -1,3 +1,4 @@
+import { logger } from '../../utils/logger.js';
 // Function to escape special characters in the search string
 function escapeRegExp(string) {
   return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // Escape special characters
@@ -24,7 +25,7 @@ async function getContacts(searchObj, isJWT) {
     const _contactRes = JSON.parse(JSON.stringify(contactRes));
     return _contactRes;
   } catch (err) {
-    console.log('err while fetch contacts', err);
+    logger.info('err while fetch contacts', err);
     throw err;
   }
 }
@@ -39,7 +40,7 @@ export default async function getSigners(request) {
       throw new Parse.Error(Parse.Error.INVALID_SESSION_TOKEN, 'Invalid session token');
     }
   } catch (err) {
-    console.log('err in get signers', err);
+    logger.info('err in get signers', err);
     throw err;
   }
 }

@@ -52,7 +52,7 @@ export default async function forwardDoc(request) {
             }),
           };
           mailRes = await sendMailWithAttachment(params);
-          // console.log('mailRes', mailRes);
+          // logger.info('mailRes', mailRes);
         }
         return mailRes;
       } catch (error) {
@@ -67,7 +67,7 @@ export default async function forwardDoc(request) {
       throw new Parse.Error(Parse.Error.INVALID_QUERY, 'please provide parameters.');
     }
   } catch (err) {
-    console.log('Err in forwardDoc', err);
+    logger.info('Err in forwardDoc', err);
     throw err;
   }
 }

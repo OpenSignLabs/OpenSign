@@ -3,7 +3,7 @@ env: flex
 
 env_variables:
   # --REQUIRED--
-  DATABASE_URI: mongodb://localhost:27017/dev
+  DATABASE_URI: <your-mongodb-connection-string>
   APP_ID: <your-app-id>
   MASTER_KEY: <your-master-key>
   SERVER_URL: https://your-project-id.appspot.com/parse

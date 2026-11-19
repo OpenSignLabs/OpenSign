@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { logger } from '../../utils/logger.js';
 export default async function Newsletter(request) {
   const name = request.params.name;
   const email = request.params?.email?.toLowerCase()?.replace(/\s/g, '');
@@ -17,7 +18,7 @@ export default async function Newsletter(request) {
     const code = err?.response?.data?.code || err?.response?.status || err?.code || 400;
     const message =
       err?.response?.data?.error || err?.response?.data || err?.message || 'Something went wrong.';
-    console.log('err in savenewsletter', err);
+    logger.info('err in savenewsletter', err);
     throw new Parse.Error(code, message);
   }
 }

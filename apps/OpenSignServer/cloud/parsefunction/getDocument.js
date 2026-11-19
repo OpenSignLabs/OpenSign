@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { cloudServerUrl, serverAppId } from '../../Utils.js';
+import { logger } from '../../utils/logger.js';
 export default async function getDocument(request) {
   const serverUrl = cloudServerUrl; //process.env.SERVER_URL;
   const docId = request.params.docId;
@@ -19,7 +20,22 @@ export default async function getDocument(request) {
         query.include('DeclineBy');
         query.notEqualTo('IsArchive', true);
         if (include) {
-          query?.include(include);
+          const ALLOWED_INCLUDES = [
+            'Bcc',
+            'Cc',
+            'Signers',
+            'Placeholders',
+            'ExtUserPtr',
+            'ExtUserPtr.TenantId',
+            'CreatedBy',
+            'AuditTrail.UserPtr',
+            'DeclineBy',
+          ];
+          const requested = String(include).split(',').map(s => s.trim()).filter(Boolean);
+          const safe = requested.filter(i => ALLOWED_INCLUDES.includes(i));
+          if (safe.length) {
+            query?.include(safe.join(','));
+          }
         }
         const res = await query.first({ useMasterKey: true });
         if (res) {
@@ -46,7 +62,7 @@ export default async function getDocument(request) {
                   return { error: "You don't have access of this document!" };
                 }
               } catch (err) {
-                console.log('err user in not authenticated', err);
+                logger.info('err user in not authenticated', err);
                 return { error: "You don't have access of this document!" };
               }
             } else {
@@ -57,14 +73,14 @@ export default async function getDocument(request) {
           return { error: "document deleted or you don't have access." };
         }
       } catch (err) {
-        console.log('err', err);
+        logger.info('err', err);
         return err;
       }
     } else {
       return { error: 'Please pass required parameters!' };
     }
   } catch (err) {
-    console.log('err', err);
+    logger.info('err', err);
     if (err.code == 209) {
       return { error: 'Invalid session token' };
     } else {

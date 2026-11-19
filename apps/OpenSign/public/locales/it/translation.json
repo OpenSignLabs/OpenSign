@@ -1662,7 +1662,7 @@
   "eideasy-downloading": "Download del documento firmato…",
   "eideasy-sign-btn": "Firma con eID Easy",
   "signature-type-hint": "Digitale: firma con disegno/dattilografia/caricamento. Qualificata: QES tramite eID Easy con verifica dell'identità.",
-   "access-code": "Codice di accesso",
+  "access-code": "Codice di accesso",
   "access-code-set": "Codice di accesso impostato",
   "access-code-add": "Aggiungi codice di accesso",
   "access-code-help": "Codice segreto facoltativo noto solo a questo firmatario. Dovrà inserirlo prima di visualizzare o firmare il documento. Comunicalo al destinatario tramite un canale alternativo (telefono, di persona).",
@@ -1721,5 +1721,6 @@
     "active-plan-message": "Il piano {{plan}} è attivo. Gestiscilo da Fatturazione.",
     "billing-action-message": "Il piano esistente richiede un’azione di fatturazione prima di poterne selezionare un altro.",
     "trial-unavailable-message": "Questo account non è idoneo per un’altra prova gratuita. Usa Fatturazione per gestire o completare il pagamento."
-  }
+  },
+  "allow-multiple-selection": "Consenti selezione multipla"
 }

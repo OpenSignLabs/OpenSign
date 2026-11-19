@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { cloudServerUrl, serverAppId } from '../../Utils.js';
+import { logger } from '../../utils/logger.js';
 const appId = serverAppId;
 const masterkey = process.env.MASTER_KEY;
 export default async function createBatchContact(req) {
@@ -44,12 +45,12 @@ export default async function createBatchContact(req) {
       // console.info('createbatchcontact ', response.data);
       const successCount = response?.data?.filter(item => item.success).length;
       const failedCount = requests.length - successCount;
-      console.log(
+      logger.info(
         `createbatchcontact query response: success: ${successCount}, failed: ${failedCount}`
       );
       return { success: successCount, failed: failedCount };
     } catch (err) {
-      console.log('err while create batch contact', err);
+      logger.info('err while create batch contact', err);
       throw new Parse.Error(400, 'Something went wrong, please try again later');
     }
   } else {

@@ -1662,7 +1662,7 @@
   "eideasy-downloading": "서명된 문서를 다운로드하는 중…",
   "eideasy-sign-btn": "eID Easy로 서명",
   "signature-type-hint": "디지털: 그리기/입력/업로드로 서명합니다. 적격: 신원 확인이 포함된 eID Easy를 통한 QES.",
-   "access-code": "접속 코드",
+  "access-code": "접속 코드",
   "access-code-set": "접속 코드가 설정됨",
   "access-code-add": "접속 코드 추가",
   "access-code-help": "이 서명자만 아는 선택적 비밀번호입니다. 문서를 보거나 서명하기 전에 반드시 입력해야 합니다. 전화 또는 직접 만나서 등 별도의 경로로 수신자에게 전달하세요.",
@@ -1721,5 +1721,6 @@
     "active-plan-message": "{{plan}} 요금제가 활성화되어 있습니다. 결제에서 관리하세요.",
     "billing-action-message": "다른 요금제를 선택하기 전에 기존 요금제의 결제 조치가 필요합니다.",
     "trial-unavailable-message": "이 계정은 추가 무료 체험 대상이 아닙니다. 결제에서 관리하거나 결제를 완료하세요."
-  }
+  },
+  "allow-multiple-selection": "다중 선택 허용"
 }

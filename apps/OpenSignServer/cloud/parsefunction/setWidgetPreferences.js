@@ -1,3 +1,4 @@
+import { logger } from '../../utils/logger.js';
 export default async function setWidgetPreferences(request) {
   if (!request?.user) {
     throw new Parse.Error(Parse.Error.INVALID_SESSION_TOKEN, 'User is not authenticated.');
@@ -43,7 +44,7 @@ export default async function setWidgetPreferences(request) {
       };
     }
   } catch (err) {
-    console.log('set widget preferences error:', err);
+    logger.info('set widget preferences error:', err);
     throw new Parse.Error(err?.code || 400, err?.message || 'Something went wrong.');
   }
 }

@@ -1,6 +1,6 @@
 {
   "name": "open_sign_server",
-  "version": "2.37.0",
+  "version": "2.38.1",
   "description": "opensign server using the parse-server module",
   "repository": {
     "type": "git",
@@ -82,7 +82,8 @@
     "websocket-driver": ">=0.7.5",
     "js-yaml": "^3.15.0",
     "lodash": "^4.18.0",
-    "undici": "^7.29.0",
+    "undici": ">=7.30.0",
+    "proxy-addr": ">=2.0.7",
     "uuid": ">=11.1.1",
     "body-parser": ">=2.3.0",
     "@graphql-tools/utils": "$@graphql-tools/utils",

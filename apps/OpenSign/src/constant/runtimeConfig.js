@@ -1,5 +1,16 @@
 import { z } from "zod";
 
+// Centralized client defaults (issue #72): single source for values that were
+// previously repeated inline. Defaults keep the behavior the app always had.
+export const DEFAULT_COMPLETION_DAYS = 15;
+export const DEFAULT_GOOGLE_TAG_IDS = Object.freeze([
+  "G-BHNNETZRTY",
+  "AW-17487135887"
+]);
+export const OPEN_SIGN_EMAIL_LOGO_URL =
+  "https://qikinnovation.ams3.digitaloceanspaces.com/logo.png";
+export const OPEN_SIGN_EMAIL_ACCENT = "#47a3ad";
+
 const emptyOrHttpUrl = z
   .string()
   .trim()
@@ -99,7 +110,7 @@ export const OPEN_SIGN_RUNTIME_CONFIG = Object.freeze({
   },
   analytics: {
     gtmId: "",
-    googleTagIds: ["G-BHNNETZRTY", "AW-17487135887"]
+    googleTagIds: [...DEFAULT_GOOGLE_TAG_IDS]
   },
   auth: {
     googleClientId: "",

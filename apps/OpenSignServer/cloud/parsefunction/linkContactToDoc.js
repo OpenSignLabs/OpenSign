@@ -1,3 +1,4 @@
+import { logger } from '../../utils/logger.js';
 // `saveRoleContact` is used to save user in contracts_Guest role and create contact
 const saveRoleContact = async contact => {
   const contactQuery = new Parse.Object('contracts_Contactbook');
@@ -275,7 +276,7 @@ export default async function linkContactToDoc(req) {
                 }
               }
             } catch (err) {
-              console.log('Err while creating contact link to doc', err);
+              logger.info('Err while creating contact link to doc', err);
             }
           } else {
             throw new Parse.Error(Parse.Error.OBJECT_NOT_FOUND, 'User not found.');
@@ -288,7 +289,7 @@ export default async function linkContactToDoc(req) {
       throw new Parse.Error(Parse.Error.OBJECT_NOT_FOUND, 'Document not found.');
     }
   } catch (err) {
-    console.log('err in linkcontacttodoc', err);
+    logger.info('err in linkcontacttodoc', err);
     throw err;
   }
 }

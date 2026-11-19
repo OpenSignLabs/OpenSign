@@ -1,3 +1,4 @@
+import { logger } from '../../utils/logger.js';
 async function getUserDetails(request) {
   const reqEmail = request.params.email;
   if (reqEmail || request.user) {
@@ -31,7 +32,7 @@ async function getUserDetails(request) {
         return '';
       }
     } catch (err) {
-      console.log('Err ', err);
+      logger.info('Err ', err);
       const code = err?.code || 400;
       const msg = err?.message || 'Something went wrong.';
       throw new Parse.Error(code, msg);

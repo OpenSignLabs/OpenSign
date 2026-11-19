@@ -1,11 +1,12 @@
 import dotenv from 'dotenv';
 import { MongoClient } from 'mongodb';
 import { generateId } from '../Utils.js';
+import { getDatabaseUri } from '../utils/envConfig.js';
 dotenv.config({ quiet: true });
 
 export default async function createNormalizedEmailUnique() {
   // Provide the complete MongoDB connection URL with the database name
-  const uri = process.env.MONGODB_URI || 'mongodb://localhost:27017/dev'; // Replace with your MongoDB URI
+  const uri = getDatabaseUri(process.env);
   const client = new MongoClient(uri);
   try {
     await client.connect();
