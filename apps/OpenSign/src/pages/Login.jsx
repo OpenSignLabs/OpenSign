@@ -140,7 +140,11 @@ function Login() {
   };
   const handleLoginBtn = async (event) => {
     event.preventDefault();
-    if (!emailRegex.test(state.email)) {
+    if (!state.email || !state.email.trim()) {
+      alert(t("input-required"));
+      return;
+    }
+    if (state.email.includes("@") && !emailRegex.test(state.email)) {
       alert(t("valid-email-alert"));
       return;
     }
@@ -516,7 +520,7 @@ function Login() {
                           </label>
                           <input
                             id="email"
-                            type="email"
+                            type="text"
                             className="op-input op-input-bordered op-input-sm hover:border-base-content w-full text-xs"
                             name="email"
                             autoComplete="username"

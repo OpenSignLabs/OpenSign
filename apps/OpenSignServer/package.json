@@ -36,6 +36,7 @@
     "generate-api-key": "^1.0.2",
     "googleapis": "^171.4.0",
     "jose": "^6.2.3",
+    "ldapts": "^9.3.1",
     "libreoffice-convert": "^1.8.1",
     "mailgun.js": "^13.0.0",
     "moment": "^2.30.1",
