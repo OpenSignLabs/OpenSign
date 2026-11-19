@@ -50,6 +50,8 @@ jobs:
     defaults:
       run:
         working-directory: apps/OpenSign
+    env:
+      NODE_ENV: production
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -65,9 +67,9 @@ jobs:
         run: npm ci --legacy-peer-deps || npm install --legacy-peer-deps
 
       - name: Run Vitest unit tests
-        run: npm test || true
+        run: npm test
 
       - name: Verify production build (Vite)
-        run: npm run build
+        run: npx vite build
         env:
           NODE_OPTIONS: "--max-old-space-size=8192"

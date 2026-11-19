@@ -86,8 +86,6 @@ jobs:
             type=semver,pattern={{major}}.{{minor}}
 
       - name: Build and push container image
-        id: docker_build
-        continue-on-error: true
         uses: docker/build-push-action@v6
         with:
           context: ${{ matrix.context }}
@@ -98,12 +96,3 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha,scope=${{ matrix.name }}
           cache-to: type=gha,scope=${{ matrix.name }},mode=max
-
-      - name: Report build error if failed
-        if: steps.docker_build.outcome == 'failure'
-        run: |
-          echo "## Build Failure Report for ${{ matrix.name }}" >> $GITHUB_STEP_SUMMARY
-          echo "```text" >> $GITHUB_STEP_SUMMARY
-          docker buildx build --file ${{ matrix.dockerfile }} --progress=plain ${{ matrix.context }} 2>&1 | tail -n 80 >> $GITHUB_STEP_SUMMARY || true
-          echo "```" >> $GITHUB_STEP_SUMMARY
-          exit 1
