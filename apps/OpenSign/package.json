@@ -79,7 +79,7 @@
     "zustand": "^4.5.1"
   },
   "scripts": {
-    "build": "NODE_OPTIONS=\"--max-old-space-size=8192\" vite build",
+    "build": "NODE_OPTIONS=\"--max-old-space-size=4096\" vite build",
     "start-dev": "vite",
     "dev": "vite",
     "qa:local": "vite --mode local-qa --host 127.0.0.1 --port 3000",

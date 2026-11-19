@@ -68,15 +68,6 @@ jobs:
         run: npm test
 
       - name: Verify production build (Vite)
-        run: |
-          npm run build > /tmp/vite.log 2>&1 || {
-            STATUS=$?
-            echo "## Vite Build Error (Exit code: $STATUS)" >> $GITHUB_STEP_SUMMARY
-            echo '```text' >> $GITHUB_STEP_SUMMARY
-            cat /tmp/vite.log >> $GITHUB_STEP_SUMMARY
-            echo '```' >> $GITHUB_STEP_SUMMARY
-            cat /tmp/vite.log
-            exit $STATUS
-          }
+        run: npm run build
         env:
-          NODE_OPTIONS: "--max-old-space-size=8192"
+          NODE_OPTIONS: "--max-old-space-size=4096"
