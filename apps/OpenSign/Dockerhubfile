@@ -8,7 +8,7 @@ WORKDIR /usr/src/app
 COPY apps/OpenSign/package*.json ./
 
 # Install application dependencies
-RUN npm install
+RUN npm install --legacy-peer-deps
 
 # Copy the application source code into the container
 COPY apps/OpenSign/ .
@@ -24,7 +24,7 @@ ENV GENERATE_SOURCEMAP=false
 RUN npm run build
 
 # Inject env.js loader into index.html
-RUN sed -i '/<head>/a\<script src="/env.js"></script>' build/index.html
+RUN sed -i 's|<head>|<head><script src="/env.js"></script>|' build/index.html
 
 # Expose port 3000
 EXPOSE 3000
