@@ -1080,6 +1080,7 @@ function PlaceHolderSign() {
       if (pdfUrl) {
         docCls.set("URL", pdfUrl);
       }
+      docCls.set("IsSendMail", pdfDetails?.[0]?.IsSendMail !== false);
       const res = await docCls.save();
       if (res && pdfUrl) {
         pdfDetails[0] = { ...pdfDetails[0], URL: pdfUrl };
@@ -1543,9 +1544,7 @@ function PlaceHolderSign() {
             } else {
               return {
                 ...position,
-                ...(position.type === textWidget
-                  ? { Height: textHeight }
-                  : {}),
+                ...(position.type === textWidget ? { Height: textHeight } : {}),
                 options: {
                   ...position.options,
                   name: defaultdata.name,

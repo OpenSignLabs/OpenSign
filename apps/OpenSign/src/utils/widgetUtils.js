@@ -541,8 +541,14 @@ export function getRegexForType(type) {
     case "text":
       //allow space in text regex
       return "/^[a-zA-Z ]+$/";
+    case "letters-only":
+      return "/^[a-zA-Z ]+$/";
     case "ssn":
       return "/^(?!000|666|9\\d{2})\\d{3}-(?!00)\\d{2}-(?!0000)\\d{4}$/";
+    case "ein":
+      return "/^\\d{2}-\\d{7}$/";
+    case "url":
+      return "/^(https?:\\/\\/)?(?:[\\w-]+\\.)+[\\w-]{2,}(?::\\d+)?(?:[/?#][^\\s]*)?$/i";
     default:
       return type;
   }

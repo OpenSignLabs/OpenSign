@@ -421,6 +421,7 @@
   "contact-details": "연락처 상세",
   "verify-email": "계속하려면 이메일을 확인하십시오. 이는 OpenSign 계정과 연결된 이메일을 확인하는 일회성 단계입니다.",
   "send-otp": " OTP 전송",
+  "resend-otp": "OTP 재전송",
   "otp-placeholder": "이메일로 받은 인증 코드를 입력하세요",
   "loading-doc": "문서 로딩 중..",
   "widgets-name": {
@@ -569,6 +570,11 @@
   "edit-template": "템플릿 편집",
   "widget-info": "위젯 정보",
   "validation": "유효성 검사",
+  "validation-options": {
+    "ein": "EIN",
+    "url": "URL",
+    "letters-only": "문자만"
+  },
   "invalid-default-value": "잘못된 기본값",
   "hint": "힌트",
   "color": "색상",
@@ -1290,6 +1296,7 @@
   "page-n-of-n": "{{totalPages}}페이지 중 {{currentPage}}페이지",
   "import": "가져오기",
   "search": "검색",
+  "search-folder": "폴더 검색",
   "viewed-on": "본 날짜: {{ViewedOn}}",
   "signed-on": "서명한 날짜: {{SignedOn}}",
   "hide": "숨기기",

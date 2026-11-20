@@ -1,4 +1,5 @@
 import crypto from 'node:crypto';
+import { isPendingContactBookUser, sendContactBookSignupOtp } from './ContactBookSignupOtp.js';
 export default async function loginUser(request) {
   const username = request.params.email;
   const password = request.params.password;
@@ -10,6 +11,14 @@ export default async function loginUser(request) {
       // console.log('user ', user);
       if (user) {
         const _user = user?.toJSON();
+        if (await isPendingContactBookUser(user)) {
+          await sendContactBookSignupOtp({ user });
+          return {
+            ..._user,
+            contactBookSignupPending: true,
+            sessionToken: user.getSessionToken(),
+          };
+        }
         return {
           ..._user,
         };

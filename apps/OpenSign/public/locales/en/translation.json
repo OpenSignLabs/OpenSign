@@ -419,6 +419,7 @@
   "contact-details": "Contact details",
   "verify-email": "Please verify your email to continue. This is a one-time step to confirm the email associated with your OpenSign account.",
   "send-otp": " Send OTP",
+  "resend-otp": "Resend OTP",
   "otp-placeholder": "Enter verification code received over email",
   "loading-doc": "Loading document..",
   "widgets-name": {
@@ -567,6 +568,11 @@
   "edit-template": "Edit template",
   "widget-info": "Widget info",
   "validation": "Validation",
+  "validation-options": {
+    "ein": "EIN",
+    "url": "URL",
+    "letters-only": "Letters Only"
+  },
   "invalid-default-value": "invalid default value",
   "hint": "Hint",
   "color": "color",
@@ -584,7 +590,7 @@
   "signature-field-widget": "Each user must have at least one signature widget. You have not added a signature widget for {{signersName}}",
   "placeholder-alert-1": "Please ensure there's at least one signature widget added for all recipients.",
   "placeholder-alert-2": "Please confirm that you have filled the text field.",
-  "placeholder-alert-3": " Are you sure you want to send out this document for signatures?",
+  "placeholder-alert-3": "Are you sure you want to send out this document for signatures?",
   "placeholder-alert-4": "You have successfully sent emails to all recipients!",
   "placeholder-mail-alert": "You have successfully sent an email to {{name}}. Subsequent signers will receive an email once {{name}} signs the document.",
   "placeholder-mail-alert-you": "Subsequent signers will get email(s) once you sign the document.",
@@ -1290,6 +1296,7 @@
   "page-n-of-n": "Page {{currentPage}} of {{totalPages}}",
   "import": "Import",
   "search": "Search",
+  "search-folder": "Search folder",
   "viewed-on": "Viewed on: {{ViewedOn}}",
   "signed-on": "Signed on: {{SignedOn}}",
   "hide": "Hide",

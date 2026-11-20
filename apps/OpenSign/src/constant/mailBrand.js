@@ -59,7 +59,7 @@ export function renderMailBrandLogo({ appName, logoUrl }) {
           </td>
           <td valign="middle">
             <div style="font-family:Arial,Helvetica,sans-serif;font-size:35px;line-height:38px;font-weight:700;letter-spacing:-1.5px;color:#080b10;">OpenSign</div>
-            <div style="font-family:Arial,Helvetica,sans-serif;font-size:13px;line-height:18px;letter-spacing:.4px;color:#173d72;text-align:center;">Seal the Deal, Openly</div>
+            <div style="font-family:Arial,Helvetica,sans-serif;font-size:11px;line-height:18px;letter-spacing:.4px;color:#173d72;text-align:center;">Seal the Deal, Openly</div>
           </td>
         </tr>
       </table>

@@ -1,5 +1,7 @@
 import axios from 'axios';
 import { cloudServerUrl, serverAppId } from '../../Utils.js';
+import { projectDocumentResponse } from './getDocumentResponse.js';
+
 export default async function getDocument(request) {
   const serverUrl = cloudServerUrl; //process.env.SERVER_URL;
   const docId = request.params.docId;
@@ -18,15 +20,17 @@ export default async function getDocument(request) {
         query.include('Placeholders');
         query.include('DeclineBy');
         query.notEqualTo('IsArchive', true);
-        if (include) {
-          query?.include(include);
+        const requestedIncludes = String(include)
+          .split(',')
+          .map(field => field.trim())
+          .filter(field => field === 'Bcc' || field === 'Cc');
+        for (const field of requestedIncludes) {
+          query.include(field);
         }
         const res = await query.first({ useMasterKey: true });
         if (res) {
           const IsEnableOTP = res?.get('IsEnableOTP') || false;
-          const document = JSON.parse(JSON.stringify(res));
-          delete document.ExtUserPtr.TenantId.FileAdapters;
-          delete document?.ExtUserPtr?.TenantId?.PfxFile;
+          const document = projectDocumentResponse(JSON.parse(JSON.stringify(res)), include);
           if (!IsEnableOTP) {
             return document;
           } else {
