@@ -97,6 +97,7 @@ async function deductcount(docsCount, extUserId) {
   }
 }
 async function sendMail(document, publicUrl) {
+  if (document?.IsSendMail === false) return;
   const baseUrl = new URL(publicUrl);
   const timeToCompleteDays = document?.TimeToCompleteDays || 15;
   const ExpireDate = new Date(document.createdAt);
@@ -275,6 +276,7 @@ async function startBulkSendInBackground(userId, Documents, Ip, parseConfig, typ
         IsEnableOTP: x?.IsEnableOTP || false,
         IsTourEnabled: x?.IsTourEnabled || false,
         AllowModifications: x?.AllowModifications || false,
+        IsSendMail: true,
         ...(x?.SenderName ? { SenderName: x?.SenderName } : {}),
         ...(x?.SenderMail ? { SenderMail: x?.SenderMail } : {}),
         ...(type === 'bulksend' ? { BulkSendToken: generateId(10) } : {}),
@@ -309,6 +311,7 @@ async function startBulkSendInBackground(userId, Documents, Ip, parseConfig, typ
       const document = Documents?.[0];
       const updateDocuments = {
         ...document,
+        IsSendMail: requests[0].body.IsSendMail,
         objectId: response.data[0]?.success?.objectId,
         createdAt: response.data[0]?.success?.createdAt,
       };

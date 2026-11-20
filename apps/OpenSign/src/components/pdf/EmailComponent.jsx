@@ -16,7 +16,8 @@ function EmailComponent({
   setSuccessEmail,
   pdfDetails,
   setIsAlert,
-  setIsDownloadModal
+  setIsDownloadModal,
+  onEmailNotVerified
 }) {
   const { t } = useTranslation();
   const [emailList, setEmailList] = useState([]);

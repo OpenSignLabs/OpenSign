@@ -53,7 +53,8 @@ import RegexParser from "regex-parser";
 import {
   saveToMySign,
   getInitials,
-  isValidBase64
+  isValidBase64,
+  getRegexForType
 } from "../../utils";
 import Draw from "./tab/Draw";
 import DefaultSignature from "./tab/DefaultSignature";
@@ -1769,6 +1770,12 @@ function WidgetsValueModal(props) {
         break;
       case "ssn":
         regexValidation = /^(?!000|666|9\d{2})\d{3}-(?!00)\d{2}-(?!0000)\d{4}$/;
+        validateExpression(regexValidation);
+        break;
+      case "letters-only":
+      case "ein":
+      case "url":
+        regexValidation = RegexParser(getRegexForType(validateType));
         validateExpression(regexValidation);
         break;
       default:

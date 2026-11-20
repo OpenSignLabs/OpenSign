@@ -65,6 +65,10 @@ const BulkSendUi = (props) => {
   const [stepKey, setStepKey] = useState(steps(t)?.[0]?.key || "");
   const [message, setMessage] = useState({ status: "", message: "" });
 
+  // Verify the current account before showing the bulk-send form. The
+  // verification modal stays in this flow instead of sending the user to
+  // profile settings.
+
   const tokenHeader = useMemo(() => {
     const headers = {
       "Content-Type": "application/json",

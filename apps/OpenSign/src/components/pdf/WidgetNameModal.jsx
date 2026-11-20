@@ -180,6 +180,19 @@ const WidgetNameModal = (props) => {
           hint: "xxx-xx-xxxx",
           cellCount: 11
         });
+      } else if (e.target.value === "ein") {
+        setFormdata({
+          ...formdata,
+          [e.target.name]: e.target.value,
+          hint: "12-3456789",
+          cellCount: 10
+        });
+      } else if (e.target.value === "url") {
+        setFormdata({
+          ...formdata,
+          [e.target.name]: e.target.value,
+          hint: "https://example.com"
+        });
       } else {
         setFormdata({ ...formdata, [e.target.name]: e.target.value });
       }

@@ -22,6 +22,7 @@ import {
   defaultMailSubject
 } from "../../constant/Utils";
 import BulkSendUi from "../../components/bulksend/BulkSendUi";
+import EmailVerificationModal from "../../components/pdf/EmailVerificationModal";
 import Loader from "../../primitives/Loader";
 import { serverUrl_fn } from "../../constant/appinfo";
 import { Trans, useTranslation } from "react-i18next";
@@ -81,6 +82,9 @@ const TemplatesReport = (props) => {
   const [userDetails, setUserDetails] = useState({});
   const [isNextStep, setIsNextStep] = useState({});
   const [isBulkSend, setIsBulkSend] = useState({});
+  const [isEmailVerificationOpen, setIsEmailVerificationOpen] = useState(false);
+  const [pendingBulkSend, setPendingBulkSend] = useState(null);
+  const [pendingResend, setPendingResend] = useState(null);
   const [templateDetails, setTemplateDetails] = useState({});
   const [placeholders, setPlaceholders] = useState([]);
   const [isLoader, setIsLoader] = useState({});
@@ -627,64 +631,75 @@ const TemplatesReport = (props) => {
   };
   // `handleNextBtn` is used to open edit mail template screen in resend mail modal
   // as well as replace variable with original one
-  const handleNextBtn = utils.withSessionValidation((user, doc) => {
-    const userdata = {
-      Name: user?.signerPtr?.Name,
-      Email: user.email ? user?.email : user.signerPtr?.Email,
-      Phone: user?.signerPtr?.Phone,
-      objectId: user?.signerPtr?.objectId
-    };
-    setUserDetails(userdata);
-    const encodeBase64 = user.email
-      ? btoa(`${doc.objectId}/${user.email}`)
-      : btoa(
-          `${doc.objectId}/${user.signerPtr.Email}/${user.signerPtr.objectId}`
-        );
-    const expireDate = doc.ExpiryDate.iso;
-    const newDate = new Date(expireDate);
-    const localExpireDate = newDate.toLocaleDateString("en-US", {
-      day: "numeric",
-      month: "long",
-      year: "numeric"
-    });
-    const signPdf = `${window.location.origin}/login/${encodeBase64}`;
-    const variables = {
-      document_title: doc.Name,
-      note: doc?.Note || "",
-      sender_name:
-        doc?.SenderName ||
-        doc.ExtUserPtr.Name,
-      sender_mail: doc?.SenderMail || doc.ExtUserPtr.Email,
-      sender_phone: doc.ExtUserPtr?.Phone || "",
-      receiver_name: user?.signerPtr?.Name || "",
-      receiver_email: user?.email ? user?.email : user?.signerPtr?.Email,
-      receiver_phone: user?.signerPtr?.Phone || "",
-      expiry_date: localExpireDate,
-      company_name: doc?.ExtUserPtr?.Company || "",
-      signing_url: signPdf
-    };
-    const subject =
-      doc?.RequestSubject ||
-      doc?.ExtUserPtr?.TenantId?.RequestSubject ||
-      `{{sender_name}} has requested you to sign "{{document_title}}"`;
-    const body =
-      doc?.RequestBody ||
-      doc?.ExtUserPtr?.TenantId?.RequestBody ||
-      `<html><head><meta http-equiv='Content-Type' content='text/html; charset=UTF-8' /></head><body><p>Hi {{receiver_name}},</p><br><p>We hope this email finds you well. {{sender_name}} has requested you to review and sign <b>"{{document_title}}"</b>.</p><p>Your signature is crucial to proceed with the next steps as it signifies your agreement and authorization.</p><br><p><a href='{{signing_url}}' rel='noopener noreferrer' target='_blank'>Sign here</a></p><br><br><p>If you have any questions or need further clarification regarding the document or the signing process,  please contact the sender.</p><br><p>Thanks</p><p> Team ${appName}</p><br></body> </html>`;
-    const res = replaceMailVaribles(subject, body, variables);
-    setEmailEditorType(
-      doc?.EmailEditorType?.request ||
-        doc?.ExtUserPtr?.EmailEditorType?.request ||
-        doc?.ExtUserPtr?.TenantId?.EmailEditorType?.request ||
-        "basic"
-    );
-    setMail((prev) => ({
-      ...prev,
-      subject: res.subject,
-      body: { basic: res.body, advanced: res.body }
-    }));
-    setIsNextStep({ [user.Id]: true });
-  });
+  const handleNextBtn = utils.withSessionValidation(
+    async (user, doc, skipVerification = false) => {
+      if (!skipVerification) {
+        const currentUser = Parse.User.current();
+        if (currentUser?.get("emailVerified") !== true) {
+          setPendingResend({ user, doc });
+          setIsEmailVerificationOpen(true);
+          return;
+        }
+      }
+
+      const userdata = {
+        Name: user?.signerPtr?.Name,
+        Email: user.email ? user?.email : user.signerPtr?.Email,
+        Phone: user?.signerPtr?.Phone,
+        objectId: user?.signerPtr?.objectId
+      };
+      setUserDetails(userdata);
+      const encodeBase64 = user.email
+        ? btoa(`${doc.objectId}/${user.email}`)
+        : btoa(
+            `${doc.objectId}/${user.signerPtr.Email}/${user.signerPtr.objectId}`
+          );
+      const expireDate = doc.ExpiryDate.iso;
+      const newDate = new Date(expireDate);
+      const localExpireDate = newDate.toLocaleDateString("en-US", {
+        day: "numeric",
+        month: "long",
+        year: "numeric"
+      });
+      const signPdf = `${window.location.origin}/login/${encodeBase64}`;
+      const variables = {
+        document_title: doc.Name,
+        note: doc?.Note || "",
+        sender_name:
+          doc?.SenderName ||
+          doc.ExtUserPtr.Name,
+        sender_mail: doc?.SenderMail || doc.ExtUserPtr.Email,
+        sender_phone: doc.ExtUserPtr?.Phone || "",
+        receiver_name: user?.signerPtr?.Name || "",
+        receiver_email: user?.email ? user?.email : user?.signerPtr?.Email,
+        receiver_phone: user?.signerPtr?.Phone || "",
+        expiry_date: localExpireDate,
+        company_name: doc?.ExtUserPtr?.Company || "",
+        signing_url: signPdf
+      };
+      const subject =
+        doc?.RequestSubject ||
+        doc?.ExtUserPtr?.TenantId?.RequestSubject ||
+        `{{sender_name}} has requested you to sign "{{document_title}}"`;
+      const body =
+        doc?.RequestBody ||
+        doc?.ExtUserPtr?.TenantId?.RequestBody ||
+        `<html><head><meta http-equiv='Content-Type' content='text/html; charset=UTF-8' /></head><body><p>Hi {{receiver_name}},</p><br><p>We hope this email finds you well. {{sender_name}} has requested you to review and sign <b>"{{document_title}}"</b>.</p><p>Your signature is crucial to proceed with the next steps as it signifies your agreement and authorization.</p><br><p><a href='{{signing_url}}' rel='noopener noreferrer' target='_blank'>Sign here</a></p><br><br><p>If you have any questions or need further clarification regarding the document or the signing process,  please contact the sender.</p><br><p>Thanks</p><p> Team ${appName}</p><br></body> </html>`;
+      const res = replaceMailVaribles(subject, body, variables);
+      setEmailEditorType(
+        doc?.EmailEditorType?.request ||
+          doc?.ExtUserPtr?.EmailEditorType?.request ||
+          doc?.ExtUserPtr?.TenantId?.EmailEditorType?.request ||
+          "basic"
+      );
+      setMail((prev) => ({
+        ...prev,
+        subject: res.subject,
+        body: { basic: res.body, advanced: res.body }
+      }));
+      setIsNextStep({ [user.Id]: true });
+    }
+  );
   const handleResendMail = utils.withSessionValidation(async (e, doc, user) => {
     e.preventDefault();
     setActLoader({ [user?.Id]: true });
@@ -760,7 +775,32 @@ const TemplatesReport = (props) => {
 
   // `handleBulkSend` is used to open modal as well as fetch template
   // and show Ui on the basis template response handleBulkSendTemplate
-  const handleBulkSend = async (template) => {
+  const handleBulkSend = async (template, skipVerification = false) => {
+    if (!skipVerification) {
+      const currentUser = Parse.User.current();
+      let isEmailVerified = currentUser?.get("emailVerified") === true;
+      if (!isEmailVerified && currentUser?.id) {
+        try {
+          const userQuery = new Parse.Query(Parse.User);
+          const user = await userQuery.get(currentUser.id, {
+            sessionToken:
+              currentUser.getSessionToken() ||
+              localStorage.getItem("accesstoken")
+          });
+          isEmailVerified = user.get("emailVerified") === true;
+        } catch (error) {
+          console.error("Error checking email verification:", error);
+          showAlert("danger", t("something-went-wrong-mssg"));
+          return;
+        }
+      }
+      if (!isEmailVerified) {
+        setPendingBulkSend(template);
+        setIsEmailVerificationOpen(true);
+        return;
+      }
+    }
+
     setIsBulkSend({ [template.objectId]: true });
     setIsLoader({ [template.objectId]: true });
     try {
@@ -780,6 +820,21 @@ const TemplatesReport = (props) => {
       console.error("fetch template in bulk modal err", err);
       setIsBulkSend({});
       showAlert("danger", t("something-went-wrong-mssg"));
+    }
+  };
+
+  const handleEmailVerified = () => {
+    setIsEmailVerificationOpen(false);
+    if (pendingResend) {
+      const { user, doc } = pendingResend;
+      setPendingResend(null);
+      handleNextBtn(user, doc, true);
+      return;
+    }
+    if (pendingBulkSend) {
+      const template = pendingBulkSend;
+      setPendingBulkSend(null);
+      handleBulkSend(template, true);
     }
   };
 
@@ -1402,30 +1457,12 @@ const TemplatesReport = (props) => {
                               <Loader />
                             </div>
                           ) : (
-                            <>
-                              {!extClass?.[0]?.UserId?.emailVerified ? (
-                                <div className="mx-[20px] mt-[15px] mb-[20px]">
-                                  <Trans
-                                    i18nKey="email-not-verified-send"
-                                    components={{
-                                      1: (
-                                        <Link
-                                          to="/profile"
-                                          className="text-blue-700 underline cursor-pointer"
-                                        />
-                                      )
-                                    }}
-                                  />
-                                </div>
-                              ) : (
-                                <BulkSendUi
-                                  Placeholders={placeholders}
-                                  item={templateDetails}
-                                  handleClose={handleQuickSendClose}
-                                  signatureType={signatureType}
-                                />
-                              )}
-                            </>
+                            <BulkSendUi
+                              Placeholders={placeholders}
+                              item={templateDetails}
+                              handleClose={handleQuickSendClose}
+                              signatureType={signatureType}
+                            />
                           )}
                         </ModalUi>
                       )}
@@ -1828,6 +1865,10 @@ const TemplatesReport = (props) => {
             )}
           </div>
         </ModalUi>
+        <EmailVerificationModal
+          isOpen={isEmailVerificationOpen}
+          onVerified={handleEmailVerified}
+        />
         <ModalUi
           title={t(`report-heading.${objInfoModal.title}`)}
           isOpen={objInfoModal.title}

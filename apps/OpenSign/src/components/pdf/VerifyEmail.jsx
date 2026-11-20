@@ -5,7 +5,11 @@ import { useTranslation } from "react-i18next";
 function VerifyEmail(props) {
   const { t } = useTranslation();
   return (
-    <dialog className="op-modal op-modal-open absolute z-[1999]">
+    <dialog
+      className={`op-modal op-modal-open ${
+        props.isStandalone ? "fixed" : "absolute"
+      } z-[1999]`}
+    >
       <div className="md:w-[40%] w-[80%] op-modal-box p-0 overflow-y-auto hide-scrollbar text-sm">
         <h3 className="font-bold text-lg pt-[15px] px-[20px] text-base-content">
           {t("otp-verification")}
@@ -13,7 +17,6 @@ function VerifyEmail(props) {
         {props.isVerifyModal ? (
           <form
             onSubmit={(e) => {
-              props.setIsVerifyModal(false);
               props.handleVerifyEmail(e);
             }}
           >
@@ -38,6 +41,7 @@ function VerifyEmail(props) {
                 {t("verify")}
               </button>
               <button
+                type="button"
                 className="op-btn op-btn-secondary ml-2"
                 onClick={(e) => props.handleResend(e)}
               >

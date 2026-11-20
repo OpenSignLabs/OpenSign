@@ -419,6 +419,7 @@
   "contact-details": "Coordonnées",
   "verify-email": "Veuillez vérifier votre e-mail pour continuer. C'est une étape unique pour confirmer l'adresse e-mail associée à votre compte OpenSign.",
   "send-otp": "envoyer un code à usage unique",
+  "resend-otp": "Renvoyer le code à usage unique",
   "otp-placeholder": "Entrez le code de vérification reçu par e-mail",
   "loading-doc": "Chargement du document..",
   "widgets-name": {
@@ -567,6 +568,11 @@
   "edit-template": "Modifier le modèle",
   "widget-info": "Informations sur les widgets",
   "validation": "Validation",
+  "validation-options": {
+    "ein": "EIN",
+    "url": "URL",
+    "letters-only": "Lettres uniquement"
+  },
   "invalid-default-value": "valeur par défaut invalide",
   "hint": "Indice",
   "color": "couleur",
@@ -584,7 +590,7 @@
   "signature-field-widget": "Chaque utilisateur doit avoir au moins un widget de signature. Vous n’avez pas ajouté de widget de signature pour {{signersName}}.",
   "placeholder-alert-1": "Veuillez vous assurer qu'au moins un widget de signature est ajouté pour tous les destinataires.",
   "placeholder-alert-2": "Veuillez confirmer que vous avez rempli le champ de texte.",
-  "placeholder-alert-3": "Etes-vous sûr de vouloir envoyer ce document pour signature ? ",
+  "placeholder-alert-3": "Etes-vous sûr de vouloir envoyer ce document pour signature ?",
   "placeholder-alert-4": "Vous avez envoyé avec succès des mails à tous les",
   "placeholder-mail-alert": "Vous avez envoyé un e-mail avec succès à {{name}}. Les signataires suivants recevront un e-mail une fois que {{name}} aura signé le document.",
   "placeholder-mail-alert-you": "Les signataires suivants recevront un e-mail une fois que vous aurez signé le document.",
@@ -1288,6 +1294,7 @@
   "page-n-of-n": "Page {{currentPage}} sur {{totalPages}}",
   "import": "Importer",
   "search": "Rechercher",
+  "search-folder": "Rechercher un dossier",
   "viewed-on": "Consulté le : {{ViewedOn}}",
   "signed-on": "Signé le : {{SignedOn}}",
   "hide": "Masquer",

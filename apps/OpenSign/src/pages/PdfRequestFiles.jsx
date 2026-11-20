@@ -243,7 +243,8 @@ function PdfRequestFiles(
     try {
       const tenantDetails = await getTenantDetails(
         user?.objectId, // userId
-        contactId // contactId
+        contactId, // contactId
+        true // exclude unused tenant counts
       );
       if (tenantDetails && tenantDetails === "user does not exist!") {
         alert(t("user-not-exist"));
@@ -902,8 +903,13 @@ function PdfRequestFiles(
     const user = usermail?.Email
       ? usermail
       : updatedDoc.updatedPdfDetails?.[0]?.Signers[newIndex];
+    const IsSendMail =
+      signedDocument?.IsSendMail !== undefined
+        ? signedDocument?.IsSendMail
+        : true;
     if (
       sendmail !== "false" &&
+      IsSendMail &&
       updatedDoc.updatedPdfDetails?.[0]?.SendinOrder === true
     ) {
       const mailBody =
