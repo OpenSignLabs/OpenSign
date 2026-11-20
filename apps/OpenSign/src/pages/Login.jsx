@@ -35,6 +35,9 @@ function Login() {
     passwordVisible: false,
     loading: false,
     thirdpartyLoader: false,
+    contactBookOtp: "",
+    contactBookOtpError: "",
+    contactBookOtpVerified: false,
   });
   const [userDetails, setUserDetails] = useState({
     Company: "",
@@ -65,8 +68,13 @@ function Login() {
   };
 
   const showToast = (type, msg) => {
-    setState({ ...state, loading: false, alertType: type, alertMsg: msg });
-    setTimeout(() => setState({ ...state, alertMsg: "" }), 2000);
+    setState((prev) => ({
+      ...prev,
+      loading: false,
+      alertType: type,
+      alertMsg: msg
+    }));
+    setTimeout(() => setState((prev) => ({ ...prev, alertMsg: "" })), 2000);
   };
 
   const checkUserExt = async () => {
@@ -116,6 +124,19 @@ function Login() {
       }
       // Get extended user data (including 2FA status) using cloud function
       try {
+        if (_user?.contactBookSignupPending) {
+          await Parse.User.become(_user.sessionToken);
+          setLocalVar(_user);
+          setUserDetails({ Company: "", Destination: "" });
+          setIsModal(true);
+          setState((prev) => ({
+            ...prev,
+            loading: false,
+            contactBookOtp: "",
+            contactBookOtpVerified: false
+          }));
+          return;
+        }
         await Parse.User.become(_user.sessionToken);
         setLocalVar(_user);
         await continueLoginFlow();
@@ -132,6 +153,46 @@ function Login() {
       }
     }
   };
+
+  const verifyContactBookOtp = async (event) => {
+    event.preventDefault();
+    if (!state.contactBookOtp) {
+      showToast("warning", t("verification-code-required"));
+      return;
+    }
+    try {
+      setThirdpartyLoader(true);
+      await Parse.Cloud.run("verifycontactbookotp", {
+        otp: state.contactBookOtp
+      });
+      setState((prev) => ({
+        ...prev,
+        contactBookOtpVerified: true,
+        contactBookOtp: "",
+        contactBookOtpError: ""
+      }));
+    } catch (error) {
+      setState((prev) => ({
+        ...prev,
+        contactBookOtpError: error.message || t("verification-code-invalid")
+      }));
+      showToast("danger", error.message || t("verification-code-invalid"));
+    } finally {
+      setThirdpartyLoader(false);
+    }
+  };
+
+  const resendContactBookOtp = async () => {
+    try {
+      setThirdpartyLoader(true);
+      await Parse.Cloud.run("sendcontactbookotp");
+      showToast("success", t("guest-email-alert"));
+    } catch (error) {
+      showToast("danger", error.message || t("something-went-wrong-mssg"));
+    } finally {
+      setThirdpartyLoader(false);
+    }
+  };
   const handleLoginBtn = async (event) => {
     event.preventDefault();
     if (!emailRegex.test(state.email)) {
@@ -142,7 +203,7 @@ function Login() {
   };
 
   const setThirdpartyLoader = (value) => {
-    setState({ ...state, thirdpartyLoader: value });
+    setState((prev) => ({ ...prev, thirdpartyLoader: value }));
   };
 
   const thirdpartyLoginfn = async (sessionToken) => {
@@ -278,6 +339,10 @@ function Login() {
 
   const handleSubmitbtn = async (e) => {
     e.preventDefault();
+    if (!state.contactBookOtpVerified) {
+      showToast("warning", t("verification-code-required"));
+      return;
+    }
     if (userDetails.Destination && userDetails.Company) {
       setThirdpartyLoader(true);
       const payload = { sessionToken: localStorage.getItem("accesstoken") };
@@ -595,80 +660,138 @@ function Login() {
           </div>
           <ModalUi
             isOpen={isModal}
-            title={t("additional-info")}
+            title={
+              state.contactBookOtpVerified
+                ? t("additional-info")
+                : t("verification")
+            }
             showClose={false}
           >
             <form className="px-4 py-3 text-base-content">
-              <div className="mb-3">
-                <label
-                  htmlFor="Company"
-                  style={{ display: "flex" }}
-                  className="block text-xs font-semibold"
-                >
-                  {t("company")}{" "}
-                  <span className="text-[red] text-[13px]">*</span>
-                </label>
-                <input
-                  type="text"
-                  className="op-input op-input-bordered op-input-sm hover:border-base-content w-full text-xs"
-                  id="Company"
-                  value={userDetails.Company}
-                  onChange={(e) =>
-                    setUserDetails({
-                      ...userDetails,
-                      Company: e.target.value
-                    })
-                  }
-                  onInvalid={(e) =>
-                    e.target.setCustomValidity(t("input-required"))
-                  }
-                  onInput={(e) => e.target.setCustomValidity("")}
-                  required
-                />
-              </div>
-              <div className="mb-3">
-                <label
-                  htmlFor="JobTitle"
-                  style={{ display: "flex" }}
-                  className="block text-xs font-semibold"
-                >
-                  {t("job-title")}
-                  <span className="text-[red] text-[13px]">*</span>
-                </label>
-                <input
-                  type="text"
-                  className="op-input op-input-bordered op-input-sm hover:border-base-content w-full text-xs"
-                  id="JobTitle"
-                  value={userDetails.Destination}
-                  onChange={(e) =>
-                    setUserDetails({
-                      ...userDetails,
-                      Destination: e.target.value
-                    })
-                  }
-                  onInvalid={(e) =>
-                    e.target.setCustomValidity(t("input-required"))
-                  }
-                  onInput={(e) => e.target.setCustomValidity("")}
-                  required
-                />
-              </div>
-              <div className="mt-4 gap-2 flex flex-row">
-                <button
-                  type="button"
-                  className="op-btn op-btn-primary"
-                  onClick={(e) => handleSubmitbtn(e)}
-                >
-                  {t("login")}
-                </button>
-                <button
-                  type="button"
-                  className="op-btn op-btn-ghost text-base-content"
-                  onClick={logOutUser}
-                >
-                  {t("cancel")}
-                </button>
-              </div>
+              {!state.contactBookOtpVerified ? (
+                <>
+                  <p className="mb-3 text-sm">{t("guest-email-alert")}</p>
+                  <label
+                    htmlFor="ContactBookOtp"
+                    className="block text-xs font-semibold"
+                  >
+                    {t("verification-code")}
+                  </label>
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    maxLength={4}
+                    className="op-input op-input-bordered op-input-sm w-full text-xs"
+                    id="ContactBookOtp"
+                    value={state.contactBookOtp}
+                    onChange={(e) =>
+                      setState((prev) => ({
+                        ...prev,
+                        contactBookOtp: e.target.value.replace(/\D/g, ""),
+                        contactBookOtpError: ""
+                      }))
+                    }
+                    placeholder={t("enter-verification-code")}
+                    required
+                  />
+                  <div className="mt-4 gap-2 flex flex-row">
+                    <button
+                      type="button"
+                      className="op-btn op-btn-primary"
+                      onClick={verifyContactBookOtp}
+                    >
+                      {t("verify")}
+                    </button>
+                    <button
+                      type="button"
+                      className="op-btn op-btn-ghost text-base-content"
+                      onClick={resendContactBookOtp}
+                    >
+                      {t("resend-otp")}
+                    </button>
+                    <button
+                      type="button"
+                      className="op-btn op-btn-ghost text-base-content"
+                      onClick={logOutUser}
+                    >
+                      {t("cancel")}
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="mb-3">
+                    <label
+                      htmlFor="Company"
+                      style={{ display: "flex" }}
+                      className="block text-xs font-semibold"
+                    >
+                      {t("company")}{" "}
+                      <span className="text-[red] text-[13px]">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      className="op-input op-input-bordered op-input-sm hover:border-base-content w-full text-xs"
+                      id="Company"
+                      value={userDetails.Company}
+                      onChange={(e) =>
+                        setUserDetails({
+                          ...userDetails,
+                          Company: e.target.value
+                        })
+                      }
+                      onInvalid={(e) =>
+                        e.target.setCustomValidity(t("input-required"))
+                      }
+                      onInput={(e) => e.target.setCustomValidity("")}
+                      required
+                    />
+                  </div>
+                  <div className="mb-3">
+                    <label
+                      htmlFor="JobTitle"
+                      style={{ display: "flex" }}
+                      className="block text-xs font-semibold"
+                    >
+                      {t("job-title")}
+                      <span className="text-[red] text-[13px]">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      className="op-input op-input-bordered op-input-sm hover:border-base-content w-full text-xs"
+                      id="JobTitle"
+                      value={userDetails.Destination}
+                      onChange={(e) =>
+                        setUserDetails({
+                          ...userDetails,
+                          Destination: e.target.value
+                        })
+                      }
+                      onInvalid={(e) =>
+                        e.target.setCustomValidity(t("input-required"))
+                      }
+                      onInput={(e) => e.target.setCustomValidity("")}
+                      required
+                    />
+                  </div>
+                  <div className="mt-4 gap-2 flex flex-row">
+                    <button
+                      type="button"
+                      className="op-btn op-btn-primary"
+                      onClick={(e) => handleSubmitbtn(e)}
+                    >
+                      {t("login")}
+                    </button>
+                    <button
+                      type="button"
+                      className="op-btn op-btn-ghost text-base-content"
+                      onClick={logOutUser}
+                    >
+                      {t("cancel")}
+                    </button>
+                  </div>
+                </>
+              )}
             </form>
           </ModalUi>
         </div>

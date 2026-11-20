@@ -151,6 +151,9 @@ export default async function createDocumentFromApp(request) {
       docCls.set('PenColors', doc.PenColors);
     }
 
+    const IsSendMail = doc.IsSendMail !== undefined ? doc.IsSendMail : true;
+    docCls.set('IsSendMail', IsSendMail);
+
     const docRes = await docCls.save(null, { useMasterKey: true });
 
     // update documentCount in Users and tenant account

@@ -421,6 +421,7 @@
   "contact-details": "Dettagli contatto",
   "verify-email": "Si prega di verificare l'e-mail per continuare. Questo è un passaggio unico per confermare l'e-mail associata al tuo account OpenSign.",
   "send-otp": "Invia OTP",
+  "resend-otp": "Reinvia OTP",
   "otp-placeholder": "Inserisci il codice di verifica ricevuto via email",
   "loading-doc": "Caricamento del documento...",
   "widgets-name": {
@@ -569,6 +570,11 @@
   "edit-template": "Modifica Modello",
   "widget-info": "Informazioni Widget",
   "validation": "Validazione",
+  "validation-options": {
+    "ein": "EIN",
+    "url": "URL",
+    "letters-only": "Solo lettere"
+  },
   "invalid-default-value": "Valore predefinita non valido",
   "hint": "Suggerimento",
   "color": "Colore",
@@ -1290,6 +1296,7 @@
   "page-n-of-n": "Pagina {{currentPage}} di {{totalPages}}",
   "import": "Importa",
   "search": "Cerca",
+  "search-folder": "Cerca cartella",
   "viewed-on": "Visualizzato il: {{ViewedOn}}",
   "signed-on": "Firmato il: {{SignedOn}}",
   "hide": "Nascondi",

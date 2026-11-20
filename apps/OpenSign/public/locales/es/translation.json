@@ -421,6 +421,7 @@
   "contact-details": "Detalles del contacto",
   "verify-email": "Por favor verifique su correo electrónico para continuar. Este es un paso único para confirmar el correo electrónico asociado a su cuenta de OpenSign.",
   "send-otp": " Enviar OTP",
+  "resend-otp": "Reenviar OTP",
   "otp-placeholder": "Ingresa el código de verificación enviado por correo",
   "loading-doc": "Cargando documento...",
   "widgets-name": {
@@ -569,6 +570,11 @@
   "edit-template": "Editar plantilla",
   "widget-info": "Información del widget",
   "validation": "Validación",
+  "validation-options": {
+    "ein": "EIN",
+    "url": "URL",
+    "letters-only": "Solo letras"
+  },
   "invalid-default-value": "valor por defecto inválido",
   "hint": "Pista",
   "color": "color",
@@ -586,7 +592,7 @@
   "signature-field-widget": "Cada usuario debe tener al menos un widget de firma. No ha añadido un widget de firma para {{signersName}}.",
   "placeholder-alert-1": "Por favor, asegúrate de que hay al menos un widget de firma para cada destinatario.",
   "placeholder-alert-2": "Por favor, confirma que hayas rellenado el campo de texto.",
-  "placeholder-alert-3": " ¿En definitiva quieres enviar este documento para ser firmado?",
+  "placeholder-alert-3": "¿En definitiva quieres enviar este documento para ser firmado?",
   "placeholder-alert-4": "¡Has enviado exitosamente correos a todos los destinatarios!",
   "placeholder-mail-alert": "Has enviado un correo electrónico con éxito a {{name}}. Los siguientes firmantes recibirán un correo electrónico una vez que {{name}} firme el documento.",
   "placeholder-mail-alert-you": "Los firmantes siguientes recibirán un correo electrónico una vez que usted firme el documento.",
@@ -1290,6 +1296,7 @@
   "page-n-of-n": "Página {{currentPage}} de {{totalPages}}",
   "import": "Importar",
   "search": "Buscar",
+  "search-folder": "Buscar carpeta",
   "viewed-on": "Visto el: {{ViewedOn}}",
   "signed-on": "Firmado el: {{SignedOn}}",
   "hide": "Ocultar",

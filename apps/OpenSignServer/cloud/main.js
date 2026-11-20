@@ -53,6 +53,10 @@ import saveAsTemplate from './parsefunction/saveAsTemplate.js';
 import updateTenant from './parsefunction/updateTenant.js';
 import recreateDocument from './parsefunction/recreateDocument.js';
 import loginUser from './parsefunction/loginUser.js';
+import {
+  sendContactBookSignupOtp,
+  verifyContactBookSignupOtp,
+} from './parsefunction/ContactBookSignupOtp.js';
 import addUser from './parsefunction/addUser.js';
 import filterDocs from './parsefunction/filterDocs.js';
 import sendDeleteUserMail from './parsefunction/sendDeleteUserMail.js';
@@ -127,6 +131,8 @@ Parse.Cloud.define('saveastemplate', saveAsTemplate);
 Parse.Cloud.define('updatetenant', updateTenant);
 Parse.Cloud.define('recreatedoc', recreateDocument);
 Parse.Cloud.define('loginuser', loginUser);
+Parse.Cloud.define('sendcontactbookotp', sendContactBookSignupOtp);
+Parse.Cloud.define('verifycontactbookotp', verifyContactBookSignupOtp);
 Parse.Cloud.define('adduser', addUser);
 Parse.Cloud.define('filterdocs', filterDocs);
 Parse.Cloud.define('senddeleterequest', sendDeleteUserMail);

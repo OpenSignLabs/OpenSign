@@ -873,9 +873,7 @@ function Placeholder(props) {
             background:
               props?.data?.Role === "prefill"
                 ? "transparent"
-                : props.isPlaceholder
-                  ? widgetBackground.replace(/b0$/, "")
-                  : widgetBackground
+                : widgetBackground
           }}
           onDrag={(_, d) => {
             props?.handleTabDrag?.(props.pos.key);

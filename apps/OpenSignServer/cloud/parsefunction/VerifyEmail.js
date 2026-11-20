@@ -1,11 +1,17 @@
 export default async function VerifyEmail(request) {
   try {
-    if (!request?.user) {
+    const jwttoken = request?.headers?.jwttoken;
+    let user = request?.user;
+
+    if (!user) {
       throw new Parse.Error(Parse.Error.INVALID_SESSION_TOKEN, 'User is not authenticated.');
     } else {
       let otpN = request.params.otp;
       let otp = parseInt(otpN);
-      let email = request.params.email;
+      let email = request.params.email || user.get('email');
+      if (jwttoken && email !== user.get('email')) {
+        throw new Parse.Error(Parse.Error.INVALID_PARAMETER, 'Invalid email.');
+      }
 
       //checking otp is correct or not which already save in defaultdata_Otp class
       const checkOtp = new Parse.Query('defaultdata_Otp');
@@ -15,19 +21,17 @@ export default async function VerifyEmail(request) {
       const res = await checkOtp.first({ useMasterKey: true });
       if (res) {
         // Fetch the user by their objectId
-        const isEmailVerified = request?.user?.get('emailVerified');
+        const isEmailVerified = user.get('emailVerified');
         if (isEmailVerified) {
           return { message: 'Email is already verified.' };
         } else {
           const userQuery = new Parse.Query(Parse.User);
-          const user = await userQuery.get(request?.user.id, {
-            sessionToken: request?.user.getSessionToken(),
-          });
+          const userObject = await userQuery.get(user.id, { useMasterKey: true });
 
           // Update the emailVerified field to true
-          user.set('emailVerified', true);
+          userObject.set('emailVerified', true);
           // Save the user object
-          const res = await user.save(null, { useMasterKey: true });
+          const res = await userObject.save(null, { useMasterKey: true });
           if (res) {
             return { message: 'Email is verified.' };
           } else {

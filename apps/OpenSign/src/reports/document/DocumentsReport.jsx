@@ -25,6 +25,7 @@ import {
   defaultMailSubject
 } from "../../constant/Utils";
 import BulkSendUi from "../../components/bulksend/BulkSendUi";
+import EmailVerificationModal from "../../components/pdf/EmailVerificationModal";
 import Loader from "../../primitives/Loader";
 import { serverUrl_fn } from "../../constant/appinfo";
 import { Trans, useTranslation } from "react-i18next";
@@ -65,6 +66,9 @@ const DocumentsReport = (props) => {
   const [userDetails, setUserDetails] = useState({});
   const [isNextStep, setIsNextStep] = useState({});
   const [isBulkSend, setIsBulkSend] = useState({});
+  const [isEmailVerificationOpen, setIsEmailVerificationOpen] = useState(false);
+  const [pendingBulkSend, setPendingBulkSend] = useState(null);
+  const [pendingResend, setPendingResend] = useState(null);
   const [templateDetails, setTemplateDetails] = useState({});
   const [placeholders, setPlaceholders] = useState([]);
   const [isLoader, setIsLoader] = useState({});
@@ -598,7 +602,16 @@ const DocumentsReport = (props) => {
   };
   // `handleNextBtn` is used to open edit mail template screen in resend mail modal
   // as well as replace variable with original one
-  const handleNextBtn = (user, doc) => {
+  const handleNextBtn = async (user, doc, skipVerification = false) => {
+    if (!skipVerification) {
+      const currentUser = Parse.User.current();
+      if (currentUser?.get("emailVerified") !== true) {
+        setPendingResend({ user, doc });
+        setIsEmailVerificationOpen(true);
+        return;
+      }
+    }
+
     const userdata = {
       Name: user?.signerPtr?.Name,
       Email: user.email ? user?.email : user.signerPtr?.Email,
@@ -845,7 +858,32 @@ const DocumentsReport = (props) => {
   // `handleBulkSendTemplate` is used to open modal as well as fetch template
   // and show Ui on the basis template response
   const handleBulkSendTemplate = utils.withSessionValidation(
-    async (templateId, docId) => {
+    async (templateId, docId, skipVerification = false) => {
+      if (!skipVerification) {
+        const currentUser = Parse.User.current();
+        let isEmailVerified = currentUser?.get("emailVerified") === true;
+        if (!isEmailVerified && currentUser?.id) {
+          try {
+            const userQuery = new Parse.Query(Parse.User);
+            const user = await userQuery.get(currentUser.id, {
+              sessionToken:
+                currentUser.getSessionToken() ||
+                localStorage.getItem("accesstoken")
+            });
+            isEmailVerified = user.get("emailVerified") === true;
+          } catch (error) {
+            console.error("Error checking email verification:", error);
+            showAlert("danger", t("something-went-wrong-mssg"));
+            return;
+          }
+        }
+        if (!isEmailVerified) {
+          setPendingBulkSend({ templateId, docId });
+          setIsEmailVerificationOpen(true);
+          return;
+        }
+      }
+
       setIsBulkSend({ [docId]: true });
       setIsLoader({ [docId]: true });
       try {
@@ -868,6 +906,21 @@ const DocumentsReport = (props) => {
       }
     }
   );
+
+  const handleEmailVerified = () => {
+    setIsEmailVerificationOpen(false);
+    if (pendingResend) {
+      const { user, doc } = pendingResend;
+      setPendingResend(null);
+      handleNextBtn(user, doc, true);
+      return;
+    }
+    if (pendingBulkSend) {
+      const { templateId, docId } = pendingBulkSend;
+      setPendingBulkSend(null);
+      handleBulkSendTemplate(templateId, docId, true);
+    }
+  };
 
   const handleResendClose = () => {
     setIsResendMail({});
@@ -1550,30 +1603,12 @@ const DocumentsReport = (props) => {
                               <Loader />
                             </div>
                           ) : (
-                            <>
-                              {!extClass?.[0]?.UserId?.emailVerified ? (
-                                <div className="mx-[20px] mt-[15px] mb-[20px]">
-                                  <Trans
-                                    i18nKey="email-not-verified-send"
-                                    components={{
-                                      1: (
-                                        <Link
-                                          to="/profile"
-                                          className="text-blue-700 underline cursor-pointer"
-                                        />
-                                      )
-                                    }}
-                                  />
-                                </div>
-                              ) : (
-                                <BulkSendUi
-                                  Placeholders={placeholders}
-                                  item={templateDetails}
-                                  handleClose={handleQuickSendClose}
-                                  signatureType={signatureType}
-                                />
-                              )}
-                            </>
+                            <BulkSendUi
+                              Placeholders={placeholders}
+                              item={templateDetails}
+                              handleClose={handleQuickSendClose}
+                              signatureType={signatureType}
+                            />
                           )}
                         </ModalUi>
                       )}
@@ -2020,6 +2055,10 @@ const DocumentsReport = (props) => {
             )}
           </div>
         </ModalUi>
+        <EmailVerificationModal
+          isOpen={isEmailVerificationOpen}
+          onVerified={handleEmailVerified}
+        />
         <ModalUi
           title={t(`report-heading.${objInfoModal.title}`)}
           isOpen={objInfoModal.title}

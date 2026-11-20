@@ -557,6 +557,11 @@ function SignYourSelf() {
     setIsVerifyModal(true);
     await handleSendOTP(Parse.User.current().getEmail());
   };
+  const handleEmailNotVerified = () => {
+    setIsEmail(false);
+    setIsEmailVerified(false);
+    setIsVerifyModal(false);
+  };
   useEffect(() => {
     const timer = setTimeout(() => {
       if (
@@ -639,30 +644,36 @@ function SignYourSelf() {
   };
   //function for send placeholder's co-ordinate(x,y) position embed signature url or stamp url
   async function embedWidgetsData() {
-    //check current user email is verified or not
-    const currentUser = JSON.parse(JSON.stringify(Parse.User.current()));
-    let isEmailVerified;
-    isEmailVerified = currentUser?.emailVerified;
+    // Check the latest verification state before signing so verification can
+    // be completed here instead of sending the user to their profile.
+    const currentUser = Parse.User.current();
+    let currentUserData = currentUser
+      ? JSON.parse(JSON.stringify(currentUser))
+      : {};
+    let emailVerified = currentUserData?.emailVerified;
     const isEnableOTP = pdfDetails?.[0]?.IsEnableOTP || false;
     if (isEnableOTP) {
-      if (isEmailVerified) {
-        setIsEmailVerified(isEmailVerified);
-      } else {
+      if (!emailVerified && currentUserData?.objectId) {
         try {
           const userQuery = new Parse.Query(Parse.User);
-          const user = await userQuery.get(currentUser.objectId, {
-            sessionToken: localStorage.getItem("accesstoken")
+          const user = await userQuery.get(currentUserData.objectId, {
+            sessionToken:
+              currentUserData.sessionToken ||
+              localStorage.getItem("accesstoken")
           });
           if (user) {
-            isEmailVerified = user?.get("emailVerified");
-            setIsEmailVerified(isEmailVerified);
+            currentUserData = JSON.parse(JSON.stringify(user));
+            emailVerified = currentUserData?.emailVerified;
           }
-        } catch (e) {
+        } catch (error) {
           setHandleError(t("something-went-wrong-mssg"));
+          setIsUiLoading(false);
+          return;
         }
       }
+      setIsEmailVerified(emailVerified === true);
     }
-    if (!isEnableOTP || isEmailVerified) {
+    if (!isEnableOTP || emailVerified === true) {
       let showAlert = false,
         widgetKey,
         tourPageNumber;
@@ -1475,6 +1486,7 @@ function SignYourSelf() {
                   pdfDetails={pdfDetails}
                   setIsAlert={setIsAlert}
                   setIsDownloadModal={setIsDownloadModal}
+                  onEmailNotVerified={handleEmailNotVerified}
                 />
                 {/* pdf header which contain funish back button */}
                 <Header

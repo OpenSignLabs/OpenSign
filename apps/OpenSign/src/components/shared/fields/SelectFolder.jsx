@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from "react";
-import Parse from "parse";
+import React, { useEffect, useRef, useState } from "react";
 import CreateFolder from "./CreateFolder";
+import useFolderPagination from "../../../hook/useFolderPagination";
+import Alert from "../../../primitives/Alert";
 import ModalUi from "../../../primitives/ModalUi";
 import Tooltip from "../../../primitives/Tooltip";
 import { useTranslation } from "react-i18next";
@@ -13,21 +14,31 @@ const SelectFolder = ({ required, onSuccess, folderCls, isReset }) => {
   const [isOpen, SetIsOpen] = useState(false);
   const [clickFolder, setClickFolder] = useState("");
   const [selectFolder, setSelectedFolder] = useState({});
-  const [folderList, setFolderList] = useState([]);
+  const {
+    folderList,
+    setFolderList,
+    isLoader,
+    error,
+    fetchFolder,
+    handleScroll
+  } = useFolderPagination(folderCls, isOpen);
   const [tabList, setTabList] = useState([]);
-  const [isLoader, setIsLoader] = useState(false);
   const [folderPath, setFolderPath] = useState("");
   const [isAdd, setIsAdd] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const searchTimer = useRef(null);
   useEffect(() => {
     if (isOpen) {
       setIsAdd(false);
       setClickFolder({});
       setFolderList([]);
       setTabList([]);
+      setSearchTerm("");
       fetchFolder();
     }
     // eslint-disable-next-line
   }, [isOpen]);
+  useEffect(() => () => clearTimeout(searchTimer.current), []);
   // below useEffect is used to reset folder selection if user pass isReset = true from parent component
   useEffect(() => {
     if (isReset == true) {
@@ -35,47 +46,20 @@ const SelectFolder = ({ required, onSuccess, folderCls, isReset }) => {
     }
   }, [isReset]);
   const handleReset = () => {
+    clearTimeout(searchTimer.current);
     setFolderPath({});
     setSelectedFolder("");
     setClickFolder("");
     setIsAdd(false);
+    setSearchTerm("");
     setFolderList([]);
     setTabList([]);
   };
-  // `fetchFolder` is used to fetch of folder list created by user on basis of folderPtr or without folderPtr
-  const fetchFolder = async (folderPtr) => {
-    setIsLoader(true);
-    try {
-      const FolderQuery = new Parse.Query(folderCls);
-      if (folderPtr) {
-        FolderQuery.equalTo("Folder", folderPtr);
-        FolderQuery.notEqualTo("IsArchive", true);
-        FolderQuery.descending("Type");
-        FolderQuery.equalTo("CreatedBy", Parse.User.current());
-      } else {
-        FolderQuery.doesNotExist("Folder");
-        FolderQuery.notEqualTo("IsArchive", true);
-        FolderQuery.descending("Type");
-        FolderQuery.equalTo("CreatedBy", Parse.User.current());
-      }
-
-      const res = await FolderQuery.find();
-      if (res) {
-        const result = JSON.parse(JSON.stringify(res));
-        if (result) {
-          setFolderList(result);
-          setIsLoader(false);
-        }
-        setIsLoader(false);
-      }
-    } catch (error) {
-      setIsLoader(false);
-    }
-  };
-
   // `handleSelect` is used to save pointer of folder selected by user and it's path in state
   const handleSelect = (item) => {
+    clearTimeout(searchTimer.current);
     setFolderList([]);
+    setSearchTerm("");
     setClickFolder({ ObjectId: item.objectId, Name: item.Name });
     if (tabList.length > 0) {
       const tab = tabList.some((x) => x.objectId === item.objectId);
@@ -120,13 +104,15 @@ const SelectFolder = ({ required, onSuccess, folderCls, isReset }) => {
     setClickFolder({});
     setFolderList([]);
     setTabList([]);
+    setSearchTerm("");
   };
 
   // `handleCancel` is call when user click on folder name from path/tab in popup
   const removeTabListItem = async (e, i) => {
     e.preventDefault();
-    setIsLoader(true);
+    clearTimeout(searchTimer.current);
     setIsAdd(false);
+    setSearchTerm("");
     if (i !== undefined) {
       setFolderList([]);
       const list = tabList.filter((folder, j) => j <= i && folder);
@@ -136,6 +122,10 @@ const SelectFolder = ({ required, onSuccess, folderCls, isReset }) => {
         className: folderCls,
         objectId: list[index].objectId
       };
+      setClickFolder({
+        ObjectId: list[index].objectId,
+        Name: list[index].Name
+      });
       fetchFolder(folderPtr);
       setTabList(list);
     } else {
@@ -149,19 +139,34 @@ const SelectFolder = ({ required, onSuccess, folderCls, isReset }) => {
   // `handleCreate` is used to open folder creation form in popup
   const handleCreate = () => setIsAdd(true);
   const handleBack = () => setIsAdd(false);
+  const handleSearchChange = (event) => {
+    const value = event.target.value;
+    setSearchTerm(value);
+    clearTimeout(searchTimer.current);
+    searchTimer.current = setTimeout(() => {
+      const currentFolder = tabList[tabList.length - 1];
+      fetchFolder(
+        currentFolder
+          ? {
+              __type: "Pointer",
+              className: folderCls,
+              objectId: currentFolder.objectId
+            }
+          : undefined,
+        false,
+        value.trim()
+      );
+    }, 300);
+  };
 
   // `handleAddFolder` is call when user folder created successfully and it fetch folder list on the basis of folderPtr or without folderPtr
   const handleAddFolder = (newFolder) => {
     setFolderList([]);
-    if (clickFolder && clickFolder.ObjectId) {
-      fetchFolder({
-        __type: "Pointer",
-        className: folderCls,
-        objectId: newFolder.objectId // clickFolder.ObjectId
-      });
-    } else {
-      fetchFolder();
-    }
+    fetchFolder({
+      __type: "Pointer",
+      className: folderCls,
+      objectId: newFolder.objectId
+    });
     setClickFolder({ ObjectId: newFolder.objectId, Name: newFolder.Name });
     setTabList((prev) => [...prev, newFolder]);
     handleBack();
@@ -239,11 +244,28 @@ const SelectFolder = ({ required, onSuccess, folderCls, isReset }) => {
                   {" / "}
                 </React.Fragment>
               ))}
+            <div className="mt-2">
+              <input
+                value={searchTerm}
+                onChange={handleSearchChange}
+                className="op-input op-input-bordered op-input-sm w-full text-xs"
+                placeholder={t("search-folder")}
+                aria-label={t("search-folder")}
+              />
+            </div>
             <hr className="bg-[#8a8a8a] mt-[0.750rem]" />
           </div>
           <div className="mb-2">
+            {error && (
+              <Alert type="danger" className="my-2 text-xs">
+                {t("something-went-wrong-mssg")}
+              </Alert>
+            )}
             {!isAdd && (
-              <div className="max-h-[210px] overflow-auto">
+              <div
+                className="max-h-[210px] overflow-auto"
+                onScroll={handleScroll}
+              >
                 {folderList.length > 0
                   ? folderList.map((folder) => (
                       <div
@@ -279,7 +301,8 @@ const SelectFolder = ({ required, onSuccess, folderCls, isReset }) => {
                         </div>
                       </div>
                     ))
-                  : !isLoader && (
+                  : !isLoader &&
+                    !error && (
                       <div className="text-base-content text-center my-2">
                         {t("no-data")}
                       </div>
