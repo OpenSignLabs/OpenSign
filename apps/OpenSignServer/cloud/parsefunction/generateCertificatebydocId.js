@@ -1,10 +1,10 @@
 import { SignPdf } from '@signpdf/signpdf';
-import { P12Signer } from '@signpdf/signer-p12';
 import { pdflibAddPlaceholder } from '@signpdf/placeholder-pdf-lib';
 import { PDFDocument } from 'pdf-lib';
 import fs from 'node:fs';
 import dotenv from 'dotenv';
 import GenerateCertificate from './pdf/GenerateCertificate.js';
+import { IssuerPreservingP12Signer } from './pdf/IssuerPreservingP12Signer.js';
 import { getSecureUrl } from '../../Utils.js';
 import { parseUploadFile } from '../../utils/fileUtils.js';
 import { resolveDeploymentBrand } from '../../utils/brandContext.js';
@@ -67,7 +67,9 @@ export default async function generateCertificatebydocId(req) {
       const doc = { ..._docRes, completedAt: completedAt };
       const certificate = await GenerateCertificate(doc);
       const certificatePdf = await PDFDocument.load(certificate);
-      const p12 = new P12Signer(P12Buffer, { passphrase: process.env.PASS_PHRASE || null });
+      const p12 = new IssuerPreservingP12Signer(P12Buffer, {
+        passphrase: process.env.PASS_PHRASE || null,
+      });
       //  `pdflibAddPlaceholder` is used to add code of only digital sign in certificate
       pdflibAddPlaceholder({
         pdfDoc: certificatePdf,

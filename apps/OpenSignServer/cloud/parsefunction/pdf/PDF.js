@@ -19,7 +19,7 @@ import GenerateCertificate from './GenerateCertificate.js';
 import { pdflibAddPlaceholder } from '@signpdf/placeholder-pdf-lib';
 import { Placeholder } from './Placeholder.js';
 import { SignPdf } from '@signpdf/signpdf';
-import { P12Signer } from '@signpdf/signer-p12';
+import { IssuerPreservingP12Signer } from './IssuerPreservingP12Signer.js';
 import { buildDownloadFilename, parseUploadFile } from '../../../utils/fileUtils.js';
 import sendMailWithAttachment from '../sendMailWithAttachment.js';
 import sendSystemMail from '../sendSystemMail.js';
@@ -311,7 +311,7 @@ async function sendMailsaveCertifcate(doc, pfx, isCustomMail, mailProvider, file
   const certificate = await GenerateCertificate(doc);
   const certificatePdf = await PDFDocument.load(certificate);
   const P12Buffer = fs.readFileSync(pfx.name);
-  const p12 = new P12Signer(P12Buffer, { passphrase: pfx.passphrase || null });
+  const p12 = new IssuerPreservingP12Signer(P12Buffer, { passphrase: pfx.passphrase || null });
   //  `pdflibAddPlaceholder` is used to add code of only digitial sign in certificate
   pdflibAddPlaceholder({
     pdfDoc: certificatePdf,
@@ -503,7 +503,9 @@ async function PDF(req) {
           signersName && signersName.length > 0
             ? signersName?.join(', ')
             : username + ' <' + userEmail + '>';
-        const p12Cert = new P12Signer(P12Buffer, { passphrase: passphrase || null });
+        const p12Cert = new IssuerPreservingP12Signer(P12Buffer, {
+          passphrase: passphrase || null,
+        });
         signedFilePath = `./exports/signed_${name}`;
         PdfBuffer = await processPdf(_resDoc, PdfBuffer, reason, UserPtr, userIP, sign);
         //`new signPDF` create new instance of pdfBuffer and p12Buffer
