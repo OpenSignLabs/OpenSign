@@ -60,6 +60,7 @@ async function sendMailOTPv1(request) {
           useMasterKey: true,
         });
         updateOtp.set('OTP', code);
+        updateOtp.set('ExpiresAt', new Date(Date.now() + 10 * 60 * 1000));
         updateOtp.save(null, { useMasterKey: true });
         //   console.log("update otp Res in tempSendOtp ", updateRes);
       } else {
@@ -68,6 +69,7 @@ async function sendMailOTPv1(request) {
         newOtpQuery.set('OTP', code);
         newOtpQuery.set('Email', email);
         newOtpQuery.set('TenantId', TenantId);
+        newOtpQuery.set('ExpiresAt', new Date(Date.now() + 10 * 60 * 1000));
         await newOtpQuery.save(null, { useMasterKey: true });
         //   console.log("new otp Res in tempSendOtp ", newRes);
       }

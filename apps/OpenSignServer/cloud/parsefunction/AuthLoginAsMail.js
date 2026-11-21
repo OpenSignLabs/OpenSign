@@ -19,8 +19,16 @@ async function AuthLoginAsMail(request) {
 
     if (res !== undefined) {
       let resOtp = res.get('OTP');
+      const expiresAt = res.get('ExpiresAt');
+      // A record without a usable expiry is legacy; it must not be accepted.
+      if (!expiresAt || new Date(expiresAt) <= new Date()) {
+        return 'Invalid Otp';
+      }
 
       if (resOtp === otp) {
+        // Consume the code before issuing a session. If the delete fails the
+        // code would stay reusable, so the authentication must abort.
+        await res.destroy({ useMasterKey: true });
         var result = await getToken(request);
         if (result && !result?.emailVerified) {
           const userQuery = new Parse.Query(Parse.User);
