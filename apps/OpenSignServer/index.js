@@ -137,16 +137,16 @@ export const config = {
               // The template used by Parse Server to send an email for password
               // reset; this is a reserved template name.
               passwordResetEmail: {
-                subjectPath: './files/password_reset_email_subject.txt',
-                textPath: './files/password_reset_email.txt',
-                htmlPath: './files/password_reset_email.html',
+                subjectPath: './email-templates/password_reset_email_subject.txt',
+                textPath: './email-templates/password_reset_email.txt',
+                htmlPath: './email-templates/password_reset_email.html',
               },
               // The template used by Parse Server to send an email for email
               // address verification; this is a reserved template name.
               verificationEmail: {
-                subjectPath: './files/verification_email_subject.txt',
-                textPath: './files/verification_email.txt',
-                htmlPath: './files/verification_email.html',
+                subjectPath: './email-templates/verification_email_subject.txt',
+                textPath: './email-templates/verification_email.txt',
+                htmlPath: './email-templates/verification_email.html',
               },
             },
             apiCallback: async ({ payload, locale }) => {
