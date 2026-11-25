@@ -19,6 +19,7 @@ async function sendMailProvider(req) {
         host: process.env.SMTP_HOST,
         port: process.env.SMTP_PORT || 465,
         secure: smtpsecure,
+        ingnoreTLS: !process.env.SMTP_TLS | false,
       };
 
       // ✅ Add auth only if BOTH username & password exist
