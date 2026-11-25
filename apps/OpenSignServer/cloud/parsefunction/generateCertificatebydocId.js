@@ -8,6 +8,7 @@ import GenerateCertificate from './pdf/GenerateCertificate.js';
 import { getSecureUrl } from '../../Utils.js';
 import { parseUploadFile } from '../../utils/fileUtils.js';
 import { resolveDeploymentBrand } from '../../utils/brandContext.js';
+import { isAuthenticated } from '../../utils/AuthUtils.js';
 dotenv.config({ quiet: true });
 const deploymentBrand = resolveDeploymentBrand();
 const eSignName = deploymentBrand.digitalSignature.name;
@@ -58,7 +59,22 @@ export default async function generateCertificatebydocId(req) {
     );
     const docRes = await getDocument.get(docId, { useMasterKey: true });
 
-    if (docRes && docRes?.get('IsCompleted') && !docRes?.get('CertificateUrl')) {
+    if (docRes && docRes?.get('IsCompleted')) {
+    const existingCert = docRes?.get('CertificateUrl');
+    if (existingCert) {
+      // Never hand a certificate of an OTP-protected document to an anonymous
+      // caller; the query above runs with the master key.
+      if (docRes?.get('IsEnableOTP')) {
+        const isAuth = await isAuthenticated(req?.user);
+        if (!isAuth) {
+          throw new Parse.Error(
+            Parse.Error.INVALID_SESSION_TOKEN,
+            'User is not authenticated.'
+          );
+        }
+      }
+      return { CertificateUrl: existingCert };
+    }
       const _docRes = JSON.parse(JSON.stringify(docRes));
       const filteredaudit = _docRes?.AuditTrail?.filter(x => x?.UserPtr?.objectId);
       // Create a reversed copy of the array and find the last object with 'signedOn'
