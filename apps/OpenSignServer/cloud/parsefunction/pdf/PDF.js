@@ -402,9 +402,14 @@ async function PDF(req) {
     docQuery.equalTo('objectId', docId);
     docQuery.notEqualTo('IsDeclined', true);
     docQuery.notEqualTo('IsArchive', true);
+    docQuery.notEqualTo('IsCompleted', true);
     const resDoc = await docQuery.first({ useMasterKey: true });
     if (!resDoc) {
-      throw new Parse.Error(Parse.Error.OBJECT_NOT_FOUND, 'Document not found.');
+      throw new Parse.Error(Parse.Error.OBJECT_NOT_FOUND, 'Document not found or no longer signable.');
+    }
+    const expiryDate = resDoc?.get('ExpiryDate');
+    if (expiryDate && new Date(expiryDate) < new Date()) {
+      throw new Parse.Error(Parse.Error.OPERATION_FORBIDDEN, 'Document has expired and can no longer be signed.');
     }
     const IsEnableOTP = resDoc?.get('IsEnableOTP') || false;
     // if `IsEnableOTP` is false then we don't have to check authentication
