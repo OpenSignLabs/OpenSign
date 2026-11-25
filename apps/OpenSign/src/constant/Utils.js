@@ -27,6 +27,7 @@ import {
   buildDownloadFilename,
   addPreferenceOpt
 } from "../utils";
+import { DEFAULT_SIGNATURE_FONT } from "./fonts";
 
 export const fontsizeArr = [2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28];
 export const getFontSizeForHeight = (height) => {
@@ -416,7 +417,7 @@ export const handleWidgetResize = (
           // If it's a “type” signature, regenerate the image and options
           if (url.typeSignature && url.signatureType === "type") {
             const signImg = convertTextToImg(
-              url.typeFont ?? "Fasthand",
+              url.typeFont ?? DEFAULT_SIGNATURE_FONT,
               url.typeSignature,
               url.fontColor ?? "blue",
               widgetDims
@@ -902,7 +903,7 @@ export const handleSignYourselfWidgetResize = (
         // If it's a “type” signature, regenerate the image and options
         if (url.typeSignature && url.signatureType === "type") {
           const signImg = convertTextToImg(
-            url.typeFont ?? "Fasthand",
+            url.typeFont ?? DEFAULT_SIGNATURE_FONT,
             url.typeSignature,
             url.fontColor ?? "blue",
             widgetDims
@@ -1568,7 +1569,7 @@ export function convertTextToImg(fontStyle, text, color, widgetDims) {
   const maxWidth = widgetDims.Width;
   const maxHeight = widgetDims.Height;
   const baselineFontSizePx = maxHeight;
-  const fontFamily = fontStyle || "Fasthand";
+  const fontFamily = fontStyle || DEFAULT_SIGNATURE_FONT;
   const fillColor = color || "blue";
 
   // 1. Use a temporary canvas to measure actual text size
@@ -1666,7 +1667,7 @@ export function onSaveSign(
           options: { ...position.options, response: signImg },
           ...(typedSignature && {
             typeSignature: typedSignature,
-            typeFont: typeFont ?? "Fasthand",
+            typeFont: typeFont ?? DEFAULT_SIGNATURE_FONT,
             fontColor: fontColor ?? "blue"
           })
         };
@@ -1698,7 +1699,7 @@ export function onSaveSign(
             options: { ...item.options, response: signImg },
             ...(typedSignature && {
               typeSignature: typedSignature,
-              typeFont: typeFont || "Fasthand",
+              typeFont: typeFont || DEFAULT_SIGNATURE_FONT,
               fontColor: fontColor || "blue"
             })
           };

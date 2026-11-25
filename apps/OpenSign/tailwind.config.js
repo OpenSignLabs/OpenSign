@@ -2,7 +2,12 @@
 module.exports = {
   content: ["./src/**/*.{js,jsx,ts,tsx}"],
   theme: {
-    extend: {}
+    extend: {
+      fontFamily: {
+        ui: ["Arial", "sans-serif"],
+        signature: ["Fasthand", "cursive"],
+      }
+    }
   },
   plugins: [
     require("daisyui"),

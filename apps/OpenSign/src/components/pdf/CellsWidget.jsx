@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { UI_FONT } from "../../constant/fonts";
 
 const Cell = ({
   isEnabled,
@@ -31,7 +32,7 @@ const Cell = ({
       onBlur={editable ? (e) => onBlur && onBlur(e, index) : undefined}
       className={`${isEnabled ? "placeholder-gray-300" : "placeholder-gray-500"} w-full text-center focus:outline-none bg-transparent`}
       placeholder={hint}
-      style={{ fontFamily: "Arial, sans-serif", fontSize, color: fontColor }}
+      style={{ fontFamily: UI_FONT, fontSize, color: fontColor }}
     />
   </div>
 );
