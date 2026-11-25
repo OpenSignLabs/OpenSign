@@ -6,6 +6,7 @@ import {
   radioButtonWidget,
   compressedFileSize,
   textWidget,
+  textInputWidget,
   months,
   changeDateToMomentFormat,
   convertBase64ToFile,
@@ -39,16 +40,26 @@ const ShowTextWidget = ({ position, handleWidgetDetails }) => {
   const inputRef = useRef(null);
   const [inputValue, setInputValue] = useState(position.options.response || "");
 
+  useEffect(() => {
+    setInputValue(position.options.response || "");
+  }, [position.options.response]);
+
   return (
-    <input
+    <textarea
       ref={inputRef}
-      rows={1}
+      rows={3}
       value={inputValue}
+      placeholder={position.options?.hint || ""}
+      onKeyDown={(e) => {
+        if (e.key === "Enter") {
+          e.stopPropagation();
+        }
+      }}
       onChange={(e) => {
         setInputValue(e.target.value);
         handleWidgetDetails(position, e.target.value);
       }}
-      className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
+      className="op-textarea op-textarea-bordered focus:outline-none hover:border-base-content w-full text-xs"
     />
   );
 };
@@ -492,6 +503,7 @@ function PrefillWidgetModal(props) {
           </>
         );
       case textWidget:
+      case textInputWidget:
         return (
           <>
             <span
