@@ -124,7 +124,7 @@ export const config = {
   allowExpiredAuthDataToken: false,
   enableInsecureAuthAdapters: false,
   databaseOptions: { allowPublicExplain: false },
-  encodeParseObjectInCloudFunction: true,
+  // encodeParseObjectInCloudFunction removed (unsupported in this parse-server version)
   ...(isMailAdapter === true
     ? {
         emailAdapter: {
